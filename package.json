@@ -1,11 +1,11 @@
 {
   "name": "@madie/madie-patient",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "files": [
     "dist/**/*"
   ],
   "scripts": {
-    "start": "webpack serve --port 8500",
+    "start": "webpack serve --port 8506",
     "build": "concurrently npm:build:*",
     "build:webpack": "webpack --mode=production",
     "analyze": "webpack --mode=production --env analyze",
