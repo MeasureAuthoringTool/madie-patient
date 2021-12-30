@@ -7,7 +7,7 @@
     "jsx": "react-jsx",
     "sourceMap": true
   },
-  "files": ["src/madie-madie-frontend-template.tsx"],
+  "files": ["src/madie-madie-patient.tsx"],
   "include": ["src/**/*"],
   "exclude": ["src/**/*.test*"]
 }

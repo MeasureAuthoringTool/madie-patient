@@ -1,5 +1,5 @@
 {
-  "name": "@madie/madie-frontend-template",
+  "name": "@madie/madie-patient",
   "version": "0.0.2",
   "files": [
     "dist/**/*"
@@ -76,7 +76,7 @@
     "single-spa": "^5.9.3",
     "single-spa-react": "^4.2.0"
   },
-  "types": "dist/madie-madie-frontend-template.d.ts",
+  "types": "dist/madie-madie-patient.d.ts",
   "browserslist": [
     "defaults",
     "not IE 11"

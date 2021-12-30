@@ -8,7 +8,7 @@ const path = require("path");
 module.exports = (webpackConfigEnv, argv) => {
   const defaultConfig = singleSpaDefaults({
     orgName: "madie",
-    projectName: "madie-frontend-template",
+    projectName: "madie-patient",
     webpackConfigEnv,
     argv,
     disableHtmlGeneration: true,
