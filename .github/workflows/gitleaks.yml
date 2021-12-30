@@ -6,8 +6,8 @@ jobs:
   gitleaks_scan:
     runs-on: ubuntu-latest
     env:
-      REPO: https://github.com/MeasureAuthoringTool/madie-layout
-      REMOTE_EXCLUDES_URL: https://raw.githubusercontent.com/semanticbits/bmat-gitleaks-automation/master/madie-layout/gitleaks.toml
+      REPO: https://github.com/MeasureAuthoringTool/madie-patient
+      REMOTE_EXCLUDES_URL: https://raw.githubusercontent.com/semanticbits/bmat-gitleaks-automation/master/madie-patient/gitleaks.toml
       GITLEAKS_VERSION: v7.5.0
     steps:
       - name: Execute Gitleaks
