@@ -28,6 +28,7 @@
     "@babel/preset-typescript": "^7.14.5",
     "@babel/runtime": "^7.14.6",
     "@madie/madie-auth": "^0.0.1",
+    "@madie/madie-components": "^0.0.4",
     "@madie/madie-editor": "^0.0.1",
     "@madie/madie-root": "^0.0.2",
     "@testing-library/jest-dom": "^5.14.1",
@@ -54,7 +55,7 @@
     "jest-cli": "^27.1.0",
     "postcss": "^8.3.6",
     "postcss-loader": "^6.1.1",
-    "postcss-preset-env": "^6.7.0",
+    "postcss-preset-env": "^7.2.0",
     "prettier": "^2.3.2",
     "pretty-quick": "^3.1.1",
     "styled-components": "^5.3.1",
@@ -71,10 +72,17 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
+    "@types/lodash": "^4.14.178",
+    "axios": "^0.24.0",
+    "formik": "^2.2.9",
+    "lodash": "^4.17.21",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-router": "^6.2.1",
+    "react-router-dom": "^6.2.1",
     "single-spa": "^5.9.3",
-    "single-spa-react": "^4.2.0"
+    "single-spa-react": "^4.2.0",
+    "yup": "^0.32.11"
   },
   "types": "dist/madie-madie-patient.d.ts",
   "browserslist": [
