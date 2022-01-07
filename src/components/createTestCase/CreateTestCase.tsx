@@ -29,7 +29,7 @@ const CreateTestCase = () => {
       description: "",
     } as TestCase,
     validationSchema: Yup.object().shape({
-      description: Yup.string().required("Patient description is required"),
+      description: Yup.string(),
     }),
     onSubmit: async (values: TestCase) => {
       await createPatient(values);
@@ -63,6 +63,7 @@ const CreateTestCase = () => {
         <FormControl>
           <Label text="Test Case Description" />
           <TestCaseDescription
+            id="testCaseDescription"
             data-testid="create-test-case-description"
             {...formik.getFieldProps("description")}
           />
