@@ -1,19 +1,11 @@
 import React from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import TestCaseLanding from "./testCaseLanding/TestCaseLanding";
-import CreateTestCase from "./createTestCase/CreateTestCase";
+import { BrowserRouter } from "react-router-dom";
+import TestCaseLayout from "./layout/TestCaseLayout";
 
 export default function Home() {
   return (
-    <div>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/measure/:measureId/edit/patients">
-            <Route index element={<TestCaseLanding />} />
-            <Route path="create" element={<CreateTestCase />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <BrowserRouter>
+      <TestCaseLayout />
+    </BrowserRouter>
   );
 }
