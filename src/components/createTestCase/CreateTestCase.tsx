@@ -5,6 +5,7 @@ import { useFormik } from "formik";
 import tw from "twin.macro";
 import * as Yup from "yup";
 import TestCase from "../../models/TestCase";
+import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 
 const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
@@ -22,6 +23,7 @@ const TestCaseDescription = tw.textarea`
 const CreateTestCase = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const testCaseService = useTestCaseServiceApi();
   const [testCase, setTestCase] = useState<TestCase>();
 
   const formik = useFormik({
@@ -40,6 +42,7 @@ const CreateTestCase = () => {
     // eslint-disable-next-line no-console
     console.log("create testCase: ", testCase);
     setTestCase(testCase);
+    await testCaseService.createTestCase(testCase);
   };
 
   function formikErrorHandler(name: string, isError: boolean) {
