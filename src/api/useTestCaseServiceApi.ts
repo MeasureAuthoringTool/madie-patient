@@ -8,10 +8,8 @@ export class TestCaseServiceApi {
 
   async createTestCase(testCase: TestCase) {
     try {
-      // eslint-disable-next-line no-console
-      console.log(`Create test case baseUrl: [${this.baseUrl}]`);
       const response = await axios.post<TestCase>(
-        `${this.baseUrl}/test-cases`,
+        `${this.baseUrl}/patient`,
         testCase
       );
       return response.data;

@@ -117,6 +117,12 @@ module.exports = {
           600: "2px solid #db202a",
         },
       },
+      minWidth: {
+        72: "18rem",
+        80: "20rem",
+        96: "24rem",
+        128: "32rem",
+      },
     },
   },
   variants: {
