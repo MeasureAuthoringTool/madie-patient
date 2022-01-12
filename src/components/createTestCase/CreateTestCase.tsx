@@ -62,9 +62,10 @@ const CreateTestCase = () => {
       if (savedTestCase && savedTestCase.id) {
         setAlert({
           status: "success",
-          message: "Test case saved successfully! Redirecting to Patients...",
+          message:
+            "Test case saved successfully! Redirecting back to Test Cases...",
         });
-        setTimeout(() => navigateToPatients(), 2000);
+        setTimeout(() => navigateToTestCases(), 2000);
       } else {
         setAlert(() => ({
           status: "error",
@@ -81,7 +82,7 @@ const CreateTestCase = () => {
     }
   };
 
-  function navigateToPatients() {
+  function navigateToTestCases() {
     const url = location.pathname.slice(0, location.pathname.length - 7);
     navigate(url);
   }
@@ -143,7 +144,7 @@ const CreateTestCase = () => {
             buttonTitle="Cancel"
             type="button"
             variant="white"
-            onClick={navigateToPatients}
+            onClick={navigateToTestCases}
             data-testid="create-test-case-cancel-button"
           />
         </FormActions>

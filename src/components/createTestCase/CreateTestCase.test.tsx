@@ -55,7 +55,7 @@ describe("CreateTestCase component", () => {
     userEvent.click(createBtn);
 
     const debugOutput = await screen.findByText(
-      "Test case saved successfully! Redirecting to Patients..."
+      "Test case saved successfully! Redirecting back to Test Cases..."
     );
     expect(debugOutput).toBeInTheDocument();
   });
