@@ -16,6 +16,10 @@ const serviceConfig: ServiceConfig = {
 };
 
 describe("CreateTestCase component", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("should render create test case page", () => {
     render(
       <MemoryRouter>
@@ -113,7 +117,7 @@ describe("CreateTestCase component", () => {
     const alert = await screen.findByRole("alert");
     expect(alert).toBeInTheDocument();
     expect(alert).toHaveTextContent(
-      "An error occurred - create did not return the expected result."
+      "An error occurred - create did not return the expected successful result."
     );
   });
 

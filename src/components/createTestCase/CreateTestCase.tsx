@@ -65,12 +65,12 @@ const CreateTestCase = () => {
           message:
             "Test case saved successfully! Redirecting back to Test Cases...",
         });
-        setTimeout(() => navigateToTestCases(), 2000);
+        setTimeout(() => navigateToTestCases(), 3000);
       } else {
         setAlert(() => ({
           status: "error",
           message:
-            "An error occurred - create did not return the expected result.",
+            "An error occurred - create did not return the expected successful result.",
         }));
       }
     } catch (error) {
