@@ -9,7 +9,7 @@ export class TestCaseServiceApi {
   async createTestCase(testCase: TestCase) {
     try {
       const response = await axios.post<TestCase>(
-        `${this.baseUrl}/patient`,
+        `${this.baseUrl}/test-case`,
         testCase
       );
       return response.data;
