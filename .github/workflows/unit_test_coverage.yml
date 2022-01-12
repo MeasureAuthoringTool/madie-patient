@@ -63,7 +63,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: coverage
-          path: src/coverage/lcov.info
+          path: coverage/lcov.info
 
   upload-codacy-coverage:
     name: Upload code coverage to Codacy
