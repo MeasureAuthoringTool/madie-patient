@@ -6,7 +6,7 @@ import CreateTestCase from "../createTestCase/CreateTestCase";
 const TestCaseLayout = () => {
   return (
     <Routes>
-      <Route path="/measure/:measureId/edit/patients">
+      <Route path="/measure/:measureId/edit/test-cases">
         <Route index element={<TestCaseLanding />} />
         <Route path="create" element={<CreateTestCase />} />
       </Route>

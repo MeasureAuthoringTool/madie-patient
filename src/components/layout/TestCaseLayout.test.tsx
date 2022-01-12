@@ -22,7 +22,7 @@ describe("TestCaseLayout", () => {
 
   it("should render the landing component first", () => {
     render(
-      <MemoryRouter initialEntries={["/measure/m1234/edit/patients"]}>
+      <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases"]}>
         <TestCaseLayout />
       </MemoryRouter>
     );
@@ -33,7 +33,7 @@ describe("TestCaseLayout", () => {
 
   it("should allow navigation to create page from landing page ", () => {
     render(
-      <MemoryRouter initialEntries={["/measure/m1234/edit/patients"]}>
+      <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases"]}>
         <TestCaseLayout />
       </MemoryRouter>
     );
@@ -58,7 +58,7 @@ describe("TestCaseLayout", () => {
 
   it("should allow navigation to create page, then back to landing page ", () => {
     render(
-      <MemoryRouter initialEntries={["/measure/m1234/edit/patients"]}>
+      <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases"]}>
         <TestCaseLayout />
       </MemoryRouter>
     );
@@ -77,7 +77,7 @@ describe("TestCaseLayout", () => {
   it("should navigate back to landing page when test case is successfully saved", async () => {
     jest.useFakeTimers("modern");
     render(
-      <MemoryRouter initialEntries={["/measure/m1234/edit/patients"]}>
+      <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases"]}>
         <ApiContextProvider value={serviceConfig}>
           <TestCaseLayout />
         </ApiContextProvider>
