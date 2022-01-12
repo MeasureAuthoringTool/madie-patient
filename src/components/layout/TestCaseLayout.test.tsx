@@ -110,20 +110,9 @@ describe("TestCaseLayout", () => {
     act(() => {
       jest.advanceTimersByTime(3500);
     });
-    // jest.advanceTimersByTime(3500);
     const newBtn2 = await screen.findByRole("button", {
       name: "New Test Case",
     });
     expect(newBtn2).toBeInTheDocument();
-    // await waitFor(
-    //   () => {
-    //     jest.advanceTimersByTime(3500);
-    //     const newBtn2 = screen.getByRole("button", {
-    //       name: "New Test Case",
-    //     });
-    //     expect(newBtn2).toBeInTheDocument();
-    //   },
-    //   { timeout: 5000 }
-    // );
   });
 });
