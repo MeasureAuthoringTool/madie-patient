@@ -58,8 +58,6 @@ const CreateTestCase = () => {
   const createTestCase = async (testCase: TestCase) => {
     setAlert(null);
     try {
-      // eslint-disable-next-line no-console
-      console.log("create testCase: ", testCase);
       const savedTestCase = await testCaseService.createTestCase(testCase);
       if (savedTestCase && savedTestCase.id) {
         setAlert({
@@ -70,14 +68,15 @@ const CreateTestCase = () => {
       } else {
         setAlert(() => ({
           status: "error",
-          message: "An error occurred while creating the test case",
+          message:
+            "An error occurred - create did not return the expected result.",
         }));
       }
     } catch (error) {
       console.error("An error occurred while creating the test case", error);
       setAlert(() => ({
         status: "error",
-        message: "An error occurred while creating the test case",
+        message: "An error occurred while creating the test case.",
       }));
     }
   };
@@ -102,14 +101,19 @@ const CreateTestCase = () => {
   return (
     <div tw="ml-2">
       {alert && (
-        <Alert status={alert.status} role="alert">
+        <Alert
+          status={alert.status}
+          role="alert"
+          aria-label="Create Alert"
+          data-testid="create-test-case-alert"
+        >
           {alert.message}
           <button
-            data-testid="save-edit-measure-name"
+            data-testid="close-create-test-case-alert"
             type="button"
             tw="box-content w-4 h-4 p-1 ml-3 mb-1.5 border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:opacity-75 hover:no-underline"
             data-bs-dismiss="alert"
-            aria-label="Close"
+            aria-label="Close Alert"
             onClick={() => setAlert(null)}
           >
             <FontAwesomeIcon icon={faTimes} />
