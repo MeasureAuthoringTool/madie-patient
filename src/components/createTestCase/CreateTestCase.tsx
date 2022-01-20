@@ -9,6 +9,7 @@ import "styled-components/macro";
 import * as Yup from "yup";
 import TestCase from "../../models/TestCase";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
+import Editor from "../editor/Editor";
 
 const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
@@ -100,56 +101,69 @@ const CreateTestCase = () => {
   }
 
   return (
-    <div tw="ml-2">
-      {alert && (
-        <Alert
-          status={alert.status}
-          role="alert"
-          aria-label="Create Alert"
-          data-testid="create-test-case-alert"
-        >
-          {alert.message}
-          <button
-            data-testid="close-create-test-case-alert"
-            type="button"
-            tw="box-content w-4 h-4 p-1 ml-3 mb-1.5 border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:opacity-75 hover:no-underline"
-            data-bs-dismiss="alert"
-            aria-label="Close Alert"
-            onClick={() => setAlert(null)}
-          >
-            <FontAwesomeIcon icon={faTimes} />
-          </button>
-        </Alert>
-      )}
-      <TestCaseForm
-        data-testid="create-test-case-form"
-        onSubmit={formik.handleSubmit}
-      >
-        <FormControl>
-          <Label text="Test Case Description" />
-          <TestCaseDescription
-            id="testCaseDescription"
-            data-testid="create-test-case-description"
-            {...formik.getFieldProps("description")}
-          />
-          <FormErrors>{formikErrorHandler("description", true)}</FormErrors>
-        </FormControl>
-        <FormActions>
-          <Button
-            buttonTitle="Create Test Case"
-            type="submit"
-            data-testid="create-test-case-button"
-          />
-          <Button
-            buttonTitle="Cancel"
-            type="button"
-            variant="white"
-            onClick={navigateToTestCases}
-            data-testid="create-test-case-cancel-button"
-          />
-        </FormActions>
-      </TestCaseForm>
-    </div>
+    <>
+      <div tw="flex flex-wrap sm:flex-row-reverse items-stretch h-screen">
+        <div tw="w-full md:w-1/2 xl:w-3/5 bg-cover flex">
+          <Editor />
+        </div>
+        <div tw="w-full flex-1 p-4 overflow-y-scroll">
+          {/* Original content of this tsx output */}
+          <div tw="ml-2">
+            {alert && (
+              <Alert
+                status={alert.status}
+                role="alert"
+                aria-label="Create Alert"
+                data-testid="create-test-case-alert"
+              >
+                {alert.message}
+                <button
+                  data-testid="close-create-test-case-alert"
+                  type="button"
+                  tw="box-content w-4 h-4 p-1 ml-3 mb-1.5 border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:opacity-75 hover:no-underline"
+                  data-bs-dismiss="alert"
+                  aria-label="Close Alert"
+                  onClick={() => setAlert(null)}
+                >
+                  <FontAwesomeIcon icon={faTimes} />
+                </button>
+              </Alert>
+            )}
+            <TestCaseForm
+              data-testid="create-test-case-form"
+              onSubmit={formik.handleSubmit}
+            >
+              <FormControl>
+                <Label text="Test Case Description" />
+                <TestCaseDescription
+                  id="testCaseDescription"
+                  data-testid="create-test-case-description"
+                  {...formik.getFieldProps("description")}
+                />
+                <FormErrors>
+                  {formikErrorHandler("description", true)}
+                </FormErrors>
+              </FormControl>
+              <FormActions>
+                <Button
+                  buttonTitle="Create Test Case"
+                  type="submit"
+                  data-testid="create-test-case-button"
+                />
+                <Button
+                  buttonTitle="Cancel"
+                  type="button"
+                  variant="white"
+                  onClick={navigateToTestCases}
+                  data-testid="create-test-case-cancel-button"
+                />
+              </FormActions>
+            </TestCaseForm>
+          </div>
+          {/* End of Original content of this tsx output */}
+        </div>
+      </div>
+    </>
   );
 };
 
