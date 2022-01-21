@@ -21,9 +21,12 @@ export class TestCaseServiceApi {
   }
 
   async getTestCasesByMeasureId(measureId: string): Promise<TestCase[]> {
+    // TODO: remove log, measureId will be passed in as query string to get request in next PR
+    // eslint-disable-next-line no-console
+    console.log(measureId);
     try {
       const response = await axios.get<TestCase[]>(
-        `${this.baseUrl}/test-cases/${measureId}`
+        `${this.baseUrl}/test-cases`
       );
       return response.data;
     } catch (err) {
