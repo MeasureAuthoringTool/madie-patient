@@ -27,11 +27,22 @@ export default function Home() {
         setConfigError(true);
       });
   }, []);
-  return (
+  const errorPage = <div>Error loading service config</div>;
+
+  const loadingState = <div>Loading...</div>;
+
+  const loadedState = (
     <BrowserRouter>
       <ApiContextProvider value={serviceConfig}>
         <TestCaseLayout />
       </ApiContextProvider>
     </BrowserRouter>
   );
+
+  let result = serviceConfig === null ? loadingState : loadedState;
+  if (configError) {
+    result = errorPage;
+  }
+
+  return result;
 }
