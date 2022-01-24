@@ -14,6 +14,12 @@ const serviceConfig: ServiceConfig = {
   },
 };
 
+jest.mock("../../hooks/useOktaTokens", () =>
+  jest.fn(() => ({
+    getAccessToken: () => "test.jwt",
+  }))
+);
+
 describe("TestCaseList component", () => {
   afterEach(() => {
     jest.clearAllMocks();
