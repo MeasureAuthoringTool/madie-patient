@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, HelperText, Label } from "@madie/madie-components";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useFormik } from "formik";
 import tw, { styled } from "twin.macro";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -45,7 +45,7 @@ const CreateTestCase = () => {
   const navigate = useNavigate();
   const testCaseService = useTestCaseServiceApi();
   const [alert, setAlert] = useState<AlertProps>(null);
-
+  const { measureId } = useParams<{ measureId: string }>();
   const formik = useFormik({
     initialValues: {
       description: "",
@@ -59,7 +59,10 @@ const CreateTestCase = () => {
   const createTestCase = async (testCase: TestCase) => {
     setAlert(null);
     try {
-      const savedTestCase = await testCaseService.createTestCase(testCase);
+      const savedTestCase = await testCaseService.createTestCase(
+        testCase,
+        measureId
+      );
       if (savedTestCase && savedTestCase.id) {
         setAlert({
           status: "success",
