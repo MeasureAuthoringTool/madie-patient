@@ -10,7 +10,7 @@ export class TestCaseServiceApi {
   async createTestCase(testCase: TestCase, measureId: string) {
     try {
       const response = await axios.post<TestCase>(
-        `${this.baseUrl}/test-case/${measureId}`,
+        `${this.baseUrl}/measures/${measureId}/test-cases`,
         testCase,
         {
           headers: {
@@ -29,7 +29,7 @@ export class TestCaseServiceApi {
   async getTestCasesByMeasureId(measureId: string): Promise<TestCase[]> {
     try {
       const response = await axios.get<TestCase[]>(
-        `${this.baseUrl}/test-cases/${measureId}`,
+        `${this.baseUrl}/measures/${measureId}/test-cases`,
         {
           headers: {
             Authorization: `Bearer ${this.getAccessToken()}`,

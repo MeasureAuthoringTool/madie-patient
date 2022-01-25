@@ -9,13 +9,13 @@ const TD = tw.td`p-3 whitespace-nowrap text-sm font-medium text-gray-900`;
 const ErrorAlert = tw.div`bg-red-100 text-red-700 rounded-lg m-1 p-3`;
 
 const TestCaseList = () => {
-  const [testCases, setTestCases] = useState<TestCase[]>([]);
+  const [testCases, setTestCases] = useState<TestCase[]>();
   const [error, setError] = useState("");
   const { measureId } = useParams<{ measureId: string }>();
   const testCaseService = useTestCaseServiceApi();
 
   useEffect(() => {
-    if (testCases.length === 0) {
+    if (!testCases) {
       testCaseService
         .getTestCasesByMeasureId(measureId)
         .then((testCaseList: TestCase[]) => {
@@ -45,7 +45,7 @@ const TestCaseList = () => {
                 </tr>
               </thead>
               <tbody>
-                {testCases.map((testCase) => (
+                {testCases?.map((testCase) => (
                   <tr tw="border-b" key={testCase.id}>
                     <TD>{testCase.description}</TD>
                     <TD>NA</TD>
