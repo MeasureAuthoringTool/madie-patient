@@ -19,6 +19,22 @@ export class TestCaseServiceApi {
       throw new Error(message);
     }
   }
+
+  async getTestCasesByMeasureId(measureId: string): Promise<TestCase[]> {
+    // TODO: remove log, measureId will be passed in as query string to get request in next PR
+    // eslint-disable-next-line no-console
+    console.log(measureId);
+    try {
+      const response = await axios.get<TestCase[]>(
+        `${this.baseUrl}/test-cases`
+      );
+      return response.data;
+    } catch (err) {
+      const message = "Unable to retrieve test cases, please try later.";
+      console.error(message, err);
+      throw new Error(message);
+    }
+  }
 }
 
 const useTestCaseServiceApi = (): TestCaseServiceApi => {
