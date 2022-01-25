@@ -32,6 +32,8 @@ describe("CreateTestCase component", () => {
         <CreateTestCase />
       </MemoryRouter>
     );
+    screen.debug();
+    const editor = screen.getByTestId("test-case-editor");
     const descriptionTextArea = screen.getByTestId(
       "create-test-case-description"
     );
@@ -40,6 +42,8 @@ describe("CreateTestCase component", () => {
       screen.getByRole("button", { name: "Create Test Case" })
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+
+    expect(editor).toBeInTheDocument();
   });
 
   it("should create test case when create button is clicked", async () => {

@@ -105,12 +105,8 @@ const CreateTestCase = () => {
 
   return (
     <>
-      <div tw="flex flex-wrap sm:flex-row-reverse items-stretch h-screen">
-        <div tw="w-full md:w-1/2 xl:w-3/5 bg-cover flex">
-          <Editor />
-        </div>
-        <div tw="w-full flex-1 p-4 overflow-y-scroll">
-          {/* Original content of this tsx output */}
+      <div tw="flex flex-wrap ">
+        <div tw="flex-none ">
           <div tw="ml-2">
             {alert && (
               <Alert
@@ -163,7 +159,9 @@ const CreateTestCase = () => {
               </FormActions>
             </TestCaseForm>
           </div>
-          {/* End of Original content of this tsx output */}
+        </div>
+        <div tw="flex-grow">
+          <Editor />
         </div>
       </div>
     </>
