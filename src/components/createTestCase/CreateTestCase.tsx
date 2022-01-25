@@ -104,7 +104,6 @@ const CreateTestCase = () => {
     <>
       <div tw="flex flex-wrap ">
         <div tw="flex-none ">
-          {/* Original content of this tsx output */}
           <div tw="ml-2">
             {alert && (
               <Alert
@@ -157,7 +156,6 @@ const CreateTestCase = () => {
               </FormActions>
             </TestCaseForm>
           </div>
-          {/* End of Original content of this tsx output */}
         </div>
         <div tw="flex-grow">
           <Editor />

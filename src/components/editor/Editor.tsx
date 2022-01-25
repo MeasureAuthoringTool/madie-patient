@@ -3,10 +3,10 @@ import AceEditor from "react-ace";
 import { Button } from "@madie/madie-components";
 import tw from "twin.macro";
 
-const Editor = () => {
+const Editor = (props) => {
   return (
     <>
-      <div>
+      <div data-testid="test-case-editor">
         <AceEditor
           mode="json" // Temporary value of mode to prevent a dynamic search request.
           theme="monokai"
