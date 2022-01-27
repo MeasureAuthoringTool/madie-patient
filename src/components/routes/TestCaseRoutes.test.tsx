@@ -1,7 +1,7 @@
 import * as React from "react";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import TestCaseLayout from "./TestCaseLayout";
+import TestCaseRoutes from "./TestCaseRoutes";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
@@ -15,7 +15,7 @@ const serviceConfig: ServiceConfig = {
   },
 };
 
-describe("TestCaseLayout", () => {
+describe("TestCaseRoutes", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -23,7 +23,7 @@ describe("TestCaseLayout", () => {
   it("should render the landing component first", () => {
     render(
       <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases"]}>
-        <TestCaseLayout />
+        <TestCaseRoutes />
       </MemoryRouter>
     );
 
@@ -34,7 +34,7 @@ describe("TestCaseLayout", () => {
   it("should allow navigation to create page from landing page ", () => {
     render(
       <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases"]}>
-        <TestCaseLayout />
+        <TestCaseRoutes />
       </MemoryRouter>
     );
 
@@ -59,7 +59,7 @@ describe("TestCaseLayout", () => {
   it("should allow navigation to create page, then back to landing page ", () => {
     render(
       <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases"]}>
-        <TestCaseLayout />
+        <TestCaseRoutes />
       </MemoryRouter>
     );
 
@@ -79,7 +79,7 @@ describe("TestCaseLayout", () => {
     render(
       <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases"]}>
         <ApiContextProvider value={serviceConfig}>
-          <TestCaseLayout />
+          <TestCaseRoutes />
         </ApiContextProvider>
       </MemoryRouter>
     );

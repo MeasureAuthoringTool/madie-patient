@@ -1,5 +1,11 @@
 import * as React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  getByTestId,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import axios from "axios";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
@@ -20,12 +26,32 @@ jest.mock("../../hooks/useOktaTokens", () =>
   }))
 );
 
+const mockedUsedNavigate = jest.fn();
+jest.mock("react-router-dom", () => ({
+  ...(jest.requireActual("react-router-dom") as any),
+  useNavigate: () => mockedUsedNavigate,
+}));
+
 describe("TestCaseList component", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it("should render list of test cases", async () => {
+    const testCaseIds = ["1234", "5678"];
+    mockedAxios.get.mockResolvedValue({
+      data: [
+        {
+          id: testCaseIds[0],
+          description: "Test IPP",
+        },
+        {
+          id: testCaseIds[1],
+          description: "Test DENOM Pass",
+        },
+      ],
+    });
+
     render(
       <MemoryRouter>
         <ApiContextProvider value={serviceConfig}>
@@ -33,18 +59,6 @@ describe("TestCaseList component", () => {
         </ApiContextProvider>
       </MemoryRouter>
     );
-    mockedAxios.get.mockResolvedValue({
-      data: [
-        {
-          id: "1234",
-          description: "Test IPP",
-        },
-        {
-          id: "5678",
-          description: "Test DENOM Pass",
-        },
-      ],
-    });
 
     await waitFor(() => {
       const table = screen.getByTestId("test-case-tbl");
@@ -55,7 +69,14 @@ describe("TestCaseList component", () => {
 
       const tableRows = table.querySelectorAll("tbody tr");
       expect(tableRows[0]).toHaveTextContent("Test IPP");
+      expect(
+        screen.getByTestId(`edit-test-case-${testCaseIds[0]}`)
+      ).toBeInTheDocument();
+
       expect(tableRows[1]).toHaveTextContent("Test DENOM Pass");
+      expect(
+        screen.getByTestId(`edit-test-case-${testCaseIds[1]}`)
+      ).toBeInTheDocument();
     });
   });
 
@@ -73,6 +94,35 @@ describe("TestCaseList component", () => {
       expect(errorMessage).toHaveTextContent(
         "Unable to retrieve test cases, please try later."
       );
+    });
+  });
+
+  it("should navigate to the Test Case details page on edit button click", async () => {
+    const testCaseIds = ["1234", "5678"];
+    mockedAxios.get.mockResolvedValue({
+      data: [
+        {
+          id: testCaseIds[0],
+          description: "Test IPP",
+        },
+        {
+          id: testCaseIds[1],
+          description: "Test DENOM Pass",
+        },
+      ],
+    });
+
+    const { getByTestId } = render(
+      <MemoryRouter>
+        <ApiContextProvider value={serviceConfig}>
+          <TestCaseList />
+        </ApiContextProvider>
+      </MemoryRouter>
+    );
+    await waitFor(() => {
+      const editButton = getByTestId(`edit-test-case-${testCaseIds[0]}`);
+      fireEvent.click(editButton);
+      expect(mockedUsedNavigate).toHaveBeenCalled();
     });
   });
 });
