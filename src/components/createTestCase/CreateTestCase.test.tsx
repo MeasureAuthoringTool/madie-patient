@@ -1,10 +1,12 @@
 import * as React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import CreateTestCase from "./CreateTestCase";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
+import TestCaseRoutes from "../routes/TestCaseRoutes";
+import TestCase from "../../models/TestCase";
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -162,5 +164,131 @@ describe("CreateTestCase component", () => {
 
     const dismissedAlert = await screen.queryByRole("alert");
     expect(dismissedAlert).not.toBeInTheDocument();
+  });
+
+  it("should load existing test case data when viewing specific test case", async () => {
+    const testCase = { id: "1234", description: "Test IPP" } as TestCase;
+    mockedAxios.get.mockResolvedValue({
+      data: testCase,
+    });
+
+    render(
+      <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases/1234"]}>
+        <ApiContextProvider value={serviceConfig}>
+          <TestCaseRoutes />
+        </ApiContextProvider>
+      </MemoryRouter>
+    );
+    const descriptionTextArea = screen.getByTestId(
+      "create-test-case-description"
+    );
+    expect(descriptionTextArea).toBeInTheDocument();
+    await waitFor(
+      () => {
+        expect(descriptionTextArea).toHaveTextContent(testCase.description);
+      },
+      { timeout: 1500 }
+    );
+    expect(
+      screen.getByRole("button", { name: "Update Test Case" })
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+  });
+
+  it("should disable submit button when no changes are detected", async () => {
+    const testCase = { id: "1234", description: "Test IPP" } as TestCase;
+    mockedAxios.get.mockResolvedValue({
+      data: testCase,
+    });
+
+    render(
+      <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases/1234"]}>
+        <ApiContextProvider value={serviceConfig}>
+          <TestCaseRoutes />
+        </ApiContextProvider>
+      </MemoryRouter>
+    );
+    await waitFor(() => {
+      const updateBtn = screen.getByRole("button", {
+        name: "Update Test Case",
+      });
+      expect(updateBtn).toBeInTheDocument();
+      expect(updateBtn).toBeDisabled();
+    });
+  });
+
+  it("should update test case when update button is clicked", async () => {
+    const testCase = { id: "1234", description: "Test IPP" } as TestCase;
+    const testCaseDescription = "modified description";
+    mockedAxios.get.mockResolvedValue({
+      data: testCase,
+    });
+
+    render(
+      <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases/1234"]}>
+        <ApiContextProvider value={serviceConfig}>
+          <TestCaseRoutes />
+        </ApiContextProvider>
+      </MemoryRouter>
+    );
+
+    mockedAxios.put.mockResolvedValue({
+      data: { ...testCase, description: testCaseDescription },
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Update Test Case" })
+      ).toBeInTheDocument();
+    });
+
+    const descriptionInput = screen.getByTestId("create-test-case-description");
+    expect(descriptionInput).toHaveTextContent(testCase.description);
+    userEvent.type(descriptionInput, `{selectall}{del}${testCaseDescription}`);
+
+    await waitFor(() => {
+      expect(descriptionInput).toHaveTextContent(testCaseDescription);
+      expect(
+        screen.getByRole("button", { name: "Update Test Case" })
+      ).toBeEnabled();
+    });
+    userEvent.click(screen.getByRole("button", { name: "Update Test Case" }));
+
+    const debugOutput = await screen.findByText(
+      "Test case updated successfully! Redirecting back to Test Cases..."
+    );
+    expect(debugOutput).toBeInTheDocument();
+  });
+
+  it("should ignore supplied changes when cancel button is clicked during test case edit", async () => {
+    const testCase = { id: "1234", description: "Test IPP" } as TestCase;
+    const modifiedDescription = "modified description";
+    mockedAxios.get.mockResolvedValue({
+      data: testCase,
+    });
+
+    render(
+      <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases/1234"]}>
+        <ApiContextProvider value={serviceConfig}>
+          <TestCaseRoutes />
+        </ApiContextProvider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Update Test Case" })
+      ).toBeInTheDocument();
+    });
+
+    const descriptionInput = screen.getByTestId("create-test-case-description");
+    expect(descriptionInput).toHaveTextContent(testCase.description);
+    userEvent.type(descriptionInput, `{selectall}{del}${modifiedDescription}`);
+
+    await waitFor(() => {
+      expect(descriptionInput).toHaveTextContent(modifiedDescription);
+    });
+    userEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    expect(mockedAxios.put).toBeCalledTimes(0);
   });
 });

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, HelperText, Label } from "@madie/madie-components";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useFormik } from "formik";
 import tw, { styled } from "twin.macro";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -29,6 +29,10 @@ interface AlertProps {
   message?: string;
 }
 
+interface navigationParams {
+  id: string;
+}
+
 const styles = {
   success: tw`bg-green-100 text-green-700`,
   warning: tw`bg-yellow-100 text-yellow-700`,
@@ -41,11 +45,12 @@ const Alert = styled.div<AlertProps>(({ status = "default" }) => [
 ]);
 
 const CreateTestCase = () => {
-  const location = useLocation();
   const navigate = useNavigate();
+  const { id } = useParams<keyof navigationParams>() as navigationParams;
   const testCaseService = useTestCaseServiceApi();
   const [alert, setAlert] = useState<AlertProps>(null);
   const { measureId } = useParams<{ measureId: string }>();
+  const [testCase, setTestCase] = useState<TestCase>(null);
   const formik = useFormik({
     initialValues: {
       description: "",
@@ -53,11 +58,27 @@ const CreateTestCase = () => {
     validationSchema: Yup.object().shape({
       description: Yup.string(),
     }),
-    onSubmit: async (values: TestCase) => await createTestCase(values),
+    onSubmit: async (values: TestCase) => await handleSubmit(values),
   });
 
-  const createTestCase = async (testCase: TestCase) => {
+  useEffect(() => {
+    if (!testCase && id) {
+      testCaseService.getTestCase(id, measureId).then((tc: TestCase) => {
+        setTestCase(tc);
+        formik.resetForm({ values: tc });
+      });
+    }
+  }, [id, testCase, formik, testCaseService, measureId]);
+
+  const handleSubmit = async (testCase: TestCase) => {
     setAlert(null);
+    if (id) {
+      return await updateTestCase(testCase);
+    }
+    await createTestCase(testCase);
+  };
+
+  const createTestCase = async (testCase: TestCase) => {
     try {
       const savedTestCase = await testCaseService.createTestCase(
         testCase,
@@ -86,9 +107,37 @@ const CreateTestCase = () => {
     }
   };
 
+  const updateTestCase = async (testCase: TestCase) => {
+    try {
+      const updatedTestCase = await testCaseService.updateTestCase(
+        testCase,
+        measureId
+      );
+      if (updatedTestCase) {
+        setAlert({
+          status: "success",
+          message:
+            "Test case updated successfully! Redirecting back to Test Cases...",
+        });
+        setTimeout(() => navigateToTestCases(), 3000);
+      } else {
+        setAlert(() => ({
+          status: "error",
+          message:
+            "An error occurred - update did not return the expected successful result.",
+        }));
+      }
+    } catch (error) {
+      console.error("An error occurred while updating the test case", error);
+      setAlert(() => ({
+        status: "error",
+        message: "An error occurred while updating the test case.",
+      }));
+    }
+  };
+
   function navigateToTestCases() {
-    const url = location.pathname.slice(0, location.pathname.length - 7);
-    navigate(url);
+    navigate("..");
   }
 
   function formikErrorHandler(name: string, isError: boolean) {
@@ -145,9 +194,12 @@ const CreateTestCase = () => {
               </FormControl>
               <FormActions>
                 <Button
-                  buttonTitle="Create Test Case"
+                  buttonTitle={
+                    !!testCase ? "Update Test Case" : "Create Test Case"
+                  }
                   type="submit"
                   data-testid="create-test-case-button"
+                  disabled={!(formik.isValid && formik.dirty)}
                 />
                 <Button
                   buttonTitle="Cancel"
