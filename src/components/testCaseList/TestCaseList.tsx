@@ -3,12 +3,14 @@ import tw from "twin.macro";
 import "styled-components/macro";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import TestCase from "../../models/TestCase";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 const TH = tw.th`p-3 border-b text-left text-sm font-bold uppercase`;
 const TD = tw.td`p-3 whitespace-nowrap text-sm font-medium text-gray-900`;
+const Button = tw.button`text-blue-600 hover:text-blue-900`;
 const ErrorAlert = tw.div`bg-red-100 text-red-700 rounded-lg m-1 p-3`;
 
 const TestCaseList = () => {
+  const navigate = useNavigate();
   const [testCases, setTestCases] = useState<TestCase[]>();
   const [error, setError] = useState("");
   const { measureId } = useParams<{ measureId: string }>();
@@ -42,6 +44,7 @@ const TestCaseList = () => {
                 <tr>
                   <TH scope="col">Description</TH>
                   <TH scope="col">Status</TH>
+                  <TH scope="col" />
                 </tr>
               </thead>
               <tbody>
@@ -49,6 +52,16 @@ const TestCaseList = () => {
                   <tr tw="border-b" key={testCase.id}>
                     <TD>{testCase.description}</TD>
                     <TD>NA</TD>
+                    <TD>
+                      <Button
+                        onClick={() => {
+                          navigate(`./${testCase.id}`);
+                        }}
+                        data-testid={`edit-test-case-${testCase.id}`}
+                      >
+                        Edit
+                      </Button>
+                    </TD>
                   </tr>
                 ))}
               </tbody>

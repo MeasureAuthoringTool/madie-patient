@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter } from "react-router-dom";
-import TestCaseLayout from "./layout/TestCaseLayout";
+import TestCaseRoutes from "./routes/TestCaseRoutes";
 import { ServiceConfig, ApiContextProvider } from "../api/ServiceContext";
 import axios from "axios";
 
@@ -34,7 +34,7 @@ export default function Home() {
   const loadedState = (
     <BrowserRouter>
       <ApiContextProvider value={serviceConfig}>
-        <TestCaseLayout />
+        <TestCaseRoutes />
       </ApiContextProvider>
     </BrowserRouter>
   );
