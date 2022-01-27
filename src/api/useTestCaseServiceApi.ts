@@ -43,6 +43,43 @@ export class TestCaseServiceApi {
       throw new Error(message);
     }
   }
+
+  async getTestCase(testCaseId: string, measureId: string): Promise<TestCase> {
+    try {
+      const response = await axios.get<TestCase>(
+        `${this.baseUrl}/measures/${measureId}/test-cases/${testCaseId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      const message = "Unable to retrieve test case, please try later.";
+      console.error(message, err);
+      throw new Error(message);
+    }
+  }
+
+  async updateTestCase(testCase: TestCase, measureId: string) {
+    try {
+      const response = await axios.put<TestCase>(
+        `${this.baseUrl}/measures/${measureId}/test-cases/${testCase.id}`,
+        testCase,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      const message = `Unable to update test case`;
+      console.error(message, err);
+      throw new Error(message);
+    }
+  }
 }
 
 const useTestCaseServiceApi = (): TestCaseServiceApi => {
