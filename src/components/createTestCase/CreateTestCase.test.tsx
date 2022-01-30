@@ -171,7 +171,11 @@ describe("CreateTestCase component", () => {
   });
 
   it("should load existing test case data when viewing specific test case", async () => {
-    const testCase = { id: "1234", description: "Test IPP" } as TestCase;
+    const testCase = {
+      id: "1234",
+      description: "Test IPP",
+      json: `{"test":"test"}`,
+    } as TestCase;
     mockedAxios.get.mockResolvedValue({
       data: testCase,
     });

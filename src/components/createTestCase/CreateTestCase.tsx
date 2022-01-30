@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { Button, HelperText, Label } from "@madie/madie-components";
 import { useNavigate, useParams } from "react-router-dom";
 import { useFormik } from "formik";
@@ -59,6 +59,8 @@ const CreateTestCase = () => {
   const [alert, setAlert] = useState<AlertProps>(null);
   const { measureId } = useParams<{ measureId: string }>();
   const [testCase, setTestCase] = useState<TestCase>(null);
+  const [editorVal, setEditorVal]: [string, Dispatch<SetStateAction<string>>] =
+    useState("");
   const formik = useFormik({
     initialValues: {
       title: "",
@@ -133,6 +135,9 @@ const CreateTestCase = () => {
 
   const updateTestCase = async (testCase: TestCase) => {
     try {
+      if (editorVal !== testCase.json) {
+        testCase.json = editorVal;
+      }
       const updatedTestCase = await testCaseService.current.updateTestCase(
         testCase,
         measureId
@@ -174,6 +179,10 @@ const CreateTestCase = () => {
         />
       );
     }
+  }
+
+  function isModified() {
+    return formik.isValid && (formik.dirty || editorVal !== testCase?.json);
   }
 
   return (
@@ -233,6 +242,7 @@ const CreateTestCase = () => {
                   }
                   type="submit"
                   data-testid="create-test-case-button"
+                  disabled={!isModified()}
                 />
                 <Button
                   buttonTitle="Cancel"
@@ -246,7 +256,10 @@ const CreateTestCase = () => {
           </div>
         </div>
         <div tw="flex-grow">
-          <Editor />
+          <Editor
+            onChange={(val: string) => setEditorVal(val)}
+            value={editorVal}
+          />
         </div>
       </div>
     </>
