@@ -106,6 +106,9 @@ const CreateTestCase = () => {
 
   const createTestCase = async (testCase: TestCase) => {
     try {
+      if (!!editorVal) {
+        testCase.json = editorVal;
+      }
       const savedTestCase = await testCaseService.current.createTestCase(
         testCase,
         measureId
