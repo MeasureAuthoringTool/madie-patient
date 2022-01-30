@@ -64,6 +64,7 @@ describe("CreateTestCase component", () => {
       data: {
         id: "testID",
         description: testCaseDescription,
+        json: `{"test":"test"}`,
         title: testCaseTitle,
       },
     });
