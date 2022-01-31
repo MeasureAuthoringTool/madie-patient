@@ -36,9 +36,11 @@ describe("CreateTestCase component", () => {
     );
     screen.debug();
     const editor = screen.getByTestId("test-case-editor");
+    const titleTextInput = screen.getByTestId("create-test-case-title");
     const descriptionTextArea = screen.getByTestId(
       "create-test-case-description"
     );
+    expect(titleTextInput).toBeInTheDocument();
     expect(descriptionTextArea).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Create Test Case" })
@@ -57,10 +59,12 @@ describe("CreateTestCase component", () => {
       </MemoryRouter>
     );
     const testCaseDescription = "TestCase123";
+    const testCaseTitle = "TestTitle";
     mockedAxios.post.mockResolvedValue({
       data: {
         id: "testID",
         description: testCaseDescription,
+        title: testCaseTitle,
       },
     });
 
