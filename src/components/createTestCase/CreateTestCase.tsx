@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button, HelperText, Label } from "@madie/madie-components";
 import { useNavigate, useParams } from "react-router-dom";
 import { useFormik } from "formik";
@@ -21,6 +21,11 @@ const TestCaseDescription = tw.textarea`
   resize
   h-24
   rounded-md
+  sm:text-sm
+`;
+const TestCaseTitle = tw.input`
+  w-96
+  rounded
   sm:text-sm
 `;
 
@@ -47,28 +52,47 @@ const Alert = styled.div<AlertProps>(({ status = "default" }) => [
 const CreateTestCase = () => {
   const navigate = useNavigate();
   const { id } = useParams<keyof navigationParams>() as navigationParams;
-  const testCaseService = useTestCaseServiceApi();
+  // Avoid infinite dependency render. May require additional error handling for timeouts.
+  const testCaseService = useRef(useTestCaseServiceApi());
   const [alert, setAlert] = useState<AlertProps>(null);
   const { measureId } = useParams<{ measureId: string }>();
   const [testCase, setTestCase] = useState<TestCase>(null);
   const formik = useFormik({
     initialValues: {
+      title: "",
       description: "",
     } as TestCase,
     validationSchema: Yup.object().shape({
+      title: Yup.string(),
       description: Yup.string(),
     }),
     onSubmit: async (values: TestCase) => await handleSubmit(values),
   });
+  const { resetForm } = formik;
 
   useEffect(() => {
-    if (!testCase && id) {
-      testCaseService.getTestCase(id, measureId).then((tc: TestCase) => {
-        setTestCase(tc);
-        formik.resetForm({ values: tc });
-      });
+    if (id) {
+      const updateTestCase = () => {
+        testCaseService.current
+          .getTestCase(id, measureId)
+          .then((tc: TestCase) => {
+            setTestCase(tc);
+            resetForm({ values: tc });
+          })
+          .catch((error) => {
+            console.error(
+              "error retrieving and updating local state for test case",
+              error
+            );
+          });
+      };
+      updateTestCase();
+      return () => {
+        setTestCase(null);
+        resetForm();
+      };
     }
-  }, [id, testCase, formik, testCaseService, measureId]);
+  }, [id, measureId, testCaseService, setTestCase, resetForm]);
 
   const handleSubmit = async (testCase: TestCase) => {
     setAlert(null);
@@ -80,7 +104,7 @@ const CreateTestCase = () => {
 
   const createTestCase = async (testCase: TestCase) => {
     try {
-      const savedTestCase = await testCaseService.createTestCase(
+      const savedTestCase = await testCaseService.current.createTestCase(
         testCase,
         measureId
       );
@@ -109,7 +133,7 @@ const CreateTestCase = () => {
 
   const updateTestCase = async (testCase: TestCase) => {
     try {
-      const updatedTestCase = await testCaseService.updateTestCase(
+      const updatedTestCase = await testCaseService.current.updateTestCase(
         testCase,
         measureId
       );
@@ -182,6 +206,16 @@ const CreateTestCase = () => {
               onSubmit={formik.handleSubmit}
             >
               <FormControl>
+                <Label text="Test Case Title" />
+                <TestCaseTitle
+                  type="text"
+                  id="testCaseTitle"
+                  data-testid="create-test-case-title"
+                  {...formik.getFieldProps("title")}
+                  // border radius classes don't take to tw.input
+                  style={{ borderRadius: ".375rem" }}
+                />
+                <FormErrors>{formikErrorHandler("title", true)}</FormErrors>
                 <Label text="Test Case Description" />
                 <TestCaseDescription
                   id="testCaseDescription"
