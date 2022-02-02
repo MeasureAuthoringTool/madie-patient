@@ -8,7 +8,7 @@ import "jest-enzyme";
 const adapter = Adapter as any;
 configure({ adapter: new adapter.default() });
 
-describe("CreateTestCase component", () => {
+describe("Test Case Editor component", () => {
   it("should render Editor Component", () => {
     const handleChange = jest.fn();
     const container = mount(<Editor value={null} onChange={handleChange} />);
