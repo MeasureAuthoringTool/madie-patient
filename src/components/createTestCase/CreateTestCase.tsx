@@ -1,4 +1,10 @@
-import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Button, HelperText, Label } from "@madie/madie-components";
 import { useNavigate, useParams } from "react-router-dom";
 import { useFormik } from "formik";
@@ -54,10 +60,10 @@ const Alert = styled.div<AlertProps>(({ status = "default" }) => [
 const CreateTestCase = () => {
   const navigate = useNavigate();
   const { id } = useParams<keyof navigationParams>() as navigationParams;
+  const { measureId } = useParams<{ measureId: string }>();
   // Avoid infinite dependency render. May require additional error handling for timeouts.
   const testCaseService = useRef(useTestCaseServiceApi());
   const [alert, setAlert] = useState<AlertProps>(null);
-  const { measureId } = useParams<{ measureId: string }>();
   const [testCase, setTestCase] = useState<TestCase>(null);
   const [editorVal, setEditorVal]: [string, Dispatch<SetStateAction<string>>] =
     useState("");

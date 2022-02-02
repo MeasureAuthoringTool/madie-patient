@@ -64,7 +64,6 @@ describe("CreateTestCase component", () => {
       data: {
         id: "testID",
         description: testCaseDescription,
-        json: `{"test":"test"}`,
         title: testCaseTitle,
       },
     });
@@ -205,7 +204,11 @@ describe("CreateTestCase component", () => {
   });
 
   it("should update test case when update button is clicked", async () => {
-    const testCase = { id: "1234", description: "Test IPP" } as TestCase;
+    const testCase = {
+      id: "1234",
+      description: "Test IPP",
+      json: `{"test":"test"}`,
+    } as TestCase;
     const testCaseDescription = "modified description";
     mockedAxios.get.mockResolvedValue({
       data: testCase,
@@ -248,7 +251,11 @@ describe("CreateTestCase component", () => {
   });
 
   it("should ignore supplied changes when cancel button is clicked during test case edit", async () => {
-    const testCase = { id: "1234", description: "Test IPP" } as TestCase;
+    const testCase = {
+      id: "1234",
+      description: "Test IPP",
+      json: `{"test":"test"}`,
+    } as TestCase;
     const modifiedDescription = "modified description";
     mockedAxios.get.mockResolvedValue({
       data: testCase,
