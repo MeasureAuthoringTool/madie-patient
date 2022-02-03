@@ -84,6 +84,7 @@ const CreateTestCase = () => {
           .getTestCase(id, measureId)
           .then((tc: TestCase) => {
             setTestCase(tc);
+            setEditorVal(tc.json);
             resetForm({ values: tc });
           })
           .catch((error) => {
