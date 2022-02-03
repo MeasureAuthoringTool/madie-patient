@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import CreateTestCase from "./CreateTestCase";
 import userEvent from "@testing-library/user-event";
@@ -294,5 +294,60 @@ describe("CreateTestCase component", () => {
     });
     userEvent.click(screen.getByRole("button", { name: "Cancel" }));
     expect(mockedAxios.put).toBeCalledTimes(0);
+  });
+
+  it("should generate field level error for test case description more than 250 characters", async () => {
+    render(
+      <MemoryRouter>
+        <CreateTestCase />
+      </MemoryRouter>
+    );
+
+    const testCaseDescription =
+      "abcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyz";
+    const descriptionInput = screen.getByTestId("create-test-case-description");
+    userEvent.type(descriptionInput, testCaseDescription);
+
+    fireEvent.blur(descriptionInput);
+
+    const createBtn = screen.getByRole("button", { name: "Create Test Case" });
+    await waitFor(() => {
+      expect(createBtn).toBeDisabled;
+      expect(screen.getByTestId("description-helper-text")).toHaveTextContent(
+        "Test Case Description cannot be more than 250 characters."
+      );
+    });
+  });
+
+  it("should allow special characters for test case description", async () => {
+    render(
+      <MemoryRouter>
+        <ApiContextProvider value={serviceConfig}>
+          <CreateTestCase />
+        </ApiContextProvider>
+      </MemoryRouter>
+    );
+
+    const testCaseDescription =
+      "{{[[{shift}{ctrl/}a{/shift}~!@#$% ^&*() _-+= }|] \\ :;,. <>?/ '\"";
+    const testCaseTitle = "TestTitle";
+    mockedAxios.post.mockResolvedValue({
+      data: {
+        id: "testID",
+        description: testCaseDescription,
+        title: testCaseTitle,
+      },
+    });
+
+    const descriptionInput = screen.getByTestId("create-test-case-description");
+    userEvent.type(descriptionInput, testCaseDescription);
+
+    const createBtn = screen.getByRole("button", { name: "Create Test Case" });
+    userEvent.click(createBtn);
+
+    const debugOutput = await screen.findByText(
+      "Test case saved successfully! Redirecting back to Test Cases..."
+    );
+    expect(debugOutput).toBeInTheDocument();
   });
 });
