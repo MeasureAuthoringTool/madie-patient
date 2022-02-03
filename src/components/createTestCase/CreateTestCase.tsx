@@ -95,8 +95,6 @@ const CreateTestCase = () => {
 
   const handleSubmit = async (testCase: TestCase) => {
     setAlert(null);
-    const sanitizedDescription = DOMPurify.sanitize(testCase.description);
-    //testCase = { ...testCase, description: sanitizedDescription};
     testCase.description = DOMPurify.sanitize(testCase.description);
     if (id) {
       return await updateTestCase(testCase);
