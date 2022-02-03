@@ -112,9 +112,7 @@ const CreateTestCase = () => {
 
   const createTestCase = async (testCase: TestCase) => {
     try {
-      if (!!editorVal) {
-        testCase.json = editorVal;
-      }
+      testCase.json = editorVal || null;
       const savedTestCase = await testCaseService.current.createTestCase(
         testCase,
         measureId
@@ -247,7 +245,7 @@ const CreateTestCase = () => {
               <FormActions>
                 <Button
                   buttonTitle={
-                    !!testCase ? "Update Test Case" : "Create Test Case"
+                    testCase ? "Update Test Case" : "Create Test Case"
                   }
                   type="submit"
                   data-testid="create-test-case-button"
