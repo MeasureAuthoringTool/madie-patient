@@ -247,7 +247,6 @@ const CreateTestCase = () => {
                   }
                   type="submit"
                   data-testid="create-test-case-button"
-                  disabled={!(formik.isValid && formik.dirty)}
                 />
                 <Button
                   buttonTitle="Cancel"

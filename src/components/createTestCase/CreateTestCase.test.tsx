@@ -199,28 +199,6 @@ describe("CreateTestCase component", () => {
     expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
   });
 
-  it("should disable submit button when no changes are detected", async () => {
-    const testCase = { id: "1234", description: "Test IPP" } as TestCase;
-    mockedAxios.get.mockResolvedValue({
-      data: testCase,
-    });
-
-    render(
-      <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases/1234"]}>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseRoutes />
-        </ApiContextProvider>
-      </MemoryRouter>
-    );
-    await waitFor(() => {
-      const updateBtn = screen.getByRole("button", {
-        name: "Update Test Case",
-      });
-      expect(updateBtn).toBeInTheDocument();
-      expect(updateBtn).toBeDisabled();
-    });
-  });
-
   it("should update test case when update button is clicked", async () => {
     const testCase = { id: "1234", description: "Test IPP" } as TestCase;
     const testCaseDescription = "modified description";
