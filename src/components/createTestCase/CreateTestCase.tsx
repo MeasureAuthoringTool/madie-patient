@@ -64,10 +64,7 @@ const CreateTestCase = () => {
       title: "",
       description: "",
     } as TestCase,
-    validationSchema: TestCaseValidator, //Yup.object().shape({
-    //title: Yup.string(),
-    //description: Yup.string(),
-    //}),
+    validationSchema: TestCaseValidator,
     onSubmit: async (values: TestCase) => await handleSubmit(values),
   });
   const { resetForm } = formik;
