@@ -10,6 +10,8 @@ import * as Yup from "yup";
 import TestCase from "../../models/TestCase";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import Editor from "../editor/Editor";
+import { TestCaseValidator } from "../../models/TestCaseValidator";
+import DOMPurify from "dompurify";
 
 const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
@@ -62,10 +64,7 @@ const CreateTestCase = () => {
       title: "",
       description: "",
     } as TestCase,
-    validationSchema: Yup.object().shape({
-      title: Yup.string(),
-      description: Yup.string(),
-    }),
+    validationSchema: TestCaseValidator,
     onSubmit: async (values: TestCase) => await handleSubmit(values),
   });
   const { resetForm } = formik;
@@ -96,6 +95,7 @@ const CreateTestCase = () => {
 
   const handleSubmit = async (testCase: TestCase) => {
     setAlert(null);
+    testCase.description = DOMPurify.sanitize(testCase.description);
     if (id) {
       return await updateTestCase(testCase);
     }
