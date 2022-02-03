@@ -8,4 +8,5 @@ export default interface TestCase {
   createdBy: string;
   lastModifiedAt: string;
   lastModifiedBy: string;
+  json?: string;
 }

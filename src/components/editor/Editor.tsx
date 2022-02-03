@@ -1,13 +1,29 @@
 import React from "react";
 import AceEditor from "react-ace";
-import { Button } from "@madie/madie-components";
-import tw from "twin.macro";
+import { Ace } from "ace-builds";
+import "ace-builds/src-noconflict/mode-json";
 
-const Editor = (props) => {
+export interface EditorPropsType {
+  value: string;
+  onChange: (value: string) => void;
+  parseDebounceTime?: number;
+  inboundAnnotations?: Ace.Annotation[];
+}
+
+const Editor = ({
+  value,
+  onChange,
+  parseDebounceTime = 1500,
+  inboundAnnotations,
+}: EditorPropsType) => {
   return (
     <>
       <div data-testid="test-case-editor">
         <AceEditor
+          value={value}
+          onChange={(value) => {
+            onChange(value);
+          }}
           mode="json" // Temporary value of mode to prevent a dynamic search request.
           theme="monokai"
           name="ace-editor-wrapper"
