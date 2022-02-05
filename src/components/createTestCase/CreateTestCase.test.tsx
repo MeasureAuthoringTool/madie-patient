@@ -1,15 +1,26 @@
 import * as React from "react";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import {
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+  within,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import CreateTestCase from "./CreateTestCase";
 import userEvent from "@testing-library/user-event";
-import axios from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
 import TestCaseRoutes from "../routes/TestCaseRoutes";
 import TestCase from "../../models/TestCase";
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
+
+// mock editor to reduce errors and warnings
+jest.mock("../editor/Editor", () => () => (
+  <div data-testid="test-case-editor">editor contents</div>
+));
 
 const serviceConfig: ServiceConfig = {
   testCaseService: {
@@ -24,6 +35,14 @@ jest.mock("../../hooks/useOktaTokens", () =>
 );
 
 describe("CreateTestCase component", () => {
+  beforeEach(() => {
+    mockedAxios.get.mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["SeriesA"] });
+      }
+      return Promise.resolve({ data: null });
+    });
+  });
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -34,7 +53,6 @@ describe("CreateTestCase component", () => {
         <CreateTestCase />
       </MemoryRouter>
     );
-    screen.debug();
     const editor = screen.getByTestId("test-case-editor");
     const titleTextInput = screen.getByTestId("create-test-case-title");
     const descriptionTextArea = screen.getByTestId(
@@ -176,8 +194,11 @@ describe("CreateTestCase component", () => {
       description: "Test IPP",
       json: `{"test":"test"}`,
     } as TestCase;
-    mockedAxios.get.mockResolvedValue({
-      data: testCase,
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["SeriesA"] });
+      }
+      return Promise.resolve({ data: testCase });
     });
 
     render(
@@ -207,11 +228,15 @@ describe("CreateTestCase component", () => {
     const testCase = {
       id: "1234",
       description: "Test IPP",
+      series: "SeriesA",
       json: `{"test":"test"}`,
     } as TestCase;
     const testCaseDescription = "modified description";
-    mockedAxios.get.mockResolvedValue({
-      data: testCase,
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
+      }
+      return Promise.resolve({ data: testCase });
     });
 
     render(
@@ -232,9 +257,19 @@ describe("CreateTestCase component", () => {
       ).toBeInTheDocument();
     });
 
+    const seriesInput = screen.getByRole("textbox", { name: "Series" });
+    expect(seriesInput).toHaveValue("SeriesA");
+
     const descriptionInput = screen.getByTestId("create-test-case-description");
     expect(descriptionInput).toHaveTextContent(testCase.description);
     userEvent.type(descriptionInput, `{selectall}{del}${testCaseDescription}`);
+
+    userEvent.click(seriesInput);
+    const list = await screen.findByRole("listbox");
+    expect(list).toBeInTheDocument();
+    const listItems = within(list).getAllByRole("option");
+    expect(listItems[1]).toHaveTextContent("SeriesB");
+    userEvent.click(listItems[1]);
 
     await waitFor(() => {
       expect(descriptionInput).toHaveTextContent(testCaseDescription);
@@ -248,6 +283,113 @@ describe("CreateTestCase component", () => {
       "Test case updated successfully! Redirecting back to Test Cases..."
     );
     expect(debugOutput).toBeInTheDocument();
+
+    const calls = mockedAxios.put.mock.calls;
+    expect(calls).toBeTruthy();
+    expect(calls[0]).toBeTruthy();
+    const updatedTestCase = calls[0][1] as TestCase;
+    expect(updatedTestCase).toBeTruthy();
+    expect(updatedTestCase.series).toEqual("SeriesB");
+  });
+
+  it("should display an error when test case update returns no data", async () => {
+    const testCase = {
+      id: "1234",
+      description: "Test IPP",
+      json: `{"test":"test"}`,
+    } as TestCase;
+    const modifiedDescription = "modified description";
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["SeriesA"] });
+      }
+      return Promise.resolve({ data: testCase });
+    });
+
+    render(
+      <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases/1234"]}>
+        <ApiContextProvider value={serviceConfig}>
+          <TestCaseRoutes />
+        </ApiContextProvider>
+      </MemoryRouter>
+    );
+
+    mockedAxios.put.mockResolvedValue({
+      data: null,
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Update Test Case" })
+      ).toBeInTheDocument();
+    });
+
+    const descriptionInput = screen.getByTestId("create-test-case-description");
+    expect(descriptionInput).toHaveTextContent(testCase.description);
+    userEvent.type(descriptionInput, `{selectall}{del}${modifiedDescription}`);
+
+    await waitFor(() => {
+      expect(descriptionInput).toHaveTextContent(modifiedDescription);
+    });
+    userEvent.click(screen.getByRole("button", { name: "Update Test Case" }));
+
+    const debugOutput = await screen.findByText(
+      "An error occurred - update did not return the expected successful result."
+    );
+    expect(debugOutput);
+  });
+
+  it("should display an error when test case update fails", async () => {
+    const testCase = {
+      id: "1234",
+      description: "Test IPP",
+      json: `{"test":"test"}`,
+    } as TestCase;
+    const modifiedDescription = "modified description";
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["SeriesA"] });
+      }
+      return Promise.resolve({ data: testCase });
+    });
+
+    render(
+      <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases/1234"]}>
+        <ApiContextProvider value={serviceConfig}>
+          <TestCaseRoutes />
+        </ApiContextProvider>
+      </MemoryRouter>
+    );
+
+    const axiosError: AxiosError = {
+      response: {
+        status: 404,
+        data: {},
+      } as AxiosResponse,
+      toJSON: jest.fn(),
+    } as unknown as AxiosError;
+
+    mockedAxios.put.mockClear().mockRejectedValue(axiosError);
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Update Test Case" })
+      ).toBeInTheDocument();
+    });
+
+    const descriptionInput = screen.getByTestId("create-test-case-description");
+    expect(descriptionInput).toHaveTextContent(testCase.description);
+    userEvent.type(descriptionInput, `{selectall}{del}${modifiedDescription}`);
+
+    await waitFor(() => {
+      expect(descriptionInput).toHaveTextContent(modifiedDescription);
+    });
+    userEvent.click(screen.getByRole("button", { name: "Update Test Case" }));
+
+    const debugOutput = await screen.findByText(
+      "An error occurred while updating the test case."
+    );
+    expect(debugOutput);
   });
 
   it("should ignore supplied changes when cancel button is clicked during test case edit", async () => {
@@ -257,8 +399,11 @@ describe("CreateTestCase component", () => {
       json: `{"test":"test"}`,
     } as TestCase;
     const modifiedDescription = "modified description";
-    mockedAxios.get.mockResolvedValue({
-      data: testCase,
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["SeriesA"] });
+      }
+      return Promise.resolve({ data: testCase });
     });
 
     render(
@@ -340,4 +485,61 @@ describe("CreateTestCase component", () => {
     );
     expect(debugOutput).toBeInTheDocument();
   });
+
+  it("should display an error when test case series fail to load", async () => {
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.reject({
+          status: 500,
+          data: null,
+        });
+      }
+      return Promise.resolve({ data: null });
+    });
+
+    render(
+      <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases/create"]}>
+        <ApiContextProvider value={serviceConfig}>
+          <CreateTestCase />
+        </ApiContextProvider>
+      </MemoryRouter>
+    );
+
+    const debugOutput = await screen.findByText(
+      "Unable to retrieve test case series, please try later."
+    );
+    expect(debugOutput).toBeInTheDocument();
+  });
+
+  it("should display an error when measure doesn't exist fetching test case series", async () => {
+    const axiosError: AxiosError = {
+      response: {
+        status: 404,
+        data: {},
+      } as AxiosResponse,
+      toJSON: jest.fn(),
+    } as unknown as AxiosError;
+
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.reject(axiosError);
+      }
+      return Promise.resolve({ data: null });
+    });
+
+    render(
+      <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases/create"]}>
+        <ApiContextProvider value={serviceConfig}>
+          <CreateTestCase />
+        </ApiContextProvider>
+      </MemoryRouter>
+    );
+
+    const debugOutput = await screen.findByText(
+      "Measure does not exist, unable to load test case series!"
+    );
+    expect(debugOutput).toBeInTheDocument();
+  });
 });
+
+// 116,172,193-194,304

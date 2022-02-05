@@ -80,9 +80,12 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
+    "@emotion/react": "^11.7.1",
+    "@emotion/styled": "^11.6.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.16",
+    "@mui/material": "^5.4.0",
     "@types/lodash": "^4.14.178",
     "axios": "^0.24.0",
     "dompurify": "^2.3.5",

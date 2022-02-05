@@ -62,6 +62,32 @@ export class TestCaseServiceApi {
     }
   }
 
+  async getTestCaseSeriesForMeasure(measureId: string): Promise<string[]> {
+    try {
+      const response = await axios.get<string[]>(
+        `${this.baseUrl}/measures/${measureId}/test-cases/series`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      if (err?.response?.status === 404) {
+        console.warn(
+          `Cannot load series for non-existent measure with id [${measureId}]`,
+          err
+        );
+        throw new Error(
+          "Measure does not exist, unable to load test case series!"
+        );
+      }
+      const message = "Unable to retrieve test case series, please try later.";
+      throw new Error(message);
+    }
+  }
+
   async updateTestCase(testCase: TestCase, measureId: string) {
     try {
       const response = await axios.put<TestCase>(

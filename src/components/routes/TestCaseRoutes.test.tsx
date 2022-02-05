@@ -1,10 +1,13 @@
 import * as React from "react";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, logRoles, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import TestCaseRoutes from "./TestCaseRoutes";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
+
+// mock the editor cause we don't care for this test and it gets rid of errors
+jest.mock("../editor/Editor", () => () => <div>editor contents</div>);
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -20,24 +23,58 @@ describe("TestCaseRoutes", () => {
     jest.clearAllMocks();
   });
 
-  it("should render the landing component first", () => {
+  it("should render the landing component first", async () => {
+    mockedAxios.get.mockImplementation((args) => {
+      return Promise.resolve({
+        data: [
+          {
+            id: "id1",
+            title: "TC1",
+            description: "Desc1",
+            status: null,
+          },
+        ],
+      });
+    });
     render(
       <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases"]}>
         <TestCaseRoutes />
       </MemoryRouter>
     );
 
+    const desc1 = await screen.findByText("Desc1");
+    expect(desc1).toBeInTheDocument();
     const createBtn = screen.getByRole("button", { name: "New Test Case" });
     expect(createBtn).toBeInTheDocument();
   });
 
-  it("should allow navigation to create page from landing page ", () => {
+  it("should allow navigation to create page from landing page ", async () => {
+    mockedAxios.get.mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["SeriesA"] });
+      } else if (args && args.endsWith("test-cases")) {
+        return Promise.resolve({
+          data: [
+            {
+              id: "id1",
+              title: "TC1",
+              description: "Desc1",
+              status: null,
+            },
+          ],
+        });
+      }
+      return Promise.resolve({ data: null });
+    });
+
     render(
       <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases"]}>
         <TestCaseRoutes />
       </MemoryRouter>
     );
 
+    const desc1 = await screen.findByText("Desc1");
+    expect(desc1).toBeInTheDocument();
     const newBtn = screen.getByRole("button", { name: "New Test Case" });
     userEvent.click(newBtn);
     const testCaseForm = screen.getByTestId("create-test-case-form");
@@ -56,13 +93,33 @@ describe("TestCaseRoutes", () => {
     expect(newBtn2).not.toBeInTheDocument();
   });
 
-  it("should allow navigation to create page, then back to landing page ", () => {
+  it("should allow navigation to create page, then back to landing page ", async () => {
+    mockedAxios.get.mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["SeriesA"] });
+      } else if (args && args.endsWith("test-cases")) {
+        return Promise.resolve({
+          data: [
+            {
+              id: "id1",
+              title: "TC1",
+              description: "Desc1",
+              status: null,
+            },
+          ],
+        });
+      }
+      return Promise.resolve({ data: null });
+    });
+
     render(
       <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases"]}>
         <TestCaseRoutes />
       </MemoryRouter>
     );
 
+    const desc1 = await screen.findByText("Desc1");
+    expect(desc1).toBeInTheDocument();
     const newBtn = screen.getByRole("button", { name: "New Test Case" });
     userEvent.click(newBtn);
     const testCaseForm = screen.getByTestId("create-test-case-form");
@@ -76,6 +133,22 @@ describe("TestCaseRoutes", () => {
 
   it("should navigate back to landing page when test case is successfully saved", async () => {
     jest.useFakeTimers("modern");
+    mockedAxios.get.mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["SeriesA"] });
+      }
+      return Promise.resolve({
+        data: [
+          {
+            id: "id1",
+            title: "TC1",
+            description: "Desc1",
+            status: null,
+          },
+        ],
+      });
+    });
+
     render(
       <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases"]}>
         <ApiContextProvider value={serviceConfig}>
@@ -83,6 +156,7 @@ describe("TestCaseRoutes", () => {
         </ApiContextProvider>
       </MemoryRouter>
     );
+
     mockedAxios.post.mockResolvedValue({
       data: {
         id: "testID",
@@ -90,6 +164,8 @@ describe("TestCaseRoutes", () => {
       },
     });
 
+    const desc1 = await screen.findByText("Desc1");
+    expect(desc1).toBeInTheDocument();
     const newBtn = screen.getByRole("button", { name: "New Test Case" });
     userEvent.click(newBtn);
     const testCaseForm = await screen.findByTestId("create-test-case-form");

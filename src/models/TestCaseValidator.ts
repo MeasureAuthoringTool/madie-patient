@@ -6,4 +6,5 @@ export const TestCaseValidator = Yup.object().shape({
     250,
     "Test Case Description cannot be more than 250 characters."
   ),
+  series: Yup.string().nullable(),
 });
