@@ -12,12 +12,12 @@ import tw, { styled } from "twin.macro";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import "styled-components/macro";
-import * as Yup from "yup";
 import TestCase from "../../models/TestCase";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import Editor from "../editor/Editor";
 import { TestCaseValidator } from "../../models/TestCaseValidator";
 import DOMPurify from "dompurify";
+import TestCaseSeries from "./TestCaseSeries";
 
 const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
@@ -67,10 +67,15 @@ const CreateTestCase = () => {
   const [testCase, setTestCase] = useState<TestCase>(null);
   const [editorVal, setEditorVal]: [string, Dispatch<SetStateAction<string>>] =
     useState("");
+  const [seriesState, setSeriesState] = useState<any>({
+    loaded: false,
+    series: [],
+  });
   const formik = useFormik({
     initialValues: {
       title: "",
       description: "",
+      series: "",
     } as TestCase,
     validationSchema: TestCaseValidator,
     onSubmit: async (values: TestCase) => await handleSubmit(values),
@@ -78,6 +83,23 @@ const CreateTestCase = () => {
   const { resetForm } = formik;
 
   useEffect(() => {
+    if (!seriesState.loaded) {
+      testCaseService.current
+        .getTestCaseSeriesForMeasure(measureId)
+        .then((existingSeries) =>
+          setSeriesState({ loaded: true, series: existingSeries })
+        )
+        .catch((error) => {
+          console.error(
+            "An error occurred while loading the series options",
+            error
+          );
+          setAlert(() => ({
+            status: "error",
+            message: error.message,
+          }));
+        });
+    }
     if (id) {
       const updateTestCase = () => {
         testCaseService.current
@@ -100,7 +122,14 @@ const CreateTestCase = () => {
         resetForm();
       };
     }
-  }, [id, measureId, testCaseService, setTestCase, resetForm]);
+  }, [
+    id,
+    measureId,
+    testCaseService,
+    setTestCase,
+    resetForm,
+    seriesState.loaded,
+  ]);
 
   const handleSubmit = async (testCase: TestCase) => {
     setAlert(null);
@@ -242,6 +271,18 @@ const CreateTestCase = () => {
                 <FormErrors>
                   {formikErrorHandler("description", true)}
                 </FormErrors>
+              </FormControl>
+              <FormControl>
+                <Label text="Test Case Series" />
+                <TestCaseSeries
+                  value={formik.values.series}
+                  onChange={(nextValue) =>
+                    formik.setFieldValue("series", nextValue)
+                  }
+                  seriesOptions={seriesState.series}
+                  sx={{ width: "100%" }}
+                />
+                <HelperText text={"Start typing to add a new series"} />
               </FormControl>
               <FormActions>
                 <Button
