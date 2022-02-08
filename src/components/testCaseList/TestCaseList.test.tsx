@@ -33,23 +33,31 @@ jest.mock("react-router-dom", () => ({
 }));
 
 describe("TestCaseList component", () => {
+  let testCases;
+  beforeEach(() => {
+    testCases = [
+      {
+        id: "1234",
+        description: "Test IPP",
+        title: "WhenAllGood",
+        series: "IPP_Pass",
+      },
+      {
+        id: "5678",
+        description: "Test IPP Fail when something is wrong",
+        title: "WhenSomethingIsWrong",
+        series: "IPP_Fail",
+      },
+    ];
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it("should render list of test cases", async () => {
-    const testCaseIds = ["1234", "5678"];
     mockedAxios.get.mockResolvedValue({
-      data: [
-        {
-          id: testCaseIds[0],
-          description: "Test IPP",
-        },
-        {
-          id: testCaseIds[1],
-          description: "Test DENOM Pass",
-        },
-      ],
+      data: testCases,
     });
 
     render(
@@ -64,18 +72,21 @@ describe("TestCaseList component", () => {
       const table = screen.getByTestId("test-case-tbl");
 
       const tableHeaders = table.querySelectorAll("thead th");
-      expect(tableHeaders[0]).toHaveTextContent("Description");
-      expect(tableHeaders[1]).toHaveTextContent("Status");
+      expect(tableHeaders[0]).toHaveTextContent("Title");
+      expect(tableHeaders[1]).toHaveTextContent("Series");
+      expect(tableHeaders[2]).toHaveTextContent("Status");
 
       const tableRows = table.querySelectorAll("tbody tr");
-      expect(tableRows[0]).toHaveTextContent("Test IPP");
+      expect(tableRows[0]).toHaveTextContent(testCases[0].title);
+      expect(tableRows[0]).toHaveTextContent(testCases[0].series);
       expect(
-        screen.getByTestId(`edit-test-case-${testCaseIds[0]}`)
+        screen.getByTestId(`edit-test-case-${testCases[0].id}`)
       ).toBeInTheDocument();
 
-      expect(tableRows[1]).toHaveTextContent("Test DENOM Pass");
+      expect(tableRows[1]).toHaveTextContent(testCases[1].title);
+      expect(tableRows[1]).toHaveTextContent(testCases[1].series);
       expect(
-        screen.getByTestId(`edit-test-case-${testCaseIds[1]}`)
+        screen.getByTestId(`edit-test-case-${testCases[1].id}`)
       ).toBeInTheDocument();
     });
   });
@@ -98,18 +109,8 @@ describe("TestCaseList component", () => {
   });
 
   it("should navigate to the Test Case details page on edit button click", async () => {
-    const testCaseIds = ["1234", "5678"];
     mockedAxios.get.mockResolvedValue({
-      data: [
-        {
-          id: testCaseIds[0],
-          description: "Test IPP",
-        },
-        {
-          id: testCaseIds[1],
-          description: "Test DENOM Pass",
-        },
-      ],
+      data: testCases,
     });
 
     const { getByTestId } = render(
@@ -120,7 +121,7 @@ describe("TestCaseList component", () => {
       </MemoryRouter>
     );
     await waitFor(() => {
-      const editButton = getByTestId(`edit-test-case-${testCaseIds[0]}`);
+      const editButton = getByTestId(`edit-test-case-${testCases[0].id}`);
       fireEvent.click(editButton);
       expect(mockedUsedNavigate).toHaveBeenCalled();
     });

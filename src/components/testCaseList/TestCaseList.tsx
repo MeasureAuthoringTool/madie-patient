@@ -42,7 +42,8 @@ const TestCaseList = () => {
             <table tw="min-w-full" data-testid="test-case-tbl">
               <thead>
                 <tr>
-                  <TH scope="col">Description</TH>
+                  <TH scope="col">Title</TH>
+                  <TH scope="col">Series</TH>
                   <TH scope="col">Status</TH>
                   <TH scope="col" />
                 </tr>
@@ -50,7 +51,8 @@ const TestCaseList = () => {
               <tbody>
                 {testCases?.map((testCase) => (
                   <tr tw="border-b" key={testCase.id}>
-                    <TD>{testCase.description}</TD>
+                    <TD>{testCase.title}</TD>
+                    <TD>{testCase.series}</TD>
                     <TD>NA</TD>
                     <TD>
                       <Button
