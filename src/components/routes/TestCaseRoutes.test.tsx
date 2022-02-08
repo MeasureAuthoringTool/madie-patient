@@ -31,6 +31,7 @@ describe("TestCaseRoutes", () => {
             id: "id1",
             title: "TC1",
             description: "Desc1",
+            series: "IPP_Pass",
             status: null,
           },
         ],
@@ -42,8 +43,10 @@ describe("TestCaseRoutes", () => {
       </MemoryRouter>
     );
 
-    const desc1 = await screen.findByText("Desc1");
-    expect(desc1).toBeInTheDocument();
+    const testCaseTitle = await screen.findByText("TC1");
+    expect(testCaseTitle).toBeInTheDocument();
+    const testCaseSeries = await screen.findByText("IPP_Pass");
+    expect(testCaseSeries).toBeInTheDocument();
     const createBtn = screen.getByRole("button", { name: "New Test Case" });
     expect(createBtn).toBeInTheDocument();
   });
@@ -73,8 +76,8 @@ describe("TestCaseRoutes", () => {
       </MemoryRouter>
     );
 
-    const desc1 = await screen.findByText("Desc1");
-    expect(desc1).toBeInTheDocument();
+    const testCaseTitle = await screen.findByText("TC1");
+    expect(testCaseTitle).toBeInTheDocument();
     const newBtn = screen.getByRole("button", { name: "New Test Case" });
     userEvent.click(newBtn);
     const testCaseForm = screen.getByTestId("create-test-case-form");
@@ -118,8 +121,8 @@ describe("TestCaseRoutes", () => {
       </MemoryRouter>
     );
 
-    const desc1 = await screen.findByText("Desc1");
-    expect(desc1).toBeInTheDocument();
+    const testCaseTitle = await screen.findByText("TC1");
+    expect(testCaseTitle).toBeInTheDocument();
     const newBtn = screen.getByRole("button", { name: "New Test Case" });
     userEvent.click(newBtn);
     const testCaseForm = screen.getByTestId("create-test-case-form");
@@ -164,8 +167,8 @@ describe("TestCaseRoutes", () => {
       },
     });
 
-    const desc1 = await screen.findByText("Desc1");
-    expect(desc1).toBeInTheDocument();
+    const testCaseTitle = await screen.findByText("TC1");
+    expect(testCaseTitle).toBeInTheDocument();
     const newBtn = screen.getByRole("button", { name: "New Test Case" });
     userEvent.click(newBtn);
     const testCaseForm = await screen.findByTestId("create-test-case-form");
