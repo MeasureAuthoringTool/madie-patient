@@ -202,7 +202,7 @@ describe("CreateTestCase component", () => {
     });
 
     render(
-      <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases/1234"]}>
+      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases/1234"]}>
         <ApiContextProvider value={serviceConfig}>
           <TestCaseRoutes />
         </ApiContextProvider>
@@ -240,7 +240,7 @@ describe("CreateTestCase component", () => {
     });
 
     render(
-      <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases/1234"]}>
+      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases/1234"]}>
         <ApiContextProvider value={serviceConfig}>
           <TestCaseRoutes />
         </ApiContextProvider>
@@ -307,7 +307,7 @@ describe("CreateTestCase component", () => {
     });
 
     render(
-      <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases/1234"]}>
+      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases/1234"]}>
         <ApiContextProvider value={serviceConfig}>
           <TestCaseRoutes />
         </ApiContextProvider>
@@ -354,7 +354,7 @@ describe("CreateTestCase component", () => {
     });
 
     render(
-      <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases/1234"]}>
+      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases/1234"]}>
         <ApiContextProvider value={serviceConfig}>
           <TestCaseRoutes />
         </ApiContextProvider>
@@ -407,7 +407,7 @@ describe("CreateTestCase component", () => {
     });
 
     render(
-      <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases/1234"]}>
+      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases/1234"]}>
         <ApiContextProvider value={serviceConfig}>
           <TestCaseRoutes />
         </ApiContextProvider>
@@ -498,7 +498,7 @@ describe("CreateTestCase component", () => {
     });
 
     render(
-      <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases/create"]}>
+      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases/create"]}>
         <ApiContextProvider value={serviceConfig}>
           <CreateTestCase />
         </ApiContextProvider>
@@ -528,7 +528,7 @@ describe("CreateTestCase component", () => {
     });
 
     render(
-      <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases/create"]}>
+      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases/create"]}>
         <ApiContextProvider value={serviceConfig}>
           <CreateTestCase />
         </ApiContextProvider>
@@ -541,5 +541,3 @@ describe("CreateTestCase component", () => {
     expect(debugOutput).toBeInTheDocument();
   });
 });
-
-// 116,172,193-194,304
