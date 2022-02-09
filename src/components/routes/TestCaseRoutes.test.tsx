@@ -38,7 +38,7 @@ describe("TestCaseRoutes", () => {
       });
     });
     render(
-      <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases"]}>
+      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases"]}>
         <TestCaseRoutes />
       </MemoryRouter>
     );
@@ -71,7 +71,7 @@ describe("TestCaseRoutes", () => {
     });
 
     render(
-      <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases"]}>
+      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases"]}>
         <TestCaseRoutes />
       </MemoryRouter>
     );
@@ -116,7 +116,7 @@ describe("TestCaseRoutes", () => {
     });
 
     render(
-      <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases"]}>
+      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases"]}>
         <TestCaseRoutes />
       </MemoryRouter>
     );
@@ -153,7 +153,7 @@ describe("TestCaseRoutes", () => {
     });
 
     render(
-      <MemoryRouter initialEntries={["/measure/m1234/edit/test-cases"]}>
+      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases"]}>
         <ApiContextProvider value={serviceConfig}>
           <TestCaseRoutes />
         </ApiContextProvider>
