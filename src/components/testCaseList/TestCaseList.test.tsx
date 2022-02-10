@@ -64,8 +64,8 @@ describe("TestCaseList component", () => {
       const table = screen.getByTestId("test-case-tbl");
 
       const tableHeaders = table.querySelectorAll("thead th");
-      expect(tableHeaders[0]).toHaveTextContent("Description");
-      expect(tableHeaders[1]).toHaveTextContent("Status");
+      expect(tableHeaders[1]).toHaveTextContent("Description");
+      expect(tableHeaders[2]).toHaveTextContent("Status");
 
       const tableRows = table.querySelectorAll("tbody tr");
       expect(tableRows[0]).toHaveTextContent("Test IPP");
