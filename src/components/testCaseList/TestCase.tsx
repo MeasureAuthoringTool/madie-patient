@@ -41,7 +41,8 @@ const TestCase = (props) => {
         />
       )}
 
-      <TD>{testCase.description}</TD>
+      <TD>{testCase.title}</TD>
+      <TD>{testCase.series}</TD>
       {isExecuteButtonClicked && testCase.executionStatus === "pass" && (
         <TD>
           <Button

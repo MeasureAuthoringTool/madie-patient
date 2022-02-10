@@ -13,6 +13,7 @@ describe("TestCase component", () => {
       id: "ID1",
       title: "TEST IPP",
       description: "TEST DESCRIPTION",
+      series: "TEST SERIES",
       executionStatus: "pass",
     };
     render(
@@ -29,8 +30,9 @@ describe("TestCase component", () => {
     );
     const row = screen.getByTestId(`test-case-row-${testCase.id}`);
     const columns = row.querySelectorAll("TD");
-    expect(columns[0]).toHaveTextContent("TEST DESCRIPTION");
-    expect(columns[1]).toHaveTextContent("pass");
+    expect(columns[0]).toHaveTextContent("TEST IPP");
+    expect(columns[1]).toHaveTextContent("TEST SERIES");
+    expect(columns[2]).toHaveTextContent("pass");
     const buttons = await screen.findAllByRole("button");
     expect(buttons).toHaveLength(2);
     expect(buttons[0]).toHaveTextContent("pass");
@@ -42,6 +44,7 @@ describe("TestCase component", () => {
       id: "ID1",
       title: "TEST IPP",
       description: "TEST DESCRIPTION",
+      series: "TEST SERIES",
       executionStatus: "NA",
     };
     render(
@@ -58,8 +61,9 @@ describe("TestCase component", () => {
     );
     const row = screen.getByTestId(`test-case-row-${testCase.id}`);
     const columns = row.querySelectorAll("td");
-    expect(columns[0]).toHaveTextContent("TEST DESCRIPTION");
-    expect(columns[1]).toHaveTextContent("NA");
+    expect(columns[0]).toHaveTextContent("TEST IPP");
+    expect(columns[1]).toHaveTextContent("TEST SERIES");
+    expect(columns[2]).toHaveTextContent("NA");
     const buttons = await screen.findAllByRole("button");
     expect(buttons).toHaveLength(1);
     expect(buttons[0]).toHaveTextContent("Edit");

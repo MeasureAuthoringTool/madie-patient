@@ -78,7 +78,8 @@ const TestCaseList = () => {
               <thead>
                 <tr>
                   <TH scope="col"></TH>
-                  <TH scope="col">Description</TH>
+                  <TH scope="col">Title</TH>
+                  <TH scope="col">Series</TH>
                   <TH scope="col">Status</TH>
                   <TH scope="col" />
                 </tr>
