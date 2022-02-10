@@ -8,7 +8,7 @@ describe("TestCase component", () => {
     jest.clearAllMocks();
   });
 
-  it("should render test case status as executed", async () => {
+  it("should render test case executionStatus with pass", async () => {
     const testCase = {
       id: "ID1",
       title: "TEST IPP",
