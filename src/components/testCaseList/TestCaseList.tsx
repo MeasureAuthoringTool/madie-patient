@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import tw from "twin.macro";
 import "styled-components/macro";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
@@ -15,30 +15,21 @@ const TestCaseList = () => {
   const [testCases, setTestCases] = useState<TestCase[]>();
   const [error, setError] = useState("");
   const { measureId } = useParams<{ measureId: string }>();
-  const testCaseService = useTestCaseServiceApi();
+  const testCaseService = useRef(useTestCaseServiceApi());
 
   const [isExecuteButtonClicked, setisExecuteButtonClicked] = useState(false);
   const [activeItem, setActiveItem] = React.useState(null);
-  //MAT-3911: only for mock up purpose
-  let lastTestCase = null;
 
   useEffect(() => {
-    if (!testCases) {
-      testCaseService
-        .getTestCasesByMeasureId(measureId)
-        .then((testCaseList: TestCase[]) => {
-          //MAT-3911: only for mock up purpose
-          const listItems = testCaseList.map((testCase) => {
-            testCase.executionStatus = "NA";
-            lastTestCase = testCase;
-          });
-          setTestCases(testCaseList);
-        })
-        .catch((err) => {
-          setError(err.message);
-        });
-    }
-  }, [measureId, testCaseService, testCases]);
+    testCaseService.current
+      .getTestCasesByMeasureId(measureId)
+      .then((testCaseList: TestCase[]) => {
+        setTestCases(testCaseList);
+      })
+      .catch((err) => {
+        setError(err.message);
+      });
+  }, [measureId, testCaseService]);
 
   //MAT-3911: the following is pure mockup data, need to be replaced by real data
   const executeTestCasesHandler = () => {
