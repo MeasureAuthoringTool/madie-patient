@@ -43,7 +43,7 @@ const TestCasePopulationList = () => {
       </thead>
       <tbody>
         {testCasePopulations?.map((population) => (
-          <TestCasePopulation population={population} />
+          <TestCasePopulation population={population} key={population.id} />
         ))}
       </tbody>
     </table>

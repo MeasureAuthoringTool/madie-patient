@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import TestCaseComponent from "./TestCase";
 
@@ -8,64 +8,95 @@ describe("TestCase component", () => {
     jest.clearAllMocks();
   });
 
-  it("should render test case executionStatus with pass", async () => {
-    const testCase = {
-      id: "ID1",
-      title: "TEST IPP",
-      description: "TEST DESCRIPTION",
-      series: "TEST SERIES",
-      executionStatus: "pass",
-    };
+  const testCase = {
+    id: "ID1",
+    title: "TEST IPP",
+    description: "TEST DESCRIPTION",
+    series: "TEST SERIES",
+    executionStatus: "pass",
+  };
+
+  it("should render test case population table not opened", async () => {
     render(
       <MemoryRouter>
-        <TestCaseComponent
-          testCase={testCase}
-          children={null}
-          setActiveItem={null}
-          activeItem={null}
-          index={testCase.id}
-          isExecuteButtonClicked={true}
-        />
+        <TestCaseComponent testCase={testCase} />
       </MemoryRouter>
     );
-    const row = screen.getByTestId(`test-case-row-${testCase.id}`);
-    const columns = row.querySelectorAll("TD");
-    expect(columns[0]).toHaveTextContent("TEST IPP");
-    expect(columns[1]).toHaveTextContent("TEST SERIES");
-    expect(columns[2]).toHaveTextContent("pass");
+    const rows = screen.getByTestId(`test-case-row-${testCase.id}`);
+    const columns = rows.querySelectorAll("td");
+    expect(columns[1]).toHaveTextContent(testCase.title);
+    expect(columns[2]).toHaveTextContent(testCase.series);
+    expect(columns[3]).toHaveTextContent(testCase.executionStatus);
+
     const buttons = await screen.findAllByRole("button");
     expect(buttons).toHaveLength(2);
-    expect(buttons[0]).toHaveTextContent("pass");
     expect(buttons[1]).toHaveTextContent("Edit");
+
+    expect(
+      screen.getByTestId(`arrow-right-icon-${testCase.id}`)
+    ).toBeInTheDocument();
   });
 
-  it("should render test case status as not executed", async () => {
-    const testCase = {
-      id: "ID1",
-      title: "TEST IPP",
-      description: "TEST DESCRIPTION",
-      series: "TEST SERIES",
-      executionStatus: "NA",
-    };
+  it("should render test case population table opened", async () => {
     render(
       <MemoryRouter>
-        <TestCaseComponent
-          testCase={testCase}
-          children={null}
-          setActiveItem={null}
-          activeItem={null}
-          index={testCase.id}
-          isExecuteButtonClicked={false}
-        />
+        <TestCaseComponent testCase={testCase} />
       </MemoryRouter>
     );
-    const row = screen.getByTestId(`test-case-row-${testCase.id}`);
-    const columns = row.querySelectorAll("td");
-    expect(columns[0]).toHaveTextContent("TEST IPP");
-    expect(columns[1]).toHaveTextContent("TEST SERIES");
-    expect(columns[2]).toHaveTextContent("NA");
+    const rows = screen.getByTestId(`test-case-row-${testCase.id}`);
+    const columns = rows.querySelectorAll("td");
+    expect(columns[1]).toHaveTextContent(testCase.title);
+    expect(columns[2]).toHaveTextContent(testCase.series);
+    expect(columns[3]).toHaveTextContent(testCase.executionStatus);
+
     const buttons = await screen.findAllByRole("button");
-    expect(buttons).toHaveLength(1);
-    expect(buttons[0]).toHaveTextContent("Edit");
+    expect(buttons).toHaveLength(2);
+    expect(buttons[1]).toHaveTextContent("Edit");
+
+    await waitFor(() => {
+      const openButton = screen.getByTestId(`open-button-${testCase.id}`);
+      fireEvent.click(openButton);
+      expect(
+        screen.getByTestId(`arrow-up-icon-${testCase.id}`)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByTestId(`test-case-population-row-${testCase.id}`)
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("should render test case population table opened and closed", async () => {
+    render(
+      <MemoryRouter>
+        <TestCaseComponent testCase={testCase} />
+      </MemoryRouter>
+    );
+    const rows = screen.getByTestId(`test-case-row-${testCase.id}`);
+    const columns = rows.querySelectorAll("td");
+    expect(columns[1]).toHaveTextContent(testCase.title);
+    expect(columns[2]).toHaveTextContent(testCase.series);
+    expect(columns[3]).toHaveTextContent(testCase.executionStatus);
+
+    const buttons = await screen.findAllByRole("button");
+    expect(buttons).toHaveLength(2);
+    expect(buttons[1]).toHaveTextContent("Edit");
+
+    screen.debug();
+
+    await waitFor(() => {
+      const openButton = screen.getByTestId(`open-button-${testCase.id}`);
+      fireEvent.click(openButton);
+      expect(
+        screen.getByTestId(`arrow-up-icon-${testCase.id}`)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByTestId(`test-case-population-row-${testCase.id}`)
+      ).toBeInTheDocument();
+
+      fireEvent.click(openButton);
+      expect(
+        screen.getByTestId(`arrow-right-icon-${testCase.id}`)
+      ).toBeInTheDocument();
+    });
   });
 });
