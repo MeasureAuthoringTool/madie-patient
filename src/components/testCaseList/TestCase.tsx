@@ -50,15 +50,15 @@ const TestCase = (props) => {
           </IconButton>
         </td>
         <td>{testCase.title}</td>
-        <td align="left">{testCase.series}</td>
-        {status === "NA" && <td align="left">{status}</td>}
+        <td>{testCase.series}</td>
+        {status === "NA" && <td>{status}</td>}
         {status !== "NA" && (
-          <td align="left">
+          <td>
             <Chip label={status} color={statusColor} />
           </td>
         )}
 
-        <td align="left">
+        <td>
           <EditButton
             onClick={() => {
               navigate(`./${testCase.id}`);
