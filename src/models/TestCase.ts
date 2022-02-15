@@ -9,4 +9,5 @@ export default interface TestCase {
   lastModifiedAt: string;
   lastModifiedBy: string;
   json?: string;
+  executionStatus: string;
 }
