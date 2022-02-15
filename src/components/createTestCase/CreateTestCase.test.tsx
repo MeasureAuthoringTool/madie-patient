@@ -540,4 +540,88 @@ describe("CreateTestCase component", () => {
     );
     expect(debugOutput).toBeInTheDocument();
   });
+
+  it("should generate field level error for test case title more than 250 characters", async () => {
+    render(
+      <MemoryRouter>
+        <CreateTestCase />
+      </MemoryRouter>
+    );
+
+    const testCaseTitle =
+      "abcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyz";
+    const titleInput = screen.getByTestId("create-test-case-title");
+    userEvent.type(titleInput, testCaseTitle);
+    fireEvent.blur(titleInput);
+
+    const createBtn = screen.getByRole("button", { name: "Create Test Case" });
+    await waitFor(() => {
+      expect(createBtn).toBeDisabled;
+      expect(screen.getByTestId("title-helper-text")).toHaveTextContent(
+        "Test Case Title cannot be more than 250 characters."
+      );
+    });
+  });
+
+  it("should allow special characters for test case title", async () => {
+    render(
+      <MemoryRouter>
+        <ApiContextProvider value={serviceConfig}>
+          <CreateTestCase />
+        </ApiContextProvider>
+      </MemoryRouter>
+    );
+
+    const testCaseDescription = "Test Description";
+    const testCaseTitle =
+      "{{[[{shift}{ctrl/}a{/shift}~!@#$% ^&*() _-+= }|] \\ :;,. <>?/ '\"";
+    mockedAxios.post.mockResolvedValue({
+      data: {
+        id: "testID",
+        description: testCaseDescription,
+        title: testCaseTitle,
+      },
+    });
+
+    const titleInput = screen.getByTestId("create-test-case-title");
+    userEvent.type(titleInput, testCaseDescription);
+
+    const createBtn = screen.getByRole("button", { name: "Create Test Case" });
+    userEvent.click(createBtn);
+
+    const debugOutput = await screen.findByText(
+      "Test case saved successfully! Redirecting back to Test Cases..."
+    );
+    expect(debugOutput).toBeInTheDocument();
+  });
+
+  it("should allow special characters for test case series", async () => {
+    render(
+      <MemoryRouter>
+        <CreateTestCase />
+      </MemoryRouter>
+    );
+
+    const testCaseDescription = "Test Description";
+    const testCaseSeries =
+      "{{[[{shift}{ctrl/}a{/shift}~!@#$% ^&*() _-+= }|] \\ :;,. <>?/ '\"";
+    mockedAxios.post.mockResolvedValue({
+      data: {
+        id: "testID",
+        description: testCaseDescription,
+        series: testCaseSeries,
+      },
+    });
+
+    const seriesInput = screen.getByTestId("create-test-case-series");
+    userEvent.type(seriesInput, testCaseSeries);
+
+    const createBtn = screen.getByRole("button", { name: "Create Test Case" });
+    userEvent.click(createBtn);
+
+    const debugOutput = await screen.findByText(
+      "Test case saved successfully! Redirecting back to Test Cases..."
+    );
+    expect(debugOutput).toBeInTheDocument();
+  });
 });
