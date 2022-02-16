@@ -31,12 +31,17 @@ module.exports = (webpackConfigEnv, argv) => {
     );
   }
 
+  const externalsConfig = {
+    externals: ["@madie/madie-components", "@madie/madie-design-system"],
+  };
+
   const defaultConfig = singleSpaDefaults({
     orgName: "madie",
     projectName: "madie-patient",
     webpackConfigEnv,
     argv,
     disableHtmlGeneration: true,
+    orgPackagesAsExternal: false,
   });
 
   // We need to override the css loading rule from the parent configuration
@@ -83,6 +88,13 @@ module.exports = (webpackConfigEnv, argv) => {
           ),
           publicPath: "/madie-auth",
         },
+        {
+          directory: path.join(
+            __dirname,
+            "node_modules/@madie/madie-design-system/dist/react"
+          ),
+          publicPath: "/madie-design-system",
+        },
       ],
     },
     plugins: [
@@ -103,5 +115,5 @@ module.exports = (webpackConfigEnv, argv) => {
       },
     },
     plugins: "append",
-  })(defaultConfig, newCssRule);
+  })(defaultConfig, newCssRule, externalsConfig);
 };
