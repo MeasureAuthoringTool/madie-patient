@@ -133,8 +133,8 @@ const CreateTestCase = () => {
 
   const handleSubmit = async (testCase: TestCase) => {
     setAlert(null);
-    testCase.description = sanitizeUserInput(testCase.description);
     testCase.title = sanitizeUserInput(testCase.title);
+    testCase.description = sanitizeUserInput(testCase.description);
     testCase.series = sanitizeUserInput(testCase.series);
 
     if (id) {

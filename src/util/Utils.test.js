@@ -31,4 +31,9 @@ describe("Utils sanitizeUserInput test", () => {
       '<META HTTP-EQUIV="refresh" CONTENT="0;url=data:text/html;base64,PHNjcmlwdD5hbGVydCgndGVzdDMnKTwvc2NyaXB0Pg">';
     expect(sanitizeUserInput(input)).toBe("");
   });
+
+  it("Should convert back non malicious < and >", () => {
+    const input = "4 < A1C < 5 and med use > 3";
+    expect(sanitizeUserInput(input)).toBe("4 < A1C < 5 and med use > 3");
+  });
 });
