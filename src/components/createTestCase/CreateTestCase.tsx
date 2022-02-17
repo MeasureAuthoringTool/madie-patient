@@ -16,7 +16,7 @@ import TestCase from "../../models/TestCase";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import Editor from "../editor/Editor";
 import { TestCaseValidator } from "../../models/TestCaseValidator";
-import DOMPurify from "dompurify";
+import { sanitizeUserInput } from "../../util/Utils.js";
 import TestCaseSeries from "./TestCaseSeries";
 
 const FormControl = tw.div`mb-3`;
@@ -133,7 +133,10 @@ const CreateTestCase = () => {
 
   const handleSubmit = async (testCase: TestCase) => {
     setAlert(null);
-    testCase.description = DOMPurify.sanitize(testCase.description);
+    testCase.description = sanitizeUserInput(testCase.description);
+    testCase.title = sanitizeUserInput(testCase.title);
+    testCase.series = sanitizeUserInput(testCase.series);
+
     if (id) {
       return await updateTestCase(testCase);
     }

@@ -41,7 +41,14 @@ const TestCaseSeries = ({
         _.isNil(existingOption) ? onChange(v) : onChange(existingOption);
       }}
       sx={sx}
-      renderInput={(params) => <TextField {...params} label="Series" />}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label="Series"
+          inputProps={{ ...params.inputProps, maxLength: 250 }}
+          data-testid="create-test-case-series"
+        />
+      )}
       options={cleanedOptions}
       filterOptions={(options, params) => {
         const filtered = filter(options, params);
