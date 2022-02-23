@@ -10,14 +10,19 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useFormik } from "formik";
 import tw, { styled } from "twin.macro";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import {
+  faTimes,
+  faExclamationCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import "styled-components/macro";
-import TestCase from "../../models/TestCase";
+import TestCase, { HapiOperationOutcome } from "../../models/TestCase";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import Editor from "../editor/Editor";
 import { TestCaseValidator } from "../../models/TestCaseValidator";
 import { sanitizeUserInput } from "../../util/Utils.js";
 import TestCaseSeries from "./TestCaseSeries";
+import * as _ from "lodash";
+import { Ace } from "ace-builds";
 
 const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
@@ -35,6 +40,22 @@ const TestCaseTitle = tw.input`
   w-96
   rounded
   sm:text-sm
+`;
+
+const ValidationErrorCard = tw.p`
+text-xs bg-white p-3 bg-red-100 rounded-xl mx-3 my-1 break-words
+`;
+
+const ValidationErrorsButton = tw.button`
+  text-lg
+  -translate-y-6
+  w-[160px]
+  h-[30px]
+  origin-bottom-left
+  rotate-90
+  border-solid
+  border-2
+  border-gray-500
 `;
 
 interface AlertProps {
@@ -57,6 +78,12 @@ const Alert = styled.div<AlertProps>(({ status = "default" }) => [
   tw`rounded-lg py-5 px-6 m-3 text-base inline-flex items-center w-auto min-w-96`,
 ]);
 
+const StyledIcon = styled(FontAwesomeIcon)(
+  ({ isError }: { isError: boolean }) => [isError ? tw`text-red-700` : ""]
+);
+
+// const ErrorsIcon = styled(FontAwesomeIcon)<any>(({}))
+
 const CreateTestCase = () => {
   const navigate = useNavigate();
   const { id } = useParams<keyof navigationParams>() as navigationParams;
@@ -67,10 +94,13 @@ const CreateTestCase = () => {
   const [testCase, setTestCase] = useState<TestCase>(null);
   const [editorVal, setEditorVal]: [string, Dispatch<SetStateAction<string>>] =
     useState("");
+  const [validationErrors, setValidationErrors] = useState<any[]>([]);
   const [seriesState, setSeriesState] = useState<any>({
     loaded: false,
     series: [],
   });
+  const [editor, setEditor] = useState<Ace.Editor>(null);
+  const [showValidationErrors, setShowValidationErrors] = useState(false);
   const formik = useFormik({
     initialValues: {
       title: "",
@@ -108,6 +138,7 @@ const CreateTestCase = () => {
             setTestCase(tc);
             setEditorVal(tc.json);
             resetForm({ values: tc });
+            handleHapiOutcome(tc.hapiOperationOutcome);
           })
           .catch((error) => {
             console.error(
@@ -151,12 +182,24 @@ const CreateTestCase = () => {
         measureId
       );
       if (savedTestCase && savedTestCase.id) {
-        setAlert({
-          status: "success",
-          message:
-            "Test case saved successfully! Redirecting back to Test Cases...",
-        });
-        setTimeout(() => navigateToTestCases(), 3000);
+        if (
+          savedTestCase.hapiOperationOutcome &&
+          (savedTestCase.hapiOperationOutcome.code === 200 ||
+            savedTestCase.hapiOperationOutcome.code === 201)
+        ) {
+          setAlert({
+            status: "success",
+            message:
+              "Test case saved successfully! Redirecting back to Test Cases...",
+          });
+          setTimeout(() => navigateToTestCases(), 3000);
+        } else {
+          handleHapiOutcome(savedTestCase.hapiOperationOutcome);
+          setAlert({
+            status: "success",
+            message: "An error occurred with the Test Case JSON",
+          });
+        }
       } else {
         setAlert(() => ({
           status: "error",
@@ -183,12 +226,26 @@ const CreateTestCase = () => {
         measureId
       );
       if (updatedTestCase) {
-        setAlert({
-          status: "success",
-          message:
-            "Test case updated successfully! Redirecting back to Test Cases...",
-        });
-        setTimeout(() => navigateToTestCases(), 3000);
+        if (
+          updatedTestCase.hapiOperationOutcome &&
+          (updatedTestCase.hapiOperationOutcome.code === 200 ||
+            updatedTestCase.hapiOperationOutcome.code === 201)
+        ) {
+          setAlert({
+            status: "success",
+            message:
+              "Test case updated successfully! Redirecting back to Test Cases...",
+          });
+          setTimeout(() => navigateToTestCases(), 3000);
+        } else {
+          setAlert({
+            status: "warning",
+            message:
+              updatedTestCase.hapiOperationOutcome?.message ||
+              "An error occurred with the FHIR resource",
+          });
+          handleHapiOutcome(updatedTestCase.hapiOperationOutcome);
+        }
       } else {
         setAlert(() => ({
           status: "error",
@@ -204,6 +261,50 @@ const CreateTestCase = () => {
       }));
     }
   };
+
+  function handleHapiOutcome(outcome: HapiOperationOutcome) {
+    if (_.isNil(outcome) || outcome.code === 200 || outcome.code === 201) {
+      setValidationErrors(() => []);
+      return;
+    }
+    if (outcome.code === 400 || outcome.code === 412) {
+      if (outcome.outcomeResponse && outcome.outcomeResponse.issue) {
+        // const annotations: Ace.Annotation[] = outcome.issues.map((issue) => {
+        //   const lineCol = getLineColForIssue(issue);
+        // console.log("get issues: ", outcome.outcomeResponse.issue);
+        //   return {
+        //     row: lineCol.line,
+        //     column: lineCol.column,
+        //     text: `FHIR: ${lineCol.column} | ${issue.diagnostics}`,
+        //     type: issue.severity ? issue.severity.toLowerCase() : "error",
+        //   };
+        // });
+        // setEditorAnnotations(annotations);
+        setValidationErrors(() => outcome.outcomeResponse.issue);
+      } else {
+        setValidationErrors([]);
+        // console.log("no issues found but thing still failed...");
+      }
+    }
+  }
+
+  // function getLineColForIssue(issue: OperationIssue) {
+  //   const lineCol = { line: 0, column: 0 };
+  //   if (issue && issue.location && issue.location.length > 0) {
+  //     for (const location of issue.location) {
+  //       if (location && location.toUpperCase().startsWith("LINE")) {
+  //         console.log("parsing location: ", location);
+  //         const parts = location.split(",");
+  //         lineCol.line = Number.parseInt(parts[0].substring(4).trim()) - 1;
+  //         if (parts.length > 1 && parts[1].toUpperCase().startsWith("COL")) {
+  //           lineCol.column = Number.parseInt(parts[1].substring(3).trim()) - 1;
+  //         }
+  //       }
+  //     }
+  //   }
+  //
+  //   return lineCol;
+  // }
 
   function navigateToTestCases() {
     navigate("..");
@@ -225,10 +326,16 @@ const CreateTestCase = () => {
     return formik.isValid && (formik.dirty || editorVal !== testCase?.json);
   }
 
+  function resizeEditor() {
+    setTimeout(() => {
+      editor?.resize(true);
+    }, 500);
+  }
+
   return (
     <>
-      <div tw="flex flex-wrap ">
-        <div tw="flex-none ">
+      <div tw="flex flex-wrap w-screen">
+        <div tw="flex-none max-w-xl">
           <div tw="ml-2">
             {alert && (
               <Alert
@@ -307,12 +414,63 @@ const CreateTestCase = () => {
             </TestCaseForm>
           </div>
         </div>
-        <div tw="flex-grow">
+        <div tw="flex-grow border-solid border-2 border-blue-500">
           <Editor
             onChange={(val: string) => setEditorVal(val)}
             value={editorVal}
+            setEditor={setEditor}
           />
         </div>
+        {showValidationErrors ? (
+          <div tw="w-80 h-[500px] flex flex-col">
+            <button
+              tw="w-full text-lg text-center"
+              onClick={() => {
+                setShowValidationErrors((prevState) => {
+                  resizeEditor();
+                  return !prevState;
+                });
+              }}
+            >
+              <StyledIcon
+                icon={faExclamationCircle}
+                isError={validationErrors.length > 0}
+              />
+              Validation Errors
+            </button>
+
+            <div tw="h-full flex flex-col overflow-y-scroll">
+              {validationErrors && validationErrors.length > 0 ? (
+                validationErrors.map((error) => {
+                  return (
+                    <ValidationErrorCard>
+                      {error.diagnostics}
+                    </ValidationErrorCard>
+                  );
+                })
+              ) : (
+                <span>No errors!</span>
+              )}
+            </div>
+          </div>
+        ) : (
+          <aside tw="w-9 h-[500px] overflow-x-hidden">
+            <ValidationErrorsButton
+              onClick={() =>
+                setShowValidationErrors((prevState) => {
+                  resizeEditor();
+                  return !prevState;
+                })
+              }
+            >
+              <StyledIcon
+                icon={faExclamationCircle}
+                isError={validationErrors.length > 0}
+              />
+              Validation Errors
+            </ValidationErrorsButton>
+          </aside>
+        )}
       </div>
     </>
   );

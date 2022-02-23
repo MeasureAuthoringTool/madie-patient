@@ -10,4 +10,31 @@ export default interface TestCase {
   lastModifiedBy: string;
   json?: string;
   executionStatus: string;
+  hapiOperationOutcome: HapiOperationOutcome;
+}
+
+export interface HapiOperationOutcome {
+  code: number;
+  message: string;
+  outcomeResponse: HapiOutcomeResponse;
+}
+
+export interface HapiOutcomeResponse {
+  resourceType: string;
+  text: string;
+  issue: HapiIssue[];
+}
+
+export interface HapiIssue {
+  severity: string;
+  code: string;
+  diagnostics: string;
+  location: string[];
+}
+
+export interface OperationIssue {
+  severity: string;
+  code: string;
+  diagnostics: string;
+  location: string[];
 }

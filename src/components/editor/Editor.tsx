@@ -8,6 +8,7 @@ export interface EditorPropsType {
   onChange: (value: string) => void;
   parseDebounceTime?: number;
   inboundAnnotations?: Ace.Annotation[];
+  setEditor?: (editor: Ace.Editor) => void;
 }
 
 const Editor = ({
@@ -15,6 +16,7 @@ const Editor = ({
   onChange,
   parseDebounceTime = 1500,
   inboundAnnotations,
+  setEditor,
 }: EditorPropsType) => {
   return (
     <>
@@ -23,6 +25,11 @@ const Editor = ({
           value={value}
           onChange={(value) => {
             onChange(value);
+          }}
+          onLoad={(editor: Ace.Editor) => {
+            if (setEditor) {
+              setEditor(editor);
+            }
           }}
           mode="json" // Temporary value of mode to prevent a dynamic search request.
           theme="monokai"
@@ -37,6 +44,7 @@ const Editor = ({
             enableSnippets: true,
             showLineNumbers: true,
             tabSize: 2,
+            autoScrollEditorIntoView: true,
           }}
           editorProps={{ $blockScrolling: true }}
         />
