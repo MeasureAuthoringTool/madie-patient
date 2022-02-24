@@ -6,12 +6,13 @@ Jira Ticket: [MAT-0000](https://jira.cms.gov/browse/MAT-0000)
 ### Summary
 
 ### All Submissions
-* [ ] This PR has the JIRA linked.
+* [ ] This PR has the JIRA linked
 * [ ] Required tests are included
+* [ ] Interaction elements have data test ids
 * [ ] No extemporaneous files are included (i.e Complied files or testing results)
-* [ ] This PR is into the **correct branch**.
+* [ ] This PR is into the **correct branch**
 * [ ] All Documentation as needed for this PR is Complete (or noted in a TODO or other Ticket)
-* [ ] Any breaking changes or failing automation are noted by placing a comment on this PR.
+* [ ] Any breaking changes or failing automation are noted by placing a comment on this PR
 
 ### DevSecOps
 If there is a question if this PR has a security or infrastructure impact, please contact the Security or DevOps engineer assigned to this project to discuss it further.
@@ -24,4 +25,5 @@ By Approving this PR you are attesting to the following:
 
 *  Code is maintainable and reusable, reuses existing code and infrastructure where appropriate, and accomplishes the task’s purpose
 *  The tests appropriately test the new code, including edge cases
+*  Interaction elements such as dropdowns, buttons, text fields, etc have meanginfully named data testid's
 *  If you have any concerns they are brought up either to the developer assigned, security engineer, or leads
