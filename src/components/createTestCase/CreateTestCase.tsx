@@ -138,7 +138,7 @@ const CreateTestCase = () => {
             setTestCase(tc);
             setEditorVal(tc.json);
             resetForm({ values: tc });
-            handleHapiOutcome(tc.hapiOperationOutcome);
+            handleHapiOutcome(tc?.hapiOperationOutcome);
           })
           .catch((error) => {
             console.error(
@@ -182,11 +182,7 @@ const CreateTestCase = () => {
         measureId
       );
       if (savedTestCase && savedTestCase.id) {
-        if (
-          savedTestCase.hapiOperationOutcome &&
-          (savedTestCase.hapiOperationOutcome.code === 200 ||
-            savedTestCase.hapiOperationOutcome.code === 201)
-        ) {
+        if (hasValidHapiOutcome(savedTestCase)) {
           setAlert({
             status: "success",
             message:
@@ -226,11 +222,7 @@ const CreateTestCase = () => {
         measureId
       );
       if (updatedTestCase) {
-        if (
-          updatedTestCase.hapiOperationOutcome &&
-          (updatedTestCase.hapiOperationOutcome.code === 200 ||
-            updatedTestCase.hapiOperationOutcome.code === 201)
-        ) {
+        if (hasValidHapiOutcome(updatedTestCase)) {
           setAlert({
             status: "success",
             message:
@@ -240,9 +232,7 @@ const CreateTestCase = () => {
         } else {
           setAlert({
             status: "warning",
-            message:
-              updatedTestCase.hapiOperationOutcome?.message ||
-              "An error occurred with the FHIR resource",
+            message: "An error occurred with the Test Case JSON",
           });
           handleHapiOutcome(updatedTestCase.hapiOperationOutcome);
         }
@@ -262,6 +252,14 @@ const CreateTestCase = () => {
     }
   };
 
+  function hasValidHapiOutcome(testCase: TestCase) {
+    return (
+      testCase.hapiOperationOutcome &&
+      (testCase.hapiOperationOutcome.code === 200 ||
+        testCase.hapiOperationOutcome.code === 201)
+    );
+  }
+
   function handleHapiOutcome(outcome: HapiOperationOutcome) {
     if (_.isNil(outcome) || outcome.code === 200 || outcome.code === 201) {
       setValidationErrors(() => []);
@@ -269,17 +267,6 @@ const CreateTestCase = () => {
     }
     if (outcome.code === 400 || outcome.code === 412) {
       if (outcome.outcomeResponse && outcome.outcomeResponse.issue) {
-        // const annotations: Ace.Annotation[] = outcome.issues.map((issue) => {
-        //   const lineCol = getLineColForIssue(issue);
-        // console.log("get issues: ", outcome.outcomeResponse.issue);
-        //   return {
-        //     row: lineCol.line,
-        //     column: lineCol.column,
-        //     text: `FHIR: ${lineCol.column} | ${issue.diagnostics}`,
-        //     type: issue.severity ? issue.severity.toLowerCase() : "error",
-        //   };
-        // });
-        // setEditorAnnotations(annotations);
         setValidationErrors(() => outcome.outcomeResponse.issue);
       } else {
         setValidationErrors([]);
@@ -287,24 +274,6 @@ const CreateTestCase = () => {
       }
     }
   }
-
-  // function getLineColForIssue(issue: OperationIssue) {
-  //   const lineCol = { line: 0, column: 0 };
-  //   if (issue && issue.location && issue.location.length > 0) {
-  //     for (const location of issue.location) {
-  //       if (location && location.toUpperCase().startsWith("LINE")) {
-  //         console.log("parsing location: ", location);
-  //         const parts = location.split(",");
-  //         lineCol.line = Number.parseInt(parts[0].substring(4).trim()) - 1;
-  //         if (parts.length > 1 && parts[1].toUpperCase().startsWith("COL")) {
-  //           lineCol.column = Number.parseInt(parts[1].substring(3).trim()) - 1;
-  //         }
-  //       }
-  //     }
-  //   }
-  //
-  //   return lineCol;
-  // }
 
   function navigateToTestCases() {
     navigate("..");
@@ -327,6 +296,7 @@ const CreateTestCase = () => {
   }
 
   function resizeEditor() {
+    // hack to force Ace to resize as it doesn't seem to be responsive
     setTimeout(() => {
       editor?.resize(true);
     }, 500);
@@ -422,9 +392,13 @@ const CreateTestCase = () => {
           />
         </div>
         {showValidationErrors ? (
-          <div tw="w-80 h-[500px] flex flex-col">
+          <aside
+            tw="w-80 h-[500px] flex flex-col"
+            data-testid="open-json-validation-errors-aside"
+          >
             <button
               tw="w-full text-lg text-center"
+              data-testid="hide-json-validation-errors-button"
               onClick={() => {
                 setShowValidationErrors((prevState) => {
                   resizeEditor();
@@ -439,7 +413,10 @@ const CreateTestCase = () => {
               Validation Errors
             </button>
 
-            <div tw="h-full flex flex-col overflow-y-scroll">
+            <div
+              tw="h-full flex flex-col overflow-y-scroll"
+              data-testid="json-validation-errors-list"
+            >
               {validationErrors && validationErrors.length > 0 ? (
                 validationErrors.map((error) => {
                   return (
@@ -449,13 +426,17 @@ const CreateTestCase = () => {
                   );
                 })
               ) : (
-                <span>No errors!</span>
+                <span>Nothing to see here!</span>
               )}
             </div>
-          </div>
+          </aside>
         ) : (
-          <aside tw="w-9 h-[500px] overflow-x-hidden">
+          <aside
+            tw="w-10 h-[500px] overflow-x-hidden"
+            data-testid="closed-json-validation-errors-aside"
+          >
             <ValidationErrorsButton
+              data-testid="show-json-validation-errors-button"
               onClick={() =>
                 setShowValidationErrors((prevState) => {
                   resizeEditor();

@@ -164,6 +164,9 @@ describe("TestCaseRoutes", () => {
       data: {
         id: "testID",
         description: "Some Description",
+        hapiOperationOutcome: {
+          code: 201,
+        },
       },
     });
 

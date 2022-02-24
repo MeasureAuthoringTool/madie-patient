@@ -4,7 +4,7 @@ import {
   screen,
   waitFor,
   fireEvent,
-  within,
+  within, logRoles
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import CreateTestCase from "./CreateTestCase";
@@ -12,7 +12,7 @@ import userEvent from "@testing-library/user-event";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
 import TestCaseRoutes from "../routes/TestCaseRoutes";
-import TestCase from "../../models/TestCase";
+import TestCase, { HapiIssue } from "../../models/TestCase";
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -83,6 +83,9 @@ describe("CreateTestCase component", () => {
         id: "testID",
         description: testCaseDescription,
         title: testCaseTitle,
+        hapiOperationOutcome: {
+          code: 200,
+        },
       },
     });
 
@@ -248,7 +251,13 @@ describe("CreateTestCase component", () => {
     );
 
     mockedAxios.put.mockResolvedValue({
-      data: { ...testCase, description: testCaseDescription },
+      data: {
+        ...testCase,
+        description: testCaseDescription,
+        hapiOperationOutcome: {
+          code: 200,
+        },
+      },
     });
 
     await waitFor(() => {
@@ -471,6 +480,9 @@ describe("CreateTestCase component", () => {
         id: "testID",
         description: testCaseDescription,
         title: testCaseTitle,
+        hapiOperationOutcome: {
+          code: 201,
+        },
       },
     });
 
@@ -580,6 +592,9 @@ describe("CreateTestCase component", () => {
         id: "testID",
         description: testCaseDescription,
         title: testCaseTitle,
+        hapiOperationOutcome: {
+          code: 201,
+        },
       },
     });
 
@@ -610,6 +625,9 @@ describe("CreateTestCase component", () => {
         id: "testID",
         description: testCaseDescription,
         series: testCaseSeries,
+        hapiOperationOutcome: {
+          code: 201,
+        },
       },
     });
 
@@ -623,5 +641,72 @@ describe("CreateTestCase component", () => {
       "Test case saved successfully! Redirecting back to Test Cases..."
     );
     expect(debugOutput).toBeInTheDocument();
+  });
+
+  it("should display HAPI validation errors after create test case", async () => {
+    const { container } = render(
+      <MemoryRouter>
+        <CreateTestCase />
+      </MemoryRouter>
+    );
+
+    const testCaseDescription = "Test Description";
+    const testCaseSeries =
+      "{{[[{shift}{ctrl/}a{/shift}~!@#$% ^&*() _-+= }|] \\ :;,. <>?/ '\"";
+    mockedAxios.post.mockResolvedValue({
+      data: {
+        id: "testID",
+        description: testCaseDescription,
+        series: testCaseSeries,
+        hapiOperationOutcome: {
+          code: 400,
+          outcomeResponse: {
+            resourceType: "OperationOutcome",
+            issue: [
+              {
+                severity: "error",
+                diagnostics: "Patient.name is a required field",
+              },
+              {
+                severity: "error",
+                diagnostics: "Patient.identifier is a required field",
+              },
+            ],
+          },
+        },
+      },
+    });
+
+    const seriesInput = screen.getByTestId("create-test-case-series");
+    userEvent.type(seriesInput, testCaseSeries);
+
+    const createBtn = screen.getByRole("button", { name: "Create Test Case" });
+    userEvent.click(createBtn);
+
+    const debugOutput = await screen.findByText(
+      "An error occurred with the Test Case JSON"
+    );
+    expect(debugOutput).toBeInTheDocument();
+
+    const showValidationErrorsBtn = screen.getByRole("button", {
+      name: "Validation Errors",
+    });
+    expect(showValidationErrorsBtn).toBeInTheDocument();
+    userEvent.click(showValidationErrorsBtn);
+
+    const validationErrorsList = await screen.findByTestId(
+      "json-validation-errors-list"
+    );
+    expect(validationErrorsList).toBeInTheDocument();
+    const patientNameError = await within(validationErrorsList).findByText(
+      "Patient.name is a required field"
+    );
+    expect(patientNameError).toBeInTheDocument();
+    const patientIdentifierError = within(validationErrorsList).getByText(
+      "Patient.identifier is a required field"
+    );
+    expect(patientIdentifierError).toBeInTheDocument();
+
+    logRoles(container);
   });
 });

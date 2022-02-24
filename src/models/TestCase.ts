@@ -31,10 +31,3 @@ export interface HapiIssue {
   diagnostics: string;
   location: string[];
 }
-
-export interface OperationIssue {
-  severity: string;
-  code: string;
-  diagnostics: string;
-  location: string[];
-}
