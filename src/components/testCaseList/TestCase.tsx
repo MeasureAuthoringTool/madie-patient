@@ -12,6 +12,8 @@ import Collapse from "@mui/material/Collapse";
 import Box from "@mui/material/Box";
 import TestCasePopulationList from "./TestCasePopulationList";
 import Chip from "@mui/material/Chip";
+import Tooltip from "@mui/material/Tooltip";
+import Button from "@mui/material/Button";
 
 const EditButton = tw.button`text-blue-600 hover:text-blue-900`;
 
@@ -21,6 +23,26 @@ const TestCase = (props) => {
   const [open, setOpen] = React.useState(false);
   const status = testCase.executionStatus;
   const statusColor = testCase.executionStatus === "pass" ? "success" : "error";
+
+  let titleLength = 0;
+  let titleNeedTruncate = false;
+  let displayTitle = testCase.title;
+  if (testCase.title != null && testCase.title.trim() !== "") {
+    titleLength = testCase.title.length;
+    titleNeedTruncate = titleLength > 60 ? true : false;
+    displayTitle =
+      titleLength < 60 ? displayTitle : displayTitle.substring(0, 59);
+  }
+
+  let seriesLength = 0;
+  let seriesNeedTruncate = false;
+  let displaySeries = testCase.series;
+  if (testCase.series != null && testCase.series.trim() !== "") {
+    seriesLength = testCase.series.length;
+    seriesNeedTruncate = seriesLength > 60 ? true : false;
+    displaySeries =
+      seriesLength < 60 ? displaySeries : displaySeries.substring(0, 59);
+  }
 
   return (
     <React.Fragment key={`fragment-key-${testCase.id}`}>
@@ -49,8 +71,35 @@ const TestCase = (props) => {
             )}
           </IconButton>
         </td>
-        <td>{testCase.title}</td>
-        <td>{testCase.series}</td>
+
+        {!titleNeedTruncate && <td>{testCase.title}</td>}
+        {titleNeedTruncate && (
+          <td>
+            <Tooltip title={testCase.title} placement="right">
+              <Button
+                data-testid={`test-case-title-${testCase.id}`}
+                name="title"
+              >
+                {displayTitle}
+              </Button>
+            </Tooltip>
+          </td>
+        )}
+
+        {!seriesNeedTruncate && <td>{testCase.series}</td>}
+        {seriesNeedTruncate && (
+          <td>
+            <Tooltip title={testCase.series} placement="right">
+              <Button
+                data-testid={`test-case-series-${testCase.id}`}
+                name="series"
+              >
+                {displaySeries}
+              </Button>
+            </Tooltip>
+          </td>
+        )}
+
         {status === "NA" && <td>{status}</td>}
         {status !== "NA" && (
           <td>
