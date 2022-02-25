@@ -14,6 +14,7 @@ import TestCasePopulationList from "./TestCasePopulationList";
 import Chip from "@mui/material/Chip";
 import Tooltip from "@mui/material/Tooltip";
 import Button from "@mui/material/Button";
+import { truncateInput } from "../../util/Utils.js";
 
 const EditButton = tw.button`text-blue-600 hover:text-blue-900`;
 
@@ -24,25 +25,8 @@ const TestCase = (props) => {
   const status = testCase.executionStatus;
   const statusColor = testCase.executionStatus === "pass" ? "success" : "error";
 
-  let titleLength = 0;
-  let titleNeedTruncate = false;
-  let displayTitle = testCase.title;
-  if (testCase.title != null && testCase.title.trim() !== "") {
-    titleLength = testCase.title.length;
-    titleNeedTruncate = titleLength > 60 ? true : false;
-    displayTitle =
-      titleLength < 60 ? displayTitle : displayTitle.substring(0, 59);
-  }
-
-  let seriesLength = 0;
-  let seriesNeedTruncate = false;
-  let displaySeries = testCase.series;
-  if (testCase.series != null && testCase.series.trim() !== "") {
-    seriesLength = testCase.series.length;
-    seriesNeedTruncate = seriesLength > 60 ? true : false;
-    displaySeries =
-      seriesLength < 60 ? displaySeries : displaySeries.substring(0, 59);
-  }
+  const displayTitle = truncateInput(testCase.title, 60);
+  const displaySeries = truncateInput(testCase.series, 60);
 
   return (
     <React.Fragment key={`fragment-key-${testCase.id}`}>
@@ -72,8 +56,8 @@ const TestCase = (props) => {
           </IconButton>
         </td>
 
-        {!titleNeedTruncate && <td>{testCase.title}</td>}
-        {titleNeedTruncate && (
+        {displayTitle === testCase.title && <td>{testCase.title}</td>}
+        {displayTitle !== testCase.title && (
           <td>
             <Tooltip title={testCase.title} placement="right">
               <Button
@@ -86,8 +70,8 @@ const TestCase = (props) => {
           </td>
         )}
 
-        {!seriesNeedTruncate && <td>{testCase.series}</td>}
-        {seriesNeedTruncate && (
+        {displaySeries === testCase.series && <td>{testCase.series}</td>}
+        {displaySeries !== testCase.series && (
           <td>
             <Tooltip title={testCase.series} placement="right">
               <Button
