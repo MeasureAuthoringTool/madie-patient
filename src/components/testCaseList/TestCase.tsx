@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import tw from "twin.macro";
+import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
@@ -14,6 +15,9 @@ import TestCasePopulationList from "./TestCasePopulationList";
 import Chip from "@mui/material/Chip";
 
 const EditButton = tw.button`text-blue-600 hover:text-blue-900`;
+const StyledCell = styled.td`
+  white-space: pre;
+`;
 
 const TestCase = (props) => {
   const navigate = useNavigate();
@@ -21,7 +25,6 @@ const TestCase = (props) => {
   const [open, setOpen] = React.useState(false);
   const status = testCase.executionStatus;
   const statusColor = testCase.executionStatus === "pass" ? "success" : "error";
-
   return (
     <React.Fragment key={`fragment-key-${testCase.id}`}>
       <tr
@@ -49,8 +52,8 @@ const TestCase = (props) => {
             )}
           </IconButton>
         </td>
-        <td>{testCase.title}</td>
-        <td>{testCase.series}</td>
+        <StyledCell>{testCase.title}</StyledCell>
+        <StyledCell>{testCase.series}</StyledCell>
         {status === "NA" && <td>{status}</td>}
         {status !== "NA" && (
           <td>
