@@ -78,9 +78,9 @@ const Alert = styled.div<AlertProps>(({ status = "default" }) => [
   tw`rounded-lg py-5 px-6 m-3 text-base inline-flex items-center w-auto min-w-96`,
 ]);
 
-const StyledIcon = styled(FontAwesomeIcon)(
-  ({ isError }: { isError: boolean }) => [isError ? tw`text-red-700` : ""]
-);
+const StyledIcon = styled(FontAwesomeIcon)(({ errors }: { errors: number }) => [
+  errors > 0 ? tw`text-red-700` : "",
+]);
 
 // const ErrorsIcon = styled(FontAwesomeIcon)<any>(({}))
 
@@ -181,28 +181,7 @@ const CreateTestCase = () => {
         testCase,
         measureId
       );
-      if (savedTestCase && savedTestCase.id) {
-        if (hasValidHapiOutcome(savedTestCase)) {
-          setAlert({
-            status: "success",
-            message:
-              "Test case saved successfully! Redirecting back to Test Cases...",
-          });
-          setTimeout(() => navigateToTestCases(), 3000);
-        } else {
-          handleHapiOutcome(savedTestCase.hapiOperationOutcome);
-          setAlert({
-            status: "success",
-            message: "An error occurred with the Test Case JSON",
-          });
-        }
-      } else {
-        setAlert(() => ({
-          status: "error",
-          message:
-            "An error occurred - create did not return the expected successful result.",
-        }));
-      }
+      handleTestCaseResponse(savedTestCase, "create");
     } catch (error) {
       console.error("An error occurred while creating the test case", error);
       setAlert(() => ({
@@ -221,28 +200,7 @@ const CreateTestCase = () => {
         testCase,
         measureId
       );
-      if (updatedTestCase) {
-        if (hasValidHapiOutcome(updatedTestCase)) {
-          setAlert({
-            status: "success",
-            message:
-              "Test case updated successfully! Redirecting back to Test Cases...",
-          });
-          setTimeout(() => navigateToTestCases(), 3000);
-        } else {
-          setAlert({
-            status: "warning",
-            message: "An error occurred with the Test Case JSON",
-          });
-          handleHapiOutcome(updatedTestCase.hapiOperationOutcome);
-        }
-      } else {
-        setAlert(() => ({
-          status: "error",
-          message:
-            "An error occurred - update did not return the expected successful result.",
-        }));
-      }
+      handleTestCaseResponse(updatedTestCase, "update");
     } catch (error) {
       console.error("An error occurred while updating the test case", error);
       setAlert(() => ({
@@ -252,11 +210,39 @@ const CreateTestCase = () => {
     }
   };
 
+  function handleTestCaseResponse(
+    testCase: TestCase,
+    action: "create" | "update"
+  ) {
+    if (testCase && testCase.id) {
+      if (hasValidHapiOutcome(testCase)) {
+        setAlert({
+          status: "success",
+          message: `Test case ${action}d successfully! Redirecting back to Test Cases...`,
+        });
+        setTimeout(() => navigateToTestCases(), 3000);
+      } else {
+        setAlert({
+          status: "warning",
+          message: `An error occurred with the Test Case JSON while ${
+            action === "create" ? "creating" : "updating"
+          } the test case`,
+        });
+        handleHapiOutcome(testCase.hapiOperationOutcome);
+      }
+    } else {
+      setAlert(() => ({
+        status: "error",
+        message: `An error occurred - ${action} did not return the expected successful result.`,
+      }));
+    }
+  }
+
   function hasValidHapiOutcome(testCase: TestCase) {
     return (
-      testCase.hapiOperationOutcome &&
-      (testCase.hapiOperationOutcome.code === 200 ||
-        testCase.hapiOperationOutcome.code === 201)
+      _.isNil(testCase.hapiOperationOutcome) ||
+      testCase.hapiOperationOutcome.code === 200 ||
+      testCase.hapiOperationOutcome.code === 201
     );
   }
 
@@ -265,13 +251,26 @@ const CreateTestCase = () => {
       setValidationErrors(() => []);
       return;
     }
-    if (outcome.code === 400 || outcome.code === 412) {
-      if (outcome.outcomeResponse && outcome.outcomeResponse.issue) {
-        setValidationErrors(() => outcome.outcomeResponse.issue);
-      } else {
-        setValidationErrors([]);
-        // console.log("no issues found but thing still failed...");
-      }
+    if (
+      (outcome.code === 400 ||
+        outcome.code === 409 ||
+        outcome.code === 412 ||
+        outcome.code === 422) &&
+      outcome.outcomeResponse &&
+      outcome.outcomeResponse.issue
+    ) {
+      setValidationErrors(() =>
+        outcome.outcomeResponse.issue.map((issue, index) => ({
+          ...issue,
+          key: index,
+        }))
+      );
+    } else {
+      const error =
+        outcome.outcomeResponse?.text ||
+        outcome.message ||
+        `HAPI FHIR returned error code ${outcome.code} but no discernible error message`;
+      setValidationErrors([{ key: 0, diagnostics: error }]);
     }
   }
 
@@ -384,7 +383,7 @@ const CreateTestCase = () => {
             </TestCaseForm>
           </div>
         </div>
-        <div tw="flex-grow border-solid border-2 border-blue-500">
+        <div tw="flex-grow">
           <Editor
             onChange={(val: string) => setEditorVal(val)}
             value={editorVal}
@@ -408,7 +407,7 @@ const CreateTestCase = () => {
             >
               <StyledIcon
                 icon={faExclamationCircle}
-                isError={validationErrors.length > 0}
+                errors={validationErrors.length}
               />
               Validation Errors
             </button>
@@ -420,7 +419,7 @@ const CreateTestCase = () => {
               {validationErrors && validationErrors.length > 0 ? (
                 validationErrors.map((error) => {
                   return (
-                    <ValidationErrorCard>
+                    <ValidationErrorCard key={error.key}>
                       {error.diagnostics}
                     </ValidationErrorCard>
                   );
@@ -446,7 +445,7 @@ const CreateTestCase = () => {
             >
               <StyledIcon
                 icon={faExclamationCircle}
-                isError={validationErrors.length > 0}
+                errors={validationErrors.length}
               />
               Validation Errors
             </ValidationErrorsButton>
