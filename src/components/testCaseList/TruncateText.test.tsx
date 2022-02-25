@@ -21,7 +21,6 @@ describe("TruncateText component", () => {
       </MemoryRouter>,
       { container: document.body.appendChild(tableRow) }
     );
-    screen.debug();
 
     expect(container).toBeTruthy();
     expect(getByText(description)).toBeInTheDocument();
