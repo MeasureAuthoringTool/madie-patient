@@ -14,6 +14,9 @@ import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
 import TestCaseRoutes from "../routes/TestCaseRoutes";
 import TestCase from "../../models/TestCase";
 
+//temporary solution (after jest updated to version 27) for error: thrown: "Exceeded timeout of 5000 ms for a test.
+jest.setTimeout(60000);
+
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
