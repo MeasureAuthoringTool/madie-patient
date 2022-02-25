@@ -14,7 +14,7 @@ import TestCasePopulationList from "./TestCasePopulationList";
 import Chip from "@mui/material/Chip";
 import Tooltip from "@mui/material/Tooltip";
 import Button from "@mui/material/Button";
-import { truncateInput } from "../../util/Utils.js";
+import TruncateText from "./TruncateText";
 
 const EditButton = tw.button`text-blue-600 hover:text-blue-900`;
 
@@ -24,9 +24,6 @@ const TestCase = (props) => {
   const [open, setOpen] = React.useState(false);
   const status = testCase.executionStatus;
   const statusColor = testCase.executionStatus === "pass" ? "success" : "error";
-
-  const displayTitle = truncateInput(testCase.title, 60);
-  const displaySeries = truncateInput(testCase.series, 60);
 
   return (
     <React.Fragment key={`fragment-key-${testCase.id}`}>
@@ -56,33 +53,19 @@ const TestCase = (props) => {
           </IconButton>
         </td>
 
-        {displayTitle === testCase.title && <td>{testCase.title}</td>}
-        {displayTitle !== testCase.title && (
-          <td>
-            <Tooltip title={testCase.title} placement="right">
-              <Button
-                data-testid={`test-case-title-${testCase.id}`}
-                name="title"
-              >
-                {displayTitle}
-              </Button>
-            </Tooltip>
-          </td>
-        )}
+        <TruncateText
+          text={testCase.title}
+          maxLength={60}
+          name="title"
+          dataTestId={`test-case-title-${testCase.id}`}
+        />
 
-        {displaySeries === testCase.series && <td>{testCase.series}</td>}
-        {displaySeries !== testCase.series && (
-          <td>
-            <Tooltip title={testCase.series} placement="right">
-              <Button
-                data-testid={`test-case-series-${testCase.id}`}
-                name="series"
-              >
-                {displaySeries}
-              </Button>
-            </Tooltip>
-          </td>
-        )}
+        <TruncateText
+          text={testCase.series}
+          maxLength={60}
+          name="series"
+          dataTestId={`test-case-series-${testCase.id}`}
+        />
 
         {status === "NA" && <td>{status}</td>}
         {status !== "NA" && (
