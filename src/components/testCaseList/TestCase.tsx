@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import tw from "twin.macro";
+import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
@@ -12,11 +13,12 @@ import Collapse from "@mui/material/Collapse";
 import Box from "@mui/material/Box";
 import TestCasePopulationList from "./TestCasePopulationList";
 import Chip from "@mui/material/Chip";
-import Tooltip from "@mui/material/Tooltip";
-import Button from "@mui/material/Button";
 import TruncateText from "./TruncateText";
 
 const EditButton = tw.button`text-blue-600 hover:text-blue-900`;
+const StyledCell = styled.td`
+  white-space: pre;
+`;
 
 const TestCase = (props) => {
   const navigate = useNavigate();
@@ -24,7 +26,6 @@ const TestCase = (props) => {
   const [open, setOpen] = React.useState(false);
   const status = testCase.executionStatus;
   const statusColor = testCase.executionStatus === "pass" ? "success" : "error";
-
   return (
     <React.Fragment key={`fragment-key-${testCase.id}`}>
       <tr
@@ -53,19 +54,22 @@ const TestCase = (props) => {
           </IconButton>
         </td>
 
-        <TruncateText
-          text={testCase.title}
-          maxLength={60}
-          name="title"
-          dataTestId={`test-case-title-${testCase.id}`}
-        />
-
-        <TruncateText
-          text={testCase.series}
-          maxLength={60}
-          name="series"
-          dataTestId={`test-case-series-${testCase.id}`}
-        />
+        <StyledCell>
+          <TruncateText
+            text={testCase.title}
+            maxLength={60}
+            name="title"
+            dataTestId={`test-case-title-${testCase.id}`}
+          />
+        </StyledCell>
+        <StyledCell>
+          <TruncateText
+            text={testCase.series}
+            maxLength={60}
+            name="series"
+            dataTestId={`test-case-series-${testCase.id}`}
+          />
+        </StyledCell>
 
         {status === "NA" && <td>{status}</td>}
         {status !== "NA" && (
