@@ -7,20 +7,14 @@ const TruncateText = ({ text, maxLength = 60, name, dataTestId }) => {
   if (text && text.length > maxLength) {
     const displayText = truncateInput(text, maxLength);
     return (
-      <td>
-        <Tooltip title={text} placement="right">
-          <Button name={name} data-testid={dataTestId}>
-            {displayText}...
-          </Button>
-        </Tooltip>
-      </td>
+      <Tooltip title={text} placement="right">
+        <Button name={name} data-testid={dataTestId}>
+          {displayText}...
+        </Button>
+      </Tooltip>
     );
   } else {
-    return (
-      <td title={name} data-testid={dataTestId}>
-        {text}
-      </td>
-    );
+    return text;
   }
 };
 

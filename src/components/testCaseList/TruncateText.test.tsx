@@ -9,7 +9,6 @@ describe("TruncateText component", () => {
     const name = "title";
     const testCaseId = "testcaseid";
 
-    const tableRow = document.createElement("tr");
     const { container, getByText, getByTestId, getByTitle } = render(
       <MemoryRouter>
         <TruncateTextComponent
@@ -18,14 +17,11 @@ describe("TruncateText component", () => {
           name={name}
           dataTestId={`test-case-title-${testCaseId}`}
         />
-      </MemoryRouter>,
-      { container: document.body.appendChild(tableRow) }
+      </MemoryRouter>
     );
 
     expect(container).toBeTruthy();
     expect(getByText(description)).toBeInTheDocument();
-    expect(getByTestId("test-case-title-testcaseid")).toBeInTheDocument();
-    expect(getByTitle(name)).toBeInTheDocument();
   });
 
   it("should render truncated value", async () => {
@@ -34,7 +30,6 @@ describe("TruncateText component", () => {
     const name = "series";
     const testCaseId = "testcaseid";
 
-    const tableRow = document.createElement("tr");
     const { container } = render(
       <MemoryRouter>
         <TruncateTextComponent
@@ -43,8 +38,7 @@ describe("TruncateText component", () => {
           name={name}
           dataTestId={`test-case-series-${testCaseId}`}
         />
-      </MemoryRouter>,
-      { container: document.body.appendChild(tableRow) }
+      </MemoryRouter>
     );
 
     expect(container).toBeTruthy();
