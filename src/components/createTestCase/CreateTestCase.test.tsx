@@ -18,9 +18,17 @@ jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 // mock editor to reduce errors and warnings
-jest.mock("../editor/Editor", () => () => (
-  <div data-testid="test-case-editor">editor contents</div>
-));
+const mockEditor = { resize: jest.fn() };
+jest.mock("../editor/Editor", () => ({ setEditor }) => {
+  const React = require("react");
+  React.useEffect(() => {
+    if (setEditor) {
+      setEditor(mockEditor);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return <div data-testid="test-case-editor">editor contents</div>;
+});
 
 const serviceConfig: ServiceConfig = {
   testCaseService: {
@@ -83,6 +91,9 @@ describe("CreateTestCase component", () => {
         id: "testID",
         description: testCaseDescription,
         title: testCaseTitle,
+        hapiOperationOutcome: {
+          code: 200,
+        },
       },
     });
 
@@ -93,7 +104,7 @@ describe("CreateTestCase component", () => {
     userEvent.click(createBtn);
 
     const debugOutput = await screen.findByText(
-      "Test case saved successfully! Redirecting back to Test Cases..."
+      "Test case created successfully! Redirecting back to Test Cases..."
     );
     expect(debugOutput).toBeInTheDocument();
   });
@@ -248,7 +259,13 @@ describe("CreateTestCase component", () => {
     );
 
     mockedAxios.put.mockResolvedValue({
-      data: { ...testCase, description: testCaseDescription },
+      data: {
+        ...testCase,
+        description: testCaseDescription,
+        hapiOperationOutcome: {
+          code: 200,
+        },
+      },
     });
 
     await waitFor(() => {
@@ -471,6 +488,9 @@ describe("CreateTestCase component", () => {
         id: "testID",
         description: testCaseDescription,
         title: testCaseTitle,
+        hapiOperationOutcome: {
+          code: 201,
+        },
       },
     });
 
@@ -481,7 +501,7 @@ describe("CreateTestCase component", () => {
     userEvent.click(createBtn);
 
     const debugOutput = await screen.findByText(
-      "Test case saved successfully! Redirecting back to Test Cases..."
+      "Test case created successfully! Redirecting back to Test Cases..."
     );
     expect(debugOutput).toBeInTheDocument();
   });
@@ -580,6 +600,9 @@ describe("CreateTestCase component", () => {
         id: "testID",
         description: testCaseDescription,
         title: testCaseTitle,
+        hapiOperationOutcome: {
+          code: 201,
+        },
       },
     });
 
@@ -590,7 +613,7 @@ describe("CreateTestCase component", () => {
     userEvent.click(createBtn);
 
     const debugOutput = await screen.findByText(
-      "Test case saved successfully! Redirecting back to Test Cases..."
+      "Test case created successfully! Redirecting back to Test Cases..."
     );
     expect(debugOutput).toBeInTheDocument();
   });
@@ -610,6 +633,9 @@ describe("CreateTestCase component", () => {
         id: "testID",
         description: testCaseDescription,
         series: testCaseSeries,
+        hapiOperationOutcome: {
+          code: 201,
+        },
       },
     });
 
@@ -620,8 +646,253 @@ describe("CreateTestCase component", () => {
     userEvent.click(createBtn);
 
     const debugOutput = await screen.findByText(
-      "Test case saved successfully! Redirecting back to Test Cases..."
+      "Test case created successfully! Redirecting back to Test Cases..."
     );
     expect(debugOutput).toBeInTheDocument();
+  });
+
+  it("should display HAPI validation errors after create test case", async () => {
+    jest.useFakeTimers("modern");
+    render(
+      <MemoryRouter>
+        <CreateTestCase />
+      </MemoryRouter>
+    );
+
+    const testCaseDescription = "Test Description";
+    const testCaseSeries =
+      "{{[[{shift}{ctrl/}a{/shift}~!@#$% ^&*() _-+= }|] \\ :;,. <>?/ '\"";
+    mockedAxios.post.mockResolvedValue({
+      data: {
+        id: "testID",
+        description: testCaseDescription,
+        series: testCaseSeries,
+        hapiOperationOutcome: {
+          code: 400,
+          outcomeResponse: {
+            resourceType: "OperationOutcome",
+            issue: [
+              {
+                severity: "error",
+                diagnostics: "Patient.name is a required field",
+              },
+              {
+                severity: "error",
+                diagnostics: "Patient.identifier is a required field",
+              },
+            ],
+          },
+        },
+      },
+    });
+
+    const seriesInput = screen.getByTestId("create-test-case-series");
+    userEvent.type(seriesInput, testCaseSeries);
+
+    const createBtn = screen.getByRole("button", { name: "Create Test Case" });
+    userEvent.click(createBtn);
+
+    const debugOutput = await screen.findByText(
+      "An error occurred with the Test Case JSON while creating the test case"
+    );
+    expect(debugOutput).toBeInTheDocument();
+
+    const showValidationErrorsBtn = screen.getByRole("button", {
+      name: "Validation Errors",
+    });
+    expect(showValidationErrorsBtn).toBeInTheDocument();
+    userEvent.click(showValidationErrorsBtn);
+    jest.advanceTimersByTime(700);
+
+    const validationErrorsList = await screen.findByTestId(
+      "json-validation-errors-list"
+    );
+    expect(validationErrorsList).toBeInTheDocument();
+    const patientNameError = await within(validationErrorsList).findByText(
+      "Patient.name is a required field"
+    );
+    expect(patientNameError).toBeInTheDocument();
+    const patientIdentifierError = within(validationErrorsList).getByText(
+      "Patient.identifier is a required field"
+    );
+    expect(patientIdentifierError).toBeInTheDocument();
+
+    // logRoles(container);
+  });
+
+  it("should display HAPI validation errors after update test case", async () => {
+    jest.useFakeTimers("modern");
+
+    const testCase = {
+      id: "1234",
+      description: "Test IPP",
+      series: "SeriesA",
+      json: `{"test":"test"}`,
+    } as TestCase;
+    const testCaseDescription = "modified description";
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
+      }
+      return Promise.resolve({ data: testCase });
+    });
+
+    render(
+      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases/1234"]}>
+        <ApiContextProvider value={serviceConfig}>
+          <TestCaseRoutes />
+        </ApiContextProvider>
+      </MemoryRouter>
+    );
+
+    mockedAxios.put.mockResolvedValue({
+      data: {
+        ...testCase,
+        description: testCaseDescription,
+        hapiOperationOutcome: {
+          code: 400,
+          outcomeResponse: {
+            resourceType: "OperationOutcome",
+            issue: [
+              {
+                severity: "error",
+                diagnostics: "Patient.name is a required field",
+              },
+              {
+                severity: "error",
+                diagnostics: "Patient.identifier is a required field",
+              },
+            ],
+          },
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Update Test Case" })
+      ).toBeInTheDocument();
+    });
+
+    const seriesInput = screen.getByTestId("create-test-case-description");
+    userEvent.type(seriesInput, testCaseDescription);
+    const updateBtn = screen.getByRole("button", { name: "Update Test Case" });
+    userEvent.click(updateBtn);
+
+    const debugOutput = await screen.findByText(
+      "An error occurred with the Test Case JSON while updating the test case"
+    );
+    expect(debugOutput).toBeInTheDocument();
+
+    const showValidationErrorsBtn = screen.getByRole("button", {
+      name: "Validation Errors",
+    });
+    expect(showValidationErrorsBtn).toBeInTheDocument();
+    userEvent.click(showValidationErrorsBtn);
+    jest.advanceTimersByTime(700);
+
+    const validationErrorsList = await screen.findByTestId(
+      "json-validation-errors-list"
+    );
+    expect(validationErrorsList).toBeInTheDocument();
+    const patientNameError = await within(validationErrorsList).findByText(
+      "Patient.name is a required field"
+    );
+    expect(patientNameError).toBeInTheDocument();
+    const patientIdentifierError = within(validationErrorsList).getByText(
+      "Patient.identifier is a required field"
+    );
+    expect(patientIdentifierError).toBeInTheDocument();
+  });
+
+  it("should alert for HAPI FHIR errors", async () => {
+    jest.useFakeTimers("modern");
+
+    const testCase = {
+      id: "1234",
+      description: "Test IPP",
+      series: "SeriesA",
+      json: `{"test":"test"}`,
+    } as TestCase;
+    const testCaseDescription = "modified description";
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
+      }
+      return Promise.resolve({ data: testCase });
+    });
+
+    render(
+      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases/1234"]}>
+        <ApiContextProvider value={serviceConfig}>
+          <TestCaseRoutes />
+        </ApiContextProvider>
+      </MemoryRouter>
+    );
+
+    const data = {
+      ...testCase,
+      description: testCaseDescription,
+      hapiOperationOutcome: {
+        code: 500,
+        message: "An unknown error occurred with HAPI FHIR",
+        outcomeResponse: {
+          resourceType: "OperationOutcome",
+          text: "Bad things happened",
+        },
+      },
+    };
+
+    mockedAxios.put.mockResolvedValue({
+      data,
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Update Test Case" })
+      ).toBeInTheDocument();
+    });
+
+    const seriesInput = screen.getByTestId("create-test-case-description");
+    userEvent.type(seriesInput, testCaseDescription);
+    const updateBtn = screen.getByRole("button", { name: "Update Test Case" });
+    userEvent.click(updateBtn);
+
+    const debugOutput = await screen.findByText(
+      "An error occurred with the Test Case JSON while updating the test case"
+    );
+    expect(debugOutput).toBeInTheDocument();
+
+    const showValidationErrorsBtn = screen.getByRole("button", {
+      name: "Validation Errors",
+    });
+    expect(showValidationErrorsBtn).toBeInTheDocument();
+    userEvent.click(showValidationErrorsBtn);
+    jest.advanceTimersByTime(700);
+
+    const validationErrorsList = await screen.findByTestId(
+      "json-validation-errors-list"
+    );
+    expect(validationErrorsList).toBeInTheDocument();
+    const noErrors = await within(validationErrorsList).findByText(
+      data.hapiOperationOutcome.outcomeResponse.text
+    );
+    expect(noErrors).toBeInTheDocument();
+
+    const closeValidationErrorsBtn = await screen.getByRole("button", {
+      name: "Validation Errors",
+    });
+    expect(closeValidationErrorsBtn).toBeInTheDocument();
+    userEvent.click(closeValidationErrorsBtn);
+    jest.advanceTimersByTime(700);
+    const sideButton = await screen.findByTestId(
+      "closed-json-validation-errors-aside"
+    );
+    expect(sideButton).toBeInTheDocument();
+    const errorText = screen.queryByText(
+      "data.hapiOperationOutcome.outcomeResponse.text"
+    );
+    expect(errorText).not.toBeInTheDocument();
+    expect(mockEditor.resize).toHaveBeenCalledTimes(2);
   });
 });

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { act, logRoles, render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import TestCaseRoutes from "./TestCaseRoutes";
 import userEvent from "@testing-library/user-event";
@@ -164,6 +164,9 @@ describe("TestCaseRoutes", () => {
       data: {
         id: "testID",
         description: "Some Description",
+        hapiOperationOutcome: {
+          code: 201,
+        },
       },
     });
 
@@ -184,7 +187,7 @@ describe("TestCaseRoutes", () => {
     userEvent.click(createBtn);
     const feedback = await screen.findByRole("alert");
     expect(feedback).toHaveTextContent(
-      "Test case saved successfully! Redirecting back to Test Cases..."
+      "Test case created successfully! Redirecting back to Test Cases..."
     );
     act(() => {
       jest.advanceTimersByTime(3500);

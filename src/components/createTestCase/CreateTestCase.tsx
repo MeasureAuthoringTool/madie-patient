@@ -10,14 +10,19 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useFormik } from "formik";
 import tw, { styled } from "twin.macro";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import {
+  faTimes,
+  faExclamationCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import "styled-components/macro";
-import TestCase from "../../models/TestCase";
+import TestCase, { HapiOperationOutcome } from "../../models/TestCase";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import Editor from "../editor/Editor";
 import { TestCaseValidator } from "../../models/TestCaseValidator";
 import { sanitizeUserInput } from "../../util/Utils.js";
 import TestCaseSeries from "./TestCaseSeries";
+import * as _ from "lodash";
+import { Ace } from "ace-builds";
 
 const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
@@ -35,6 +40,22 @@ const TestCaseTitle = tw.input`
   w-96
   rounded
   sm:text-sm
+`;
+
+const ValidationErrorCard = tw.p`
+text-xs bg-white p-3 bg-red-100 rounded-xl mx-3 my-1 break-words
+`;
+
+const ValidationErrorsButton = tw.button`
+  text-lg
+  -translate-y-6
+  w-[160px]
+  h-[30px]
+  origin-bottom-left
+  rotate-90
+  border-solid
+  border-2
+  border-gray-500
 `;
 
 interface AlertProps {
@@ -57,6 +78,12 @@ const Alert = styled.div<AlertProps>(({ status = "default" }) => [
   tw`rounded-lg py-5 px-6 m-3 text-base inline-flex items-center w-auto min-w-96`,
 ]);
 
+const StyledIcon = styled(FontAwesomeIcon)(({ errors }: { errors: number }) => [
+  errors > 0 ? tw`text-red-700` : "",
+]);
+
+// const ErrorsIcon = styled(FontAwesomeIcon)<any>(({}))
+
 const CreateTestCase = () => {
   const navigate = useNavigate();
   const { id } = useParams<keyof navigationParams>() as navigationParams;
@@ -67,10 +94,13 @@ const CreateTestCase = () => {
   const [testCase, setTestCase] = useState<TestCase>(null);
   const [editorVal, setEditorVal]: [string, Dispatch<SetStateAction<string>>] =
     useState("");
+  const [validationErrors, setValidationErrors] = useState<any[]>([]);
   const [seriesState, setSeriesState] = useState<any>({
     loaded: false,
     series: [],
   });
+  const [editor, setEditor] = useState<Ace.Editor>(null);
+  const [showValidationErrors, setShowValidationErrors] = useState(false);
   const formik = useFormik({
     initialValues: {
       title: "",
@@ -108,6 +138,7 @@ const CreateTestCase = () => {
             setTestCase(tc);
             setEditorVal(tc.json);
             resetForm({ values: tc });
+            handleHapiOutcome(tc?.hapiOperationOutcome);
           })
           .catch((error) => {
             console.error(
@@ -150,20 +181,7 @@ const CreateTestCase = () => {
         testCase,
         measureId
       );
-      if (savedTestCase && savedTestCase.id) {
-        setAlert({
-          status: "success",
-          message:
-            "Test case saved successfully! Redirecting back to Test Cases...",
-        });
-        setTimeout(() => navigateToTestCases(), 3000);
-      } else {
-        setAlert(() => ({
-          status: "error",
-          message:
-            "An error occurred - create did not return the expected successful result.",
-        }));
-      }
+      handleTestCaseResponse(savedTestCase, "create");
     } catch (error) {
       console.error("An error occurred while creating the test case", error);
       setAlert(() => ({
@@ -182,20 +200,7 @@ const CreateTestCase = () => {
         testCase,
         measureId
       );
-      if (updatedTestCase) {
-        setAlert({
-          status: "success",
-          message:
-            "Test case updated successfully! Redirecting back to Test Cases...",
-        });
-        setTimeout(() => navigateToTestCases(), 3000);
-      } else {
-        setAlert(() => ({
-          status: "error",
-          message:
-            "An error occurred - update did not return the expected successful result.",
-        }));
-      }
+      handleTestCaseResponse(updatedTestCase, "update");
     } catch (error) {
       console.error("An error occurred while updating the test case", error);
       setAlert(() => ({
@@ -204,6 +209,70 @@ const CreateTestCase = () => {
       }));
     }
   };
+
+  function handleTestCaseResponse(
+    testCase: TestCase,
+    action: "create" | "update"
+  ) {
+    if (testCase && testCase.id) {
+      if (hasValidHapiOutcome(testCase)) {
+        setAlert({
+          status: "success",
+          message: `Test case ${action}d successfully! Redirecting back to Test Cases...`,
+        });
+        setTimeout(() => navigateToTestCases(), 3000);
+      } else {
+        setAlert({
+          status: "warning",
+          message: `An error occurred with the Test Case JSON while ${
+            action === "create" ? "creating" : "updating"
+          } the test case`,
+        });
+        handleHapiOutcome(testCase.hapiOperationOutcome);
+      }
+    } else {
+      setAlert(() => ({
+        status: "error",
+        message: `An error occurred - ${action} did not return the expected successful result.`,
+      }));
+    }
+  }
+
+  function hasValidHapiOutcome(testCase: TestCase) {
+    return (
+      _.isNil(testCase.hapiOperationOutcome) ||
+      testCase.hapiOperationOutcome.code === 200 ||
+      testCase.hapiOperationOutcome.code === 201
+    );
+  }
+
+  function handleHapiOutcome(outcome: HapiOperationOutcome) {
+    if (_.isNil(outcome) || outcome.code === 200 || outcome.code === 201) {
+      setValidationErrors(() => []);
+      return;
+    }
+    if (
+      (outcome.code === 400 ||
+        outcome.code === 409 ||
+        outcome.code === 412 ||
+        outcome.code === 422) &&
+      outcome.outcomeResponse &&
+      outcome.outcomeResponse.issue
+    ) {
+      setValidationErrors(() =>
+        outcome.outcomeResponse.issue.map((issue, index) => ({
+          ...issue,
+          key: index,
+        }))
+      );
+    } else {
+      const error =
+        outcome.outcomeResponse?.text ||
+        outcome.message ||
+        `HAPI FHIR returned error code ${outcome.code} but no discernible error message`;
+      setValidationErrors([{ key: 0, diagnostics: error }]);
+    }
+  }
 
   function navigateToTestCases() {
     navigate("..");
@@ -225,10 +294,17 @@ const CreateTestCase = () => {
     return formik.isValid && (formik.dirty || editorVal !== testCase?.json);
   }
 
+  function resizeEditor() {
+    // hack to force Ace to resize as it doesn't seem to be responsive
+    setTimeout(() => {
+      editor?.resize(true);
+    }, 500);
+  }
+
   return (
     <>
-      <div tw="flex flex-wrap ">
-        <div tw="flex-none ">
+      <div tw="flex flex-wrap w-screen">
+        <div tw="flex-none max-w-xl">
           <div tw="ml-2">
             {alert && (
               <Alert
@@ -311,8 +387,70 @@ const CreateTestCase = () => {
           <Editor
             onChange={(val: string) => setEditorVal(val)}
             value={editorVal}
+            setEditor={setEditor}
           />
         </div>
+        {showValidationErrors ? (
+          <aside
+            tw="w-80 h-[500px] flex flex-col"
+            data-testid="open-json-validation-errors-aside"
+          >
+            <button
+              tw="w-full text-lg text-center"
+              data-testid="hide-json-validation-errors-button"
+              onClick={() => {
+                setShowValidationErrors((prevState) => {
+                  resizeEditor();
+                  return !prevState;
+                });
+              }}
+            >
+              <StyledIcon
+                icon={faExclamationCircle}
+                errors={validationErrors.length}
+              />
+              Validation Errors
+            </button>
+
+            <div
+              tw="h-full flex flex-col overflow-y-scroll"
+              data-testid="json-validation-errors-list"
+            >
+              {validationErrors && validationErrors.length > 0 ? (
+                validationErrors.map((error) => {
+                  return (
+                    <ValidationErrorCard key={error.key}>
+                      {error.diagnostics}
+                    </ValidationErrorCard>
+                  );
+                })
+              ) : (
+                <span>Nothing to see here!</span>
+              )}
+            </div>
+          </aside>
+        ) : (
+          <aside
+            tw="w-10 h-[500px] overflow-x-hidden"
+            data-testid="closed-json-validation-errors-aside"
+          >
+            <ValidationErrorsButton
+              data-testid="show-json-validation-errors-button"
+              onClick={() =>
+                setShowValidationErrors((prevState) => {
+                  resizeEditor();
+                  return !prevState;
+                })
+              }
+            >
+              <StyledIcon
+                icon={faExclamationCircle}
+                errors={validationErrors.length}
+              />
+              Validation Errors
+            </ValidationErrorsButton>
+          </aside>
+        )}
       </div>
     </>
   );
