@@ -13,6 +13,7 @@ import Collapse from "@mui/material/Collapse";
 import Box from "@mui/material/Box";
 import TestCasePopulationList from "./TestCasePopulationList";
 import Chip from "@mui/material/Chip";
+import TruncateText from "./TruncateText";
 
 const EditButton = tw.button`text-blue-600 hover:text-blue-900`;
 const StyledCell = styled.td`
@@ -52,8 +53,24 @@ const TestCase = (props) => {
             )}
           </IconButton>
         </td>
-        <StyledCell>{testCase.title}</StyledCell>
-        <StyledCell>{testCase.series}</StyledCell>
+
+        <StyledCell>
+          <TruncateText
+            text={testCase.title}
+            maxLength={60}
+            name="title"
+            dataTestId={`test-case-title-${testCase.id}`}
+          />
+        </StyledCell>
+        <StyledCell>
+          <TruncateText
+            text={testCase.series}
+            maxLength={60}
+            name="series"
+            dataTestId={`test-case-series-${testCase.id}`}
+          />
+        </StyledCell>
+
         {status === "NA" && <td>{status}</td>}
         {status !== "NA" && (
           <td>

@@ -17,11 +17,16 @@ describe("TestCase component", () => {
   };
 
   it("should render test case population table not opened", async () => {
+    const table = document.createElement("table");
     render(
-      <MemoryRouter>
-        <TestCaseComponent testCase={testCase} />
-      </MemoryRouter>
+      <tbody>
+        <MemoryRouter>
+          <TestCaseComponent testCase={testCase} />
+        </MemoryRouter>
+      </tbody>,
+      { container: document.body.appendChild(table) }
     );
+
     const rows = screen.getByTestId(`test-case-row-${testCase.id}`);
     const columns = rows.querySelectorAll("td");
     expect(columns[1]).toHaveTextContent(testCase.title);
@@ -43,8 +48,10 @@ describe("TestCase component", () => {
         <TestCaseComponent testCase={testCase} />
       </MemoryRouter>
     );
+
     const rows = screen.getByTestId(`test-case-row-${testCase.id}`);
     const columns = rows.querySelectorAll("td");
+
     expect(columns[1]).toHaveTextContent(testCase.title);
     expect(columns[2]).toHaveTextContent(testCase.series);
     expect(columns[3]).toHaveTextContent(testCase.executionStatus);

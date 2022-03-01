@@ -13,3 +13,10 @@ export const sanitizeUserInput = (input) => {
   }
   return clean;
 };
+
+export const truncateInput = (input, length) => {
+  if (input != null && input.trim() !== "" && input.length > length) {
+    return input.substring(0, length);
+  }
+  return input;
+};
