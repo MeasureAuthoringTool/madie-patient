@@ -13,6 +13,9 @@ jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const serviceConfig: ServiceConfig = {
+  measureService: {
+    baseUrl: "measure.url",
+  },
   testCaseService: {
     baseUrl: "base.url",
   },
@@ -39,7 +42,9 @@ describe("TestCaseRoutes", () => {
     });
     render(
       <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases"]}>
-        <TestCaseRoutes />
+        <ApiContextProvider value={serviceConfig}>
+          <TestCaseRoutes />
+        </ApiContextProvider>
       </MemoryRouter>
     );
 
@@ -72,7 +77,9 @@ describe("TestCaseRoutes", () => {
 
     render(
       <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases"]}>
-        <TestCaseRoutes />
+        <ApiContextProvider value={serviceConfig}>
+          <TestCaseRoutes />
+        </ApiContextProvider>
       </MemoryRouter>
     );
 
@@ -117,7 +124,9 @@ describe("TestCaseRoutes", () => {
 
     render(
       <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases"]}>
-        <TestCaseRoutes />
+        <ApiContextProvider value={serviceConfig}>
+          <TestCaseRoutes />
+        </ApiContextProvider>
       </MemoryRouter>
     );
 

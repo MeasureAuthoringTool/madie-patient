@@ -11,8 +11,8 @@ import { useFormik } from "formik";
 import tw, { styled } from "twin.macro";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faTimes,
   faExclamationCircle,
+  faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import "styled-components/macro";
 import TestCase, { HapiOperationOutcome } from "../../models/TestCase";
@@ -23,6 +23,10 @@ import { sanitizeUserInput } from "../../util/Utils.js";
 import TestCaseSeries from "./TestCaseSeries";
 import * as _ from "lodash";
 import { Ace } from "ace-builds";
+import { getPopulationsForScoring } from "../../util/PopulationsMap";
+import Measure from "../../models/Measure";
+import useMeasureServiceApi from "../../api/useMeasureServiceApi";
+import GroupPopulations from "../populations/GroupPopulations";
 
 const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
@@ -65,6 +69,7 @@ interface AlertProps {
 
 interface navigationParams {
   id: string;
+  measureId: string;
 }
 
 const styles = {
@@ -82,14 +87,28 @@ const StyledIcon = styled(FontAwesomeIcon)(({ errors }: { errors: number }) => [
   errors > 0 ? tw`text-red-700` : "",
 ]);
 
-// const ErrorsIcon = styled(FontAwesomeIcon)<any>(({}))
+/*
+For population values...
+If testCase is present, then take the population groups off the testCase
+If no testCase is present, then show the populations for the measure groups
+coming from the loaded measure
+ */
+
+const INITIAL_VALUES = {
+  title: "",
+  description: "",
+  series: "",
+  groupPopulations: [],
+} as TestCase;
 
 const CreateTestCase = () => {
   const navigate = useNavigate();
-  const { id } = useParams<keyof navigationParams>() as navigationParams;
-  const { measureId } = useParams<{ measureId: string }>();
+  const { id, measureId } = useParams<
+    keyof navigationParams
+  >() as navigationParams;
   // Avoid infinite dependency render. May require additional error handling for timeouts.
   const testCaseService = useRef(useTestCaseServiceApi());
+  const measureService = useRef(useMeasureServiceApi());
   const [alert, setAlert] = useState<AlertProps>(null);
   const [testCase, setTestCase] = useState<TestCase>(null);
   const [editorVal, setEditorVal]: [string, Dispatch<SetStateAction<string>>] =
@@ -99,14 +118,12 @@ const CreateTestCase = () => {
     loaded: false,
     series: [],
   });
+  const [measure, setMeasure] = useState<Measure>(null);
+  const [measureGroups, setMeasureGroups] = useState(null);
   const [editor, setEditor] = useState<Ace.Editor>(null);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
   const formik = useFormik({
-    initialValues: {
-      title: "",
-      description: "",
-      series: "",
-    } as TestCase,
+    initialValues: { ...INITIAL_VALUES },
     validationSchema: TestCaseValidator,
     onSubmit: async (values: TestCase) => await handleSubmit(values),
   });
@@ -135,9 +152,9 @@ const CreateTestCase = () => {
         testCaseService.current
           .getTestCase(id, measureId)
           .then((tc: TestCase) => {
-            setTestCase(tc);
+            setTestCase(_.cloneDeep(tc));
             setEditorVal(tc.json);
-            resetForm({ values: tc });
+            resetForm({ values: _.cloneDeep(tc) });
             handleHapiOutcome(tc?.hapiOperationOutcome);
           })
           .catch((error) => {
@@ -152,6 +169,25 @@ const CreateTestCase = () => {
         setTestCase(null);
         resetForm();
       };
+    } else if (measureGroups) {
+      resetForm({
+        values: {
+          ...INITIAL_VALUES,
+          groupPopulations: measureGroups.map((mg) => {
+            return {
+              group: mg.groupName,
+              scoring: mg.scoring,
+              populationValues: getPopulationsForScoring(mg.scoring)?.map(
+                (population) => ({
+                  name: population,
+                  expected: false,
+                  actual: false,
+                })
+              ),
+            };
+          }),
+        },
+      });
     }
   }, [
     id,
@@ -159,8 +195,39 @@ const CreateTestCase = () => {
     testCaseService,
     setTestCase,
     resetForm,
+    measureGroups,
     seriesState.loaded,
   ]);
+
+  useEffect(() => {
+    if (measureId) {
+      measureService.current
+        .fetchMeasure(measureId)
+        .then((measure) => {
+          setMeasure(measure);
+          // TODO: replace this with the groups off the measure once those are being persisted
+          setMeasureGroups([
+            {
+              groupName: "Group One",
+              scoring: measure.measureScoring,
+            },
+          ]);
+        })
+        .catch((error) => {
+          console.error(
+            `Failed to load measure groups. An error occurred while loading measure with ID [${measureId}]`,
+            error
+          );
+          setAlert(() => ({
+            status: "error",
+            message:
+              "Failed to load measure groups. An error occurred while loading the measure.",
+          }));
+        });
+    } else {
+      console.warn("MeasureID not defined");
+    }
+  }, [measureId]);
 
   const handleSubmit = async (testCase: TestCase) => {
     setAlert(null);
@@ -291,7 +358,12 @@ const CreateTestCase = () => {
   }
 
   function isModified() {
-    return formik.isValid && (formik.dirty || editorVal !== testCase?.json);
+    return (
+      formik.isValid &&
+      (formik.dirty ||
+        editorVal !== testCase?.json ||
+        !_.isEqual(testCase?.groupPopulations, formik.values.groupPopulations))
+    );
   }
 
   function resizeEditor() {
@@ -362,6 +434,19 @@ const CreateTestCase = () => {
                   sx={{ width: "100%" }}
                 />
                 <HelperText text={"Start typing to add a new series"} />
+              </FormControl>
+              <FormControl
+                tw="flex flex-col"
+                data-testid="create-test-case-populations"
+              >
+                <span tw="text-lg">Population Values</span>
+                <GroupPopulations
+                  disableActual={true}
+                  groupPopulations={formik.values.groupPopulations}
+                  onChange={(groupPopulations) => {
+                    formik.setFieldValue("groupPopulations", groupPopulations);
+                  }}
+                />
               </FormControl>
               <FormActions>
                 <Button

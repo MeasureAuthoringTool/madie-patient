@@ -1,3 +1,6 @@
+import { MeasurePopulation } from "./MeasurePopulation";
+import { MeasureScoring } from "./MeasureScoring";
+
 export default interface TestCase {
   id: string;
   title: string;
@@ -10,7 +13,20 @@ export default interface TestCase {
   lastModifiedBy: string;
   json?: string;
   executionStatus: string;
+  groupPopulations: GroupPopulation[];
   hapiOperationOutcome: HapiOperationOutcome;
+}
+
+export interface GroupPopulation {
+  group: string;
+  scoring: MeasureScoring;
+  populationValues: PopulationValue[];
+}
+
+export interface PopulationValue {
+  name: MeasurePopulation;
+  expected: boolean;
+  actual: boolean;
 }
 
 export interface HapiOperationOutcome {

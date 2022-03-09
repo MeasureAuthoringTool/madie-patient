@@ -1,6 +1,9 @@
 import { createContext } from "react";
 
 export interface ServiceConfig {
+  measureService: {
+    baseUrl: string;
+  };
   testCaseService: {
     baseUrl: string;
   };
