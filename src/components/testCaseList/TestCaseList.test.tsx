@@ -170,4 +170,71 @@ describe("TestCaseList component", () => {
       expect(tableRows[0]).toHaveTextContent("pass");
     });
   });
+
+  it("should render list of test cases and truncate title and series", async () => {
+    const testCases = [
+      {
+        id: "9010",
+        description: "Test IPP",
+        title:
+          "1bcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxy",
+        series:
+          "2bcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxy",
+      },
+    ];
+    mockedAxios.get.mockResolvedValue({
+      data: testCases,
+    });
+
+    render(
+      <MemoryRouter>
+        <ApiContextProvider value={serviceConfig}>
+          <TestCaseList />
+        </ApiContextProvider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      const table = screen.getByTestId("test-case-tbl");
+
+      const tableHeaders = table.querySelectorAll("thead th");
+
+      expect(tableHeaders[1]).toHaveTextContent("Title");
+      expect(tableHeaders[2]).toHaveTextContent("Series");
+      expect(tableHeaders[3]).toHaveTextContent("Status");
+
+      const tableRows = table.querySelectorAll("tbody tr");
+      expect(tableRows[0]).toHaveTextContent(
+        testCases[0].title.substring(0, 59)
+      );
+      expect(tableRows[0]).toHaveTextContent(
+        testCases[0].series.substring(0, 59)
+      );
+
+      const titleButton = screen.getByTestId(
+        `test-case-title-${testCases[0].id}`
+      );
+      expect(titleButton).toBeInTheDocument();
+      fireEvent.mouseOver(titleButton);
+      expect(
+        screen.getByRole("button", {
+          name: testCases[0].title,
+          hidden: true,
+        })
+      ).toBeVisible();
+      expect(screen.getByText(testCases[0].title)).toBeInTheDocument();
+
+      const seriesButton = screen.getByTestId(
+        `test-case-series-${testCases[0].id}`
+      );
+      expect(seriesButton).toBeInTheDocument();
+      fireEvent.mouseOver(seriesButton);
+      expect(
+        screen.getByRole("button", {
+          name: testCases[0].series,
+          hidden: true,
+        })
+      ).toBeVisible();
+    });
+  });
 });
