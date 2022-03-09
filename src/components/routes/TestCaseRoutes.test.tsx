@@ -200,4 +200,15 @@ describe("TestCaseRoutes", () => {
     });
     expect(newBtn2).toBeInTheDocument();
   });
+
+  it("should render 404 page", async () => {
+    const { getByTestId } = render(
+      <MemoryRouter initialEntries={["/measures/m1234/edit/test-case"]}>
+        <TestCaseRoutes />
+      </MemoryRouter>
+    );
+
+    expect(getByTestId("404-page")).toBeInTheDocument();
+    expect(getByTestId("404-page-link")).toBeInTheDocument();
+  });
 });

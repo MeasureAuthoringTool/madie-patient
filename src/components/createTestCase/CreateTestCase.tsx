@@ -112,6 +112,8 @@ const CreateTestCase = () => {
   });
   const { resetForm } = formik;
 
+  const [notFound, setNotFound] = useState(false);
+
   useEffect(() => {
     if (!seriesState.loaded) {
       testCaseService.current
@@ -145,6 +147,7 @@ const CreateTestCase = () => {
               "error retrieving and updating local state for test case",
               error
             );
+            setNotFound(true);
           });
       };
       updateTestCase();
@@ -161,6 +164,10 @@ const CreateTestCase = () => {
     resetForm,
     seriesState.loaded,
   ]);
+
+  if (notFound) {
+    navigate("/404");
+  }
 
   const handleSubmit = async (testCase: TestCase) => {
     setAlert(null);
