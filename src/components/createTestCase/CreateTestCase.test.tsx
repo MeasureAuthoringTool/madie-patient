@@ -1018,4 +1018,50 @@ describe("CreateTestCase component", () => {
       "Failed to load measure groups. An error occurred while loading the measure."
     );
   });
+
+  it("should handle displaying a test case with null groupPoulation data", async () => {
+    const testCase = {
+      id: "1234",
+      description: "Test IPP",
+      series: "SeriesA",
+      json: `{"test":"test"}`,
+      groupPopulations: null,
+    } as TestCase;
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.startsWith(serviceConfig.measureService.baseUrl)) {
+        return Promise.resolve({
+          data: {
+            id: "m1234",
+            measureScoring: MeasureScoring.CONTINUOUS_VARIABLE,
+          },
+        });
+      } else if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
+      }
+      return Promise.resolve({ data: testCase });
+    });
+
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/1234"],
+      "/measures/:measureId/edit/test-cases/:id",
+      <CreateTestCase />
+    );
+
+    const g1PopulationValues = await screen.findByText(
+      "Group One Population Values"
+    );
+    expect(g1PopulationValues).toBeInTheDocument();
+    const ippRow = screen.getByTestId(
+      "test-row-population-id-initialPopulation"
+    );
+    const msrpoplRow = screen.getByTestId(
+      "test-row-population-id-measurePopulation"
+    );
+    const msrpoplexRow = screen.getByTestId(
+      "test-row-population-id-measurePopulationExclusion"
+    );
+    expect(ippRow).toBeInTheDocument();
+    expect(msrpoplRow).toBeInTheDocument();
+    expect(msrpoplexRow).toBeInTheDocument();
+  });
 });

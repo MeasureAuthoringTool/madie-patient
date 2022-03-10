@@ -18,7 +18,7 @@ const GroupPopulations = ({
   onChange,
 }: PopulationsProps) => (
   <>
-    {groupPopulations.length > 0 ? (
+    {groupPopulations && groupPopulations.length > 0 ? (
       groupPopulations.map((gp) => (
         <div tw="my-2" key={gp.group}>
           <span tw="text-base">{gp.group} Population Values</span>
@@ -40,7 +40,7 @@ const GroupPopulations = ({
         </div>
       ))
     ) : (
-      <span tw="text-sm">No scoring selected</span>
+      <span tw="text-sm">No populations for current scoring</span>
     )}
   </>
 );

@@ -83,6 +83,26 @@ describe("Group Populations", () => {
     expect(allCheckboxes).toHaveLength(6);
   });
 
+  it("should handle null groupPopulation input", () => {
+    render(<GroupPopulations groupPopulations={null} onChange={jest.fn()} />);
+    const text = screen.getByText("No populations for current scoring");
+    expect(text).toBeInTheDocument();
+  });
+
+  it("should handle undefined groupPopulation input", () => {
+    render(
+      <GroupPopulations groupPopulations={undefined} onChange={jest.fn()} />
+    );
+    const text = screen.getByText("No populations for current scoring");
+    expect(text).toBeInTheDocument();
+  });
+
+  it("should handle empty groupPopulation input", () => {
+    render(<GroupPopulations groupPopulations={[]} onChange={jest.fn()} />);
+    const text = screen.getByText("No populations for current scoring");
+    expect(text).toBeInTheDocument();
+  });
+
   it("should render the populations with both checkboxes disabled", () => {
     const groupPopulations: GroupPopulation[] = [
       {

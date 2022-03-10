@@ -129,6 +129,22 @@ const CreateTestCase = () => {
   });
   const { resetForm } = formik;
 
+  const mapMeasureGroups = (measureGroups) => {
+    return measureGroups.map((mg) => {
+      return {
+        group: mg.groupName,
+        scoring: mg.scoring,
+        populationValues: getPopulationsForScoring(mg.scoring)?.map(
+          (population) => ({
+            name: population,
+            expected: false,
+            actual: false,
+          })
+        ),
+      };
+    });
+  };
+
   useEffect(() => {
     if (!seriesState.loaded) {
       testCaseService.current
@@ -154,7 +170,13 @@ const CreateTestCase = () => {
           .then((tc: TestCase) => {
             setTestCase(_.cloneDeep(tc));
             setEditorVal(tc.json);
-            resetForm({ values: _.cloneDeep(tc) });
+            const nextTc = _.cloneDeep(tc);
+            if (_.isNil(tc.groupPopulations) && measureGroups) {
+              nextTc.groupPopulations = mapMeasureGroups(measureGroups);
+            } else if (_.isNil(tc.groupPopulations)) {
+              nextTc.groupPopulations = [];
+            }
+            resetForm({ values: nextTc });
             handleHapiOutcome(tc?.hapiOperationOutcome);
           })
           .catch((error) => {
@@ -173,19 +195,7 @@ const CreateTestCase = () => {
       resetForm({
         values: {
           ...INITIAL_VALUES,
-          groupPopulations: measureGroups.map((mg) => {
-            return {
-              group: mg.groupName,
-              scoring: mg.scoring,
-              populationValues: getPopulationsForScoring(mg.scoring)?.map(
-                (population) => ({
-                  name: population,
-                  expected: false,
-                  actual: false,
-                })
-              ),
-            };
-          }),
+          groupPopulations: mapMeasureGroups(measureGroups),
         },
       });
     }
