@@ -13,6 +13,7 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
 import TestCaseRoutes from "../routes/TestCaseRoutes";
 import TestCase from "../../models/TestCase";
+import { act } from "react-dom/test-utils";
 
 //temporary solution (after jest updated to version 27) for error: thrown: "Exceeded timeout of 5000 ms for a test.
 jest.setTimeout(60000);
@@ -897,5 +898,29 @@ describe("CreateTestCase component", () => {
     );
     expect(errorText).not.toBeInTheDocument();
     expect(mockEditor.resize).toHaveBeenCalledTimes(2);
+  });
+
+  it("should render 404 page", async () => {
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      return Promise.reject(
+        new Error("Error: Request failed with status code 404")
+      );
+    });
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          initialEntries={["/measures/m1234/edit/test-cases/tc1234"]}
+        >
+          <ApiContextProvider value={serviceConfig}>
+            <TestCaseRoutes />
+          </ApiContextProvider>
+        </MemoryRouter>
+      );
+    });
+
+    expect(screen.getByTestId("404-page")).toBeInTheDocument();
+    expect(screen.getByText("404 - Not Found!")).toBeInTheDocument();
+    expect(screen.getByTestId("404-page-link")).toBeInTheDocument();
   });
 });

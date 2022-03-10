@@ -147,7 +147,9 @@ const CreateTestCase = () => {
               "error retrieving and updating local state for test case",
               error
             );
-            setNotFound(true);
+            if (error.toString().includes("404")) {
+              setNotFound(true);
+            }
           });
       };
       updateTestCase();
