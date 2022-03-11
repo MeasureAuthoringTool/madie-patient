@@ -88,8 +88,6 @@ describe("TestCase component", () => {
     expect(buttons).toHaveLength(2);
     expect(buttons[1]).toHaveTextContent("Edit");
 
-    screen.debug();
-
     await waitFor(() => {
       const openButton = screen.getByTestId(`open-button-${testCase.id}`);
       fireEvent.click(openButton);

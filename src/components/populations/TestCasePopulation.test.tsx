@@ -1,0 +1,78 @@
+import * as React from "react";
+import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import TestCasePopulation from "./TestCasePopulation";
+import { MeasurePopulation } from "../../models/MeasurePopulation";
+import userEvent from "@testing-library/user-event";
+
+describe("TestCasePopulation component", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should render test case population", async () => {
+    const testCasePopulation = {
+      name: MeasurePopulation.INITIAL_POPULATION,
+      expected: true,
+      actual: true,
+    };
+    const handleChange = jest.fn();
+    render(
+      <MemoryRouter>
+        <table>
+          <tbody>
+            <TestCasePopulation
+              population={testCasePopulation}
+              onChange={handleChange}
+            />
+          </tbody>
+        </table>
+      </MemoryRouter>
+    );
+    const row = screen.getByTestId(
+      `test-row-population-id-${testCasePopulation.name}`
+    );
+    const columns = row.querySelectorAll("TD");
+    expect(columns[1]).toHaveTextContent("IPP");
+    const buttons = await screen.findAllByRole("checkbox");
+    expect(buttons).toHaveLength(2);
+  });
+
+  it("should handle changes to checkboxes", async () => {
+    const testCasePopulation = {
+      name: MeasurePopulation.INITIAL_POPULATION,
+      expected: false,
+      actual: false,
+    };
+    const handleChange = jest.fn();
+    render(
+      <MemoryRouter>
+        <table>
+          <tbody>
+            <TestCasePopulation
+              population={testCasePopulation}
+              onChange={handleChange}
+            />
+          </tbody>
+        </table>
+      </MemoryRouter>
+    );
+    const ippExpected = screen.getByTestId(
+      "test-population-initialPopulation-expected"
+    );
+    const ippActual = screen.getByTestId(
+      "test-population-initialPopulation-actual"
+    );
+    expect(ippExpected).toBeInTheDocument();
+    expect(ippActual).toBeInTheDocument();
+    expect(ippExpected).not.toBeChecked();
+    expect(ippActual).not.toBeChecked();
+
+    userEvent.click(ippActual);
+    expect(handleChange).toBeCalledWith({
+      name: MeasurePopulation.INITIAL_POPULATION,
+      expected: false,
+      actual: true,
+    });
+  });
+});
