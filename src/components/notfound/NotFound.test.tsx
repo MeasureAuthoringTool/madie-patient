@@ -6,7 +6,7 @@ import Enzyme, { shallow, mount } from "enzyme";
 import Adapter from "@wojtekmaj/enzyme-adapter-react-17";
 
 describe("NotFound component", () => {
-  it("should render NotFound component", async () => {
+  it("should render NotFound component", () => {
     const { getByTestId, getByText } = render(
       <MemoryRouter>
         <NotFound />
@@ -18,7 +18,7 @@ describe("NotFound component", () => {
     expect(getByTestId("404-page-link")).toBeInTheDocument();
   });
 
-  it("should have link that renders home page", async () => {
+  it("should have link that renders home page", () => {
     render(
       <MemoryRouter>
         <NotFound />
