@@ -1,7 +1,6 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import tw from "twin.macro";
-import { Button } from "@madie/madie-components";
 const GoHomeLink = tw.button`text-blue-500 hover:text-blue-900`;
 
 const NotFound = () => {
