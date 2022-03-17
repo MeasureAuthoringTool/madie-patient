@@ -13,6 +13,7 @@ export default interface TestCase {
   lastModifiedBy: string;
   json?: string;
   executionStatus: string;
+  measurementPeriod: MeasurementPeriod;
   groupPopulations: GroupPopulation[];
   hapiOperationOutcome: HapiOperationOutcome;
 }
@@ -27,6 +28,11 @@ export interface PopulationValue {
   name: MeasurePopulation;
   expected: boolean;
   actual: boolean;
+}
+
+export interface MeasurementPeriod {
+  start: Date;
+  end: Date;
 }
 
 export interface HapiOperationOutcome {
