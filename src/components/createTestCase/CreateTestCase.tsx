@@ -112,8 +112,6 @@ const CreateTestCase = () => {
   });
   const { resetForm } = formik;
 
-  const [notFound, setNotFound] = useState(false);
-
   useEffect(() => {
     if (!seriesState.loaded) {
       testCaseService.current
@@ -148,7 +146,7 @@ const CreateTestCase = () => {
               error
             );
             if (error.toString().includes("404")) {
-              setNotFound(true);
+              navigate("/404");
             }
           });
       };
@@ -166,10 +164,6 @@ const CreateTestCase = () => {
     resetForm,
     seriesState.loaded,
   ]);
-
-  if (notFound) {
-    navigate("/404");
-  }
 
   const handleSubmit = async (testCase: TestCase) => {
     setAlert(null);
