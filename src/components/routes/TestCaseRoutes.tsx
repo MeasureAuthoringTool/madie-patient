@@ -2,6 +2,7 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import TestCaseLanding from "../testCaseLanding/TestCaseLanding";
 import CreateTestCase from "../createTestCase/CreateTestCase";
+import NotFound from "../notfound/NotFound";
 
 const TestCaseRoutes = () => {
   return (
@@ -11,6 +12,7 @@ const TestCaseRoutes = () => {
         <Route path="create" element={<CreateTestCase />} />
         <Route path=":id" element={<CreateTestCase />} />
       </Route>
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };
