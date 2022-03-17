@@ -1,18 +1,20 @@
 import * as React from "react";
 import {
+  fireEvent,
   render,
   screen,
   waitFor,
-  fireEvent,
   within,
 } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import CreateTestCase from "./CreateTestCase";
 import userEvent from "@testing-library/user-event";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
-import TestCaseRoutes from "../routes/TestCaseRoutes";
 import TestCase from "../../models/TestCase";
+import { MeasureScoring } from "../../models/MeasureScoring";
+import { MeasurePopulation } from "../../models/MeasurePopulation";
+import TestCaseRoutes from "../routes/TestCaseRoutes";
 import { act } from "react-dom/test-utils";
 
 //temporary solution (after jest updated to version 27) for error: thrown: "Exceeded timeout of 5000 ms for a test.
@@ -35,6 +37,9 @@ jest.mock("../editor/Editor", () => ({ setEditor }) => {
 });
 
 const serviceConfig: ServiceConfig = {
+  measureService: {
+    baseUrl: "measure.url",
+  },
   testCaseService: {
     baseUrl: "base.url",
   },
@@ -46,10 +51,33 @@ jest.mock("../../hooks/useOktaTokens", () =>
   }))
 );
 
+const renderWithRouter = (
+  initialEntries = [],
+  routePath: string,
+  element: React.ReactElement
+) => {
+  return render(
+    <MemoryRouter initialEntries={initialEntries}>
+      <ApiContextProvider value={serviceConfig}>
+        <Routes>
+          <Route path={routePath} element={element} />
+        </Routes>
+      </ApiContextProvider>
+    </MemoryRouter>
+  );
+};
+
 describe("CreateTestCase component", () => {
   beforeEach(() => {
     mockedAxios.get.mockImplementation((args) => {
-      if (args && args.endsWith("series")) {
+      if (args && args.startsWith(serviceConfig.measureService.baseUrl)) {
+        return Promise.resolve({
+          data: {
+            id: "m1234",
+            measureScoring: MeasureScoring.COHORT,
+          },
+        });
+      } else if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["SeriesA"] });
       }
       return Promise.resolve({ data: null });
@@ -60,10 +88,10 @@ describe("CreateTestCase component", () => {
   });
 
   it("should render create test case page", () => {
-    render(
-      <MemoryRouter>
-        <CreateTestCase />
-      </MemoryRouter>
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/create"],
+      "/measures/:measureId/edit/test-cases/create",
+      <CreateTestCase />
     );
     const editor = screen.getByTestId("test-case-editor");
     const titleTextInput = screen.getByTestId("create-test-case-title");
@@ -81,12 +109,10 @@ describe("CreateTestCase component", () => {
   });
 
   it("should create test case when create button is clicked", async () => {
-    render(
-      <MemoryRouter>
-        <ApiContextProvider value={serviceConfig}>
-          <CreateTestCase />
-        </ApiContextProvider>
-      </MemoryRouter>
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/create"],
+      "/measures/:measureId/edit/test-cases/create",
+      <CreateTestCase />
     );
     const testCaseDescription = "TestCase123";
     const testCaseTitle = "TestTitle";
@@ -114,12 +140,10 @@ describe("CreateTestCase component", () => {
   });
 
   it("should provide user alert when create test case fails", async () => {
-    render(
-      <MemoryRouter>
-        <ApiContextProvider value={serviceConfig}>
-          <CreateTestCase />
-        </ApiContextProvider>
-      </MemoryRouter>
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/create"],
+      "/measures/:measureId/edit/test-cases/create",
+      <CreateTestCase />
     );
     const testCaseDescription = "TestCase123";
     mockedAxios.post.mockRejectedValue({
@@ -142,12 +166,10 @@ describe("CreateTestCase component", () => {
   });
 
   it("should provide user alert for a success result but response is missing ID attribute", async () => {
-    render(
-      <MemoryRouter>
-        <ApiContextProvider value={serviceConfig}>
-          <CreateTestCase />
-        </ApiContextProvider>
-      </MemoryRouter>
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/create"],
+      "/measures/:measureId/edit/test-cases/create",
+      <CreateTestCase />
     );
     const testCaseDescription = "TestCase123";
     mockedAxios.post.mockResolvedValue({
@@ -171,12 +193,10 @@ describe("CreateTestCase component", () => {
   });
 
   it("should clear error alert when user clicks alert close button", async () => {
-    render(
-      <MemoryRouter>
-        <ApiContextProvider value={serviceConfig}>
-          <CreateTestCase />
-        </ApiContextProvider>
-      </MemoryRouter>
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/create"],
+      "/measures/:measureId/edit/test-cases/create",
+      <CreateTestCase />
     );
     const testCaseDescription = "TestCase123";
     mockedAxios.post.mockRejectedValue({
@@ -216,13 +236,12 @@ describe("CreateTestCase component", () => {
       return Promise.resolve({ data: testCase });
     });
 
-    render(
-      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases/1234"]}>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseRoutes />
-        </ApiContextProvider>
-      </MemoryRouter>
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/1234"],
+      "/measures/:measureId/edit/test-cases/:id",
+      <CreateTestCase />
     );
+
     const descriptionTextArea = screen.getByTestId(
       "create-test-case-description"
     );
@@ -245,22 +264,55 @@ describe("CreateTestCase component", () => {
       description: "Test IPP",
       series: "SeriesA",
       json: `{"test":"test"}`,
+      groupPopulations: [
+        {
+          group: "Group One",
+          scoring: MeasureScoring.RATIO,
+          populationValues: [
+            {
+              name: MeasurePopulation.INITIAL_POPULATION,
+              expected: true,
+              actual: false,
+            },
+            {
+              name: MeasurePopulation.MEASURE_POPULATION,
+              expected: false,
+              actual: false,
+            },
+            {
+              name: MeasurePopulation.MEASURE_POPULATION_EXCLUSION,
+              expected: false,
+              actual: false,
+            },
+          ],
+        },
+      ],
     } as TestCase;
     const testCaseDescription = "modified description";
     mockedAxios.get.mockClear().mockImplementation((args) => {
-      if (args && args.endsWith("series")) {
+      if (args && args.startsWith(serviceConfig.measureService.baseUrl)) {
+        return Promise.resolve({
+          data: {
+            id: "m1234",
+            measureScoring: MeasureScoring.CONTINUOUS_VARIABLE,
+          },
+        });
+      } else if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
       }
       return Promise.resolve({ data: testCase });
     });
 
-    render(
-      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases/1234"]}>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseRoutes />
-        </ApiContextProvider>
-      </MemoryRouter>
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/1234"],
+      "/measures/:measureId/edit/test-cases/:id",
+      <CreateTestCase />
     );
+
+    const g1PopulationValues = await screen.findByText(
+      "Group One Population Values"
+    );
+    expect(g1PopulationValues).toBeInTheDocument();
 
     mockedAxios.put.mockResolvedValue({
       data: {
@@ -292,6 +344,18 @@ describe("CreateTestCase component", () => {
     expect(listItems[1]).toHaveTextContent("SeriesB");
     userEvent.click(listItems[1]);
 
+    const ippExpectedCb = await screen.findByTestId(
+      "test-population-initialPopulation-expected"
+    );
+    expect(ippExpectedCb).toBeChecked();
+    const mpExpectedCb = await screen.findByTestId(
+      "test-population-measurePopulation-expected"
+    );
+    userEvent.click(mpExpectedCb);
+    await waitFor(() => {
+      expect(mpExpectedCb).toBeChecked();
+    });
+
     await waitFor(() => {
       expect(descriptionInput).toHaveTextContent(testCaseDescription);
       expect(
@@ -311,7 +375,30 @@ describe("CreateTestCase component", () => {
     const updatedTestCase = calls[0][1] as TestCase;
     expect(updatedTestCase).toBeTruthy();
     expect(updatedTestCase.series).toEqual("SeriesB");
-  });
+    expect(updatedTestCase.groupPopulations).toEqual([
+      {
+        group: "Group One",
+        scoring: MeasureScoring.RATIO,
+        populationValues: [
+          {
+            name: MeasurePopulation.INITIAL_POPULATION,
+            expected: true,
+            actual: false,
+          },
+          {
+            name: MeasurePopulation.MEASURE_POPULATION,
+            expected: true,
+            actual: false,
+          },
+          {
+            name: MeasurePopulation.MEASURE_POPULATION_EXCLUSION,
+            expected: false,
+            actual: false,
+          },
+        ],
+      },
+    ]);
+  }, 15000);
 
   it("should display an error when test case update returns no data", async () => {
     const testCase = {
@@ -327,12 +414,10 @@ describe("CreateTestCase component", () => {
       return Promise.resolve({ data: testCase });
     });
 
-    render(
-      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases/1234"]}>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseRoutes />
-        </ApiContextProvider>
-      </MemoryRouter>
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/1234"],
+      "/measures/:measureId/edit/test-cases/:id",
+      <CreateTestCase />
     );
 
     mockedAxios.put.mockResolvedValue({
@@ -374,12 +459,10 @@ describe("CreateTestCase component", () => {
       return Promise.resolve({ data: testCase });
     });
 
-    render(
-      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases/1234"]}>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseRoutes />
-        </ApiContextProvider>
-      </MemoryRouter>
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/1234"],
+      "/measures/:measureId/edit/test-cases/:id",
+      <CreateTestCase />
     );
 
     const axiosError: AxiosError = {
@@ -427,12 +510,10 @@ describe("CreateTestCase component", () => {
       return Promise.resolve({ data: testCase });
     });
 
-    render(
-      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases/1234"]}>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseRoutes />
-        </ApiContextProvider>
-      </MemoryRouter>
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/1234"],
+      "/measures/:measureId/edit/test-cases/:id",
+      <CreateTestCase />
     );
 
     await waitFor(() => {
@@ -453,11 +534,16 @@ describe("CreateTestCase component", () => {
   });
 
   it("should generate field level error for test case description more than 250 characters", async () => {
-    render(
-      <MemoryRouter>
-        <CreateTestCase />
-      </MemoryRouter>
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/create"],
+      "/measures/:measureId/edit/test-cases/create",
+      <CreateTestCase />
     );
+
+    const g1PopulationValues = await screen.findByText(
+      "Group One Population Values"
+    );
+    expect(g1PopulationValues).toBeInTheDocument();
 
     const testCaseDescription =
       "abcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyz";
@@ -476,12 +562,10 @@ describe("CreateTestCase component", () => {
   });
 
   it("should allow special characters for test case description", async () => {
-    render(
-      <MemoryRouter>
-        <ApiContextProvider value={serviceConfig}>
-          <CreateTestCase />
-        </ApiContextProvider>
-      </MemoryRouter>
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/create"],
+      "/measures/:measureId/edit/test-cases/create",
+      <CreateTestCase />
     );
 
     const testCaseDescription =
@@ -512,7 +596,14 @@ describe("CreateTestCase component", () => {
 
   it("should display an error when test case series fail to load", async () => {
     mockedAxios.get.mockClear().mockImplementation((args) => {
-      if (args && args.endsWith("series")) {
+      if (args && args.startsWith(serviceConfig.measureService.baseUrl)) {
+        return Promise.resolve({
+          data: {
+            id: "m1234",
+            measureScoring: MeasureScoring.COHORT,
+          },
+        });
+      } else if (args && args.endsWith("series")) {
         return Promise.reject({
           status: 500,
           data: null,
@@ -521,12 +612,10 @@ describe("CreateTestCase component", () => {
       return Promise.resolve({ data: null });
     });
 
-    render(
-      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases/create"]}>
-        <ApiContextProvider value={serviceConfig}>
-          <CreateTestCase />
-        </ApiContextProvider>
-      </MemoryRouter>
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/create"],
+      "/measures/:measureId/edit/test-cases/create",
+      <CreateTestCase />
     );
 
     const debugOutput = await screen.findByText(
@@ -545,19 +634,29 @@ describe("CreateTestCase component", () => {
     } as unknown as AxiosError;
 
     mockedAxios.get.mockClear().mockImplementation((args) => {
-      if (args && args.endsWith("series")) {
+      if (args && args.startsWith(serviceConfig.measureService.baseUrl)) {
+        return Promise.resolve({
+          data: {
+            id: "m1234",
+            measureScoring: MeasureScoring.COHORT,
+          },
+        });
+      } else if (args && args.endsWith("series")) {
         return Promise.reject(axiosError);
       }
       return Promise.resolve({ data: null });
     });
 
-    render(
-      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases/create"]}>
-        <ApiContextProvider value={serviceConfig}>
-          <CreateTestCase />
-        </ApiContextProvider>
-      </MemoryRouter>
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/create"],
+      "/measures/:measureId/edit/test-cases/create",
+      <CreateTestCase />
     );
+
+    const g1PopulationValues = await screen.findByText(
+      "Group One Population Values"
+    );
+    expect(g1PopulationValues).toBeInTheDocument();
 
     const debugOutput = await screen.findByText(
       "Measure does not exist, unable to load test case series!"
@@ -566,11 +665,16 @@ describe("CreateTestCase component", () => {
   });
 
   it("should generate field level error for test case title more than 250 characters", async () => {
-    render(
-      <MemoryRouter>
-        <CreateTestCase />
-      </MemoryRouter>
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/create"],
+      "/measures/:measureId/edit/test-cases/create",
+      <CreateTestCase />
     );
+
+    const g1PopulationValues = await screen.findByText(
+      "Group One Population Values"
+    );
+    expect(g1PopulationValues).toBeInTheDocument();
 
     const testCaseTitle =
       "abcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyz";
@@ -588,12 +692,10 @@ describe("CreateTestCase component", () => {
   });
 
   it("should allow special characters for test case title", async () => {
-    render(
-      <MemoryRouter>
-        <ApiContextProvider value={serviceConfig}>
-          <CreateTestCase />
-        </ApiContextProvider>
-      </MemoryRouter>
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/create"],
+      "/measures/:measureId/edit/test-cases/create",
+      <CreateTestCase />
     );
 
     const testCaseDescription = "Test Description";
@@ -623,10 +725,10 @@ describe("CreateTestCase component", () => {
   });
 
   it("should allow special characters for test case series", async () => {
-    render(
-      <MemoryRouter>
-        <CreateTestCase />
-      </MemoryRouter>
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/create"],
+      "/measures/:measureId/edit/test-cases/create",
+      <CreateTestCase />
     );
 
     const testCaseDescription = "Test Description";
@@ -653,14 +755,14 @@ describe("CreateTestCase component", () => {
       "Test case created successfully! Redirecting back to Test Cases..."
     );
     expect(debugOutput).toBeInTheDocument();
-  });
+  }, 15000);
 
   it("should display HAPI validation errors after create test case", async () => {
     jest.useFakeTimers("modern");
-    render(
-      <MemoryRouter>
-        <CreateTestCase />
-      </MemoryRouter>
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/create"],
+      "/measures/:measureId/edit/test-cases/create",
+      <CreateTestCase />
     );
 
     const testCaseDescription = "Test Description";
@@ -720,9 +822,7 @@ describe("CreateTestCase component", () => {
       "Patient.identifier is a required field"
     );
     expect(patientIdentifierError).toBeInTheDocument();
-
-    // logRoles(container);
-  });
+  }, 15000);
 
   it("should display HAPI validation errors after update test case", async () => {
     jest.useFakeTimers("modern");
@@ -741,12 +841,10 @@ describe("CreateTestCase component", () => {
       return Promise.resolve({ data: testCase });
     });
 
-    render(
-      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases/1234"]}>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseRoutes />
-        </ApiContextProvider>
-      </MemoryRouter>
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/1234"],
+      "/measures/:measureId/edit/test-cases/:id",
+      <CreateTestCase />
     );
 
     mockedAxios.put.mockResolvedValue({
@@ -826,12 +924,10 @@ describe("CreateTestCase component", () => {
       return Promise.resolve({ data: testCase });
     });
 
-    render(
-      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases/1234"]}>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseRoutes />
-        </ApiContextProvider>
-      </MemoryRouter>
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/1234"],
+      "/measures/:measureId/edit/test-cases/:id",
+      <CreateTestCase />
     );
 
     const data = {
@@ -898,6 +994,77 @@ describe("CreateTestCase component", () => {
     );
     expect(errorText).not.toBeInTheDocument();
     expect(mockEditor.resize).toHaveBeenCalledTimes(2);
+  });
+
+  it("should display an error when measure groups and measure info cannot be loaded", async () => {
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
+      }
+      return Promise.reject({
+        data: {
+          error: "Error with loading measure data",
+        },
+      });
+    });
+
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/create"],
+      "/measures/:measureId/edit/test-cases/create",
+      <CreateTestCase />
+    );
+
+    const alert = await screen.findByRole("alert");
+    expect(alert).toBeInTheDocument();
+    expect(alert).toHaveTextContent(
+      "Failed to load measure groups. An error occurred while loading the measure."
+    );
+  });
+
+  it("should handle displaying a test case with null groupPoulation data", async () => {
+    const testCase = {
+      id: "1234",
+      description: "Test IPP",
+      series: "SeriesA",
+      json: `{"test":"test"}`,
+      groupPopulations: null,
+    } as TestCase;
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.startsWith(serviceConfig.measureService.baseUrl)) {
+        return Promise.resolve({
+          data: {
+            id: "m1234",
+            measureScoring: MeasureScoring.CONTINUOUS_VARIABLE,
+          },
+        });
+      } else if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
+      }
+      return Promise.resolve({ data: testCase });
+    });
+
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/1234"],
+      "/measures/:measureId/edit/test-cases/:id",
+      <CreateTestCase />
+    );
+
+    const g1PopulationValues = await screen.findByText(
+      "Group One Population Values"
+    );
+    expect(g1PopulationValues).toBeInTheDocument();
+    const ippRow = screen.getByTestId(
+      "test-row-population-id-initialPopulation"
+    );
+    const msrpoplRow = screen.getByTestId(
+      "test-row-population-id-measurePopulation"
+    );
+    const msrpoplexRow = screen.getByTestId(
+      "test-row-population-id-measurePopulationExclusion"
+    );
+    expect(ippRow).toBeInTheDocument();
+    expect(msrpoplRow).toBeInTheDocument();
+    expect(msrpoplexRow).toBeInTheDocument();
   });
 
   it("should render 404 page", async () => {
