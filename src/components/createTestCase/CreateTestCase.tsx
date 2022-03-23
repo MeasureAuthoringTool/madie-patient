@@ -27,12 +27,10 @@ import { getPopulationsForScoring } from "../../util/PopulationsMap";
 import Measure from "../../models/Measure";
 import useMeasureServiceApi from "../../api/useMeasureServiceApi";
 import GroupPopulations from "../populations/GroupPopulations";
-import { Calculator } from "fqm-execution";
 import DateAdapter from "@mui/lab/AdapterDateFns";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import DesktopDatePicker from "@mui/lab/DesktopDatePicker";
 import { TextField } from "@mui/material";
-import { format } from "date-fns";
 import useCalculation from "../../api/useCalculation";
 
 const FormControl = tw.div`mb-3`;
@@ -446,6 +444,10 @@ const CreateTestCase = () => {
               data-testid="create-test-case-form"
               onSubmit={formik.handleSubmit}
             >
+              {/*
+              TODO Replace with re-usable form component
+               label, input, and error => single input control component
+              */}
               <FormControl>
                 <Label text="Test Case Title" />
                 <TestCaseTitle
