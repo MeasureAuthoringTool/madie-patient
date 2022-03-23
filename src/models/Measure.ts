@@ -32,4 +32,5 @@ export default interface Measure {
   model: Model | "";
   measureMetaData?: MeasureMetadata;
   groups?: Array<Group>;
+  elmJson?: string;
 }
