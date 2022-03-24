@@ -4,7 +4,7 @@ import {
   CalculationOutput,
   DetailedPopulationGroupResult,
 } from "fqm-execution/build/types/Calculator";
-import TestCase, { MeasurementPeriod } from "../models/TestCase";
+import TestCase from "../models/TestCase";
 import Measure from "../models/Measure";
 import { FHIRHelpers } from "../util/FHIRHelpers";
 
@@ -14,7 +14,8 @@ export class CalculationService {
   async calculateSingleTestCase(
     measure: Measure,
     testCase: TestCase,
-    measurementPeriod: MeasurementPeriod
+    measurementPeriodStart,
+    measurementPeriodEnd
   ): Promise<DetailedPopulationGroupResult[]> {
     const measureBundle = this.buildMeasureBundle(measure);
     const patientBundles = this.buildPatientBundle(testCase);
@@ -25,8 +26,8 @@ export class CalculationService {
     const results = await this.calculate(
       measureBundle,
       [patientBundles],
-      measurementPeriod.start,
-      measurementPeriod.end
+      measurementPeriodStart,
+      measurementPeriodEnd
     );
     console.dir(results);
     return results?.results[0]?.detailedResults;
@@ -149,8 +150,8 @@ export class CalculationService {
   ): Promise<CalculationOutput> {
     return await Calculator.calculate(measureBundle, patientBundles, {
       includeClauseResults: false,
-      measurementPeriodStart: format(measurementPeriodStart, "yyyy-MM-dd"),
-      measurementPeriodEnd: format(measurementPeriodEnd, "yyyy-MM-dd"),
+      measurementPeriodStart: measurementPeriodStart,
+      measurementPeriodEnd: measurementPeriodEnd,
     });
   }
 }

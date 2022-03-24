@@ -31,11 +31,6 @@ export interface PopulationValue {
   actual: boolean;
 }
 
-export interface MeasurementPeriod {
-  start: Date;
-  end: Date;
-}
-
 export interface HapiOperationOutcome {
   code: number;
   message: string;

@@ -182,14 +182,14 @@ const CreateTestCase = () => {
           .then((tc: TestCase) => {
             setTestCase(_.cloneDeep(tc));
             setEditorVal(tc.json);
+            setMeasurementPeriodStart(tc.measurementPeriodStart);
+            setMeasurementPeriodEnd(tc.measurementPeriodEnd);
             const nextTc = _.cloneDeep(tc);
             if (_.isNil(tc.groupPopulations) && measureGroups) {
               nextTc.groupPopulations = mapMeasureGroups(measureGroups);
             } else if (_.isNil(tc.groupPopulations)) {
               nextTc.groupPopulations = [];
             }
-            console.log(nextTc.measurementPeriodStart);
-            console.log(nextTc.measurementPeriodEnd);
             resetForm({ values: nextTc });
             handleHapiOutcome(tc?.hapiOperationOutcome);
           })
@@ -292,6 +292,7 @@ const CreateTestCase = () => {
       if (editorVal !== testCase.json) {
         testCase.json = editorVal;
       }
+      console.dir(testCase);
       const updatedTestCase = await testCaseService.current.updateTestCase(
         testCase,
         measureId
@@ -311,11 +312,15 @@ const CreateTestCase = () => {
     if (isModified()) {
       tempTestCase.json = editorVal;
     }
+    console.log("testCase.calculate: " + measurementPeriodStart);
+    console.log(measurementPeriodEnd);
     calculation.current
-      .calculateSingleTestCase(measure, tempTestCase, {
-        start: measurementPeriodStart,
-        end: measurementPeriodEnd,
-      })
+      .calculateSingleTestCase(
+        measure,
+        tempTestCase,
+        measurementPeriodStart,
+        measurementPeriodEnd
+      )
       .then((result) => {
         /* eslint no-console:off */
         console.dir(result);
