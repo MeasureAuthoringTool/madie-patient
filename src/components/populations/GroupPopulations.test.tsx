@@ -10,7 +10,7 @@ describe("Group Populations", () => {
   it("should render the populations", () => {
     const groupPopulations: GroupPopulation[] = [
       {
-        group: "Group One",
+        groupId: "Group1_ID",
         scoring: MeasureScoring.CONTINUOUS_VARIABLE,
         populationValues: [
           {
@@ -85,28 +85,37 @@ describe("Group Populations", () => {
 
   it("should handle null groupPopulation input", () => {
     render(<GroupPopulations groupPopulations={null} onChange={jest.fn()} />);
-    const text = screen.getByText("No populations for current scoring");
-    expect(text).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "No populations for current scoring. Please make sure at least one measure group has been created."
+      )
+    ).toBeInTheDocument();
   });
 
   it("should handle undefined groupPopulation input", () => {
     render(
       <GroupPopulations groupPopulations={undefined} onChange={jest.fn()} />
     );
-    const text = screen.getByText("No populations for current scoring");
-    expect(text).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "No populations for current scoring. Please make sure at least one measure group has been created."
+      )
+    ).toBeInTheDocument();
   });
 
   it("should handle empty groupPopulation input", () => {
     render(<GroupPopulations groupPopulations={[]} onChange={jest.fn()} />);
-    const text = screen.getByText("No populations for current scoring");
-    expect(text).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "No populations for current scoring. Please make sure at least one measure group has been created."
+      )
+    ).toBeInTheDocument();
   });
 
   it("should render the populations with both checkboxes disabled", () => {
     const groupPopulations: GroupPopulation[] = [
       {
-        group: "Group One",
+        groupId: "Group1_ID",
         scoring: MeasureScoring.COHORT,
         populationValues: [
           {
@@ -138,7 +147,7 @@ describe("Group Populations", () => {
   it("should handle checkbox changes", () => {
     const groupPopulations: GroupPopulation[] = [
       {
-        group: "Group One",
+        groupId: "Group1_ID",
         scoring: MeasureScoring.CONTINUOUS_VARIABLE,
         populationValues: [
           {
@@ -167,7 +176,7 @@ describe("Group Populations", () => {
     userEvent.click(ippCbs[0]);
     expect(handleChange).toHaveBeenCalledWith([
       {
-        group: "Group One",
+        groupId: "Group1_ID",
         scoring: MeasureScoring.CONTINUOUS_VARIABLE,
         populationValues: [
           {

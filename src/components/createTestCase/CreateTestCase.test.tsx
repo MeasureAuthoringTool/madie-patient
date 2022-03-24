@@ -73,6 +73,15 @@ describe("CreateTestCase component", () => {
           data: {
             id: "m1234",
             measureScoring: MeasureScoring.COHORT,
+            groups: [
+              {
+                groupId: "Group1_ID",
+                scoring: "Cohort",
+                population: {
+                  initialPopulation: "Pop1",
+                },
+              },
+            ],
           },
         });
       } else if (args && args.endsWith("series")) {
@@ -264,7 +273,7 @@ describe("CreateTestCase component", () => {
       json: `{"test":"test"}`,
       groupPopulations: [
         {
-          group: "Group One",
+          groupId: "Group1_ID",
           scoring: MeasureScoring.RATIO,
           populationValues: [
             {
@@ -293,6 +302,15 @@ describe("CreateTestCase component", () => {
           data: {
             id: "m1234",
             measureScoring: MeasureScoring.CONTINUOUS_VARIABLE,
+            groups: [
+              {
+                groupId: "Group1_ID",
+                scoring: "Cohort",
+                population: {
+                  initialPopulation: "Pop1",
+                },
+              },
+            ],
           },
         });
       } else if (args && args.endsWith("series")) {
@@ -308,7 +326,7 @@ describe("CreateTestCase component", () => {
     );
 
     const g1PopulationValues = await screen.findByText(
-      "Group One Population Values"
+      "Group 1 (Cohort) Population Values"
     );
     expect(g1PopulationValues).toBeInTheDocument();
 
@@ -539,7 +557,7 @@ describe("CreateTestCase component", () => {
     );
 
     const g1PopulationValues = await screen.findByText(
-      "Group One Population Values"
+      "Group 1 (Cohort) Population Values"
     );
     expect(g1PopulationValues).toBeInTheDocument();
 
@@ -651,11 +669,6 @@ describe("CreateTestCase component", () => {
       <CreateTestCase />
     );
 
-    const g1PopulationValues = await screen.findByText(
-      "Group One Population Values"
-    );
-    expect(g1PopulationValues).toBeInTheDocument();
-
     const debugOutput = await screen.findByText(
       "Measure does not exist, unable to load test case series!"
     );
@@ -670,7 +683,7 @@ describe("CreateTestCase component", () => {
     );
 
     const g1PopulationValues = await screen.findByText(
-      "Group One Population Values"
+      "Group 1 (Cohort) Population Values"
     );
     expect(g1PopulationValues).toBeInTheDocument();
 
@@ -1047,21 +1060,21 @@ describe("CreateTestCase component", () => {
       <CreateTestCase />
     );
 
-    const g1PopulationValues = await screen.findByText(
-      "Group One Population Values"
+    const errorMessage = await screen.findByText(
+      "No populations for current scoring. Please make sure at least one measure group has been created."
     );
-    expect(g1PopulationValues).toBeInTheDocument();
-    const ippRow = screen.getByTestId(
-      "test-row-population-id-initialPopulation"
-    );
-    const msrpoplRow = screen.getByTestId(
-      "test-row-population-id-measurePopulation"
-    );
-    const msrpoplexRow = screen.getByTestId(
-      "test-row-population-id-measurePopulationExclusion"
-    );
-    expect(ippRow).toBeInTheDocument();
-    expect(msrpoplRow).toBeInTheDocument();
-    expect(msrpoplexRow).toBeInTheDocument();
+    expect(errorMessage).toBeInTheDocument();
+    // const ippRow = screen.getByTestId(
+    //   "test-row-population-id-initialPopulation"
+    // );
+    // const msrpoplRow = screen.getByTestId(
+    //   "test-row-population-id-measurePopulation"
+    // );
+    // const msrpoplexRow = screen.getByTestId(
+    //   "test-row-population-id-measurePopulationExclusion"
+    // );
+    // expect(ippRow).toBeInTheDocument();
+    // expect(msrpoplRow).toBeInTheDocument();
+    // expect(msrpoplexRow).toBeInTheDocument();
   });
 });

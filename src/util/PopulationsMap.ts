@@ -26,7 +26,7 @@ const POPULATION_MAP = {
 };
 
 export function getPopulationsForScoring(
-  scoring: MeasureScoring
+  scoring: MeasureScoring | string
 ): MeasurePopulation[] {
   return POPULATION_MAP[scoring];
 }

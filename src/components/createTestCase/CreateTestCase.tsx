@@ -15,7 +15,10 @@ import {
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import "styled-components/macro";
-import TestCase, { HapiOperationOutcome } from "../../models/TestCase";
+import TestCase, {
+  GroupPopulation,
+  HapiOperationOutcome,
+} from "../../models/TestCase";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import Editor from "../editor/Editor";
 import { TestCaseValidator } from "../../models/TestCaseValidator";
@@ -24,7 +27,7 @@ import TestCaseSeries from "./TestCaseSeries";
 import * as _ from "lodash";
 import { Ace } from "ace-builds";
 import { getPopulationsForScoring } from "../../util/PopulationsMap";
-import Measure from "../../models/Measure";
+import Measure, { Group } from "../../models/Measure";
 import useMeasureServiceApi from "../../api/useMeasureServiceApi";
 import GroupPopulations from "../populations/GroupPopulations";
 
@@ -119,7 +122,7 @@ const CreateTestCase = () => {
     series: [],
   });
   const [measure, setMeasure] = useState<Measure>(null);
-  const [measureGroups, setMeasureGroups] = useState(null);
+  // const [measureGroups, setMeasureGroups] = useState(null);
   const [editor, setEditor] = useState<Ace.Editor>(null);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
   const formik = useFormik({
@@ -129,20 +132,22 @@ const CreateTestCase = () => {
   });
   const { resetForm } = formik;
 
-  const mapMeasureGroups = (measureGroups) => {
-    return measureGroups.map((mg) => {
-      return {
-        group: mg.groupName,
-        scoring: mg.scoring,
-        populationValues: getPopulationsForScoring(mg.scoring)?.map(
-          (population) => ({
-            name: population,
-            expected: false,
-            actual: false,
-          })
-        ),
-      };
-    });
+  const mapMeasureGroup = (mg: Group): GroupPopulation => {
+    return {
+      groupId: mg.id,
+      scoring: mg.scoring,
+      populationValues: getPopulationsForScoring(mg.scoring)?.map(
+        (population) => ({
+          name: population,
+          expected: false,
+          actual: false,
+        })
+      ),
+    };
+  };
+
+  const mapMeasureGroups = (measureGroups: Group[]): GroupPopulation[] => {
+    return measureGroups.map(mapMeasureGroup);
   };
 
   useEffect(() => {
@@ -171,11 +176,23 @@ const CreateTestCase = () => {
             setTestCase(_.cloneDeep(tc));
             setEditorVal(tc.json);
             const nextTc = _.cloneDeep(tc);
-            if (_.isNil(tc.groupPopulations) && measureGroups) {
-              nextTc.groupPopulations = mapMeasureGroups(measureGroups);
-            } else if (_.isNil(tc.groupPopulations)) {
+            if (measure && measure.groups) {
+              nextTc.groupPopulations = measure.groups.map((group) => {
+                const existingGroupPop = tc.groupPopulations?.find(
+                  (gp) => gp.groupId === group.id
+                );
+                return _.isNil(existingGroupPop)
+                  ? mapMeasureGroup(group)
+                  : existingGroupPop;
+              });
+            } else {
               nextTc.groupPopulations = [];
             }
+            // if (_.isNil(tc.groupPopulations) && measure && measure.groups) {
+            //   nextTc.groupPopulations = mapMeasureGroups(measure.groups);
+            // } else if (_.isNil(tc.groupPopulations)) {
+            //   nextTc.groupPopulations = [];
+            // }
             resetForm({ values: nextTc });
             handleHapiOutcome(tc?.hapiOperationOutcome);
           })
@@ -191,11 +208,11 @@ const CreateTestCase = () => {
         setTestCase(null);
         resetForm();
       };
-    } else if (measureGroups) {
+    } else if (measure && measure.groups) {
       resetForm({
         values: {
           ...INITIAL_VALUES,
-          groupPopulations: mapMeasureGroups(measureGroups),
+          groupPopulations: mapMeasureGroups(measure.groups),
         },
       });
     }
@@ -205,7 +222,7 @@ const CreateTestCase = () => {
     testCaseService,
     setTestCase,
     resetForm,
-    measureGroups,
+    measure,
     seriesState.loaded,
   ]);
 
@@ -216,12 +233,12 @@ const CreateTestCase = () => {
         .then((measure) => {
           setMeasure(measure);
           // TODO: replace this with the groups off the measure once those are being persisted
-          setMeasureGroups([
-            {
-              groupName: "Group One",
-              scoring: measure.measureScoring,
-            },
-          ]);
+          // setMeasureGroups([
+          //   {
+          //     groupName: "Group One",
+          //     scoring: measure.measureScoring,
+          //   },
+          // ]);
         })
         .catch((error) => {
           console.error(
