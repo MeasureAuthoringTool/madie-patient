@@ -32,6 +32,7 @@ import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import DesktopDatePicker from "@mui/lab/DesktopDatePicker";
 import { TextField } from "@mui/material";
 import useCalculation from "../../api/useCalculation";
+import { add, parseISO } from "date-fns";
 
 const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
@@ -104,7 +105,8 @@ const INITIAL_VALUES = {
   description: "",
   series: "",
   groupPopulations: [],
-  measurementPeriod: {},
+  measurementPeriodStart: new Date(2019, 0, 1),
+  measurementPeriodEnd: new Date(2019, 11, 31),
 } as TestCase;
 
 const CreateTestCase = () => {
@@ -129,12 +131,9 @@ const CreateTestCase = () => {
   const [measureGroups, setMeasureGroups] = useState(null);
   const [editor, setEditor] = useState<Ace.Editor>(null);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
-  const [measurementPeriodStart, setMeasurementPeriodStart] = useState<Date>(
-    new Date(2019, 0, 1)
-  );
-  const [measurementPeriodEnd, setMeasurementPeriodEnd] = useState<Date>(
-    new Date(2019, 11, 31)
-  );
+  const [measurementPeriodStart, setMeasurementPeriodStart] =
+    useState<Date>(null);
+  const [measurementPeriodEnd, setMeasurementPeriodEnd] = useState<Date>(null);
   const formik = useFormik({
     initialValues: { ...INITIAL_VALUES },
     validationSchema: TestCaseValidator,
@@ -189,6 +188,8 @@ const CreateTestCase = () => {
             } else if (_.isNil(tc.groupPopulations)) {
               nextTc.groupPopulations = [];
             }
+            console.log(nextTc.measurementPeriodStart);
+            console.log(nextTc.measurementPeriodEnd);
             resetForm({ values: nextTc });
             handleHapiOutcome(tc?.hapiOperationOutcome);
           })
@@ -260,6 +261,8 @@ const CreateTestCase = () => {
     testCase.title = sanitizeUserInput(testCase.title);
     testCase.description = sanitizeUserInput(testCase.description);
     testCase.series = sanitizeUserInput(testCase.series);
+    console.log(testCase.measurementPeriodStart);
+    console.log(testCase.measurementPeriodEnd);
 
     if (id) {
       return await updateTestCase(testCase);
@@ -500,17 +503,9 @@ const CreateTestCase = () => {
                   <DesktopDatePicker
                     label="Start"
                     inputFormat="MM/dd/yyyy"
-                    value={
-                      /*formik.values.measurementPeriod.start*/
-                      /* TODO use formik's initial value */
-                      /* throwing error, undefined trying to read "start" */
-                      measurementPeriodStart
-                    }
+                    value={formik.values.measurementPeriodStart}
                     onChange={(startDate) => {
-                      formik.setFieldValue(
-                        "measurementPeriod.start",
-                        startDate
-                      );
+                      formik.setFieldValue("measurementPeriodStart", startDate);
                       setMeasurementPeriodStart(startDate);
                     }}
                     renderInput={(params) => <TextField {...params} />}
@@ -522,14 +517,9 @@ const CreateTestCase = () => {
                   <DesktopDatePicker
                     label="End"
                     inputFormat="MM/dd/yyyy"
-                    value={
-                      /*formik.values.measurementPeriod.end*/
-                      /* TODO use formik's initial value */
-                      /* throwing error, undefined trying to read "end" */
-                      measurementPeriodEnd
-                    }
+                    value={formik.values.measurementPeriodEnd}
                     onChange={(endDate) => {
-                      formik.setFieldValue("measurementPeriod.end", endDate);
+                      formik.setFieldValue("measurementPeriodEnd", endDate);
                       setMeasurementPeriodEnd(endDate);
                     }}
                     renderInput={(params) => <TextField {...params} />}
