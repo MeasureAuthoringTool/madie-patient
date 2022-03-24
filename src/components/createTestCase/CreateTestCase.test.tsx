@@ -276,23 +276,13 @@ describe("CreateTestCase component", () => {
       groupPopulations: [
         {
           groupId: "Group1_ID",
-          scoring: MeasureScoring.RATIO,
+          scoring: MeasureScoring.COHORT,
           populationValues: [
             {
               name: MeasurePopulation.INITIAL_POPULATION,
               expected: true,
               actual: false,
-            },
-            {
-              name: MeasurePopulation.MEASURE_POPULATION,
-              expected: false,
-              actual: false,
-            },
-            {
-              name: MeasurePopulation.MEASURE_POPULATION_EXCLUSION,
-              expected: false,
-              actual: false,
-            },
+            }
           ],
         },
       ],
@@ -366,10 +356,6 @@ describe("CreateTestCase component", () => {
       "test-population-initialPopulation-expected"
     );
     expect(ippExpectedCb).toBeChecked();
-    const mpExpectedCb = await screen.findByTestId(
-      "test-population-measurePopulation-expected"
-    );
-    userEvent.click(mpExpectedCb);
     await waitFor(() => {
       expect(mpExpectedCb).toBeChecked();
     });
