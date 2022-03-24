@@ -201,6 +201,9 @@ const CreateTestCase = () => {
               "error retrieving and updating local state for test case",
               error
             );
+            if (error.toString().includes("404")) {
+              navigate("/404");
+            }
           });
       };
       updateTestCase();

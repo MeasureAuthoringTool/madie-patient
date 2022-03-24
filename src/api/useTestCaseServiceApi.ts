@@ -58,7 +58,7 @@ export class TestCaseServiceApi {
     } catch (err) {
       const message = "Unable to retrieve test case, please try later.";
       console.error(message, err);
-      throw new Error(message);
+      throw new Error(err);
     }
   }
 
