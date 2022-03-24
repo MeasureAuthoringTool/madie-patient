@@ -237,7 +237,9 @@ const CreateTestCase = () => {
           setMeasureGroups([
             {
               groupName: "Group One",
-              scoring: measure.measureScoring,
+              scoring: measure?.groups
+                ? measure.groups[0].scoring
+                : measure.measureScoring,
             },
           ]);
         })
