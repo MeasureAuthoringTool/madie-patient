@@ -12,6 +12,7 @@ import DateAdapter from "@mui/lab/AdapterDateFns";
 import DesktopDatePicker from "@mui/lab/DesktopDatePicker";
 import { TextField } from "@mui/material";
 import { isValid } from "date-fns";
+import useCalculation from "../../api/useCalculation";
 
 const TH = tw.th`p-3 border-b text-left text-sm font-bold uppercase`;
 const ErrorAlert = tw.div`bg-red-100 text-red-700 rounded-lg m-1 p-3`;
@@ -25,6 +26,7 @@ const TestCaseList = () => {
   const { measureId } = useParams<{ measureId: string }>();
   const testCaseService = useRef(useTestCaseServiceApi());
   const measureService = useRef(useMeasureServiceApi());
+  const calculation = useRef(useCalculation());
 
   const [isExecuteButtonClicked, setisExecuteButtonClicked] = useState(false);
 
@@ -40,7 +42,7 @@ const TestCaseList = () => {
       })
       .catch((error) => {
         console.error(
-          `Failed to load measure groups. An error occurred while loading measure with ID [${measureId}]`,
+          `Failed to load measure. An error occurred while loading measure with ID [${measureId}]`,
           error
         );
       });
@@ -80,6 +82,9 @@ const TestCaseList = () => {
   //MAT-3911: the following is pure mockup data, need to be replaced by real data
   const executeTestCasesHandler = () => {
     if (testCases) {
+      // calculation.current.calculateTestCases(measure, testCases).then(detailedResults => {
+      //   // detailedResults.
+      // });
       let count = 0;
       testCases.map((testCase) => {
         if (count === 0) {

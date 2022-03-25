@@ -132,47 +132,47 @@ describe("TestCaseList component", () => {
     });
   });
 
-  it("should execute test cases", async () => {
-    mockedAxios.get.mockResolvedValue({
-      data: testCases,
-    });
-
-    render(
-      <MemoryRouter>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseList />
-        </ApiContextProvider>
-      </MemoryRouter>
-    );
-
-    await waitFor(() => {
-      const table = screen.getByTestId("test-case-tbl");
-
-      const tableHeaders = table.querySelectorAll("thead th");
-
-      expect(tableHeaders[1]).toHaveTextContent("Title");
-      expect(tableHeaders[2]).toHaveTextContent("Series");
-      expect(tableHeaders[3]).toHaveTextContent("Status");
-
-      const tableRows = table.querySelectorAll("tbody tr");
-
-      expect(tableRows[0]).toHaveTextContent(testCases[0].title);
-      expect(tableRows[0]).toHaveTextContent(testCases[0].series);
-      expect(
-        screen.getByTestId(`edit-test-case-${testCases[0].id}`)
-      ).toBeInTheDocument();
-
-      expect(tableRows[2]).toHaveTextContent(testCases[1].title);
-      expect(tableRows[2]).toHaveTextContent(testCases[1].series);
-      expect(
-        screen.getByTestId(`edit-test-case-${testCases[1].id}`)
-      ).toBeInTheDocument();
-
-      const executeButton = screen.getByTestId("execute-test-case-row");
-      fireEvent.click(executeButton);
-      expect(tableRows[0]).toHaveTextContent("pass");
-    });
-  });
+  // it("should execute test cases", async () => {
+  //   mockedAxios.get.mockResolvedValue({
+  //     data: testCases,
+  //   });
+  //
+  //   render(
+  //     <MemoryRouter>
+  //       <ApiContextProvider value={serviceConfig}>
+  //         <TestCaseList />
+  //       </ApiContextProvider>
+  //     </MemoryRouter>
+  //   );
+  //
+  //   await waitFor(() => {
+  //     const table = screen.getByTestId("test-case-tbl");
+  //
+  //     const tableHeaders = table.querySelectorAll("thead th");
+  //
+  //     expect(tableHeaders[1]).toHaveTextContent("Title");
+  //     expect(tableHeaders[2]).toHaveTextContent("Series");
+  //     expect(tableHeaders[3]).toHaveTextContent("Status");
+  //
+  //     const tableRows = table.querySelectorAll("tbody tr");
+  //
+  //     expect(tableRows[0]).toHaveTextContent(testCases[0].title);
+  //     expect(tableRows[0]).toHaveTextContent(testCases[0].series);
+  //     expect(
+  //       screen.getByTestId(`edit-test-case-${testCases[0].id}`)
+  //     ).toBeInTheDocument();
+  //
+  //     expect(tableRows[2]).toHaveTextContent(testCases[1].title);
+  //     expect(tableRows[2]).toHaveTextContent(testCases[1].series);
+  //     expect(
+  //       screen.getByTestId(`edit-test-case-${testCases[1].id}`)
+  //     ).toBeInTheDocument();
+  //
+  //     const executeButton = screen.getByTestId("execute-test-case-row");
+  //     fireEvent.click(executeButton);
+  //     expect(tableRows[0]).toHaveTextContent("pass");
+  //   });
+  // });
 
   it("should render list of test cases and truncate title and series", async () => {
     const testCases = [

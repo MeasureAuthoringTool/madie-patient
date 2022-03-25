@@ -314,11 +314,9 @@ const CreateTestCase = () => {
       tempTestCase.json = editorVal;
     }
     calculation.current
-      .calculateSingleTestCase(
+      .calculateTestCases(
         measure,
-        tempTestCase,
-        measurementPeriodStart,
-        measurementPeriodEnd
+        [tempTestCase],
       )
       .then((result) => {
         /* eslint no-console:off */

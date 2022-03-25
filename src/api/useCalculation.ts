@@ -11,28 +11,27 @@ import { FHIRHelpers } from "../util/FHIRHelpers";
 // TODO consider converting into a context.
 // OR a re-usable hook.
 export class CalculationService {
-  async calculateSingleTestCase(
+  async calculateTestCases(
     measure: Measure,
-    testCase: TestCase,
-    measurementPeriodStart,
-    measurementPeriodEnd
+    testCases: TestCase[]
   ): Promise<DetailedPopulationGroupResult[]> {
     const measureBundle = this.buildMeasureBundle(measure);
-    const patientBundles = this.buildPatientBundle(testCase);
+    const TestCaseBundles = testCases.map((testCase) => {
+      return this.buildPatientBundle(testCase);
+    });
     /* eslint no-console:off */
-    console.dir(measureBundle);
-    console.dir(patientBundles);
+    console.log("measure Bundle", measureBundle);
+    console.log("TestCase Bundle", TestCaseBundles);
 
     const results = await this.calculate(
       measureBundle,
-      [patientBundles],
-      measurementPeriodStart,
-      measurementPeriodEnd
+      TestCaseBundles,
+      measure.measurementPeriodStart,
+      measure.measurementPeriodEnd
     );
-    console.dir(results);
+    console.log("Results from fqm execution", results);
     return results?.results[0]?.detailedResults;
   }
-  async calculateAllTestCases(measure: Measure) {}
 
   buildMeasureBundle(measure: Measure): fhir4.Bundle {
     return {
