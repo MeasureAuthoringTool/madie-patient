@@ -105,8 +105,6 @@ const INITIAL_VALUES = {
   description: "",
   series: "",
   groupPopulations: [],
-  measurementPeriodStart: new Date(2019, 0, 1),
-  measurementPeriodEnd: new Date(2019, 11, 31),
 } as TestCase;
 
 const CreateTestCase = () => {
@@ -131,9 +129,12 @@ const CreateTestCase = () => {
   const [measureGroups, setMeasureGroups] = useState(null);
   const [editor, setEditor] = useState<Ace.Editor>(null);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
-  const [measurementPeriodStart, setMeasurementPeriodStart] =
-    useState<Date>(null);
-  const [measurementPeriodEnd, setMeasurementPeriodEnd] = useState<Date>(null);
+  const [measurementPeriodStart, setMeasurementPeriodStart] = useState<Date>(
+    new Date(2019, 0, 1)
+  );
+  const [measurementPeriodEnd, setMeasurementPeriodEnd] = useState<Date>(
+    new Date(2019, 11, 31)
+  );
   const formik = useFormik({
     initialValues: { ...INITIAL_VALUES },
     validationSchema: TestCaseValidator,
@@ -182,8 +183,6 @@ const CreateTestCase = () => {
           .then((tc: TestCase) => {
             setTestCase(_.cloneDeep(tc));
             setEditorVal(tc.json);
-            setMeasurementPeriodStart(tc.measurementPeriodStart);
-            setMeasurementPeriodEnd(tc.measurementPeriodEnd);
             const nextTc = _.cloneDeep(tc);
             if (_.isNil(tc.groupPopulations) && measureGroups) {
               nextTc.groupPopulations = mapMeasureGroups(measureGroups);
@@ -232,11 +231,15 @@ const CreateTestCase = () => {
         .fetchMeasure(measureId)
         .then((measure) => {
           setMeasure(measure);
+          setMeasurementPeriodStart(measure.measurementPeriodStart);
+          setMeasurementPeriodEnd(measure.measurementPeriodEnd);
           // TODO: replace this with the groups off the measure once those are being persisted
           setMeasureGroups([
             {
               groupName: "Group One",
-              scoring: measure.measureScoring,
+              scoring: measure?.groups
+                ? measure.groups[0].scoring
+                : measure.measureScoring,
             },
           ]);
         })
@@ -261,8 +264,6 @@ const CreateTestCase = () => {
     testCase.title = sanitizeUserInput(testCase.title);
     testCase.description = sanitizeUserInput(testCase.description);
     testCase.series = sanitizeUserInput(testCase.series);
-    console.log(testCase.measurementPeriodStart);
-    console.log(testCase.measurementPeriodEnd);
 
     if (id) {
       return await updateTestCase(testCase);
@@ -312,8 +313,6 @@ const CreateTestCase = () => {
     if (isModified()) {
       tempTestCase.json = editorVal;
     }
-    console.log("testCase.calculate: " + measurementPeriodStart);
-    console.log(measurementPeriodEnd);
     calculation.current
       .calculateSingleTestCase(
         measure,
@@ -506,13 +505,12 @@ const CreateTestCase = () => {
               <FormControl data-testid="create-test-case-measurement-period-start">
                 <LocalizationProvider dateAdapter={DateAdapter}>
                   <DesktopDatePicker
+                    readOnly={true}
+                    disableOpenPicker={true}
                     label="Start"
                     inputFormat="MM/dd/yyyy"
-                    value={formik.values.measurementPeriodStart}
-                    onChange={(startDate) => {
-                      formik.setFieldValue("measurementPeriodStart", startDate);
-                      setMeasurementPeriodStart(startDate);
-                    }}
+                    value={measurementPeriodStart}
+                    onChange={(startDate) => {}}
                     renderInput={(params) => <TextField {...params} />}
                   />
                 </LocalizationProvider>
@@ -520,13 +518,12 @@ const CreateTestCase = () => {
               <FormControl data-testid="create-test-case-measurement-period-end">
                 <LocalizationProvider dateAdapter={DateAdapter}>
                   <DesktopDatePicker
+                    readOnly={true}
+                    disableOpenPicker={true}
                     label="End"
                     inputFormat="MM/dd/yyyy"
-                    value={formik.values.measurementPeriodEnd}
-                    onChange={(endDate) => {
-                      formik.setFieldValue("measurementPeriodEnd", endDate);
-                      setMeasurementPeriodEnd(endDate);
-                    }}
+                    value={measurementPeriodEnd}
+                    onChange={(endDate) => {}}
                     renderInput={(params) => <TextField {...params} />}
                   />
                 </LocalizationProvider>

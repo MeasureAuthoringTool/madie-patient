@@ -18,6 +18,9 @@ const serviceConfig: ServiceConfig = {
   testCaseService: {
     baseUrl: "base.url",
   },
+  measureService: {
+    baseUrl: "base.url",
+  },
 };
 
 jest.mock("../../hooks/useOktaTokens", () =>
