@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import TestCaseLanding from "./TestCaseLanding";
 import { MemoryRouter } from "react-router-dom";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
@@ -32,8 +32,8 @@ describe("TestCaseLanding component", () => {
           data: {
             id: "m1234",
             measureScoring: MeasureScoring.PROPORTION,
-            measurementPeriodStart: new Date(2019, 0, 1),
-            measurementPeriodEnd: new Date(2019, 11, 31),
+            measurementPeriodStart: "2023-01-01",
+            measurementPeriodEnd: "2023-12-31",
           },
         });
       }
@@ -43,7 +43,7 @@ describe("TestCaseLanding component", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
-  it("should render the landing component with a button to create new test case", () => {
+  it("should render the landing component with a button to create new test case", async () => {
     render(
       <ApiContextProvider value={serviceConfig}>
         <MemoryRouter>
@@ -51,7 +51,9 @@ describe("TestCaseLanding component", () => {
         </MemoryRouter>
       </ApiContextProvider>
     );
-    const newTestCase = screen.getByRole("button", { name: "New Test Case" });
-    expect(newTestCase).toBeInTheDocument();
+    await waitFor(() => {
+      const newTestCase = screen.getByRole("button", { name: "New Test Case" });
+      expect(newTestCase).toBeInTheDocument();
+    });
   });
 });

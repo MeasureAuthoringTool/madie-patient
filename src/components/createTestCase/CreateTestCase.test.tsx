@@ -16,6 +16,10 @@ import { MeasureScoring } from "../../models/MeasureScoring";
 import { MeasurePopulation } from "../../models/MeasurePopulation";
 import TestCaseRoutes from "../routes/TestCaseRoutes";
 import { act } from "react-dom/test-utils";
+import calculationService from "../../api/CalculationService";
+import { simpleMeasureFixture } from "./__mocks__/simpleMeasureFixture";
+import { testCaseFixture } from "./__mocks__/testCaseFixture";
+import { ExecutionResult } from "fqm-execution/build/types/Calculator";
 
 //temporary solution (after jest updated to version 27) for error: thrown: "Exceeded timeout of 5000 ms for a test.
 jest.setTimeout(60000);
@@ -75,6 +79,8 @@ describe("CreateTestCase component", () => {
           data: {
             id: "m1234",
             measureScoring: MeasureScoring.COHORT,
+            measurementPeriodStart: "2023-01-01",
+            measurementPeriodEnd: "2023-12-31",
           },
         });
       } else if (args && args.endsWith("series")) {
@@ -87,25 +93,29 @@ describe("CreateTestCase component", () => {
     jest.clearAllMocks();
   });
 
-  it("should render create test case page", () => {
+  it("should render create test case page", async () => {
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
       "/measures/:measureId/edit/test-cases/create",
       <CreateTestCase />
     );
-    const editor = screen.getByTestId("test-case-editor");
-    const titleTextInput = screen.getByTestId("create-test-case-title");
-    const descriptionTextArea = screen.getByTestId(
-      "create-test-case-description"
-    );
-    expect(titleTextInput).toBeInTheDocument();
-    expect(descriptionTextArea).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Create Test Case" })
-    ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+    await waitFor(() => {
+      const editor = screen.getByTestId("test-case-editor");
+      const titleTextInput = screen.getByTestId("create-test-case-title");
+      const descriptionTextArea = screen.getByTestId(
+        "create-test-case-description"
+      );
+      expect(titleTextInput).toBeInTheDocument();
+      expect(descriptionTextArea).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Create Test Case" })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Cancel" })
+      ).toBeInTheDocument();
 
-    expect(editor).toBeInTheDocument();
+      expect(editor).toBeInTheDocument();
+    });
   });
 
   it("should create test case when create button is clicked", async () => {
@@ -126,12 +136,17 @@ describe("CreateTestCase component", () => {
         },
       },
     });
+    await waitFor(() => {
+      const descriptionInput = screen.getByTestId(
+        "create-test-case-description"
+      );
+      userEvent.type(descriptionInput, testCaseDescription);
 
-    const descriptionInput = screen.getByTestId("create-test-case-description");
-    userEvent.type(descriptionInput, testCaseDescription);
-
-    const createBtn = screen.getByRole("button", { name: "Create Test Case" });
-    userEvent.click(createBtn);
+      const createBtn = screen.getByRole("button", {
+        name: "Create Test Case",
+      });
+      userEvent.click(createBtn);
+    });
 
     const debugOutput = await screen.findByText(
       "Test case created successfully! Redirecting back to Test Cases..."
@@ -295,6 +310,8 @@ describe("CreateTestCase component", () => {
           data: {
             id: "m1234",
             measureScoring: MeasureScoring.CONTINUOUS_VARIABLE,
+            measurementPeriodStart: "2023-01-01",
+            measurementPeriodEnd: "2023-12-31",
           },
         });
       } else if (args && args.endsWith("series")) {
@@ -601,6 +618,8 @@ describe("CreateTestCase component", () => {
           data: {
             id: "m1234",
             measureScoring: MeasureScoring.COHORT,
+            measurementPeriodStart: "2023-01-01",
+            measurementPeriodEnd: "2023-12-31",
           },
         });
       } else if (args && args.endsWith("series")) {
@@ -639,6 +658,8 @@ describe("CreateTestCase component", () => {
           data: {
             id: "m1234",
             measureScoring: MeasureScoring.COHORT,
+            measurementPeriodStart: "2023-01-01",
+            measurementPeriodEnd: "2023-12-31",
           },
         });
       } else if (args && args.endsWith("series")) {
@@ -1035,6 +1056,8 @@ describe("CreateTestCase component", () => {
           data: {
             id: "m1234",
             measureScoring: MeasureScoring.CONTINUOUS_VARIABLE,
+            measurementPeriodStart: "2023-01-01",
+            measurementPeriodEnd: "2023-12-31",
           },
         });
       } else if (args && args.endsWith("series")) {
@@ -1089,5 +1112,33 @@ describe("CreateTestCase component", () => {
     expect(screen.getByTestId("404-page")).toBeInTheDocument();
     expect(screen.getByText("404 - Not Found!")).toBeInTheDocument();
     expect(screen.getByTestId("404-page-link")).toBeInTheDocument();
+  });
+});
+
+describe("Measure Calculation", () => {
+  it("calculates a measure against a test case", async () => {
+    const calculationSrv = calculationService();
+    const calculationResults: ExecutionResult[] =
+      await calculationSrv.calculateTestCases(simpleMeasureFixture, [
+        testCaseFixture,
+      ]);
+    expect(calculationResults).toHaveLength(1);
+    expect(calculationResults[0].detailedResults).toHaveLength(1);
+
+    const populationResults =
+      calculationResults[0].detailedResults[0].populationResults;
+    expect(populationResults).toHaveLength(3);
+    expect(populationResults).toContainEqual({
+      populationType: "initial-population",
+      result: true,
+    });
+    expect(populationResults).toContainEqual({
+      populationType: "denominator",
+      result: true,
+    });
+    expect(populationResults).toContainEqual({
+      populationType: "numerator",
+      result: false,
+    });
   });
 });

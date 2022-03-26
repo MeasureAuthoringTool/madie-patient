@@ -1,7 +1,7 @@
 import { MeasureScoring } from "../../../models/MeasureScoring";
 import { MeasurePopulation } from "../../../models/MeasurePopulation";
 
-export const testCase = {
+export const testCaseFixture = {
   id: "623cacffe74613783378c17c",
   executionStatus: null,
   name: null,

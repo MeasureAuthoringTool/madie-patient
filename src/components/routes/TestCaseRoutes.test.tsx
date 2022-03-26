@@ -86,8 +86,10 @@ describe("TestCaseRoutes", () => {
 
     const testCaseTitle = await screen.findByText("TC1");
     expect(testCaseTitle).toBeInTheDocument();
-    const newBtn = screen.getByRole("button", { name: "New Test Case" });
-    userEvent.click(newBtn);
+    await waitFor(() => {
+      const newBtn = screen.getByRole("button", { name: "New Test Case" });
+      userEvent.click(newBtn);
+    });
     const testCaseForm = screen.getByTestId("create-test-case-form");
     expect(testCaseForm).toBeInTheDocument();
     const tcDescriptionLabel = screen.getByText("Test Case Description");
@@ -135,12 +137,16 @@ describe("TestCaseRoutes", () => {
     const testCaseTitle = await screen.findByText("TC1");
     expect(testCaseTitle).toBeInTheDocument();
     const newBtn = screen.getByRole("button", { name: "New Test Case" });
-    userEvent.click(newBtn);
+    await waitFor(() => {
+      userEvent.click(newBtn);
+    });
     const testCaseForm = screen.getByTestId("create-test-case-form");
     expect(testCaseForm).toBeInTheDocument();
     const cancelBtn = screen.getByRole("button", { name: "Cancel" });
     expect(cancelBtn).toBeInTheDocument();
-    userEvent.click(cancelBtn);
+    await waitFor(() => {
+      userEvent.click(cancelBtn);
+    });
     const newBtn2 = screen.getByRole("button", { name: "New Test Case" });
     expect(newBtn2).toBeInTheDocument();
   });

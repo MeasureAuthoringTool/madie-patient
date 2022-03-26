@@ -2,7 +2,7 @@ import Measure from "../../../models/Measure";
 import { Model } from "../../../models/Model";
 import { MeasureScoring } from "../../../models/MeasureScoring";
 
-export const simpleMeasure: Measure = {
+export const simpleMeasureFixture: Measure = {
   id: "623cacebe74613783378c17b",
   measureHumanReadableId: null,
   measureSetId: null,
