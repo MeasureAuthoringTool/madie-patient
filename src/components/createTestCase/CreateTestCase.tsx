@@ -31,7 +31,7 @@ import DateAdapter from "@mui/lab/AdapterDateFns";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import DesktopDatePicker from "@mui/lab/DesktopDatePicker";
 import { TextField } from "@mui/material";
-import useCalculation from "../../api/useCalculation";
+import calculationService from "../../api/CalculationService";
 import { add, parse, parseISO } from "date-fns";
 
 const FormControl = tw.div`mb-3`;
@@ -115,7 +115,7 @@ const CreateTestCase = () => {
   // Avoid infinite dependency render. May require additional error handling for timeouts.
   const testCaseService = useRef(useTestCaseServiceApi());
   const measureService = useRef(useMeasureServiceApi());
-  const calculation = useRef(useCalculation());
+  const calculation = useRef(calculationService());
   const [alert, setAlert] = useState<AlertProps>(null);
   const [testCase, setTestCase] = useState<TestCase>(null);
   const [editorVal, setEditorVal]: [string, Dispatch<SetStateAction<string>>] =
@@ -129,12 +129,8 @@ const CreateTestCase = () => {
   const [measureGroups, setMeasureGroups] = useState(null);
   const [editor, setEditor] = useState<Ace.Editor>(null);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
-  const [measurementPeriodStart, setMeasurementPeriodStart] = useState<Date>(
-    new Date(2019, 0, 1)
-  );
-  const [measurementPeriodEnd, setMeasurementPeriodEnd] = useState<Date>(
-    new Date(2019, 11, 31)
-  );
+  const [measurementPeriodStart, setMeasurementPeriodStart] = useState<Date>();
+  const [measurementPeriodEnd, setMeasurementPeriodEnd] = useState<Date>();
   const formik = useFormik({
     initialValues: { ...INITIAL_VALUES },
     validationSchema: TestCaseValidator,
@@ -231,13 +227,8 @@ const CreateTestCase = () => {
         .fetchMeasure(measureId)
         .then((measure) => {
           setMeasure(measure);
-          setMeasurementPeriodStart(
-            parse("yyyy-MM-dd", measure.measurementPeriodStart, new Date())
-          );
-          setMeasurementPeriodEnd(
-            parse("yyyy-MM-dd", measure.measurementPeriodStart, new Date())
-          );
-          // TODO: replace this with the groups off the measure once those are being persisted
+          setMeasurementPeriodStart(parseISO(measure.measurementPeriodStart));
+          setMeasurementPeriodEnd(parseISO(measure.measurementPeriodEnd));
           setMeasureGroups([
             {
               groupName: "Group One",
@@ -318,13 +309,10 @@ const CreateTestCase = () => {
       modifiedTestCase.json = editorVal;
     }
     calculation.current
-      .calculateTestCases(
-        measure,
-        [modifiedTestCase],
-      )
+      .calculateTestCases(measure, [modifiedTestCase])
       .then((result) => {
         /* eslint no-console:off */
-        console.dir(result);
+        console.dir(result[0].detailedResults);
       });
   };
 

@@ -2,6 +2,7 @@ import { Calculator } from "fqm-execution";
 import {
   CalculationOutput,
   DetailedPopulationGroupResult,
+  ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
 import TestCase from "../models/TestCase";
 import Measure from "../models/Measure";
@@ -15,7 +16,7 @@ export class CalculationService {
   async calculateTestCases(
     measure: Measure,
     testCases: TestCase[]
-  ): Promise<DetailedPopulationGroupResult[]> {
+  ): Promise<ExecutionResult[]> {
     const measureBundle = this.buildMeasureBundle(measure);
     const TestCaseBundles = testCases.map((testCase) => {
       return this.buildPatientBundle(testCase);
@@ -31,7 +32,7 @@ export class CalculationService {
       measure.measurementPeriodEnd
     );
     console.log("Results from fqm execution", results);
-    return results?.results[0]?.detailedResults;
+    return results?.results;
   }
 
   private buildMeasureBundle(measure: Measure): fhir4.Bundle {
@@ -145,6 +146,6 @@ export class CalculationService {
   }
 }
 
-export default function useCalculation(): CalculationService {
+export default function calculationService(): CalculationService {
   return new CalculationService();
 }
