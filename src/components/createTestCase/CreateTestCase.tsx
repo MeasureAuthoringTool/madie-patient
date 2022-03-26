@@ -32,7 +32,7 @@ import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import DesktopDatePicker from "@mui/lab/DesktopDatePicker";
 import { TextField } from "@mui/material";
 import useCalculation from "../../api/useCalculation";
-import { add, parseISO } from "date-fns";
+import { add, parse, parseISO } from "date-fns";
 
 const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
@@ -231,8 +231,12 @@ const CreateTestCase = () => {
         .fetchMeasure(measureId)
         .then((measure) => {
           setMeasure(measure);
-          setMeasurementPeriodStart(measure.measurementPeriodStart);
-          setMeasurementPeriodEnd(measure.measurementPeriodEnd);
+          setMeasurementPeriodStart(
+            parse("yyyy-MM-dd", measure.measurementPeriodStart, new Date())
+          );
+          setMeasurementPeriodEnd(
+            parse("yyyy-MM-dd", measure.measurementPeriodStart, new Date())
+          );
           // TODO: replace this with the groups off the measure once those are being persisted
           setMeasureGroups([
             {
@@ -309,14 +313,14 @@ const CreateTestCase = () => {
   };
 
   const calculate = (): void => {
-    let tempTestCase = { ...testCase };
+    let modifiedTestCase = { ...testCase };
     if (isModified()) {
-      tempTestCase.json = editorVal;
+      modifiedTestCase.json = editorVal;
     }
     calculation.current
       .calculateTestCases(
         measure,
-        [tempTestCase],
+        [modifiedTestCase],
       )
       .then((result) => {
         /* eslint no-console:off */

@@ -1,5 +1,4 @@
 import { Calculator } from "fqm-execution";
-import { format } from "date-fns";
 import {
   CalculationOutput,
   DetailedPopulationGroupResult,
@@ -7,6 +6,8 @@ import {
 import TestCase from "../models/TestCase";
 import Measure from "../models/Measure";
 import { FHIRHelpers } from "../util/FHIRHelpers";
+import { getFhirMeasurePopulationCode } from "../util/PopulationsMap";
+import { PopulationType } from "../models/MeasurePopulation";
 
 // TODO consider converting into a context.
 // OR a re-usable hook.
@@ -33,8 +34,8 @@ export class CalculationService {
     return results?.results[0]?.detailedResults;
   }
 
-  buildMeasureBundle(measure: Measure): fhir4.Bundle {
-    return {
+  private buildMeasureBundle(measure: Measure): fhir4.Bundle {
+    const bundle: fhir4.Bundle = {
       resourceType: "Bundle",
       type: "transaction",
       entry: [
@@ -47,63 +48,7 @@ export class CalculationService {
               `http://ecqi.healthit.gov/ecqms/Library/${measure.cqlLibraryName}`,
             ],
             // Hardcoded measure group: Proportion with IPP, NUM, and DENOM.
-            group: [
-              {
-                population: [
-                  {
-                    id: "27CB432E-90F5-410D-AB6E-8595CB123344",
-                    code: {
-                      coding: [
-                        {
-                          system:
-                            "http://terminology.hl7.org/CodeSystem/measure-population",
-                          code: "initial-population",
-                          display: "Initial Population",
-                        },
-                      ],
-                    },
-                    criteria: {
-                      language: "text/cql.identifier",
-                      expression: "ipp",
-                    },
-                  },
-                  {
-                    id: "0E19CEC4-017E-4BA5-89E2-1710CB300B92",
-                    code: {
-                      coding: [
-                        {
-                          system:
-                            "http://terminology.hl7.org/CodeSystem/measure-population",
-                          code: "denominator",
-                          display: "Denominator",
-                        },
-                      ],
-                    },
-                    criteria: {
-                      language: "text/cql.identifier",
-                      expression: "denom",
-                    },
-                  },
-                  {
-                    id: "6505FF9E-A6BE-4134-809C-46294A10DA2C",
-                    code: {
-                      coding: [
-                        {
-                          system:
-                            "http://terminology.hl7.org/CodeSystem/measure-population",
-                          code: "numerator",
-                          display: "Numerator",
-                        },
-                      ],
-                    },
-                    criteria: {
-                      language: "text/cql.identifier",
-                      expression: "num",
-                    },
-                  },
-                ],
-              },
-            ],
+            group: [],
           },
           request: { method: "PUT", url: `Measure/${measure.cqlLibraryName}` },
         },
@@ -134,6 +79,51 @@ export class CalculationService {
         // FHIR Helpers
         { ...FHIRHelpers },
       ],
+    };
+    const measureResource: fhir4.Measure = bundle.entry.find(
+      (e) => e.resource.resourceType === "Measure"
+    ).resource as fhir4.Measure;
+
+    this.buildMeasureGroups(measure, measureResource);
+
+    return bundle;
+  }
+
+  private buildMeasureGroups(measure: Measure, measureResource: fhir4.Measure) {
+    measure.groups.map((group) => {
+      const fhirMeasureGroup: fhir4.MeasureGroup = {};
+      fhirMeasureGroup.population = this.buildMeasureGroup(group.population);
+      measureResource.group.push(fhirMeasureGroup);
+    });
+  }
+
+  private buildMeasureGroup(
+    measurePopulations: PopulationType
+  ): fhir4.MeasureGroupPopulation[] {
+    const msrPops: [string, string][] = Object.entries(measurePopulations);
+    return msrPops.map((population) => {
+      return this.buildMeasureGroupPopulation(population);
+    });
+  }
+
+  private buildMeasureGroupPopulation(
+    measurePopulation: [string, string]
+  ): fhir4.MeasureGroupPopulation {
+    return {
+      code: {
+        coding: [
+          {
+            system: "http://terminology.hl7.org/CodeSystem/measure-population",
+            code: getFhirMeasurePopulationCode(measurePopulation[0]),
+            display: measurePopulation[0],
+          },
+        ],
+      },
+      criteria: {
+        language: "text/cql.identifier",
+        // TODO Use correct display content.
+        expression: measurePopulation[1],
+      },
     };
   }
 
