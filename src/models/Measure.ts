@@ -32,8 +32,8 @@ export default interface Measure {
   lastModifiedBy: string;
   model: Model | "";
   measureMetaData?: MeasureMetadata;
-  measurementPeriodStart: Date;
-  measurementPeriodEnd: Date;
+  measurementPeriodStart: string;
+  measurementPeriodEnd: string;
   groups?: Array<Group>;
   elmJson?: string;
 }

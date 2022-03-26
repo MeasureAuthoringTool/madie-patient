@@ -11,8 +11,9 @@ import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import DateAdapter from "@mui/lab/AdapterDateFns";
 import DesktopDatePicker from "@mui/lab/DesktopDatePicker";
 import { TextField } from "@mui/material";
-import { isValid } from "date-fns";
-import useCalculation from "../../api/useCalculation";
+import { format, isValid, parseISO } from "date-fns";
+import calculationService from "../../api/CalculationService";
+import Measure from "../../models/Measure";
 
 const TH = tw.th`p-3 border-b text-left text-sm font-bold uppercase`;
 const ErrorAlert = tw.div`bg-red-100 text-red-700 rounded-lg m-1 p-3`;
@@ -20,13 +21,13 @@ const ErrorAlert = tw.div`bg-red-100 text-red-700 rounded-lg m-1 p-3`;
 const TestCaseList = () => {
   const [testCases, setTestCases] = useState<TestCase[]>();
   const [error, setError] = useState("");
-  const [measure, setMeasure] = useState(null);
-  const [measurementPeriodStart, setMeasurementPeriodStart] = useState(null);
-  const [measurementPeriodEnd, setMeasurementPeriodEnd] = useState(null);
+  const [measure, setMeasure] = useState<Measure>(null);
+  const [measurementPeriodStart, setMeasurementPeriodStart] = useState<Date>();
+  const [measurementPeriodEnd, setMeasurementPeriodEnd] = useState<Date>();
   const { measureId } = useParams<{ measureId: string }>();
   const testCaseService = useRef(useTestCaseServiceApi());
   const measureService = useRef(useMeasureServiceApi());
-  const calculation = useRef(useCalculation());
+  const calculation = useRef(calculationService());
 
   const [isExecuteButtonClicked, setisExecuteButtonClicked] = useState(false);
 
@@ -37,8 +38,10 @@ const TestCaseList = () => {
       .fetchMeasure(measureId)
       .then((measure) => {
         setMeasure(measure);
-        setMeasurementPeriodStart(measure.measurementPeriodStart);
-        setMeasurementPeriodEnd(measure.measurementPeriodEnd);
+        if (measure?.measurementPeriodStart)
+          setMeasurementPeriodStart(parseISO(measure.measurementPeriodStart));
+        if (measure?.measurementPeriodEnd)
+          setMeasurementPeriodEnd(parseISO(measure.measurementPeriodEnd));
       })
       .catch((error) => {
         console.error(
@@ -62,22 +65,30 @@ const TestCaseList = () => {
 
   useEffect(() => {
     if (
+      measurementPeriodStart &&
       isValid(measurementPeriodStart) &&
-      measure.measurementPeriodStart !== measurementPeriodStart
+      measure?.measurementPeriodStart &&
+      measurementPeriodStart !== parseISO(measure?.measurementPeriodStart)
     ) {
-      const updatedMeasure = { ...measure };
-      updatedMeasure.measurementPeriodStart = measurementPeriodStart;
-      measureService.current.updateMeasure(updatedMeasure);
+      measure.measurementPeriodStart = format(
+        measurementPeriodStart,
+        "yyyy-MM-dd"
+      );
+      measureService.current.updateMeasure(measure);
     }
+  }, [measure, measurementPeriodStart]);
+
+  useEffect(() => {
     if (
+      measurementPeriodEnd &&
       isValid(measurementPeriodEnd) &&
-      measure.measurementPeriodEnd !== measurementPeriodEnd
+      measure?.measurementPeriodEnd &&
+      measurementPeriodEnd !== parseISO(measure?.measurementPeriodEnd)
     ) {
-      const updatedMeasure = { ...measure };
-      updatedMeasure.measurementPeriodEnd = measurementPeriodEnd;
-      measureService.current.updateMeasure(updatedMeasure);
+      measure.measurementPeriodEnd = format(measurementPeriodEnd, "yyyy-MM-dd");
+      measureService.current.updateMeasure(measure);
     }
-  }, [measurementPeriodStart, measurementPeriodEnd]);
+  }, [measure, measurementPeriodEnd]);
 
   //MAT-3911: the following is pure mockup data, need to be replaced by real data
   const executeTestCasesHandler = () => {
@@ -113,6 +124,8 @@ const TestCaseList = () => {
           <LocalizationProvider dateAdapter={DateAdapter}>
             <DesktopDatePicker
               data-testid="measurement-period-start"
+              readOnly={true}
+              disableOpenPicker={true}
               label="Start"
               inputFormat="MM/dd/yyyy"
               value={measurementPeriodStart}
@@ -125,6 +138,8 @@ const TestCaseList = () => {
           <LocalizationProvider dateAdapter={DateAdapter}>
             <DesktopDatePicker
               data-testid="measurement-period-end"
+              readOnly={true}
+              disableOpenPicker={true}
               label="End"
               inputFormat="MM/dd/yyyy"
               value={measurementPeriodEnd}
