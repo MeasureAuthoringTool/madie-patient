@@ -41,7 +41,7 @@ describe("Group Populations", () => {
     );
 
     const populationValuesLabel = screen.getByText(
-      "Group One Population Values"
+      "Group 1 (Continuous Variable) Population Values"
     );
     expect(populationValuesLabel).toBeInTheDocument();
 
@@ -191,7 +191,7 @@ describe("Group Populations", () => {
     userEvent.click(ippCbs[1]);
     expect(handleChange).toHaveBeenCalledWith([
       {
-        group: "Group One",
+        groupId: "Group1_ID",
         scoring: MeasureScoring.CONTINUOUS_VARIABLE,
         populationValues: [
           {

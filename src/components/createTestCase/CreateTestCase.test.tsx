@@ -282,7 +282,7 @@ describe("CreateTestCase component", () => {
               name: MeasurePopulation.INITIAL_POPULATION,
               expected: true,
               actual: false,
-            }
+            },
           ],
         },
       ],
@@ -296,7 +296,7 @@ describe("CreateTestCase component", () => {
             measureScoring: MeasureScoring.CONTINUOUS_VARIABLE,
             groups: [
               {
-                groupId: "Group1_ID",
+                id: "Group1_ID",
                 scoring: "Cohort",
                 population: {
                   initialPopulation: "Pop1",
@@ -356,9 +356,6 @@ describe("CreateTestCase component", () => {
       "test-population-initialPopulation-expected"
     );
     expect(ippExpectedCb).toBeChecked();
-    await waitFor(() => {
-      expect(mpExpectedCb).toBeChecked();
-    });
 
     await waitFor(() => {
       expect(descriptionInput).toHaveTextContent(testCaseDescription);
@@ -381,22 +378,12 @@ describe("CreateTestCase component", () => {
     expect(updatedTestCase.series).toEqual("SeriesB");
     expect(updatedTestCase.groupPopulations).toEqual([
       {
-        group: "Group One",
-        scoring: MeasureScoring.RATIO,
+        groupId: "Group1_ID",
+        scoring: MeasureScoring.COHORT,
         populationValues: [
           {
             name: MeasurePopulation.INITIAL_POPULATION,
             expected: true,
-            actual: false,
-          },
-          {
-            name: MeasurePopulation.MEASURE_POPULATION,
-            expected: true,
-            actual: false,
-          },
-          {
-            name: MeasurePopulation.MEASURE_POPULATION_EXCLUSION,
-            expected: false,
             actual: false,
           },
         ],

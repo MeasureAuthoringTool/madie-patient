@@ -188,11 +188,6 @@ const CreateTestCase = () => {
             } else {
               nextTc.groupPopulations = [];
             }
-            // if (_.isNil(tc.groupPopulations) && measure && measure.groups) {
-            //   nextTc.groupPopulations = mapMeasureGroups(measure.groups);
-            // } else if (_.isNil(tc.groupPopulations)) {
-            //   nextTc.groupPopulations = [];
-            // }
             resetForm({ values: nextTc });
             handleHapiOutcome(tc?.hapiOperationOutcome);
           })
