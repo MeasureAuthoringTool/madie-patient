@@ -1,7 +1,6 @@
 import { Calculator } from "fqm-execution";
 import {
   CalculationOutput,
-  DetailedPopulationGroupResult,
   ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
 import TestCase from "../models/TestCase";

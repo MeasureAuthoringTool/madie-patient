@@ -32,7 +32,7 @@ import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import DesktopDatePicker from "@mui/lab/DesktopDatePicker";
 import { TextField } from "@mui/material";
 import calculationService from "../../api/CalculationService";
-import { add, parse, parseISO } from "date-fns";
+import { parseISO } from "date-fns";
 
 const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
@@ -312,7 +312,7 @@ const CreateTestCase = () => {
       .calculateTestCases(measure, [modifiedTestCase])
       .then((result) => {
         /* eslint no-console:off */
-        console.dir(result[0].detailedResults);
+        console.dir(result[0]?.detailedResults);
       });
   };
 
