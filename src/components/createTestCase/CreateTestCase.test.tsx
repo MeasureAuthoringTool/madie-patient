@@ -276,10 +276,15 @@ describe("CreateTestCase component", () => {
       groupPopulations: [
         {
           groupId: "Group1_ID",
-          scoring: MeasureScoring.COHORT,
+          scoring: MeasureScoring.CONTINUOUS_VARIABLE,
           populationValues: [
             {
               name: MeasurePopulation.INITIAL_POPULATION,
+              expected: true,
+              actual: false,
+            },
+            {
+              name: MeasurePopulation.MEASURE_POPULATION,
               expected: true,
               actual: false,
             },
@@ -318,7 +323,7 @@ describe("CreateTestCase component", () => {
     );
 
     const g1PopulationValues = await screen.findByText(
-      "Group 1 (Cohort) Population Values"
+      "Group 1 (Continuous Variable) Population Values"
     );
     expect(g1PopulationValues).toBeInTheDocument();
 
@@ -356,6 +361,11 @@ describe("CreateTestCase component", () => {
       "test-population-initialPopulation-expected"
     );
     expect(ippExpectedCb).toBeChecked();
+    const mpExpectedCb = await screen.getByTestId(
+      "test-population-measurePopulation-expected"
+    );
+    expect(mpExpectedCb).toBeChecked();
+    userEvent.click(mpExpectedCb);
 
     await waitFor(() => {
       expect(descriptionInput).toHaveTextContent(testCaseDescription);
@@ -379,11 +389,16 @@ describe("CreateTestCase component", () => {
     expect(updatedTestCase.groupPopulations).toEqual([
       {
         groupId: "Group1_ID",
-        scoring: MeasureScoring.COHORT,
+        scoring: MeasureScoring.CONTINUOUS_VARIABLE,
         populationValues: [
           {
             name: MeasurePopulation.INITIAL_POPULATION,
             expected: true,
+            actual: false,
+          },
+          {
+            name: MeasurePopulation.MEASURE_POPULATION,
+            expected: false,
             actual: false,
           },
         ],
@@ -1007,7 +1022,7 @@ describe("CreateTestCase component", () => {
     );
   });
 
-  it("should handle displaying a test case with null groupPoulation data", async () => {
+  it("should handle displaying a test case with null groupPopulation data", async () => {
     const testCase = {
       id: "1234",
       description: "Test IPP",
@@ -1021,6 +1036,50 @@ describe("CreateTestCase component", () => {
           data: {
             id: "m1234",
             measureScoring: MeasureScoring.CONTINUOUS_VARIABLE,
+            groups: [
+              {
+                id: "Group1_ID",
+                scoring: "Cohort",
+                population: {
+                  initialPopulation: "Pop1",
+                },
+              },
+            ],
+          },
+        });
+      } else if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
+      }
+      return Promise.resolve({ data: testCase });
+    });
+
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/1234"],
+      "/measures/:measureId/edit/test-cases/:id",
+      <CreateTestCase />
+    );
+
+    const ippRow = await screen.findByTestId(
+      "test-row-population-id-initialPopulation"
+    );
+    expect(ippRow).toBeInTheDocument();
+  });
+
+  it("should show message when no groups are present", async () => {
+    const testCase = {
+      id: "1234",
+      description: "Test IPP",
+      series: "SeriesA",
+      json: `{"test":"test"}`,
+      groupPopulations: null,
+    } as TestCase;
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.startsWith(serviceConfig.measureService.baseUrl)) {
+        return Promise.resolve({
+          data: {
+            id: "m1234",
+            measureScoring: MeasureScoring.CONTINUOUS_VARIABLE,
+            groups: null,
           },
         });
       } else if (args && args.endsWith("series")) {
@@ -1039,18 +1098,6 @@ describe("CreateTestCase component", () => {
       "No populations for current scoring. Please make sure at least one measure group has been created."
     );
     expect(errorMessage).toBeInTheDocument();
-    // const ippRow = screen.getByTestId(
-    //   "test-row-population-id-initialPopulation"
-    // );
-    // const msrpoplRow = screen.getByTestId(
-    //   "test-row-population-id-measurePopulation"
-    // );
-    // const msrpoplexRow = screen.getByTestId(
-    //   "test-row-population-id-measurePopulationExclusion"
-    // );
-    // expect(ippRow).toBeInTheDocument();
-    // expect(msrpoplRow).toBeInTheDocument();
-    // expect(msrpoplexRow).toBeInTheDocument();
   });
 
   it("should render 404 page", async () => {

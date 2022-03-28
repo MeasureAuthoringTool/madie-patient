@@ -1,6 +1,7 @@
 import React, {
   Dispatch,
   SetStateAction,
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -122,7 +123,6 @@ const CreateTestCase = () => {
     series: [],
   });
   const [measure, setMeasure] = useState<Measure>(null);
-  // const [measureGroups, setMeasureGroups] = useState(null);
   const [editor, setEditor] = useState<Ace.Editor>(null);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
   const formik = useFormik({
@@ -146,9 +146,12 @@ const CreateTestCase = () => {
     };
   };
 
-  const mapMeasureGroups = (measureGroups: Group[]): GroupPopulation[] => {
-    return measureGroups.map(mapMeasureGroup);
-  };
+  const mapMeasureGroups = useCallback(
+    (measureGroups: Group[]): GroupPopulation[] => {
+      return measureGroups.map(mapMeasureGroup);
+    },
+    []
+  );
 
   useEffect(() => {
     if (!seriesState.loaded) {
@@ -221,6 +224,7 @@ const CreateTestCase = () => {
     setTestCase,
     resetForm,
     measure,
+    mapMeasureGroups,
     seriesState.loaded,
   ]);
 
@@ -230,13 +234,6 @@ const CreateTestCase = () => {
         .fetchMeasure(measureId)
         .then((measure) => {
           setMeasure(measure);
-          // TODO: replace this with the groups off the measure once those are being persisted
-          // setMeasureGroups([
-          //   {
-          //     groupName: "Group One",
-          //     scoring: measure.measureScoring,
-          //   },
-          // ]);
         })
         .catch((error) => {
           console.error(
