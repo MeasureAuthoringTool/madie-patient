@@ -48,7 +48,6 @@ export class CalculationService {
             library: [
               `http://ecqi.healthit.gov/ecqms/Library/${measure.cqlLibraryName}`,
             ],
-            // Hardcoded measure group: Proportion with IPP, NUM, and DENOM.
             group: [],
           },
           request: { method: "PUT", url: `Measure/${measure.cqlLibraryName}` },
