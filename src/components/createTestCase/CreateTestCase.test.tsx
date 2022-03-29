@@ -351,7 +351,7 @@ describe("CreateTestCase component", () => {
       ).toBeInTheDocument();
     });
 
-    const seriesInput = screen.getByRole("textbox", { name: "Series" });
+    const seriesInput = screen.getByRole("combobox", { name: "Series" });
     expect(seriesInput).toHaveValue("SeriesA");
 
     const descriptionInput = screen.getByTestId("create-test-case-description");
