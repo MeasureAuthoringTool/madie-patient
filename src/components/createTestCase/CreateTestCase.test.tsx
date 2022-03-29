@@ -16,6 +16,10 @@ import { MeasureScoring } from "../../models/MeasureScoring";
 import { MeasurePopulation } from "../../models/MeasurePopulation";
 import TestCaseRoutes from "../routes/TestCaseRoutes";
 import { act } from "react-dom/test-utils";
+import calculationService from "../../api/CalculationService";
+import { simpleMeasureFixture } from "./__mocks__/simpleMeasureFixture";
+import { testCaseFixture } from "./__mocks__/testCaseFixture";
+import { ExecutionResult } from "fqm-execution/build/types/Calculator";
 
 //temporary solution (after jest updated to version 27) for error: thrown: "Exceeded timeout of 5000 ms for a test.
 jest.setTimeout(60000);
@@ -84,6 +88,8 @@ describe("CreateTestCase component", () => {
                 },
               },
             ],
+            measurementPeriodStart: "2023-01-01",
+            measurementPeriodEnd: "2023-12-31",
           },
         });
       } else if (args && args.endsWith("series")) {
@@ -96,7 +102,7 @@ describe("CreateTestCase component", () => {
     jest.clearAllMocks();
   });
 
-  it("should render create test case page", () => {
+  it("should render create test case page", async () => {
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
       "/measures/:measureId/edit/test-cases/create",
@@ -308,6 +314,8 @@ describe("CreateTestCase component", () => {
                 },
               },
             ],
+            measurementPeriodStart: "2023-01-01",
+            measurementPeriodEnd: "2023-12-31",
           },
         });
       } else if (args && args.endsWith("series")) {
@@ -343,7 +351,7 @@ describe("CreateTestCase component", () => {
       ).toBeInTheDocument();
     });
 
-    const seriesInput = screen.getByRole("textbox", { name: "Series" });
+    const seriesInput = screen.getByRole("combobox", { name: "Series" });
     expect(seriesInput).toHaveValue("SeriesA");
 
     const descriptionInput = screen.getByTestId("create-test-case-description");
@@ -361,7 +369,7 @@ describe("CreateTestCase component", () => {
       "test-population-initialPopulation-expected"
     );
     expect(ippExpectedCb).toBeChecked();
-    const mpExpectedCb = await screen.getByTestId(
+    const mpExpectedCb = await screen.findByTestId(
       "test-population-measurePopulation-expected"
     );
     expect(mpExpectedCb).toBeChecked();
@@ -607,6 +615,8 @@ describe("CreateTestCase component", () => {
           data: {
             id: "m1234",
             measureScoring: MeasureScoring.COHORT,
+            measurementPeriodStart: "2023-01-01",
+            measurementPeriodEnd: "2023-12-31",
           },
         });
       } else if (args && args.endsWith("series")) {
@@ -645,6 +655,8 @@ describe("CreateTestCase component", () => {
           data: {
             id: "m1234",
             measureScoring: MeasureScoring.COHORT,
+            measurementPeriodStart: "2023-01-01",
+            measurementPeriodEnd: "2023-12-31",
           },
         });
       } else if (args && args.endsWith("series")) {
@@ -1045,6 +1057,8 @@ describe("CreateTestCase component", () => {
                 },
               },
             ],
+            measurementPeriodStart: "2023-01-01",
+            measurementPeriodEnd: "2023-12-31",
           },
         });
       } else if (args && args.endsWith("series")) {
@@ -1122,5 +1136,33 @@ describe("CreateTestCase component", () => {
     expect(screen.getByTestId("404-page")).toBeInTheDocument();
     expect(screen.getByText("404 - Not Found!")).toBeInTheDocument();
     expect(screen.getByTestId("404-page-link")).toBeInTheDocument();
+  });
+});
+
+describe("Measure Calculation", () => {
+  it("calculates a measure against a test case", async () => {
+    const calculationSrv = calculationService();
+    const calculationResults: ExecutionResult[] =
+      await calculationSrv.calculateTestCases(simpleMeasureFixture, [
+        testCaseFixture,
+      ]);
+    expect(calculationResults).toHaveLength(1);
+    expect(calculationResults[0].detailedResults).toHaveLength(1);
+
+    const populationResults =
+      calculationResults[0].detailedResults[0].populationResults;
+    expect(populationResults).toHaveLength(3);
+    expect(populationResults).toContainEqual({
+      populationType: "initial-population",
+      result: true,
+    });
+    expect(populationResults).toContainEqual({
+      populationType: "denominator",
+      result: true,
+    });
+    expect(populationResults).toContainEqual({
+      populationType: "numerator",
+      result: false,
+    });
   });
 });

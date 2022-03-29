@@ -36,6 +36,7 @@ const Editor = ({
           name="ace-editor-wrapper"
           enableBasicAutocompletion={true}
           width="100%"
+          height="909px"
           showPrintMargin={true}
           showGutter={true}
           setOptions={{

@@ -5,6 +5,7 @@ import TestCaseRoutes from "./TestCaseRoutes";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
+import { MeasureScoring } from "../../models/MeasureScoring";
 
 // mock the editor cause we don't care for this test and it gets rid of errors
 jest.mock("../editor/Editor", () => () => <div>editor contents</div>);
@@ -60,6 +61,18 @@ describe("TestCaseRoutes", () => {
     mockedAxios.get.mockImplementation((args) => {
       if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["SeriesA"] });
+      } else if (
+        args &&
+        args.startsWith(serviceConfig.measureService.baseUrl)
+      ) {
+        return Promise.resolve({
+          data: {
+            id: "m1234",
+            measureScoring: MeasureScoring.COHORT,
+            measurementPeriodStart: "2023-01-01",
+            measurementPeriodEnd: "2023-12-31",
+          },
+        });
       } else if (args && args.endsWith("test-cases")) {
         return Promise.resolve({
           data: [
@@ -86,19 +99,21 @@ describe("TestCaseRoutes", () => {
 
     const testCaseTitle = await screen.findByText("TC1");
     expect(testCaseTitle).toBeInTheDocument();
-    const newBtn = screen.getByRole("button", { name: "New Test Case" });
+    const newBtn = await screen.findByRole("button", { name: "New Test Case" });
     userEvent.click(newBtn);
-    const testCaseForm = screen.getByTestId("create-test-case-form");
+    const testCaseForm = await screen.findByTestId("create-test-case-form");
     expect(testCaseForm).toBeInTheDocument();
-    const tcDescriptionLabel = screen.getByText("Test Case Description");
+    const tcDescriptionLabel = await screen.findByText("Test Case Description");
     expect(tcDescriptionLabel).toBeInTheDocument();
-    const tcDescriptionInput = screen.getByTestId(
+    const tcDescriptionInput = await screen.findByTestId(
       "create-test-case-description"
     );
     expect(tcDescriptionInput).toBeInTheDocument();
-    const createBtn = screen.getByRole("button", { name: "Create Test Case" });
+    const createBtn = await screen.findByRole("button", {
+      name: "Create Test Case",
+    });
     expect(createBtn).toBeInTheDocument();
-    const cancelBtn = screen.getByRole("button", { name: "Cancel" });
+    const cancelBtn = await screen.findByRole("button", { name: "Cancel" });
     expect(cancelBtn).toBeInTheDocument();
     const newBtn2 = screen.queryByRole("button", { name: "New Test Case" });
     expect(newBtn2).not.toBeInTheDocument();
@@ -108,6 +123,18 @@ describe("TestCaseRoutes", () => {
     mockedAxios.get.mockImplementation((args) => {
       if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["SeriesA"] });
+      } else if (
+        args &&
+        args.startsWith(serviceConfig.measureService.baseUrl)
+      ) {
+        return Promise.resolve({
+          data: {
+            id: "m1234",
+            measureScoring: MeasureScoring.COHORT,
+            measurementPeriodStart: "2023-01-01",
+            measurementPeriodEnd: "2023-12-31",
+          },
+        });
       } else if (args && args.endsWith("test-cases")) {
         return Promise.resolve({
           data: [
@@ -134,14 +161,16 @@ describe("TestCaseRoutes", () => {
 
     const testCaseTitle = await screen.findByText("TC1");
     expect(testCaseTitle).toBeInTheDocument();
-    const newBtn = screen.getByRole("button", { name: "New Test Case" });
+    const newBtn = await screen.findByRole("button", { name: "New Test Case" });
     userEvent.click(newBtn);
-    const testCaseForm = screen.getByTestId("create-test-case-form");
+    const testCaseForm = await screen.findByTestId("create-test-case-form");
     expect(testCaseForm).toBeInTheDocument();
-    const cancelBtn = screen.getByRole("button", { name: "Cancel" });
+    const cancelBtn = await screen.findByRole("button", { name: "Cancel" });
     expect(cancelBtn).toBeInTheDocument();
     userEvent.click(cancelBtn);
-    const newBtn2 = screen.getByRole("button", { name: "New Test Case" });
+    const newBtn2 = await screen.findByRole("button", {
+      name: "New Test Case",
+    });
     expect(newBtn2).toBeInTheDocument();
   });
 

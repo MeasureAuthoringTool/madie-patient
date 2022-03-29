@@ -31,6 +31,12 @@ import { getPopulationsForScoring } from "../../util/PopulationsMap";
 import Measure, { Group } from "../../models/Measure";
 import useMeasureServiceApi from "../../api/useMeasureServiceApi";
 import GroupPopulations from "../populations/GroupPopulations";
+import DateAdapter from "@mui/lab/AdapterDateFns";
+import LocalizationProvider from "@mui/lab/LocalizationProvider";
+import DesktopDatePicker from "@mui/lab/DesktopDatePicker";
+import { TextField } from "@mui/material";
+import calculationService from "../../api/CalculationService";
+import { parseISO } from "date-fns";
 
 const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
@@ -113,6 +119,7 @@ const CreateTestCase = () => {
   // Avoid infinite dependency render. May require additional error handling for timeouts.
   const testCaseService = useRef(useTestCaseServiceApi());
   const measureService = useRef(useMeasureServiceApi());
+  const calculation = useRef(calculationService());
   const [alert, setAlert] = useState<AlertProps>(null);
   const [testCase, setTestCase] = useState<TestCase>(null);
   const [editorVal, setEditorVal]: [string, Dispatch<SetStateAction<string>>] =
@@ -125,6 +132,8 @@ const CreateTestCase = () => {
   const [measure, setMeasure] = useState<Measure>(null);
   const [editor, setEditor] = useState<Ace.Editor>(null);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
+  const [measurementPeriodStart, setMeasurementPeriodStart] = useState<Date>();
+  const [measurementPeriodEnd, setMeasurementPeriodEnd] = useState<Date>();
   const formik = useFormik({
     initialValues: { ...INITIAL_VALUES },
     validationSchema: TestCaseValidator,
@@ -234,6 +243,8 @@ const CreateTestCase = () => {
         .fetchMeasure(measureId)
         .then((measure) => {
           setMeasure(measure);
+          setMeasurementPeriodStart(parseISO(measure.measurementPeriodStart));
+          setMeasurementPeriodEnd(parseISO(measure.measurementPeriodEnd));
         })
         .catch((error) => {
           console.error(
@@ -297,6 +308,19 @@ const CreateTestCase = () => {
         message: "An error occurred while updating the test case.",
       }));
     }
+  };
+
+  const calculate = (): void => {
+    let modifiedTestCase = { ...testCase };
+    if (isModified()) {
+      modifiedTestCase.json = editorVal;
+    }
+    calculation.current
+      .calculateTestCases(measure, [modifiedTestCase])
+      .then((result) => {
+        /* eslint no-console:off */
+        console.dir(result[0]?.detailedResults);
+      });
   };
 
   function handleTestCaseResponse(
@@ -424,6 +448,10 @@ const CreateTestCase = () => {
               data-testid="create-test-case-form"
               onSubmit={formik.handleSubmit}
             >
+              {/*
+              TODO Replace with re-usable form component
+               label, input, and error => single input control component
+              */}
               <FormControl>
                 <Label text="Test Case Title" />
                 <TestCaseTitle
@@ -470,6 +498,33 @@ const CreateTestCase = () => {
                   }}
                 />
               </FormControl>
+              <span tw="text-lg">Measurement Period</span>
+              <FormControl data-testid="create-test-case-measurement-period-start">
+                <LocalizationProvider dateAdapter={DateAdapter}>
+                  <DesktopDatePicker
+                    readOnly={true}
+                    disableOpenPicker={true}
+                    label="Start"
+                    inputFormat="MM/dd/yyyy"
+                    value={measurementPeriodStart}
+                    onChange={(startDate) => {}}
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                </LocalizationProvider>
+              </FormControl>
+              <FormControl data-testid="create-test-case-measurement-period-end">
+                <LocalizationProvider dateAdapter={DateAdapter}>
+                  <DesktopDatePicker
+                    readOnly={true}
+                    disableOpenPicker={true}
+                    label="End"
+                    inputFormat="MM/dd/yyyy"
+                    value={measurementPeriodEnd}
+                    onChange={(endDate) => {}}
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                </LocalizationProvider>
+              </FormControl>
               <FormActions>
                 <Button
                   buttonTitle={
@@ -478,6 +533,13 @@ const CreateTestCase = () => {
                   type="submit"
                   data-testid="create-test-case-button"
                   disabled={!isModified()}
+                />
+                <Button
+                  buttonTitle="Run Test"
+                  type="button"
+                  variant="secondary"
+                  onClick={calculate}
+                  data-testid="create-test-case-run-test-button"
                 />
                 <Button
                   buttonTitle="Cancel"

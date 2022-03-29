@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import TestCaseSeries from "./TestCaseSeries";
 import userEvent from "@testing-library/user-event";
@@ -12,9 +12,10 @@ describe("", () => {
         value={"Option1"}
         onChange={handleChange}
         seriesOptions={options}
+        sx={{}}
       />
     );
-    const seriesAutocomplete = screen.getByRole("textbox");
+    const seriesAutocomplete = screen.getByRole("combobox");
     expect(seriesAutocomplete).toBeInTheDocument();
   });
 
@@ -26,9 +27,10 @@ describe("", () => {
         value={"Option1"}
         onChange={handleChange}
         seriesOptions={options}
+        sx={{}}
       />
     );
-    const seriesAutocomplete = screen.getByRole("textbox");
+    const seriesAutocomplete = screen.getByRole("combobox");
     userEvent.click(seriesAutocomplete);
     const list = await screen.findByRole("listbox");
     expect(list).toBeInTheDocument();
@@ -46,9 +48,10 @@ describe("", () => {
         value={"Option1"}
         onChange={handleChange}
         seriesOptions={options}
+        sx={{}}
       />
     );
-    const seriesAutocomplete = screen.getByRole("textbox");
+    const seriesAutocomplete = screen.getByRole("combobox");
     userEvent.click(seriesAutocomplete);
     const list = await screen.findByRole("listbox");
     expect(list).toBeInTheDocument();
@@ -66,9 +69,10 @@ describe("", () => {
         value={"Option1"}
         onChange={handleChange}
         seriesOptions={options}
+        sx={{}}
       />
     );
-    const seriesAutocomplete = screen.getByRole("textbox");
+    const seriesAutocomplete = screen.getByRole("combobox");
     userEvent.click(seriesAutocomplete);
     const list = screen.queryByRole("listbox");
     expect(list).not.toBeInTheDocument();
@@ -82,9 +86,10 @@ describe("", () => {
         value={""}
         onChange={handleChange}
         seriesOptions={options}
+        sx={{}}
       />
     );
-    const seriesAutocomplete = screen.getByRole("textbox");
+    const seriesAutocomplete = screen.getByRole("combobox");
     userEvent.click(seriesAutocomplete);
     const list = await screen.findByRole("listbox");
     // screen.debug();
@@ -105,9 +110,10 @@ describe("", () => {
         value={""}
         onChange={handleChange}
         seriesOptions={options}
+        sx={{}}
       />
     );
-    const seriesAutocomplete = screen.getByRole("textbox");
+    const seriesAutocomplete = screen.getByRole("combobox");
     userEvent.click(seriesAutocomplete);
     const list = await screen.findByRole("listbox");
     // screen.debug();
@@ -129,9 +135,10 @@ describe("", () => {
         value={""}
         onChange={handleChange}
         seriesOptions={options}
+        sx={{}}
       />
     );
-    const seriesAutocomplete = screen.getByRole("textbox");
+    const seriesAutocomplete = screen.getByRole("combobox");
     userEvent.click(seriesAutocomplete);
     const list = await screen.findByRole("listbox");
     expect(list).toBeInTheDocument();
@@ -155,9 +162,10 @@ describe("", () => {
         value={""}
         onChange={handleChange}
         seriesOptions={options}
+        sx={{}}
       />
     );
-    const seriesAutocomplete = screen.getByRole("textbox");
+    const seriesAutocomplete = screen.getByRole("combobox");
     userEvent.click(seriesAutocomplete);
     const list = await screen.findByRole("listbox");
     expect(list).toBeInTheDocument();
@@ -179,9 +187,10 @@ describe("", () => {
         value={null}
         onChange={handleChange}
         seriesOptions={options}
+        sx={{}}
       />
     );
-    const seriesAutocomplete = screen.getByRole("textbox");
+    const seriesAutocomplete = screen.getByRole("combobox");
     userEvent.click(seriesAutocomplete);
     const list = await screen.findByRole("listbox");
     expect(list).toBeInTheDocument();
@@ -195,6 +204,7 @@ describe("", () => {
         value={"Option1"}
         onChange={handleChange}
         seriesOptions={options}
+        sx={{}}
       />
     );
     // logRoles(container);
@@ -215,9 +225,10 @@ describe("", () => {
         value={null}
         onChange={handleChange}
         seriesOptions={options}
+        sx={{}}
       />
     );
-    const seriesAutocomplete = screen.getByRole("textbox");
+    const seriesAutocomplete = screen.getByRole("combobox");
     userEvent.click(seriesAutocomplete);
     const list = await screen.findByRole("listbox");
     expect(list).toBeInTheDocument();
@@ -231,6 +242,7 @@ describe("", () => {
         value={"Option1"}
         onChange={handleChange}
         seriesOptions={options}
+        sx={{}}
       />
     );
     // logRoles(container);

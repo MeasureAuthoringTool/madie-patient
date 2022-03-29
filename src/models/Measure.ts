@@ -6,6 +6,7 @@ export interface MeasureMetadata {
   steward?: string;
   description?: string;
   copyright?: string;
+  disclaimer?: string;
 }
 
 export interface Group {
@@ -31,5 +32,8 @@ export default interface Measure {
   lastModifiedBy: string;
   model: Model | "";
   measureMetaData?: MeasureMetadata;
+  measurementPeriodStart: string;
+  measurementPeriodEnd: string;
   groups?: Array<Group>;
+  elmJson?: string;
 }
