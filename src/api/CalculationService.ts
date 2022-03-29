@@ -17,14 +17,10 @@ export class CalculationService {
     testCases: TestCase[]
   ): Promise<ExecutionResult[]> {
     try {
-      console.log("TestCases Calculation is called");
       const measureBundle = this.buildMeasureBundle(measure);
       const TestCaseBundles = testCases.map((testCase) => {
         return this.buildPatientBundle(testCase);
       });
-      /* eslint no-console:off */
-      console.log("measure Bundle", measureBundle);
-      console.log("TestCase Bundle", TestCaseBundles);
 
       const calculationOutput: CalculationOutput = await this.calculate(
         measureBundle,
@@ -32,7 +28,6 @@ export class CalculationService {
         measure.measurementPeriodStart,
         measure.measurementPeriodEnd
       );
-      console.log("Results from fqm execution", calculationOutput);
       return calculationOutput?.results;
     } catch (error) {
       const message = "Unable to calculate test case.";
