@@ -80,9 +80,9 @@
     "webpack-dev-server": "^4.0.0-rc.0",
     "webpack-merge": "^5.8.0"
   },
-"overrides": {
-  "cql-execution": "2.3.3"
-},
+  "overrides": {
+    "cql-execution": "2.3.3"
+  },
   "dependencies": {
     "@date-io/date-fns": "^2.13.1",
     "@emotion/react": "^11.7.1",
