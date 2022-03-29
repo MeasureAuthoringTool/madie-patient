@@ -79,6 +79,15 @@ describe("CreateTestCase component", () => {
           data: {
             id: "m1234",
             measureScoring: MeasureScoring.COHORT,
+            groups: [
+              {
+                groupId: "Group1_ID",
+                scoring: "Cohort",
+                population: {
+                  initialPopulation: "Pop1",
+                },
+              },
+            ],
             measurementPeriodStart: "2023-01-01",
             measurementPeriodEnd: "2023-12-31",
           },
@@ -99,23 +108,19 @@ describe("CreateTestCase component", () => {
       "/measures/:measureId/edit/test-cases/create",
       <CreateTestCase />
     );
-    await waitFor(() => {
-      const editor = screen.getByTestId("test-case-editor");
-      const titleTextInput = screen.getByTestId("create-test-case-title");
-      const descriptionTextArea = screen.getByTestId(
-        "create-test-case-description"
-      );
-      expect(titleTextInput).toBeInTheDocument();
-      expect(descriptionTextArea).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: "Create Test Case" })
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: "Cancel" })
-      ).toBeInTheDocument();
+    const editor = screen.getByTestId("test-case-editor");
+    const titleTextInput = screen.getByTestId("create-test-case-title");
+    const descriptionTextArea = screen.getByTestId(
+      "create-test-case-description"
+    );
+    expect(titleTextInput).toBeInTheDocument();
+    expect(descriptionTextArea).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Create Test Case" })
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
 
-      expect(editor).toBeInTheDocument();
-    });
+    expect(editor).toBeInTheDocument();
   });
 
   it("should create test case when create button is clicked", async () => {
@@ -136,17 +141,12 @@ describe("CreateTestCase component", () => {
         },
       },
     });
-    await waitFor(() => {
-      const descriptionInput = screen.getByTestId(
-        "create-test-case-description"
-      );
-      userEvent.type(descriptionInput, testCaseDescription);
 
-      const createBtn = screen.getByRole("button", {
-        name: "Create Test Case",
-      });
-      userEvent.click(createBtn);
-    });
+    const descriptionInput = screen.getByTestId("create-test-case-description");
+    userEvent.type(descriptionInput, testCaseDescription);
+
+    const createBtn = screen.getByRole("button", { name: "Create Test Case" });
+    userEvent.click(createBtn);
 
     const debugOutput = await screen.findByText(
       "Test case created successfully! Redirecting back to Test Cases..."
@@ -281,8 +281,8 @@ describe("CreateTestCase component", () => {
       json: `{"test":"test"}`,
       groupPopulations: [
         {
-          group: "Group One",
-          scoring: MeasureScoring.RATIO,
+          groupId: "Group1_ID",
+          scoring: MeasureScoring.CONTINUOUS_VARIABLE,
           populationValues: [
             {
               name: MeasurePopulation.INITIAL_POPULATION,
@@ -291,12 +291,7 @@ describe("CreateTestCase component", () => {
             },
             {
               name: MeasurePopulation.MEASURE_POPULATION,
-              expected: false,
-              actual: false,
-            },
-            {
-              name: MeasurePopulation.MEASURE_POPULATION_EXCLUSION,
-              expected: false,
+              expected: true,
               actual: false,
             },
           ],
@@ -310,6 +305,15 @@ describe("CreateTestCase component", () => {
           data: {
             id: "m1234",
             measureScoring: MeasureScoring.CONTINUOUS_VARIABLE,
+            groups: [
+              {
+                id: "Group1_ID",
+                scoring: "Cohort",
+                population: {
+                  initialPopulation: "Pop1",
+                },
+              },
+            ],
             measurementPeriodStart: "2023-01-01",
             measurementPeriodEnd: "2023-12-31",
           },
@@ -327,7 +331,7 @@ describe("CreateTestCase component", () => {
     );
 
     const g1PopulationValues = await screen.findByText(
-      "Group One Population Values"
+      "Group 1 (Continuous Variable) Population Values"
     );
     expect(g1PopulationValues).toBeInTheDocument();
 
@@ -368,10 +372,8 @@ describe("CreateTestCase component", () => {
     const mpExpectedCb = await screen.findByTestId(
       "test-population-measurePopulation-expected"
     );
+    expect(mpExpectedCb).toBeChecked();
     userEvent.click(mpExpectedCb);
-    await waitFor(() => {
-      expect(mpExpectedCb).toBeChecked();
-    });
 
     await waitFor(() => {
       expect(descriptionInput).toHaveTextContent(testCaseDescription);
@@ -394,8 +396,8 @@ describe("CreateTestCase component", () => {
     expect(updatedTestCase.series).toEqual("SeriesB");
     expect(updatedTestCase.groupPopulations).toEqual([
       {
-        group: "Group One",
-        scoring: MeasureScoring.RATIO,
+        groupId: "Group1_ID",
+        scoring: MeasureScoring.CONTINUOUS_VARIABLE,
         populationValues: [
           {
             name: MeasurePopulation.INITIAL_POPULATION,
@@ -404,11 +406,6 @@ describe("CreateTestCase component", () => {
           },
           {
             name: MeasurePopulation.MEASURE_POPULATION,
-            expected: true,
-            actual: false,
-          },
-          {
-            name: MeasurePopulation.MEASURE_POPULATION_EXCLUSION,
             expected: false,
             actual: false,
           },
@@ -558,7 +555,7 @@ describe("CreateTestCase component", () => {
     );
 
     const g1PopulationValues = await screen.findByText(
-      "Group One Population Values"
+      "Group 1 (Cohort) Population Values"
     );
     expect(g1PopulationValues).toBeInTheDocument();
 
@@ -674,11 +671,6 @@ describe("CreateTestCase component", () => {
       <CreateTestCase />
     );
 
-    const g1PopulationValues = await screen.findByText(
-      "Group One Population Values"
-    );
-    expect(g1PopulationValues).toBeInTheDocument();
-
     const debugOutput = await screen.findByText(
       "Measure does not exist, unable to load test case series!"
     );
@@ -693,7 +685,7 @@ describe("CreateTestCase component", () => {
     );
 
     const g1PopulationValues = await screen.findByText(
-      "Group One Population Values"
+      "Group 1 (Cohort) Population Values"
     );
     expect(g1PopulationValues).toBeInTheDocument();
 
@@ -1042,7 +1034,7 @@ describe("CreateTestCase component", () => {
     );
   });
 
-  it("should handle displaying a test case with null groupPoulation data", async () => {
+  it("should handle displaying a test case with null groupPopulation data", async () => {
     const testCase = {
       id: "1234",
       description: "Test IPP",
@@ -1056,6 +1048,15 @@ describe("CreateTestCase component", () => {
           data: {
             id: "m1234",
             measureScoring: MeasureScoring.CONTINUOUS_VARIABLE,
+            groups: [
+              {
+                id: "Group1_ID",
+                scoring: "Cohort",
+                population: {
+                  initialPopulation: "Pop1",
+                },
+              },
+            ],
             measurementPeriodStart: "2023-01-01",
             measurementPeriodEnd: "2023-12-31",
           },
@@ -1072,22 +1073,45 @@ describe("CreateTestCase component", () => {
       <CreateTestCase />
     );
 
-    const g1PopulationValues = await screen.findByText(
-      "Group One Population Values"
-    );
-    expect(g1PopulationValues).toBeInTheDocument();
-    const ippRow = screen.getByTestId(
+    const ippRow = await screen.findByTestId(
       "test-row-population-id-initialPopulation"
     );
-    const msrpoplRow = screen.getByTestId(
-      "test-row-population-id-measurePopulation"
-    );
-    const msrpoplexRow = screen.getByTestId(
-      "test-row-population-id-measurePopulationExclusion"
-    );
     expect(ippRow).toBeInTheDocument();
-    expect(msrpoplRow).toBeInTheDocument();
-    expect(msrpoplexRow).toBeInTheDocument();
+  });
+
+  it("should show message when no groups are present", async () => {
+    const testCase = {
+      id: "1234",
+      description: "Test IPP",
+      series: "SeriesA",
+      json: `{"test":"test"}`,
+      groupPopulations: null,
+    } as TestCase;
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.startsWith(serviceConfig.measureService.baseUrl)) {
+        return Promise.resolve({
+          data: {
+            id: "m1234",
+            measureScoring: MeasureScoring.CONTINUOUS_VARIABLE,
+            groups: null,
+          },
+        });
+      } else if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
+      }
+      return Promise.resolve({ data: testCase });
+    });
+
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/1234"],
+      "/measures/:measureId/edit/test-cases/:id",
+      <CreateTestCase />
+    );
+
+    const errorMessage = await screen.findByText(
+      "No populations for current scoring. Please make sure at least one measure group has been created."
+    );
+    expect(errorMessage).toBeInTheDocument();
   });
 
   it("should render 404 page", async () => {
