@@ -14,12 +14,13 @@ import { TextField } from "@mui/material";
 import { format, isValid, parseISO } from "date-fns";
 import calculationService from "../../api/CalculationService";
 import Measure from "../../models/Measure";
+import { ExecutionResult } from "fqm-execution/build/types/Calculator";
 
 const TH = tw.th`p-3 border-b text-left text-sm font-bold uppercase`;
 const ErrorAlert = tw.div`bg-red-100 text-red-700 rounded-lg m-1 p-3`;
 
 const TestCaseList = () => {
-  const [testCases, setTestCases] = useState<TestCase[]>();
+  const [testCases, setTestCases] = useState<TestCase[]>(null);
   const [error, setError] = useState("");
   const [measure, setMeasure] = useState<Measure>(null);
   const [measurementPeriodStart, setMeasurementPeriodStart] = useState<Date>();
@@ -28,10 +29,6 @@ const TestCaseList = () => {
   const testCaseService = useRef(useTestCaseServiceApi());
   const measureService = useRef(useMeasureServiceApi());
   const calculation = useRef(calculationService());
-
-  const [isExecuteButtonClicked, setisExecuteButtonClicked] = useState(false);
-
-  const [activeItem, setActiveItem] = React.useState(null);
 
   useEffect(() => {
     measureService.current
@@ -44,16 +41,12 @@ const TestCaseList = () => {
           setMeasurementPeriodEnd(parseISO(measure.measurementPeriodEnd));
       })
       .catch((error) => {
-        console.error(
-          `Failed to load measure. An error occurred while loading measure with ID [${measureId}]`,
-          error
-        );
+        setError(error.message);
       });
     testCaseService.current
       .getTestCasesByMeasureId(measureId)
       .then((testCaseList: TestCase[]) => {
-        //MAT-3911: only for mock up purpose
-        const listItems = testCaseList.map((testCase) => {
+        testCaseList.forEach((testCase) => {
           testCase.executionStatus = "NA";
         });
         setTestCases(testCaseList);
@@ -90,23 +83,44 @@ const TestCaseList = () => {
     }
   }, [measure, measurementPeriodEnd]);
 
-  //MAT-3911: the following is pure mockup data, need to be replaced by real data
-  const executeTestCasesHandler = () => {
+  const executeTestCases = () => {
     if (testCases) {
-      // calculation.current.calculateTestCases(measure, testCases).then(detailedResults => {
-      //   // detailedResults.
-      // });
-      let count = 0;
-      testCases.map((testCase) => {
-        if (count === 0) {
-          testCase.executionStatus = "pass";
-        } else {
-          testCase.executionStatus = "fail";
-        }
-        count = count + 1;
-      });
+      calculation.current
+        .calculateTestCases(measure, testCases)
+        .then((executionResults: ExecutionResult[]) => {
+          testCases.forEach((testCase) => {
+            const { populationResults } = executionResults.find(
+              (result) => result.patientId === testCase.id
+            ).detailedResults[0]; // Since we have only 1 population group
+
+            if (populationResults.length) {
+              const { populationValues } = testCase.groupPopulations[0];
+
+              let executionStatus = true;
+              // executionStatus is set to false if any of the populationResults (calculation result) doesn't match with populationValues (Given from testCase)
+              populationResults.forEach((populationResult) => {
+                if (executionStatus) {
+                  const expectedValue = populationValues.find(
+                    (populationValue) =>
+                      populationValue.name ==
+                      populationResult.populationType.toString()
+                  );
+
+                  if (expectedValue) {
+                    executionStatus =
+                      expectedValue.expected === populationResult.result;
+                  }
+                }
+              });
+              testCase.executionStatus = !!executionStatus ? "pass" : "fail";
+            }
+          });
+          setTestCases([...testCases]);
+        })
+        .catch((error) => {
+          setError(error.message);
+        });
     }
-    setisExecuteButtonClicked(true);
   };
 
   return (
@@ -116,8 +130,8 @@ const TestCaseList = () => {
           <Button
             buttonTitle="Execute Test Cases"
             disabled={false}
-            onClick={executeTestCasesHandler}
-            data-testid="execute-test-case-row"
+            onClick={executeTestCases}
+            data-testid="execute-test-cases-button"
           />
         </div>
         <div tw="py-2 gap-1">
@@ -161,7 +175,7 @@ const TestCaseList = () => {
             <table tw="min-w-full" data-testid="test-case-tbl">
               <thead>
                 <tr>
-                  <TH scope="col"></TH>
+                  <TH scope="col" />
                   <TH scope="col">Title</TH>
                   <TH scope="col">Series</TH>
                   <TH scope="col">Status</TH>

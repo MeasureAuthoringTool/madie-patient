@@ -47,7 +47,7 @@ const testCasePopulations: PopulationValue[] = [
 
 const TestCase = (props) => {
   const navigate = useNavigate();
-  const testCase = props.testCase;
+  const { testCase } = props;
   const [open, setOpen] = React.useState(false);
   const status = testCase.executionStatus;
   const statusColor = testCase.executionStatus === "pass" ? "success" : "error";

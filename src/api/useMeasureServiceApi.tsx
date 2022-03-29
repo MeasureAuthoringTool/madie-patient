@@ -21,7 +21,6 @@ export class MeasureServiceApi {
       return response.data;
     } catch (err) {
       const message = `Unable to fetch measure ${id}`;
-      console.error(message, err);
       throw new Error(message);
     }
   }
@@ -38,9 +37,7 @@ export class MeasureServiceApi {
       });
       return response.data;
     } catch (err) {
-      const message = `Unable to fetch measures`;
-      console.error(message);
-      console.error(err);
+      const message = `Unable to fetch measures.`;
       throw new Error(message);
     }
   }
@@ -67,7 +64,6 @@ export class MeasureServiceApi {
       return response.data;
     } catch (err) {
       const message = `Failed to create the group.`;
-      console.error(message, err);
       throw new Error(message);
     }
   }
@@ -86,7 +82,6 @@ export class MeasureServiceApi {
       return response.data;
     } catch (err) {
       const message = `Failed to update the group.`;
-      console.error(message, err);
       throw new Error(message);
     }
   }

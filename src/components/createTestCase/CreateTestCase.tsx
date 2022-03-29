@@ -32,6 +32,7 @@ import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import DesktopDatePicker from "@mui/lab/DesktopDatePicker";
 import { TextField } from "@mui/material";
 import calculationService from "../../api/CalculationService";
+import {CalculationOutput, ExecutionResult} from "fqm-execution/build/types/Calculator";
 import { parseISO } from "date-fns";
 
 const FormControl = tw.div`mb-3`;
@@ -310,9 +311,9 @@ const CreateTestCase = () => {
     }
     calculation.current
       .calculateTestCases(measure, [modifiedTestCase])
-      .then((result) => {
+      .then((executionResults: ExecutionResult[]) => {
         /* eslint no-console:off */
-        console.dir(result[0]?.detailedResults);
+        console.dir(executionResults);
       });
   };
 
