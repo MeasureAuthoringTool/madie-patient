@@ -16,22 +16,23 @@ export class CalculationService {
     measure: Measure,
     testCases: TestCase[]
   ): Promise<ExecutionResult[]> {
-    const measureBundle = this.buildMeasureBundle(measure);
-    const TestCaseBundles = testCases.map((testCase) => {
-      return this.buildPatientBundle(testCase);
-    });
-    /* eslint no-console:off */
-    console.log("measure Bundle", measureBundle);
-    console.log("TestCase Bundle", TestCaseBundles);
+    try {
+      const measureBundle = this.buildMeasureBundle(measure);
+      const TestCaseBundles = testCases.map((testCase) => {
+        return this.buildPatientBundle(testCase);
+      });
 
-    const results = await this.calculate(
-      measureBundle,
-      TestCaseBundles,
-      measure.measurementPeriodStart,
-      measure.measurementPeriodEnd
-    );
-    console.log("Results from fqm execution", results);
-    return results?.results;
+      const calculationOutput: CalculationOutput = await this.calculate(
+        measureBundle,
+        TestCaseBundles,
+        measure.measurementPeriodStart,
+        measure.measurementPeriodEnd
+      );
+      return calculationOutput?.results;
+    } catch (error) {
+      const message = "Unable to calculate test case.";
+      throw new Error(message);
+    }
   }
 
   private buildMeasureBundle(measure: Measure): fhir4.Bundle {
@@ -126,8 +127,18 @@ export class CalculationService {
     };
   }
 
+  // fqm Execution requires each patient to be with unique ID.
+  // So assigning the testCase ID as patient ID to retrieve calculate multiple testcases
   buildPatientBundle(testCase: TestCase): fhir4.Bundle {
-    return JSON.parse(testCase.json);
+    const testCaseBundle: fhir4.Bundle = JSON.parse(testCase.json);
+    testCaseBundle.entry
+      .filter((entry) => {
+        return entry.resource.resourceType === "Patient";
+      })
+      .forEach((entry) => {
+        entry.resource.id = testCase.id;
+      });
+    return testCaseBundle;
   }
 
   async calculate(

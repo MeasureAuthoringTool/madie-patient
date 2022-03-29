@@ -44,6 +44,8 @@ export function getPopulationsForScoring(
   return POPULATION_MAP[scoring];
 }
 
+// for every MeasurePopulation value,
+// this method returns its equivalent fqm-execution PopulationResult identifier.
 export function getFhirMeasurePopulationCode(population: string) {
   for (const [code, pop] of Object.entries(FHIR_POPULATION_CODES)) {
     if (population === pop) {
