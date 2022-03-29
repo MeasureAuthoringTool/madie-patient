@@ -18,8 +18,8 @@ export default interface TestCase {
 }
 
 export interface GroupPopulation {
-  group: string;
-  scoring: MeasureScoring;
+  groupId: string;
+  scoring: string;
   populationValues: PopulationValue[];
 }
 

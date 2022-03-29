@@ -1,4 +1,5 @@
 import React from "react";
+import "twin.macro";
 import "styled-components/macro";
 import TestCasePopulationList from "./TestCasePopulationList";
 import { GroupPopulation } from "../../models/TestCase";
@@ -19,9 +20,11 @@ const GroupPopulations = ({
 }: PopulationsProps) => (
   <>
     {groupPopulations && groupPopulations.length > 0 ? (
-      groupPopulations.map((gp) => (
-        <div tw="my-2" key={gp.group}>
-          <span tw="text-base">{gp.group} Population Values</span>
+      groupPopulations.map((gp, i) => (
+        <div tw="my-2" key={gp.groupId}>
+          <span tw="text-base">
+            Group {`${i + 1} (${gp.scoring})`} Population Values
+          </span>
           <TestCasePopulationList
             disableExpected={disableExpected}
             disableActual={disableActual}
@@ -29,7 +32,7 @@ const GroupPopulations = ({
             onChange={(populations) => {
               const nextPopulations = _.cloneDeep(groupPopulations);
               const groupPopulation = nextPopulations.find(
-                (np) => np.group === gp.group
+                (np) => np.groupId === gp.groupId
               );
               if (groupPopulation) {
                 groupPopulation.populationValues = populations;
@@ -40,7 +43,10 @@ const GroupPopulations = ({
         </div>
       ))
     ) : (
-      <span tw="text-sm">No populations for current scoring</span>
+      <span tw="text-sm">
+        No populations for current scoring. Please make sure at least one
+        measure group has been created.
+      </span>
     )}
   </>
 );
