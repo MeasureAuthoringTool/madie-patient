@@ -51,9 +51,9 @@ describe("TestCaseLanding component", () => {
         </MemoryRouter>
       </ApiContextProvider>
     );
-    await waitFor(() => {
-      const newTestCase = screen.getByRole("button", { name: "New Test Case" });
-      expect(newTestCase).toBeInTheDocument();
+    const newTestCase = await screen.findByRole("button", {
+      name: "New Test Case",
     });
+    expect(newTestCase).toBeInTheDocument();
   });
 });
