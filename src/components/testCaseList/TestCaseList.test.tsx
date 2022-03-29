@@ -113,7 +113,7 @@ const testCases = [
       {
         populationValues: [
           {
-            name: "initial-population",
+            name: "initialPopulation",
             expected: false,
           },
           {
@@ -137,7 +137,7 @@ const testCases = [
       {
         populationValues: [
           {
-            name: "initial-population",
+            name: "initialPopulation",
             expected: false,
           },
           {

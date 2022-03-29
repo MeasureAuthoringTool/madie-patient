@@ -15,6 +15,7 @@ import { format, isValid, parseISO } from "date-fns";
 import calculationService from "../../api/CalculationService";
 import Measure from "../../models/Measure";
 import { ExecutionResult } from "fqm-execution/build/types/Calculator";
+import { getFhirMeasurePopulationCode } from "../../util/PopulationsMap";
 
 const TH = tw.th`p-3 border-b text-left text-sm font-bold uppercase`;
 const ErrorAlert = tw.div`bg-red-100 text-red-700 rounded-lg m-1 p-3`;
@@ -102,7 +103,7 @@ const TestCaseList = () => {
                 if (executionStatus) {
                   const expectedValue = populationValues.find(
                     (populationValue) =>
-                      populationValue.name ==
+                      getFhirMeasurePopulationCode(populationValue.name) ===
                       populationResult.populationType.toString()
                   );
 
