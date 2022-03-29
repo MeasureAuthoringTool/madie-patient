@@ -21,7 +21,6 @@ export class TestCaseServiceApi {
       return response.data;
     } catch (err) {
       const message = `Unable to create new test case`;
-      console.error(message, err);
       throw new Error(message);
     }
   }

@@ -201,10 +201,6 @@ const CreateTestCase = () => {
             handleHapiOutcome(tc?.hapiOperationOutcome);
           })
           .catch((error) => {
-            console.error(
-              "error retrieving and updating local state for test case",
-              error
-            );
             if (error.toString().includes("404")) {
               navigate("/404");
             }
