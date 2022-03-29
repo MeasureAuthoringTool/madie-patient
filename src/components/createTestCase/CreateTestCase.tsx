@@ -171,10 +171,6 @@ const CreateTestCase = () => {
           setSeriesState({ loaded: true, series: existingSeries })
         )
         .catch((error) => {
-          console.error(
-            "An error occurred while loading the series options",
-            error
-          );
           setAlert(() => ({
             status: "error",
             message: error.message,

@@ -39,7 +39,6 @@ export class TestCaseServiceApi {
       return response.data || [];
     } catch (err) {
       const message = "Unable to retrieve test cases, please try later.";
-      console.error(message, err);
       throw new Error(message);
     }
   }
@@ -57,7 +56,6 @@ export class TestCaseServiceApi {
       return response.data;
     } catch (err) {
       const message = "Unable to retrieve test case, please try later.";
-      console.error(message, err);
       throw new Error(err);
     }
   }
@@ -102,7 +100,6 @@ export class TestCaseServiceApi {
       return response.data;
     } catch (err) {
       const message = `Unable to update test case`;
-      console.error(message, err);
       throw new Error(message);
     }
   }
