@@ -17,6 +17,7 @@ export const testCaseFixture = {
   groupPopulations: [
     {
       group: "Group One",
+      groupId: "1",
       scoring: MeasureScoring.PROPORTION,
       populationValues: [
         {

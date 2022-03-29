@@ -1,6 +1,7 @@
 import React, {
   Dispatch,
   SetStateAction,
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -15,7 +16,10 @@ import {
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import "styled-components/macro";
-import TestCase, { HapiOperationOutcome } from "../../models/TestCase";
+import TestCase, {
+  GroupPopulation,
+  HapiOperationOutcome,
+} from "../../models/TestCase";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import Editor from "../editor/Editor";
 import { TestCaseValidator } from "../../models/TestCaseValidator";
@@ -24,7 +28,7 @@ import TestCaseSeries from "./TestCaseSeries";
 import * as _ from "lodash";
 import { Ace } from "ace-builds";
 import { getPopulationsForScoring } from "../../util/PopulationsMap";
-import Measure from "../../models/Measure";
+import Measure, { Group } from "../../models/Measure";
 import useMeasureServiceApi from "../../api/useMeasureServiceApi";
 import GroupPopulations from "../populations/GroupPopulations";
 import DateAdapter from "@mui/lab/AdapterDateFns";
@@ -127,7 +131,6 @@ const CreateTestCase = () => {
     series: [],
   });
   const [measure, setMeasure] = useState<Measure>(null);
-  const [measureGroups, setMeasureGroups] = useState(null);
   const [editor, setEditor] = useState<Ace.Editor>(null);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
   const [measurementPeriodStart, setMeasurementPeriodStart] = useState<Date>();
@@ -139,21 +142,26 @@ const CreateTestCase = () => {
   });
   const { resetForm } = formik;
 
-  const mapMeasureGroups = (measureGroups) => {
-    return measureGroups.map((mg) => {
-      return {
-        group: mg.groupName,
-        scoring: mg.scoring,
-        populationValues: getPopulationsForScoring(mg.scoring)?.map(
-          (population) => ({
-            name: population,
-            expected: false,
-            actual: false,
-          })
-        ),
-      };
-    });
+  const mapMeasureGroup = (mg: Group): GroupPopulation => {
+    return {
+      groupId: mg.id,
+      scoring: mg.scoring,
+      populationValues: getPopulationsForScoring(mg.scoring)?.map(
+        (population) => ({
+          name: population,
+          expected: false,
+          actual: false,
+        })
+      ),
+    };
   };
+
+  const mapMeasureGroups = useCallback(
+    (measureGroups: Group[]): GroupPopulation[] => {
+      return measureGroups.map(mapMeasureGroup);
+    },
+    []
+  );
 
   useEffect(() => {
     if (!seriesState.loaded) {
@@ -181,9 +189,16 @@ const CreateTestCase = () => {
             setTestCase(_.cloneDeep(tc));
             setEditorVal(tc.json);
             const nextTc = _.cloneDeep(tc);
-            if (_.isNil(tc.groupPopulations) && measureGroups) {
-              nextTc.groupPopulations = mapMeasureGroups(measureGroups);
-            } else if (_.isNil(tc.groupPopulations)) {
+            if (measure && measure.groups) {
+              nextTc.groupPopulations = measure.groups.map((group) => {
+                const existingGroupPop = tc.groupPopulations?.find(
+                  (gp) => gp.groupId === group.id
+                );
+                return _.isNil(existingGroupPop)
+                  ? mapMeasureGroup(group)
+                  : existingGroupPop;
+              });
+            } else {
               nextTc.groupPopulations = [];
             }
             resetForm({ values: nextTc });
@@ -204,11 +219,11 @@ const CreateTestCase = () => {
         setTestCase(null);
         resetForm();
       };
-    } else if (measureGroups) {
+    } else if (measure && measure.groups) {
       resetForm({
         values: {
           ...INITIAL_VALUES,
-          groupPopulations: mapMeasureGroups(measureGroups),
+          groupPopulations: mapMeasureGroups(measure.groups),
         },
       });
     }
@@ -218,7 +233,8 @@ const CreateTestCase = () => {
     testCaseService,
     setTestCase,
     resetForm,
-    measureGroups,
+    measure,
+    mapMeasureGroups,
     seriesState.loaded,
   ]);
 
@@ -230,14 +246,6 @@ const CreateTestCase = () => {
           setMeasure(measure);
           setMeasurementPeriodStart(parseISO(measure.measurementPeriodStart));
           setMeasurementPeriodEnd(parseISO(measure.measurementPeriodEnd));
-          setMeasureGroups([
-            {
-              groupName: "Group One",
-              scoring: measure?.groups
-                ? measure.groups[0].scoring
-                : measure.measureScoring,
-            },
-          ]);
         })
         .catch((error) => {
           console.error(
@@ -289,7 +297,6 @@ const CreateTestCase = () => {
       if (editorVal !== testCase.json) {
         testCase.json = editorVal;
       }
-      console.dir(testCase);
       const updatedTestCase = await testCaseService.current.updateTestCase(
         testCase,
         measureId

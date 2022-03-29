@@ -39,7 +39,7 @@ const FHIR_POPULATION_CODES = {
 };
 
 export function getPopulationsForScoring(
-  scoring: MeasureScoring
+  scoring: MeasureScoring | string
 ): MeasurePopulation[] {
   return POPULATION_MAP[scoring];
 }
