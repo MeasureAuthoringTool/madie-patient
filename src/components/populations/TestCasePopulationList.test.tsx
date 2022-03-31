@@ -72,6 +72,7 @@ describe("TestCasePopulationPopulation component", () => {
         <TestCasePopulationList
           populations={testCasePopulations}
           onChange={handleChange}
+          disableExpected={false}
         />
       </MemoryRouter>
     );

@@ -27,7 +27,7 @@ describe("TestCase component", () => {
       { container: document.body.appendChild(table) }
     );
 
-    const rows = screen.getByTestId(`test-case-row-${testCase.id}`);
+    const rows = await screen.findByTestId(`test-case-row-${testCase.id}`);
     const columns = rows.querySelectorAll("td");
     expect(columns[1]).toHaveTextContent(testCase.title);
     expect(columns[2]).toHaveTextContent(testCase.series);
@@ -49,7 +49,7 @@ describe("TestCase component", () => {
       </MemoryRouter>
     );
 
-    const rows = screen.getByTestId(`test-case-row-${testCase.id}`);
+    const rows = await screen.findByTestId(`test-case-row-${testCase.id}`);
     const columns = rows.querySelectorAll("td");
 
     expect(columns[1]).toHaveTextContent(testCase.title);
@@ -78,7 +78,7 @@ describe("TestCase component", () => {
         <TestCaseComponent testCase={testCase} />
       </MemoryRouter>
     );
-    const rows = screen.getByTestId(`test-case-row-${testCase.id}`);
+    const rows = await screen.findByTestId(`test-case-row-${testCase.id}`);
     const columns = rows.querySelectorAll("td");
     expect(columns[1]).toHaveTextContent(testCase.title);
     expect(columns[2]).toHaveTextContent(testCase.series);

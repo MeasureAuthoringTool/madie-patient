@@ -79,7 +79,7 @@ const TestCase = (props) => {
           </IconButton>
         </td>
 
-        <StyledCell>
+        <StyledCell data-testid={`test-case-title-${testCase.id}`}>
           <TruncateText
             text={testCase.title}
             maxLength={60}
@@ -87,7 +87,7 @@ const TestCase = (props) => {
             dataTestId={`test-case-title-${testCase.id}`}
           />
         </StyledCell>
-        <StyledCell>
+        <StyledCell data-testid={`test-case-series-${testCase.id}`}>
           <TruncateText
             text={testCase.series}
             maxLength={60}

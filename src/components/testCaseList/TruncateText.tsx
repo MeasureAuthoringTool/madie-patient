@@ -8,7 +8,7 @@ const TruncateText = ({ text, maxLength = 60, name, dataTestId }) => {
     const displayText = truncateInput(text, maxLength);
     return (
       <Tooltip title={text} placement="right">
-        <Button name={name} data-testid={dataTestId}>
+        <Button name={name} data-testid={`${dataTestId}-button`}>
           {displayText}...
         </Button>
       </Tooltip>
