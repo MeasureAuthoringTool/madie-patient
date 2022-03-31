@@ -3,11 +3,16 @@ import tw, { styled } from "twin.macro";
 import "styled-components/macro";
 import { PopulationValue } from "../../models/TestCase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCheckCircle,
+  faCircle,
+  faTimesCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import { getPopulationCode } from "../../models/MeasurePopulation";
 
 const TD = tw.td`p-1 text-xs text-gray-600`;
-const StyledIcon = styled(FontAwesomeIcon)(() => [tw`text-green-700`]);
+const StyledPassIcon = styled(FontAwesomeIcon)(() => [tw`text-green-700`]);
+const StyledFailIcon = styled(FontAwesomeIcon)(() => [tw`text-red-700`]);
 
 const StyledInput = tw.input`
   rounded!
@@ -55,10 +60,17 @@ const TestCasePopulation = ({
         data-testid={`test-row-population-id-${population.name}`}
       >
         <TD>
-          <StyledIcon
-            icon={faCheckCircle}
-            data-testid={`test-population-icon-${population.name}`}
-          />
+          {population.expected === population.actual ? (
+            <StyledPassIcon
+              icon={faCheckCircle}
+              data-testid={`test-population-icon-${population.name}`}
+            />
+          ) : (
+            <StyledFailIcon
+              icon={faTimesCircle}
+              data-testid={`test-population-icon-${population.name}`}
+            />
+          )}
         </TD>
         <TD>{getPopulationCode(population.name)}</TD>
         <TD>
