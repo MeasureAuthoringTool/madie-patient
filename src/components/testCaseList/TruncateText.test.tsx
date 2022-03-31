@@ -9,7 +9,7 @@ describe("TruncateText component", () => {
     const name = "title";
     const testCaseId = "testcaseid";
 
-    const { container, getByText, getByTestId, getByTitle } = render(
+    const { container, getByText } = render(
       <MemoryRouter>
         <TruncateTextComponent
           text={description}
@@ -42,7 +42,9 @@ describe("TruncateText component", () => {
     );
 
     expect(container).toBeTruthy();
-    const button = screen.getByTestId("test-case-series-testcaseid");
+    const button = await screen.findByTestId(
+      "test-case-series-testcaseid-button"
+    );
     expect(button).toBeInTheDocument();
     expect(button).toHaveTextContent(description.substring(0, 60));
 

@@ -382,7 +382,7 @@ describe("TestCaseList component", () => {
       );
 
       const titleButton = screen.getByTestId(
-        `test-case-title-${testCases[0].id}`
+        `test-case-title-${testCases[0].id}-button`
       );
       expect(titleButton).toBeInTheDocument();
       fireEvent.mouseOver(titleButton);
@@ -395,7 +395,7 @@ describe("TestCaseList component", () => {
       expect(screen.getByText(testCases[0].title)).toBeInTheDocument();
 
       const seriesButton = screen.getByTestId(
-        `test-case-series-${testCases[0].id}`
+        `test-case-series-${testCases[0].id}-button`
       );
       expect(seriesButton).toBeInTheDocument();
       fireEvent.mouseOver(seriesButton);
