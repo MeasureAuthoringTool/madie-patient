@@ -1,5 +1,4 @@
 import { MeasurePopulation } from "./MeasurePopulation";
-import { MeasureScoring } from "./MeasureScoring";
 
 export default interface TestCase {
   id: string;

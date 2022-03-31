@@ -101,19 +101,20 @@ const TestCaseList = () => {
               // executionStatus is set to false if any of the populationResults (calculation result) doesn't match with populationValues (Given from testCase)
               populationResults.forEach((populationResult) => {
                 if (executionStatus) {
-                  const expectedValue = populationValues.find(
+                  const groupPopulation = populationValues.find(
                     (populationValue) =>
                       getFhirMeasurePopulationCode(populationValue.name) ===
                       populationResult.populationType.toString()
                   );
 
-                  if (expectedValue) {
+                  if (groupPopulation) {
+                    groupPopulation.actual = populationResult.result;
                     executionStatus =
-                      expectedValue.expected === populationResult.result;
+                      groupPopulation.expected === populationResult.result;
                   }
                 }
               });
-              testCase.executionStatus = !!executionStatus ? "pass" : "fail";
+              testCase.executionStatus = executionStatus ? "pass" : "fail";
             }
           });
           setTestCases([...testCases]);
@@ -136,6 +137,7 @@ const TestCaseList = () => {
           />
         </div>
         <div tw="py-2 gap-1">
+          <h5>Measurement Period</h5>
           <LocalizationProvider dateAdapter={DateAdapter}>
             <DesktopDatePicker
               data-testid="measurement-period-start"
