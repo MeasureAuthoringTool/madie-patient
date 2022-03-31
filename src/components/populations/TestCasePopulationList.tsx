@@ -14,8 +14,8 @@ export interface TestCasePopulationListProps {
 
 const TestCasePopulationList = ({
   populations,
-  disableExpected = false,
-  disableActual = false,
+  disableExpected = true,
+  disableActual = true,
   onChange,
 }: TestCasePopulationListProps) => {
   const handleChange = (population: PopulationValue) => {
