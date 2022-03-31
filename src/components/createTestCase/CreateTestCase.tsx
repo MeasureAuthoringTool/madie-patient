@@ -527,13 +527,13 @@ const CreateTestCase = () => {
                   data-testid="create-test-case-button"
                   disabled={!isModified()}
                 />
-                <Button
-                  buttonTitle="Run Test"
-                  type="button"
-                  variant="secondary"
-                  onClick={calculate}
-                  data-testid="create-test-case-run-test-button"
-                />
+                {/*<Button*/}
+                {/*  buttonTitle="Run Test"*/}
+                {/*  type="button"*/}
+                {/*  variant="secondary"*/}
+                {/*  onClick={calculate}*/}
+                {/*  data-testid="create-test-case-run-test-button"*/}
+                {/*/>*/}
                 <Button
                   buttonTitle="Cancel"
                   type="button"
