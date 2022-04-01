@@ -1,37 +1,173 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import tw from "twin.macro";
 import "styled-components/macro";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import TestCase from "../../models/TestCase";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { Button } from "@madie/madie-components";
+import TestCaseComponent from "./TestCase";
+import useMeasureServiceApi from "../../api/useMeasureServiceApi";
+import LocalizationProvider from "@mui/lab/LocalizationProvider";
+import DateAdapter from "@mui/lab/AdapterDateFns";
+import DesktopDatePicker from "@mui/lab/DesktopDatePicker";
+import { TextField } from "@mui/material";
+import { format, isValid, parseISO } from "date-fns";
+import calculationService from "../../api/CalculationService";
+import Measure from "../../models/Measure";
+import { ExecutionResult } from "fqm-execution/build/types/Calculator";
+import { getFhirMeasurePopulationCode } from "../../util/PopulationsMap";
+
 const TH = tw.th`p-3 border-b text-left text-sm font-bold uppercase`;
-const TD = tw.td`p-3 whitespace-nowrap text-sm font-medium text-gray-900`;
-const Button = tw.button`text-blue-600 hover:text-blue-900`;
 const ErrorAlert = tw.div`bg-red-100 text-red-700 rounded-lg m-1 p-3`;
 
 const TestCaseList = () => {
-  const navigate = useNavigate();
-  const [testCases, setTestCases] = useState<TestCase[]>();
+  const [testCases, setTestCases] = useState<TestCase[]>(null);
   const [error, setError] = useState("");
+  const [measure, setMeasure] = useState<Measure>(null);
+  const [measurementPeriodStart, setMeasurementPeriodStart] = useState<Date>();
+  const [measurementPeriodEnd, setMeasurementPeriodEnd] = useState<Date>();
   const { measureId } = useParams<{ measureId: string }>();
-  const testCaseService = useTestCaseServiceApi();
+  const testCaseService = useRef(useTestCaseServiceApi());
+  const measureService = useRef(useMeasureServiceApi());
+  const calculation = useRef(calculationService());
 
   useEffect(() => {
-    if (!testCases) {
-      testCaseService
-        .getTestCasesByMeasureId(measureId)
-        .then((testCaseList: TestCase[]) => {
-          setTestCases(testCaseList);
+    measureService.current
+      .fetchMeasure(measureId)
+      .then((measure) => {
+        setMeasure(measure);
+        if (measure?.measurementPeriodStart)
+          setMeasurementPeriodStart(parseISO(measure.measurementPeriodStart));
+        if (measure?.measurementPeriodEnd)
+          setMeasurementPeriodEnd(parseISO(measure.measurementPeriodEnd));
+      })
+      .catch((error) => {
+        setError(error.message);
+      });
+    testCaseService.current
+      .getTestCasesByMeasureId(measureId)
+      .then((testCaseList: TestCase[]) => {
+        testCaseList.forEach((testCase) => {
+          testCase.executionStatus = "NA";
+        });
+        setTestCases(testCaseList);
+      })
+      .catch((err) => {
+        setError(err.message);
+      });
+  }, [measureId, testCaseService]);
+
+  useEffect(() => {
+    if (
+      measurementPeriodStart &&
+      isValid(measurementPeriodStart) &&
+      measure?.measurementPeriodStart &&
+      measurementPeriodStart !== parseISO(measure?.measurementPeriodStart)
+    ) {
+      measure.measurementPeriodStart = format(
+        measurementPeriodStart,
+        "yyyy-MM-dd"
+      );
+      measureService.current.updateMeasure(measure);
+    }
+  }, [measure, measurementPeriodStart]);
+
+  useEffect(() => {
+    if (
+      measurementPeriodEnd &&
+      isValid(measurementPeriodEnd) &&
+      measure?.measurementPeriodEnd &&
+      measurementPeriodEnd !== parseISO(measure?.measurementPeriodEnd)
+    ) {
+      measure.measurementPeriodEnd = format(measurementPeriodEnd, "yyyy-MM-dd");
+      measureService.current.updateMeasure(measure);
+    }
+  }, [measure, measurementPeriodEnd]);
+
+  const executeTestCases = () => {
+    if (testCases) {
+      calculation.current
+        .calculateTestCases(measure, testCases)
+        .then((executionResults: ExecutionResult[]) => {
+          testCases.forEach((testCase) => {
+            const { populationResults } = executionResults.find(
+              (result) => result.patientId === testCase.id
+            ).detailedResults[0]; // Since we have only 1 population group
+
+            if (populationResults.length) {
+              const { populationValues } = testCase.groupPopulations[0];
+
+              let executionStatus = true;
+              // executionStatus is set to false if any of the populationResults (calculation result) doesn't match with populationValues (Given from testCase)
+              populationResults.forEach((populationResult) => {
+                if (executionStatus) {
+                  const groupPopulation = populationValues.find(
+                    (populationValue) =>
+                      getFhirMeasurePopulationCode(populationValue.name) ===
+                      populationResult.populationType.toString()
+                  );
+
+                  if (groupPopulation) {
+                    groupPopulation.actual = populationResult.result;
+                    executionStatus =
+                      groupPopulation.expected === populationResult.result;
+                  }
+                }
+              });
+              testCase.executionStatus = executionStatus ? "pass" : "fail";
+            }
+          });
+          setTestCases([...testCases]);
         })
-        .catch((err) => {
-          setError(err.message);
+        .catch((error) => {
+          setError(error.message);
         });
     }
-  }, [measureId, testCaseService, testCases]);
+  };
 
   return (
     <div>
       <div tw="flex flex-col">
+        <div tw="py-2">
+          <Button
+            buttonTitle="Execute Test Cases"
+            disabled={false}
+            onClick={executeTestCases}
+            data-testid="execute-test-cases-button"
+          />
+        </div>
+        <div tw="py-2 gap-1">
+          <h5>Measurement Period</h5>
+          <LocalizationProvider dateAdapter={DateAdapter}>
+            <DesktopDatePicker
+              data-testid="measurement-period-start"
+              readOnly={true}
+              disableOpenPicker={true}
+              label="Start"
+              inputFormat="MM/dd/yyyy"
+              value={measurementPeriodStart}
+              onChange={(startDate) => {
+                setMeasurementPeriodStart(startDate);
+              }}
+              renderInput={(params) => <TextField {...params} />}
+            />
+          </LocalizationProvider>
+          <LocalizationProvider dateAdapter={DateAdapter}>
+            <DesktopDatePicker
+              data-testid="measurement-period-end"
+              readOnly={true}
+              disableOpenPicker={true}
+              label="End"
+              inputFormat="MM/dd/yyyy"
+              value={measurementPeriodEnd}
+              onChange={(endDate) => {
+                setMeasurementPeriodEnd(endDate);
+              }}
+              renderInput={(params) => <TextField {...params} />}
+            />
+          </LocalizationProvider>
+        </div>
+
         {error && (
           <ErrorAlert data-testid="display-tests-error" role="alert">
             {error}
@@ -42,27 +178,16 @@ const TestCaseList = () => {
             <table tw="min-w-full" data-testid="test-case-tbl">
               <thead>
                 <tr>
-                  <TH scope="col">Description</TH>
+                  <TH scope="col" />
+                  <TH scope="col">Title</TH>
+                  <TH scope="col">Series</TH>
                   <TH scope="col">Status</TH>
                   <TH scope="col" />
                 </tr>
               </thead>
               <tbody>
                 {testCases?.map((testCase) => (
-                  <tr tw="border-b" key={testCase.id}>
-                    <TD>{testCase.description}</TD>
-                    <TD>NA</TD>
-                    <TD>
-                      <Button
-                        onClick={() => {
-                          navigate(`./${testCase.id}`);
-                        }}
-                        data-testid={`edit-test-case-${testCase.id}`}
-                      >
-                        Edit
-                      </Button>
-                    </TD>
-                  </tr>
+                  <TestCaseComponent testCase={testCase} key={testCase.id} />
                 ))}
               </tbody>
             </table>

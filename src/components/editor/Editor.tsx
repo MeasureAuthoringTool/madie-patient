@@ -1,18 +1,42 @@
 import React from "react";
 import AceEditor from "react-ace";
-import { Button } from "@madie/madie-components";
-import tw from "twin.macro";
+import { Ace } from "ace-builds";
+import "ace-builds/src-noconflict/mode-json";
 
-const Editor = (props) => {
+export interface EditorPropsType {
+  value: string;
+  onChange: (value: string) => void;
+  parseDebounceTime?: number;
+  inboundAnnotations?: Ace.Annotation[];
+  setEditor?: (editor: Ace.Editor) => void;
+}
+
+const Editor = ({
+  value,
+  onChange,
+  parseDebounceTime = 1500,
+  inboundAnnotations,
+  setEditor,
+}: EditorPropsType) => {
   return (
     <>
       <div data-testid="test-case-editor">
         <AceEditor
+          value={value}
+          onChange={(value) => {
+            onChange(value);
+          }}
+          onLoad={(editor: Ace.Editor) => {
+            if (setEditor) {
+              setEditor(editor);
+            }
+          }}
           mode="json" // Temporary value of mode to prevent a dynamic search request.
           theme="monokai"
           name="ace-editor-wrapper"
           enableBasicAutocompletion={true}
           width="100%"
+          height="909px"
           showPrintMargin={true}
           showGutter={true}
           setOptions={{
@@ -21,6 +45,7 @@ const Editor = (props) => {
             enableSnippets: true,
             showLineNumbers: true,
             tabSize: 2,
+            autoScrollEditorIntoView: true,
           }}
           editorProps={{ $blockScrolling: true }}
         />

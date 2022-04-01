@@ -21,7 +21,6 @@ export class TestCaseServiceApi {
       return response.data;
     } catch (err) {
       const message = `Unable to create new test case`;
-      console.error(message, err);
       throw new Error(message);
     }
   }
@@ -39,7 +38,6 @@ export class TestCaseServiceApi {
       return response.data || [];
     } catch (err) {
       const message = "Unable to retrieve test cases, please try later.";
-      console.error(message, err);
       throw new Error(message);
     }
   }
@@ -57,7 +55,32 @@ export class TestCaseServiceApi {
       return response.data;
     } catch (err) {
       const message = "Unable to retrieve test case, please try later.";
-      console.error(message, err);
+      throw new Error(err);
+    }
+  }
+
+  async getTestCaseSeriesForMeasure(measureId: string): Promise<string[]> {
+    try {
+      const response = await axios.get<string[]>(
+        `${this.baseUrl}/measures/${measureId}/test-cases/series`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      if (err?.response?.status === 404) {
+        console.warn(
+          `Cannot load series for non-existent measure with id [${measureId}]`,
+          err
+        );
+        throw new Error(
+          "Measure does not exist, unable to load test case series!"
+        );
+      }
+      const message = "Unable to retrieve test case series, please try later.";
       throw new Error(message);
     }
   }
@@ -76,7 +99,6 @@ export class TestCaseServiceApi {
       return response.data;
     } catch (err) {
       const message = `Unable to update test case`;
-      console.error(message, err);
       throw new Error(message);
     }
   }

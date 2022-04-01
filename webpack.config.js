@@ -3,6 +3,7 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { mergeWithRules } = require("webpack-merge");
 const singleSpaDefaults = require("webpack-config-single-spa-react-ts");
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 const path = require("path");
 const fs = require("fs");
 
@@ -95,6 +96,36 @@ module.exports = (webpackConfigEnv, argv) => {
     ],
   };
 
+  // node polyfills
+  const polyfillConfig = {
+    resolve: {
+      fallback: {
+        fs: false,
+        buffer: false,
+        timers: false,
+      },
+    },
+    plugins: [new NodePolyfillPlugin()],
+  };
+
+  //handlebar madness
+  const handlebarsConfig = {
+    module: {
+      rules: [
+        {
+          include: [/node_modules\/ * \/fqm_execution\/templates/],
+          test: /\.(js|handlebars|hbs)$/,
+          loader: "handlebars-loader",
+        },
+      ],
+    },
+    resolve: {
+      alias: {
+        handlebars: "handlebars/dist/handlebars.min.js",
+      },
+    },
+  };
+
   return mergeWithRules({
     module: {
       rules: {
@@ -103,5 +134,5 @@ module.exports = (webpackConfigEnv, argv) => {
       },
     },
     plugins: "append",
-  })(defaultConfig, newCssRule);
+  })(defaultConfig, polyfillConfig, handlebarsConfig, newCssRule);
 };
