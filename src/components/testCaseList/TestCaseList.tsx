@@ -92,13 +92,14 @@ const TestCaseList = () => {
           testCases.forEach((testCase) => {
             const { populationResults } = executionResults.find(
               (result) => result.patientId === testCase.id
-            ).detailedResults[0]; // Since we have only 1 population group
+            )?.detailedResults?.[0]; // Since we have only 1 population group
 
-            if (populationResults.length) {
-              const { populationValues } = testCase.groupPopulations[0];
+            const populationValues =
+              testCase?.groupPopulations?.[0]?.populationValues;
 
+            // executionStatus is set to false if any of the populationResults (calculation result) doesn't match with populationValues (Given from testCase)
+            if (populationResults && populationValues) {
               let executionStatus = true;
-              // executionStatus is set to false if any of the populationResults (calculation result) doesn't match with populationValues (Given from testCase)
               populationResults.forEach((populationResult) => {
                 if (executionStatus) {
                   const groupPopulation = populationValues.find(
