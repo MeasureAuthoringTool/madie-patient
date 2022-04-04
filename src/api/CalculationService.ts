@@ -90,6 +90,7 @@ export class CalculationService {
   }
 
   private buildMeasureGroups(measure: Measure, measureResource: fhir4.Measure) {
+    // verify if measureGroup is created? if not Calculation will fail, so return to user specifying to add atleast one measureGroup
     measure.groups.map((group) => {
       const fhirMeasureGroup: fhir4.MeasureGroup = {};
       fhirMeasureGroup.population = this.buildMeasureGroup(group.population);
