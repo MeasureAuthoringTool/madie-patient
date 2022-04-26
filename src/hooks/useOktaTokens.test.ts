@@ -12,7 +12,7 @@ const idTokenObj = {
 const accessTokenObj = {
   authorizeUrl: "authorize.url",
   claims: {
-    sub: "testuser@test.com",
+    sub: "testuser",
   },
   accessToken: "test.access.jwt",
 };
@@ -109,7 +109,7 @@ describe("useOktaTokens", () => {
 
   it("should return user name", () => {
     const { getUserName } = useOktaTokens();
-    expect(getUserName()).toEqual("testuser@test.com");
+    expect(getUserName()).toEqual("testuser");
     expect(global.Storage.prototype.getItem).toHaveBeenCalledWith(
       "okta-token-storage"
     );

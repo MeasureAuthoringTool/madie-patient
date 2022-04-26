@@ -22,7 +22,7 @@ const serviceConfig: ServiceConfig = {
   },
 };
 
-const MEASURE_CREATEDBY = "testuser@example.com";
+const MEASURE_CREATEDBY = "testuser";
 jest.mock("../../hooks/useOktaTokens", () =>
   jest.fn(() => ({
     getAccessToken: () => "test.jwt",

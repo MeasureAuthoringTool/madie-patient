@@ -33,7 +33,7 @@ const serviceConfig: ServiceConfig = {
   },
 };
 
-const MEASURE_CREATEDBY = "testuser@example.com";
+const MEASURE_CREATEDBY = "testuser";
 jest.mock("../../hooks/useOktaTokens", () =>
   jest.fn(() => ({
     getAccessToken: () => "test.jwt",
@@ -276,7 +276,7 @@ describe("TestCaseList component", () => {
   });
 
   it("should navigate to the Test Case details page on view button click for non-owner", async () => {
-    measure.createdBy = "AnotherUser@example.com";
+    measure.createdBy = "AnotherUser";
     const { getByTestId } = render(
       <MemoryRouter>
         <ApiContextProvider value={serviceConfig}>

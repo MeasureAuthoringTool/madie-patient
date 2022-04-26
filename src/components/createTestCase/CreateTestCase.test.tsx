@@ -49,7 +49,7 @@ const serviceConfig: ServiceConfig = {
   },
 };
 
-const MEASURE_CREATEDBY = "testuser@example.com";
+const MEASURE_CREATEDBY = "testuser";
 jest.mock("../../hooks/useOktaTokens", () =>
   jest.fn(() => ({
     getAccessToken: () => "test.jwt",
@@ -1245,7 +1245,7 @@ describe("Measure Calculation", () => {
           data: {
             id: "m1234",
             measureScoring: MeasureScoring.COHORT,
-            createdBy: "AnotherUser@example.com",
+            createdBy: "AnotherUser",
             groups: [
               {
                 groupId: "Group1_ID",

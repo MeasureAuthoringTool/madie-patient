@@ -18,7 +18,7 @@ const serviceConfig: ServiceConfig = {
   },
 };
 
-const MEASURE_CREATEDBY = "testuser@example.com";
+const MEASURE_CREATEDBY = "testuser";
 jest.mock("../../hooks/useOktaTokens", () =>
   jest.fn(() => ({
     getAccessToken: () => "test.jwt",
@@ -71,7 +71,7 @@ describe("TestCaseLanding component", () => {
         return Promise.resolve({
           data: {
             id: "m1234",
-            createdBy: "AnotherUser@example.com",
+            createdBy: "AnotherUser",
             measureScoring: MeasureScoring.PROPORTION,
             measurementPeriodStart: "2023-01-01",
             measurementPeriodEnd: "2023-12-31",
