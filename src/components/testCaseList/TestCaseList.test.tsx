@@ -33,9 +33,11 @@ const serviceConfig: ServiceConfig = {
   },
 };
 
+const MEASURE_CREATEDBY = "testuser@example.com";
 jest.mock("../../hooks/useOktaTokens", () =>
   jest.fn(() => ({
     getAccessToken: () => "test.jwt",
+    getUserName: () => MEASURE_CREATEDBY,
   }))
 );
 
@@ -167,6 +169,7 @@ const useTestCaseServiceMockResolved = {
 const measure = {
   id: "1",
   measureName: "measureName",
+  createdBy: MEASURE_CREATEDBY,
 } as Measure;
 
 // mocking measureService
@@ -272,7 +275,24 @@ describe("TestCaseList component", () => {
     });
   });
 
+  it("should navigate to the Test Case details page on view button click for non-owner", async () => {
+    measure.createdBy = "AnotherUser@example.com";
+    const { getByTestId } = render(
+      <MemoryRouter>
+        <ApiContextProvider value={serviceConfig}>
+          <TestCaseList />
+        </ApiContextProvider>
+      </MemoryRouter>
+    );
+    await waitFor(() => {
+      const viewButton = getByTestId(`view-test-case-${testCases[0].id}`);
+      fireEvent.click(viewButton);
+      expect(mockedUsedNavigate).toHaveBeenCalled();
+    });
+  });
+
   it("should execute test cases", async () => {
+    measure.createdBy = MEASURE_CREATEDBY;
     const { getByTestId } = render(<TestCaseList />);
 
     await waitFor(async () => {
@@ -287,7 +307,17 @@ describe("TestCaseList component", () => {
     });
   });
 
+  it("should not render execute button for user who is not the owner of the measure", () => {
+    measure.createdBy = "AnotherUser@example.com";
+    render(<TestCaseList />);
+    const executeAllTestCasesButton = screen.queryByText(
+      "execute-test-cases-button"
+    );
+    expect(executeAllTestCasesButton).not.toBeInTheDocument();
+  });
+
   it("should display error message when test cases calculation fails", async () => {
+    measure.createdBy = MEASURE_CREATEDBY;
     const error = {
       message: "Unable to calculate test case.",
     };
@@ -406,5 +436,29 @@ describe("TestCaseList component", () => {
         })
       ).toBeVisible();
     });
+  });
+
+  it("should render New Test Case button and navigate to the Create New Test Case page when button clicked", async () => {
+    const { getByTestId } = render(
+      <MemoryRouter>
+        <ApiContextProvider value={serviceConfig}>
+          <TestCaseList />
+        </ApiContextProvider>
+      </MemoryRouter>
+    );
+    await waitFor(() => {
+      const createNewButton = getByTestId("create-new-test-case-button");
+      fireEvent.click(createNewButton);
+      expect(mockedUsedNavigate).toHaveBeenCalled();
+    });
+  });
+
+  it("should not render New Test Case button for user who is not the owner of the measure", () => {
+    measure.createdBy = "AnotherUser@example.com";
+    render(<TestCaseList />);
+    const createNewTestCaseButton = screen.queryByText(
+      "create-new-test-case-button"
+    );
+    expect(createNewTestCaseButton).not.toBeInTheDocument();
   });
 });

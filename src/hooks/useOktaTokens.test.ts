@@ -30,12 +30,13 @@ describe("useOktaTokens", () => {
     );
   });
 
-  it("should return four functions", () => {
+  it("should return five functions", () => {
     const oktaTokens = useOktaTokens();
     expect(oktaTokens.getIdTokenObj).toBeTruthy();
     expect(oktaTokens.getIdToken).toBeTruthy();
     expect(oktaTokens.getAccessTokenObj).toBeTruthy();
     expect(oktaTokens.getAccessToken).toBeTruthy();
+    expect(oktaTokens.getUserName).toBeTruthy();
   });
 
   it("should return an idToken object", () => {
@@ -103,6 +104,14 @@ describe("useOktaTokens", () => {
     expect(getAccessTokenObj()).toBeTruthy();
     expect(global.Storage.prototype.getItem).toHaveBeenCalledWith(
       "some-storage-key"
+    );
+  });
+
+  it("should return user name", () => {
+    const { getUserName } = useOktaTokens();
+    expect(getUserName()).toEqual("testuser@test.com");
+    expect(global.Storage.prototype.getItem).toHaveBeenCalledWith(
+      "okta-token-storage"
     );
   });
 });

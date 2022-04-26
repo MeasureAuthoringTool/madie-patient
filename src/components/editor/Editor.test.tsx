@@ -36,4 +36,27 @@ describe("Test Case Editor component", () => {
     expect(wrapper.find("Editor")).not.toHaveValue("not the correct stuff");
     expect(wrapper.find("Editor")).toHaveValue(testCase.json);
   });
+
+  it("should apply readonly attribute", () => {
+    const testCase = {
+      id: "1234",
+      description: "Test IPP",
+      json: `{
+              "resourceType": "Patient",
+              "id": "example",
+              "meta": {
+                "profile": [
+                  "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-patient"
+                ]
+              }
+            }`,
+    } as TestCase;
+    const handleChange = jest.fn();
+    const wrapper = mount(
+      <Editor value={testCase.json} onChange={handleChange} readOnly={true} />
+    );
+
+    expect(wrapper.find("Editor")).toHaveValue(testCase.json);
+    expect(wrapper.find("Editor")).toHaveProp("readOnly");
+  });
 });

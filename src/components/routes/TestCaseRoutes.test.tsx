@@ -22,6 +22,14 @@ const serviceConfig: ServiceConfig = {
   },
 };
 
+const MEASURE_CREATEDBY = "testuser@example.com";
+jest.mock("../../hooks/useOktaTokens", () =>
+  jest.fn(() => ({
+    getAccessToken: () => "test.jwt",
+    getUserName: () => MEASURE_CREATEDBY,
+  }))
+);
+
 describe("TestCaseRoutes", () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -53,8 +61,8 @@ describe("TestCaseRoutes", () => {
     expect(testCaseTitle).toBeInTheDocument();
     const testCaseSeries = await screen.findByText("IPP_Pass");
     expect(testCaseSeries).toBeInTheDocument();
-    const createBtn = screen.getByRole("button", { name: "New Test Case" });
-    expect(createBtn).toBeInTheDocument();
+    const viewBtn = screen.getByRole("button", { name: "View" });
+    expect(viewBtn).toBeInTheDocument();
   });
 
   it("should allow navigation to create page from landing page ", async () => {
@@ -68,6 +76,7 @@ describe("TestCaseRoutes", () => {
         return Promise.resolve({
           data: {
             id: "m1234",
+            createdBy: MEASURE_CREATEDBY,
             measureScoring: MeasureScoring.COHORT,
             measurementPeriodStart: "2023-01-01",
             measurementPeriodEnd: "2023-12-31",
@@ -130,6 +139,7 @@ describe("TestCaseRoutes", () => {
         return Promise.resolve({
           data: {
             id: "m1234",
+            createdBy: MEASURE_CREATEDBY,
             measureScoring: MeasureScoring.COHORT,
             measurementPeriodStart: "2023-01-01",
             measurementPeriodEnd: "2023-12-31",
@@ -179,18 +189,32 @@ describe("TestCaseRoutes", () => {
     mockedAxios.get.mockImplementation((args) => {
       if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["SeriesA"] });
-      }
-      return Promise.resolve({
-        data: [
-          {
-            id: "id1",
-            title: "TC1",
-            description: "Desc1",
-            series: "IPP_Pass",
-            status: null,
+      } else if (
+        args &&
+        args.startsWith(serviceConfig.measureService.baseUrl)
+      ) {
+        return Promise.resolve({
+          data: {
+            id: "m1234",
+            createdBy: MEASURE_CREATEDBY,
+            measureScoring: MeasureScoring.COHORT,
+            measurementPeriodStart: "2023-01-01",
+            measurementPeriodEnd: "2023-12-31",
           },
-        ],
-      });
+        });
+      } else if (args && args.endsWith("test-cases")) {
+        return Promise.resolve({
+          data: [
+            {
+              id: "id1",
+              title: "TC1",
+              description: "Desc1",
+              series: "IPP_Pass",
+              status: null,
+            },
+          ],
+        });
+      }
     });
 
     render(
@@ -205,6 +229,7 @@ describe("TestCaseRoutes", () => {
       data: {
         id: "testID",
         description: "Some Description",
+        createdBy: MEASURE_CREATEDBY,
         hapiOperationOutcome: {
           code: 201,
         },

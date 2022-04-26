@@ -3,7 +3,7 @@ import tw from "twin.macro";
 import "styled-components/macro";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import TestCase from "../../models/TestCase";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@madie/madie-components";
 import TestCaseComponent from "./TestCase";
 import useMeasureServiceApi from "../../api/useMeasureServiceApi";
@@ -16,6 +16,7 @@ import calculationService from "../../api/CalculationService";
 import Measure from "../../models/Measure";
 import { ExecutionResult } from "fqm-execution/build/types/Calculator";
 import { getFhirMeasurePopulationCode } from "../../util/PopulationsMap";
+import useOktaTokens from "../../hooks/useOktaTokens";
 
 const TH = tw.th`p-3 border-b text-left text-sm font-bold uppercase`;
 const ErrorAlert = tw.div`bg-red-100 text-red-700 rounded-lg m-1 p-3`;
@@ -30,12 +31,18 @@ const TestCaseList = () => {
   const testCaseService = useRef(useTestCaseServiceApi());
   const measureService = useRef(useMeasureServiceApi());
   const calculation = useRef(calculationService());
+  const { getUserName } = useOktaTokens();
+  const userName = getUserName();
+  const navigate = useNavigate();
+  const [canEdit, setCanEdit] = useState<boolean>(false);
 
   useEffect(() => {
     measureService.current
       .fetchMeasure(measureId)
       .then((measure) => {
         setMeasure(measure);
+        setCanEdit(userName === measure.createdBy ? true : false);
+
         if (measure?.measurementPeriodStart)
           setMeasurementPeriodStart(parseISO(measure.measurementPeriodStart));
         if (measure?.measurementPeriodEnd)
@@ -84,6 +91,9 @@ const TestCaseList = () => {
     }
   }, [measure, measurementPeriodEnd]);
 
+  const createNewTestCase = () => {
+    navigate("create");
+  };
   const executeTestCases = () => {
     if (testCases) {
       calculation.current
@@ -130,12 +140,24 @@ const TestCaseList = () => {
     <div>
       <div tw="flex flex-col">
         <div tw="py-2">
-          <Button
-            buttonTitle="Execute Test Cases"
-            disabled={false}
-            onClick={executeTestCases}
-            data-testid="execute-test-cases-button"
-          />
+          {canEdit && (
+            <Button
+              buttonTitle="New Test Case"
+              disabled={false}
+              onClick={createNewTestCase}
+              data-testid="create-new-test-case-button"
+            />
+          )}
+        </div>
+        <div tw="py-2">
+          {canEdit && (
+            <Button
+              buttonTitle="Execute Test Cases"
+              disabled={false}
+              onClick={executeTestCases}
+              data-testid="execute-test-cases-button"
+            />
+          )}
         </div>
         <div tw="py-2 gap-1">
           <h5>Measurement Period</h5>
@@ -188,7 +210,11 @@ const TestCaseList = () => {
               </thead>
               <tbody>
                 {testCases?.map((testCase) => (
-                  <TestCaseComponent testCase={testCase} key={testCase.id} />
+                  <TestCaseComponent
+                    testCase={testCase}
+                    key={testCase.id}
+                    canEdit={canEdit}
+                  />
                 ))}
               </tbody>
             </table>
