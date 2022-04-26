@@ -19,6 +19,7 @@ import "styled-components/macro";
 import TestCase, {
   GroupPopulation,
   HapiOperationOutcome,
+  PopulationValue,
 } from "../../models/TestCase";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import Editor from "../editor/Editor";
@@ -27,7 +28,10 @@ import { sanitizeUserInput } from "../../util/Utils.js";
 import TestCaseSeries from "./TestCaseSeries";
 import * as _ from "lodash";
 import { Ace } from "ace-builds";
-import { getPopulationsForScoring } from "../../util/PopulationsMap";
+import {
+  getPopulationsForScoring,
+  triggerPopChanges,
+} from "../../util/PopulationsMap";
 import Measure, { Group } from "../../models/Measure";
 import useMeasureServiceApi from "../../api/useMeasureServiceApi";
 import GroupPopulations from "../populations/GroupPopulations";
@@ -487,6 +491,8 @@ const CreateTestCase = () => {
                   disableActual={true}
                   groupPopulations={formik.values.groupPopulations}
                   onChange={(groupPopulations) => {
+                    //triggerPopChanges(groupPopulations);
+
                     formik.setFieldValue("groupPopulations", groupPopulations);
                   }}
                 />
