@@ -1289,7 +1289,9 @@ describe("Measure Calculation", () => {
       },
       { timeout: 1500 }
     );
-    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Cancel" })
+    ).not.toBeInTheDocument();
 
     expect(editor).toBeInTheDocument();
   });

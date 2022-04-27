@@ -41,7 +41,7 @@ const TestCaseList = () => {
       .fetchMeasure(measureId)
       .then((measure) => {
         setMeasure(measure);
-        setCanEdit(userName === measure.createdBy ? true : false);
+        setCanEdit(userName === measure.createdBy);
 
         if (measure?.measurementPeriodStart)
           setMeasurementPeriodStart(parseISO(measure.measurementPeriodStart));

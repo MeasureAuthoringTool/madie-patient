@@ -189,7 +189,7 @@ const CreateTestCase = () => {
             setTestCase(_.cloneDeep(tc));
             setEditorVal(tc.json);
 
-            setCanEdit(userName === tc.createdBy ? true : false);
+            setCanEdit(userName === tc.createdBy);
 
             const nextTc = _.cloneDeep(tc);
             if (measure && measure.groups) {
@@ -219,7 +219,7 @@ const CreateTestCase = () => {
         resetForm();
       };
     } else if (measure && measure.groups) {
-      setCanEdit(measure.createdBy === userName ? true : false);
+      setCanEdit(measure.createdBy === userName);
 
       resetForm({
         values: {
@@ -246,7 +246,7 @@ const CreateTestCase = () => {
         .then((measure) => {
           setMeasure(measure);
 
-          setCanEdit(userName === measure.createdBy ? true : false);
+          setCanEdit(userName === measure.createdBy);
 
           setMeasurementPeriodStart(parseISO(measure.measurementPeriodStart));
           setMeasurementPeriodEnd(parseISO(measure.measurementPeriodEnd));
@@ -563,13 +563,15 @@ const CreateTestCase = () => {
                 {/*  onClick={calculate}*/}
                 {/*  data-testid="create-test-case-run-test-button"*/}
                 {/*/>*/}
-                <Button
-                  buttonTitle="Cancel"
-                  type="button"
-                  variant="white"
-                  onClick={navigateToTestCases}
-                  data-testid="create-test-case-cancel-button"
-                />
+                {canEdit && (
+                  <Button
+                    buttonTitle="Cancel"
+                    type="button"
+                    variant="white"
+                    onClick={navigateToTestCases}
+                    data-testid="create-test-case-cancel-button"
+                  />
+                )}
               </FormActions>
             </TestCaseForm>
           </div>
