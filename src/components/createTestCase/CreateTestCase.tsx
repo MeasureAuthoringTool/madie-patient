@@ -512,6 +512,7 @@ const CreateTestCase = () => {
                 <span tw="text-lg">Population Values</span>
                 <GroupPopulations
                   disableActual={true}
+                  disableExpected={!canEdit}
                   groupPopulations={formik.values.groupPopulations}
                   onChange={(groupPopulations) => {
                     formik.setFieldValue("groupPopulations", groupPopulations);

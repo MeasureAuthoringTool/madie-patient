@@ -140,7 +140,11 @@ const TestCase = (props) => {
                 aria-label="population"
                 data-testid={`population-table-${testCase.id}`}
               >
-                <TestCasePopulationList populations={testCasePopulations} />
+                <TestCasePopulationList
+                  populations={testCasePopulations}
+                  disableActual={!canEdit}
+                  disableExpected={!canEdit}
+                />
               </Table>
             </Box>
           </Collapse>
