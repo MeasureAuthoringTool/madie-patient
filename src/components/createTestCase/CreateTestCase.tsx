@@ -135,6 +135,7 @@ const CreateTestCase = () => {
   const [showValidationErrors, setShowValidationErrors] = useState(false);
   const [measurementPeriodStart, setMeasurementPeriodStart] = useState<Date>();
   const [measurementPeriodEnd, setMeasurementPeriodEnd] = useState<Date>();
+
   const formik = useFormik({
     initialValues: { ...INITIAL_VALUES },
     validationSchema: TestCaseValidator,
@@ -142,17 +143,15 @@ const CreateTestCase = () => {
   });
   const { resetForm } = formik;
 
-  const mapMeasureGroup = (mg: Group): GroupPopulation => {
+  const mapMeasureGroup = (group: Group): GroupPopulation => {
     return {
-      groupId: mg.id,
-      scoring: mg.scoring,
-      populationValues: getPopulationsForScoring(mg.scoring)?.map(
-        (population) => ({
-          name: population,
-          expected: false,
-          actual: false,
-        })
-      ),
+      groupId: group.id,
+      scoring: group.scoring,
+      populationValues: getPopulationsForScoring(group)?.map((population) => ({
+        name: population,
+        expected: false,
+        actual: false,
+      })),
     };
   };
 
