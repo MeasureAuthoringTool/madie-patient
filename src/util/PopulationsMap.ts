@@ -1,5 +1,7 @@
 import { MeasureScoring } from "../models/MeasureScoring";
 import { MeasurePopulation } from "../models/MeasurePopulation";
+import { Group } from "../models/Measure";
+import { GroupPopulation } from "../models/TestCase";
 
 const POPULATION_MAP = {
   Ratio: [
@@ -38,10 +40,11 @@ const FHIR_POPULATION_CODES = {
   "measure-observation": MeasurePopulation.MEASURE_OBSERVATION,
 };
 
-export function getPopulationsForScoring(
-  scoring: MeasureScoring | string
-): MeasurePopulation[] {
-  return POPULATION_MAP[scoring];
+// filtering out populations for those that have definitions added.
+export function getPopulationsForScoring(group: Group): MeasurePopulation[] {
+  return POPULATION_MAP[group.scoring].filter((population) =>
+    group.population.hasOwnProperty(population)
+  );
 }
 
 // for every MeasurePopulation value,
