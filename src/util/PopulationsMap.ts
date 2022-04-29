@@ -1,7 +1,5 @@
-import { MeasureScoring } from "../models/MeasureScoring";
 import { MeasurePopulation } from "../models/MeasurePopulation";
 import { Group } from "../models/Measure";
-import { GroupPopulation } from "../models/TestCase";
 
 const POPULATION_MAP = {
   Ratio: [
