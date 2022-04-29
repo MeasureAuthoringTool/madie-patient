@@ -17,7 +17,8 @@
     "watch-tests": "cross-env BABEL_ENV=test jest --watch",
     "prepare": "husky install",
     "coverage": "cross-env BABEL_ENV=test jest --coverage",
-    "build:types": "tsc"
+    "build:types": "tsc",
+    "preinstall": "npx npm-force-resolutions"
   },
   "devDependencies": {
     "@babel/core": "^7.14.6",
@@ -115,6 +116,9 @@
     "defaults",
     "not IE 11"
   ],
+  "resolutions": {
+    "async": "2.6.4"
+  },
   "babelMacros": {
     "twin": {
       "preset": "styled-components",
