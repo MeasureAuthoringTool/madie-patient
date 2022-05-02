@@ -38,6 +38,7 @@ import { TextField } from "@mui/material";
 import calculationService from "../../api/CalculationService";
 import { ExecutionResult } from "fqm-execution/build/types/Calculator";
 import { parseISO } from "date-fns";
+import useOktaTokens from "../../hooks/useOktaTokens";
 
 const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
@@ -131,6 +132,9 @@ const CreateTestCase = () => {
     series: [],
   });
   const [measure, setMeasure] = useState<Measure>(null);
+  const { getUserName } = useOktaTokens();
+  const userName = getUserName();
+  const [canEdit, setCanEdit] = useState<boolean>(false);
   const [editor, setEditor] = useState<Ace.Editor>(null);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
   const [measurementPeriodStart, setMeasurementPeriodStart] = useState<Date>();
@@ -183,6 +187,9 @@ const CreateTestCase = () => {
           .then((tc: TestCase) => {
             setTestCase(_.cloneDeep(tc));
             setEditorVal(tc.json);
+
+            setCanEdit(userName === tc.createdBy);
+
             const nextTc = _.cloneDeep(tc);
             if (measure && measure.groups) {
               nextTc.groupPopulations = measure.groups.map((group) => {
@@ -211,6 +218,8 @@ const CreateTestCase = () => {
         resetForm();
       };
     } else if (measure && measure.groups) {
+      setCanEdit(measure.createdBy === userName);
+
       resetForm({
         values: {
           ...INITIAL_VALUES,
@@ -235,6 +244,9 @@ const CreateTestCase = () => {
         .fetchMeasure(measureId)
         .then((measure) => {
           setMeasure(measure);
+
+          setCanEdit(userName === measure.createdBy);
+
           setMeasurementPeriodStart(parseISO(measure.measurementPeriodStart));
           setMeasurementPeriodEnd(parseISO(measure.measurementPeriodEnd));
         })
@@ -446,36 +458,51 @@ const CreateTestCase = () => {
               */}
               <FormControl>
                 <Label text="Test Case Title" />
-                <TestCaseTitle
-                  type="text"
-                  id="testCaseTitle"
-                  data-testid="create-test-case-title"
-                  {...formik.getFieldProps("title")}
-                  // border radius classes don't take to tw.input
-                  style={{ borderRadius: ".375rem" }}
-                />
-                <FormErrors>{formikErrorHandler("title", true)}</FormErrors>
+                {canEdit && (
+                  <TestCaseTitle
+                    type="text"
+                    id="testCaseTitle"
+                    data-testid="create-test-case-title"
+                    {...formik.getFieldProps("title")}
+                    // border radius classes don't take to tw.input
+                    style={{ borderRadius: ".375rem" }}
+                  />
+                )}
+                {canEdit && (
+                  <FormErrors>{formikErrorHandler("title", true)}</FormErrors>
+                )}
+                {!canEdit && formik.values.title}
                 <Label text="Test Case Description" />
-                <TestCaseDescription
-                  id="testCaseDescription"
-                  data-testid="create-test-case-description"
-                  {...formik.getFieldProps("description")}
-                />
-                <FormErrors>
-                  {formikErrorHandler("description", true)}
-                </FormErrors>
+                {canEdit && (
+                  <TestCaseDescription
+                    id="testCaseDescription"
+                    data-testid="create-test-case-description"
+                    {...formik.getFieldProps("description")}
+                  />
+                )}
+                {canEdit && (
+                  <FormErrors>
+                    {formikErrorHandler("description", true)}
+                  </FormErrors>
+                )}
+                {!canEdit && formik.values.description}
               </FormControl>
               <FormControl>
                 <Label text="Test Case Series" />
-                <TestCaseSeries
-                  value={formik.values.series}
-                  onChange={(nextValue) =>
-                    formik.setFieldValue("series", nextValue)
-                  }
-                  seriesOptions={seriesState.series}
-                  sx={{ width: "100%" }}
-                />
-                <HelperText text={"Start typing to add a new series"} />
+                {canEdit && (
+                  <TestCaseSeries
+                    value={formik.values.series}
+                    onChange={(nextValue) =>
+                      formik.setFieldValue("series", nextValue)
+                    }
+                    seriesOptions={seriesState.series}
+                    sx={{ width: "100%" }}
+                  />
+                )}
+                {canEdit && (
+                  <HelperText text={"Start typing to add a new series"} />
+                )}
+                {!canEdit && formik.values.series}
               </FormControl>
               <FormControl
                 tw="flex flex-col"
@@ -484,6 +511,7 @@ const CreateTestCase = () => {
                 <span tw="text-lg">Population Values</span>
                 <GroupPopulations
                   disableActual={true}
+                  disableExpected={!canEdit}
                   groupPopulations={formik.values.groupPopulations}
                   onChange={(groupPopulations) => {
                     formik.setFieldValue("groupPopulations", groupPopulations);
@@ -518,14 +546,16 @@ const CreateTestCase = () => {
                 </LocalizationProvider>
               </FormControl>
               <FormActions>
-                <Button
-                  buttonTitle={
-                    testCase ? "Update Test Case" : "Create Test Case"
-                  }
-                  type="submit"
-                  data-testid="create-test-case-button"
-                  disabled={!isModified()}
-                />
+                {canEdit && (
+                  <Button
+                    buttonTitle={
+                      testCase ? "Update Test Case" : "Create Test Case"
+                    }
+                    type="submit"
+                    data-testid="create-test-case-button"
+                    disabled={!isModified()}
+                  />
+                )}
                 {/*<Button*/}
                 {/*  buttonTitle="Run Test"*/}
                 {/*  type="button"*/}
@@ -533,13 +563,15 @@ const CreateTestCase = () => {
                 {/*  onClick={calculate}*/}
                 {/*  data-testid="create-test-case-run-test-button"*/}
                 {/*/>*/}
-                <Button
-                  buttonTitle="Cancel"
-                  type="button"
-                  variant="white"
-                  onClick={navigateToTestCases}
-                  data-testid="create-test-case-cancel-button"
-                />
+                {canEdit && (
+                  <Button
+                    buttonTitle="Cancel"
+                    type="button"
+                    variant="white"
+                    onClick={navigateToTestCases}
+                    data-testid="create-test-case-cancel-button"
+                  />
+                )}
               </FormActions>
             </TestCaseForm>
           </div>
@@ -549,6 +581,7 @@ const CreateTestCase = () => {
             onChange={(val: string) => setEditorVal(val)}
             value={editorVal}
             setEditor={setEditor}
+            readOnly={!canEdit}
           />
         </div>
         {showValidationErrors ? (
