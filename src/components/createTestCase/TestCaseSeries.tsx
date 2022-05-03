@@ -81,9 +81,17 @@ const TestCaseSeries = ({
       }}
       renderOption={(props, option) => {
         if (typeof option === "string") {
-          return <li {...props}>{option}</li>;
+          return (
+            <li {...props} data-testid={`${option}-aa-option`}>
+              {option}
+            </li>
+          );
         } else {
-          return <li {...props}>{option?.title}</li>;
+          return (
+            <li {...props} data-testid={`${option?.title}-aa-option`}>
+              {option?.title}
+            </li>
+          );
         }
       }}
     />
