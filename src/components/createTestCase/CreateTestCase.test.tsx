@@ -49,9 +49,11 @@ const serviceConfig: ServiceConfig = {
   },
 };
 
+const MEASURE_CREATEDBY = "testuser";
 jest.mock("../../hooks/useOktaTokens", () =>
   jest.fn(() => ({
     getAccessToken: () => "test.jwt",
+    getUserName: () => MEASURE_CREATEDBY,
   }))
 );
 
@@ -79,6 +81,7 @@ describe("CreateTestCase component", () => {
           data: {
             id: "m1234",
             measureScoring: MeasureScoring.COHORT,
+            createdBy: MEASURE_CREATEDBY,
             groups: [
               {
                 groupId: "Group1_ID",
@@ -109,15 +112,21 @@ describe("CreateTestCase component", () => {
       <CreateTestCase />
     );
     const editor = screen.getByTestId("test-case-editor");
-    const titleTextInput = screen.getByTestId("create-test-case-title");
-    const descriptionTextArea = screen.getByTestId(
-      "create-test-case-description"
+
+    await waitFor(
+      () => {
+        expect(
+          screen.getByTestId("create-test-case-title")
+        ).toBeInTheDocument();
+        expect(
+          screen.getByTestId("create-test-case-description")
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole("button", { name: "Create Test Case" })
+        ).toBeInTheDocument();
+      },
+      { timeout: 1500 }
     );
-    expect(titleTextInput).toBeInTheDocument();
-    expect(descriptionTextArea).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Create Test Case" })
-    ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
 
     expect(editor).toBeInTheDocument();
@@ -134,6 +143,7 @@ describe("CreateTestCase component", () => {
     mockedAxios.post.mockResolvedValue({
       data: {
         id: "testID",
+        createdBy: MEASURE_CREATEDBY,
         description: testCaseDescription,
         title: testCaseTitle,
         hapiOperationOutcome: {
@@ -142,8 +152,15 @@ describe("CreateTestCase component", () => {
       },
     });
 
-    const descriptionInput = screen.getByTestId("create-test-case-description");
-    userEvent.type(descriptionInput, testCaseDescription);
+    await waitFor(
+      () => {
+        const descriptionInput = screen.getByTestId(
+          "create-test-case-description"
+        );
+        userEvent.type(descriptionInput, testCaseDescription);
+      },
+      { timeout: 1500 }
+    );
 
     const createBtn = screen.getByRole("button", { name: "Create Test Case" });
     userEvent.click(createBtn);
@@ -167,8 +184,15 @@ describe("CreateTestCase component", () => {
       },
     });
 
-    const descriptionInput = screen.getByTestId("create-test-case-description");
-    userEvent.type(descriptionInput, testCaseDescription);
+    await waitFor(
+      () => {
+        const descriptionInput = screen.getByTestId(
+          "create-test-case-description"
+        );
+        userEvent.type(descriptionInput, testCaseDescription);
+      },
+      { timeout: 1500 }
+    );
 
     const createBtn = screen.getByRole("button", { name: "Create Test Case" });
     userEvent.click(createBtn);
@@ -194,8 +218,15 @@ describe("CreateTestCase component", () => {
             `,
     });
 
-    const descriptionInput = screen.getByTestId("create-test-case-description");
-    userEvent.type(descriptionInput, testCaseDescription);
+    await waitFor(
+      () => {
+        const descriptionInput = screen.getByTestId(
+          "create-test-case-description"
+        );
+        userEvent.type(descriptionInput, testCaseDescription);
+      },
+      { timeout: 1500 }
+    );
 
     const createBtn = screen.getByRole("button", { name: "Create Test Case" });
     userEvent.click(createBtn);
@@ -220,8 +251,15 @@ describe("CreateTestCase component", () => {
       },
     });
 
-    const descriptionInput = screen.getByTestId("create-test-case-description");
-    userEvent.type(descriptionInput, testCaseDescription);
+    await waitFor(
+      () => {
+        const descriptionInput = screen.getByTestId(
+          "create-test-case-description"
+        );
+        userEvent.type(descriptionInput, testCaseDescription);
+      },
+      { timeout: 1500 }
+    );
 
     const createBtn = screen.getByRole("button", { name: "Create Test Case" });
     userEvent.click(createBtn);
@@ -241,6 +279,7 @@ describe("CreateTestCase component", () => {
   it("should load existing test case data when viewing specific test case", async () => {
     const testCase = {
       id: "1234",
+      createdBy: MEASURE_CREATEDBY,
       description: "Test IPP",
       json: `{"test":"test"}`,
     } as TestCase;
@@ -257,12 +296,12 @@ describe("CreateTestCase component", () => {
       <CreateTestCase />
     );
 
-    const descriptionTextArea = screen.getByTestId(
-      "create-test-case-description"
-    );
-    expect(descriptionTextArea).toBeInTheDocument();
     await waitFor(
       () => {
+        const descriptionTextArea = screen.getByTestId(
+          "create-test-case-description"
+        );
+        expect(descriptionTextArea).toBeInTheDocument();
         expect(descriptionTextArea).toHaveTextContent(testCase.description);
       },
       { timeout: 1500 }
@@ -276,6 +315,7 @@ describe("CreateTestCase component", () => {
   it("should update test case when update button is clicked", async () => {
     const testCase = {
       id: "1234",
+      createdBy: MEASURE_CREATEDBY,
       description: "Test IPP",
       series: "SeriesA",
       json: `{"test":"test"}`,
@@ -304,6 +344,7 @@ describe("CreateTestCase component", () => {
         return Promise.resolve({
           data: {
             id: "m1234",
+            createdBy: MEASURE_CREATEDBY,
             measureScoring: MeasureScoring.CONTINUOUS_VARIABLE,
             groups: [
               {
@@ -417,6 +458,7 @@ describe("CreateTestCase component", () => {
   it("should display an error when test case update returns no data", async () => {
     const testCase = {
       id: "1234",
+      createdBy: MEASURE_CREATEDBY,
       description: "Test IPP",
       json: `{"test":"test"}`,
     } as TestCase;
@@ -462,6 +504,7 @@ describe("CreateTestCase component", () => {
   it("should display an error when test case update fails", async () => {
     const testCase = {
       id: "1234",
+      createdBy: MEASURE_CREATEDBY,
       description: "Test IPP",
       json: `{"test":"test"}`,
     } as TestCase;
@@ -513,6 +556,7 @@ describe("CreateTestCase component", () => {
   it("should ignore supplied changes when cancel button is clicked during test case edit", async () => {
     const testCase = {
       id: "1234",
+      createdBy: MEASURE_CREATEDBY,
       description: "Test IPP",
       json: `{"test":"test"}`,
     } as TestCase;
@@ -588,6 +632,7 @@ describe("CreateTestCase component", () => {
     mockedAxios.post.mockResolvedValue({
       data: {
         id: "testID",
+        createdBy: MEASURE_CREATEDBY,
         description: testCaseDescription,
         title: testCaseTitle,
         hapiOperationOutcome: {
@@ -596,8 +641,15 @@ describe("CreateTestCase component", () => {
       },
     });
 
-    const descriptionInput = screen.getByTestId("create-test-case-description");
-    userEvent.type(descriptionInput, testCaseDescription);
+    await waitFor(
+      () => {
+        const descriptionInput = screen.getByTestId(
+          "create-test-case-description"
+        );
+        userEvent.type(descriptionInput, testCaseDescription);
+      },
+      { timeout: 1500 }
+    );
 
     const createBtn = screen.getByRole("button", { name: "Create Test Case" });
     userEvent.click(createBtn);
@@ -717,6 +769,7 @@ describe("CreateTestCase component", () => {
     mockedAxios.post.mockResolvedValue({
       data: {
         id: "testID",
+        createdBy: MEASURE_CREATEDBY,
         description: testCaseDescription,
         title: testCaseTitle,
         hapiOperationOutcome: {
@@ -725,8 +778,13 @@ describe("CreateTestCase component", () => {
       },
     });
 
-    const titleInput = screen.getByTestId("create-test-case-title");
-    userEvent.type(titleInput, testCaseDescription);
+    await waitFor(
+      () => {
+        const titleInput = screen.getByTestId("create-test-case-title");
+        userEvent.type(titleInput, testCaseTitle);
+      },
+      { timeout: 1500 }
+    );
 
     const createBtn = screen.getByRole("button", { name: "Create Test Case" });
     userEvent.click(createBtn);
@@ -750,6 +808,7 @@ describe("CreateTestCase component", () => {
     mockedAxios.post.mockResolvedValue({
       data: {
         id: "testID",
+        createdBy: MEASURE_CREATEDBY,
         description: testCaseDescription,
         series: testCaseSeries,
         hapiOperationOutcome: {
@@ -758,8 +817,13 @@ describe("CreateTestCase component", () => {
       },
     });
 
-    const seriesInput = screen.getByTestId("create-test-case-series");
-    userEvent.type(seriesInput, testCaseSeries);
+    await waitFor(
+      () => {
+        const seriesInput = screen.getByTestId("create-test-case-series");
+        userEvent.type(seriesInput, testCaseSeries);
+      },
+      { timeout: 1500 }
+    );
 
     const createBtn = screen.getByRole("button", { name: "Create Test Case" });
     userEvent.click(createBtn);
@@ -784,6 +848,7 @@ describe("CreateTestCase component", () => {
     mockedAxios.post.mockResolvedValue({
       data: {
         id: "testID",
+        createdBy: MEASURE_CREATEDBY,
         description: testCaseDescription,
         series: testCaseSeries,
         hapiOperationOutcome: {
@@ -805,8 +870,13 @@ describe("CreateTestCase component", () => {
       },
     });
 
-    const seriesInput = screen.getByTestId("create-test-case-series");
-    userEvent.type(seriesInput, testCaseSeries);
+    await waitFor(
+      () => {
+        const seriesInput = screen.getByTestId("create-test-case-series");
+        userEvent.type(seriesInput, testCaseSeries);
+      },
+      { timeout: 1500 }
+    );
 
     const createBtn = screen.getByRole("button", { name: "Create Test Case" });
     userEvent.click(createBtn);
@@ -842,6 +912,7 @@ describe("CreateTestCase component", () => {
 
     const testCase = {
       id: "1234",
+      createdBy: MEASURE_CREATEDBY,
       description: "Test IPP",
       series: "SeriesA",
       json: `{"test":"test"}`,
@@ -925,6 +996,7 @@ describe("CreateTestCase component", () => {
 
     const testCase = {
       id: "1234",
+      createdBy: MEASURE_CREATEDBY,
       description: "Test IPP",
       series: "SeriesA",
       json: `{"test":"test"}`,
@@ -1136,6 +1208,64 @@ describe("CreateTestCase component", () => {
     expect(screen.getByTestId("404-page")).toBeInTheDocument();
     expect(screen.getByText("404 - Not Found!")).toBeInTheDocument();
     expect(screen.getByTestId("404-page-link")).toBeInTheDocument();
+  });
+
+  it("should render no text input and no create or update button if user is not the measure owner", async () => {
+    mockedAxios.get.mockImplementation((args) => {
+      if (args && args.startsWith(serviceConfig.measureService.baseUrl)) {
+        return Promise.resolve({
+          data: {
+            id: "m1234",
+            measureScoring: MeasureScoring.COHORT,
+            createdBy: "AnotherUser",
+            groups: [
+              {
+                groupId: "Group1_ID",
+                scoring: "Cohort",
+                population: {
+                  initialPopulation: "Pop1",
+                },
+              },
+            ],
+            measurementPeriodStart: "2023-01-01",
+            measurementPeriodEnd: "2023-12-31",
+          },
+        });
+      } else if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["SeriesA"] });
+      }
+      return Promise.resolve({ data: null });
+    });
+
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/create"],
+      "/measures/:measureId/edit/test-cases/create",
+      <CreateTestCase />
+    );
+    const editor = screen.getByTestId("test-case-editor");
+
+    await waitFor(
+      () => {
+        expect(
+          screen.queryByTestId("create-test-case-title")
+        ).not.toBeInTheDocument();
+        expect(
+          screen.queryByTestId("create-test-case-description")
+        ).not.toBeInTheDocument();
+        expect(
+          screen.queryByTestId("create-test-case-series")
+        ).not.toBeInTheDocument();
+        expect(
+          screen.queryByRole("button", { name: "Create Test Case" })
+        ).not.toBeInTheDocument();
+      },
+      { timeout: 1500 }
+    );
+    expect(
+      screen.queryByRole("button", { name: "Cancel" })
+    ).not.toBeInTheDocument();
+
+    expect(editor).toBeInTheDocument();
   });
 });
 

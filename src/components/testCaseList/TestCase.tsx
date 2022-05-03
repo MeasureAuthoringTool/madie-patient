@@ -47,7 +47,7 @@ const testCasePopulations: PopulationValue[] = [
 
 const TestCase = (props) => {
   const navigate = useNavigate();
-  const { testCase } = props;
+  const { testCase, canEdit } = props;
   const [open, setOpen] = React.useState(false);
   const status = testCase.executionStatus;
   const statusColor = testCase.executionStatus === "pass" ? "success" : "error";
@@ -102,17 +102,30 @@ const TestCase = (props) => {
             <Chip label={status} color={statusColor} />
           </td>
         )}
-
-        <td>
-          <EditButton
-            onClick={() => {
-              navigate(`./${testCase.id}`);
-            }}
-            data-testid={`edit-test-case-${testCase.id}`}
-          >
-            Edit
-          </EditButton>
-        </td>
+        {canEdit && (
+          <td>
+            <EditButton
+              onClick={() => {
+                navigate(`./${testCase.id}`);
+              }}
+              data-testid={`edit-test-case-${testCase.id}`}
+            >
+              Edit
+            </EditButton>
+          </td>
+        )}
+        {!canEdit && (
+          <td>
+            <EditButton
+              onClick={() => {
+                navigate(`./${testCase.id}`);
+              }}
+              data-testid={`view-test-case-${testCase.id}`}
+            >
+              View
+            </EditButton>
+          </td>
+        )}
       </tr>
 
       <TableRow
@@ -127,7 +140,11 @@ const TestCase = (props) => {
                 aria-label="population"
                 data-testid={`population-table-${testCase.id}`}
               >
-                <TestCasePopulationList populations={testCasePopulations} />
+                <TestCasePopulationList
+                  populations={testCasePopulations}
+                  disableActual={!canEdit}
+                  disableExpected={!canEdit}
+                />
               </Table>
             </Box>
           </Collapse>

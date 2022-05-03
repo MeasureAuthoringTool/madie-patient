@@ -21,7 +21,7 @@ describe("TestCase component", () => {
     render(
       <tbody>
         <MemoryRouter>
-          <TestCaseComponent testCase={testCase} />
+          <TestCaseComponent testCase={testCase} canEdit={true} />
         </MemoryRouter>
       </tbody>,
       { container: document.body.appendChild(table) }
@@ -45,7 +45,7 @@ describe("TestCase component", () => {
   it("should render test case population table opened", async () => {
     render(
       <MemoryRouter>
-        <TestCaseComponent testCase={testCase} />
+        <TestCaseComponent testCase={testCase} canEdit={true} />
       </MemoryRouter>
     );
 
@@ -75,7 +75,7 @@ describe("TestCase component", () => {
   it("should render test case population table opened and closed", async () => {
     render(
       <MemoryRouter>
-        <TestCaseComponent testCase={testCase} />
+        <TestCaseComponent testCase={testCase} canEdit={true} />
       </MemoryRouter>
     );
     const rows = await screen.findByTestId(`test-case-row-${testCase.id}`);
@@ -103,5 +103,27 @@ describe("TestCase component", () => {
         screen.getByTestId(`arrow-right-icon-${testCase.id}`)
       ).toBeInTheDocument();
     });
+  });
+
+  it("should render test case in view mode if user is not the owner", async () => {
+    const table = document.createElement("table");
+    render(
+      <tbody>
+        <MemoryRouter>
+          <TestCaseComponent testCase={testCase} canEdit={false} />
+        </MemoryRouter>
+      </tbody>,
+      { container: document.body.appendChild(table) }
+    );
+
+    const rows = await screen.findByTestId(`test-case-row-${testCase.id}`);
+    const columns = rows.querySelectorAll("td");
+    expect(columns[1]).toHaveTextContent(testCase.title);
+    expect(columns[2]).toHaveTextContent(testCase.series);
+    expect(columns[3]).toHaveTextContent(testCase.executionStatus);
+
+    const buttons = await screen.findAllByRole("button");
+    expect(buttons).toHaveLength(2);
+    expect(buttons[1]).toHaveTextContent("View");
   });
 });

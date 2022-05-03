@@ -9,6 +9,7 @@ export interface EditorPropsType {
   parseDebounceTime?: number;
   inboundAnnotations?: Ace.Annotation[];
   setEditor?: (editor: Ace.Editor) => void;
+  readOnly?: boolean;
 }
 
 const Editor = ({
@@ -17,6 +18,7 @@ const Editor = ({
   parseDebounceTime = 1500,
   inboundAnnotations,
   setEditor,
+  readOnly,
 }: EditorPropsType) => {
   return (
     <>
@@ -48,6 +50,7 @@ const Editor = ({
             autoScrollEditorIntoView: true,
           }}
           editorProps={{ $blockScrolling: true }}
+          readOnly={readOnly}
         />
       </div>
     </>
