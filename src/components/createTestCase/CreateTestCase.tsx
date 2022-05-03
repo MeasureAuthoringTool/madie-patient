@@ -19,7 +19,6 @@ import "styled-components/macro";
 import TestCase, {
   GroupPopulation,
   HapiOperationOutcome,
-  PopulationValue,
 } from "../../models/TestCase";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import Editor from "../editor/Editor";
@@ -139,6 +138,8 @@ const CreateTestCase = () => {
   const [showValidationErrors, setShowValidationErrors] = useState(false);
   const [measurementPeriodStart, setMeasurementPeriodStart] = useState<Date>();
   const [measurementPeriodEnd, setMeasurementPeriodEnd] = useState<Date>();
+  const [changedId, setChangedId] = useState("");
+  const [isChanged, setIsChanged] = useState<boolean>(false);
   const formik = useFormik({
     initialValues: { ...INITIAL_VALUES },
     validationSchema: TestCaseValidator,
@@ -416,6 +417,20 @@ const CreateTestCase = () => {
     }, 500);
   }
 
+  useEffect(() => {
+    if (changedId !== "") {
+      validatePopulationDependencies(formik.values.groupPopulations, changedId);
+    }
+  }, [changedId, isChanged]);
+
+  const validatePopulationDependencies = (
+    groupPopulations: GroupPopulation[],
+    changedId: String
+  ) => {
+    triggerPopChanges(groupPopulations, changedId);
+    formik.setFieldValue("groupPopulations", groupPopulations);
+  };
+
   return (
     <>
       <div tw="flex flex-wrap w-screen">
@@ -490,11 +505,10 @@ const CreateTestCase = () => {
                 <GroupPopulations
                   disableActual={true}
                   groupPopulations={formik.values.groupPopulations}
-                  onChange={(groupPopulations) => {
-                    //triggerPopChanges(groupPopulations);
-
-                    formik.setFieldValue("groupPopulations", groupPopulations);
+                  onChange={() => {
+                    setIsChanged(!isChanged);
                   }}
+                  setChangedId={setChangedId}
                 />
               </FormControl>
               <span tw="text-lg">Measurement Period</span>

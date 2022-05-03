@@ -21,12 +21,15 @@ const StyledInput = tw.input`
   disabled:bg-gray-100!
 `;
 
-const StyledCheckbox = ({ checked, onChange, ...props }) => {
+const StyledCheckbox = ({ checked, onChange, setChangedId, ...props }) => {
   return (
     <StyledInput
       type="checkbox"
       checked={checked}
-      onChange={(e) => onChange(!!e.target.checked)}
+      onChange={(e) => {
+        setChangedId(props.name);
+        onChange(!!e.target.checked);
+      }}
       {...props}
     />
   );
@@ -39,6 +42,7 @@ export interface TestCasePopulationProps {
   disableExpected?: boolean;
   disableActual?: boolean;
   onChange: (population: PopulationValue) => void;
+  setChangedId?: (string: string) => void;
 }
 
 const TestCasePopulation = ({
@@ -46,6 +50,7 @@ const TestCasePopulation = ({
   disableExpected = false,
   disableActual = false,
   onChange,
+  setChangedId,
 }: TestCasePopulationProps) => {
   return (
     <React.Fragment key={`fragment-key-${population.name}`}>
@@ -64,10 +69,12 @@ const TestCasePopulation = ({
         <TD>
           <StyledCheckbox
             id={`${population.name}-expected-cb`}
+            name={population.name}
             checked={population.expected}
             onChange={(checked) =>
               onChange({ ...population, expected: checked })
             }
+            setChangedId={setChangedId}
             disabled={disableExpected}
             data-testid={`test-population-${population.name}-expected`}
           />
@@ -77,6 +84,7 @@ const TestCasePopulation = ({
             id={`${population.name}-actual-cb`}
             checked={population.actual}
             onChange={(checked) => onChange({ ...population, actual: checked })}
+            setChangedId={setChangedId}
             disabled={disableActual}
             data-testid={`test-population-${population.name}-actual`}
           />

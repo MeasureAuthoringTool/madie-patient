@@ -17,6 +17,7 @@ describe("TestCasePopulation component", () => {
       actual: true,
     };
     const handleChange = jest.fn();
+    var setChangedId = jest.fn();
     render(
       <MemoryRouter>
         <table>
@@ -24,6 +25,7 @@ describe("TestCasePopulation component", () => {
             <TestCasePopulation
               population={testCasePopulation}
               onChange={handleChange}
+              setChangedId={setChangedId}
             />
           </tbody>
         </table>
@@ -45,6 +47,7 @@ describe("TestCasePopulation component", () => {
       actual: false,
     };
     const handleChange = jest.fn();
+    var setChangedId = jest.fn();
     render(
       <MemoryRouter>
         <table>
@@ -52,6 +55,7 @@ describe("TestCasePopulation component", () => {
             <TestCasePopulation
               population={testCasePopulation}
               onChange={handleChange}
+              setChangedId={setChangedId}
             />
           </tbody>
         </table>

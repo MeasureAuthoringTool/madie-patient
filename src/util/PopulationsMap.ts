@@ -1,7 +1,6 @@
 import { MeasureScoring } from "../models/MeasureScoring";
 import { MeasurePopulation } from "../models/MeasurePopulation";
 import { GroupPopulation, PopulationValue } from "../models/TestCase";
-import GroupPopulations from "../components/populations/GroupPopulations";
 
 const POPULATION_MAP = {
   Ratio: [
@@ -56,8 +55,14 @@ export function getFhirMeasurePopulationCode(population: string) {
   }
 }
 
-export function triggerPopChanges(groupPopulations: GroupPopulation[]) {
+export function triggerPopChanges(
+  groupPopulations: GroupPopulation[],
+  changedId
+) {
   let returnPop: GroupPopulation[] = [];
+  const expectedValue = groupPopulations[0]?.populationValues.filter(
+    (population) => population.name === changedId
+  )[0]?.expected;
   returnPop.push(groupPopulations[0]);
   let myMap = {};
 
@@ -66,26 +71,63 @@ export function triggerPopChanges(groupPopulations: GroupPopulation[]) {
     myMap[value.name] = value;
   });
 
-  if (
-    myMap[MeasurePopulation.DENOMINATOR] != null &&
-    myMap[MeasurePopulation.DENOMINATOR].expected == true
-  ) {
-    // Since Denominator is TRUE... set InitialPopulation to TRUE too
-    myMap[MeasurePopulation.INITIAL_POPULATION].expected = true;
-  }
-  if (
-    myMap[MeasurePopulation.DENOMINATOR_EXCEPTION] != null &&
-    myMap[MeasurePopulation.DENOMINATOR_EXCEPTION].expected == true
-  ) {
-    // Since Denominotor Exception is true, then IPP & Denom should also be true
-    myMap[MeasurePopulation.INITIAL_POPULATION].expected = true;
-    myMap[MeasurePopulation.DENOMINATOR].expected = true;
+  //denominator
+  if (changedId === "denominator") {
+    if (expectedValue === true) {
+      myMap[MeasurePopulation.INITIAL_POPULATION].expected = true;
+    }
+
+    if (expectedValue === false) {
+      myMap[MeasurePopulation.NUMERATOR].expected = false;
+      myMap[MeasurePopulation.DENOMINATOR_EXCLUSION].expected = false;
+      myMap[MeasurePopulation.DENOMINATOR_EXCEPTION].expected = false;
+      myMap[MeasurePopulation.NUMERATOR_EXCLUSION].expected = false;
+    }
   }
 
-  //for every item in Map, create a returnPop[0].push with that value //returnPop.push(groupPopulations[0]);
-  Object.keys(myMap).forEach((key: MeasurePopulation) => {
-    returnPop[0].populationValues.push(myMap[key]);
-  });
+  //numerator
+  if (changedId === "numerator") {
+    if (expectedValue === true) {
+      myMap[MeasurePopulation.INITIAL_POPULATION].expected = true;
+      myMap[MeasurePopulation.DENOMINATOR].expected = true;
+    }
+    if (expectedValue === false) {
+      myMap[MeasurePopulation.NUMERATOR_EXCLUSION].expected = false;
+    }
+  }
+
+  //Denom Exclusion
+  if (changedId === "denominatorExclusion") {
+    if (expectedValue === true) {
+      myMap[MeasurePopulation.INITIAL_POPULATION].expected = true;
+      myMap[MeasurePopulation.DENOMINATOR].expected = true;
+    }
+  }
+  //Denom Exception
+  if (changedId === "denominatorException") {
+    if (expectedValue === true) {
+      myMap[MeasurePopulation.INITIAL_POPULATION].expected = true;
+      myMap[MeasurePopulation.DENOMINATOR].expected = true;
+    }
+  }
+
+  //Numer Exclusion
+  if (changedId === "numeratorExclusion") {
+    if (expectedValue === true) {
+      myMap[MeasurePopulation.INITIAL_POPULATION].expected = true;
+      myMap[MeasurePopulation.DENOMINATOR].expected = true;
+      myMap[MeasurePopulation.NUMERATOR].expected = true;
+    }
+  }
+
+  //initialPopulation
+  if (changedId === "initialPopulation" && expectedValue === false) {
+    myMap[MeasurePopulation.DENOMINATOR].expected = false;
+    myMap[MeasurePopulation.NUMERATOR].expected = false;
+    myMap[MeasurePopulation.DENOMINATOR_EXCLUSION].expected = false;
+    myMap[MeasurePopulation.DENOMINATOR_EXCEPTION].expected = false;
+    myMap[MeasurePopulation.NUMERATOR_EXCLUSION].expected = false;
+  }
 
   return returnPop;
 }
