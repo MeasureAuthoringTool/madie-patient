@@ -9,11 +9,6 @@ const TestCaseLanding = () => {
   return (
     <div tw="m-2">
       <section>
-        <Link to="create" data-testid="create-new-test-case-button">
-          <Button buttonTitle="New Test Case" />
-        </Link>
-      </section>
-      <section>
         <TestCaseList />
       </section>
     </div>
