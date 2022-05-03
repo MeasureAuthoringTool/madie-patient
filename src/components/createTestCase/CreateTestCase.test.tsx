@@ -149,7 +149,7 @@ describe("CreateTestCase component", () => {
     userEvent.click(createBtn);
 
     const debugOutput = await screen.findByText(
-      "Test case created successfully! Redirecting back to Test Cases..."
+      "Test case created successfully!"
     );
     expect(debugOutput).toBeInTheDocument();
   });
@@ -384,7 +384,7 @@ describe("CreateTestCase component", () => {
     userEvent.click(screen.getByRole("button", { name: "Update Test Case" }));
 
     const debugOutput = await screen.findByText(
-      "Test case updated successfully! Redirecting back to Test Cases..."
+      "Test case updated successfully!"
     );
     expect(debugOutput).toBeInTheDocument();
 
@@ -412,7 +412,7 @@ describe("CreateTestCase component", () => {
         ],
       },
     ]);
-  }, 15000);
+  });
 
   it("should display an error when test case update returns no data", async () => {
     const testCase = {
@@ -603,7 +603,7 @@ describe("CreateTestCase component", () => {
     userEvent.click(createBtn);
 
     const debugOutput = await screen.findByText(
-      "Test case created successfully! Redirecting back to Test Cases..."
+      "Test case created successfully!"
     );
     expect(debugOutput).toBeInTheDocument();
   });
@@ -732,7 +732,7 @@ describe("CreateTestCase component", () => {
     userEvent.click(createBtn);
 
     const debugOutput = await screen.findByText(
-      "Test case created successfully! Redirecting back to Test Cases..."
+      "Test case created successfully!"
     );
     expect(debugOutput).toBeInTheDocument();
   });
@@ -765,7 +765,7 @@ describe("CreateTestCase component", () => {
     userEvent.click(createBtn);
 
     const debugOutput = await screen.findByText(
-      "Test case created successfully! Redirecting back to Test Cases..."
+      "Test case created successfully!"
     );
     expect(debugOutput).toBeInTheDocument();
   }, 15000);

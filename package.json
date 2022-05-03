@@ -101,6 +101,7 @@
     "formik": "^2.2.9",
     "fqm-execution": "^0.9.0",
     "handlebars-loader": "^1.7.1",
+    "html-react-parser": "^1.4.12",
     "lodash": "^4.17.21",
     "node-polyfill-webpack-plugin": "^1.1.4",
     "react": "^17.0.2",

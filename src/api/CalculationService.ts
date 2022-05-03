@@ -16,23 +16,18 @@ export class CalculationService {
     measure: Measure,
     testCases: TestCase[]
   ): Promise<ExecutionResult[]> {
-    try {
-      const measureBundle = this.buildMeasureBundle(measure);
-      const TestCaseBundles = testCases.map((testCase) => {
-        return this.buildPatientBundle(testCase);
-      });
+    const measureBundle = this.buildMeasureBundle(measure);
+    const TestCaseBundles = testCases.map((testCase) => {
+      return this.buildPatientBundle(testCase);
+    });
 
-      const calculationOutput: CalculationOutput = await this.calculate(
-        measureBundle,
-        TestCaseBundles,
-        measure.measurementPeriodStart,
-        measure.measurementPeriodEnd
-      );
-      return calculationOutput?.results;
-    } catch (error) {
-      const message = "Unable to calculate test case.";
-      throw new Error(message);
-    }
+    const calculationOutput: CalculationOutput = await this.calculate(
+      measureBundle,
+      TestCaseBundles,
+      measure.measurementPeriodStart,
+      measure.measurementPeriodEnd
+    );
+    return calculationOutput?.results;
   }
 
   private buildMeasureBundle(measure: Measure): fhir4.Bundle {

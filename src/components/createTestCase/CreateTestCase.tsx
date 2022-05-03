@@ -6,6 +6,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import parse from "html-react-parser";
 import { Button, HelperText, Label } from "@madie/madie-components";
 import { useNavigate, useParams } from "react-router-dom";
 import { useFormik } from "formik";
@@ -36,7 +37,10 @@ import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import DesktopDatePicker from "@mui/lab/DesktopDatePicker";
 import { TextField } from "@mui/material";
 import calculationService from "../../api/CalculationService";
-import { ExecutionResult } from "fqm-execution/build/types/Calculator";
+import {
+  DetailedPopulationGroupResult,
+  ExecutionResult,
+} from "fqm-execution/build/types/Calculator";
 import { parseISO } from "date-fns";
 
 const FormControl = tw.div`mb-3`;
@@ -45,14 +49,14 @@ const TestCaseForm = tw.form`m-3`;
 const FormActions = tw.div`flex flex-row gap-2`;
 
 const TestCaseDescription = tw.textarea`
-  w-96
+  min-w-full
   resize
   h-24
   rounded-md
   sm:text-sm
 `;
 const TestCaseTitle = tw.input`
-  w-96
+  min-w-full
   rounded
   sm:text-sm
 `;
@@ -91,7 +95,7 @@ const styles = {
 };
 const Alert = styled.div<AlertProps>(({ status = "default" }) => [
   styles[status],
-  tw`rounded-lg py-5 px-6 m-3 text-base inline-flex items-center w-auto min-w-96`,
+  tw`rounded-lg p-2 m-2 text-base inline-flex items-center w-11/12`,
 ]);
 
 const StyledIcon = styled(FontAwesomeIcon)(({ errors }: { errors: number }) => [
@@ -135,6 +139,9 @@ const CreateTestCase = () => {
   const [showValidationErrors, setShowValidationErrors] = useState(false);
   const [measurementPeriodStart, setMeasurementPeriodStart] = useState<Date>();
   const [measurementPeriodEnd, setMeasurementPeriodEnd] = useState<Date>();
+  const [populationGroupResult, setPopulationGroupResult] =
+    useState<DetailedPopulationGroupResult>();
+  const [calculationErrors, setCalculationErrors] = useState<string>();
 
   const formik = useFormik({
     initialValues: { ...INITIAL_VALUES },
@@ -307,12 +314,17 @@ const CreateTestCase = () => {
     if (isModified()) {
       modifiedTestCase.json = editorVal;
     }
-    calculation.current
-      .calculateTestCases(measure, [modifiedTestCase])
-      .then((executionResults: ExecutionResult[]) => {
-        /* eslint no-console:off */
-        console.dir(executionResults);
-      });
+    if (modifiedTestCase?.json) {
+      calculation.current
+        .calculateTestCases(measure, [modifiedTestCase])
+        .then((executionResults: ExecutionResult[]) => {
+          // clear errors
+          setCalculationErrors("");
+          // grab first group results because we only have one group for now
+          setPopulationGroupResult(executionResults[0].detailedResults[0]);
+        })
+        .catch((error) => setCalculationErrors(error.message));
+    }
   };
 
   function handleTestCaseResponse(
@@ -323,9 +335,8 @@ const CreateTestCase = () => {
       if (hasValidHapiOutcome(testCase)) {
         setAlert({
           status: "success",
-          message: `Test case ${action}d successfully! Redirecting back to Test Cases...`,
+          message: `Test case ${action}d successfully!`,
         });
-        setTimeout(() => navigateToTestCases(), 3000);
       } else {
         setAlert({
           status: "warning",
@@ -414,7 +425,7 @@ const CreateTestCase = () => {
   return (
     <>
       <div tw="flex flex-wrap w-screen">
-        <div tw="flex-none max-w-xl">
+        <div tw="flex-none w-3/12">
           <div tw="ml-2">
             {alert && (
               <Alert
@@ -427,7 +438,7 @@ const CreateTestCase = () => {
                 <button
                   data-testid="close-create-test-case-alert"
                   type="button"
-                  tw="box-content w-4 h-4 p-1 ml-3 mb-1.5 border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:opacity-75 hover:no-underline"
+                  tw="box-content h-4 p-1 ml-3 mb-1.5"
                   data-bs-dismiss="alert"
                   aria-label="Close Alert"
                   onClick={() => setAlert(null)}
@@ -526,13 +537,13 @@ const CreateTestCase = () => {
                   data-testid="create-test-case-button"
                   disabled={!isModified()}
                 />
-                {/*<Button*/}
-                {/*  buttonTitle="Run Test"*/}
-                {/*  type="button"*/}
-                {/*  variant="secondary"*/}
-                {/*  onClick={calculate}*/}
-                {/*  data-testid="create-test-case-run-test-button"*/}
-                {/*/>*/}
+                <Button
+                  buttonTitle="Run Test"
+                  type="button"
+                  variant="secondary"
+                  onClick={calculate}
+                  data-testid="create-test-case-run-test-`button"
+                />
                 <Button
                   buttonTitle="Cancel"
                   type="button"
@@ -544,13 +555,28 @@ const CreateTestCase = () => {
             </TestCaseForm>
           </div>
         </div>
-        <div tw="flex-grow">
+        <div tw="flex-auto w-3/12">
           <Editor
             onChange={(val: string) => setEditorVal(val)}
             value={editorVal}
             setEditor={setEditor}
           />
         </div>
+        {(populationGroupResult || calculationErrors) && (
+          <div tw="flex-auto w-3/12 text-sm p-2">
+            {calculationErrors && (
+              <Alert
+                status="error"
+                role="alert"
+                aria-label="Create Alert"
+                data-testid="create-test-case-alert"
+              >
+                {calculationErrors}
+              </Alert>
+            )}
+            {!calculationErrors && parse(populationGroupResult.html)}
+          </div>
+        )}
         {showValidationErrors ? (
           <aside
             tw="w-80 h-[500px] flex flex-col"
