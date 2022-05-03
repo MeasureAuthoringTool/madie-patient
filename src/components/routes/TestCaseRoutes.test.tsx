@@ -174,7 +174,7 @@ describe("TestCaseRoutes", () => {
     expect(newBtn2).toBeInTheDocument();
   });
 
-  it("should save est case successfully", async () => {
+  it("should save test case successfully", async () => {
     jest.useFakeTimers("modern");
     mockedAxios.get.mockImplementation((args) => {
       if (args && args.endsWith("series")) {

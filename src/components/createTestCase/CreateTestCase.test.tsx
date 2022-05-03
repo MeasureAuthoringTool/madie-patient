@@ -1165,4 +1165,61 @@ describe("Measure Calculation", () => {
       result: false,
     });
   });
+
+  it("executes a test case successfully when test case resources are valid", async () => {
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.startsWith(serviceConfig.measureService.baseUrl)) {
+        return Promise.resolve({ data: simpleMeasureFixture });
+      } else if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
+      }
+      return Promise.resolve({ data: testCaseFixture });
+    });
+
+    renderWithRouter(
+      [
+        "/measures/623cacebe74613783378c17b/edit/test-cases/623cacffe74613783378c17c",
+      ],
+      "/measures/:measureId/edit/test-cases/:id",
+      <CreateTestCase />
+    );
+    userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
+    const debugOutput = await screen.findByText(
+      "Population Group: population-group-1"
+    );
+    expect(debugOutput).toBeInTheDocument();
+  });
+
+  it("executes a test case and shows the errors for invalid test case json", async () => {
+    const testCase = {
+      id: "1234",
+      description: "Test IPP",
+      series: "SeriesA",
+      json: '{ "resourceType": "Bundle", "type": "collection", "entry": [] }',
+      groupPopulations: null,
+    } as TestCase;
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.startsWith(serviceConfig.measureService.baseUrl)) {
+        return Promise.resolve({ data: simpleMeasureFixture });
+      } else if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
+      }
+      return Promise.resolve({
+        data: testCase,
+      });
+    });
+
+    renderWithRouter(
+      [
+        "/measures/623cacebe74613783378c17b/edit/test-cases/623cacffe74613783378c17c",
+      ],
+      "/measures/:measureId/edit/test-cases/:id",
+      <CreateTestCase />
+    );
+    userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
+    const debugOutput = await screen.findByText(
+      "No entries found in passed patient bundles"
+    );
+    expect(debugOutput).toBeInTheDocument();
+  });
 });

@@ -314,17 +314,15 @@ const CreateTestCase = () => {
     if (isModified()) {
       modifiedTestCase.json = editorVal;
     }
-    if (modifiedTestCase?.json) {
-      calculation.current
-        .calculateTestCases(measure, [modifiedTestCase])
-        .then((executionResults: ExecutionResult[]) => {
-          // clear errors
-          setCalculationErrors("");
-          // grab first group results because we only have one group for now
-          setPopulationGroupResult(executionResults[0].detailedResults[0]);
-        })
-        .catch((error) => setCalculationErrors(error.message));
-    }
+    calculation.current
+      .calculateTestCases(measure, [modifiedTestCase])
+      .then((executionResults: ExecutionResult[]) => {
+        // clear errors
+        setCalculationErrors("");
+        // grab first group results because we only have one group for now
+        setPopulationGroupResult(executionResults[0].detailedResults[0]);
+      })
+      .catch((error) => setCalculationErrors(error.message));
   };
 
   function handleTestCaseResponse(
@@ -542,7 +540,7 @@ const CreateTestCase = () => {
                   type="button"
                   variant="secondary"
                   onClick={calculate}
-                  data-testid="create-test-case-run-test-`button"
+                  data-testid="run-test-case-button"
                 />
                 <Button
                   buttonTitle="Cancel"
@@ -563,18 +561,22 @@ const CreateTestCase = () => {
           />
         </div>
         {(populationGroupResult || calculationErrors) && (
-          <div tw="flex-auto w-3/12 text-sm p-2">
+          <div tw="flex-auto w-3/12 p-2">
             {calculationErrors && (
               <Alert
                 status="error"
                 role="alert"
-                aria-label="Create Alert"
-                data-testid="create-test-case-alert"
+                aria-label="Calculation Errors"
+                data-testid="calculation-error-alert"
               >
                 {calculationErrors}
               </Alert>
             )}
-            {!calculationErrors && parse(populationGroupResult.html)}
+            {!calculationErrors && (
+              <div tw="text-sm" data-testid="calculation-results">
+                {parse(populationGroupResult.html)}
+              </div>
+            )}
           </div>
         )}
         {showValidationErrors ? (
