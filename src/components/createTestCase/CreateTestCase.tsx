@@ -428,7 +428,7 @@ const CreateTestCase = () => {
   }
 
   useEffect(() => {
-    if (changedId !== "") {
+    if (changedId !== "" && isChanged) {
       validatePopulationDependencies(formik.values.groupPopulations, changedId);
     }
   }, [changedId, isChanged]);
@@ -439,6 +439,7 @@ const CreateTestCase = () => {
   ) => {
     triggerPopChanges(groupPopulations, changedId);
     formik.setFieldValue("groupPopulations", groupPopulations);
+    setIsChanged(false);
   };
 
   return (
@@ -532,7 +533,7 @@ const CreateTestCase = () => {
                   disableExpected={!canEdit}
                   groupPopulations={formik.values.groupPopulations}
                   onChange={() => {
-                    setIsChanged(!isChanged);
+                    setIsChanged(true);
                   }}
                   setChangedId={setChangedId}
                 />
