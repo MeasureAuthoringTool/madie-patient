@@ -184,7 +184,7 @@ describe("TestCaseRoutes", () => {
     expect(newBtn2).toBeInTheDocument();
   });
 
-  it("should navigate back to landing page when test case is successfully saved", async () => {
+  it("should save test case successfully", async () => {
     jest.useFakeTimers("modern");
     mockedAxios.get.mockImplementation((args) => {
       if (args && args.endsWith("series")) {
@@ -252,16 +252,7 @@ describe("TestCaseRoutes", () => {
     const createBtn = screen.getByRole("button", { name: "Create Test Case" });
     userEvent.click(createBtn);
     const feedback = await screen.findByRole("alert");
-    expect(feedback).toHaveTextContent(
-      "Test case created successfully! Redirecting back to Test Cases..."
-    );
-    act(() => {
-      jest.advanceTimersByTime(3500);
-    });
-    const newBtn2 = await screen.findByRole("button", {
-      name: "New Test Case",
-    });
-    expect(newBtn2).toBeInTheDocument();
+    expect(feedback).toHaveTextContent("Test case created successfully!");
   });
 
   it("should render 404 page", async () => {
