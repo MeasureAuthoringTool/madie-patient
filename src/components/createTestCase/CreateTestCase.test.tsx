@@ -166,7 +166,7 @@ describe("CreateTestCase component", () => {
     userEvent.click(createBtn);
 
     const debugOutput = await screen.findByText(
-      "Test case created successfully! Redirecting back to Test Cases..."
+      "Test case created successfully!"
     );
     expect(debugOutput).toBeInTheDocument();
   });
@@ -425,7 +425,7 @@ describe("CreateTestCase component", () => {
     userEvent.click(screen.getByRole("button", { name: "Update Test Case" }));
 
     const debugOutput = await screen.findByText(
-      "Test case updated successfully! Redirecting back to Test Cases..."
+      "Test case updated successfully!"
     );
     expect(debugOutput).toBeInTheDocument();
 
@@ -453,7 +453,7 @@ describe("CreateTestCase component", () => {
         ],
       },
     ]);
-  }, 15000);
+  });
 
   it("should display an error when test case update returns no data", async () => {
     const testCase = {
@@ -655,7 +655,7 @@ describe("CreateTestCase component", () => {
     userEvent.click(createBtn);
 
     const debugOutput = await screen.findByText(
-      "Test case created successfully! Redirecting back to Test Cases..."
+      "Test case created successfully!"
     );
     expect(debugOutput).toBeInTheDocument();
   });
@@ -790,7 +790,7 @@ describe("CreateTestCase component", () => {
     userEvent.click(createBtn);
 
     const debugOutput = await screen.findByText(
-      "Test case created successfully! Redirecting back to Test Cases..."
+      "Test case created successfully!"
     );
     expect(debugOutput).toBeInTheDocument();
   });
@@ -829,7 +829,7 @@ describe("CreateTestCase component", () => {
     userEvent.click(createBtn);
 
     const debugOutput = await screen.findByText(
-      "Test case created successfully! Redirecting back to Test Cases..."
+      "Test case created successfully!"
     );
     expect(debugOutput).toBeInTheDocument();
   }, 15000);
@@ -1209,34 +1209,6 @@ describe("CreateTestCase component", () => {
     expect(screen.getByText("404 - Not Found!")).toBeInTheDocument();
     expect(screen.getByTestId("404-page-link")).toBeInTheDocument();
   });
-});
-
-describe("Measure Calculation", () => {
-  it("calculates a measure against a test case", async () => {
-    const calculationSrv = calculationService();
-    const calculationResults: ExecutionResult[] =
-      await calculationSrv.calculateTestCases(simpleMeasureFixture, [
-        testCaseFixture,
-      ]);
-    expect(calculationResults).toHaveLength(1);
-    expect(calculationResults[0].detailedResults).toHaveLength(1);
-
-    const populationResults =
-      calculationResults[0].detailedResults[0].populationResults;
-    expect(populationResults).toHaveLength(3);
-    expect(populationResults).toContainEqual({
-      populationType: "initial-population",
-      result: true,
-    });
-    expect(populationResults).toContainEqual({
-      populationType: "denominator",
-      result: true,
-    });
-    expect(populationResults).toContainEqual({
-      populationType: "numerator",
-      result: false,
-    });
-  });
 
   it("should render no text input and no create or update button if user is not the measure owner", async () => {
     mockedAxios.get.mockImplementation((args) => {
@@ -1294,5 +1266,90 @@ describe("Measure Calculation", () => {
     ).not.toBeInTheDocument();
 
     expect(editor).toBeInTheDocument();
+  });
+});
+
+describe("Measure Calculation", () => {
+  it("calculates a measure against a test case", async () => {
+    const calculationSrv = calculationService();
+    const calculationResults: ExecutionResult[] =
+      await calculationSrv.calculateTestCases(simpleMeasureFixture, [
+        testCaseFixture,
+      ]);
+    expect(calculationResults).toHaveLength(1);
+    expect(calculationResults[0].detailedResults).toHaveLength(1);
+
+    const populationResults =
+      calculationResults[0].detailedResults[0].populationResults;
+    expect(populationResults).toHaveLength(3);
+    expect(populationResults).toContainEqual({
+      populationType: "initial-population",
+      result: true,
+    });
+    expect(populationResults).toContainEqual({
+      populationType: "denominator",
+      result: true,
+    });
+    expect(populationResults).toContainEqual({
+      populationType: "numerator",
+      result: false,
+    });
+  });
+
+  it("executes a test case successfully when test case resources are valid", async () => {
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.startsWith(serviceConfig.measureService.baseUrl)) {
+        return Promise.resolve({ data: simpleMeasureFixture });
+      } else if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
+      }
+      return Promise.resolve({ data: testCaseFixture });
+    });
+
+    renderWithRouter(
+      [
+        "/measures/623cacebe74613783378c17b/edit/test-cases/623cacffe74613783378c17c",
+      ],
+      "/measures/:measureId/edit/test-cases/:id",
+      <CreateTestCase />
+    );
+    userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
+    const debugOutput = await screen.findByText(
+      "Population Group: population-group-1"
+    );
+    expect(debugOutput).toBeInTheDocument();
+  });
+
+  it("executes a test case and shows the errors for invalid test case json", async () => {
+    const testCase = {
+      id: "1234",
+      description: "Test IPP",
+      series: "SeriesA",
+      json: '{ "resourceType": "Bundle", "type": "collection", "entry": [] }',
+      groupPopulations: null,
+    } as TestCase;
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.startsWith(serviceConfig.measureService.baseUrl)) {
+        return Promise.resolve({ data: simpleMeasureFixture });
+      } else if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
+      }
+      return Promise.resolve({
+        data: testCase,
+      });
+    });
+
+    renderWithRouter(
+      [
+        "/measures/623cacebe74613783378c17b/edit/test-cases/623cacffe74613783378c17c",
+      ],
+      "/measures/:measureId/edit/test-cases/:id",
+      <CreateTestCase />
+    );
+    userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
+    const debugOutput = await screen.findByText(
+      "No entries found in passed patient bundles"
+    );
+    expect(debugOutput).toBeInTheDocument();
   });
 });

@@ -308,7 +308,7 @@ describe("TestCaseList component", () => {
   });
 
   it("should not render execute button for user who is not the owner of the measure", () => {
-    measure.createdBy = "AnotherUser@example.com";
+    measure.createdBy = "AnotherUser";
     render(<TestCaseList />);
     const executeAllTestCasesButton = screen.queryByText(
       "execute-test-cases-button"
@@ -454,7 +454,7 @@ describe("TestCaseList component", () => {
   });
 
   it("should not render New Test Case button for user who is not the owner of the measure", () => {
-    measure.createdBy = "AnotherUser@example.com";
+    measure.createdBy = "AnotherUser";
     render(<TestCaseList />);
     const createNewTestCaseButton = screen.queryByText(
       "create-new-test-case-button"
