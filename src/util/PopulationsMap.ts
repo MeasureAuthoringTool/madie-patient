@@ -1,4 +1,5 @@
 import { MeasurePopulation } from "../models/MeasurePopulation";
+import { GroupPopulation, PopulationValue } from "../models/TestCase";
 import { Group } from "../models/Measure";
 
 const POPULATION_MAP = {
@@ -45,7 +46,7 @@ export function getPopulationsForScoring(group: Group): MeasurePopulation[] {
   );
 }
 
-// for every MeasurePopulation value,
+// for every MeasurePopulation value
 // this method returns its equivalent fqm-execution PopulationResult identifier.
 export function getFhirMeasurePopulationCode(population: string) {
   for (const [code, pop] of Object.entries(FHIR_POPULATION_CODES)) {
@@ -53,4 +54,90 @@ export function getFhirMeasurePopulationCode(population: string) {
       return code;
     }
   }
+}
+
+export function triggerPopChanges(
+  groupPopulations: GroupPopulation[],
+  changedPopulation
+) {
+  let returnPop: GroupPopulation[] = [];
+  const expectedValue = groupPopulations[0]?.populationValues.filter(
+    (population) => population.name === changedPopulation
+  )[0]?.expected;
+  returnPop.push(groupPopulations[0]);
+  let myMap = {};
+
+  //iterate through
+  groupPopulations[0].populationValues.forEach((value: PopulationValue) => {
+    myMap[value.name] = value;
+  });
+
+  if (groupPopulations[0].scoring === "Proportion") {
+    //denominator
+    if (changedPopulation === "denominator") {
+      if (expectedValue === true) {
+        myMap[MeasurePopulation.INITIAL_POPULATION].expected = true;
+      }
+
+      if (expectedValue === false) {
+        myMap[MeasurePopulation.NUMERATOR].expected = false;
+        myMap[MeasurePopulation.DENOMINATOR_EXCLUSION] !== undefined &&
+          (myMap[MeasurePopulation.DENOMINATOR_EXCLUSION].expected = false);
+        myMap[MeasurePopulation.DENOMINATOR_EXCEPTION] !== undefined &&
+          (myMap[MeasurePopulation.DENOMINATOR_EXCEPTION].expected = false);
+        myMap[MeasurePopulation.NUMERATOR_EXCLUSION] !== undefined &&
+          (myMap[MeasurePopulation.NUMERATOR_EXCLUSION].expected = false);
+      }
+    }
+
+    //numerator
+    if (changedPopulation === "numerator") {
+      if (expectedValue === true) {
+        myMap[MeasurePopulation.INITIAL_POPULATION].expected = true;
+        myMap[MeasurePopulation.DENOMINATOR].expected = true;
+      }
+      if (expectedValue === false) {
+        myMap[MeasurePopulation.NUMERATOR_EXCLUSION] !== undefined &&
+          (myMap[MeasurePopulation.NUMERATOR_EXCLUSION].expected = false);
+      }
+    }
+
+    //Denom Exclusion
+    if (changedPopulation === "denominatorExclusion") {
+      if (expectedValue === true) {
+        myMap[MeasurePopulation.INITIAL_POPULATION].expected = true;
+        myMap[MeasurePopulation.DENOMINATOR].expected = true;
+      }
+    }
+    //Denom Exception
+    if (changedPopulation === "denominatorException") {
+      if (expectedValue === true) {
+        myMap[MeasurePopulation.INITIAL_POPULATION].expected = true;
+        myMap[MeasurePopulation.DENOMINATOR].expected = true;
+      }
+    }
+
+    //Numer Exclusion
+    if (changedPopulation === "numeratorExclusion") {
+      if (expectedValue === true) {
+        myMap[MeasurePopulation.INITIAL_POPULATION].expected = true;
+        myMap[MeasurePopulation.DENOMINATOR].expected = true;
+        myMap[MeasurePopulation.NUMERATOR].expected = true;
+      }
+    }
+
+    //initialPopulation
+    if (changedPopulation === "initialPopulation" && expectedValue === false) {
+      myMap[MeasurePopulation.DENOMINATOR].expected = false;
+      myMap[MeasurePopulation.NUMERATOR].expected = false;
+      myMap[MeasurePopulation.DENOMINATOR_EXCLUSION] !== undefined &&
+        (myMap[MeasurePopulation.DENOMINATOR_EXCLUSION].expected = false);
+      myMap[MeasurePopulation.DENOMINATOR_EXCEPTION] !== undefined &&
+        (myMap[MeasurePopulation.DENOMINATOR_EXCEPTION].expected = false);
+      myMap[MeasurePopulation.NUMERATOR_EXCLUSION] !== undefined &&
+        (myMap[MeasurePopulation.NUMERATOR_EXCLUSION].expected = false);
+    }
+  }
+
+  return returnPop;
 }

@@ -28,7 +28,10 @@ import { sanitizeUserInput } from "../../util/Utils.js";
 import TestCaseSeries from "./TestCaseSeries";
 import * as _ from "lodash";
 import { Ace } from "ace-builds";
-import { getPopulationsForScoring } from "../../util/PopulationsMap";
+import {
+  getPopulationsForScoring,
+  triggerPopChanges,
+} from "../../util/PopulationsMap";
 import Measure, { Group } from "../../models/Measure";
 import useMeasureServiceApi from "../../api/useMeasureServiceApi";
 import GroupPopulations from "../populations/GroupPopulations";
@@ -143,6 +146,8 @@ const CreateTestCase = () => {
   const [showValidationErrors, setShowValidationErrors] = useState(false);
   const [measurementPeriodStart, setMeasurementPeriodStart] = useState<Date>();
   const [measurementPeriodEnd, setMeasurementPeriodEnd] = useState<Date>();
+  const [changedPopulation, setChangedPopulation] = useState<string>("");
+  const [isChanged, setIsChanged] = useState<boolean>(false);
   const [populationGroupResult, setPopulationGroupResult] =
     useState<DetailedPopulationGroupResult>();
   const [calculationErrors, setCalculationErrors] = useState<string>();
@@ -427,6 +432,24 @@ const CreateTestCase = () => {
     }, 500);
   }
 
+  useEffect(() => {
+    if (changedPopulation !== "" && isChanged) {
+      validatePopulationDependencies(
+        formik.values.groupPopulations,
+        changedPopulation
+      );
+    }
+  }, [changedPopulation, isChanged]);
+
+  const validatePopulationDependencies = (
+    groupPopulations: GroupPopulation[],
+    changedPopulation: String
+  ) => {
+    triggerPopChanges(groupPopulations, changedPopulation);
+    formik.setFieldValue("groupPopulations", groupPopulations);
+    setIsChanged(false);
+  };
+
   return (
     <>
       <div tw="flex flex-wrap w-screen">
@@ -517,9 +540,10 @@ const CreateTestCase = () => {
                   disableActual={true}
                   disableExpected={!canEdit}
                   groupPopulations={formik.values.groupPopulations}
-                  onChange={(groupPopulations) => {
-                    formik.setFieldValue("groupPopulations", groupPopulations);
+                  onChange={() => {
+                    setIsChanged(true);
                   }}
+                  setChangedPopulation={setChangedPopulation}
                 />
               </FormControl>
               <span tw="text-lg">Measurement Period</span>

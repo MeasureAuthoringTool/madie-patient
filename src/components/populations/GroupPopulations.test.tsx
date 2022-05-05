@@ -32,11 +32,13 @@ describe("Group Populations", () => {
       },
     ];
     const handleChange = jest.fn();
+    const setChangedPopulation = jest.fn();
     render(
       <GroupPopulations
         disableActual={true}
         groupPopulations={groupPopulations}
         onChange={handleChange}
+        setChangedPopulation={setChangedPopulation}
       />
     );
 
@@ -127,12 +129,14 @@ describe("Group Populations", () => {
       },
     ];
     const handleChange = jest.fn();
+    const setChangedPopulation = jest.fn();
     render(
       <GroupPopulations
         disableActual={true}
         disableExpected={true}
         groupPopulations={groupPopulations}
         onChange={handleChange}
+        setChangedPopulation={setChangedPopulation}
       />
     );
 
@@ -159,10 +163,12 @@ describe("Group Populations", () => {
       },
     ];
     const handleChange = jest.fn();
+    const setChangedPopulation = jest.fn();
     render(
       <GroupPopulations
         groupPopulations={groupPopulations}
         onChange={handleChange}
+        setChangedPopulation={setChangedPopulation}
       />
     );
 

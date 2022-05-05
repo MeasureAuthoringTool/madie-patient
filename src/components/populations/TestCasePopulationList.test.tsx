@@ -67,12 +67,14 @@ describe("TestCasePopulationPopulation component", () => {
       },
     ];
     const handleChange = jest.fn();
+    const setChangedPopulation = jest.fn();
     render(
       <MemoryRouter>
         <TestCasePopulationList
           populations={testCasePopulations}
           onChange={handleChange}
           disableExpected={false}
+          setChangedPopulation={setChangedPopulation}
         />
       </MemoryRouter>
     );
