@@ -67,12 +67,11 @@ it("return the input with IPP changed to Expected because Denom is Expected", ()
 
   const group1: GroupPopulation = {
     groupId: "shrug",
-    scoring: "Cohort",
+    scoring: "Proportion",
     populationValues: populationValues,
   };
   const groupPopulations: GroupPopulation[] = [];
   groupPopulations.push(group1);
-
   const resultPops = triggerPopChanges(groupPopulations, "denominator");
 
   expect(resultPops.length).toEqual(groupPopulations.length);
@@ -126,7 +125,7 @@ it("return the input with IPP Expected, Denom Expected because Denom Exception i
 
   const group1: GroupPopulation = {
     groupId: "shrug",
-    scoring: "Cohort",
+    scoring: "Proportion",
     populationValues: populationValues,
   };
   const groupPopulations: GroupPopulation[] = [];
@@ -194,7 +193,7 @@ it("return the input with IPP Expected, Denom Expected because Numer is Expected
 
   const group1: GroupPopulation = {
     groupId: "shrug",
-    scoring: "Cohort",
+    scoring: "Proportion",
     populationValues: populationValues,
   };
   const groupPopulations: GroupPopulation[] = [];
@@ -259,7 +258,7 @@ it("return the input with IPP Expected, Denom Expected when Numer is Unchecked",
 
   const group1: GroupPopulation = {
     groupId: "shrug",
-    scoring: "Cohort",
+    scoring: "Proportion",
     populationValues: populationValues,
   };
   const groupPopulations: GroupPopulation[] = [];
@@ -324,7 +323,7 @@ it("return the input with IPP Expected, Denom Expected when Denom Exception is c
 
   const group1: GroupPopulation = {
     groupId: "shrug",
-    scoring: "Cohort",
+    scoring: "Proportion",
     populationValues: populationValues,
   };
   const groupPopulations: GroupPopulation[] = [];
@@ -392,7 +391,7 @@ it("return the input with IPP Expected, Denom Expected when Denom Exclusion is c
 
   const group1: GroupPopulation = {
     groupId: "shrug",
-    scoring: "Cohort",
+    scoring: "Proportion",
     populationValues: populationValues,
   };
   const groupPopulations: GroupPopulation[] = [];
@@ -460,7 +459,7 @@ it("return the input with IPP Expected, Denom Expected and Numer Expected when N
 
   const group1: GroupPopulation = {
     groupId: "shrug",
-    scoring: "Cohort",
+    scoring: "Proportion",
     populationValues: populationValues,
   };
   const groupPopulations: GroupPopulation[] = [];
@@ -531,7 +530,7 @@ it("when Denom is unchecked, then Numer, Denom Exclusion, Denom Exception, Numer
 
   const group1: GroupPopulation = {
     groupId: "shrug",
-    scoring: "Cohort",
+    scoring: "Proportion",
     populationValues: populationValues,
   };
   const groupPopulations: GroupPopulation[] = [];
@@ -614,7 +613,7 @@ it("when IPP is unchecked then rest of populations expected values should also b
 
   const group1: GroupPopulation = {
     groupId: "shrug",
-    scoring: "Cohort",
+    scoring: "Proportion",
     populationValues: populationValues,
   };
   const groupPopulations: GroupPopulation[] = [];

@@ -72,62 +72,71 @@ export function triggerPopChanges(
     myMap[value.name] = value;
   });
 
-  //denominator
-  if (changedId === "denominator") {
-    if (expectedValue === true) {
-      myMap[MeasurePopulation.INITIAL_POPULATION].expected = true;
+  if (groupPopulations[0].scoring === "Proportion") {
+    //denominator
+    if (changedId === "denominator") {
+      if (expectedValue === true) {
+        myMap[MeasurePopulation.INITIAL_POPULATION].expected = true;
+      }
+
+      if (expectedValue === false) {
+        myMap[MeasurePopulation.NUMERATOR].expected = false;
+        myMap[MeasurePopulation.DENOMINATOR_EXCLUSION] !== undefined &&
+          (myMap[MeasurePopulation.DENOMINATOR_EXCLUSION].expected = false);
+        myMap[MeasurePopulation.DENOMINATOR_EXCEPTION] !== undefined &&
+          (myMap[MeasurePopulation.DENOMINATOR_EXCEPTION].expected = false);
+        myMap[MeasurePopulation.NUMERATOR_EXCLUSION] !== undefined &&
+          (myMap[MeasurePopulation.NUMERATOR_EXCLUSION].expected = false);
+      }
     }
 
-    if (expectedValue === false) {
+    //numerator
+    if (changedId === "numerator") {
+      if (expectedValue === true) {
+        myMap[MeasurePopulation.INITIAL_POPULATION].expected = true;
+        myMap[MeasurePopulation.DENOMINATOR].expected = true;
+      }
+      if (expectedValue === false) {
+        myMap[MeasurePopulation.NUMERATOR_EXCLUSION] !== undefined &&
+          (myMap[MeasurePopulation.NUMERATOR_EXCLUSION].expected = false);
+      }
+    }
+
+    //Denom Exclusion
+    if (changedId === "denominatorExclusion") {
+      if (expectedValue === true) {
+        myMap[MeasurePopulation.INITIAL_POPULATION].expected = true;
+        myMap[MeasurePopulation.DENOMINATOR].expected = true;
+      }
+    }
+    //Denom Exception
+    if (changedId === "denominatorException") {
+      if (expectedValue === true) {
+        myMap[MeasurePopulation.INITIAL_POPULATION].expected = true;
+        myMap[MeasurePopulation.DENOMINATOR].expected = true;
+      }
+    }
+
+    //Numer Exclusion
+    if (changedId === "numeratorExclusion") {
+      if (expectedValue === true) {
+        myMap[MeasurePopulation.INITIAL_POPULATION].expected = true;
+        myMap[MeasurePopulation.DENOMINATOR].expected = true;
+        myMap[MeasurePopulation.NUMERATOR].expected = true;
+      }
+    }
+
+    //initialPopulation
+    if (changedId === "initialPopulation" && expectedValue === false) {
+      myMap[MeasurePopulation.DENOMINATOR].expected = false;
       myMap[MeasurePopulation.NUMERATOR].expected = false;
-      myMap[MeasurePopulation.DENOMINATOR_EXCLUSION].expected = false;
-      myMap[MeasurePopulation.DENOMINATOR_EXCEPTION].expected = false;
-      myMap[MeasurePopulation.NUMERATOR_EXCLUSION].expected = false;
+      myMap[MeasurePopulation.DENOMINATOR_EXCLUSION] !== undefined &&
+        (myMap[MeasurePopulation.DENOMINATOR_EXCLUSION].expected = false);
+      myMap[MeasurePopulation.DENOMINATOR_EXCEPTION] !== undefined &&
+        (myMap[MeasurePopulation.DENOMINATOR_EXCEPTION].expected = false);
+      myMap[MeasurePopulation.NUMERATOR_EXCLUSION] !== undefined &&
+        (myMap[MeasurePopulation.NUMERATOR_EXCLUSION].expected = false);
     }
-  }
-
-  //numerator
-  if (changedId === "numerator") {
-    if (expectedValue === true) {
-      myMap[MeasurePopulation.INITIAL_POPULATION].expected = true;
-      myMap[MeasurePopulation.DENOMINATOR].expected = true;
-    }
-    if (expectedValue === false) {
-      myMap[MeasurePopulation.NUMERATOR_EXCLUSION].expected = false;
-    }
-  }
-
-  //Denom Exclusion
-  if (changedId === "denominatorExclusion") {
-    if (expectedValue === true) {
-      myMap[MeasurePopulation.INITIAL_POPULATION].expected = true;
-      myMap[MeasurePopulation.DENOMINATOR].expected = true;
-    }
-  }
-  //Denom Exception
-  if (changedId === "denominatorException") {
-    if (expectedValue === true) {
-      myMap[MeasurePopulation.INITIAL_POPULATION].expected = true;
-      myMap[MeasurePopulation.DENOMINATOR].expected = true;
-    }
-  }
-
-  //Numer Exclusion
-  if (changedId === "numeratorExclusion") {
-    if (expectedValue === true) {
-      myMap[MeasurePopulation.INITIAL_POPULATION].expected = true;
-      myMap[MeasurePopulation.DENOMINATOR].expected = true;
-      myMap[MeasurePopulation.NUMERATOR].expected = true;
-    }
-  }
-
-  //initialPopulation
-  if (changedId === "initialPopulation" && expectedValue === false) {
-    myMap[MeasurePopulation.DENOMINATOR].expected = false;
-    myMap[MeasurePopulation.NUMERATOR].expected = false;
-    myMap[MeasurePopulation.DENOMINATOR_EXCLUSION].expected = false;
-    myMap[MeasurePopulation.DENOMINATOR_EXCEPTION].expected = false;
-    myMap[MeasurePopulation.NUMERATOR_EXCLUSION].expected = false;
   }
 
   return returnPop;
