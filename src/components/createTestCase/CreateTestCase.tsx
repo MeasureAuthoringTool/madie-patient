@@ -146,7 +146,7 @@ const CreateTestCase = () => {
   const [showValidationErrors, setShowValidationErrors] = useState(false);
   const [measurementPeriodStart, setMeasurementPeriodStart] = useState<Date>();
   const [measurementPeriodEnd, setMeasurementPeriodEnd] = useState<Date>();
-  const [changedId, setChangedId] = useState("");
+  const [changedPopulation, setChangedPopulation] = useState<string>("");
   const [isChanged, setIsChanged] = useState<boolean>(false);
   const [populationGroupResult, setPopulationGroupResult] =
     useState<DetailedPopulationGroupResult>();
@@ -433,16 +433,19 @@ const CreateTestCase = () => {
   }
 
   useEffect(() => {
-    if (changedId !== "" && isChanged) {
-      validatePopulationDependencies(formik.values.groupPopulations, changedId);
+    if (changedPopulation !== "" && isChanged) {
+      validatePopulationDependencies(
+        formik.values.groupPopulations,
+        changedPopulation
+      );
     }
-  }, [changedId, isChanged]);
+  }, [changedPopulation, isChanged]);
 
   const validatePopulationDependencies = (
     groupPopulations: GroupPopulation[],
-    changedId: String
+    changedPopulation: String
   ) => {
-    triggerPopChanges(groupPopulations, changedId);
+    triggerPopChanges(groupPopulations, changedPopulation);
     formik.setFieldValue("groupPopulations", groupPopulations);
     setIsChanged(false);
   };
@@ -540,7 +543,7 @@ const CreateTestCase = () => {
                   onChange={() => {
                     setIsChanged(true);
                   }}
-                  setChangedId={setChangedId}
+                  setChangedPopulation={setChangedPopulation}
                 />
               </FormControl>
               <span tw="text-lg">Measurement Period</span>

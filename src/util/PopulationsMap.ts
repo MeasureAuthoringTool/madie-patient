@@ -58,11 +58,11 @@ export function getFhirMeasurePopulationCode(population: string) {
 
 export function triggerPopChanges(
   groupPopulations: GroupPopulation[],
-  changedId
+  changedPopulation
 ) {
   let returnPop: GroupPopulation[] = [];
   const expectedValue = groupPopulations[0]?.populationValues.filter(
-    (population) => population.name === changedId
+    (population) => population.name === changedPopulation
   )[0]?.expected;
   returnPop.push(groupPopulations[0]);
   let myMap = {};
@@ -74,7 +74,7 @@ export function triggerPopChanges(
 
   if (groupPopulations[0].scoring === "Proportion") {
     //denominator
-    if (changedId === "denominator") {
+    if (changedPopulation === "denominator") {
       if (expectedValue === true) {
         myMap[MeasurePopulation.INITIAL_POPULATION].expected = true;
       }
@@ -91,7 +91,7 @@ export function triggerPopChanges(
     }
 
     //numerator
-    if (changedId === "numerator") {
+    if (changedPopulation === "numerator") {
       if (expectedValue === true) {
         myMap[MeasurePopulation.INITIAL_POPULATION].expected = true;
         myMap[MeasurePopulation.DENOMINATOR].expected = true;
@@ -103,14 +103,14 @@ export function triggerPopChanges(
     }
 
     //Denom Exclusion
-    if (changedId === "denominatorExclusion") {
+    if (changedPopulation === "denominatorExclusion") {
       if (expectedValue === true) {
         myMap[MeasurePopulation.INITIAL_POPULATION].expected = true;
         myMap[MeasurePopulation.DENOMINATOR].expected = true;
       }
     }
     //Denom Exception
-    if (changedId === "denominatorException") {
+    if (changedPopulation === "denominatorException") {
       if (expectedValue === true) {
         myMap[MeasurePopulation.INITIAL_POPULATION].expected = true;
         myMap[MeasurePopulation.DENOMINATOR].expected = true;
@@ -118,7 +118,7 @@ export function triggerPopChanges(
     }
 
     //Numer Exclusion
-    if (changedId === "numeratorExclusion") {
+    if (changedPopulation === "numeratorExclusion") {
       if (expectedValue === true) {
         myMap[MeasurePopulation.INITIAL_POPULATION].expected = true;
         myMap[MeasurePopulation.DENOMINATOR].expected = true;
@@ -127,7 +127,7 @@ export function triggerPopChanges(
     }
 
     //initialPopulation
-    if (changedId === "initialPopulation" && expectedValue === false) {
+    if (changedPopulation === "initialPopulation" && expectedValue === false) {
       myMap[MeasurePopulation.DENOMINATOR].expected = false;
       myMap[MeasurePopulation.NUMERATOR].expected = false;
       myMap[MeasurePopulation.DENOMINATOR_EXCLUSION] !== undefined &&

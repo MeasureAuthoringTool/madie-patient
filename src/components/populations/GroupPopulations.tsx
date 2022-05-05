@@ -10,7 +10,7 @@ export interface PopulationsProps {
   disableActual?: boolean;
   groupPopulations: GroupPopulation[];
   onChange?: (groupPopulations: GroupPopulation[]) => void;
-  setChangedId?: (string: string) => void;
+  setChangedPopulation?: (string: string) => void;
 }
 
 const GroupPopulations = ({
@@ -18,7 +18,7 @@ const GroupPopulations = ({
   disableActual = false,
   groupPopulations = [],
   onChange,
-  setChangedId,
+  setChangedPopulation,
 }: PopulationsProps) => (
   <>
     {groupPopulations && groupPopulations.length > 0 ? (
@@ -41,7 +41,7 @@ const GroupPopulations = ({
               }
               onChange(nextPopulations);
             }}
-            setChangedId={setChangedId}
+            setChangedPopulation={setChangedPopulation}
           />
         </div>
       ))

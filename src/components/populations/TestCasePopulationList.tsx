@@ -10,7 +10,7 @@ export interface TestCasePopulationListProps {
   disableExpected?: boolean;
   disableActual?: boolean;
   onChange?: (populations: PopulationValue[]) => void;
-  setChangedId?: (string: string) => void;
+  setChangedPopulation?: (string: string) => void;
 }
 
 const TestCasePopulationList = ({
@@ -18,7 +18,7 @@ const TestCasePopulationList = ({
   disableExpected = true,
   disableActual = true,
   onChange,
-  setChangedId,
+  setChangedPopulation,
 }: TestCasePopulationListProps) => {
   const handleChange = (population: PopulationValue) => {
     const newPopulations = [...populations];
@@ -51,7 +51,7 @@ const TestCasePopulationList = ({
             disableExpected={disableExpected}
             disableActual={disableActual}
             onChange={handleChange}
-            setChangedId={setChangedId}
+            setChangedPopulation={setChangedPopulation}
           />
         ))}
       </tbody>
