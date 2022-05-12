@@ -324,6 +324,13 @@ const CreateTestCase = () => {
   };
 
   const calculate = (): void => {
+    if (measure && measure.cqlErrors) {
+      setCalculationErrors(
+        "Cannot execute test case while errors exist in the measure CQL!"
+      );
+      return;
+    }
+
     let modifiedTestCase = { ...testCase };
     if (isModified()) {
       modifiedTestCase.json = editorVal;

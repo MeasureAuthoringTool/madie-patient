@@ -23,6 +23,7 @@ import useMeasureServiceApi, {
   MeasureServiceApi,
 } from "../../api/useMeasureServiceApi";
 import Measure from "../../../../madie-measure/src/models/Measure";
+import userEvent from "@testing-library/user-event";
 
 const serviceConfig: ServiceConfig = {
   testCaseService: {
@@ -460,5 +461,23 @@ describe("TestCaseList component", () => {
       "create-new-test-case-button"
     );
     expect(createNewTestCaseButton).not.toBeInTheDocument();
+  });
+
+  it("shows an error when trying to execute test cases when Measure CQL errors exist", async () => {
+    measure.createdBy = MEASURE_CREATEDBY;
+    measure.cqlErrors = true;
+    const { getByTestId } = render(<TestCaseList />);
+
+    await waitFor(async () => {
+      const executeAllTestCasesButton = getByTestId(
+        "execute-test-cases-button"
+      );
+      userEvent.click(executeAllTestCasesButton);
+      expect(
+        await screen.findByText(
+          "Cannot execute test cases while errors exist in the measure CQL!"
+        )
+      ).toBeInTheDocument();
+    });
   });
 });

@@ -92,6 +92,13 @@ const TestCaseList = () => {
     navigate("create");
   };
   const executeTestCases = () => {
+    if (measure && measure.cqlErrors) {
+      setError(
+        "Cannot execute test cases while errors exist in the measure CQL!"
+      );
+      return;
+    }
+
     if (testCases) {
       calculation.current
         .calculateTestCases(measure, testCases)

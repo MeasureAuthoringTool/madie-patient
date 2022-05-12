@@ -1353,4 +1353,41 @@ describe("Measure Calculation", () => {
     );
     expect(debugOutput).toBeInTheDocument();
   });
+
+  it("shows an error when trying to run the test case when Measure CQL errors exist", async () => {
+    // measure with cqlErrors flag
+    const testCase = {
+      id: "623cacffe74613783378c17c",
+      description: "Test IPP",
+      series: "SeriesA",
+      json: '{ "resourceType": "Bundle", "type": "collection", "entry": [] }',
+      groupPopulations: null,
+    } as TestCase;
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.startsWith(serviceConfig.measureService.baseUrl)) {
+        return Promise.resolve({
+          data: { ...simpleMeasureFixture, cqlErrors: true },
+        });
+      } else if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
+      }
+      return Promise.resolve({
+        data: testCase,
+      });
+    });
+
+    renderWithRouter(
+      [
+        "/measures/623cacebe74613783378c17b/edit/test-cases/623cacffe74613783378c17c",
+      ],
+      "/measures/:measureId/edit/test-cases/:id",
+      <CreateTestCase />
+    );
+    userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
+
+    const debugOutput = await screen.findByText(
+      "Cannot execute test case while errors exist in the measure CQL!"
+    );
+    expect(debugOutput).toBeInTheDocument();
+  });
 });
