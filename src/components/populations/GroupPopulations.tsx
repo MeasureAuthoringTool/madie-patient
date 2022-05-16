@@ -2,7 +2,7 @@ import React from "react";
 import "twin.macro";
 import "styled-components/macro";
 import TestCasePopulationList from "./TestCasePopulationList";
-import { GroupPopulation } from "../../models/TestCase";
+import { GroupPopulation } from "@madie/madie-models";
 import * as _ from "lodash";
 
 export interface PopulationsProps {

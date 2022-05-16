@@ -5,7 +5,7 @@ import TestCaseRoutes from "./TestCaseRoutes";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
-import { MeasureScoring } from "../../models/MeasureScoring";
+import { MeasureScoring } from "@madie/madie-models";
 
 // mock the editor cause we don't care for this test and it gets rid of errors
 jest.mock("../editor/Editor", () => () => <div>editor contents</div>);

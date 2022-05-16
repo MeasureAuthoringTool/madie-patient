@@ -3,11 +3,10 @@ import {
   CalculationOutput,
   ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
-import TestCase from "../models/TestCase";
-import Measure from "../models/Measure";
+import { TestCase, Measure, PopulationType } from "@madie/madie-models";
+
 import { FHIRHelpers } from "../util/FHIRHelpers";
 import { getFhirMeasurePopulationCode } from "../util/PopulationsMap";
-import { PopulationType } from "../models/MeasurePopulation";
 
 // TODO consider converting into a context.
 // OR a re-usable hook.

@@ -11,9 +11,10 @@ import CreateTestCase from "./CreateTestCase";
 import userEvent from "@testing-library/user-event";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
-import TestCase from "../../models/TestCase";
-import { MeasureScoring } from "../../models/MeasureScoring";
-import { MeasurePopulation } from "../../models/MeasurePopulation";
+import TestCase, {
+  MeasureScoring,
+  MeasurePopulation,
+} from "@madie/madie-models";
 import TestCaseRoutes from "../routes/TestCaseRoutes";
 import { act } from "react-dom/test-utils";
 import calculationService from "../../api/CalculationService";

@@ -1,10 +1,11 @@
 import React from "react";
 import { render, screen, within } from "@testing-library/react";
 import GroupPopulations from "./GroupPopulations";
-import { GroupPopulation } from "../../models/TestCase";
-import { MeasurePopulation } from "../../models/MeasurePopulation";
+import GroupPopulation, {
+  MeasurePopulation,
+  MeasureScoring,
+} from "@madie/madie-models";
 import userEvent from "@testing-library/user-event";
-import { MeasureScoring } from "../../models/MeasureScoring";
 
 describe("Group Populations", () => {
   it("should render the populations", () => {

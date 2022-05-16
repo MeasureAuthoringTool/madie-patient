@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import tw from "twin.macro";
 import "styled-components/macro";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
-import TestCase from "../../models/TestCase";
+import { TestCase, Measure } from "@madie/madie-models";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@madie/madie-components";
 import TestCaseComponent from "./TestCase";
@@ -13,7 +13,7 @@ import DesktopDatePicker from "@mui/lab/DesktopDatePicker";
 import { TextField } from "@mui/material";
 import { format, isValid, parseISO } from "date-fns";
 import calculationService from "../../api/CalculationService";
-import Measure from "../../models/Measure";
+
 import { ExecutionResult } from "fqm-execution/build/types/Calculator";
 import { getFhirMeasurePopulationCode } from "../../util/PopulationsMap";
 import useOktaTokens from "../../hooks/useOktaTokens";
@@ -44,9 +44,9 @@ const TestCaseList = () => {
         setCanEdit(userName === measure.createdBy);
 
         if (measure?.measurementPeriodStart)
-          setMeasurementPeriodStart(parseISO(measure.measurementPeriodStart));
+          setMeasurementPeriodStart(measure.measurementPeriodStart);
         if (measure?.measurementPeriodEnd)
-          setMeasurementPeriodEnd(parseISO(measure.measurementPeriodEnd));
+          setMeasurementPeriodEnd(measure.measurementPeriodEnd);
       })
       .catch((error) => {
         setError(error.message);
@@ -69,12 +69,9 @@ const TestCaseList = () => {
       measurementPeriodStart &&
       isValid(measurementPeriodStart) &&
       measure?.measurementPeriodStart &&
-      measurementPeriodStart !== parseISO(measure?.measurementPeriodStart)
+      measurementPeriodStart !== measure?.measurementPeriodStart
     ) {
-      measure.measurementPeriodStart = format(
-        measurementPeriodStart,
-        "yyyy-MM-dd"
-      );
+      measure.measurementPeriodStart = measurementPeriodStart;
       measureService.current.updateMeasure(measure);
     }
   }, [measure, measurementPeriodStart]);
@@ -84,9 +81,9 @@ const TestCaseList = () => {
       measurementPeriodEnd &&
       isValid(measurementPeriodEnd) &&
       measure?.measurementPeriodEnd &&
-      measurementPeriodEnd !== parseISO(measure?.measurementPeriodEnd)
+      measurementPeriodEnd !== measure?.measurementPeriodEnd
     ) {
-      measure.measurementPeriodEnd = format(measurementPeriodEnd, "yyyy-MM-dd");
+      measure.measurementPeriodEnd = measurementPeriodEnd;
       measureService.current.updateMeasure(measure);
     }
   }, [measure, measurementPeriodEnd]);

@@ -1,10 +1,9 @@
 import React from "react";
 import tw, { styled } from "twin.macro";
 import "styled-components/macro";
-import { PopulationValue } from "../../models/TestCase";
+import { PopulationValue, getPopulationCode } from "@madie/madie-models";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
-import { getPopulationCode } from "../../models/MeasurePopulation";
 
 const TD = tw.td`p-1 text-xs text-gray-600`;
 const StyledIcon = styled(FontAwesomeIcon)(() => [tw`text-green-700`]);

@@ -1,6 +1,9 @@
-import { MeasurePopulation } from "../models/MeasurePopulation";
-import { GroupPopulation, PopulationValue } from "../models/TestCase";
-import { Group } from "../models/Measure";
+import {
+  MeasurePopulation,
+  GroupPopulation,
+  PopulationValue,
+  Group,
+} from "@madie/madie-models";
 
 const POPULATION_MAP = {
   Ratio: [

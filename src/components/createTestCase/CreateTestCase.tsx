@@ -17,13 +17,16 @@ import {
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import "styled-components/macro";
-import TestCase, {
+import {
+  TestCase,
   GroupPopulation,
   HapiOperationOutcome,
-} from "../../models/TestCase";
+  Measure,
+  Group,
+} from "@madie/madie-models";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import Editor from "../editor/Editor";
-import { TestCaseValidator } from "../../models/TestCaseValidator";
+import { TestCaseValidator } from "../../validators/TestCaseValidator";
 import { sanitizeUserInput } from "../../util/Utils.js";
 import TestCaseSeries from "./TestCaseSeries";
 import * as _ from "lodash";
@@ -32,7 +35,6 @@ import {
   getPopulationsForScoring,
   triggerPopChanges,
 } from "../../util/PopulationsMap";
-import Measure, { Group } from "../../models/Measure";
 import useMeasureServiceApi from "../../api/useMeasureServiceApi";
 import GroupPopulations from "../populations/GroupPopulations";
 import DateAdapter from "@mui/lab/AdapterDateFns";
@@ -254,8 +256,8 @@ const CreateTestCase = () => {
         .then((measure) => {
           setMeasure(measure);
           setCanEdit(userName === measure.createdBy);
-          setMeasurementPeriodStart(parseISO(measure.measurementPeriodStart));
-          setMeasurementPeriodEnd(parseISO(measure.measurementPeriodEnd));
+          setMeasurementPeriodStart(measure.measurementPeriodStart);
+          setMeasurementPeriodEnd(measure.measurementPeriodEnd);
         })
         .catch((error) => {
           console.error(

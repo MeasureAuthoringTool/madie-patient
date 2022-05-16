@@ -8,6 +8,9 @@ const path = require("path");
 const fs = require("fs");
 
 module.exports = (webpackConfigEnv, argv) => {
+  resolve: {
+    symlinks: false;
+  }
   const protocol = webpackConfigEnv.protocol
     ? webpackConfigEnv.protocol
     : "http";
@@ -39,6 +42,12 @@ module.exports = (webpackConfigEnv, argv) => {
     argv,
     disableHtmlGeneration: true,
   });
+  const externalsConfig = {
+    externals: {
+      directory: path.join(__dirname, "node_modules/@madie/madie-models/dist/"),
+      publicPath: "/madie-models",
+    },
+  };
 
   // We need to override the css loading rule from the parent configuration
   // so that we can add postcss-loader to the chain
@@ -107,7 +116,6 @@ module.exports = (webpackConfigEnv, argv) => {
     },
     plugins: [new NodePolyfillPlugin()],
   };
-
   //handlebar madness
   const handlebarsConfig = {
     module: {
@@ -134,5 +142,11 @@ module.exports = (webpackConfigEnv, argv) => {
       },
     },
     plugins: "append",
-  })(defaultConfig, polyfillConfig, handlebarsConfig, newCssRule);
+  })(
+    externalsConfig,
+    defaultConfig,
+    polyfillConfig,
+    handlebarsConfig,
+    newCssRule
+  );
 };

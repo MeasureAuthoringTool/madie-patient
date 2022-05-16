@@ -2,7 +2,7 @@ import React from "react";
 import axios from "axios";
 import useServiceConfig from "./useServiceConfig";
 import { ServiceConfig } from "./ServiceContext";
-import Measure, { Group } from "../models/Measure";
+import { Measure, Group } from "@madie/madie-models";
 import useOktaTokens from "../hooks/useOktaTokens";
 
 export class MeasureServiceApi {
