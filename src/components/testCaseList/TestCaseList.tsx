@@ -53,6 +53,7 @@ const TestCaseList = () => {
       });
   }, [measureId, testCaseService]);
 
+
   const createNewTestCase = () => {
     navigate("create");
   };
@@ -70,7 +71,7 @@ const TestCaseList = () => {
       );
       calculation.current
         .calculateTestCases(measure, testCases, measureBundle)
-        .then((executionResults: ExecutionResult[]) => {
+        .then((executionResults: ExecutionResult<any>[]) => {
           testCases.forEach((testCase) => {
             const { populationResults } = executionResults.find(
               (result) => result.patientId === testCase.id

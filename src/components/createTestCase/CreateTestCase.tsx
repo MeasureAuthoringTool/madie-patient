@@ -331,7 +331,7 @@ const CreateTestCase = () => {
     );
     calculation.current
       .calculateTestCases(measure, [modifiedTestCase], measureBundle)
-      .then((executionResults: ExecutionResult[]) => {
+      .then((executionResults: ExecutionResult<DetailedPopulationGroupResult>[]) => {
         // clear errors
         setCalculationErrors("");
         // grab first group results because we only have one group for now
