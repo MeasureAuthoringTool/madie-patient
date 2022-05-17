@@ -37,16 +37,11 @@ import {
 } from "../../util/PopulationsMap";
 import useMeasureServiceApi from "../../api/useMeasureServiceApi";
 import GroupPopulations from "../populations/GroupPopulations";
-import DateAdapter from "@mui/lab/AdapterDateFns";
-import LocalizationProvider from "@mui/lab/LocalizationProvider";
-import DesktopDatePicker from "@mui/lab/DesktopDatePicker";
-import { TextField } from "@mui/material";
 import calculationService from "../../api/CalculationService";
 import {
   DetailedPopulationGroupResult,
   ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
-import { parseISO } from "date-fns";
 import useOktaTokens from "../../hooks/useOktaTokens";
 
 const FormControl = tw.div`mb-3`;
@@ -146,8 +141,6 @@ const CreateTestCase = () => {
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [editor, setEditor] = useState<Ace.Editor>(null);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
-  const [measurementPeriodStart, setMeasurementPeriodStart] = useState<Date>();
-  const [measurementPeriodEnd, setMeasurementPeriodEnd] = useState<Date>();
   const [changedPopulation, setChangedPopulation] = useState<string>("");
   const [isChanged, setIsChanged] = useState<boolean>(false);
   const [populationGroupResult, setPopulationGroupResult] =
@@ -256,8 +249,6 @@ const CreateTestCase = () => {
         .then((measure) => {
           setMeasure(measure);
           setCanEdit(userName === measure.createdBy);
-          setMeasurementPeriodStart(measure.measurementPeriodStart);
-          setMeasurementPeriodEnd(measure.measurementPeriodEnd);
         })
         .catch((error) => {
           console.error(
@@ -564,33 +555,7 @@ const CreateTestCase = () => {
                   setChangedPopulation={setChangedPopulation}
                 />
               </FormControl>
-              <span tw="text-lg">Measurement Period</span>
-              <FormControl data-testid="create-test-case-measurement-period-start">
-                <LocalizationProvider dateAdapter={DateAdapter}>
-                  <DesktopDatePicker
-                    readOnly={true}
-                    disableOpenPicker={true}
-                    label="Start"
-                    inputFormat="MM/dd/yyyy"
-                    value={measurementPeriodStart}
-                    onChange={(startDate) => {}}
-                    renderInput={(params) => <TextField {...params} />}
-                  />
-                </LocalizationProvider>
-              </FormControl>
-              <FormControl data-testid="create-test-case-measurement-period-end">
-                <LocalizationProvider dateAdapter={DateAdapter}>
-                  <DesktopDatePicker
-                    readOnly={true}
-                    disableOpenPicker={true}
-                    label="End"
-                    inputFormat="MM/dd/yyyy"
-                    value={measurementPeriodEnd}
-                    onChange={(endDate) => {}}
-                    renderInput={(params) => <TextField {...params} />}
-                  />
-                </LocalizationProvider>
-              </FormControl>
+
               <FormActions>
                 {canEdit && (
                   <Button
