@@ -41,12 +41,10 @@ module.exports = (webpackConfigEnv, argv) => {
     webpackConfigEnv,
     argv,
     disableHtmlGeneration: true,
+    orgPackagesAsExternal: false,
   });
   const externalsConfig = {
-    externals: {
-      directory: path.join(__dirname, "node_modules/@madie/madie-models/dist/"),
-      publicPath: "/madie-models",
-    },
+    externals: ["@madie/madie-components"],
   };
 
   // We need to override the css loading rule from the parent configuration
