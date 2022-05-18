@@ -4,6 +4,7 @@ import useServiceConfig from "./useServiceConfig";
 import { ServiceConfig } from "./ServiceContext";
 import { Measure, Group } from "@madie/madie-models";
 import useOktaTokens from "../hooks/useOktaTokens";
+import { Bundle } from "fhir/r4";
 
 export class MeasureServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
@@ -39,6 +40,23 @@ export class MeasureServiceApi {
     } catch (err) {
       const message = `Unable to fetch measures.`;
       throw new Error(message);
+    }
+  }
+
+  async fetchMeasureBundle(measureId: string): Promise<Bundle> {
+    try {
+      const response = await axios.get(
+        `${this.baseUrl}/measures/${measureId}/bundles`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      console.error("An error occurred fetching the measure bundle", err);
+      throw new Error("An error occurred fetching the measure bundle");
     }
   }
 
