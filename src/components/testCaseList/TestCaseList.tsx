@@ -94,17 +94,20 @@ const TestCaseList = () => {
   const createNewTestCase = () => {
     navigate("create");
   };
-  const executeTestCases = () => {
+  const executeTestCases = async () => {
     if (measure && measure.cqlErrors) {
       setError(
         "Cannot execute test cases while errors exist in the measure CQL!"
       );
-      return;
+      return null;
     }
 
     if (testCases) {
+      const measureBundle = await measureService.current.fetchMeasureBundle(
+        measureId
+      );
       calculation.current
-        .calculateTestCases(measure, testCases)
+        .calculateTestCases(measure, testCases, measureBundle)
         .then((executionResults: ExecutionResult[]) => {
           testCases.forEach((testCase) => {
             const { populationResults } = executionResults.find(

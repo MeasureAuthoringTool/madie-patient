@@ -321,7 +321,7 @@ const CreateTestCase = () => {
     }
   };
 
-  const calculate = (): void => {
+  const calculate = async () => {
     if (measure && measure.cqlErrors) {
       setCalculationErrors(
         "Cannot execute test case while errors exist in the measure CQL!"
@@ -333,15 +333,24 @@ const CreateTestCase = () => {
     if (isModified()) {
       modifiedTestCase.json = editorVal;
     }
+    const measureBundle = await measureService.current.fetchMeasureBundle(
+      measureId
+    );
+    console.log("got measure bundle!!", measureBundle);
+
     calculation.current
-      .calculateTestCases(measure, [modifiedTestCase])
+      .calculateTestCases(measure, [modifiedTestCase], measureBundle)
       .then((executionResults: ExecutionResult[]) => {
+        console.log("got here");
         // clear errors
         setCalculationErrors("");
         // grab first group results because we only have one group for now
         setPopulationGroupResult(executionResults[0].detailedResults[0]);
       })
-      .catch((error) => setCalculationErrors(error.message));
+      .catch((error) => {
+        console.error("bad things happened", error);
+        setCalculationErrors(error.message);
+      });
   };
 
   function handleTestCaseResponse(
