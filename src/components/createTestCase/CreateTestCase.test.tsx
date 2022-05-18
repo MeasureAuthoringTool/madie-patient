@@ -91,8 +91,6 @@ describe("CreateTestCase component", () => {
                 },
               },
             ],
-            measurementPeriodStart: "2023-01-01",
-            measurementPeriodEnd: "2023-12-31",
           },
         });
       } else if (args && args.endsWith("series")) {
@@ -355,8 +353,6 @@ describe("CreateTestCase component", () => {
                 },
               },
             ],
-            measurementPeriodStart: "2023-01-01",
-            measurementPeriodEnd: "2023-12-31",
           },
         });
       } else if (args && args.endsWith("series")) {
@@ -667,8 +663,6 @@ describe("CreateTestCase component", () => {
           data: {
             id: "m1234",
             measureScoring: MeasureScoring.COHORT,
-            measurementPeriodStart: "2023-01-01",
-            measurementPeriodEnd: "2023-12-31",
           },
         });
       } else if (args && args.endsWith("series")) {
@@ -707,8 +701,6 @@ describe("CreateTestCase component", () => {
           data: {
             id: "m1234",
             measureScoring: MeasureScoring.COHORT,
-            measurementPeriodStart: "2023-01-01",
-            measurementPeriodEnd: "2023-12-31",
           },
         });
       } else if (args && args.endsWith("series")) {
@@ -1129,8 +1121,6 @@ describe("CreateTestCase component", () => {
                 },
               },
             ],
-            measurementPeriodStart: "2023-01-01",
-            measurementPeriodEnd: "2023-12-31",
           },
         });
       } else if (args && args.endsWith("series")) {
@@ -1227,8 +1217,6 @@ describe("CreateTestCase component", () => {
                 },
               },
             ],
-            measurementPeriodStart: "2023-01-01",
-            measurementPeriodEnd: "2023-12-31",
           },
         });
       } else if (args && args.endsWith("series")) {

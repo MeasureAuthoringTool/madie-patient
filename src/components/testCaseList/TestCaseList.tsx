@@ -7,10 +7,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@madie/madie-components";
 import TestCaseComponent from "./TestCase";
 import useMeasureServiceApi from "../../api/useMeasureServiceApi";
-import LocalizationProvider from "@mui/lab/LocalizationProvider";
-import DateAdapter from "@mui/lab/AdapterDateFns";
-import DesktopDatePicker from "@mui/lab/DesktopDatePicker";
-import { TextField } from "@mui/material";
 import { format, isValid, parseISO } from "date-fns";
 import calculationService from "../../api/CalculationService";
 import Measure from "../../models/Measure";
@@ -25,8 +21,6 @@ const TestCaseList = () => {
   const [testCases, setTestCases] = useState<TestCase[]>(null);
   const [error, setError] = useState("");
   const [measure, setMeasure] = useState<Measure>(null);
-  const [measurementPeriodStart, setMeasurementPeriodStart] = useState<Date>();
-  const [measurementPeriodEnd, setMeasurementPeriodEnd] = useState<Date>();
   const { measureId } = useParams<{ measureId: string }>();
   const testCaseService = useRef(useTestCaseServiceApi());
   const measureService = useRef(useMeasureServiceApi());
@@ -42,11 +36,6 @@ const TestCaseList = () => {
       .then((measure) => {
         setMeasure(measure);
         setCanEdit(userName === measure.createdBy);
-
-        if (measure?.measurementPeriodStart)
-          setMeasurementPeriodStart(parseISO(measure.measurementPeriodStart));
-        if (measure?.measurementPeriodEnd)
-          setMeasurementPeriodEnd(parseISO(measure.measurementPeriodEnd));
       })
       .catch((error) => {
         setError(error.message);
@@ -63,33 +52,6 @@ const TestCaseList = () => {
         setError(err.message);
       });
   }, [measureId, testCaseService]);
-
-  useEffect(() => {
-    if (
-      measurementPeriodStart &&
-      isValid(measurementPeriodStart) &&
-      measure?.measurementPeriodStart &&
-      measurementPeriodStart !== parseISO(measure?.measurementPeriodStart)
-    ) {
-      measure.measurementPeriodStart = format(
-        measurementPeriodStart,
-        "yyyy-MM-dd"
-      );
-      measureService.current.updateMeasure(measure);
-    }
-  }, [measure, measurementPeriodStart]);
-
-  useEffect(() => {
-    if (
-      measurementPeriodEnd &&
-      isValid(measurementPeriodEnd) &&
-      measure?.measurementPeriodEnd &&
-      measurementPeriodEnd !== parseISO(measure?.measurementPeriodEnd)
-    ) {
-      measure.measurementPeriodEnd = format(measurementPeriodEnd, "yyyy-MM-dd");
-      measureService.current.updateMeasure(measure);
-    }
-  }, [measure, measurementPeriodEnd]);
 
   const createNewTestCase = () => {
     navigate("create");
@@ -168,37 +130,6 @@ const TestCaseList = () => {
               data-testid="execute-test-cases-button"
             />
           )}
-        </div>
-        <div tw="py-2 gap-1">
-          <h5>Measurement Period</h5>
-          <LocalizationProvider dateAdapter={DateAdapter}>
-            <DesktopDatePicker
-              data-testid="measurement-period-start"
-              readOnly={true}
-              disableOpenPicker={true}
-              label="Start"
-              inputFormat="MM/dd/yyyy"
-              value={measurementPeriodStart}
-              onChange={(startDate) => {
-                setMeasurementPeriodStart(startDate);
-              }}
-              renderInput={(params) => <TextField {...params} />}
-            />
-          </LocalizationProvider>
-          <LocalizationProvider dateAdapter={DateAdapter}>
-            <DesktopDatePicker
-              data-testid="measurement-period-end"
-              readOnly={true}
-              disableOpenPicker={true}
-              label="End"
-              inputFormat="MM/dd/yyyy"
-              value={measurementPeriodEnd}
-              onChange={(endDate) => {
-                setMeasurementPeriodEnd(endDate);
-              }}
-              renderInput={(params) => <TextField {...params} />}
-            />
-          </LocalizationProvider>
         </div>
 
         {error && (
