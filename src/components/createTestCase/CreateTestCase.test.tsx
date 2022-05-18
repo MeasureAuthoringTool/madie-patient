@@ -20,6 +20,7 @@ import calculationService from "../../api/CalculationService";
 import { simpleMeasureFixture } from "./__mocks__/simpleMeasureFixture";
 import { testCaseFixture } from "./__mocks__/testCaseFixture";
 import { ExecutionResult } from "fqm-execution/build/types/Calculator";
+import { buildMeasureBundle } from "../../util/CalculationTestHelpers";
 
 //temporary solution (after jest updated to version 27) for error: thrown: "Exceeded timeout of 5000 ms for a test.
 jest.setTimeout(60000);
@@ -1261,9 +1262,11 @@ describe("Measure Calculation", () => {
   it("calculates a measure against a test case", async () => {
     const calculationSrv = calculationService();
     const calculationResults: ExecutionResult[] =
-      await calculationSrv.calculateTestCases(simpleMeasureFixture, [
-        testCaseFixture,
-      ]);
+      await calculationSrv.calculateTestCases(
+        simpleMeasureFixture,
+        [testCaseFixture],
+        buildMeasureBundle(simpleMeasureFixture)
+      );
     expect(calculationResults).toHaveLength(1);
     expect(calculationResults[0].detailedResults).toHaveLength(1);
 
@@ -1286,13 +1289,22 @@ describe("Measure Calculation", () => {
 
   it("executes a test case successfully when test case resources are valid", async () => {
     mockedAxios.get.mockClear().mockImplementation((args) => {
-      if (args && args.startsWith(serviceConfig.measureService.baseUrl)) {
+      if (args && args.endsWith("/bundles")) {
+        return Promise.resolve({
+          data: buildMeasureBundle(simpleMeasureFixture),
+        });
+      } else if (
+        args &&
+        args.startsWith(serviceConfig.measureService.baseUrl)
+      ) {
         return Promise.resolve({ data: simpleMeasureFixture });
       } else if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
       }
       return Promise.resolve({ data: testCaseFixture });
     });
+
+    // TODO
 
     renderWithRouter(
       [
@@ -1337,6 +1349,43 @@ describe("Measure Calculation", () => {
     userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
     const debugOutput = await screen.findByText(
       "No entries found in passed patient bundles"
+    );
+    expect(debugOutput).toBeInTheDocument();
+  });
+
+  it("shows an error when trying to run the test case when Measure CQL errors exist", async () => {
+    // measure with cqlErrors flag
+    const testCase = {
+      id: "623cacffe74613783378c17c",
+      description: "Test IPP",
+      series: "SeriesA",
+      json: '{ "resourceType": "Bundle", "type": "collection", "entry": [] }',
+      groupPopulations: null,
+    } as TestCase;
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.startsWith(serviceConfig.measureService.baseUrl)) {
+        return Promise.resolve({
+          data: { ...simpleMeasureFixture, cqlErrors: true },
+        });
+      } else if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
+      }
+      return Promise.resolve({
+        data: testCase,
+      });
+    });
+
+    renderWithRouter(
+      [
+        "/measures/623cacebe74613783378c17b/edit/test-cases/623cacffe74613783378c17c",
+      ],
+      "/measures/:measureId/edit/test-cases/:id",
+      <CreateTestCase />
+    );
+    userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
+
+    const debugOutput = await screen.findByText(
+      "Cannot execute test case while errors exist in the measure CQL!"
     );
     expect(debugOutput).toBeInTheDocument();
   });
