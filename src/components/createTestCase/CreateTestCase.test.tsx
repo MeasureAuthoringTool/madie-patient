@@ -21,20 +21,10 @@ import calculationService from "../../api/CalculationService";
 import { simpleMeasureFixture } from "./__mocks__/simpleMeasureFixture";
 import { testCaseFixture } from "./__mocks__/testCaseFixture";
 import { ExecutionResult } from "fqm-execution/build/types/Calculator";
-import {
-  buildMeasureBundle,
-  successfulExecutionResults,
-} from "../../util/CalculationTestHelpers";
+import { buildMeasureBundle } from "../../util/CalculationTestHelpers";
 
 //temporary solution (after jest updated to version 27) for error: thrown: "Exceeded timeout of 5000 ms for a test.
 jest.setTimeout(60000);
-
-// const mockCalculate = jest.fn().mockResolvedValue(successfulExecutionResults);
-// jest.mock("../../api/CalculationService", () =>
-//   jest.fn(() => ({
-//     calculateTestCases: async () => mockCalculate(),
-//   }))
-// );
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
