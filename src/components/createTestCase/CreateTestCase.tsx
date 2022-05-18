@@ -327,19 +327,16 @@ const CreateTestCase = () => {
     const measureBundle = await measureService.current.fetchMeasureBundle(
       measureId
     );
-    console.log("got measure bundle!!", measureBundle);
-
     calculation.current
       .calculateTestCases(measure, [modifiedTestCase], measureBundle)
       .then((executionResults: ExecutionResult[]) => {
-        console.log("got here");
         // clear errors
         setCalculationErrors("");
         // grab first group results because we only have one group for now
         setPopulationGroupResult(executionResults[0].detailedResults[0]);
       })
       .catch((error) => {
-        console.error("bad things happened", error);
+        console.error("An error occurred while executing test cases", error);
         setCalculationErrors(error.message);
       });
   };

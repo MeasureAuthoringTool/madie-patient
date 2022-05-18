@@ -22,8 +22,10 @@ import useTestCaseServiceApi, {
 import useMeasureServiceApi, {
   MeasureServiceApi,
 } from "../../api/useMeasureServiceApi";
-import Measure from "../../../../madie-measure/src/models/Measure";
+// import Measure from "../../../../madie-measure/src/models/Measure";
+import Measure from "../../models/Measure";
 import userEvent from "@testing-library/user-event";
+import { buildMeasureBundle } from "../createTestCase/ExectionTestHelpers";
 
 const serviceConfig: ServiceConfig = {
   testCaseService: {
@@ -180,6 +182,7 @@ const useMeasureServiceMock =
 
 const useMeasureServiceMockResolved = {
   fetchMeasure: jest.fn().mockResolvedValue(measure),
+  fetchMeasureBundle: jest.fn().mockResolvedValue(buildMeasureBundle(measure)),
 } as unknown as MeasureServiceApi;
 
 describe("TestCaseList component", () => {
