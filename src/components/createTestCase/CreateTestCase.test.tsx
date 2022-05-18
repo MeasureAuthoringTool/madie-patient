@@ -21,9 +21,20 @@ import calculationService from "../../api/CalculationService";
 import { simpleMeasureFixture } from "./__mocks__/simpleMeasureFixture";
 import { testCaseFixture } from "./__mocks__/testCaseFixture";
 import { ExecutionResult } from "fqm-execution/build/types/Calculator";
+import {
+  buildMeasureBundle,
+  successfulExecutionResults,
+} from "./ExectionTestHelpers";
 
 //temporary solution (after jest updated to version 27) for error: thrown: "Exceeded timeout of 5000 ms for a test.
 jest.setTimeout(60000);
+
+// const mockCalculate = jest.fn().mockResolvedValue(successfulExecutionResults);
+// jest.mock("../../api/CalculationService", () =>
+//   jest.fn(() => ({
+//     calculateTestCases: async () => mockCalculate(),
+//   }))
+// );
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -1262,9 +1273,11 @@ describe("Measure Calculation", () => {
   it("calculates a measure against a test case", async () => {
     const calculationSrv = calculationService();
     const calculationResults: ExecutionResult[] =
-      await calculationSrv.calculateTestCases(simpleMeasureFixture, [
-        testCaseFixture,
-      ]);
+      await calculationSrv.calculateTestCases(
+        simpleMeasureFixture,
+        [testCaseFixture],
+        buildMeasureBundle(simpleMeasureFixture)
+      );
     expect(calculationResults).toHaveLength(1);
     expect(calculationResults[0].detailedResults).toHaveLength(1);
 
@@ -1287,13 +1300,22 @@ describe("Measure Calculation", () => {
 
   it("executes a test case successfully when test case resources are valid", async () => {
     mockedAxios.get.mockClear().mockImplementation((args) => {
-      if (args && args.startsWith(serviceConfig.measureService.baseUrl)) {
+      if (args && args.endsWith("/bundles")) {
+        return Promise.resolve({
+          data: buildMeasureBundle(simpleMeasureFixture),
+        });
+      } else if (
+        args &&
+        args.startsWith(serviceConfig.measureService.baseUrl)
+      ) {
         return Promise.resolve({ data: simpleMeasureFixture });
       } else if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
       }
       return Promise.resolve({ data: testCaseFixture });
     });
+
+    // TODO
 
     renderWithRouter(
       [

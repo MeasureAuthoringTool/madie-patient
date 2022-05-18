@@ -16,7 +16,7 @@ export class CalculationService {
     testCases: TestCase[],
     measureBundle: fhir4.Bundle
   ): Promise<ExecutionResult[]> {
-    // const measureBundle = this.buildMeasureBundle(measure);
+    // const measureBundle2 = this.buildMeasureBundle(measure);
     const TestCaseBundles = testCases.map((testCase) => {
       return this.buildPatientBundle(testCase);
     });
@@ -83,45 +83,45 @@ export class CalculationService {
   //
   //   return bundle;
   // }
-
-  private buildMeasureGroups(measure: Measure, measureResource: fhir4.Measure) {
-    // verify if measureGroup is created? if not Calculation will fail, so return to user specifying to add atleast one measureGroup
-    measure.groups.map((group) => {
-      const fhirMeasureGroup: fhir4.MeasureGroup = {};
-      fhirMeasureGroup.population = this.buildMeasureGroup(group.population);
-      measureResource.group.push(fhirMeasureGroup);
-    });
-  }
-
-  private buildMeasureGroup(
-    measurePopulations: PopulationType
-  ): fhir4.MeasureGroupPopulation[] {
-    const msrPops: [string, string][] = Object.entries(measurePopulations);
-    return msrPops.map((population) => {
-      return this.buildMeasureGroupPopulation(population);
-    });
-  }
-
-  private buildMeasureGroupPopulation(
-    measurePopulation: [string, string]
-  ): fhir4.MeasureGroupPopulation {
-    return {
-      code: {
-        coding: [
-          {
-            system: "http://terminology.hl7.org/CodeSystem/measure-population",
-            code: getFhirMeasurePopulationCode(measurePopulation[0]),
-            display: measurePopulation[0],
-          },
-        ],
-      },
-      criteria: {
-        language: "text/cql.identifier",
-        // TODO Use correct display content.
-        expression: measurePopulation[1],
-      },
-    };
-  }
+  //
+  // private buildMeasureGroups(measure: Measure, measureResource: fhir4.Measure) {
+  //   // verify if measureGroup is created? if not Calculation will fail, so return to user specifying to add atleast one measureGroup
+  //   measure.groups.map((group) => {
+  //     const fhirMeasureGroup: fhir4.MeasureGroup = {};
+  //     fhirMeasureGroup.population = this.buildMeasureGroup(group.population);
+  //     measureResource.group.push(fhirMeasureGroup);
+  //   });
+  // }
+  //
+  // private buildMeasureGroup(
+  //   measurePopulations: PopulationType
+  // ): fhir4.MeasureGroupPopulation[] {
+  //   const msrPops: [string, string][] = Object.entries(measurePopulations);
+  //   return msrPops.map((population) => {
+  //     return this.buildMeasureGroupPopulation(population);
+  //   });
+  // }
+  //
+  // private buildMeasureGroupPopulation(
+  //   measurePopulation: [string, string]
+  // ): fhir4.MeasureGroupPopulation {
+  //   return {
+  //     code: {
+  //       coding: [
+  //         {
+  //           system: "http://terminology.hl7.org/CodeSystem/measure-population",
+  //           code: getFhirMeasurePopulationCode(measurePopulation[0]),
+  //           display: measurePopulation[0],
+  //         },
+  //       ],
+  //     },
+  //     criteria: {
+  //       language: "text/cql.identifier",
+  //       // TODO Use correct display content.
+  //       expression: measurePopulation[1],
+  //     },
+  //   };
+  // }
 
   // fqm Execution requires each patient to be with unique ID.
   // So assigning the testCase ID as patient ID to retrieve calculate multiple testcases
