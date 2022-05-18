@@ -1,7 +1,7 @@
-import Measure from "../../models/Measure";
-import { FHIRHelpers } from "../../util/FHIRHelpers";
-import { getFhirMeasurePopulationCode } from "../../util/PopulationsMap";
-import { PopulationType } from "../../models/MeasurePopulation";
+import Measure from "../models/Measure";
+import { FHIRHelpers } from "./FHIRHelpers";
+import { getFhirMeasurePopulationCode } from "./PopulationsMap";
+import { PopulationType } from "../models/MeasurePopulation";
 
 export const successfulExecutionResults = [
   {
