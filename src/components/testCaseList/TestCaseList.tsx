@@ -64,7 +64,6 @@ const TestCaseList = () => {
     }
 
     if (testCases) {
-
       try {
         const measureBundle = await measureService.current.fetchMeasureBundle(
           measureId

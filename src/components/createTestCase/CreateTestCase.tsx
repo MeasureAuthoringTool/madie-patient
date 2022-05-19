@@ -334,7 +334,6 @@ const CreateTestCase = () => {
     } catch (error) {
       setCalculationErrors(error.message);
     }
-
   };
 
   function handleTestCaseResponse(
