@@ -1393,4 +1393,54 @@ describe("Measure Calculation", () => {
     );
     expect(debugOutput).toBeInTheDocument();
   });
+
+  it("shows an error when fetch measure bundle fails", async () => {
+    const axiosError: AxiosError = {
+      response: {
+        status: 500,
+        data: { message: "BAD STUFF HAPPENED" },
+      } as AxiosResponse,
+      toJSON: jest.fn(),
+    } as unknown as AxiosError;
+
+    // measure with cqlErrors flag
+    const testCase = {
+      id: "623cacffe74613783378c17c",
+      description: "Test IPP",
+      series: "SeriesA",
+      json: '{ "resourceType": "Bundle", "type": "collection", "entry": [] }',
+      groupPopulations: null,
+    } as TestCase;
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.endsWith("/bundles")) {
+        return Promise.reject(axiosError);
+      } else if (
+        args &&
+        args.startsWith(serviceConfig.measureService.baseUrl)
+      ) {
+        return Promise.resolve({
+          data: { ...simpleMeasureFixture },
+        });
+      } else if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
+      }
+      return Promise.resolve({
+        data: testCase,
+      });
+    });
+
+    renderWithRouter(
+      [
+        "/measures/623cacebe74613783378c17b/edit/test-cases/623cacffe74613783378c17c",
+      ],
+      "/measures/:measureId/edit/test-cases/:id",
+      <CreateTestCase />
+    );
+    userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
+
+    const debugOutput = await screen.findByText(
+      "An error occurred fetching the measure bundle"
+    );
+    expect(debugOutput).toBeInTheDocument();
+  });
 });
