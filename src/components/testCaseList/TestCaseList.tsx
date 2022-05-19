@@ -7,7 +7,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@madie/madie-components";
 import TestCaseComponent from "./TestCase";
 import useMeasureServiceApi from "../../api/useMeasureServiceApi";
-import { format, isValid, parseISO } from "date-fns";
 import calculationService from "../../api/CalculationService";
 import Measure from "../../models/Measure";
 import { ExecutionResult } from "fqm-execution/build/types/Calculator";
@@ -107,7 +106,6 @@ const TestCaseList = () => {
         });
         setTestCases([...testCases]);
       } catch (error) {
-        console.error("An error occurred while executing test cases", error);
         setError(error.message);
       }
     }

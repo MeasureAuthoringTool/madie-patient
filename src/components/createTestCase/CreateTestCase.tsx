@@ -248,19 +248,13 @@ const CreateTestCase = () => {
           setMeasure(measure);
           setCanEdit(userName === measure.createdBy);
         })
-        .catch((error) => {
-          console.error(
-            `Failed to load measure groups. An error occurred while loading measure with ID [${measureId}]`,
-            error
-          );
+        .catch(() => {
           setAlert(() => ({
             status: "error",
             message:
               "Failed to load measure groups. An error occurred while loading the measure.",
           }));
         });
-    } else {
-      console.warn("MeasureID not defined");
     }
   }, [measureId]);
 
@@ -285,7 +279,6 @@ const CreateTestCase = () => {
       );
       handleTestCaseResponse(savedTestCase, "create");
     } catch (error) {
-      console.error("An error occurred while creating the test case", error);
       setAlert(() => ({
         status: "error",
         message: "An error occurred while creating the test case.",
@@ -304,7 +297,6 @@ const CreateTestCase = () => {
       );
       handleTestCaseResponse(updatedTestCase, "update");
     } catch (error) {
-      console.error("An error occurred while updating the test case", error);
       setAlert(() => ({
         status: "error",
         message: "An error occurred while updating the test case.",
@@ -333,12 +325,10 @@ const CreateTestCase = () => {
           [modifiedTestCase],
           measureBundle
         );
-      // clear errors
       setCalculationErrors("");
       // grab first group results because we only have one group for now
       setPopulationGroupResult(executionResults[0].detailedResults[0]);
     } catch (error) {
-      console.error("An error occurred while executing the test case", error);
       setCalculationErrors(error.message);
     }
   };
