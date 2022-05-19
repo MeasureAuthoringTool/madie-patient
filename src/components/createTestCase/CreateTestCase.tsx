@@ -591,6 +591,7 @@ const CreateTestCase = () => {
             setEditor={setEditor}
             readOnly={!canEdit}
           />
+          con
         </div>
         {(populationGroupResult || calculationErrors) && (
           <div tw="flex-auto w-3/12 p-2">

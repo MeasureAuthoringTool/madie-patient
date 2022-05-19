@@ -11,7 +11,8 @@ import CreateTestCase from "./CreateTestCase";
 import userEvent from "@testing-library/user-event";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
-import TestCase, {
+import {
+  TestCase,
   MeasureScoring,
   MeasurePopulation,
 } from "@madie/madie-models";
@@ -1258,16 +1259,17 @@ describe("CreateTestCase component", () => {
     expect(editor).toBeInTheDocument();
   });
 });
-
-describe("Measure Calculation", () => {
+describe("Measure Calculation ", () => {
   it("calculates a measure against a test case", async () => {
     const calculationSrv = calculationService();
-    const calculationResults: ExecutionResult[] =
+
+    const calculationResults: ExecutionResult<any>[] =
       await calculationSrv.calculateTestCases(
         simpleMeasureFixture,
         [testCaseFixture],
         buildMeasureBundle(simpleMeasureFixture)
       );
+
     expect(calculationResults).toHaveLength(1);
     expect(calculationResults[0].detailedResults).toHaveLength(1);
 
@@ -1288,7 +1290,14 @@ describe("Measure Calculation", () => {
     });
   });
 
-  it("executes a test case successfully when test case resources are valid", async () => {
+  it("executes a test case and shows the errors for invalid test case json", async () => {
+    const testCase = {
+      id: "1234",
+      description: "Test IPP",
+      series: "SeriesA",
+      json: '{ "resourceType": "Bundle", "type": "collection", "entry": [] }',
+      groupPopulations: null,
+    } as TestCase;
     mockedAxios.get.mockClear().mockImplementation((args) => {
       if (args && args.endsWith("/bundles")) {
         return Promise.resolve({
@@ -1302,7 +1311,9 @@ describe("Measure Calculation", () => {
       } else if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
       }
-      return Promise.resolve({ data: testCaseFixture });
+      return Promise.resolve({
+        data: testCase,
+      });
     });
 
     // TODO
@@ -1316,28 +1327,19 @@ describe("Measure Calculation", () => {
     );
     userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
     const debugOutput = await screen.findByText(
-      "Population Group: population-group-1"
+      "No entries found in passed patient bundles"
     );
     expect(debugOutput).toBeInTheDocument();
   });
 
-  it("executes a test case and shows the errors for invalid test case json", async () => {
-    const testCase = {
-      id: "1234",
-      description: "Test IPP",
-      series: "SeriesA",
-      json: '{ "resourceType": "Bundle", "type": "collection", "entry": [] }',
-      groupPopulations: null,
-    } as TestCase;
+  it("executes a test case successfully when test case resources are valid", async () => {
     mockedAxios.get.mockClear().mockImplementation((args) => {
       if (args && args.startsWith(serviceConfig.measureService.baseUrl)) {
         return Promise.resolve({ data: simpleMeasureFixture });
       } else if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
       }
-      return Promise.resolve({
-        data: testCase,
-      });
+      return Promise.resolve({ data: testCaseFixture });
     });
 
     renderWithRouter(
@@ -1347,11 +1349,11 @@ describe("Measure Calculation", () => {
       "/measures/:measureId/edit/test-cases/:id",
       <CreateTestCase />
     );
-    userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
-    const debugOutput = await screen.findByText(
-      "No entries found in passed patient bundles"
-    );
-    expect(debugOutput).toBeInTheDocument();
+
+    await waitFor(async () => {
+      userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
+      expect(screen.findByText("Population Group: population-group-1"));
+    });
   });
 
   it("shows an error when trying to run the test case when Measure CQL errors exist", async () => {

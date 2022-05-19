@@ -48,7 +48,7 @@ export class CalculationService {
     patientBundles,
     measurementPeriodStart,
     measurementPeriodEnd
-  ): Promise<CalculationOutput<any> {
+  ): Promise<CalculationOutput<any>> {
     try {
       return await Calculator.calculate(measureBundle, patientBundles, {
         includeClauseResults: false,
