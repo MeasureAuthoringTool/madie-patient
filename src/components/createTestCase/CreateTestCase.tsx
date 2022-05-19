@@ -331,12 +331,16 @@ const CreateTestCase = () => {
     );
     calculation.current
       .calculateTestCases(measure, [modifiedTestCase], measureBundle)
-      .then((executionResults: ExecutionResult<DetailedPopulationGroupResult>[]) => {
-        // clear errors
-        setCalculationErrors("");
-        // grab first group results because we only have one group for now
-        setPopulationGroupResult(executionResults[0].detailedResults[0]);
-      })
+      .then(
+        (
+          executionResults: ExecutionResult<DetailedPopulationGroupResult>[]
+        ) => {
+          // clear errors
+          setCalculationErrors("");
+          // grab first group results because we only have one group for now
+          setPopulationGroupResult(executionResults[0].detailedResults[0]);
+        }
+      )
       .catch((error) => {
         console.error("An error occurred while executing test cases", error);
         setCalculationErrors(error.message);
