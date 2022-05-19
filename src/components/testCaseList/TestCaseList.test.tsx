@@ -348,6 +348,35 @@ describe("TestCaseList component", () => {
     });
   });
 
+  it("should display error message when fetch measure bundle fails", async () => {
+    measure.createdBy = MEASURE_CREATEDBY;
+    const error = {
+      message: "An error occurred fetching the measure bundle",
+    };
+
+    const useMeasureServiceMockResponses = {
+      fetchMeasure: jest.fn().mockResolvedValue(measure),
+      fetchMeasureBundle: jest.fn().mockRejectedValue(error),
+    } as unknown as MeasureServiceApi;
+
+    useMeasureServiceMock.mockImplementation(
+      () => useMeasureServiceMockResponses
+    );
+
+    const { getByTestId } = render(<TestCaseList />);
+
+    await waitFor(async () => {
+      const executeAllTestCasesButton = getByTestId(
+        "execute-test-cases-button"
+      );
+      fireEvent.click(executeAllTestCasesButton);
+      const errorMessage = getByTestId("display-tests-error");
+      await expect(errorMessage).toHaveTextContent(
+        "An error occurred fetching the measure bundle"
+      );
+    });
+  });
+
   it("should display error message when fetch measure fails", async () => {
     const error = {
       message: `Unable to fetch measure ${measure.id}`,
