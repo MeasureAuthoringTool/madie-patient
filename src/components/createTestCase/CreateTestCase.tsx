@@ -322,7 +322,7 @@ const CreateTestCase = () => {
       const measureBundle = await measureService.current.fetchMeasureBundle(
         measureId
       );
-      const executionResults: ExecutionResult[] =
+      const executionResults: ExecutionResult<DetailedPopulationGroupResult>[] =
         await calculation.current.calculateTestCases(
           measure,
           [modifiedTestCase],
