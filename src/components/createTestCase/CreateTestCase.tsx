@@ -144,6 +144,8 @@ const CreateTestCase = () => {
   const [populationGroupResult, setPopulationGroupResult] =
     useState<DetailedPopulationGroupResult>();
   const [calculationErrors, setCalculationErrors] = useState<string>();
+  const [createButtonDisabled, setCreatedButtonDisabled] =
+    useState<boolean>(false);
 
   const formik = useFormik({
     initialValues: { ...INITIAL_VALUES },
@@ -283,6 +285,18 @@ const CreateTestCase = () => {
         testCase,
         measureId
       );
+
+      //possible solution for now
+      setCreatedButtonDisabled(true);
+      //setEditorVal(savedTestCase.json); //to display updated date with generated ID
+
+      //not possible for now
+      // resetForm({
+      //   values: { ...INITIAL_VALUES },
+      // });
+      // setTestCase(null);
+      // setEditorVal(null)
+
       handleTestCaseResponse(savedTestCase, "create");
     } catch (error) {
       console.error("An error occurred while creating the test case", error);
@@ -302,6 +316,13 @@ const CreateTestCase = () => {
         testCase,
         measureId
       );
+
+      resetForm({
+        values: { ...testCase },
+      });
+      setTestCase(updatedTestCase);
+      setEditorVal(updatedTestCase.json);
+
       handleTestCaseResponse(updatedTestCase, "update");
     } catch (error) {
       console.error("An error occurred while updating the test case", error);
@@ -559,7 +580,7 @@ const CreateTestCase = () => {
                     }
                     type="submit"
                     data-testid="create-test-case-button"
-                    disabled={!isModified()}
+                    disabled={!isModified() || createButtonDisabled}
                   />
                 )}
                 <Button

@@ -452,52 +452,6 @@ describe("CreateTestCase component", () => {
     ]);
   });
 
-  it("should display an error when test case update returns no data", async () => {
-    const testCase = {
-      id: "1234",
-      createdBy: MEASURE_CREATEDBY,
-      description: "Test IPP",
-      json: `{"test":"test"}`,
-    } as TestCase;
-    const modifiedDescription = "modified description";
-    mockedAxios.get.mockClear().mockImplementation((args) => {
-      if (args && args.endsWith("series")) {
-        return Promise.resolve({ data: ["SeriesA"] });
-      }
-      return Promise.resolve({ data: testCase });
-    });
-
-    renderWithRouter(
-      ["/measures/m1234/edit/test-cases/1234"],
-      "/measures/:measureId/edit/test-cases/:id",
-      <CreateTestCase />
-    );
-
-    mockedAxios.put.mockResolvedValue({
-      data: null,
-    });
-
-    await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: "Update Test Case" })
-      ).toBeInTheDocument();
-    });
-
-    const descriptionInput = screen.getByTestId("create-test-case-description");
-    expect(descriptionInput).toHaveTextContent(testCase.description);
-    userEvent.type(descriptionInput, `{selectall}{del}${modifiedDescription}`);
-
-    await waitFor(() => {
-      expect(descriptionInput).toHaveTextContent(modifiedDescription);
-    });
-    userEvent.click(screen.getByRole("button", { name: "Update Test Case" }));
-
-    const debugOutput = await screen.findByText(
-      "An error occurred - update did not return the expected successful result."
-    );
-    expect(debugOutput);
-  });
-
   it("should display an error when test case update fails", async () => {
     const testCase = {
       id: "1234",
@@ -538,6 +492,56 @@ describe("CreateTestCase component", () => {
     const descriptionInput = screen.getByTestId("create-test-case-description");
     expect(descriptionInput).toHaveTextContent(testCase.description);
     userEvent.type(descriptionInput, `{selectall}{del}${modifiedDescription}`);
+
+    await waitFor(() => {
+      expect(descriptionInput).toHaveTextContent(modifiedDescription);
+    });
+    userEvent.click(screen.getByRole("button", { name: "Update Test Case" }));
+
+    const debugOutput = await screen.findByText(
+      "An error occurred while updating the test case."
+    );
+    expect(debugOutput);
+  });
+
+  it("should display an error when test case update returns no data", async () => {
+    const testCase = {
+      id: "1234",
+      createdBy: MEASURE_CREATEDBY,
+      description: "Test IPP",
+      json: `{"test":"test"}`,
+    } as TestCase;
+    const modifiedDescription = "modified description";
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["SeriesA"] });
+      }
+      return Promise.resolve({ data: testCase });
+    });
+
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/1234"],
+      "/measures/:measureId/edit/test-cases/:id",
+      <CreateTestCase />
+    );
+
+    mockedAxios.put.mockResolvedValue({
+      data: null,
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Update Test Case" })
+      ).toBeInTheDocument();
+    });
+
+    const descriptionInput = screen.getByTestId("create-test-case-description");
+    expect(descriptionInput).toHaveTextContent(testCase.description);
+    userEvent.type(descriptionInput, `{selectall}{del}${modifiedDescription}`);
+
+    expect(
+      screen.getByRole("button", { name: "Update Test Case" })
+    ).toBeEnabled();
 
     await waitFor(() => {
       expect(descriptionInput).toHaveTextContent(modifiedDescription);
