@@ -1,5 +1,4 @@
-import { MeasureScoring } from "../../../models/MeasureScoring";
-import { MeasurePopulation } from "../../../models/MeasurePopulation";
+import { MeasureScoring, MeasurePopulation } from "@madie/madie-models";
 
 export const testCaseFixture = {
   id: "623cacffe74613783378c17c",

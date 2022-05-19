@@ -1,6 +1,9 @@
 import { triggerPopChanges } from "./PopulationsMap";
-import { GroupPopulation, PopulationValue } from "../models/TestCase";
-import { MeasurePopulation } from "../models/MeasurePopulation";
+import {
+  MeasurePopulation,
+  GroupPopulation,
+  PopulationValue,
+} from "@madie/madie-models";
 
 it("return the input matches output with no changes", () => {
   const populationVal: PopulationValue = {

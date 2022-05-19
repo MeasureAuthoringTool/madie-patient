@@ -1,7 +1,7 @@
 import axios from "axios";
 import useServiceConfig from "./useServiceConfig";
 import { ServiceConfig } from "./ServiceContext";
-import TestCase from "../models/TestCase";
+import { TestCase } from "@madie/madie-models";
 import useOktaTokens from "../hooks/useOktaTokens";
 
 export class TestCaseServiceApi {

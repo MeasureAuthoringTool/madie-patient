@@ -1,9 +1,8 @@
-import Measure from "../../../models/Measure";
-import { Model } from "../../../models/Model";
-import { MeasureScoring } from "../../../models/MeasureScoring";
+import { Measure, MeasureScoring, Model } from "@madie/madie-models";
 
 export const simpleMeasureFixture: Measure = {
   id: "623cacebe74613783378c17b",
+  active: false,
   measureHumanReadableId: null,
   measureSetId: null,
   version: null,
@@ -29,8 +28,8 @@ export const simpleMeasureFixture: Measure = {
   createdBy: "joseph.kotanchik@semanticbits.com",
   lastModifiedAt: "2022-03-25T19:32:56.083Z",
   lastModifiedBy: "joseph.kotanchik@semanticbits.com",
-  measurementPeriodStart: "2023-01-01",
-  measurementPeriodEnd: "2023-12-31",
+  measurementPeriodStart: new Date("2023-01-01"),
+  measurementPeriodEnd: new Date("2023-12-31"),
   model: Model.QICORE,
   measureScoring: MeasureScoring.PROPORTION,
   measureMetaData: {
