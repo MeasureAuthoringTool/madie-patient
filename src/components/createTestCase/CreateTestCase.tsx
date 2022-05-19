@@ -280,16 +280,8 @@ const CreateTestCase = () => {
         measureId
       );
 
-      //possible solution for now
       setCreatedButtonDisabled(true);
-      //setEditorVal(savedTestCase.json); //to display updated date with generated ID
-
-      //not possible for now
-      // resetForm({
-      //   values: { ...INITIAL_VALUES },
-      // });
-      // setTestCase(null);
-      // setEditorVal(null)
+      setEditorVal(savedTestCase.json);
 
       handleTestCaseResponse(savedTestCase, "create");
     } catch (error) {
