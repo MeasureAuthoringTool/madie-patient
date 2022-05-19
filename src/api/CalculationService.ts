@@ -3,7 +3,6 @@ import {
   CalculationOutput,
   ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
-
 import { TestCase, Measure, PopulationType } from "@madie/madie-models";
 import { FHIRHelpers } from "../util/FHIRHelpers";
 import { getFhirMeasurePopulationCode } from "../util/PopulationsMap";
@@ -48,7 +47,11 @@ export class CalculationService {
     patientBundles,
     measurementPeriodStart,
     measurementPeriodEnd
+<<<<<<< HEAD
   ): Promise<CalculationOutput<any>> {
+=======
+  ): Promise<CalculationOutput> {
+>>>>>>> develop
     try {
       return await Calculator.calculate(measureBundle, patientBundles, {
         includeClauseResults: false,
