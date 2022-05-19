@@ -2,7 +2,7 @@ import React from "react";
 import tw from "twin.macro";
 import "styled-components/macro";
 import TestCasePopulation from "./TestCasePopulation";
-import { PopulationValue } from "../../models/TestCase";
+import { PopulationValue } from "@madie/madie-models";
 const TH = tw.th`p-1 border-b text-right text-xs uppercase border`;
 
 export interface TestCasePopulationListProps {

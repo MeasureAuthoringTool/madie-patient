@@ -3,8 +3,9 @@ import {
   CalculationOutput,
   ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
-import TestCase from "../models/TestCase";
-import Measure from "../models/Measure";
+import { TestCase, Measure, PopulationType } from "@madie/madie-models";
+import { FHIRHelpers } from "../util/FHIRHelpers";
+import { getFhirMeasurePopulationCode } from "../util/PopulationsMap";
 
 // TODO consider converting into a context.
 // OR a re-usable hook.
@@ -13,12 +14,12 @@ export class CalculationService {
     measure: Measure,
     testCases: TestCase[],
     measureBundle: fhir4.Bundle
-  ): Promise<ExecutionResult[]> {
+  ): Promise<ExecutionResult<any>[]> {
     const TestCaseBundles = testCases.map((testCase) => {
       return this.buildPatientBundle(testCase);
     });
 
-    const calculationOutput: CalculationOutput = await this.calculate(
+    const calculationOutput: CalculationOutput<any> = await this.calculate(
       measureBundle,
       TestCaseBundles,
       measure.measurementPeriodStart,
@@ -46,7 +47,7 @@ export class CalculationService {
     patientBundles,
     measurementPeriodStart,
     measurementPeriodEnd
-  ): Promise<CalculationOutput> {
+  ): Promise<CalculationOutput<any>> {
     try {
       return await Calculator.calculate(measureBundle, patientBundles, {
         includeClauseResults: false,

@@ -2,13 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import tw from "twin.macro";
 import "styled-components/macro";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
-import TestCase from "../../models/TestCase";
+import { TestCase, Measure } from "@madie/madie-models";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@madie/madie-components";
 import TestCaseComponent from "./TestCase";
 import useMeasureServiceApi from "../../api/useMeasureServiceApi";
 import calculationService from "../../api/CalculationService";
-import Measure from "../../models/Measure";
+
 import { ExecutionResult } from "fqm-execution/build/types/Calculator";
 import { getFhirMeasurePopulationCode } from "../../util/PopulationsMap";
 import useOktaTokens from "../../hooks/useOktaTokens";
@@ -68,7 +68,7 @@ const TestCaseList = () => {
         const measureBundle = await measureService.current.fetchMeasureBundle(
           measureId
         );
-        const executionResults: ExecutionResult[] =
+        const executionResults: ExecutionResult<any>[] =
           await calculation.current.calculateTestCases(
             measure,
             testCases,

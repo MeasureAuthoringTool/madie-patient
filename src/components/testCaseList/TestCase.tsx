@@ -14,8 +14,7 @@ import Box from "@mui/material/Box";
 import TestCasePopulationList from "../populations/TestCasePopulationList";
 import Chip from "@mui/material/Chip";
 import TruncateText from "./TruncateText";
-import { PopulationValue } from "../../models/TestCase";
-import { MeasurePopulation } from "../../models/MeasurePopulation";
+import { PopulationValue, MeasurePopulation } from "@madie/madie-models";
 
 const EditButton = tw.button`text-blue-600 hover:text-blue-900`;
 const StyledCell = styled.td`

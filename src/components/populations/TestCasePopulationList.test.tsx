@@ -2,7 +2,7 @@ import * as React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import TestCasePopulationList from "./TestCasePopulationList";
-import { MeasurePopulation } from "../../models/MeasurePopulation";
+import { MeasurePopulation } from "@madie/madie-models";
 import userEvent from "@testing-library/user-event";
 
 describe("TestCasePopulationPopulation component", () => {

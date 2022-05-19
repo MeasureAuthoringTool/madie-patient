@@ -4,7 +4,7 @@ import TestCaseLanding from "./TestCaseLanding";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
 import axios from "axios";
-import { MeasureScoring } from "../../models/MeasureScoring";
+import { MeasureScoring } from "@madie/madie-models";
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;

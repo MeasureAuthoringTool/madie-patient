@@ -17,13 +17,16 @@ import {
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import "styled-components/macro";
-import TestCase, {
+import {
+  TestCase,
   GroupPopulation,
   HapiOperationOutcome,
-} from "../../models/TestCase";
+  Measure,
+  Group,
+} from "@madie/madie-models";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import Editor from "../editor/Editor";
-import { TestCaseValidator } from "../../models/TestCaseValidator";
+import { TestCaseValidator } from "../../validators/TestCaseValidator";
 import { sanitizeUserInput } from "../../util/Utils.js";
 import TestCaseSeries from "./TestCaseSeries";
 import * as _ from "lodash";
@@ -32,7 +35,6 @@ import {
   getPopulationsForScoring,
   triggerPopChanges,
 } from "../../util/PopulationsMap";
-import Measure, { Group } from "../../models/Measure";
 import useMeasureServiceApi from "../../api/useMeasureServiceApi";
 import GroupPopulations from "../populations/GroupPopulations";
 import calculationService from "../../api/CalculationService";
@@ -328,11 +330,12 @@ const CreateTestCase = () => {
     if (isModified()) {
       modifiedTestCase.json = editorVal;
     }
+
     try {
       const measureBundle = await measureService.current.fetchMeasureBundle(
         measureId
       );
-      const executionResults: ExecutionResult[] =
+      const executionResults: ExecutionResult<DetailedPopulationGroupResult>[] =
         await calculation.current.calculateTestCases(
           measure,
           [modifiedTestCase],
@@ -594,6 +597,7 @@ const CreateTestCase = () => {
             setEditor={setEditor}
             readOnly={!canEdit}
           />
+          con
         </div>
         {(populationGroupResult || calculationErrors) && (
           <div tw="flex-auto w-3/12 p-2">

@@ -1,7 +1,6 @@
-import Measure from "../models/Measure";
+import { Measure, PopulationType } from "@madie/madie-models";
 import { FHIRHelpers } from "./FHIRHelpers";
 import { getFhirMeasurePopulationCode } from "./PopulationsMap";
-import { PopulationType } from "../models/MeasurePopulation";
 
 export const successfulExecutionResults = [
   {
