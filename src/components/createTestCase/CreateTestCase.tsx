@@ -146,7 +146,7 @@ const CreateTestCase = () => {
   const [populationGroupResult, setPopulationGroupResult] =
     useState<DetailedPopulationGroupResult>();
   const [calculationErrors, setCalculationErrors] = useState<string>();
-  const [createButtonDisabled, setCreatedButtonDisabled] =
+  const [createButtonDisabled, setCreateButtonDisabled] =
     useState<boolean>(false);
 
   const formik = useFormik({
@@ -282,7 +282,7 @@ const CreateTestCase = () => {
         measureId
       );
 
-      setCreatedButtonDisabled(true);
+      setCreateButtonDisabled(true);
       setEditorVal(savedTestCase.json);
 
       handleTestCaseResponse(savedTestCase, "create");
