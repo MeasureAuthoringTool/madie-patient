@@ -65,46 +65,51 @@ const TestCaseList = () => {
     }
 
     if (testCases) {
-      const measureBundle = await measureService.current.fetchMeasureBundle(
-        measureId
-      );
-      calculation.current
-        .calculateTestCases(measure, testCases, measureBundle)
-        .then((executionResults: ExecutionResult[]) => {
-          testCases.forEach((testCase) => {
-            const { populationResults } = executionResults.find(
-              (result) => result.patientId === testCase.id
-            )?.detailedResults?.[0]; // Since we have only 1 population group
+      try {
+        const measureBundle = await measureService.current.fetchMeasureBundle(
+          measureId
+        );
+        const executionResults: ExecutionResult[] =
+          await calculation.current.calculateTestCases(
+            measure,
+            testCases,
+            measureBundle
+          );
 
-            const populationValues =
-              testCase?.groupPopulations?.[0]?.populationValues;
+        testCases.forEach((testCase) => {
+          const { populationResults } = executionResults.find(
+            (result) => result.patientId === testCase.id
+          )?.detailedResults?.[0]; // Since we have only 1 population group
 
-            // executionStatus is set to false if any of the populationResults (calculation result) doesn't match with populationValues (Given from testCase)
-            if (populationResults && populationValues) {
-              let executionStatus = true;
-              populationResults.forEach((populationResult) => {
-                if (executionStatus) {
-                  const groupPopulation = populationValues.find(
-                    (populationValue) =>
-                      getFhirMeasurePopulationCode(populationValue.name) ===
-                      populationResult.populationType.toString()
-                  );
+          const populationValues =
+            testCase?.groupPopulations?.[0]?.populationValues;
 
-                  if (groupPopulation) {
-                    groupPopulation.actual = populationResult.result;
-                    executionStatus =
-                      groupPopulation.expected === populationResult.result;
-                  }
+          // executionStatus is set to false if any of the populationResults (calculation result) doesn't match with populationValues (Given from testCase)
+          if (populationResults && populationValues) {
+            let executionStatus = true;
+            populationResults.forEach((populationResult) => {
+              if (executionStatus) {
+                const groupPopulation = populationValues.find(
+                  (populationValue) =>
+                    getFhirMeasurePopulationCode(populationValue.name) ===
+                    populationResult.populationType.toString()
+                );
+
+                if (groupPopulation) {
+                  groupPopulation.actual = populationResult.result;
+                  executionStatus =
+                    groupPopulation.expected === populationResult.result;
                 }
-              });
-              testCase.executionStatus = executionStatus ? "pass" : "fail";
-            }
-          });
-          setTestCases([...testCases]);
-        })
-        .catch((error) => {
-          setError(error.message);
+              }
+            });
+            testCase.executionStatus = executionStatus ? "pass" : "fail";
+          }
         });
+        setTestCases([...testCases]);
+      } catch (error) {
+        console.error("An error occurred while executing test cases", error);
+        setError(error.message);
+      }
     }
   };
 
