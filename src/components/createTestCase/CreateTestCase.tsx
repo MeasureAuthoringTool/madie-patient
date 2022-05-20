@@ -146,6 +146,8 @@ const CreateTestCase = () => {
   const [populationGroupResult, setPopulationGroupResult] =
     useState<DetailedPopulationGroupResult>();
   const [calculationErrors, setCalculationErrors] = useState<string>();
+  const [createButtonDisabled, setCreateButtonDisabled] =
+    useState<boolean>(false);
 
   const formik = useFormik({
     initialValues: { ...INITIAL_VALUES },
@@ -279,6 +281,10 @@ const CreateTestCase = () => {
         testCase,
         measureId
       );
+
+      setCreateButtonDisabled(true);
+      setEditorVal(savedTestCase.json);
+
       handleTestCaseResponse(savedTestCase, "create");
     } catch (error) {
       setAlert(() => ({
@@ -297,6 +303,13 @@ const CreateTestCase = () => {
         testCase,
         measureId
       );
+
+      resetForm({
+        values: { ...testCase },
+      });
+      setTestCase(updatedTestCase);
+      setEditorVal(updatedTestCase.json);
+
       handleTestCaseResponse(updatedTestCase, "update");
     } catch (error) {
       setAlert(() => ({
@@ -554,7 +567,7 @@ const CreateTestCase = () => {
                     }
                     type="submit"
                     data-testid="create-test-case-button"
-                    disabled={!isModified()}
+                    disabled={!isModified() || createButtonDisabled}
                   />
                 )}
                 <Button
