@@ -2,9 +2,11 @@ import * as React from "react";
 import {
   fireEvent,
   getByTestId,
+  logRoles,
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
@@ -12,20 +14,23 @@ import TestCaseList from "./TestCaseList";
 import calculationService, {
   CalculationService,
 } from "../../api/CalculationService";
-import TestCase, {
-  GroupPopulation,
-  PopulationValue,
-} from "../../models/TestCase";
 import useTestCaseServiceApi, {
   TestCaseServiceApi,
 } from "../../api/useTestCaseServiceApi";
 import useMeasureServiceApi, {
   MeasureServiceApi,
 } from "../../api/useMeasureServiceApi";
-// import Measure from "../../../../madie-measure/src/models/Measure";
-import Measure from "../../models/Measure";
 import userEvent from "@testing-library/user-event";
 import { buildMeasureBundle } from "../../util/CalculationTestHelpers";
+import {
+  GroupPopulation,
+  Measure,
+  MeasurePopulation,
+  MeasureScoring,
+  PopulationExpectedValue,
+  TestCase,
+} from "@madie/madie-models";
+import { PopulationType } from "../../../../madie-models/src";
 
 const serviceConfig: ServiceConfig = {
   testCaseService: {
@@ -60,7 +65,7 @@ const executionResults = [
         populationResults: [
           {
             populationType: "initial-population",
-            result: false,
+            result: true,
           },
           {
             populationType: "denominator",
@@ -68,7 +73,7 @@ const executionResults = [
           },
           {
             populationType: "numerator",
-            result: false,
+            result: true,
           },
         ],
       },
@@ -116,10 +121,12 @@ const testCases = [
     series: "IPP_Pass",
     groupPopulations: [
       {
+        groupId: "1",
+        scoring: MeasureScoring.PROPORTION,
         populationValues: [
           {
             name: "initialPopulation",
-            expected: false,
+            expected: true,
           },
           {
             name: "denominator",
@@ -127,9 +134,9 @@ const testCases = [
           },
           {
             name: "numerator",
-            expected: false,
+            expected: true,
           },
-        ] as PopulationValue[],
+        ] as PopulationExpectedValue[],
       },
     ] as GroupPopulation[],
   },
@@ -140,6 +147,8 @@ const testCases = [
     series: "IPP_Fail",
     groupPopulations: [
       {
+        groupId: "1",
+        scoring: MeasureScoring.PROPORTION,
         populationValues: [
           {
             name: "initialPopulation",
@@ -153,7 +162,7 @@ const testCases = [
             name: "numerator",
             expected: true,
           },
-        ] as PopulationValue[],
+        ] as PopulationExpectedValue[],
       },
     ] as GroupPopulation[],
   },
@@ -173,6 +182,17 @@ const measure = {
   id: "1",
   measureName: "measureName",
   createdBy: MEASURE_CREATEDBY,
+  groups: [
+    {
+      id: "1",
+      scoring: MeasureScoring.PROPORTION,
+      population: {
+        [MeasurePopulation.INITIAL_POPULATION]: "ipp",
+        [MeasurePopulation.DENOMINATOR]: "denom",
+        [MeasurePopulation.NUMERATOR]: "num",
+      },
+    },
+  ],
 } as Measure;
 
 // mocking measureService
@@ -297,18 +317,31 @@ describe("TestCaseList component", () => {
 
   it("should execute test cases", async () => {
     measure.createdBy = MEASURE_CREATEDBY;
-    const { getByTestId } = render(<TestCaseList />);
+    render(<TestCaseList />);
 
-    await waitFor(async () => {
-      const table = getByTestId("test-case-tbl");
-      const tableRows = table.querySelectorAll("tbody tr");
-      const executeAllTestCasesButton = getByTestId(
-        "execute-test-cases-button"
-      );
-      fireEvent.click(executeAllTestCasesButton);
-      await expect(tableRows[0]).toHaveTextContent("pass");
-      await expect(tableRows[2]).toHaveTextContent("fail");
+    const table = await screen.findByTestId("test-case-tbl");
+    const tableRows = table.querySelectorAll("tbody tr");
+    const executeAllTestCasesButton = screen.getByRole("button", {
+      name: "Execute Test Cases",
     });
+
+    userEvent.click(executeAllTestCasesButton);
+    await waitFor(() => {
+      expect(tableRows[0]).toHaveTextContent("pass");
+      expect(tableRows[2]).toHaveTextContent("fail");
+    });
+    const expand1Btn = await within(tableRows[0] as HTMLElement).findByRole(
+      "button",
+      { name: "expand row" }
+    );
+    userEvent.click(expand1Btn);
+    expect(await screen.findByTestId("population-table-1")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Group 1 (Proportion) Population Values")
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByTestId("test-population-initialPopulation-actual")
+    ).toBeChecked();
   });
 
   it("should not render execute button for user who is not the owner of the measure", () => {
@@ -427,48 +460,49 @@ describe("TestCaseList component", () => {
       </MemoryRouter>
     );
 
-    await waitFor(() => {
-      const table = screen.getByTestId("test-case-tbl");
+    const table = await screen.findByTestId("test-case-tbl");
+    const tableHeaders = table.querySelectorAll("thead th");
 
-      const tableHeaders = table.querySelectorAll("thead th");
+    expect(tableHeaders[1]).toHaveTextContent("Title");
+    expect(tableHeaders[2]).toHaveTextContent("Series");
+    expect(tableHeaders[3]).toHaveTextContent("Status");
 
-      expect(tableHeaders[1]).toHaveTextContent("Title");
-      expect(tableHeaders[2]).toHaveTextContent("Series");
-      expect(tableHeaders[3]).toHaveTextContent("Status");
+    const tableRows = table.querySelectorAll("tbody tr");
+    expect(tableRows[0]).toHaveTextContent(testCases[0].title.substring(0, 59));
+    expect(tableRows[0]).toHaveTextContent(
+      testCases[0].series.substring(0, 59)
+    );
 
-      const tableRows = table.querySelectorAll("tbody tr");
-      expect(tableRows[0]).toHaveTextContent(
-        testCases[0].title.substring(0, 59)
-      );
-      expect(tableRows[0]).toHaveTextContent(
-        testCases[0].series.substring(0, 59)
-      );
-
-      const titleButton = screen.getByTestId(
-        `test-case-title-${testCases[0].id}-button`
-      );
-      expect(titleButton).toBeInTheDocument();
-      fireEvent.mouseOver(titleButton);
-      expect(
-        screen.getByRole("button", {
+    const titleButton = screen.getByTestId(
+      `test-case-title-${testCases[0].id}-button`
+    );
+    expect(titleButton).toBeInTheDocument();
+    fireEvent.mouseOver(titleButton);
+    expect(
+      await screen.findByRole(
+        "button",
+        {
           name: testCases[0].title,
           hidden: true,
-        })
-      ).toBeVisible();
-      expect(screen.getByText(testCases[0].title)).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      )
+    ).toBeVisible();
+    await waitFor(() =>
+      expect(screen.getByText(testCases[0].title)).toBeInTheDocument()
+    );
 
-      const seriesButton = screen.getByTestId(
-        `test-case-series-${testCases[0].id}-button`
-      );
-      expect(seriesButton).toBeInTheDocument();
-      fireEvent.mouseOver(seriesButton);
-      expect(
-        screen.getByRole("button", {
-          name: testCases[0].series,
-          hidden: true,
-        })
-      ).toBeVisible();
-    });
+    const seriesButton = await screen.findByTestId(
+      `test-case-series-${testCases[0].id}-button`
+    );
+    expect(seriesButton).toBeInTheDocument();
+    fireEvent.mouseOver(seriesButton);
+    expect(
+      await screen.findByRole("button", {
+        name: testCases[0].series,
+        hidden: true,
+      })
+    ).toBeVisible();
   });
 
   it("should render New Test Case button and navigate to the Create New Test Case page when button clicked", async () => {
@@ -495,21 +529,14 @@ describe("TestCaseList component", () => {
     expect(createNewTestCaseButton).not.toBeInTheDocument();
   });
 
-  it("shows an error when trying to execute test cases when Measure CQL errors exist", async () => {
+  it("disables execute button when trying to execute test cases when Measure CQL errors exist", async () => {
     measure.createdBy = MEASURE_CREATEDBY;
     measure.cqlErrors = true;
-    const { getByTestId } = render(<TestCaseList />);
+    render(<TestCaseList />);
 
-    await waitFor(async () => {
-      const executeAllTestCasesButton = getByTestId(
-        "execute-test-cases-button"
-      );
-      userEvent.click(executeAllTestCasesButton);
-      expect(
-        await screen.findByText(
-          "Cannot execute test cases while errors exist in the measure CQL!"
-        )
-      ).toBeInTheDocument();
-    });
+    expect(await screen.findByText("WhenAllGood")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Execute Test Cases" })
+    ).toBeDisabled();
   });
 });
