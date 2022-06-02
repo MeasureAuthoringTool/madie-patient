@@ -92,7 +92,6 @@ const setValueSets = jest.fn();
 const renderWithRouter = (
   initialEntries = [],
   routePath: string,
-  element: React.ReactElement,
   measure: Measure = defaultMeasure
 ) => {
   return render(
@@ -106,7 +105,7 @@ const renderWithRouter = (
           }}
         >
           <Routes>
-            <Route path={routePath} element={element} />
+            <Route path={routePath} element={<CreateTestCase />} />
           </Routes>
         </ExecutionContextProvider>
       </ApiContextProvider>
@@ -130,8 +129,7 @@ describe("CreateTestCase component", () => {
   it("should render create test case page", async () => {
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/create"
     );
     const editor = screen.getByTestId("test-case-editor");
 
@@ -157,8 +155,7 @@ describe("CreateTestCase component", () => {
   it("should create test case when create button is clicked", async () => {
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/create"
     );
     const testCaseDescription = "TestCase123";
     const testCaseTitle = "TestTitle";
@@ -196,8 +193,7 @@ describe("CreateTestCase component", () => {
   it("should provide user alert when create test case fails", async () => {
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/create"
     );
     const testCaseDescription = "TestCase123";
     mockedAxios.post.mockRejectedValue({
@@ -229,8 +225,7 @@ describe("CreateTestCase component", () => {
   it("should provide user alert for a success result but response is missing ID attribute", async () => {
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/create"
     );
     const testCaseDescription = "TestCase123";
     mockedAxios.post.mockResolvedValue({
@@ -263,8 +258,7 @@ describe("CreateTestCase component", () => {
   it("should clear error alert when user clicks alert close button", async () => {
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/create"
     );
     const testCaseDescription = "TestCase123";
     mockedAxios.post.mockRejectedValue({
@@ -314,8 +308,7 @@ describe("CreateTestCase component", () => {
 
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/1234"],
-      "/measures/:measureId/edit/test-cases/:id",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/:id"
     );
 
     await waitFor(
@@ -385,7 +378,6 @@ describe("CreateTestCase component", () => {
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/1234"],
       "/measures/:measureId/edit/test-cases/:id",
-      <CreateTestCase />,
       measure
     );
 
@@ -490,8 +482,7 @@ describe("CreateTestCase component", () => {
 
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/1234"],
-      "/measures/:measureId/edit/test-cases/:id",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/:id"
     );
 
     const axiosError: AxiosError = {
@@ -542,8 +533,7 @@ describe("CreateTestCase component", () => {
 
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/1234"],
-      "/measures/:measureId/edit/test-cases/:id",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/:id"
     );
 
     mockedAxios.put.mockResolvedValue({
@@ -592,8 +582,7 @@ describe("CreateTestCase component", () => {
 
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/1234"],
-      "/measures/:measureId/edit/test-cases/:id",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/:id"
     );
 
     await waitFor(() => {
@@ -616,8 +605,7 @@ describe("CreateTestCase component", () => {
   it("should generate field level error for test case description more than 250 characters", async () => {
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/create"
     );
 
     const g1PopulationValues = await screen.findByText(
@@ -644,8 +632,7 @@ describe("CreateTestCase component", () => {
   it("should allow special characters for test case description", async () => {
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/create"
     );
 
     const testCaseDescription =
@@ -702,8 +689,7 @@ describe("CreateTestCase component", () => {
 
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/create"
     );
 
     const debugOutput = await screen.findByText(
@@ -737,8 +723,7 @@ describe("CreateTestCase component", () => {
 
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/create"
     );
 
     const debugOutput = await screen.findByText(
@@ -750,8 +735,7 @@ describe("CreateTestCase component", () => {
   it("should generate field level error for test case title more than 250 characters", async () => {
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/create"
     );
 
     const g1PopulationValues = await screen.findByText(
@@ -777,8 +761,7 @@ describe("CreateTestCase component", () => {
   it("should allow special characters for test case title", async () => {
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/create"
     );
 
     const testCaseDescription = "Test Description";
@@ -816,8 +799,7 @@ describe("CreateTestCase component", () => {
   it("should allow special characters for test case series", async () => {
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/create"
     );
 
     const testCaseDescription = "Test Description";
@@ -856,8 +838,7 @@ describe("CreateTestCase component", () => {
     jest.useFakeTimers("modern");
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/create"
     );
 
     const testCaseDescription = "Test Description";
@@ -945,8 +926,7 @@ describe("CreateTestCase component", () => {
 
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/1234"],
-      "/measures/:measureId/edit/test-cases/:id",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/:id"
     );
 
     mockedAxios.put.mockResolvedValue({
@@ -1029,8 +1009,7 @@ describe("CreateTestCase component", () => {
 
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/1234"],
-      "/measures/:measureId/edit/test-cases/:id",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/:id"
     );
 
     const data = {
@@ -1132,8 +1111,7 @@ describe("CreateTestCase component", () => {
 
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/1234"],
-      "/measures/:measureId/edit/test-cases/:id",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/:id"
     );
 
     const ippRow = await screen.findByTestId(
@@ -1160,7 +1138,6 @@ describe("CreateTestCase component", () => {
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/1234"],
       "/measures/:measureId/edit/test-cases/:id",
-      <CreateTestCase />,
       measure
     );
 
@@ -1207,7 +1184,6 @@ describe("CreateTestCase component", () => {
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
       "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />,
       measure
     );
     const editor = screen.getByTestId("test-case-editor");
@@ -1298,8 +1274,7 @@ describe("Measure Calculation ", () => {
       [
         "/measures/623cacebe74613783378c17b/edit/test-cases/623cacffe74613783378c17c",
       ],
-      "/measures/:measureId/edit/test-cases/:id",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/:id"
     );
     userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
     const debugOutput = await screen.findByText(
@@ -1322,8 +1297,7 @@ describe("Measure Calculation ", () => {
       [
         "/measures/623cacebe74613783378c17b/edit/test-cases/623cacffe74613783378c17c",
       ],
-      "/measures/:measureId/edit/test-cases/:id",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/:id"
     );
 
     await waitFor(async () => {
@@ -1355,7 +1329,6 @@ describe("Measure Calculation ", () => {
         "/measures/623cacebe74613783378c17b/edit/test-cases/623cacffe74613783378c17c",
       ],
       "/measures/:measureId/edit/test-cases/:id",
-      <CreateTestCase />,
       measure
     );
     userEvent.click(await screen.findByRole("button", { name: "Run Test" }));

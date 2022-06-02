@@ -51,7 +51,7 @@ export class TerminologyServiceApi {
   }
 
   /**
-   * Extract the ValueSet OIDs used in Dara requirements of library resources
+   * Extract the ValueSet OIDs used in Data requirements of library resources
    */
   getValueSetsOIdsFromBundle(measureBundle: Bundle): ValueSetSearchParams[] {
     if (measureBundle?.entry) {
@@ -88,7 +88,6 @@ export class TerminologyServiceApi {
     if (!tgtItem) {
       return null;
     }
-    // TODO: do we need to check for expiry?
     return JSON.parse(tgtItem).TGT;
   }
 }
