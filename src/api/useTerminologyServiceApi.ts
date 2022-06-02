@@ -61,7 +61,6 @@ export class TerminologyServiceApi {
    */
   getValueSetsOIdsFromBundle(measureBundle: Bundle): ValueSetSearchParams[] {
     if (measureBundle?.entry) {
-      const oidRegex = /[0-2](\.(0|[1-9][0-9]*))+/;
       const valueSetOIDs = measureBundle.entry
         .filter((entry) => entry.resource?.resourceType === "Library")
         .reduce((allVs, library) => {
