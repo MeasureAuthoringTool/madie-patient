@@ -3,8 +3,8 @@ import {
   CalculationOutput,
   ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
-import { TestCase, Measure, PopulationType } from "@madie/madie-models";
-import { ValueSet } from "fhir/r4";
+import { TestCase, Measure } from "@madie/madie-models";
+import { ValueSet, Bundle } from "fhir/r4";
 
 // TODO consider converting into a context.
 // OR a re-usable hook.
@@ -12,7 +12,7 @@ export class CalculationService {
   async calculateTestCases(
     measure: Measure,
     testCases: TestCase[],
-    measureBundle: fhir4.Bundle,
+    measureBundle: Bundle,
     valueSets: ValueSet[]
   ): Promise<ExecutionResult<any>[]> {
     const TestCaseBundles = testCases.map((testCase) => {
@@ -31,8 +31,8 @@ export class CalculationService {
 
   // fqm Execution requires each patient to be with unique ID.
   // So assigning the testCase ID as patient ID to retrieve calculate multiple testcases
-  buildPatientBundle(testCase: TestCase): fhir4.Bundle {
-    const testCaseBundle: fhir4.Bundle = JSON.parse(testCase.json);
+  buildPatientBundle(testCase: TestCase): Bundle {
+    const testCaseBundle: Bundle = JSON.parse(testCase.json);
     testCaseBundle.entry
       .filter((entry) => {
         return entry.resource.resourceType === "Patient";
