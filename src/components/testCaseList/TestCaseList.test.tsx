@@ -12,20 +12,24 @@ import TestCaseList from "./TestCaseList";
 import calculationService, {
   CalculationService,
 } from "../../api/CalculationService";
-import TestCase, {
+import {
+  Measure,
+  TestCase,
   GroupPopulation,
   PopulationValue,
-} from "../../models/TestCase";
+} from "@madie/madie-models";
 import useTestCaseServiceApi, {
   TestCaseServiceApi,
 } from "../../api/useTestCaseServiceApi";
 import useMeasureServiceApi, {
   MeasureServiceApi,
 } from "../../api/useMeasureServiceApi";
-// import Measure from "../../../../madie-measure/src/models/Measure";
-import Measure from "../../models/Measure";
 import userEvent from "@testing-library/user-event";
-import { buildMeasureBundle } from "../../util/CalculationTestHelpers";
+import {
+  buildMeasureBundle,
+  getExampleValueSet,
+} from "../../util/CalculationTestHelpers";
+import { ExecutionContextProvider } from "../routes/ExecutionContext";
 
 const serviceConfig: ServiceConfig = {
   testCaseService: {
@@ -33,6 +37,9 @@ const serviceConfig: ServiceConfig = {
   },
   measureService: {
     baseUrl: "base.url",
+  },
+  terminologyService: {
+    baseUrl: "http.com",
   },
 };
 
@@ -185,6 +192,12 @@ const useMeasureServiceMockResolved = {
   fetchMeasureBundle: jest.fn().mockResolvedValue(buildMeasureBundle(measure)),
 } as unknown as MeasureServiceApi;
 
+const measureBundle = buildMeasureBundle(measure);
+const valueSets = [getExampleValueSet()];
+const setMeasure = jest.fn();
+const setMeasureBundle = jest.fn();
+const setValueSets = jest.fn();
+
 describe("TestCaseList component", () => {
   beforeEach(() => {
     calculationServiceMock.mockImplementation(() => {
@@ -202,15 +215,25 @@ describe("TestCaseList component", () => {
     jest.clearAllMocks();
   });
 
-  it("should render list of test cases", async () => {
-    render(
+  function renderTestCaseListComponent() {
+    return render(
       <MemoryRouter>
         <ApiContextProvider value={serviceConfig}>
-          <TestCaseList />
+          <ExecutionContextProvider
+            value={{
+              measureState: [measure, setMeasure],
+              bundleState: [measureBundle, setMeasureBundle],
+              valueSetsState: [valueSets, setValueSets],
+            }}
+          >
+            <TestCaseList />
+          </ExecutionContextProvider>
         </ApiContextProvider>
       </MemoryRouter>
     );
-
+  }
+  it("should render list of test cases", async () => {
+    renderTestCaseListComponent();
     await waitFor(() => {
       const table = screen.getByTestId("test-case-tbl");
 
@@ -249,13 +272,7 @@ describe("TestCaseList component", () => {
       return useTestCaseServiceMockRejected;
     });
 
-    render(
-      <MemoryRouter>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseList />
-        </ApiContextProvider>
-      </MemoryRouter>
-    );
+    renderTestCaseListComponent();
     await waitFor(() => {
       const errorMessage = screen.getByTestId("display-tests-error");
       expect(errorMessage).toHaveTextContent(
@@ -265,13 +282,7 @@ describe("TestCaseList component", () => {
   });
 
   it("should navigate to the Test Case details page on edit button click", async () => {
-    const { getByTestId } = render(
-      <MemoryRouter>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseList />
-        </ApiContextProvider>
-      </MemoryRouter>
-    );
+    const { getByTestId } = renderTestCaseListComponent();
     await waitFor(() => {
       const editButton = getByTestId(`edit-test-case-${testCases[0].id}`);
       fireEvent.click(editButton);
@@ -281,13 +292,7 @@ describe("TestCaseList component", () => {
 
   it("should navigate to the Test Case details page on view button click for non-owner", async () => {
     measure.createdBy = "AnotherUser";
-    const { getByTestId } = render(
-      <MemoryRouter>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseList />
-        </ApiContextProvider>
-      </MemoryRouter>
-    );
+    const { getByTestId } = renderTestCaseListComponent();
     await waitFor(() => {
       const viewButton = getByTestId(`view-test-case-${testCases[0].id}`);
       fireEvent.click(viewButton);
@@ -297,7 +302,7 @@ describe("TestCaseList component", () => {
 
   it("should execute test cases", async () => {
     measure.createdBy = MEASURE_CREATEDBY;
-    const { getByTestId } = render(<TestCaseList />);
+    const { getByTestId } = renderTestCaseListComponent();
 
     await waitFor(async () => {
       const table = getByTestId("test-case-tbl");
@@ -313,7 +318,7 @@ describe("TestCaseList component", () => {
 
   it("should not render execute button for user who is not the owner of the measure", () => {
     measure.createdBy = "AnotherUser";
-    render(<TestCaseList />);
+    renderTestCaseListComponent();
     const executeAllTestCasesButton = screen.queryByText(
       "execute-test-cases-button"
     );
@@ -334,7 +339,7 @@ describe("TestCaseList component", () => {
       return calculationServiceMockRejected;
     });
 
-    const { getByTestId } = render(<TestCaseList />);
+    const { getByTestId } = renderTestCaseListComponent();
 
     await waitFor(async () => {
       const executeAllTestCasesButton = getByTestId(
@@ -344,35 +349,6 @@ describe("TestCaseList component", () => {
       const errorMessage = getByTestId("display-tests-error");
       await expect(errorMessage).toHaveTextContent(
         "Unable to calculate test case."
-      );
-    });
-  });
-
-  it("should display error message when fetch measure bundle fails", async () => {
-    measure.createdBy = MEASURE_CREATEDBY;
-    const error = {
-      message: "An error occurred fetching the measure bundle",
-    };
-
-    const useMeasureServiceMockResponses = {
-      fetchMeasure: jest.fn().mockResolvedValue(measure),
-      fetchMeasureBundle: jest.fn().mockRejectedValue(error),
-    } as unknown as MeasureServiceApi;
-
-    useMeasureServiceMock.mockImplementation(
-      () => useMeasureServiceMockResponses
-    );
-
-    const { getByTestId } = render(<TestCaseList />);
-
-    await waitFor(async () => {
-      const executeAllTestCasesButton = getByTestId(
-        "execute-test-cases-button"
-      );
-      fireEvent.click(executeAllTestCasesButton);
-      const errorMessage = getByTestId("display-tests-error");
-      await expect(errorMessage).toHaveTextContent(
-        "An error occurred fetching the measure bundle"
       );
     });
   });
@@ -389,7 +365,7 @@ describe("TestCaseList component", () => {
       return useMeasureServiceMockRejected;
     });
 
-    const { getByTestId } = render(<TestCaseList />);
+    const { getByTestId } = renderTestCaseListComponent();
 
     await waitFor(async () => {
       const errorMessage = getByTestId("display-tests-error");
@@ -419,13 +395,7 @@ describe("TestCaseList component", () => {
       return useTestCaseServiceMockResolved;
     });
 
-    render(
-      <MemoryRouter>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseList />
-        </ApiContextProvider>
-      </MemoryRouter>
-    );
+    renderTestCaseListComponent();
 
     await waitFor(() => {
       const table = screen.getByTestId("test-case-tbl");
@@ -455,7 +425,6 @@ describe("TestCaseList component", () => {
           hidden: true,
         })
       ).toBeVisible();
-      expect(screen.getByText(testCases[0].title)).toBeInTheDocument();
 
       const seriesButton = screen.getByTestId(
         `test-case-series-${testCases[0].id}-button`
@@ -472,13 +441,7 @@ describe("TestCaseList component", () => {
   });
 
   it("should render New Test Case button and navigate to the Create New Test Case page when button clicked", async () => {
-    const { getByTestId } = render(
-      <MemoryRouter>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseList />
-        </ApiContextProvider>
-      </MemoryRouter>
-    );
+    const { getByTestId } = renderTestCaseListComponent();
     await waitFor(() => {
       const createNewButton = getByTestId("create-new-test-case-button");
       fireEvent.click(createNewButton);
@@ -488,7 +451,7 @@ describe("TestCaseList component", () => {
 
   it("should not render New Test Case button for user who is not the owner of the measure", () => {
     measure.createdBy = "AnotherUser";
-    render(<TestCaseList />);
+    renderTestCaseListComponent();
     const createNewTestCaseButton = screen.queryByText(
       "create-new-test-case-button"
     );
@@ -498,7 +461,7 @@ describe("TestCaseList component", () => {
   it("shows an error when trying to execute test cases when Measure CQL errors exist", async () => {
     measure.createdBy = MEASURE_CREATEDBY;
     measure.cqlErrors = true;
-    const { getByTestId } = render(<TestCaseList />);
+    const { getByTestId } = renderTestCaseListComponent();
 
     await waitFor(async () => {
       const executeAllTestCasesButton = getByTestId(

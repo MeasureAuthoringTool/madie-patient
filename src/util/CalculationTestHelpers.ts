@@ -9815,3 +9815,30 @@ function buildMeasureGroupPopulation(
     },
   };
 }
+
+export function getExampleValueSet(): fhir4.ValueSet {
+  return {
+    status: "draft",
+    resourceType: "ValueSet",
+    id: "vs-1",
+    url: "http://vsac.com/vs-1",
+    compose: {
+      include: [
+        {
+          system: "http://loinc.com",
+          version: "1",
+          concept: [
+            {
+              code: "code-1",
+              display: "Code 1",
+            },
+            {
+              code: "code-2",
+              display: "Code 2",
+            },
+          ],
+        },
+      ],
+    },
+  };
+}

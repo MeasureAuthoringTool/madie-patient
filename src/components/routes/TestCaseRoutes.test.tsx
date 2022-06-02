@@ -20,6 +20,9 @@ const serviceConfig: ServiceConfig = {
   testCaseService: {
     baseUrl: "base.url",
   },
+  terminologyService: {
+    baseUrl: "something.com",
+  },
 };
 
 const MEASURE_CREATEDBY = "testuser";
@@ -258,7 +261,9 @@ describe("TestCaseRoutes", () => {
   it("should render 404 page", async () => {
     const { getByTestId } = render(
       <MemoryRouter initialEntries={["/measures/m1234/edit/test-case"]}>
-        <TestCaseRoutes />
+        <ApiContextProvider value={serviceConfig}>
+          <TestCaseRoutes />
+        </ApiContextProvider>
       </MemoryRouter>
     );
 

@@ -4,8 +4,7 @@ import {
   ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
 import { TestCase, Measure, PopulationType } from "@madie/madie-models";
-import { FHIRHelpers } from "../util/FHIRHelpers";
-import { getFhirMeasurePopulationCode } from "../util/PopulationsMap";
+import { ValueSet } from "fhir/r4";
 
 // TODO consider converting into a context.
 // OR a re-usable hook.
@@ -13,7 +12,8 @@ export class CalculationService {
   async calculateTestCases(
     measure: Measure,
     testCases: TestCase[],
-    measureBundle: fhir4.Bundle
+    measureBundle: fhir4.Bundle,
+    valueSets: ValueSet[]
   ): Promise<ExecutionResult<any>[]> {
     const TestCaseBundles = testCases.map((testCase) => {
       return this.buildPatientBundle(testCase);
@@ -22,6 +22,7 @@ export class CalculationService {
     const calculationOutput: CalculationOutput<any> = await this.calculate(
       measureBundle,
       TestCaseBundles,
+      valueSets,
       measure.measurementPeriodStart,
       measure.measurementPeriodEnd
     );
@@ -45,15 +46,21 @@ export class CalculationService {
   async calculate(
     measureBundle,
     patientBundles,
+    valueSets,
     measurementPeriodStart,
     measurementPeriodEnd
   ): Promise<CalculationOutput<any>> {
     try {
-      return await Calculator.calculate(measureBundle, patientBundles, {
-        includeClauseResults: false,
-        measurementPeriodStart: measurementPeriodStart,
-        measurementPeriodEnd: measurementPeriodEnd,
-      });
+      return await Calculator.calculate(
+        measureBundle,
+        patientBundles,
+        {
+          includeClauseResults: false,
+          measurementPeriodStart: measurementPeriodStart,
+          measurementPeriodEnd: measurementPeriodEnd,
+        },
+        valueSets
+      );
     } catch (err) {
       console.error("An error occurred in FQM-Execution", err);
       throw err;

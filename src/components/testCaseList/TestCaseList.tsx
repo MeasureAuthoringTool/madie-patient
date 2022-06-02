@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import tw from "twin.macro";
 import "styled-components/macro";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
-import { TestCase, Measure } from "@madie/madie-models";
+import { TestCase } from "@madie/madie-models";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@madie/madie-components";
 import TestCaseComponent from "./TestCase";
@@ -12,6 +12,7 @@ import calculationService from "../../api/CalculationService";
 import { ExecutionResult } from "fqm-execution/build/types/Calculator";
 import { getFhirMeasurePopulationCode } from "../../util/PopulationsMap";
 import useOktaTokens from "../../hooks/useOktaTokens";
+import useExecutionContext from "../routes/useExecutionContext";
 
 const TH = tw.th`p-3 border-b text-left text-sm font-bold uppercase`;
 const ErrorAlert = tw.div`bg-red-100 text-red-700 rounded-lg m-1 p-3`;
@@ -19,7 +20,6 @@ const ErrorAlert = tw.div`bg-red-100 text-red-700 rounded-lg m-1 p-3`;
 const TestCaseList = () => {
   const [testCases, setTestCases] = useState<TestCase[]>(null);
   const [error, setError] = useState("");
-  const [measure, setMeasure] = useState<Measure>(null);
   const { measureId } = useParams<{ measureId: string }>();
   const testCaseService = useRef(useTestCaseServiceApi());
   const measureService = useRef(useMeasureServiceApi());
@@ -28,6 +28,11 @@ const TestCaseList = () => {
   const userName = getUserName();
   const navigate = useNavigate();
   const [canEdit, setCanEdit] = useState<boolean>(false);
+
+  const { measureState, bundleState, valueSetsState } = useExecutionContext();
+  const [measure, setMeasure] = measureState;
+  const [measureBundle] = bundleState;
+  const [valueSets] = valueSetsState;
 
   useEffect(() => {
     measureService.current
@@ -63,16 +68,14 @@ const TestCaseList = () => {
       return null;
     }
 
-    if (testCases) {
+    if (testCases && measureBundle) {
       try {
-        const measureBundle = await measureService.current.fetchMeasureBundle(
-          measureId
-        );
         const executionResults: ExecutionResult<any>[] =
           await calculation.current.calculateTestCases(
             measure,
             testCases,
-            measureBundle
+            measureBundle,
+            valueSets
           );
 
         testCases.forEach((testCase) => {
