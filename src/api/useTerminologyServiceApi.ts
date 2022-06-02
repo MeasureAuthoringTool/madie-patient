@@ -24,7 +24,7 @@ export class TerminologyServiceApi {
     if (!measureBundle) {
       return null;
     }
-    let searchCriteria = {
+    const searchCriteria = {
       includeDraft: true, // always true for now
       tgt: this.getTicketGrantingTicket(),
       valueSetParams: this.getValueSetsOIdsFromBundle(measureBundle),

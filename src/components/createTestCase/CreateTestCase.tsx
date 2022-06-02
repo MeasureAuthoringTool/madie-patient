@@ -34,7 +34,6 @@ import {
   getPopulationsForScoring,
   triggerPopChanges,
 } from "../../util/PopulationsMap";
-import useMeasureServiceApi from "../../api/useMeasureServiceApi";
 import GroupPopulations from "../populations/GroupPopulations";
 import calculationService from "../../api/CalculationService";
 import {
