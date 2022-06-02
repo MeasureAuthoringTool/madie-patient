@@ -1,11 +1,13 @@
 import * as React from "react";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import TestCaseRoutes from "./TestCaseRoutes";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
-import { MeasureScoring } from "@madie/madie-models";
+import { MeasureScoring, Measure } from "@madie/madie-models";
+import { getExampleValueSet } from "../../util/CalculationTestHelpers";
+import { Bundle } from "fhir/r4";
 
 // mock the editor cause we don't care for this test and it gets rid of errors
 jest.mock("../editor/Editor", () => () => <div>editor contents</div>);
@@ -32,6 +34,9 @@ jest.mock("../../hooks/useOktaTokens", () =>
     getUserName: () => MEASURE_CREATEDBY,
   }))
 );
+
+const measureBundle = {} as Bundle;
+const valueSets = [getExampleValueSet()];
 
 describe("TestCaseRoutes", () => {
   afterEach(() => {
@@ -203,6 +208,8 @@ describe("TestCaseRoutes", () => {
             measureScoring: MeasureScoring.COHORT,
             measurementPeriodStart: "2023-01-01",
             measurementPeriodEnd: "2023-12-31",
+            cqlErrors: false,
+            elmJson: "fake",
           },
         });
       } else if (args && args.endsWith("test-cases")) {
@@ -217,6 +224,10 @@ describe("TestCaseRoutes", () => {
             },
           ],
         });
+      } else if (args?.endsWith("/bundle")) {
+        return Promise.resolve({ data: measureBundle });
+      } else if (args?.endsWith("/value-sets/searches")) {
+        return Promise.resolve({ data: [valueSets] });
       }
     });
 
@@ -256,6 +267,45 @@ describe("TestCaseRoutes", () => {
     userEvent.click(createBtn);
     const feedback = await screen.findByRole("alert");
     expect(feedback).toHaveTextContent("Test case created successfully!");
+  });
+
+  it("Fetch measure bundle on Routes load", async () => {
+    mockedAxios.get.mockImplementation((args) => {
+      if (args?.startsWith(serviceConfig.measureService.baseUrl)) {
+        return Promise.resolve({
+          data: { cqlErrors: false, elmJson: "Fak3" } as Measure,
+        });
+      } else if (args?.endsWith("/bundle")) {
+        return Promise.resolve({ data: measureBundle });
+      } else if (args?.endsWith("/value-sets/searches")) {
+        return Promise.resolve({ data: [valueSets] });
+      }
+      return Promise.resolve({
+        data: [
+          {
+            id: "id1",
+            title: "TC1",
+            description: "Desc1",
+            series: "IPP_Pass",
+            status: null,
+          },
+        ],
+      });
+    });
+    render(
+      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases"]}>
+        <ApiContextProvider value={serviceConfig}>
+          <TestCaseRoutes />
+        </ApiContextProvider>
+      </MemoryRouter>
+    );
+
+    const testCaseTitle = await screen.findByText("TC1");
+    expect(testCaseTitle).toBeInTheDocument();
+    const testCaseSeries = await screen.findByText("IPP_Pass");
+    expect(testCaseSeries).toBeInTheDocument();
+    const viewBtn = screen.getByRole("button", { name: "View" });
+    expect(viewBtn).toBeInTheDocument();
   });
 
   it("should render 404 page", async () => {

@@ -56,7 +56,7 @@ export class MeasureServiceApi {
       return response.data;
     } catch (err) {
       console.error("An error occurred fetching the measure bundle", err);
-      throw new Error("An error occurred fetching the measure bundle");
+      throw new Error("An error occurred while fetching the measure bundle");
     }
   }
 

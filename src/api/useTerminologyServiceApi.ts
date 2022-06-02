@@ -44,9 +44,15 @@ export class TerminologyServiceApi {
         }
       );
       return response.data;
-    } catch (e) {
-      console.error("Error while fetching value sets", e);
-      throw new Error("Failed to fetch value sets.");
+    } catch (error) {
+      console.error("Error while fetching value sets", error);
+      let message = "Error while fetching value sets.";
+      if (error.response && error.response.status === 404) {
+        const data = error.response.data?.message;
+        const oid = this.getOidFromString(data);
+        message = `Can not find the ValueSet: ${oid}`;
+      }
+      throw new Error(message);
     }
   }
 
@@ -64,9 +70,11 @@ export class TerminologyServiceApi {
           // TODO: release and version not supported
           const libVs = libraryResource.relatedArtifact?.reduce(
             (libVs, artifact) => {
-              if (artifact?.url && artifact.url.match(oidRegex)) {
-                const oid = artifact.url.match(/[0-2](\.(0|[1-9][0-9]*))+/)[0];
-                libVs.push({ oid: oid });
+              if (artifact?.url) {
+                const oid = this.getOidFromString(artifact?.url);
+                if (oid) {
+                  libVs.push({ oid: oid });
+                }
               }
               return libVs;
             },
@@ -81,6 +89,15 @@ export class TerminologyServiceApi {
       return valueSetOIDs;
     }
     return [];
+  }
+
+  getOidFromString(oidString: string): string {
+    const oidRegex = /[0-2](\.(0|[1-9][0-9]*))+/;
+    const match = oidString?.match(oidRegex);
+    if (match) {
+      return match[0];
+    }
+    return null;
   }
 
   getTicketGrantingTicket(): string {

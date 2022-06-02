@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Route, Routes } from "react-router-dom";
+import { Alert } from "@mui/material";
 import TestCaseLanding from "../testCaseLanding/TestCaseLanding";
 import CreateTestCase from "../createTestCase/CreateTestCase";
 import NotFound from "../notfound/NotFound";
@@ -13,22 +14,28 @@ const TestCaseRoutes = () => {
   const [measure, setMeasure] = useState<Measure>();
   const [measureBundle, setMeasureBundle] = useState<Bundle>();
   const [valueSets, setValueSets] = useState<ValueSet[]>();
-  const [valueSetErrors, setValueSetErrors] = useState<string[]>();
-  const [bundleErrors, setBundleErrors] = useState<string[]>();
+  const [errors, setErrors] = useState<string>();
 
   const terminologyService = useRef(useTerminologyServiceApi());
   const measureService = useRef(useMeasureServiceApi());
 
   useEffect(() => {
-    if (measure && !measure.cqlErrors && measure.elmJson) {
-      measureService.current
-        .fetchMeasureBundle(measure?.id)
-        .then((bundle: Bundle) => {
-          setMeasureBundle(bundle);
-        })
-        .catch((err) => {
-          setBundleErrors(err.message);
-        });
+    if (measure) {
+      setErrors(null);
+      if (!measure.cqlErrors && measure.elmJson) {
+        measureService.current
+          .fetchMeasureBundle(measure?.id)
+          .then((bundle: Bundle) => {
+            setMeasureBundle(bundle);
+          })
+          .catch((err) => {
+            setErrors(err.message);
+          });
+      } else {
+        setErrors(
+          "Issues found with Measure CQL. Please correct them before executing the test case."
+        );
+      }
     }
   }, [measure]);
 
@@ -40,7 +47,7 @@ const TestCaseRoutes = () => {
           setValueSets(vs);
         })
         .catch((err) => {
-          setValueSetErrors(err.message);
+          setErrors(err.message);
         });
     }
   }, [measureBundle]);
@@ -53,6 +60,7 @@ const TestCaseRoutes = () => {
         valueSetsState: [valueSets, setValueSets],
       }}
     >
+      {errors && <Alert severity="error">{errors}</Alert>}
       <Routes>
         <Route path="/measures/:measureId/edit/test-cases">
           <Route index element={<TestCaseLanding />} />
