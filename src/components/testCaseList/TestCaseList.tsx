@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import tw from "twin.macro";
 import "styled-components/macro";
+import * as _ from "lodash";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import { TestCase, Measure } from "@madie/madie-models";
 import { useParams, useNavigate } from "react-router-dom";
@@ -9,7 +10,10 @@ import TestCaseComponent from "./TestCase";
 import useMeasureServiceApi from "../../api/useMeasureServiceApi";
 import calculationService from "../../api/CalculationService";
 
-import { ExecutionResult } from "fqm-execution/build/types/Calculator";
+import {
+  DetailedPopulationGroupResult,
+  ExecutionResult,
+} from "fqm-execution/build/types/Calculator";
 import { getFhirMeasurePopulationCode } from "../../util/PopulationsMap";
 import useOktaTokens from "../../hooks/useOktaTokens";
 
@@ -18,6 +22,9 @@ const ErrorAlert = tw.div`bg-red-100 text-red-700 rounded-lg m-1 p-3`;
 
 const TestCaseList = () => {
   const [testCases, setTestCases] = useState<TestCase[]>(null);
+  const [executionResults, setExecutionResults] = useState<{
+    [key: string]: ExecutionResult<DetailedPopulationGroupResult>;
+  }>({});
   const [error, setError] = useState("");
   const [measure, setMeasure] = useState<Measure>(null);
   const { measureId } = useParams<{ measureId: string }>();
@@ -68,17 +75,21 @@ const TestCaseList = () => {
         const measureBundle = await measureService.current.fetchMeasureBundle(
           measureId
         );
-        const executionResults: ExecutionResult<any>[] =
+        const executionResults: ExecutionResult<DetailedPopulationGroupResult>[] =
           await calculation.current.calculateTestCases(
             measure,
             testCases,
             measureBundle
           );
 
+        const nextExecutionResults = {};
         testCases.forEach((testCase) => {
-          const { populationResults } = executionResults.find(
+          const detailedResults = executionResults.find(
             (result) => result.patientId === testCase.id
-          )?.detailedResults?.[0]; // Since we have only 1 population group
+          )?.detailedResults;
+          nextExecutionResults[testCase.id] = detailedResults;
+
+          const { populationResults } = detailedResults?.[0]; // Since we have only 1 population group
 
           const populationValues =
             testCase?.groupPopulations?.[0]?.populationValues;
@@ -88,7 +99,7 @@ const TestCaseList = () => {
             let executionStatus = true;
             populationResults.forEach((populationResult) => {
               if (executionStatus) {
-                const groupPopulation = populationValues.find(
+                const groupPopulation: any = populationValues.find(
                   (populationValue) =>
                     getFhirMeasurePopulationCode(populationValue.name) ===
                     populationResult.populationType.toString()
@@ -105,6 +116,7 @@ const TestCaseList = () => {
           }
         });
         setTestCases([...testCases]);
+        setExecutionResults(nextExecutionResults);
       } catch (error) {
         setError(error.message);
       }
@@ -128,7 +140,11 @@ const TestCaseList = () => {
           {canEdit && (
             <Button
               buttonTitle="Execute Test Cases"
-              disabled={false}
+              disabled={
+                !!measure?.cqlErrors ||
+                _.isNil(measure?.groups) ||
+                measure?.groups.length === 0
+              }
               onClick={executeTestCases}
               data-testid="execute-test-cases-button"
             />
@@ -153,13 +169,16 @@ const TestCaseList = () => {
                 </tr>
               </thead>
               <tbody>
-                {testCases?.map((testCase) => (
-                  <TestCaseComponent
-                    testCase={testCase}
-                    key={testCase.id}
-                    canEdit={canEdit}
-                  />
-                ))}
+                {testCases?.map((testCase) => {
+                  return (
+                    <TestCaseComponent
+                      testCase={testCase}
+                      key={testCase.id}
+                      canEdit={canEdit}
+                      executionResult={executionResults[testCase.id]}
+                    />
+                  );
+                })}
               </tbody>
             </table>
           </div>

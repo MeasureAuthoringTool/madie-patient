@@ -2,14 +2,17 @@ import React from "react";
 import tw from "twin.macro";
 import "styled-components/macro";
 import TestCasePopulation from "./TestCasePopulation";
-import { PopulationValue } from "@madie/madie-models";
+import { DisplayPopulationValue } from "@madie/madie-models";
 const TH = tw.th`p-1 border-b text-right text-xs uppercase border`;
 
 export interface TestCasePopulationListProps {
-  populations: PopulationValue[];
+  populations: DisplayPopulationValue[];
   disableExpected?: boolean;
   disableActual?: boolean;
-  onChange?: (populations: PopulationValue[]) => void;
+  onChange?: (
+    populations: DisplayPopulationValue[],
+    type: "actual" | "expected"
+  ) => void;
   setChangedPopulation?: (string: string) => void;
 }
 
@@ -20,13 +23,19 @@ const TestCasePopulationList = ({
   onChange,
   setChangedPopulation,
 }: TestCasePopulationListProps) => {
-  const handleChange = (population: PopulationValue) => {
+  const handleChange = (population: DisplayPopulationValue) => {
     const newPopulations = [...populations];
     const newPop = newPopulations.find((pop) => pop.name === population.name);
+    const type =
+      newPop.actual !== population.actual
+        ? "actual"
+        : newPop.expected !== population.expected
+        ? "expected"
+        : null;
     newPop.actual = population.actual;
     newPop.expected = population.expected;
     if (onChange) {
-      onChange(newPopulations);
+      onChange(newPopulations, type);
     }
   };
 

@@ -1,12 +1,16 @@
 import React from "react";
 import tw, { styled } from "twin.macro";
 import "styled-components/macro";
-import { PopulationValue, getPopulationCode } from "@madie/madie-models";
+import { DisplayPopulationValue, getPopulationCode } from "@madie/madie-models";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 
 const TD = tw.td`p-1 text-xs text-gray-600`;
-const StyledIcon = styled(FontAwesomeIcon)(() => [tw`text-green-700`]);
+const StyledIcon = styled(FontAwesomeIcon)(
+  ({ errors }: { errors: boolean }) => [
+    errors ? tw`text-red-700` : tw`text-green-700`,
+  ]
+);
 
 const StyledInput = tw.input`
   rounded!
@@ -31,7 +35,9 @@ const StyledCheckbox = ({
       type="checkbox"
       checked={checked}
       onChange={(e) => {
-        setChangedPopulation(props.name);
+        if (setChangedPopulation) {
+          setChangedPopulation(props.name);
+        }
         onChange(!!e.target.checked);
       }}
       {...props}
@@ -40,12 +46,12 @@ const StyledCheckbox = ({
 };
 
 export interface TestCasePopulationProps {
-  population: PopulationValue;
+  population: DisplayPopulationValue;
   showExpected?: boolean;
   showActual?: boolean;
   disableExpected?: boolean;
   disableActual?: boolean;
-  onChange: (population: PopulationValue) => void;
+  onChange: (population: DisplayPopulationValue) => void;
   setChangedPopulation?: (string: string) => void;
 }
 
@@ -67,6 +73,7 @@ const TestCasePopulation = ({
           <StyledIcon
             icon={faCheckCircle}
             data-testid={`test-population-icon-${population.name}`}
+            errors={population.expected !== population.actual}
           />
         </TD>
         <TD>{getPopulationCode(population.name)}</TD>

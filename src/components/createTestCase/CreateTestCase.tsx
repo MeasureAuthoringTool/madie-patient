@@ -18,11 +18,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import "styled-components/macro";
 import {
-  TestCase,
-  GroupPopulation,
-  HapiOperationOutcome,
   Measure,
   Group,
+  TestCase,
+  GroupPopulation,
+  DisplayGroupPopulation,
+  HapiOperationOutcome,
 } from "@madie/madie-models";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import Editor from "../editor/Editor";
@@ -32,6 +33,7 @@ import TestCaseSeries from "./TestCaseSeries";
 import * as _ from "lodash";
 import { Ace } from "ace-builds";
 import {
+  FHIR_POPULATION_CODES,
   getPopulationsForScoring,
   triggerPopChanges,
 } from "../../util/PopulationsMap";
@@ -143,6 +145,8 @@ const CreateTestCase = () => {
   const [showValidationErrors, setShowValidationErrors] = useState(false);
   const [changedPopulation, setChangedPopulation] = useState<string>("");
   const [isChanged, setIsChanged] = useState<boolean>(false);
+  const [pendingGroupPopulations, setPendingGroupPopulations] =
+    useState<any>(null);
   const [populationGroupResult, setPopulationGroupResult] =
     useState<DetailedPopulationGroupResult>();
   const [calculationErrors, setCalculationErrors] = useState<string>();
@@ -456,21 +460,47 @@ const CreateTestCase = () => {
   }
 
   useEffect(() => {
-    if (changedPopulation !== "" && isChanged) {
+    if (changedPopulation !== "" && pendingGroupPopulations) {
       validatePopulationDependencies(
-        formik.values.groupPopulations,
+        pendingGroupPopulations as GroupPopulation[],
         changedPopulation
       );
     }
-  }, [changedPopulation, isChanged]);
+  }, [changedPopulation, pendingGroupPopulations]);
 
   const validatePopulationDependencies = (
     groupPopulations: GroupPopulation[],
     changedPopulation: String
   ) => {
-    triggerPopChanges(groupPopulations, changedPopulation);
-    formik.setFieldValue("groupPopulations", groupPopulations);
-    setIsChanged(false);
+    const output = triggerPopChanges(groupPopulations, changedPopulation);
+    formik.setFieldValue("groupPopulations", output as GroupPopulation[]);
+    setPendingGroupPopulations(null);
+  };
+
+  const mapGroups = (
+    groupPopulation: GroupPopulation,
+    results: DetailedPopulationGroupResult
+  ): DisplayGroupPopulation[] => {
+    if (_.isNil(groupPopulation)) {
+      return null;
+    }
+    return [
+      {
+        ...groupPopulation,
+        populationValues: groupPopulation?.populationValues?.map(
+          (populationValue) => {
+            return {
+              ...populationValue,
+              actual: !!results?.populationResults?.find(
+                (popResult) =>
+                  FHIR_POPULATION_CODES[popResult.populationType] ===
+                  populationValue.name
+              )?.result,
+            };
+          }
+        ),
+      },
+    ];
   };
 
   return (
@@ -562,9 +592,12 @@ const CreateTestCase = () => {
                 <GroupPopulations
                   disableActual={true}
                   disableExpected={!canEdit}
-                  groupPopulations={formik.values.groupPopulations}
-                  onChange={() => {
-                    setIsChanged(true);
+                  groupPopulations={mapGroups(
+                    formik.values.groupPopulations[0],
+                    populationGroupResult
+                  )}
+                  onChange={(groupPopulations) => {
+                    setPendingGroupPopulations(groupPopulations);
                   }}
                   setChangedPopulation={setChangedPopulation}
                 />
@@ -586,6 +619,12 @@ const CreateTestCase = () => {
                   type="button"
                   variant="secondary"
                   onClick={calculate}
+                  disabled={
+                    !!measure?.cqlErrors ||
+                    _.isNil(measure?.groups) ||
+                    measure?.groups.length === 0 ||
+                    validationErrors?.length > 0
+                  }
                   data-testid="run-test-case-button"
                 />
                 {canEdit && (

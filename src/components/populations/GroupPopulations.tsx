@@ -2,13 +2,13 @@ import React from "react";
 import "twin.macro";
 import "styled-components/macro";
 import TestCasePopulationList from "./TestCasePopulationList";
-import { GroupPopulation } from "@madie/madie-models";
+import { DisplayGroupPopulation, GroupPopulation } from "@madie/madie-models";
 import * as _ from "lodash";
 
 export interface PopulationsProps {
   disableExpected?: boolean;
   disableActual?: boolean;
-  groupPopulations: GroupPopulation[];
+  groupPopulations: DisplayGroupPopulation[];
   onChange?: (groupPopulations: GroupPopulation[]) => void;
   setChangedPopulation?: (string: string) => void;
 }
@@ -39,7 +39,9 @@ const GroupPopulations = ({
               if (groupPopulation) {
                 groupPopulation.populationValues = populations;
               }
-              onChange(nextPopulations);
+              if (onChange) {
+                onChange(nextPopulations);
+              }
             }}
             setChangedPopulation={setChangedPopulation}
           />
