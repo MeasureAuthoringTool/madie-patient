@@ -338,7 +338,7 @@ describe("CreateTestCase component", () => {
           ],
         },
       ],
-    } as TestCase;
+    } as unknown as TestCase;
     const testCaseDescription = "modified description";
     mockedAxios.get.mockClear().mockImplementation((args) => {
       if (args && args.startsWith(serviceConfig.measureService.baseUrl)) {
@@ -1148,7 +1148,7 @@ describe("CreateTestCase component", () => {
     expect(ippRow).toBeInTheDocument();
   });
 
-  it("should show message when no groups are present", async () => {
+  it("should show message and disable run button when no groups are present", async () => {
     const testCase = {
       id: "1234",
       description: "Test IPP",
@@ -1181,6 +1181,7 @@ describe("CreateTestCase component", () => {
       "No populations for current scoring. Please make sure at least one measure group has been created."
     );
     expect(errorMessage).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Run Test" })).toBeDisabled();
   });
 
   it("should render 404 page", async () => {
@@ -1295,8 +1296,10 @@ describe("Measure Calculation ", () => {
   it("executes a test case and shows the errors for invalid test case json", async () => {
     const testCase = {
       id: "1234",
+      title: "A Test Case",
       description: "Test IPP",
       series: "SeriesA",
+      createdBy: MEASURE_CREATEDBY,
       json: '{ "resourceType": "Bundle", "type": "collection", "entry": [] }',
       groupPopulations: null,
     } as TestCase;
@@ -1317,9 +1320,6 @@ describe("Measure Calculation ", () => {
         data: testCase,
       });
     });
-
-    // TODO
-
     renderWithRouter(
       [
         "/measures/623cacebe74613783378c17b/edit/test-cases/623cacffe74613783378c17c",
@@ -1327,21 +1327,38 @@ describe("Measure Calculation ", () => {
       "/measures/:measureId/edit/test-cases/:id",
       <CreateTestCase />
     );
-    userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
+    const updateButton = await screen.findByRole("button", {
+      name: "Update Test Case",
+    });
+    expect(updateButton).toBeInTheDocument();
+    const runButton = await screen.findByRole("button", { name: "Run Test" });
+    await waitFor(() => expect(runButton).toBeEnabled(), { timeout: 5000 });
+    userEvent.click(runButton);
     const debugOutput = await screen.findByText(
       "No entries found in passed patient bundles"
     );
     expect(debugOutput).toBeInTheDocument();
   });
 
-  it.skip("executes a test case successfully when test case resources are valid", async () => {
+  it("executes a test case successfully when test case resources are valid", async () => {
     mockedAxios.get.mockClear().mockImplementation((args) => {
-      if (args && args.startsWith(serviceConfig.measureService.baseUrl)) {
-        return Promise.resolve({ data: simpleMeasureFixture });
+      if (args && args.endsWith("/bundles")) {
+        return Promise.resolve({
+          data: buildMeasureBundle(simpleMeasureFixture),
+        });
+      } else if (
+        args &&
+        args.startsWith(serviceConfig.measureService.baseUrl)
+      ) {
+        return Promise.resolve({
+          data: { ...simpleMeasureFixture, createdBy: MEASURE_CREATEDBY },
+        });
       } else if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
       }
-      return Promise.resolve({ data: testCaseFixture });
+      return Promise.resolve({
+        data: { ...testCaseFixture, createdBy: MEASURE_CREATEDBY },
+      });
     });
 
     renderWithRouter(
@@ -1352,18 +1369,34 @@ describe("Measure Calculation ", () => {
       <CreateTestCase />
     );
 
+    expect(
+      await screen.findByRole("button", {
+        name: "Update Test Case",
+      })
+    ).toBeInTheDocument();
+
     await waitFor(async () => {
       userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
     });
-    expect(screen.findByText("Population Group: population-group-1"));
+    expect(
+      await screen.findByText("Population Group: population-group-1")
+    ).toBeInTheDocument();
+
+    expect(
+      await screen.findByTestId("test-population-initialPopulation-actual")
+    ).toBeChecked();
+    expect(
+      screen.getByTestId("test-population-numerator-actual")
+    ).not.toBeChecked();
   });
 
-  it("shows an error when trying to run the test case when Measure CQL errors exist", async () => {
+  it("disables button to run the test case when Measure CQL errors exist", async () => {
     // measure with cqlErrors flag
     const testCase = {
       id: "623cacffe74613783378c17c",
       description: "Test IPP",
       series: "SeriesA",
+      createdBy: MEASURE_CREATEDBY,
       json: '{ "resourceType": "Bundle", "type": "collection", "entry": [] }',
       groupPopulations: null,
     } as TestCase;
@@ -1387,12 +1420,14 @@ describe("Measure Calculation ", () => {
       "/measures/:measureId/edit/test-cases/:id",
       <CreateTestCase />
     );
-    userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
 
-    const debugOutput = await screen.findByText(
-      "Cannot execute test case while errors exist in the measure CQL!"
-    );
-    expect(debugOutput).toBeInTheDocument();
+    expect(
+      await screen.findByRole("button", {
+        name: "Update Test Case",
+      })
+    ).toBeInTheDocument();
+    const runButton = await screen.findByRole("button", { name: "Run Test" });
+    expect(runButton).toBeDisabled();
   });
 
   it("shows an error when fetch measure bundle fails", async () => {
@@ -1409,6 +1444,7 @@ describe("Measure Calculation ", () => {
       id: "623cacffe74613783378c17c",
       description: "Test IPP",
       series: "SeriesA",
+      createdBy: MEASURE_CREATEDBY,
       json: '{ "resourceType": "Bundle", "type": "collection", "entry": [] }',
       groupPopulations: null,
     } as TestCase;
@@ -1437,7 +1473,14 @@ describe("Measure Calculation ", () => {
       "/measures/:measureId/edit/test-cases/:id",
       <CreateTestCase />
     );
-    userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
+    expect(
+      await screen.findByRole("button", {
+        name: "Update Test Case",
+      })
+    ).toBeInTheDocument();
+    const runButton = await screen.findByRole("button", { name: "Run Test" });
+    await waitFor(() => expect(runButton).toBeEnabled(), { timeout: 5000 });
+    userEvent.click(runButton);
 
     const debugOutput = await screen.findByText(
       "An error occurred fetching the measure bundle"

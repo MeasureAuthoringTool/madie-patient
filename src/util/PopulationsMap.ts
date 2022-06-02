@@ -1,8 +1,8 @@
 import {
   MeasurePopulation,
   GroupPopulation,
-  PopulationValue,
   Group,
+  PopulationExpectedValue,
 } from "@madie/madie-models";
 
 const POPULATION_MAP = {
@@ -29,7 +29,7 @@ const POPULATION_MAP = {
   Cohort: [MeasurePopulation.INITIAL_POPULATION],
 };
 
-const FHIR_POPULATION_CODES = {
+export const FHIR_POPULATION_CODES = {
   "initial-population": MeasurePopulation.INITIAL_POPULATION,
   numerator: MeasurePopulation.NUMERATOR,
   "numerator-exclusion": MeasurePopulation.NUMERATOR_EXCLUSION,
@@ -71,9 +71,11 @@ export function triggerPopChanges(
   let myMap = {};
 
   //iterate through
-  groupPopulations[0].populationValues.forEach((value: PopulationValue) => {
-    myMap[value.name] = value;
-  });
+  groupPopulations[0].populationValues.forEach(
+    (value: PopulationExpectedValue) => {
+      myMap[value.name] = value;
+    }
+  );
 
   if (groupPopulations[0].scoring === "Proportion") {
     //denominator
