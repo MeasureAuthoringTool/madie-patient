@@ -11,45 +11,72 @@ import TableRow from "@mui/material/TableRow";
 import IconButton from "@mui/material/IconButton";
 import Collapse from "@mui/material/Collapse";
 import Box from "@mui/material/Box";
-import TestCasePopulationList from "../populations/TestCasePopulationList";
 import Chip from "@mui/material/Chip";
 import TruncateText from "./TruncateText";
-import { PopulationValue, MeasurePopulation } from "@madie/madie-models";
+import {
+  DisplayGroupPopulation,
+  GroupPopulation,
+  TestCase as TestCaseModel,
+} from "@madie/madie-models";
+import {
+  DetailedPopulationGroupResult,
+  ExecutionResult,
+} from "fqm-execution/build/types/Calculator";
+import * as _ from "lodash";
+import { FHIR_POPULATION_CODES } from "../../util/PopulationsMap";
+import GroupPopulations from "../populations/GroupPopulations";
 
 const EditButton = tw.button`text-blue-600 hover:text-blue-900`;
 const StyledCell = styled.td`
   white-space: pre;
 `;
 
-const testCasePopulations: PopulationValue[] = [
-  {
-    name: MeasurePopulation.INITIAL_POPULATION,
-    expected: true,
-    actual: true,
-  },
-  {
-    name: MeasurePopulation.DENOMINATOR,
-    expected: true,
-    actual: true,
-  },
-  {
-    name: MeasurePopulation.NUMERATOR_EXCLUSION,
-    expected: true,
-    actual: true,
-  },
-  {
-    name: MeasurePopulation.NUMERATOR,
-    expected: true,
-    actual: true,
-  },
-];
+const mapGroups = (
+  groupPopulation: GroupPopulation,
+  results: DetailedPopulationGroupResult
+): DisplayGroupPopulation[] => {
+  if (_.isNil(groupPopulation)) {
+    return null;
+  }
+  return [
+    {
+      ...groupPopulation,
+      populationValues: groupPopulation?.populationValues?.map(
+        (populationValue) => {
+          return {
+            ...populationValue,
+            actual: !!results?.populationResults?.find(
+              (popResult) =>
+                FHIR_POPULATION_CODES[popResult.populationType] ===
+                populationValue.name
+            )?.result,
+          };
+        }
+      ),
+    },
+  ];
+};
 
-const TestCase = (props) => {
+const TestCase = ({
+  testCase,
+  canEdit,
+  executionResult,
+}: {
+  testCase: TestCaseModel;
+  canEdit: boolean;
+  executionResult: ExecutionResult<DetailedPopulationGroupResult>;
+}) => {
   const navigate = useNavigate();
-  const { testCase, canEdit } = props;
   const [open, setOpen] = React.useState(false);
   const status = testCase.executionStatus;
   const statusColor = testCase.executionStatus === "pass" ? "success" : "error";
+
+  // only one group for now
+  const groupPopulations = mapGroups(
+    testCase?.groupPopulations?.[0],
+    executionResult?.[0]
+  );
+
   return (
     <React.Fragment key={`fragment-key-${testCase.id}`}>
       <tr
@@ -139,11 +166,7 @@ const TestCase = (props) => {
                 aria-label="population"
                 data-testid={`population-table-${testCase.id}`}
               >
-                <TestCasePopulationList
-                  populations={testCasePopulations}
-                  disableActual={!canEdit}
-                  disableExpected={!canEdit}
-                />
+                <GroupPopulations groupPopulations={groupPopulations} />
               </Table>
             </Box>
           </Collapse>
