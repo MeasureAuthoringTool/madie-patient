@@ -281,15 +281,17 @@ const CreateTestCase = () => {
   const createTestCase = async (testCase: TestCase) => {
     try {
       testCase.json = editorVal || null;
+      const checkEditorValJsonId = editorVal
+        ? JSON.parse(editorVal).hasOwnProperty("id")
+        : null;
       const savedTestCase = await testCaseService.current.createTestCase(
         testCase,
         measureId
       );
-
       setCreateButtonDisabled(true);
       setEditorVal(savedTestCase.json);
 
-      handleTestCaseResponse(savedTestCase, "create");
+      handleTestCaseResponse(savedTestCase, "create", checkEditorValJsonId);
     } catch (error) {
       setAlert(() => ({
         status: "error",
@@ -355,13 +357,22 @@ const CreateTestCase = () => {
 
   function handleTestCaseResponse(
     testCase: TestCase,
-    action: "create" | "update"
+    action: "create" | "update",
+    editorValJsonId?: boolean
   ) {
+    const editorValJsonIdMessage = editorValJsonId
+      ? "Bundle IDs are auto generated on save. MADiE has over written the ID provided"
+      : editorValJsonId !== null
+      ? "Bundle ID has been auto generated"
+      : "";
+
     if (testCase && testCase.id) {
       if (hasValidHapiOutcome(testCase)) {
         setAlert({
-          status: "success",
-          message: `Test case ${action}d successfully!`,
+          status: editorValJsonId ? "warning" : "success",
+          message: `Test case ${action}d successfully! ${
+            action === "create" ? editorValJsonIdMessage : ""
+          }`,
         });
       } else {
         setAlert({
