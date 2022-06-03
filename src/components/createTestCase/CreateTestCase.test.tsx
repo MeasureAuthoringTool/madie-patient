@@ -298,7 +298,7 @@ describe("CreateTestCase component", () => {
     expect(debugOutput).toBeInTheDocument();
   });
 
-  it("should give a warning message when Id is present in the JSON while creating a test case", async () => {
+  it("should give a warning message when Id is not present in the JSON while creating a test case", async () => {
     const { container } = renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
       "/measures/:measureId/edit/test-cases/create",
