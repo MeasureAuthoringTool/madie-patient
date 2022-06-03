@@ -2,7 +2,7 @@ import React from "react";
 import axios from "axios";
 import useServiceConfig from "./useServiceConfig";
 import { ServiceConfig } from "./ServiceContext";
-import { Measure, Group } from "@madie/madie-models";
+import { Measure } from "@madie/madie-models";
 import useOktaTokens from "../hooks/useOktaTokens";
 import { Bundle } from "fhir/r4";
 
@@ -26,27 +26,22 @@ export class MeasureServiceApi {
     }
   }
 
-  async fetchMeasures(filterByCurrentUser: boolean): Promise<Measure[]> {
-    try {
-      const response = await axios.get<Measure[]>(`${this.baseUrl}/measures`, {
-        headers: {
-          Authorization: `Bearer ${this.getAccessToken()}`,
-        },
-        params: {
-          currentUser: filterByCurrentUser,
-        },
-      });
-      return response.data;
-    } catch (err) {
-      const message = `Unable to fetch measures.`;
-      throw new Error(message);
+  async fetchMeasureBundle(measure: Measure): Promise<Bundle> {
+    if (measure.cqlErrors || !measure.elmJson) {
+      throw new Error(
+        "An error exists with the measure CQL, please review the CQL Editor tab."
+      );
     }
-  }
 
-  async fetchMeasureBundle(measureId: string): Promise<Bundle> {
+    if (!measure.groups) {
+      throw new Error(
+        "There are no groups associated with this measure. Please review the Groups tab."
+      );
+    }
+
     try {
       const response = await axios.get(
-        `${this.baseUrl}/measures/${measureId}/bundles`,
+        `${this.baseUrl}/measures/${measure.id}/bundles`,
         {
           headers: {
             Authorization: `Bearer ${this.getAccessToken()}`,
@@ -55,52 +50,10 @@ export class MeasureServiceApi {
       );
       return response.data;
     } catch (err) {
-      console.error("An error occurred fetching the measure bundle", err);
-      throw new Error("An error occurred while fetching the measure bundle");
-    }
-  }
-
-  async updateMeasure(measure: Measure): Promise<void> {
-    return await axios.put(`${this.baseUrl}/measures/${measure.id}`, measure, {
-      headers: {
-        Authorization: `Bearer ${this.getAccessToken()}`,
-      },
-    });
-  }
-
-  async createGroup(group: Group, measureId: string): Promise<Group> {
-    try {
-      const response = await axios.post<Group>(
-        `${this.baseUrl}/measures/${measureId}/groups/`,
-        group,
-        {
-          headers: {
-            Authorization: `Bearer ${this.getAccessToken()}`,
-          },
-        }
+      console.error("Bundle Error", err?.response);
+      throw new Error(
+        "An error occurred, please try again. If the error persists, please contact the help desk."
       );
-      return response.data;
-    } catch (err) {
-      const message = `Failed to create the group.`;
-      throw new Error(message);
-    }
-  }
-
-  async updateGroup(group: Group, measureId: string): Promise<Group> {
-    try {
-      const response = await axios.put<Group>(
-        `${this.baseUrl}/measures/${measureId}/groups/`,
-        group,
-        {
-          headers: {
-            Authorization: `Bearer ${this.getAccessToken()}`,
-          },
-        }
-      );
-      return response.data;
-    } catch (err) {
-      const message = `Failed to update the group.`;
-      throw new Error(message);
     }
   }
 }

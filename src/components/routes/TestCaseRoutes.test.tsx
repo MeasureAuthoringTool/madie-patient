@@ -210,6 +210,7 @@ describe("TestCaseRoutes", () => {
             measurementPeriodEnd: "2023-12-31",
             cqlErrors: false,
             elmJson: "fake",
+            groups: [],
           },
         });
       } else if (args && args.endsWith("test-cases")) {

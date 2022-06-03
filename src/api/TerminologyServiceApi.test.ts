@@ -53,7 +53,7 @@ describe("TerminologyServiceApi Tests", () => {
       await terminologyService.getValueSetsExpansion(officeVisitMeasureBundle);
     } catch (error) {
       expect(error.message).toEqual(
-        "Can not find the ValueSet: 2.16.840.1.113883.3.464.1003.101.12.10011"
+        "An error exists with the measure CQL, please review the CQL Editor tab."
       );
     }
   });

@@ -22,20 +22,14 @@ const TestCaseRoutes = () => {
   useEffect(() => {
     if (measure) {
       setErrors(null);
-      if (!measure.cqlErrors && measure.elmJson) {
-        measureService.current
-          .fetchMeasureBundle(measure?.id)
-          .then((bundle: Bundle) => {
-            setMeasureBundle(bundle);
-          })
-          .catch((err) => {
-            setErrors(err.message);
-          });
-      } else {
-        setErrors(
-          "Issues found with Measure CQL. Please correct them before executing the test case."
-        );
-      }
+      measureService.current
+        .fetchMeasureBundle(measure)
+        .then((bundle: Bundle) => {
+          setMeasureBundle(bundle);
+        })
+        .catch((err) => {
+          setErrors(err.message);
+        });
     }
   }, [measure]);
 
@@ -60,7 +54,11 @@ const TestCaseRoutes = () => {
         valueSetsState: [valueSets, setValueSets],
       }}
     >
-      {errors && <Alert severity="error">{errors}</Alert>}
+      {errors && (
+        <Alert data-testid="execution_context_loading_errors" severity="error">
+          {errors}
+        </Alert>
+      )}
       <Routes>
         <Route path="/measures/:measureId/edit/test-cases">
           <Route index element={<TestCaseLanding />} />

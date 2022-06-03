@@ -45,12 +45,16 @@ export class TerminologyServiceApi {
       );
       return response.data;
     } catch (error) {
-      console.error("Error while fetching value sets", error);
-      let message = "Error while fetching value sets.";
+      let message =
+        "An error occurred, please try again. If the error persists, please contact the help desk.";
       if (error.response && error.response.status === 404) {
         const data = error.response.data?.message;
-        const oid = this.getOidFromString(data);
-        message = `Can not find the ValueSet: ${oid}`;
+        console.error(
+          "ValueSet not found in vsac: ",
+          this.getOidFromString(data)
+        );
+        message =
+          "An error exists with the measure CQL, please review the CQL Editor tab.";
       }
       throw new Error(message);
     }
