@@ -28,6 +28,7 @@ import {
   getExampleValueSet,
 } from "../../util/CalculationTestHelpers";
 import { ExecutionContextProvider } from "../routes/ExecutionContext";
+import { ChangeEvent } from "react";
 
 //temporary solution (after jest updated to version 27) for error: thrown: "Exceeded timeout of 5000 ms for a test.
 jest.setTimeout(60000);
@@ -37,7 +38,7 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 // mock editor to reduce errors and warnings
 const mockEditor = { resize: jest.fn() };
-jest.mock("../editor/Editor", () => ({ setEditor }) => {
+jest.mock("../editor/Editor", () => ({ setEditor, value, onChange }) => {
   const React = require("react");
   React.useEffect(() => {
     if (setEditor) {
@@ -45,7 +46,16 @@ jest.mock("../editor/Editor", () => ({ setEditor }) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  return <div data-testid="test-case-editor">editor contents</div>;
+
+  return (
+    <input
+      data-testid="test-case-editor"
+      value={value}
+      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+        onChange(e.target.value);
+      }}
+    />
+  );
 });
 
 const serviceConfig: ServiceConfig = {
@@ -185,6 +195,233 @@ describe("CreateTestCase component", () => {
 
     const debugOutput = await screen.findByText(
       "Test case created successfully!"
+    );
+    expect(debugOutput).toBeInTheDocument();
+  });
+
+  it("should give a warning message when Id is present in the JSON while creating a test case", async () => {
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/create"],
+      "/measures/:measureId/edit/test-cases/create"
+    );
+
+    const testCaseDescription = "TestCase123";
+    const testCaseTitle = "TestTitle";
+    const testCaseJson = JSON.stringify({
+      resourceType: "Bundle",
+      id: "43",
+      meta: {
+        versionId: "1",
+        lastUpdated: "2022-06-03T12:33:15.459+00:00",
+      },
+      type: "collection",
+      entry: [
+        {
+          fullUrl: "http://local/Encounter",
+          resource: {
+            resourceType: "Encounter",
+            meta: {
+              versionId: "1",
+              lastUpdated: "2021-10-13T03:34:10.160+00:00",
+              source: "#nEcAkGd8PRwPP5fA",
+            },
+            text: {
+              status: "generated",
+              div: '<div xmlns="http://www.w3.org/1999/xhtml">Sep 9th 2021 for Asthma<a name="mm"/></div>',
+            },
+            status: "finished",
+            class: {
+              system: "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+              code: "IMP",
+              display: "inpatient encounter",
+            },
+            type: [
+              {
+                text: "OutPatient",
+              },
+            ],
+            subject: {
+              reference: "Patient/1",
+            },
+            participant: [
+              {
+                individual: {
+                  reference: "Practitioner/30164",
+                  display: "Dr John Doe",
+                },
+              },
+            ],
+            period: {
+              start: "2023-09-10T03:34:10.054Z",
+            },
+          },
+        },
+        {
+          fullUrl: "http://local/Patient",
+          resource: {
+            resourceType: "Patient",
+            text: {
+              status: "generated",
+              div: '<div xmlns="http://www.w3.org/1999/xhtml">Lizzy Health</div>',
+            },
+            identifier: [
+              {
+                system: "http://clinfhir.com/fhir/NamingSystem/identifier",
+                value: "20181011LizzyHealth",
+              },
+            ],
+            name: [
+              {
+                use: "official",
+                text: "Lizzy Health",
+                family: "Health",
+                given: ["Lizzy"],
+              },
+            ],
+            gender: "female",
+            birthDate: "2000-10-11",
+          },
+        },
+      ],
+    });
+
+    mockedAxios.post.mockResolvedValue({
+      data: {
+        id: "testID",
+        createdBy: MEASURE_CREATEDBY,
+        description: testCaseDescription,
+        title: testCaseTitle,
+        json: testCaseJson,
+        hapiOperationOutcome: {
+          code: 200,
+        },
+      },
+    });
+
+    const editor = screen.getByTestId("test-case-editor");
+    userEvent.paste(editor, testCaseJson);
+    expect(editor).toHaveValue(testCaseJson);
+
+    const createBtn = await screen.findByRole("button", {
+      name: "Create Test Case",
+    });
+    userEvent.click(createBtn);
+
+    const debugOutput = await screen.findByText(
+      "Test case created successfully! Bundle IDs are auto generated on save. MADiE has over written the ID provided"
+    );
+    expect(debugOutput).toBeInTheDocument();
+  });
+
+  it("should give a warning message when Id is not present in the JSON while creating a test case", async () => {
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/create"],
+      "/measures/:measureId/edit/test-cases/create"
+    );
+
+    const testCaseDescription = "TestCase123";
+    const testCaseTitle = "TestTitle";
+    const testCaseJson = JSON.stringify({
+      resourceType: "Bundle",
+      meta: {
+        versionId: "1",
+        lastUpdated: "2022-06-03T12:33:15.459+00:00",
+      },
+      type: "collection",
+      entry: [
+        {
+          fullUrl: "http://local/Encounter",
+          resource: {
+            resourceType: "Encounter",
+            meta: {
+              versionId: "1",
+              lastUpdated: "2021-10-13T03:34:10.160+00:00",
+              source: "#nEcAkGd8PRwPP5fA",
+            },
+            text: {
+              status: "generated",
+              div: '<div xmlns="http://www.w3.org/1999/xhtml">Sep 9th 2021 for Asthma<a name="mm"/></div>',
+            },
+            status: "finished",
+            class: {
+              system: "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+              code: "IMP",
+              display: "inpatient encounter",
+            },
+            type: [
+              {
+                text: "OutPatient",
+              },
+            ],
+            subject: {
+              reference: "Patient/1",
+            },
+            participant: [
+              {
+                individual: {
+                  reference: "Practitioner/30164",
+                  display: "Dr John Doe",
+                },
+              },
+            ],
+            period: {
+              start: "2023-09-10T03:34:10.054Z",
+            },
+          },
+        },
+        {
+          fullUrl: "http://local/Patient",
+          resource: {
+            resourceType: "Patient",
+            text: {
+              status: "generated",
+              div: '<div xmlns="http://www.w3.org/1999/xhtml">Lizzy Health</div>',
+            },
+            identifier: [
+              {
+                system: "http://clinfhir.com/fhir/NamingSystem/identifier",
+                value: "20181011LizzyHealth",
+              },
+            ],
+            name: [
+              {
+                use: "official",
+                text: "Lizzy Health",
+                family: "Health",
+                given: ["Lizzy"],
+              },
+            ],
+            gender: "female",
+            birthDate: "2000-10-11",
+          },
+        },
+      ],
+    });
+
+    mockedAxios.post.mockResolvedValue({
+      data: {
+        id: "testID",
+        createdBy: MEASURE_CREATEDBY,
+        description: testCaseDescription,
+        title: testCaseTitle,
+        json: testCaseJson,
+        hapiOperationOutcome: {
+          code: 200,
+        },
+      },
+    });
+
+    const editor = screen.getByTestId("test-case-editor");
+    userEvent.paste(editor, testCaseJson);
+    expect(editor).toHaveValue(testCaseJson);
+
+    const createBtn = await screen.findByRole("button", {
+      name: "Create Test Case",
+    });
+    userEvent.click(createBtn);
+
+    const debugOutput = await screen.findByText(
+      "Test case created successfully! Bundle ID has been auto generated"
     );
     expect(debugOutput).toBeInTheDocument();
   });
