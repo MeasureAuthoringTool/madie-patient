@@ -8,7 +8,7 @@ import {
   within,
 } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import CreateTestCase from "./CreateTestCase";
+import CreateTestCase, { isEmptyTestCaseJsonString } from "./CreateTestCase";
 import userEvent from "@testing-library/user-event";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
@@ -1424,6 +1424,46 @@ describe("CreateTestCase component", () => {
     expect(screen.getByRole("button", { name: "Run Test" })).toBeDisabled();
   });
 
+  it("should disable run button when json string is empty", async () => {
+    const testCase = {
+      id: "1234",
+      title: "A Test Case",
+      description: "Test IPP",
+      series: "SeriesA",
+      createdBy: MEASURE_CREATEDBY,
+      json: "{}",
+      groupPopulations: null,
+    } as TestCase;
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.startsWith(serviceConfig.measureService.baseUrl)) {
+        return Promise.resolve({ data: simpleMeasureFixture });
+      } else if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
+      }
+      return Promise.resolve({ data: testCase });
+    });
+
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/1234"],
+      "/measures/:measureId/edit/test-cases/:id",
+      <CreateTestCase />
+    );
+
+    expect(
+      await screen.findByRole("button", {
+        name: "Update Test Case",
+      })
+    ).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", {
+          name: "Run Test",
+        })
+      ).toBeDisabled();
+    });
+  });
+
   it("should render 404 page", async () => {
     mockedAxios.get.mockClear().mockImplementation((args) => {
       return Promise.reject(
@@ -1726,5 +1766,31 @@ describe("Measure Calculation ", () => {
       "An error occurred fetching the measure bundle"
     );
     expect(debugOutput).toBeInTheDocument();
+  });
+});
+
+describe("isEmptyTestCaseJsonString", () => {
+  it("should return true for null input", () => {
+    expect(isEmptyTestCaseJsonString(null)).toBeTruthy();
+  });
+
+  it("should return true for undefined input", () => {
+    expect(isEmptyTestCaseJsonString(undefined)).toBeTruthy();
+  });
+
+  it("should return true for empty string input", () => {
+    expect(isEmptyTestCaseJsonString("")).toBeTruthy();
+  });
+
+  it("should return true for whitespace string input", () => {
+    expect(isEmptyTestCaseJsonString("  ")).toBeTruthy();
+  });
+
+  it("should return true for empty json object string", () => {
+    expect(isEmptyTestCaseJsonString("{}")).toBeTruthy();
+  });
+
+  it("should return false for json object string with a field", () => {
+    expect(isEmptyTestCaseJsonString(`{"field1":"value"}`)).toBeFalsy();
   });
 });
