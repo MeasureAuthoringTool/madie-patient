@@ -1,6 +1,6 @@
 import { MeasureScoring, MeasurePopulation } from "@madie/madie-models";
 
-export const TestCaseOfficeVisit = {
+export const testCaseOfficeVisit = {
   id: "623cFfaK34613783378c17c",
   executionStatus: null,
   name: null,

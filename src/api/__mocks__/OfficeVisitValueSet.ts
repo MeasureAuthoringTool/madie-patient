@@ -1,4 +1,4 @@
-export const officeVisitValueSet = {
+export const officeVisitValueSet: fhir4.ValueSet = {
   resourceType: "ValueSet",
   id: "2.16.840.1.113883.3.464.1003.101.12.1001",
   url: "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1001",

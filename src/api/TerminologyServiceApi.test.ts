@@ -11,13 +11,13 @@ describe("TerminologyServiceApi Tests", () => {
     const getAccessToken = jest.fn();
     terminologyService = new TerminologyServiceApi("test.url", getAccessToken);
   });
-  it("Get ExampleValueSet when no bundle provided", () => {
+  it("gives no ValueSets when no bundle provided", () => {
     terminologyService.getValueSetsExpansion(null).then((data) => {
       expect(data).toBeNull();
     });
   });
 
-  it("Get Expanded ValueSets when measure bundle contains ValueSets", () => {
+  it("gives expanded ValueSets for ValueSets in measure bundle", () => {
     axios.put = jest
       .fn()
       .mockResolvedValueOnce({ data: [officeVisitValueSet] });
@@ -33,7 +33,7 @@ describe("TerminologyServiceApi Tests", () => {
       });
   });
 
-  it("Get Expanded ValueSets when ValueSet not found in VSAC", async () => {
+  it("throws an error if ValueSets not found in VSAC", async () => {
     const response = {
       timestamp: "2022-06-02T21:36:46.592+00:00",
       status: 404,
