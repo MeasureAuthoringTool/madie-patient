@@ -1790,6 +1790,10 @@ describe("isEmptyTestCaseJsonString", () => {
     expect(isEmptyTestCaseJsonString("{}")).toBeTruthy();
   });
 
+  it("should return true for invalid json string", () => {
+    expect(isEmptyTestCaseJsonString("NOT_JSON")).toBeTruthy();
+  });
+
   it("should return false for json object string with a field", () => {
     expect(isEmptyTestCaseJsonString(`{"field1":"value"}`)).toBeFalsy();
   });
