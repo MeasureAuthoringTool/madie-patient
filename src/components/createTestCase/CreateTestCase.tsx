@@ -281,9 +281,7 @@ const CreateTestCase = () => {
   const createTestCase = async (testCase: TestCase) => {
     try {
       testCase.json = editorVal || null;
-      const checkEditorValJsonId = editorVal
-        ? JSON.parse(editorVal).hasOwnProperty("id")
-        : null;
+      const checkEditorValJsonId = checkEditorValJsonIdOne(editorVal);
       const savedTestCase = await testCaseService.current.createTestCase(
         testCase,
         measureId
@@ -305,20 +303,15 @@ const CreateTestCase = () => {
       if (editorVal !== testCase.json) {
         testCase.json = editorVal;
       }
-      const checkEditorValJsonId = editorVal
-        ? JSON.parse(editorVal).hasOwnProperty("id")
-        : null;
-
-      //console.log(JSON.parse(editorVal).id);
       const updatedTestCase = await testCaseService.current.updateTestCase(
         testCase,
         measureId
       );
-
-      const checkPreviousIdValue =
-        JSON.parse(updatedTestCase.json).id !== JSON.parse(editorVal).id
-          ? false
-          : true;
+      const checkEditorValJsonId = checkEditorValJsonIdOne(editorVal);
+      const checkPreviousIdValue = checkPreviousIdValueOne(
+        updatedTestCase.json,
+        editorVal
+      );
 
       resetForm({
         values: { ...testCase },
@@ -337,6 +330,24 @@ const CreateTestCase = () => {
         status: "error",
         message: "An error occurred while updating the test case.",
       }));
+    }
+  };
+
+  const checkEditorValJsonIdOne = (editorVal) => {
+    try {
+      return editorVal ? JSON.parse(editorVal).hasOwnProperty("id") : null;
+    } catch (e) {
+      return false;
+    }
+  };
+
+  const checkPreviousIdValueOne = (updatedTestCase, editorVal) => {
+    try {
+      JSON.parse(updatedTestCase?.json)?.id !== JSON.parse(editorVal)?.id
+        ? false
+        : true;
+    } catch (e) {
+      return null;
     }
   };
 
