@@ -599,7 +599,7 @@ describe("CreateTestCase component", () => {
     userEvent.click(screen.getByRole("button", { name: "Update Test Case" }));
 
     const debugOutput = await screen.findByText(
-      "Test case updated successfully! Bundle ID has been auto generated"
+      "Test case updated successfully!"
     );
     expect(debugOutput).toBeInTheDocument();
 

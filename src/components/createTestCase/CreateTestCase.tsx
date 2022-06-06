@@ -281,7 +281,7 @@ const CreateTestCase = () => {
   const createTestCase = async (testCase: TestCase) => {
     try {
       testCase.json = editorVal || null;
-      const checkEditorValJsonId = checkEditorValJsonIdOne(editorVal);
+      const checkEditorValJsonId = checkEditorValContainsJsonId(editorVal);
       const savedTestCase = await testCaseService.current.createTestCase(
         testCase,
         measureId
@@ -307,9 +307,10 @@ const CreateTestCase = () => {
         testCase,
         measureId
       );
-      const checkEditorValJsonId = checkEditorValJsonIdOne(editorVal);
-      const checkPreviousIdValue = checkPreviousIdValueOne(
-        updatedTestCase.json,
+
+      const checkEditorValJsonId = checkEditorValContainsJsonId(editorVal);
+      const checkPreviousIdValue = checkPreviousIdVal(
+        updatedTestCase,
         editorVal
       );
 
@@ -333,19 +334,19 @@ const CreateTestCase = () => {
     }
   };
 
-  const checkEditorValJsonIdOne = (editorVal) => {
+  const checkEditorValContainsJsonId = (editorVal) => {
     try {
       return editorVal ? JSON.parse(editorVal).hasOwnProperty("id") : null;
     } catch (e) {
-      return false;
+      return null;
     }
   };
 
-  const checkPreviousIdValueOne = (updatedTestCase, editorVal) => {
+  const checkPreviousIdVal = (updatedTestCase, editorVal) => {
     try {
-      JSON.parse(updatedTestCase?.json)?.id !== JSON.parse(editorVal)?.id
-        ? false
-        : true;
+      return JSON.parse(updatedTestCase?.json)?.id === JSON.parse(editorVal)?.id
+        ? true
+        : false;
     } catch (e) {
       return null;
     }
@@ -400,7 +401,7 @@ const CreateTestCase = () => {
             ? "warning"
             : "success",
           message: `Test case ${action}d successfully! ${
-            !checkPreviousIdValue ? editorValJsonIdMessage : ""
+            checkPreviousIdValue ? "" : editorValJsonIdMessage
           }`,
         });
       } else {
