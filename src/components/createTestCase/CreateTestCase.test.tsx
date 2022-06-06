@@ -1405,8 +1405,7 @@ describe("CreateTestCase component", () => {
 
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/1234"],
-      "/measures/:measureId/edit/test-cases/:id",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/:id"
     );
 
     expect(
