@@ -1,6 +1,6 @@
 import * as React from "react";
 import Editor from "./Editor";
-import TestCase from "../../models/TestCase";
+import { TestCase } from "@madie/madie-models";
 import { configure, mount } from "enzyme";
 import * as Adapter from "@wojtekmaj/enzyme-adapter-react-17";
 import "jest-enzyme";
