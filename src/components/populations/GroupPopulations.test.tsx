@@ -1,7 +1,8 @@
-import React from "react";
+import * as React from "react";
 import { render, screen, within } from "@testing-library/react";
 import GroupPopulations from "./GroupPopulations";
-import GroupPopulation, {
+import {
+  GroupPopulation,
   MeasurePopulation,
   MeasureScoring,
 } from "@madie/madie-models";

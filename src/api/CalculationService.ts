@@ -3,9 +3,8 @@ import {
   CalculationOutput,
   ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
-import { TestCase, Measure, PopulationType } from "@madie/madie-models";
-import { FHIRHelpers } from "../util/FHIRHelpers";
-import { getFhirMeasurePopulationCode } from "../util/PopulationsMap";
+import { TestCase, Measure } from "@madie/madie-models";
+import { ValueSet, Bundle } from "fhir/r4";
 
 // TODO consider converting into a context.
 // OR a re-usable hook.
@@ -13,7 +12,8 @@ export class CalculationService {
   async calculateTestCases(
     measure: Measure,
     testCases: TestCase[],
-    measureBundle: fhir4.Bundle
+    measureBundle: Bundle,
+    valueSets: ValueSet[]
   ): Promise<ExecutionResult<any>[]> {
     const TestCaseBundles = testCases.map((testCase) => {
       return this.buildPatientBundle(testCase);
@@ -22,6 +22,7 @@ export class CalculationService {
     const calculationOutput: CalculationOutput<any> = await this.calculate(
       measureBundle,
       TestCaseBundles,
+      valueSets,
       measure.measurementPeriodStart,
       measure.measurementPeriodEnd
     );
@@ -30,8 +31,8 @@ export class CalculationService {
 
   // fqm Execution requires each patient to be with unique ID.
   // So assigning the testCase ID as patient ID to retrieve calculate multiple testcases
-  buildPatientBundle(testCase: TestCase): fhir4.Bundle {
-    const testCaseBundle: fhir4.Bundle = JSON.parse(testCase.json);
+  buildPatientBundle(testCase: TestCase): Bundle {
+    const testCaseBundle: Bundle = JSON.parse(testCase.json);
     testCaseBundle.entry
       .filter((entry) => {
         return entry.resource.resourceType === "Patient";
@@ -45,15 +46,21 @@ export class CalculationService {
   async calculate(
     measureBundle,
     patientBundles,
+    valueSets,
     measurementPeriodStart,
     measurementPeriodEnd
   ): Promise<CalculationOutput<any>> {
     try {
-      return await Calculator.calculate(measureBundle, patientBundles, {
-        includeClauseResults: false,
-        measurementPeriodStart: measurementPeriodStart,
-        measurementPeriodEnd: measurementPeriodEnd,
-      });
+      return await Calculator.calculate(
+        measureBundle,
+        patientBundles,
+        {
+          includeClauseResults: false,
+          measurementPeriodStart: measurementPeriodStart,
+          measurementPeriodEnd: measurementPeriodEnd,
+        },
+        valueSets
+      );
     } catch (err) {
       console.error("An error occurred in FQM-Execution", err);
       throw err;

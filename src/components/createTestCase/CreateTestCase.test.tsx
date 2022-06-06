@@ -1,7 +1,6 @@
 import * as React from "react";
 import {
   fireEvent,
-  logRoles,
   render,
   screen,
   waitFor,
@@ -13,9 +12,10 @@ import userEvent from "@testing-library/user-event";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
 import {
-  TestCase,
-  MeasureScoring,
+  Measure,
   MeasurePopulation,
+  MeasureScoring,
+  TestCase,
 } from "@madie/madie-models";
 import TestCaseRoutes from "../routes/TestCaseRoutes";
 import { act } from "react-dom/test-utils";
@@ -23,7 +23,11 @@ import calculationService from "../../api/CalculationService";
 import { simpleMeasureFixture } from "./__mocks__/simpleMeasureFixture";
 import { testCaseFixture } from "./__mocks__/testCaseFixture";
 import { ExecutionResult } from "fqm-execution/build/types/Calculator";
-import { buildMeasureBundle } from "../../util/CalculationTestHelpers";
+import {
+  buildMeasureBundle,
+  getExampleValueSet,
+} from "../../util/CalculationTestHelpers";
+import { ExecutionContextProvider } from "../routes/ExecutionContext";
 import { ChangeEvent } from "react";
 
 //temporary solution (after jest updated to version 27) for error: thrown: "Exceeded timeout of 5000 ms for a test.
@@ -61,6 +65,9 @@ const serviceConfig: ServiceConfig = {
   testCaseService: {
     baseUrl: "base.url",
   },
+  terminologyService: {
+    baseUrl: "something.com",
+  },
 };
 
 const MEASURE_CREATEDBY = "testuser";
@@ -71,17 +78,45 @@ jest.mock("../../hooks/useOktaTokens", () =>
   }))
 );
 
+const defaultMeasure = {
+  id: "m1234",
+  measureScoring: MeasureScoring.COHORT,
+  createdBy: MEASURE_CREATEDBY,
+  groups: [
+    {
+      groupId: "Group1_ID",
+      scoring: "Cohort",
+      population: {
+        initialPopulation: "Pop1",
+      },
+    },
+  ],
+} as unknown as Measure;
+const measureBundle = buildMeasureBundle(simpleMeasureFixture);
+const valueSets = [getExampleValueSet()];
+const setMeasure = jest.fn();
+const setMeasureBundle = jest.fn();
+const setValueSets = jest.fn();
+
 const renderWithRouter = (
   initialEntries = [],
   routePath: string,
-  element: React.ReactElement
+  measure: Measure = defaultMeasure
 ) => {
   return render(
     <MemoryRouter initialEntries={initialEntries}>
       <ApiContextProvider value={serviceConfig}>
-        <Routes>
-          <Route path={routePath} element={element} />
-        </Routes>
+        <ExecutionContextProvider
+          value={{
+            measureState: [measure, setMeasure],
+            bundleState: [measureBundle, setMeasureBundle],
+            valueSetsState: [valueSets, setValueSets],
+          }}
+        >
+          <Routes>
+            <Route path={routePath} element={<CreateTestCase />} />
+          </Routes>
+        </ExecutionContextProvider>
       </ApiContextProvider>
     </MemoryRouter>
   );
@@ -90,24 +125,7 @@ const renderWithRouter = (
 describe("CreateTestCase component", () => {
   beforeEach(() => {
     mockedAxios.get.mockImplementation((args) => {
-      if (args && args.startsWith(serviceConfig.measureService.baseUrl)) {
-        return Promise.resolve({
-          data: {
-            id: "m1234",
-            measureScoring: MeasureScoring.COHORT,
-            createdBy: MEASURE_CREATEDBY,
-            groups: [
-              {
-                groupId: "Group1_ID",
-                scoring: "Cohort",
-                population: {
-                  initialPopulation: "Pop1",
-                },
-              },
-            ],
-          },
-        });
-      } else if (args && args.endsWith("series")) {
+      if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["SeriesA"] });
       }
       return Promise.resolve({ data: null });
@@ -120,8 +138,7 @@ describe("CreateTestCase component", () => {
   it("should render create test case page", async () => {
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/create"
     );
     const editor = screen.getByTestId("test-case-editor");
 
@@ -147,8 +164,7 @@ describe("CreateTestCase component", () => {
   it("should create test case when create button is clicked", async () => {
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/create"
     );
     const testCaseDescription = "TestCase123";
     const testCaseTitle = "TestTitle";
@@ -184,10 +200,9 @@ describe("CreateTestCase component", () => {
   });
 
   it("should give a warning message when Id is present in the JSON while creating a test case", async () => {
-    const { container } = renderWithRouter(
+    renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/create"
     );
 
     const testCaseDescription = "TestCase123";
@@ -299,10 +314,9 @@ describe("CreateTestCase component", () => {
   });
 
   it("should give a warning message when Id is not present in the JSON while creating a test case", async () => {
-    const { container } = renderWithRouter(
+    renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/create"
     );
 
     const testCaseDescription = "TestCase123";
@@ -415,8 +429,7 @@ describe("CreateTestCase component", () => {
   it("should provide user alert when create test case fails", async () => {
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/create"
     );
     const testCaseDescription = "TestCase123";
     mockedAxios.post.mockRejectedValue({
@@ -448,8 +461,7 @@ describe("CreateTestCase component", () => {
   it("should provide user alert for a success result but response is missing ID attribute", async () => {
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/create"
     );
     const testCaseDescription = "TestCase123";
     mockedAxios.post.mockResolvedValue({
@@ -482,8 +494,7 @@ describe("CreateTestCase component", () => {
   it("should clear error alert when user clicks alert close button", async () => {
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/create"
     );
     const testCaseDescription = "TestCase123";
     mockedAxios.post.mockRejectedValue({
@@ -533,8 +544,7 @@ describe("CreateTestCase component", () => {
 
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/1234"],
-      "/measures/:measureId/edit/test-cases/:id",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/:id"
     );
 
     await waitFor(
@@ -581,33 +591,30 @@ describe("CreateTestCase component", () => {
     } as unknown as TestCase;
     const testCaseDescription = "modified description";
     mockedAxios.get.mockClear().mockImplementation((args) => {
-      if (args && args.startsWith(serviceConfig.measureService.baseUrl)) {
-        return Promise.resolve({
-          data: {
-            id: "m1234",
-            createdBy: MEASURE_CREATEDBY,
-            measureScoring: MeasureScoring.CONTINUOUS_VARIABLE,
-            groups: [
-              {
-                id: "Group1_ID",
-                scoring: "Cohort",
-                population: {
-                  initialPopulation: "Pop1",
-                },
-              },
-            ],
-          },
-        });
-      } else if (args && args.endsWith("series")) {
+      if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
       }
       return Promise.resolve({ data: testCase });
     });
+    const measure = {
+      id: "m1234",
+      createdBy: MEASURE_CREATEDBY,
+      measureScoring: MeasureScoring.CONTINUOUS_VARIABLE,
+      groups: [
+        {
+          id: "Group1_ID",
+          scoring: "Cohort",
+          population: {
+            initialPopulation: "Pop1",
+          },
+        },
+      ],
+    } as Measure;
 
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/1234"],
       "/measures/:measureId/edit/test-cases/:id",
-      <CreateTestCase />
+      measure
     );
 
     const g1PopulationValues = await screen.findByText(
@@ -711,8 +718,7 @@ describe("CreateTestCase component", () => {
 
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/1234"],
-      "/measures/:measureId/edit/test-cases/:id",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/:id"
     );
 
     const axiosError: AxiosError = {
@@ -763,8 +769,7 @@ describe("CreateTestCase component", () => {
 
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/1234"],
-      "/measures/:measureId/edit/test-cases/:id",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/:id"
     );
 
     mockedAxios.put.mockResolvedValue({
@@ -813,8 +818,7 @@ describe("CreateTestCase component", () => {
 
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/1234"],
-      "/measures/:measureId/edit/test-cases/:id",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/:id"
     );
 
     await waitFor(() => {
@@ -837,8 +841,7 @@ describe("CreateTestCase component", () => {
   it("should generate field level error for test case description more than 250 characters", async () => {
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/create"
     );
 
     const g1PopulationValues = await screen.findByText(
@@ -865,8 +868,7 @@ describe("CreateTestCase component", () => {
   it("should allow special characters for test case description", async () => {
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/create"
     );
 
     const testCaseDescription =
@@ -923,8 +925,7 @@ describe("CreateTestCase component", () => {
 
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/create"
     );
 
     const debugOutput = await screen.findByText(
@@ -958,8 +959,7 @@ describe("CreateTestCase component", () => {
 
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/create"
     );
 
     const debugOutput = await screen.findByText(
@@ -971,8 +971,7 @@ describe("CreateTestCase component", () => {
   it("should generate field level error for test case title more than 250 characters", async () => {
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/create"
     );
 
     const g1PopulationValues = await screen.findByText(
@@ -998,8 +997,7 @@ describe("CreateTestCase component", () => {
   it("should allow special characters for test case title", async () => {
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/create"
     );
 
     const testCaseDescription = "Test Description";
@@ -1037,8 +1035,7 @@ describe("CreateTestCase component", () => {
   it("should allow special characters for test case series", async () => {
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/create"
     );
 
     const testCaseDescription = "Test Description";
@@ -1077,8 +1074,7 @@ describe("CreateTestCase component", () => {
     jest.useFakeTimers("modern");
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/create"
     );
 
     const testCaseDescription = "Test Description";
@@ -1166,8 +1162,7 @@ describe("CreateTestCase component", () => {
 
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/1234"],
-      "/measures/:measureId/edit/test-cases/:id",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/:id"
     );
 
     mockedAxios.put.mockResolvedValue({
@@ -1250,8 +1245,7 @@ describe("CreateTestCase component", () => {
 
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/1234"],
-      "/measures/:measureId/edit/test-cases/:id",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/:id"
     );
 
     const data = {
@@ -1320,31 +1314,6 @@ describe("CreateTestCase component", () => {
     expect(mockEditor.resize).toHaveBeenCalledTimes(2);
   });
 
-  it("should display an error when measure groups and measure info cannot be loaded", async () => {
-    mockedAxios.get.mockClear().mockImplementation((args) => {
-      if (args && args.endsWith("series")) {
-        return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
-      }
-      return Promise.reject({
-        data: {
-          error: "Error with loading measure data",
-        },
-      });
-    });
-
-    renderWithRouter(
-      ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
-    );
-
-    const alert = await screen.findByRole("alert");
-    expect(alert).toBeInTheDocument();
-    expect(alert).toHaveTextContent(
-      "Failed to load measure groups. An error occurred while loading the measure."
-    );
-  });
-
   it("should handle displaying a test case with null groupPopulation data", async () => {
     const testCase = {
       id: "1234",
@@ -1378,8 +1347,7 @@ describe("CreateTestCase component", () => {
 
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/1234"],
-      "/measures/:measureId/edit/test-cases/:id",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/:id"
     );
 
     const ippRow = await screen.findByTestId(
@@ -1397,24 +1365,16 @@ describe("CreateTestCase component", () => {
       groupPopulations: null,
     } as TestCase;
     mockedAxios.get.mockClear().mockImplementation((args) => {
-      if (args && args.startsWith(serviceConfig.measureService.baseUrl)) {
-        return Promise.resolve({
-          data: {
-            id: "m1234",
-            measureScoring: MeasureScoring.CONTINUOUS_VARIABLE,
-            groups: null,
-          },
-        });
-      } else if (args && args.endsWith("series")) {
+      if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
       }
       return Promise.resolve({ data: testCase });
     });
-
+    const measure = { ...defaultMeasure, groups: null };
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/1234"],
       "/measures/:measureId/edit/test-cases/:id",
-      <CreateTestCase />
+      measure
     );
 
     const errorMessage = await screen.findByText(
@@ -1445,8 +1405,7 @@ describe("CreateTestCase component", () => {
 
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/1234"],
-      "/measures/:measureId/edit/test-cases/:id",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/:id"
     );
 
     expect(
@@ -1465,7 +1424,7 @@ describe("CreateTestCase component", () => {
   });
 
   it("should render 404 page", async () => {
-    mockedAxios.get.mockClear().mockImplementation((args) => {
+    mockedAxios.get.mockClear().mockImplementation(() => {
       return Promise.reject(
         new Error("Error: Request failed with status code 404")
       );
@@ -1490,33 +1449,18 @@ describe("CreateTestCase component", () => {
 
   it("should render no text input and no create or update button if user is not the measure owner", async () => {
     mockedAxios.get.mockImplementation((args) => {
-      if (args && args.startsWith(serviceConfig.measureService.baseUrl)) {
-        return Promise.resolve({
-          data: {
-            id: "m1234",
-            measureScoring: MeasureScoring.COHORT,
-            createdBy: "AnotherUser",
-            groups: [
-              {
-                groupId: "Group1_ID",
-                scoring: "Cohort",
-                population: {
-                  initialPopulation: "Pop1",
-                },
-              },
-            ],
-          },
-        });
-      } else if (args && args.endsWith("series")) {
+      if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["SeriesA"] });
       }
       return Promise.resolve({ data: null });
     });
 
+    const measure = { ...defaultMeasure, createdBy: "AnotherUser" };
+
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
       "/measures/:measureId/edit/test-cases/create",
-      <CreateTestCase />
+      measure
     );
     const editor = screen.getByTestId("test-case-editor");
 
@@ -1551,7 +1495,8 @@ describe("Measure Calculation ", () => {
       await calculationSrv.calculateTestCases(
         simpleMeasureFixture,
         [testCaseFixture],
-        buildMeasureBundle(simpleMeasureFixture)
+        buildMeasureBundle(simpleMeasureFixture),
+        []
       );
     expect(calculationResults).toHaveLength(1);
     expect(calculationResults[0].detailedResults).toHaveLength(1);
@@ -1604,8 +1549,7 @@ describe("Measure Calculation ", () => {
       [
         "/measures/623cacebe74613783378c17b/edit/test-cases/623cacffe74613783378c17c",
       ],
-      "/measures/:measureId/edit/test-cases/:id",
-      <CreateTestCase />
+      "/measures/:measureId/edit/test-cases/:id"
     );
     const updateButton = await screen.findByRole("button", {
       name: "Update Test Case",
@@ -1622,31 +1566,20 @@ describe("Measure Calculation ", () => {
 
   it("executes a test case successfully when test case resources are valid", async () => {
     mockedAxios.get.mockClear().mockImplementation((args) => {
-      if (args && args.endsWith("/bundles")) {
-        return Promise.resolve({
-          data: buildMeasureBundle(simpleMeasureFixture),
-        });
-      } else if (
-        args &&
-        args.startsWith(serviceConfig.measureService.baseUrl)
-      ) {
-        return Promise.resolve({
-          data: { ...simpleMeasureFixture, createdBy: MEASURE_CREATEDBY },
-        });
-      } else if (args && args.endsWith("series")) {
+      if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
       }
       return Promise.resolve({
         data: { ...testCaseFixture, createdBy: MEASURE_CREATEDBY },
       });
     });
-
+    const measure = { ...simpleMeasureFixture, createdBy: MEASURE_CREATEDBY };
     renderWithRouter(
       [
         "/measures/623cacebe74613783378c17b/edit/test-cases/623cacffe74613783378c17c",
       ],
       "/measures/:measureId/edit/test-cases/:id",
-      <CreateTestCase />
+      measure
     );
 
     expect(
@@ -1681,24 +1614,20 @@ describe("Measure Calculation ", () => {
       groupPopulations: null,
     } as TestCase;
     mockedAxios.get.mockClear().mockImplementation((args) => {
-      if (args && args.startsWith(serviceConfig.measureService.baseUrl)) {
-        return Promise.resolve({
-          data: { ...simpleMeasureFixture, cqlErrors: true },
-        });
-      } else if (args && args.endsWith("series")) {
+      if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
       }
       return Promise.resolve({
         data: testCase,
       });
     });
-
+    const measure = { ...simpleMeasureFixture, cqlErrors: true };
     renderWithRouter(
       [
         "/measures/623cacebe74613783378c17b/edit/test-cases/623cacffe74613783378c17c",
       ],
       "/measures/:measureId/edit/test-cases/:id",
-      <CreateTestCase />
+      measure
     );
 
     expect(
@@ -1708,64 +1637,6 @@ describe("Measure Calculation ", () => {
     ).toBeInTheDocument();
     const runButton = await screen.findByRole("button", { name: "Run Test" });
     expect(runButton).toBeDisabled();
-  });
-
-  it("shows an error when fetch measure bundle fails", async () => {
-    const axiosError: AxiosError = {
-      response: {
-        status: 500,
-        data: { message: "BAD STUFF HAPPENED" },
-      } as AxiosResponse,
-      toJSON: jest.fn(),
-    } as unknown as AxiosError;
-
-    // measure with cqlErrors flag
-    const testCase = {
-      id: "623cacffe74613783378c17c",
-      description: "Test IPP",
-      series: "SeriesA",
-      createdBy: MEASURE_CREATEDBY,
-      json: '{ "resourceType": "Bundle", "type": "collection", "entry": [] }',
-      groupPopulations: null,
-    } as TestCase;
-    mockedAxios.get.mockClear().mockImplementation((args) => {
-      if (args && args.endsWith("/bundles")) {
-        return Promise.reject(axiosError);
-      } else if (
-        args &&
-        args.startsWith(serviceConfig.measureService.baseUrl)
-      ) {
-        return Promise.resolve({
-          data: { ...simpleMeasureFixture },
-        });
-      } else if (args && args.endsWith("series")) {
-        return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
-      }
-      return Promise.resolve({
-        data: testCase,
-      });
-    });
-
-    renderWithRouter(
-      [
-        "/measures/623cacebe74613783378c17b/edit/test-cases/623cacffe74613783378c17c",
-      ],
-      "/measures/:measureId/edit/test-cases/:id",
-      <CreateTestCase />
-    );
-    expect(
-      await screen.findByRole("button", {
-        name: "Update Test Case",
-      })
-    ).toBeInTheDocument();
-    const runButton = await screen.findByRole("button", { name: "Run Test" });
-    await waitFor(() => expect(runButton).toBeEnabled(), { timeout: 5000 });
-    userEvent.click(runButton);
-
-    const debugOutput = await screen.findByText(
-      "An error occurred fetching the measure bundle"
-    );
-    expect(debugOutput).toBeInTheDocument();
   });
 });
 

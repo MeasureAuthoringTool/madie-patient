@@ -18,7 +18,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import "styled-components/macro";
 import {
-  Measure,
   Group,
   TestCase,
   GroupPopulation,
@@ -37,7 +36,6 @@ import {
   getPopulationsForScoring,
   triggerPopChanges,
 } from "../../util/PopulationsMap";
-import useMeasureServiceApi from "../../api/useMeasureServiceApi";
 import GroupPopulations from "../populations/GroupPopulations";
 import calculationService from "../../api/CalculationService";
 import {
@@ -45,6 +43,7 @@ import {
   ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
 import useOktaTokens from "../../hooks/useOktaTokens";
+import useExecutionContext from "../routes/useExecutionContext";
 
 const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
@@ -140,7 +139,6 @@ const CreateTestCase = () => {
   >() as navigationParams;
   // Avoid infinite dependency render. May require additional error handling for timeouts.
   const testCaseService = useRef(useTestCaseServiceApi());
-  const measureService = useRef(useMeasureServiceApi());
   const calculation = useRef(calculationService());
   const [alert, setAlert] = useState<AlertProps>(null);
   const [testCase, setTestCase] = useState<TestCase>(null);
@@ -151,14 +149,11 @@ const CreateTestCase = () => {
     loaded: false,
     series: [],
   });
-  const [measure, setMeasure] = useState<Measure>(null);
   const { getUserName } = useOktaTokens();
   const userName = getUserName();
-  const [canEdit, setCanEdit] = useState<boolean>(false);
   const [editor, setEditor] = useState<Ace.Editor>(null);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
   const [changedPopulation, setChangedPopulation] = useState<string>("");
-  const [isChanged, setIsChanged] = useState<boolean>(false);
   const [pendingGroupPopulations, setPendingGroupPopulations] =
     useState<any>(null);
   const [populationGroupResult, setPopulationGroupResult] =
@@ -166,6 +161,15 @@ const CreateTestCase = () => {
   const [calculationErrors, setCalculationErrors] = useState<string>();
   const [createButtonDisabled, setCreateButtonDisabled] =
     useState<boolean>(false);
+
+  const { measureState, bundleState, valueSetsState } = useExecutionContext();
+  const [measure] = measureState;
+  const [measureBundle] = bundleState;
+  const [valueSets] = valueSetsState;
+
+  const [canEdit, setCanEdit] = useState<boolean>(
+    userName === measure?.createdBy
+  );
 
   const formik = useFormik({
     initialValues: { ...INITIAL_VALUES },
@@ -262,24 +266,6 @@ const CreateTestCase = () => {
     seriesState.loaded,
   ]);
 
-  useEffect(() => {
-    if (measureId) {
-      measureService.current
-        .fetchMeasure(measureId)
-        .then((measure) => {
-          setMeasure(measure);
-          setCanEdit(userName === measure.createdBy);
-        })
-        .catch(() => {
-          setAlert(() => ({
-            status: "error",
-            message:
-              "Failed to load measure groups. An error occurred while loading the measure.",
-          }));
-        });
-    }
-  }, [measureId]);
-
   const handleSubmit = async (testCase: TestCase) => {
     setAlert(null);
     testCase.title = sanitizeUserInput(testCase.title);
@@ -352,14 +338,12 @@ const CreateTestCase = () => {
     }
 
     try {
-      const measureBundle = await measureService.current.fetchMeasureBundle(
-        measureId
-      );
       const executionResults: ExecutionResult<DetailedPopulationGroupResult>[] =
         await calculation.current.calculateTestCases(
           measure,
           [modifiedTestCase],
-          measureBundle
+          measureBundle,
+          valueSets
         );
       setCalculationErrors("");
       // grab first group results because we only have one group for now
