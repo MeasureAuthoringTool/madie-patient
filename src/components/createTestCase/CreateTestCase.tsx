@@ -112,6 +112,20 @@ If no testCase is present, then show the populations for the measure groups
 coming from the loaded measure
  */
 
+export function isEmptyTestCaseJsonString(
+  jsonString: string | undefined | null
+) {
+  try {
+    return (
+      _.isNil(jsonString) ||
+      _.isEmpty(jsonString.trim()) ||
+      _.isEmpty(JSON.parse(jsonString))
+    );
+  } catch (error) {
+    return true;
+  }
+}
+
 const INITIAL_VALUES = {
   title: "",
   description: "",
@@ -643,7 +657,8 @@ const CreateTestCase = () => {
                     !!measure?.cqlErrors ||
                     _.isNil(measure?.groups) ||
                     measure?.groups.length === 0 ||
-                    validationErrors?.length > 0
+                    validationErrors?.length > 0 ||
+                    isEmptyTestCaseJsonString(formik.values.json)
                   }
                   data-testid="run-test-case-button"
                 />
