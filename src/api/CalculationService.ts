@@ -56,6 +56,7 @@ export class CalculationService {
         patientBundles,
         {
           includeClauseResults: false,
+          profileValidation: true,
           measurementPeriodStart: measurementPeriodStart,
           measurementPeriodEnd: measurementPeriodEnd,
         },
