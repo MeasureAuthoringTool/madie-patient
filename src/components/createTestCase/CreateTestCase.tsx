@@ -281,7 +281,7 @@ const CreateTestCase = () => {
   const createTestCase = async (testCase: TestCase) => {
     try {
       testCase.json = editorVal || null;
-      const checkEditorValJsonId = checkEditorValContainsJsonId(editorVal);
+      const isTestCaseBundleIdPresent = hasTestCaseBundleId(editorVal);
       const savedTestCase = await testCaseService.current.createTestCase(
         testCase,
         measureId
@@ -289,7 +289,11 @@ const CreateTestCase = () => {
       setCreateButtonDisabled(true);
       setEditorVal(savedTestCase.json);
 
-      handleTestCaseResponse(savedTestCase, "create", checkEditorValJsonId);
+      handleTestCaseResponse(
+        savedTestCase,
+        "create",
+        isTestCaseBundleIdPresent
+      );
     } catch (error) {
       setAlert(() => ({
         status: "error",
@@ -308,8 +312,8 @@ const CreateTestCase = () => {
         measureId
       );
 
-      const checkEditorValJsonId = checkEditorValContainsJsonId(editorVal);
-      const checkPreviousIdValue = checkPreviousIdVal(
+      const isTestCaseBundleIdPresent = hasTestCaseBundleId(editorVal);
+      const isPreviousBundleIdValueChanged = checkPreviousBundleIdVal(
         updatedTestCase,
         editorVal
       );
@@ -323,8 +327,8 @@ const CreateTestCase = () => {
       handleTestCaseResponse(
         updatedTestCase,
         "update",
-        checkEditorValJsonId,
-        checkPreviousIdValue
+        isTestCaseBundleIdPresent,
+        isPreviousBundleIdValueChanged
       );
     } catch (error) {
       setAlert(() => ({
@@ -334,7 +338,7 @@ const CreateTestCase = () => {
     }
   };
 
-  const checkEditorValContainsJsonId = (editorVal) => {
+  const hasTestCaseBundleId = (editorVal) => {
     try {
       return editorVal ? JSON.parse(editorVal).hasOwnProperty("id") : null;
     } catch (e) {
@@ -342,7 +346,7 @@ const CreateTestCase = () => {
     }
   };
 
-  const checkPreviousIdVal = (updatedTestCase, editorVal) => {
+  const checkPreviousBundleIdVal = (updatedTestCase, editorVal) => {
     try {
       return JSON.parse(updatedTestCase?.json)?.id === JSON.parse(editorVal)?.id
         ? true
@@ -383,25 +387,25 @@ const CreateTestCase = () => {
   function handleTestCaseResponse(
     testCase: TestCase,
     action: "create" | "update",
-    editorValJsonId?: boolean,
-    checkPreviousIdValue?: boolean
+    isTestCaseBundleIdPresent?: boolean,
+    isPreviousBundleIdValueChanged?: boolean
   ) {
-    const editorValJsonIdMessage = editorValJsonId
+    const editorValJsonIdMessage = isTestCaseBundleIdPresent
       ? "Bundle IDs are auto generated on save. MADiE has over written the ID provided"
-      : editorValJsonId !== null
+      : isTestCaseBundleIdPresent !== null
       ? "Bundle ID has been auto generated"
       : "";
 
     if (testCase && testCase.id) {
       if (hasValidHapiOutcome(testCase)) {
         setAlert({
-          status: checkPreviousIdValue
+          status: isPreviousBundleIdValueChanged
             ? "success"
-            : editorValJsonId
+            : isTestCaseBundleIdPresent
             ? "warning"
             : "success",
           message: `Test case ${action}d successfully! ${
-            checkPreviousIdValue ? "" : editorValJsonIdMessage
+            isPreviousBundleIdValueChanged ? "" : editorValJsonIdMessage
           }`,
         });
       } else {
