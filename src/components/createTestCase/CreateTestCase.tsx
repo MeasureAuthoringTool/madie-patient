@@ -281,9 +281,7 @@ const CreateTestCase = () => {
   const createTestCase = async (testCase: TestCase) => {
     try {
       testCase.json = editorVal || null;
-      const checkEditorValJsonId = editorVal
-        ? JSON.parse(editorVal).hasOwnProperty("id")
-        : null;
+      const checkEditorValJsonId = checkEditorValContainsJsonId(editorVal);
       const savedTestCase = await testCaseService.current.createTestCase(
         testCase,
         measureId
@@ -310,18 +308,47 @@ const CreateTestCase = () => {
         measureId
       );
 
+      const checkEditorValJsonId = checkEditorValContainsJsonId(editorVal);
+      const checkPreviousIdValue = checkPreviousIdVal(
+        updatedTestCase,
+        editorVal
+      );
+
       resetForm({
         values: { ...testCase },
       });
       setTestCase(updatedTestCase);
       setEditorVal(updatedTestCase.json);
 
-      handleTestCaseResponse(updatedTestCase, "update");
+      handleTestCaseResponse(
+        updatedTestCase,
+        "update",
+        checkEditorValJsonId,
+        checkPreviousIdValue
+      );
     } catch (error) {
       setAlert(() => ({
         status: "error",
         message: "An error occurred while updating the test case.",
       }));
+    }
+  };
+
+  const checkEditorValContainsJsonId = (editorVal) => {
+    try {
+      return editorVal ? JSON.parse(editorVal).hasOwnProperty("id") : null;
+    } catch (e) {
+      return null;
+    }
+  };
+
+  const checkPreviousIdVal = (updatedTestCase, editorVal) => {
+    try {
+      return JSON.parse(updatedTestCase?.json)?.id === JSON.parse(editorVal)?.id
+        ? true
+        : false;
+    } catch (e) {
+      return null;
     }
   };
 
@@ -356,7 +383,8 @@ const CreateTestCase = () => {
   function handleTestCaseResponse(
     testCase: TestCase,
     action: "create" | "update",
-    editorValJsonId?: boolean
+    editorValJsonId?: boolean,
+    checkPreviousIdValue?: boolean
   ) {
     const editorValJsonIdMessage = editorValJsonId
       ? "Bundle IDs are auto generated on save. MADiE has over written the ID provided"
@@ -367,9 +395,13 @@ const CreateTestCase = () => {
     if (testCase && testCase.id) {
       if (hasValidHapiOutcome(testCase)) {
         setAlert({
-          status: editorValJsonId ? "warning" : "success",
+          status: checkPreviousIdValue
+            ? "success"
+            : editorValJsonId
+            ? "warning"
+            : "success",
           message: `Test case ${action}d successfully! ${
-            action === "create" ? editorValJsonIdMessage : ""
+            checkPreviousIdValue ? "" : editorValJsonIdMessage
           }`,
         });
       } else {

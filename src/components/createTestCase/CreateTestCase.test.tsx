@@ -491,78 +491,6 @@ describe("CreateTestCase component", () => {
     );
   });
 
-  it("should clear error alert when user clicks alert close button", async () => {
-    renderWithRouter(
-      ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create"
-    );
-    const testCaseDescription = "TestCase123";
-    mockedAxios.post.mockRejectedValue({
-      data: {
-        error: "Random error",
-      },
-    });
-
-    await waitFor(
-      () => {
-        const descriptionInput = screen.getByTestId(
-          "create-test-case-description"
-        );
-        userEvent.type(descriptionInput, testCaseDescription);
-      },
-      { timeout: 1500 }
-    );
-
-    const createBtn = screen.getByRole("button", { name: "Create Test Case" });
-    userEvent.click(createBtn);
-
-    const alert = await screen.findByRole("alert");
-    expect(alert).toHaveTextContent(
-      "An error occurred while creating the test case."
-    );
-
-    const closeAlertBtn = screen.getByRole("button", { name: "Close Alert" });
-    userEvent.click(closeAlertBtn);
-
-    const dismissedAlert = await screen.queryByRole("alert");
-    expect(dismissedAlert).not.toBeInTheDocument();
-  });
-
-  it("should load existing test case data when viewing specific test case", async () => {
-    const testCase = {
-      id: "1234",
-      createdBy: MEASURE_CREATEDBY,
-      description: "Test IPP",
-      json: `{"test":"test"}`,
-    } as TestCase;
-    mockedAxios.get.mockClear().mockImplementation((args) => {
-      if (args && args.endsWith("series")) {
-        return Promise.resolve({ data: ["SeriesA"] });
-      }
-      return Promise.resolve({ data: testCase });
-    });
-
-    renderWithRouter(
-      ["/measures/m1234/edit/test-cases/1234"],
-      "/measures/:measureId/edit/test-cases/:id"
-    );
-
-    await waitFor(
-      () => {
-        const descriptionTextArea = screen.getByTestId(
-          "create-test-case-description"
-        );
-        expect(descriptionTextArea).toBeInTheDocument();
-        expect(descriptionTextArea).toHaveTextContent(testCase.description);
-      },
-      { timeout: 1500 }
-    );
-    expect(
-      screen.getByRole("button", { name: "Update Test Case" })
-    ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
-  });
-
   it("should update test case when update button is clicked", async () => {
     const testCase = {
       id: "1234",
@@ -672,6 +600,513 @@ describe("CreateTestCase component", () => {
 
     const debugOutput = await screen.findByText(
       "Test case updated successfully!"
+    );
+    expect(debugOutput).toBeInTheDocument();
+
+    const calls = mockedAxios.put.mock.calls;
+    expect(calls).toBeTruthy();
+    expect(calls[0]).toBeTruthy();
+    const updatedTestCase = calls[0][1] as TestCase;
+    expect(updatedTestCase).toBeTruthy();
+    expect(updatedTestCase.series).toEqual("SeriesB");
+    expect(updatedTestCase.groupPopulations).toEqual([
+      {
+        groupId: "Group1_ID",
+        scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+        populationValues: [
+          {
+            name: MeasurePopulation.INITIAL_POPULATION,
+            expected: true,
+            actual: false,
+          },
+          {
+            name: MeasurePopulation.MEASURE_POPULATION,
+            expected: false,
+            actual: false,
+          },
+        ],
+      },
+    ]);
+  });
+
+  it("should clear error alert when user clicks alert close button", async () => {
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/create"],
+      "/measures/:measureId/edit/test-cases/create"
+    );
+    const testCaseDescription = "TestCase123";
+    mockedAxios.post.mockRejectedValue({
+      data: {
+        error: "Random error",
+      },
+    });
+
+    await waitFor(
+      () => {
+        const descriptionInput = screen.getByTestId(
+          "create-test-case-description"
+        );
+        userEvent.type(descriptionInput, testCaseDescription);
+      },
+      { timeout: 1500 }
+    );
+
+    const createBtn = screen.getByRole("button", { name: "Create Test Case" });
+    userEvent.click(createBtn);
+
+    const alert = await screen.findByRole("alert");
+    expect(alert).toHaveTextContent(
+      "An error occurred while creating the test case."
+    );
+
+    const closeAlertBtn = screen.getByRole("button", { name: "Close Alert" });
+    userEvent.click(closeAlertBtn);
+
+    const dismissedAlert = await screen.queryByRole("alert");
+    expect(dismissedAlert).not.toBeInTheDocument();
+  });
+
+  it("should load existing test case data when viewing specific test case", async () => {
+    const testCase = {
+      id: "1234",
+      createdBy: MEASURE_CREATEDBY,
+      description: "Test IPP",
+      json: `{"test":"test"}`,
+    } as TestCase;
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["SeriesA"] });
+      }
+      return Promise.resolve({ data: testCase });
+    });
+
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/1234"],
+      "/measures/:measureId/edit/test-cases/:id"
+    );
+
+    await waitFor(
+      () => {
+        const descriptionTextArea = screen.getByTestId(
+          "create-test-case-description"
+        );
+        expect(descriptionTextArea).toBeInTheDocument();
+        expect(descriptionTextArea).toHaveTextContent(testCase.description);
+      },
+      { timeout: 1500 }
+    );
+    expect(
+      screen.getByRole("button", { name: "Update Test Case" })
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+  });
+
+  it("should give a warning message when Id is not present in the JSON while updating test case when update button is clicked", async () => {
+    const testCase = {
+      id: "1234",
+      createdBy: MEASURE_CREATEDBY,
+      description: "Test IPP",
+      series: "SeriesA",
+      groupPopulations: [
+        {
+          groupId: "Group1_ID",
+          scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+          populationValues: [
+            {
+              name: MeasurePopulation.INITIAL_POPULATION,
+              expected: true,
+              actual: false,
+            },
+            {
+              name: MeasurePopulation.MEASURE_POPULATION,
+              expected: true,
+              actual: false,
+            },
+          ],
+        },
+      ],
+    } as unknown as TestCase;
+    const testCaseDescription = "modified description";
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
+      }
+      return Promise.resolve({ data: testCase });
+    });
+    const measure = {
+      id: "m1234",
+      createdBy: MEASURE_CREATEDBY,
+      measureScoring: MeasureScoring.CONTINUOUS_VARIABLE,
+      groups: [
+        {
+          id: "Group1_ID",
+          scoring: "Cohort",
+          population: {
+            initialPopulation: "Pop1",
+          },
+        },
+      ],
+    } as Measure;
+    const testCaseJson = JSON.stringify({
+      resourceType: "Bundle",
+      meta: {
+        versionId: "1",
+        lastUpdated: "2022-06-03T12:33:15.459+00:00",
+      },
+      type: "collection",
+      entry: [
+        {
+          fullUrl: "http://local/Encounter",
+          resource: {
+            resourceType: "Encounter",
+            meta: {
+              versionId: "1",
+              lastUpdated: "2021-10-13T03:34:10.160+00:00",
+              source: "#nEcAkGd8PRwPP5fA",
+            },
+            text: {
+              status: "generated",
+              div: '<div xmlns="http://www.w3.org/1999/xhtml">Sep 9th 2021 for Asthma<a name="mm"/></div>',
+            },
+            status: "finished",
+            class: {
+              system: "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+              code: "IMP",
+              display: "inpatient encounter",
+            },
+            type: [
+              {
+                text: "OutPatient",
+              },
+            ],
+            subject: {
+              reference: "Patient/1",
+            },
+            participant: [
+              {
+                individual: {
+                  reference: "Practitioner/30164",
+                  display: "Dr John Doe",
+                },
+              },
+            ],
+            period: {
+              start: "2023-09-10T03:34:10.054Z",
+            },
+          },
+        },
+        {
+          fullUrl: "http://local/Patient",
+          resource: {
+            resourceType: "Patient",
+            text: {
+              status: "generated",
+              div: '<div xmlns="http://www.w3.org/1999/xhtml">Lizzy Health</div>',
+            },
+            identifier: [
+              {
+                system: "http://clinfhir.com/fhir/NamingSystem/identifier",
+                value: "20181011LizzyHealth",
+              },
+            ],
+            name: [
+              {
+                use: "official",
+                text: "Lizzy Health",
+                family: "Health",
+                given: ["Lizzy"],
+              },
+            ],
+            gender: "female",
+            birthDate: "2000-10-11",
+          },
+        },
+      ],
+    });
+
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/1234"],
+      "/measures/:measureId/edit/test-cases/:id",
+      measure
+    );
+
+    const g1PopulationValues = await screen.findByText(
+      "Group 1 (Continuous Variable) Population Values"
+    );
+    expect(g1PopulationValues).toBeInTheDocument();
+
+    mockedAxios.put.mockResolvedValue({
+      data: {
+        ...testCase,
+        description: testCaseDescription,
+        hapiOperationOutcome: {
+          code: 200,
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Update Test Case" })
+      ).toBeInTheDocument();
+    });
+
+    const seriesInput = screen.getByRole("combobox", { name: "Series" });
+    expect(seriesInput).toHaveValue("SeriesA");
+
+    const descriptionInput = screen.getByTestId("create-test-case-description");
+    expect(descriptionInput).toHaveTextContent(testCase.description);
+    userEvent.type(descriptionInput, `{selectall}{del}${testCaseDescription}`);
+
+    userEvent.click(seriesInput);
+    const list = await screen.findByRole("listbox");
+    expect(list).toBeInTheDocument();
+    const listItems = within(list).getAllByRole("option");
+    expect(listItems[1]).toHaveTextContent("SeriesB");
+    userEvent.click(listItems[1]);
+
+    const ippExpectedCb = await screen.findByTestId(
+      "test-population-initialPopulation-expected"
+    );
+    expect(ippExpectedCb).toBeChecked();
+    const mpExpectedCb = await screen.findByTestId(
+      "test-population-measurePopulation-expected"
+    );
+    expect(mpExpectedCb).toBeChecked();
+    userEvent.click(mpExpectedCb);
+
+    const editor = screen.getByTestId("test-case-editor");
+    userEvent.paste(editor, testCaseJson);
+    expect(editor).toHaveValue(testCaseJson);
+
+    await waitFor(() => {
+      expect(descriptionInput).toHaveTextContent(testCaseDescription);
+      expect(
+        screen.getByRole("button", { name: "Update Test Case" })
+      ).toBeEnabled();
+    });
+    userEvent.click(screen.getByRole("button", { name: "Update Test Case" }));
+
+    const debugOutput = await screen.findByText(
+      "Test case updated successfully! Bundle ID has been auto generated"
+    );
+    expect(debugOutput).toBeInTheDocument();
+
+    const calls = mockedAxios.put.mock.calls;
+    expect(calls).toBeTruthy();
+    expect(calls[0]).toBeTruthy();
+    const updatedTestCase = calls[0][1] as TestCase;
+    expect(updatedTestCase).toBeTruthy();
+    expect(updatedTestCase.series).toEqual("SeriesB");
+    expect(updatedTestCase.groupPopulations).toEqual([
+      {
+        groupId: "Group1_ID",
+        scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+        populationValues: [
+          {
+            name: MeasurePopulation.INITIAL_POPULATION,
+            expected: true,
+            actual: false,
+          },
+          {
+            name: MeasurePopulation.MEASURE_POPULATION,
+            expected: false,
+            actual: false,
+          },
+        ],
+      },
+    ]);
+  });
+
+  it("should give a warning message when Id is present in the JSON while updating test case when update button is clicked", async () => {
+    const testCase = {
+      id: "1234",
+      createdBy: MEASURE_CREATEDBY,
+      description: "Test IPP",
+      series: "SeriesA",
+      groupPopulations: [
+        {
+          groupId: "Group1_ID",
+          scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+          populationValues: [
+            {
+              name: MeasurePopulation.INITIAL_POPULATION,
+              expected: true,
+              actual: false,
+            },
+            {
+              name: MeasurePopulation.MEASURE_POPULATION,
+              expected: true,
+              actual: false,
+            },
+          ],
+        },
+      ],
+    } as unknown as TestCase;
+    const testCaseDescription = "modified description";
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
+      }
+      return Promise.resolve({ data: testCase });
+    });
+    const measure = {
+      id: "m1234",
+      createdBy: MEASURE_CREATEDBY,
+      measureScoring: MeasureScoring.CONTINUOUS_VARIABLE,
+      groups: [
+        {
+          id: "Group1_ID",
+          scoring: "Cohort",
+          population: {
+            initialPopulation: "Pop1",
+          },
+        },
+      ],
+    } as Measure;
+    const testCaseJson = JSON.stringify({
+      resourceType: "Bundle",
+      id: "12",
+      meta: {
+        versionId: "1",
+        lastUpdated: "2022-06-03T12:33:15.459+00:00",
+      },
+      type: "collection",
+      entry: [
+        {
+          fullUrl: "http://local/Encounter",
+          resource: {
+            resourceType: "Encounter",
+            meta: {
+              versionId: "1",
+              lastUpdated: "2021-10-13T03:34:10.160+00:00",
+              source: "#nEcAkGd8PRwPP5fA",
+            },
+            text: {
+              status: "generated",
+              div: '<div xmlns="http://www.w3.org/1999/xhtml">Sep 9th 2021 for Asthma<a name="mm"/></div>',
+            },
+            status: "finished",
+            class: {
+              system: "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+              code: "IMP",
+              display: "inpatient encounter",
+            },
+            type: [
+              {
+                text: "OutPatient",
+              },
+            ],
+            subject: {
+              reference: "Patient/1",
+            },
+            participant: [
+              {
+                individual: {
+                  reference: "Practitioner/30164",
+                  display: "Dr John Doe",
+                },
+              },
+            ],
+            period: {
+              start: "2023-09-10T03:34:10.054Z",
+            },
+          },
+        },
+        {
+          fullUrl: "http://local/Patient",
+          resource: {
+            resourceType: "Patient",
+            text: {
+              status: "generated",
+              div: '<div xmlns="http://www.w3.org/1999/xhtml">Lizzy Health</div>',
+            },
+            identifier: [
+              {
+                system: "http://clinfhir.com/fhir/NamingSystem/identifier",
+                value: "20181011LizzyHealth",
+              },
+            ],
+            name: [
+              {
+                use: "official",
+                text: "Lizzy Health",
+                family: "Health",
+                given: ["Lizzy"],
+              },
+            ],
+            gender: "female",
+            birthDate: "2000-10-11",
+          },
+        },
+      ],
+    });
+
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/1234"],
+      "/measures/:measureId/edit/test-cases/:id",
+      measure
+    );
+
+    const g1PopulationValues = await screen.findByText(
+      "Group 1 (Continuous Variable) Population Values"
+    );
+    expect(g1PopulationValues).toBeInTheDocument();
+
+    mockedAxios.put.mockResolvedValue({
+      data: {
+        ...testCase,
+        description: testCaseDescription,
+        hapiOperationOutcome: {
+          code: 200,
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Update Test Case" })
+      ).toBeInTheDocument();
+    });
+
+    const seriesInput = screen.getByRole("combobox", { name: "Series" });
+    expect(seriesInput).toHaveValue("SeriesA");
+
+    const descriptionInput = screen.getByTestId("create-test-case-description");
+    expect(descriptionInput).toHaveTextContent(testCase.description);
+    userEvent.type(descriptionInput, `{selectall}{del}${testCaseDescription}`);
+
+    userEvent.click(seriesInput);
+    const list = await screen.findByRole("listbox");
+    expect(list).toBeInTheDocument();
+    const listItems = within(list).getAllByRole("option");
+    expect(listItems[1]).toHaveTextContent("SeriesB");
+    userEvent.click(listItems[1]);
+
+    const ippExpectedCb = await screen.findByTestId(
+      "test-population-initialPopulation-expected"
+    );
+    expect(ippExpectedCb).toBeChecked();
+    const mpExpectedCb = await screen.findByTestId(
+      "test-population-measurePopulation-expected"
+    );
+    expect(mpExpectedCb).toBeChecked();
+    userEvent.click(mpExpectedCb);
+
+    const editor = screen.getByTestId("test-case-editor");
+    userEvent.paste(editor, testCaseJson);
+    expect(editor).toHaveValue(testCaseJson);
+
+    await waitFor(() => {
+      expect(descriptionInput).toHaveTextContent(testCaseDescription);
+      expect(
+        screen.getByRole("button", { name: "Update Test Case" })
+      ).toBeEnabled();
+    });
+    userEvent.click(screen.getByRole("button", { name: "Update Test Case" }));
+
+    const debugOutput = await screen.findByText(
+      "Test case updated successfully! Bundle IDs are auto generated on save. MADiE has over written the ID provided"
     );
     expect(debugOutput).toBeInTheDocument();
 
