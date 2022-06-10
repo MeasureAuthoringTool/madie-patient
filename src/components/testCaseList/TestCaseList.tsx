@@ -3,7 +3,7 @@ import tw from "twin.macro";
 import "styled-components/macro";
 import * as _ from "lodash";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
-import { TestCase, Measure } from "@madie/madie-models";
+import { TestCase, Measure, GroupPopulation, Group } from "@madie/madie-models";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@madie/madie-components";
 import TestCaseComponent from "./TestCase";
@@ -14,8 +14,16 @@ import {
   DetailedPopulationGroupResult,
   ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
-import { getFhirMeasurePopulationCode } from "../../util/PopulationsMap";
+import {
+  getFhirMeasurePopulationCode,
+  getPopulationsForScoring,
+} from "../../util/PopulationsMap";
 import useOktaTokens from "../../hooks/useOktaTokens";
+import { PopulationExpectedValue } from "@madie/madie-models/dist/TestCase";
+import Backdrop from "@mui/material/Backdrop";
+import { CircularProgress, Typography } from "@mui/material";
+import { processPatientBundles } from "../../util/ImportHelper";
+import TestCaseImportDialog from "./TestCaseImportDialog";
 
 const TH = tw.th`p-3 border-b text-left text-sm font-bold uppercase`;
 const ErrorAlert = tw.div`bg-red-100 text-red-700 rounded-lg m-1 p-3`;
@@ -35,6 +43,17 @@ const TestCaseList = () => {
   const userName = getUserName();
   const navigate = useNavigate();
   const [canEdit, setCanEdit] = useState<boolean>(false);
+  const [loadingState, setLoadingState] = useState<any>({
+    loading: false,
+    message: "",
+  });
+  const [fileInputState, setFileInputState] = useState<any>({
+    file: null,
+    key: Math.random().toString(36),
+  });
+  const [importDialogState, setImportDialogState] = useState<any>({
+    open: false,
+  });
 
   useEffect(() => {
     measureService.current
@@ -46,6 +65,14 @@ const TestCaseList = () => {
       .catch((error) => {
         setError(error.message);
       });
+    refreshTestCases();
+  }, [measureId, testCaseService]);
+
+  const refreshTestCases = () => {
+    setLoadingState(() => ({
+      loading: false,
+      message: "Loading Test Cases...",
+    }));
     testCaseService.current
       .getTestCasesByMeasureId(measureId)
       .then((testCaseList: TestCase[]) => {
@@ -56,8 +83,13 @@ const TestCaseList = () => {
       })
       .catch((err) => {
         setError(err.message);
+      })
+      .finally(() => {
+        setTimeout(() => {
+          setLoadingState({ loading: false, message: "" });
+        }, 500);
       });
-  }, [measureId, testCaseService]);
+  };
 
   const createNewTestCase = () => {
     navigate("create");
@@ -123,16 +155,49 @@ const TestCaseList = () => {
     }
   };
 
+  const onTestCaseImport = async (testCases: TestCase[]) => {
+    setLoadingState(() => ({
+      loading: true,
+      message: "Importing Test Cases...",
+    }));
+
+    const saved = await testCaseService.current.importTestCases(
+      measureId,
+      testCases
+    );
+
+    // eslint-disable-next-line no-console
+    console.log("saved test cases: ", saved);
+
+    refreshTestCases();
+
+    setFileInputState({
+      file: null,
+      key: Math.random().toString(36),
+    });
+  };
+
   return (
     <div>
       <div tw="flex flex-col">
-        <div tw="py-2">
+        <div tw="py-2" style={{ display: "flex", flexDirection: "row" }}>
           {canEdit && (
             <Button
               buttonTitle="New Test Case"
               disabled={false}
               onClick={createNewTestCase}
               data-testid="create-new-test-case-button"
+            />
+          )}
+          <span style={{ marginLeft: 5, marginRight: 5 }} />
+          {canEdit && (
+            <Button
+              buttonTitle="Import Test Cases"
+              onClick={() => {
+                // console.log("Importing the test cases");
+                setImportDialogState({ ...importDialogState, open: true });
+              }}
+              data-testid="show-import-test-cases-button"
             />
           )}
         </div>
@@ -184,6 +249,29 @@ const TestCaseList = () => {
           </div>
         </div>
       </div>
+
+      <TestCaseImportDialog
+        open={importDialogState.open}
+        measure={measure}
+        onImport={onTestCaseImport}
+        handleClose={() =>
+          setImportDialogState({ ...importDialogState, open: false })
+        }
+      />
+
+      <Backdrop
+        sx={{
+          color: "#fff",
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          display: "flex",
+          flexDirection: "column",
+        }}
+        open={loadingState.loading}
+        // onClick={handleClose}
+      >
+        <Typography color="inherit">{loadingState.message}</Typography>
+        <CircularProgress color="inherit" size={80} />
+      </Backdrop>
     </div>
   );
 };

@@ -25,6 +25,27 @@ export class TestCaseServiceApi {
     }
   }
 
+  async importTestCases(
+    measureId: string,
+    testCases: TestCase[]
+  ): Promise<TestCase[]> {
+    try {
+      const response = await axios.post<TestCase[]>(
+        `${this.baseUrl}/measures/${measureId}/test-cases/bulk`,
+        testCases,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      const message = `Unable to create new test case`;
+      throw new Error(message);
+    }
+  }
+
   async getTestCasesByMeasureId(measureId: string): Promise<TestCase[]> {
     try {
       const response = await axios.get<TestCase[]>(
