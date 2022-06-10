@@ -281,7 +281,8 @@ const CreateTestCase = () => {
   const createTestCase = async (testCase: TestCase) => {
     try {
       testCase.json = editorVal || null;
-      const isTestCaseBundleIdPresent = hasTestCaseBundleId(editorVal);
+      // const isTestCaseBundleIdPresent = hasTestCaseBundleId(editorVal);
+      const isTestCaseBundleIdPresent = hasTestCaseBundleId(testCase.json);
       const savedTestCase = await testCaseService.current.createTestCase(
         testCase,
         measureId
@@ -340,7 +341,8 @@ const CreateTestCase = () => {
 
   const hasTestCaseBundleId = (editorVal) => {
     try {
-      return editorVal ? JSON.parse(editorVal).hasOwnProperty("id") : null;
+      //return editorVal ? JSON.parse(editorVal).hasOwnProperty("id") : null;
+      return editorVal && JSON.parse(editorVal).hasOwnProperty("id");
     } catch (e) {
       return null;
     }
