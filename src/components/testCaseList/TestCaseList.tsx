@@ -17,6 +17,10 @@ import {
 import { getFhirMeasurePopulationCode } from "../../util/PopulationsMap";
 import useOktaTokens from "../../hooks/useOktaTokens";
 import useExecutionContext from "../routes/useExecutionContext";
+import Backdrop from "@mui/material/Backdrop";
+import { CircularProgress, Typography } from "@mui/material";
+import { processPatientBundles } from "../../util/ImportHelper";
+import TestCaseImportDialog from "./TestCaseImportDialog";
 
 const TH = tw.th`p-3 border-b text-left text-sm font-bold uppercase`;
 const ErrorAlert = tw.div`bg-red-100 text-red-700 rounded-lg m-1 p-3`;
@@ -40,6 +44,14 @@ const TestCaseList = () => {
   const [measure, setMeasure] = measureState;
   const [measureBundle] = bundleState;
   const [valueSets] = valueSetsState;
+  const [loadingState, setLoadingState] = useState<any>({
+    loading: false,
+    message: "",
+  });
+  const [importDialogState, setImportDialogState] = useState<any>({
+    open: false,
+  });
+
 
   useEffect(() => {
     measureService.current
@@ -51,6 +63,14 @@ const TestCaseList = () => {
       .catch((error) => {
         setError(error.message);
       });
+    refreshTestCases();
+  }, [measureId, testCaseService]);
+
+  const refreshTestCases = () => {
+    setLoadingState(() => ({
+      loading: false,
+      message: "Loading Test Cases...",
+    }));
     testCaseService.current
       .getTestCasesByMeasureId(measureId)
       .then((testCaseList: TestCase[]) => {
@@ -61,8 +81,13 @@ const TestCaseList = () => {
       })
       .catch((err) => {
         setError(err.message);
+      })
+      .finally(() => {
+        setTimeout(() => {
+          setLoadingState({ loading: false, message: "" });
+        }, 500);
       });
-  }, [measureId, testCaseService]);
+  };
 
   const createNewTestCase = () => {
     navigate("create");
@@ -126,16 +151,44 @@ const TestCaseList = () => {
     }
   };
 
+  const onTestCaseImport = async (testCases: TestCase[]) => {
+    setImportDialogState({ ...importDialogState, open: false });
+
+    setLoadingState(() => ({
+      loading: true,
+      message: "Importing Test Cases...",
+    }));
+
+    // TODO: catch errors and display error message if persist fails
+    await testCaseService.current.importTestCases(
+      measureId,
+      testCases
+    );
+
+    refreshTestCases();
+  };
+
   return (
     <div>
       <div tw="flex flex-col">
-        <div tw="py-2">
+        <div tw="py-2" style={{ display: "flex", flexDirection: "row" }}>
           {canEdit && (
             <Button
               buttonTitle="New Test Case"
               disabled={false}
               onClick={createNewTestCase}
               data-testid="create-new-test-case-button"
+            />
+          )}
+          <span style={{ marginLeft: 5, marginRight: 5 }} />
+          {canEdit && (
+            <Button
+              buttonTitle="Import Test Cases"
+              onClick={() => {
+                // console.log("Importing the test cases");
+                setImportDialogState({ ...importDialogState, open: true });
+              }}
+              data-testid="show-import-test-cases-button"
             />
           )}
         </div>
@@ -187,6 +240,28 @@ const TestCaseList = () => {
           </div>
         </div>
       </div>
+
+      <TestCaseImportDialog
+        open={importDialogState.open}
+        measure={measure}
+        onImport={onTestCaseImport}
+        handleClose={() =>
+          setImportDialogState({ ...importDialogState, open: false })
+        }
+      />
+
+      <Backdrop
+        sx={{
+          color: "#fff",
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          display: "flex",
+          flexDirection: "column",
+        }}
+        open={loadingState.loading}
+      >
+        <Typography color="inherit">{loadingState.message}</Typography>
+        <CircularProgress color="inherit" size={80} />
+      </Backdrop>
     </div>
   );
 };
