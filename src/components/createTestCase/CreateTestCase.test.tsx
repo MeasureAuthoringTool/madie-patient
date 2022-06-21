@@ -78,6 +78,18 @@ jest.mock("../../hooks/useOktaTokens", () =>
   }))
 );
 
+jest.mock("@madie/madie-util", () => ({
+  measureStore: {
+    state: null,
+    initialState: null,
+    subscribe: (set) => {
+      set({} as Measure);
+      return { unsubscribe: () => null };
+    },
+    unsubscribe: () => null,
+  },
+}));
+
 const defaultMeasure = {
   id: "m1234",
   measureScoring: MeasureScoring.COHORT,

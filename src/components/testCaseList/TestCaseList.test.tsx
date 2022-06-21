@@ -384,28 +384,6 @@ describe("TestCaseList component", () => {
     });
   });
 
-  it("should display error message when fetch measure fails", async () => {
-    const error = {
-      message: `Unable to fetch measure ${measure.id}`,
-    };
-    const useMeasureServiceMockRejected = {
-      fetchMeasure: jest.fn().mockRejectedValue(error),
-    } as unknown as MeasureServiceApi;
-
-    useMeasureServiceMock.mockImplementation(() => {
-      return useMeasureServiceMockRejected;
-    });
-
-    const { getByTestId } = renderTestCaseListComponent();
-
-    await waitFor(async () => {
-      const errorMessage = getByTestId("display-tests-error");
-      await expect(errorMessage).toHaveTextContent(
-        `Unable to fetch measure ${measure.id}`
-      );
-    });
-  });
-
   it("should render list of test cases and truncate title and series", async () => {
     const testCases = [
       {

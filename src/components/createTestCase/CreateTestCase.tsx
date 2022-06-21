@@ -408,6 +408,11 @@ const CreateTestCase = () => {
             isPreviousBundleIdValueChanged ? "" : editorValJsonIdMessage
           }`,
         });
+        if (measure.testCases) {
+          measure.testCases.push(testCase);
+        } else {
+          measure.testCases = [testCase];
+        }
       } else {
         setAlert({
           status: "warning",
