@@ -41,6 +41,8 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
+      - name: Set selected color
+        run: echo "$(npm --version)"
       - name: Install node dependencies
         run: npm ci
 
