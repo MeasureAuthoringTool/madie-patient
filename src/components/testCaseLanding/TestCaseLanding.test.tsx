@@ -35,15 +35,6 @@ const setMeasureBundle = jest.fn();
 const setValueSets = jest.fn();
 
 jest.mock("@madie/madie-util", () => ({
-  measureStore: {
-    state: null,
-    initialState: null,
-    subscribe: (set) => {
-      set(measure);
-      return { unsubscribe: () => null };
-    },
-    unsubscribe: () => null,
-  },
   useOktaTokens: () => ({
     getAccessToken: () => "test.jwt",
     getUserName: () => MEASURE_CREATEDBY,
