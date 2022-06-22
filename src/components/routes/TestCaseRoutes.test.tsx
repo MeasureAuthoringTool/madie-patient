@@ -5,7 +5,7 @@ import TestCaseRoutes from "./TestCaseRoutes";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
-import { MeasureScoring, Measure } from "@madie/madie-models";
+import { MeasureScoring } from "@madie/madie-models";
 import { getExampleValueSet } from "../../util/CalculationTestHelpers";
 import { Bundle } from "fhir/r4";
 
@@ -28,19 +28,10 @@ const serviceConfig: ServiceConfig = {
 };
 
 const MEASURE_CREATEDBY = "testuser";
-jest.mock("../../hooks/useOktaTokens", () =>
-  jest.fn(() => ({
-    getAccessToken: () => "test.jwt",
-    getUserName: () => MEASURE_CREATEDBY,
-  }))
-);
-
 const measureBundle = {} as Bundle;
 const valueSets = [getExampleValueSet()];
-
 const measure = {
   id: "m1234",
-  measureScoring: "Cohort",
   model: "QI-Core",
   cqlLibraryName: "CM527Library",
   measurementPeriodStart: "01/05/2022",
@@ -62,6 +53,10 @@ jest.mock("@madie/madie-util", () => ({
     },
     unsubscribe: () => null,
   },
+  useOktaTokens: () => ({
+    getAccessToken: () => "test.jwt",
+    getUserName: () => MEASURE_CREATEDBY,
+  }),
 }));
 
 describe("TestCaseRoutes", () => {

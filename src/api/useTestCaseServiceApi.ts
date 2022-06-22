@@ -2,7 +2,7 @@ import axios from "axios";
 import useServiceConfig from "./useServiceConfig";
 import { ServiceConfig } from "./ServiceContext";
 import { TestCase } from "@madie/madie-models";
-import useOktaTokens from "../hooks/useOktaTokens";
+import { useOktaTokens } from "@madie/madie-util";
 
 export class TestCaseServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}

@@ -42,7 +42,7 @@ import {
   DetailedPopulationGroupResult,
   ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
-import useOktaTokens from "../../hooks/useOktaTokens";
+import { useOktaTokens } from "@madie/madie-util";
 import useExecutionContext from "../routes/useExecutionContext";
 
 const FormControl = tw.div`mb-3`;

@@ -1,7 +1,7 @@
 import axios from "axios";
 import useServiceConfig from "./useServiceConfig";
 import { ServiceConfig } from "./ServiceContext";
-import useOktaTokens from "../hooks/useOktaTokens";
+import { useOktaTokens } from "@madie/madie-util";
 import { Bundle, ValueSet, Library } from "fhir/r4";
 
 type ValueSetSearchParams = {

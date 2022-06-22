@@ -69,14 +69,7 @@ const serviceConfig: ServiceConfig = {
     baseUrl: "something.com",
   },
 };
-
 const MEASURE_CREATEDBY = "testuser";
-jest.mock("../../hooks/useOktaTokens", () =>
-  jest.fn(() => ({
-    getAccessToken: () => "test.jwt",
-    getUserName: () => MEASURE_CREATEDBY,
-  }))
-);
 
 jest.mock("@madie/madie-util", () => ({
   measureStore: {
@@ -88,6 +81,10 @@ jest.mock("@madie/madie-util", () => ({
     },
     unsubscribe: () => null,
   },
+  useOktaTokens: () => ({
+    getAccessToken: () => "test.jwt",
+    getUserName: () => MEASURE_CREATEDBY,
+  }),
 }));
 
 const defaultMeasure = {

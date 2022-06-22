@@ -47,12 +47,12 @@ const serviceConfig: ServiceConfig = {
 };
 
 const MEASURE_CREATEDBY = "testuser";
-jest.mock("../../hooks/useOktaTokens", () =>
-  jest.fn(() => ({
+jest.mock("@madie/madie-util", () => ({
+  useOktaTokens: () => ({
     getAccessToken: () => "test.jwt",
     getUserName: () => MEASURE_CREATEDBY,
-  }))
-);
+  }),
+}));
 
 const mockedUsedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({

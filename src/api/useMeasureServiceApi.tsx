@@ -3,29 +3,11 @@ import axios from "axios";
 import useServiceConfig from "./useServiceConfig";
 import { ServiceConfig } from "./ServiceContext";
 import { Measure } from "@madie/madie-models";
-import useOktaTokens from "../hooks/useOktaTokens";
+import { useOktaTokens } from "@madie/madie-util";
 import { Bundle } from "fhir/r4";
 
 export class MeasureServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
-
-  async fetchMeasure(id: string): Promise<Measure> {
-    try {
-      const response = await axios.get<Measure>(
-        `${this.baseUrl}/measures/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${this.getAccessToken()}`,
-          },
-        }
-      );
-      return response.data;
-    } catch (err) {
-      const message = `Unable to fetch measure ${id}`;
-      throw new Error(message);
-    }
-  }
-
   async fetchMeasureBundle(measure: Measure): Promise<Bundle> {
     if (measure.cqlErrors || !measure.elmJson) {
       throw new Error(

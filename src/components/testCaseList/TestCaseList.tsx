@@ -14,7 +14,7 @@ import {
   ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
 import { getFhirMeasurePopulationCode } from "../../util/PopulationsMap";
-import useOktaTokens from "../../hooks/useOktaTokens";
+import { useOktaTokens } from "@madie/madie-util";
 import useExecutionContext from "../routes/useExecutionContext";
 
 const TH = tw.th`p-3 border-b text-left text-sm font-bold uppercase`;
@@ -41,7 +41,7 @@ const TestCaseList = () => {
 
   useEffect(() => {
     setCanEdit(userName === measure?.createdBy);
-  });
+  }, [measure, userName]);
 
   useEffect(() => {
     testCaseService.current

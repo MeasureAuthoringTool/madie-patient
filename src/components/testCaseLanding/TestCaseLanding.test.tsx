@@ -3,13 +3,9 @@ import { render, screen } from "@testing-library/react";
 import TestCaseLanding from "./TestCaseLanding";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
-import axios from "axios";
 import { Measure, MeasureScoring } from "@madie/madie-models";
 import { Bundle, ValueSet } from "fhir/r4";
 import { ExecutionContextProvider } from "../routes/ExecutionContext";
-
-jest.mock("axios");
-const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const serviceConfig: ServiceConfig = {
   measureService: {
@@ -24,17 +20,10 @@ const serviceConfig: ServiceConfig = {
 };
 
 const MEASURE_CREATEDBY = "testuser";
-jest.mock("../../hooks/useOktaTokens", () =>
-  jest.fn(() => ({
-    getAccessToken: () => "test.jwt",
-    getUserName: () => MEASURE_CREATEDBY,
-  }))
-);
 
 const measure = {
   id: "m1234",
   createdBy: MEASURE_CREATEDBY,
-  measureScoring: MeasureScoring.PROPORTION,
   measurementPeriodStart: "2023-01-01",
   measurementPeriodEnd: "2023-12-31",
 } as unknown as Measure;
@@ -44,6 +33,22 @@ const valueSets = [] as ValueSet[];
 const setMeasure = jest.fn();
 const setMeasureBundle = jest.fn();
 const setValueSets = jest.fn();
+
+jest.mock("@madie/madie-util", () => ({
+  measureStore: {
+    state: null,
+    initialState: null,
+    subscribe: (set) => {
+      set(measure);
+      return { unsubscribe: () => null };
+    },
+    unsubscribe: () => null,
+  },
+  useOktaTokens: () => ({
+    getAccessToken: () => "test.jwt",
+    getUserName: () => MEASURE_CREATEDBY,
+  }),
+}));
 
 describe("TestCaseLanding component", () => {
   afterEach(() => {
