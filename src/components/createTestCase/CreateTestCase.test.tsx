@@ -390,7 +390,6 @@ describe("CreateTestCase component", () => {
     const measure = {
       id: "m1234",
       createdBy: MEASURE_CREATEDBY,
-      measureScoring: MeasureScoring.CONTINUOUS_VARIABLE,
       groups: [
         {
           id: "Group1_ID",
@@ -400,7 +399,7 @@ describe("CreateTestCase component", () => {
           },
         },
       ],
-    } as Measure;
+    } as unknown as Measure;
 
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/1234"],
@@ -598,7 +597,6 @@ describe("CreateTestCase component", () => {
     const measure = {
       id: "m1234",
       createdBy: MEASURE_CREATEDBY,
-      measureScoring: MeasureScoring.CONTINUOUS_VARIABLE,
       groups: [
         {
           id: "Group1_ID",
@@ -608,7 +606,7 @@ describe("CreateTestCase component", () => {
           },
         },
       ],
-    } as Measure;
+    } as unknown as Measure;
     const testCaseJson = JSON.stringify({
       resourceType: "Bundle",
     });
@@ -741,7 +739,6 @@ describe("CreateTestCase component", () => {
     const measure = {
       id: "m1234",
       createdBy: MEASURE_CREATEDBY,
-      measureScoring: MeasureScoring.CONTINUOUS_VARIABLE,
       groups: [
         {
           id: "Group1_ID",
@@ -751,7 +748,7 @@ describe("CreateTestCase component", () => {
           },
         },
       ],
-    } as Measure;
+    } as unknown as Measure;
     const testCaseJson = JSON.stringify({
       resourceType: "Bundle",
       id: "12",
