@@ -30,7 +30,6 @@ export class TestCaseServiceApi {
     testCases: TestCase[]
   ): Promise<TestCase[]> {
     try {
-      console.log("testCases: ", testCases);
       const response = await axios.post<TestCase[]>(
         `${this.baseUrl}/measures/${measureId}/test-cases/bulk`,
         testCases,

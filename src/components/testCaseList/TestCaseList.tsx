@@ -52,7 +52,6 @@ const TestCaseList = () => {
     open: false,
   });
 
-
   useEffect(() => {
     measureService.current
       .fetchMeasure(measureId)
@@ -160,10 +159,7 @@ const TestCaseList = () => {
     }));
 
     // TODO: catch errors and display error message if persist fails
-    await testCaseService.current.importTestCases(
-      measureId,
-      testCases
-    );
+    await testCaseService.current.importTestCases(measureId, testCases);
 
     refreshTestCases();
   };
