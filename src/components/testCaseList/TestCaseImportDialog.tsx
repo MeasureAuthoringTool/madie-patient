@@ -78,7 +78,9 @@ const TestCaseImportDialog = ({ open, handleClose, measure, onImport }) => {
   const renderFileContent = () => {
     return (
       <div>
-        <div>Test Cases from File: {file.name}</div>
+        <div>
+          [ {testCases?.length | 0} ] Test Cases from File: {file.name}
+        </div>
         <Divider />
         <div style={{ maxHeight: 450, overflowY: "scroll" }}>
           {testCases?.map((tc) => (
@@ -102,7 +104,7 @@ const TestCaseImportDialog = ({ open, handleClose, measure, onImport }) => {
       <DialogTitle id="responsive-dialog-title">Test Case Import</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          <Alert severity="warning" style={{marginBottom: 10}}>
+          <Alert severity="warning" style={{ marginBottom: 10 }}>
             Please Note: Expected Values for group populations are not imported
             and must be manually updated!
           </Alert>
