@@ -22,15 +22,15 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Use Node.js 16.x
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v2-beta
         with:
           node-version: 16.x
 
       - name: Cache node modules
-        uses: actions/cache@v3
+        uses: actions/cache@v2
         env:
           cache-name: cache-node-modules
         with:
@@ -60,7 +60,7 @@ jobs:
         run: npm run-script coverage
 
       - name: Store the coverage report as an artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: coverage
           path: coverage/lcov.info
@@ -71,7 +71,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download coverage artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v2
         with:
           name: coverage
 
@@ -87,9 +87,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
       - name: Download coverage artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v2
         with:
           name: coverage
       - name: Upload code coverage to Codecov
