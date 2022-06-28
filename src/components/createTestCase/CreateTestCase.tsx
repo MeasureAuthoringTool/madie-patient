@@ -23,7 +23,6 @@ import {
   GroupPopulation,
   DisplayGroupPopulation,
   HapiOperationOutcome,
-  Measure,
 } from "@madie/madie-models";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import Editor from "../editor/Editor";
@@ -430,7 +429,7 @@ const CreateTestCase = () => {
 
   // we need to update measure store with created/updated test case to avoid stale state,
   // otherwise we'll lose testcase updates
-  function updateMeasureStore(action, testCase) {
+  function updateMeasureStore(action: string, testCase: TestCase) {
     const measureCopy = Object.assign({}, measure);
     if (action === "update") {
       // for update action, find original test from measure
