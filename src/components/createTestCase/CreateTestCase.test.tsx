@@ -391,6 +391,7 @@ describe("CreateTestCase component", () => {
     const measure = {
       id: "m1234",
       createdBy: MEASURE_CREATEDBY,
+      testCases: [testCase],
       groups: [
         {
           id: "Group1_ID",
@@ -598,6 +599,7 @@ describe("CreateTestCase component", () => {
     const measure = {
       id: "m1234",
       createdBy: MEASURE_CREATEDBY,
+      testCases: [testCase],
       groups: [
         {
           id: "Group1_ID",
@@ -740,6 +742,7 @@ describe("CreateTestCase component", () => {
     const measure = {
       id: "m1234",
       createdBy: MEASURE_CREATEDBY,
+      testCases: [],
       groups: [
         {
           id: "Group1_ID",
@@ -1299,6 +1302,21 @@ describe("CreateTestCase component", () => {
       series: "SeriesA",
       json: `{"test":"test"}`,
     } as TestCase;
+
+    const measure = {
+      id: "m1234",
+      createdBy: MEASURE_CREATEDBY,
+      testCases: [],
+      groups: [
+        {
+          id: "Group1_ID",
+          scoring: "Cohort",
+          population: {
+            initialPopulation: "Pop1",
+          },
+        },
+      ],
+    } as unknown as Measure;
     const testCaseDescription = "modified description";
     mockedAxios.get.mockClear().mockImplementation((args) => {
       if (args && args.endsWith("series")) {
@@ -1309,7 +1327,8 @@ describe("CreateTestCase component", () => {
 
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/1234"],
-      "/measures/:measureId/edit/test-cases/:id"
+      "/measures/:measureId/edit/test-cases/:id",
+      measure
     );
 
     mockedAxios.put.mockResolvedValue({
@@ -1382,6 +1401,22 @@ describe("CreateTestCase component", () => {
       series: "SeriesA",
       json: `{"test":"test"}`,
     } as TestCase;
+
+    const measure = {
+      id: "m1234",
+      createdBy: MEASURE_CREATEDBY,
+      testCases: [],
+      groups: [
+        {
+          id: "Group1_ID",
+          scoring: "Cohort",
+          population: {
+            initialPopulation: "Pop1",
+          },
+        },
+      ],
+    } as unknown as Measure;
+
     const testCaseDescription = "modified description";
     mockedAxios.get.mockClear().mockImplementation((args) => {
       if (args && args.endsWith("series")) {
@@ -1392,7 +1427,8 @@ describe("CreateTestCase component", () => {
 
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/1234"],
-      "/measures/:measureId/edit/test-cases/:id"
+      "/measures/:measureId/edit/test-cases/:id",
+      measure
     );
 
     const data = {

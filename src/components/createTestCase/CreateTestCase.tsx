@@ -23,6 +23,7 @@ import {
   GroupPopulation,
   DisplayGroupPopulation,
   HapiOperationOutcome,
+  Measure,
 } from "@madie/madie-models";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import Editor from "../editor/Editor";
@@ -409,14 +410,6 @@ const CreateTestCase = () => {
             isPreviousBundleIdValueChanged ? "" : editorValJsonIdMessage
           }`,
         });
-        const measureCopy = Object.assign({}, measure);
-        if (measureCopy.testCases) {
-          measureCopy.testCases.push(testCase);
-        } else {
-          measureCopy.testCases = [testCase];
-        }
-        // update measure store
-        updateMeasure(measureCopy);
       } else {
         setAlert({
           status: "warning",
@@ -426,12 +419,35 @@ const CreateTestCase = () => {
         });
         handleHapiOutcome(testCase.hapiOperationOutcome);
       }
+      updateMeasureStore(action, testCase);
     } else {
       setAlert(() => ({
         status: "error",
         message: `An error occurred - ${action} did not return the expected successful result.`,
       }));
     }
+  }
+
+  // we need to update measure store with created/updated test case to avoid stale state,
+  // otherwise we'll lose testcase updates
+  function updateMeasureStore(action, testCase) {
+    const measureCopy = Object.assign({}, measure);
+    if (action === "update") {
+      // for update action, find original test from measure
+      const index = measureCopy.testCases.findIndex(
+        (tc) => tc.id === testCase.id
+      );
+      // remove stale test case
+      measureCopy.testCases.splice(index, 1);
+    }
+    // add updated test to measure
+    if (measureCopy.testCases) {
+      measureCopy.testCases.push(testCase);
+    } else {
+      measureCopy.testCases = [testCase];
+    }
+    // update measure store
+    updateMeasure(measureCopy);
   }
 
   function hasValidHapiOutcome(testCase: TestCase) {
