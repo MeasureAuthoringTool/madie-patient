@@ -45,6 +45,7 @@ const measure = {
 
 jest.mock("@madie/madie-util", () => ({
   measureStore: {
+    updateMeasure: jest.fn((measure) => measure),
     state: null,
     initialState: null,
     subscribe: (set) => {

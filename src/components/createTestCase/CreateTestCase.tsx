@@ -42,7 +42,7 @@ import {
   DetailedPopulationGroupResult,
   ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
-import { useOktaTokens } from "@madie/madie-util";
+import { measureStore, useOktaTokens } from "@madie/madie-util";
 import useExecutionContext from "../routes/useExecutionContext";
 
 const FormControl = tw.div`mb-3`;
@@ -166,6 +166,7 @@ const CreateTestCase = () => {
   const [measure] = measureState;
   const [measureBundle] = bundleState;
   const [valueSets] = valueSetsState;
+  const { updateMeasure } = measureStore;
 
   const [canEdit, setCanEdit] = useState<boolean>(
     userName === measure?.createdBy
@@ -408,11 +409,14 @@ const CreateTestCase = () => {
             isPreviousBundleIdValueChanged ? "" : editorValJsonIdMessage
           }`,
         });
-        if (measure.testCases) {
-          measure.testCases.push(testCase);
+        const measureCopy = Object.assign({}, measure);
+        if (measureCopy.testCases) {
+          measureCopy.testCases.push(testCase);
         } else {
-          measure.testCases = [testCase];
+          measureCopy.testCases = [testCase];
         }
+        // update measure store
+        updateMeasure(measureCopy);
       } else {
         setAlert({
           status: "warning",
