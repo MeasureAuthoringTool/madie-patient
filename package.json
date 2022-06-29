@@ -57,7 +57,6 @@
     "@wojtekmaj/enzyme-adapter-react-17": "^0.6.6",
     "@wojtekmaj/enzyme-adapter-utils": "^0.1.2",
     "ace-builds": "~1.4.13",
-    "async": "^3.2.4",
     "autoprefixer": "^10.3.3",
     "axios": "^0.24.0",
     "babel-jest": "^27.1.0",
@@ -112,6 +111,9 @@
     "react-router-dom": "^6.2.1",
     "single-spa": "^5.9.3",
     "single-spa-react": "^4.2.0"
+  },
+  "overrides": {
+    "async": "^2.6.4"
   },
   "types": "dist/madie-madie-patient.d.ts",
   "browserslist": [
