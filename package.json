@@ -112,10 +112,6 @@
     "single-spa": "^5.9.3",
     "single-spa-react": "^4.2.0"
   },
-  "overrides": {
-    "cql-execution": "2.3.3",
-    "async": "^2.6.4"
-  },
   "types": "dist/madie-madie-patient.d.ts",
   "browserslist": [
     "defaults",
