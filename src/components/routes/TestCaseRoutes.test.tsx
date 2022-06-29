@@ -91,8 +91,8 @@ describe("TestCaseRoutes", () => {
     expect(testCaseTitle).toBeInTheDocument();
     const testCaseSeries = await screen.findByText("IPP_Pass");
     expect(testCaseSeries).toBeInTheDocument();
-    const viewBtn = screen.getByRole("button", { name: "Edit" });
-    expect(viewBtn).toBeInTheDocument();
+    const editBtn = screen.getByRole("button", { name: "Edit" });
+    expect(editBtn).toBeInTheDocument();
   });
 
   it("should allow navigation to create page from landing page ", async () => {
@@ -278,7 +278,7 @@ describe("TestCaseRoutes", () => {
 
   it("Fetch measure bundle on Routes load", async () => {
     mockedAxios.get.mockImplementation((args) => {
-      if (args?.endsWith("/bundle")) {
+      if (args?.endsWith("/bundles")) {
         return Promise.resolve({ data: measureBundle });
       } else if (args?.endsWith("/value-sets/searches")) {
         return Promise.resolve({ data: [valueSets] });
@@ -307,8 +307,8 @@ describe("TestCaseRoutes", () => {
     expect(testCaseTitle).toBeInTheDocument();
     const testCaseSeries = await screen.findByText("IPP_Pass");
     expect(testCaseSeries).toBeInTheDocument();
-    const viewBtn = screen.getByRole("button", { name: "Edit" });
-    expect(viewBtn).toBeInTheDocument();
+    const editBtn = screen.getByRole("button", { name: "Edit" });
+    expect(editBtn).toBeInTheDocument();
   });
 
   it("should render 404 page", async () => {
