@@ -8,7 +8,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@madie/madie-components";
 import TestCaseComponent from "./TestCase";
 import calculationService from "../../api/CalculationService";
-
 import {
   DetailedPopulationGroupResult,
   ExecutionResult,
