@@ -1,4 +1,4 @@
-import { Measure, MeasureScoring, Model } from "@madie/madie-models";
+import { Measure, Model } from "@madie/madie-models";
 
 export const officeVisitMeasure: Measure = {
   version: 0,
@@ -34,7 +34,6 @@ export const officeVisitMeasure: Measure = {
     rationale: null,
   },
   measureName: "SimpleFhirMeasure",
-  measureScoring: MeasureScoring.PROPORTION,
   measureSetId: null,
   measurementPeriodEnd: new Date("2023-12-21"),
   measurementPeriodStart: new Date("2022-01-01"),

@@ -5,7 +5,7 @@ import TestCaseRoutes from "./TestCaseRoutes";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
-import { MeasureScoring, Measure } from "@madie/madie-models";
+import { MeasureScoring } from "@madie/madie-models";
 import { getExampleValueSet } from "../../util/CalculationTestHelpers";
 import { Bundle } from "fhir/r4";
 
@@ -28,15 +28,37 @@ const serviceConfig: ServiceConfig = {
 };
 
 const MEASURE_CREATEDBY = "testuser";
-jest.mock("../../hooks/useOktaTokens", () =>
-  jest.fn(() => ({
-    getAccessToken: () => "test.jwt",
-    getUserName: () => MEASURE_CREATEDBY,
-  }))
-);
-
 const measureBundle = {} as Bundle;
 const valueSets = [getExampleValueSet()];
+const measure = {
+  id: "m1234",
+  model: "QI-Core",
+  cqlLibraryName: "CM527Library",
+  measurementPeriodStart: "01/05/2022",
+  measurementPeriodEnd: "03/07/2022",
+  active: true,
+  cqlErrors: false,
+  elmJson: "Fak3",
+  groups: [],
+  createdBy: MEASURE_CREATEDBY,
+};
+
+jest.mock("@madie/madie-util", () => ({
+  measureStore: {
+    updateMeasure: jest.fn((measure) => measure),
+    state: null,
+    initialState: null,
+    subscribe: (set) => {
+      set(measure);
+      return { unsubscribe: () => null };
+    },
+    unsubscribe: () => null,
+  },
+  useOktaTokens: () => ({
+    getAccessToken: () => "test.jwt",
+    getUserName: () => MEASURE_CREATEDBY,
+  }),
+}));
 
 describe("TestCaseRoutes", () => {
   afterEach(() => {
@@ -69,8 +91,8 @@ describe("TestCaseRoutes", () => {
     expect(testCaseTitle).toBeInTheDocument();
     const testCaseSeries = await screen.findByText("IPP_Pass");
     expect(testCaseSeries).toBeInTheDocument();
-    const viewBtn = screen.getByRole("button", { name: "View" });
-    expect(viewBtn).toBeInTheDocument();
+    const editBtn = screen.getByRole("button", { name: "Edit" });
+    expect(editBtn).toBeInTheDocument();
   });
 
   it("should allow navigation to create page from landing page ", async () => {
@@ -197,22 +219,6 @@ describe("TestCaseRoutes", () => {
     mockedAxios.get.mockImplementation((args) => {
       if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["SeriesA"] });
-      } else if (
-        args &&
-        args.startsWith(serviceConfig.measureService.baseUrl)
-      ) {
-        return Promise.resolve({
-          data: {
-            id: "m1234",
-            createdBy: MEASURE_CREATEDBY,
-            measureScoring: MeasureScoring.COHORT,
-            measurementPeriodStart: "2023-01-01",
-            measurementPeriodEnd: "2023-12-31",
-            cqlErrors: false,
-            elmJson: "fake",
-            groups: [],
-          },
-        });
       } else if (args && args.endsWith("test-cases")) {
         return Promise.resolve({
           data: [
@@ -225,7 +231,7 @@ describe("TestCaseRoutes", () => {
             },
           ],
         });
-      } else if (args?.endsWith("/bundle")) {
+      } else if (args?.endsWith("/bundles")) {
         return Promise.resolve({ data: measureBundle });
       } else if (args?.endsWith("/value-sets/searches")) {
         return Promise.resolve({ data: [valueSets] });
@@ -272,11 +278,7 @@ describe("TestCaseRoutes", () => {
 
   it("Fetch measure bundle on Routes load", async () => {
     mockedAxios.get.mockImplementation((args) => {
-      if (args?.startsWith(serviceConfig.measureService.baseUrl)) {
-        return Promise.resolve({
-          data: { cqlErrors: false, elmJson: "Fak3" } as Measure,
-        });
-      } else if (args?.endsWith("/bundle")) {
+      if (args?.endsWith("/bundles")) {
         return Promise.resolve({ data: measureBundle });
       } else if (args?.endsWith("/value-sets/searches")) {
         return Promise.resolve({ data: [valueSets] });
@@ -305,8 +307,8 @@ describe("TestCaseRoutes", () => {
     expect(testCaseTitle).toBeInTheDocument();
     const testCaseSeries = await screen.findByText("IPP_Pass");
     expect(testCaseSeries).toBeInTheDocument();
-    const viewBtn = screen.getByRole("button", { name: "View" });
-    expect(viewBtn).toBeInTheDocument();
+    const editBtn = screen.getByRole("button", { name: "Edit" });
+    expect(editBtn).toBeInTheDocument();
   });
 
   it("should render 404 page", async () => {

@@ -1,4 +1,4 @@
-import { Measure, MeasureScoring, Model } from "@madie/madie-models";
+import { Measure, Model } from "@madie/madie-models";
 
 export const simpleMeasureFixture: Measure = {
   id: "623cacebe74613783378c17b",
@@ -31,7 +31,6 @@ export const simpleMeasureFixture: Measure = {
   measurementPeriodStart: new Date("2023-01-01"),
   measurementPeriodEnd: new Date("2023-12-31"),
   model: Model.QICORE,
-  measureScoring: MeasureScoring.PROPORTION,
   measureMetaData: {
     steward: null,
     description: null,

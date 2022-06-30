@@ -4,20 +4,27 @@ import { Alert } from "@mui/material";
 import TestCaseLanding from "../testCaseLanding/TestCaseLanding";
 import CreateTestCase from "../createTestCase/CreateTestCase";
 import NotFound from "../notfound/NotFound";
-import { Measure } from "@madie/madie-models";
+import { measureStore } from "@madie/madie-util";
 import { Bundle, ValueSet } from "fhir/r4";
 import useTerminologyServiceApi from "../../api/useTerminologyServiceApi";
 import { ExecutionContextProvider } from "./ExecutionContext";
 import useMeasureServiceApi from "../../api/useMeasureServiceApi";
 
 const TestCaseRoutes = () => {
-  const [measure, setMeasure] = useState<Measure>();
   const [measureBundle, setMeasureBundle] = useState<Bundle>();
   const [valueSets, setValueSets] = useState<ValueSet[]>();
   const [errors, setErrors] = useState<string>();
 
   const terminologyService = useRef(useTerminologyServiceApi());
   const measureService = useRef(useMeasureServiceApi());
+
+  const [measure, setMeasure] = useState<any>(measureStore.state);
+  useEffect(() => {
+    const subscription = measureStore.subscribe(setMeasure);
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
     if (measure) {
