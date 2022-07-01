@@ -3,7 +3,10 @@ import tw, { styled } from "twin.macro";
 import "styled-components/macro";
 import { DisplayPopulationValue, getPopulationCode } from "@madie/madie-models";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCheckCircle,
+  faTimesCircle,
+} from "@fortawesome/free-solid-svg-icons";
 
 const TD = tw.td`p-1 text-xs text-gray-600`;
 const StyledIcon = styled(FontAwesomeIcon)(
@@ -71,7 +74,11 @@ const TestCasePopulation = ({
       >
         <TD>
           <StyledIcon
-            icon={faCheckCircle}
+            icon={
+              population.expected === population.actual
+                ? faCheckCircle
+                : faTimesCircle
+            }
             data-testid={`test-population-icon-${population.name}`}
             errors={population.expected !== population.actual}
           />
