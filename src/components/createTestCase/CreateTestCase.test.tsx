@@ -69,14 +69,24 @@ const serviceConfig: ServiceConfig = {
     baseUrl: "something.com",
   },
 };
-
 const MEASURE_CREATEDBY = "testuser";
-jest.mock("../../hooks/useOktaTokens", () =>
-  jest.fn(() => ({
+
+jest.mock("@madie/madie-util", () => ({
+  measureStore: {
+    updateMeasure: jest.fn((measure) => measure),
+    state: null,
+    initialState: null,
+    subscribe: (set) => {
+      set({} as Measure);
+      return { unsubscribe: () => null };
+    },
+    unsubscribe: () => null,
+  },
+  useOktaTokens: () => ({
     getAccessToken: () => "test.jwt",
     getUserName: () => MEASURE_CREATEDBY,
-  }))
-);
+  }),
+}));
 
 const defaultMeasure = {
   id: "m1234",
@@ -381,7 +391,7 @@ describe("CreateTestCase component", () => {
     const measure = {
       id: "m1234",
       createdBy: MEASURE_CREATEDBY,
-      measureScoring: MeasureScoring.CONTINUOUS_VARIABLE,
+      testCases: [testCase],
       groups: [
         {
           id: "Group1_ID",
@@ -391,7 +401,7 @@ describe("CreateTestCase component", () => {
           },
         },
       ],
-    } as Measure;
+    } as unknown as Measure;
 
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/1234"],
@@ -589,7 +599,7 @@ describe("CreateTestCase component", () => {
     const measure = {
       id: "m1234",
       createdBy: MEASURE_CREATEDBY,
-      measureScoring: MeasureScoring.CONTINUOUS_VARIABLE,
+      testCases: [testCase],
       groups: [
         {
           id: "Group1_ID",
@@ -599,7 +609,7 @@ describe("CreateTestCase component", () => {
           },
         },
       ],
-    } as Measure;
+    } as unknown as Measure;
     const testCaseJson = JSON.stringify({
       resourceType: "Bundle",
     });
@@ -732,7 +742,7 @@ describe("CreateTestCase component", () => {
     const measure = {
       id: "m1234",
       createdBy: MEASURE_CREATEDBY,
-      measureScoring: MeasureScoring.CONTINUOUS_VARIABLE,
+      testCases: [],
       groups: [
         {
           id: "Group1_ID",
@@ -742,7 +752,7 @@ describe("CreateTestCase component", () => {
           },
         },
       ],
-    } as Measure;
+    } as unknown as Measure;
     const testCaseJson = JSON.stringify({
       resourceType: "Bundle",
       id: "12",
@@ -1292,6 +1302,21 @@ describe("CreateTestCase component", () => {
       series: "SeriesA",
       json: `{"test":"test"}`,
     } as TestCase;
+
+    const measure = {
+      id: "m1234",
+      createdBy: MEASURE_CREATEDBY,
+      testCases: [],
+      groups: [
+        {
+          id: "Group1_ID",
+          scoring: "Cohort",
+          population: {
+            initialPopulation: "Pop1",
+          },
+        },
+      ],
+    } as unknown as Measure;
     const testCaseDescription = "modified description";
     mockedAxios.get.mockClear().mockImplementation((args) => {
       if (args && args.endsWith("series")) {
@@ -1302,7 +1327,8 @@ describe("CreateTestCase component", () => {
 
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/1234"],
-      "/measures/:measureId/edit/test-cases/:id"
+      "/measures/:measureId/edit/test-cases/:id",
+      measure
     );
 
     mockedAxios.put.mockResolvedValue({
@@ -1375,6 +1401,22 @@ describe("CreateTestCase component", () => {
       series: "SeriesA",
       json: `{"test":"test"}`,
     } as TestCase;
+
+    const measure = {
+      id: "m1234",
+      createdBy: MEASURE_CREATEDBY,
+      testCases: [],
+      groups: [
+        {
+          id: "Group1_ID",
+          scoring: "Cohort",
+          population: {
+            initialPopulation: "Pop1",
+          },
+        },
+      ],
+    } as unknown as Measure;
+
     const testCaseDescription = "modified description";
     mockedAxios.get.mockClear().mockImplementation((args) => {
       if (args && args.endsWith("series")) {
@@ -1385,7 +1427,8 @@ describe("CreateTestCase component", () => {
 
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/1234"],
-      "/measures/:measureId/edit/test-cases/:id"
+      "/measures/:measureId/edit/test-cases/:id",
+      measure
     );
 
     const data = {

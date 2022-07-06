@@ -47,12 +47,12 @@ const serviceConfig: ServiceConfig = {
 };
 
 const MEASURE_CREATEDBY = "testuser";
-jest.mock("../../hooks/useOktaTokens", () =>
-  jest.fn(() => ({
+jest.mock("@madie/madie-util", () => ({
+  useOktaTokens: () => ({
     getAccessToken: () => "test.jwt",
     getUserName: () => MEASURE_CREATEDBY,
-  }))
-);
+  }),
+}));
 
 const mockedUsedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -380,28 +380,6 @@ describe("TestCaseList component", () => {
       const errorMessage = getByTestId("display-tests-error");
       await expect(errorMessage).toHaveTextContent(
         "Unable to calculate test case."
-      );
-    });
-  });
-
-  it("should display error message when fetch measure fails", async () => {
-    const error = {
-      message: `Unable to fetch measure ${measure.id}`,
-    };
-    const useMeasureServiceMockRejected = {
-      fetchMeasure: jest.fn().mockRejectedValue(error),
-    } as unknown as MeasureServiceApi;
-
-    useMeasureServiceMock.mockImplementation(() => {
-      return useMeasureServiceMockRejected;
-    });
-
-    const { getByTestId } = renderTestCaseListComponent();
-
-    await waitFor(async () => {
-      const errorMessage = getByTestId("display-tests-error");
-      await expect(errorMessage).toHaveTextContent(
-        `Unable to fetch measure ${measure.id}`
       );
     });
   });

@@ -7,15 +7,13 @@ import { TestCase } from "@madie/madie-models";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@madie/madie-components";
 import TestCaseComponent from "./TestCase";
-import useMeasureServiceApi from "../../api/useMeasureServiceApi";
 import calculationService from "../../api/CalculationService";
-
 import {
   DetailedPopulationGroupResult,
   ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
 import { getFhirMeasurePopulationCode } from "../../util/PopulationsMap";
-import useOktaTokens from "../../hooks/useOktaTokens";
+import { useOktaTokens } from "@madie/madie-util";
 import useExecutionContext from "../routes/useExecutionContext";
 import Backdrop from "@mui/material/Backdrop";
 import { CircularProgress, Typography } from "@mui/material";
@@ -33,7 +31,6 @@ const TestCaseList = () => {
   const [error, setError] = useState("");
   const { measureId } = useParams<{ measureId: string }>();
   const testCaseService = useRef(useTestCaseServiceApi());
-  const measureService = useRef(useMeasureServiceApi());
   const calculation = useRef(calculationService());
   const { getUserName } = useOktaTokens();
   const userName = getUserName();
@@ -41,7 +38,7 @@ const TestCaseList = () => {
   const [canEdit, setCanEdit] = useState<boolean>(false);
 
   const { measureState, bundleState, valueSetsState } = useExecutionContext();
-  const [measure, setMeasure] = measureState;
+  const [measure] = measureState;
   const [measureBundle] = bundleState;
   const [valueSets] = valueSetsState;
   const [loadingState, setLoadingState] = useState<any>({
@@ -53,15 +50,10 @@ const TestCaseList = () => {
   });
 
   useEffect(() => {
-    measureService.current
-      .fetchMeasure(measureId)
-      .then((measure) => {
-        setMeasure(measure);
-        setCanEdit(userName === measure.createdBy);
-      })
-      .catch((error) => {
-        setError(error.message);
-      });
+    setCanEdit(userName === measure?.createdBy);
+  }, [measure, userName]);
+
+  useEffect(() => {
     refreshTestCases();
   }, [measureId, testCaseService]);
 
