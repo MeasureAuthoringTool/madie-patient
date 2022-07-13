@@ -47,3 +47,42 @@ jobs:
 
       - name: Execute test coverage
         run: npm run-script coverage
+
+      - name: Store the coverage report as an artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage
+          path: coverage/lcov.info
+
+  upload-codacy-coverage:
+    name: Upload code coverage to Codacy
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download coverage artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: coverage
+
+      - name: Upload code coverage to Codacy
+        uses: codacy/codacy-coverage-reporter-action@master
+        with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: lcov.info
+
+  upload-codecov-coverage:
+    name: Upload code coverage to Codecov
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Download coverage artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: coverage
+      - name: Upload code coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          file: lcov.info
+          fail_ci_if_error: true
