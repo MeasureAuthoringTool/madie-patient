@@ -2,7 +2,7 @@ import * as React from "react";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import TestCasePopulation from "./TestCasePopulation";
-import { MeasurePopulation } from "@madie/madie-models";
+import { PopulationType } from "@madie/madie-models";
 import userEvent from "@testing-library/user-event";
 
 describe("TestCasePopulation component", () => {
@@ -12,7 +12,7 @@ describe("TestCasePopulation component", () => {
 
   it("should render test case population", async () => {
     const testCasePopulation = {
-      name: MeasurePopulation.INITIAL_POPULATION,
+      name: PopulationType.INITIAL_POPULATION,
       expected: true,
       actual: true,
     };
@@ -42,7 +42,7 @@ describe("TestCasePopulation component", () => {
 
   it("should handle changes to checkboxes", async () => {
     const testCasePopulation = {
-      name: MeasurePopulation.INITIAL_POPULATION,
+      name: PopulationType.INITIAL_POPULATION,
       expected: false,
       actual: false,
     };
@@ -74,7 +74,7 @@ describe("TestCasePopulation component", () => {
 
     userEvent.click(ippActual);
     expect(handleChange).toBeCalledWith({
-      name: MeasurePopulation.INITIAL_POPULATION,
+      name: PopulationType.INITIAL_POPULATION,
       expected: false,
       actual: true,
     });

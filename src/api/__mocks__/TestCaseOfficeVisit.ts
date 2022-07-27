@@ -1,4 +1,4 @@
-import { MeasureScoring, MeasurePopulation } from "@madie/madie-models";
+import { MeasureScoring, PopulationType } from "@madie/madie-models";
 
 export const testCaseOfficeVisit = {
   id: "623cFfaK34613783378c17c",
@@ -20,17 +20,17 @@ export const testCaseOfficeVisit = {
       scoring: MeasureScoring.PROPORTION,
       populationValues: [
         {
-          name: MeasurePopulation.INITIAL_POPULATION,
+          name: PopulationType.INITIAL_POPULATION,
           expected: true,
           actual: true,
         },
         {
-          name: MeasurePopulation.NUMERATOR,
+          name: PopulationType.NUMERATOR,
           expected: true,
           actual: true,
         },
         {
-          name: MeasurePopulation.DENOMINATOR,
+          name: PopulationType.DENOMINATOR,
           expected: true,
           actual: true,
         },

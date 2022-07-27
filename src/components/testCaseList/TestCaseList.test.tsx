@@ -17,9 +17,9 @@ import {
   Measure,
   TestCase,
   GroupPopulation,
-  MeasurePopulation,
   MeasureScoring,
   PopulationExpectedValue,
+  PopulationType,
 } from "@madie/madie-models";
 import useTestCaseServiceApi, {
   TestCaseServiceApi,
@@ -191,11 +191,23 @@ const measure = {
     {
       id: "1",
       scoring: MeasureScoring.PROPORTION,
-      population: {
-        [MeasurePopulation.INITIAL_POPULATION]: "ipp",
-        [MeasurePopulation.DENOMINATOR]: "denom",
-        [MeasurePopulation.NUMERATOR]: "num",
-      },
+      populations: [
+        {
+          id: "id-1",
+          name: PopulationType.INITIAL_POPULATION,
+          definition: "ipp",
+        },
+        {
+          id: "id-2",
+          name: PopulationType.DENOMINATOR,
+          definition: "denom",
+        },
+        {
+          id: "id-3",
+          name: PopulationType.NUMERATOR,
+          definition: "num",
+        },
+      ],
     },
   ],
 } as Measure;
