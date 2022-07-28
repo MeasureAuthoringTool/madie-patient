@@ -1,4 +1,9 @@
-import { Measure, Model } from "@madie/madie-models";
+import {
+  Measure,
+  MeasureGroupTypes,
+  Model,
+  PopulationType,
+} from "@madie/madie-models";
 
 export const officeVisitMeasure: Measure = {
   version: 0,
@@ -15,11 +20,24 @@ export const officeVisitMeasure: Measure = {
     {
       id: "626be4370ca8110d3b22404b",
       scoring: "Proportion",
-      population: {
-        initialPopulation: "ipp",
-        denominator: "denom",
-        numerator: "num",
-      },
+      populations: [
+        {
+          id: "id-1",
+          name: PopulationType.INITIAL_POPULATION,
+          definition: "ipp",
+        },
+        {
+          id: "id-2",
+          name: PopulationType.DENOMINATOR,
+          definition: "denom",
+        },
+        {
+          id: "id-3",
+          name: PopulationType.NUMERATOR,
+          definition: "num",
+        },
+      ],
+      measureGroupTypes: [MeasureGroupTypes.OUTCOME],
       groupDescription: null,
     },
   ],

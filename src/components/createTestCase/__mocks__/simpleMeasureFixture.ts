@@ -1,4 +1,9 @@
-import { Measure, Model } from "@madie/madie-models";
+import {
+  Measure,
+  MeasureGroupTypes,
+  Model,
+  PopulationType,
+} from "@madie/madie-models";
 
 export const simpleMeasureFixture: Measure = {
   id: "623cacebe74613783378c17b",
@@ -17,11 +22,24 @@ export const simpleMeasureFixture: Measure = {
     {
       id: "623ce5c173ed8771ee716254",
       scoring: "Proportion",
-      population: {
-        initialPopulation: "first",
-        denominator: "second",
-        numerator: "third",
-      },
+      populations: [
+        {
+          id: "id-1",
+          name: PopulationType.INITIAL_POPULATION,
+          definition: "first",
+        },
+        {
+          id: "id-2",
+          name: PopulationType.DENOMINATOR,
+          definition: "second",
+        },
+        {
+          id: "id-3",
+          name: PopulationType.NUMERATOR,
+          definition: "third",
+        },
+      ],
+      measureGroupTypes: [MeasureGroupTypes.OUTCOME],
     },
   ],
   createdAt: "2022-03-24T17:39:55.871Z",

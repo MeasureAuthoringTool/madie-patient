@@ -1,13 +1,13 @@
 import { triggerPopChanges } from "./PopulationsMap";
 import {
-  MeasurePopulation,
+  PopulationType,
   GroupPopulation,
   PopulationValue,
 } from "@madie/madie-models";
 
 it("return the input matches output with no changes", () => {
   const populationVal: PopulationValue = {
-    name: MeasurePopulation.INITIAL_POPULATION,
+    name: PopulationType.INITIAL_POPULATION,
     expected: true,
     actual: false,
   };
@@ -31,32 +31,32 @@ it("return the input matches output with no changes", () => {
 
 it("return the input with IPP changed to Expected because Denom is Expected", () => {
   const ipp: PopulationValue = {
-    name: MeasurePopulation.INITIAL_POPULATION,
+    name: PopulationType.INITIAL_POPULATION,
     expected: false,
     actual: false,
   };
   const denom: PopulationValue = {
-    name: MeasurePopulation.DENOMINATOR,
+    name: PopulationType.DENOMINATOR,
     expected: true,
     actual: false,
   };
   const denomExcep: PopulationValue = {
-    name: MeasurePopulation.DENOMINATOR_EXCEPTION,
+    name: PopulationType.DENOMINATOR_EXCEPTION,
     expected: false,
     actual: false,
   };
   const denomExclu: PopulationValue = {
-    name: MeasurePopulation.DENOMINATOR_EXCLUSION,
+    name: PopulationType.DENOMINATOR_EXCLUSION,
     expected: false,
     actual: false,
   };
   const numer: PopulationValue = {
-    name: MeasurePopulation.NUMERATOR,
+    name: PopulationType.NUMERATOR,
     expected: false,
     actual: false,
   };
   const numerExclu: PopulationValue = {
-    name: MeasurePopulation.NUMERATOR_EXCLUSION,
+    name: PopulationType.NUMERATOR_EXCLUSION,
     expected: false,
     actual: false,
   };
@@ -82,39 +82,39 @@ it("return the input with IPP changed to Expected because Denom is Expected", ()
   expect(
     findExpectedForName(
       resultPops[0].populationValues,
-      MeasurePopulation.INITIAL_POPULATION
+      PopulationType.INITIAL_POPULATION
     )
   ).toBeTruthy();
 });
 
 it("return the input with IPP Expected, Denom Expected because Denom Exception is Expected", () => {
   const ipp: PopulationValue = {
-    name: MeasurePopulation.INITIAL_POPULATION,
+    name: PopulationType.INITIAL_POPULATION,
     expected: false,
     actual: false,
   };
   const denom: PopulationValue = {
-    name: MeasurePopulation.DENOMINATOR,
+    name: PopulationType.DENOMINATOR,
     expected: false,
     actual: false,
   };
   const denomExcep: PopulationValue = {
-    name: MeasurePopulation.DENOMINATOR_EXCEPTION,
+    name: PopulationType.DENOMINATOR_EXCEPTION,
     expected: true,
     actual: false,
   };
   const denomExclu: PopulationValue = {
-    name: MeasurePopulation.DENOMINATOR_EXCLUSION,
+    name: PopulationType.DENOMINATOR_EXCLUSION,
     expected: false,
     actual: false,
   };
   const numer: PopulationValue = {
-    name: MeasurePopulation.NUMERATOR,
+    name: PopulationType.NUMERATOR,
     expected: false,
     actual: false,
   };
   const numerExclu: PopulationValue = {
-    name: MeasurePopulation.NUMERATOR_EXCLUSION,
+    name: PopulationType.NUMERATOR_EXCLUSION,
     expected: false,
     actual: false,
   };
@@ -144,45 +144,45 @@ it("return the input with IPP Expected, Denom Expected because Denom Exception i
   expect(
     findExpectedForName(
       resultPops[0].populationValues,
-      MeasurePopulation.INITIAL_POPULATION
+      PopulationType.INITIAL_POPULATION
     )
   ).toBeTruthy();
   expect(
     findExpectedForName(
       resultPops[0].populationValues,
-      MeasurePopulation.DENOMINATOR
+      PopulationType.DENOMINATOR
     )
   ).toBeTruthy();
 });
 
 it("return the input with IPP Expected, Denom Expected because Numer is Expected", () => {
   const ipp: PopulationValue = {
-    name: MeasurePopulation.INITIAL_POPULATION,
+    name: PopulationType.INITIAL_POPULATION,
     expected: false,
     actual: false,
   };
   const denom: PopulationValue = {
-    name: MeasurePopulation.DENOMINATOR,
+    name: PopulationType.DENOMINATOR,
     expected: false,
     actual: false,
   };
   const denomExcep: PopulationValue = {
-    name: MeasurePopulation.DENOMINATOR_EXCEPTION,
+    name: PopulationType.DENOMINATOR_EXCEPTION,
     expected: false,
     actual: false,
   };
   const denomExclu: PopulationValue = {
-    name: MeasurePopulation.DENOMINATOR_EXCLUSION,
+    name: PopulationType.DENOMINATOR_EXCLUSION,
     expected: false,
     actual: false,
   };
   const numer: PopulationValue = {
-    name: MeasurePopulation.NUMERATOR,
+    name: PopulationType.NUMERATOR,
     expected: true,
     actual: false,
   };
   const numerExclu: PopulationValue = {
-    name: MeasurePopulation.NUMERATOR_EXCLUSION,
+    name: PopulationType.NUMERATOR_EXCLUSION,
     expected: false,
     actual: false,
   };
@@ -209,45 +209,45 @@ it("return the input with IPP Expected, Denom Expected because Numer is Expected
   expect(
     findExpectedForName(
       resultPops[0].populationValues,
-      MeasurePopulation.INITIAL_POPULATION
+      PopulationType.INITIAL_POPULATION
     )
   ).toBeTruthy();
   expect(
     findExpectedForName(
       resultPops[0].populationValues,
-      MeasurePopulation.DENOMINATOR
+      PopulationType.DENOMINATOR
     )
   ).toBeTruthy();
 });
 
 it("return the input with IPP Expected, Denom Expected when Numer is Unchecked", () => {
   const ipp: PopulationValue = {
-    name: MeasurePopulation.INITIAL_POPULATION,
+    name: PopulationType.INITIAL_POPULATION,
     expected: true,
     actual: false,
   };
   const denom: PopulationValue = {
-    name: MeasurePopulation.DENOMINATOR,
+    name: PopulationType.DENOMINATOR,
     expected: true,
     actual: false,
   };
   const denomExcep: PopulationValue = {
-    name: MeasurePopulation.DENOMINATOR_EXCEPTION,
+    name: PopulationType.DENOMINATOR_EXCEPTION,
     expected: false,
     actual: false,
   };
   const denomExclu: PopulationValue = {
-    name: MeasurePopulation.DENOMINATOR_EXCLUSION,
+    name: PopulationType.DENOMINATOR_EXCLUSION,
     expected: false,
     actual: false,
   };
   const numer: PopulationValue = {
-    name: MeasurePopulation.NUMERATOR,
+    name: PopulationType.NUMERATOR,
     expected: false,
     actual: false,
   };
   const numerExclu: PopulationValue = {
-    name: MeasurePopulation.NUMERATOR_EXCLUSION,
+    name: PopulationType.NUMERATOR_EXCLUSION,
     expected: false,
     actual: false,
   };
@@ -274,45 +274,45 @@ it("return the input with IPP Expected, Denom Expected when Numer is Unchecked",
   expect(
     findExpectedForName(
       resultPops[0].populationValues,
-      MeasurePopulation.INITIAL_POPULATION
+      PopulationType.INITIAL_POPULATION
     )
   ).toBeTruthy();
   expect(
     findExpectedForName(
       resultPops[0].populationValues,
-      MeasurePopulation.DENOMINATOR
+      PopulationType.DENOMINATOR
     )
   ).toBeTruthy();
 });
 
 it("return the input with IPP Expected, Denom Expected when Denom Exception is checked", () => {
   const ipp: PopulationValue = {
-    name: MeasurePopulation.INITIAL_POPULATION,
+    name: PopulationType.INITIAL_POPULATION,
     expected: false,
     actual: false,
   };
   const denom: PopulationValue = {
-    name: MeasurePopulation.DENOMINATOR,
+    name: PopulationType.DENOMINATOR,
     expected: false,
     actual: false,
   };
   const denomExcep: PopulationValue = {
-    name: MeasurePopulation.DENOMINATOR_EXCEPTION,
+    name: PopulationType.DENOMINATOR_EXCEPTION,
     expected: true,
     actual: false,
   };
   const denomExclu: PopulationValue = {
-    name: MeasurePopulation.DENOMINATOR_EXCLUSION,
+    name: PopulationType.DENOMINATOR_EXCLUSION,
     expected: false,
     actual: false,
   };
   const numer: PopulationValue = {
-    name: MeasurePopulation.NUMERATOR,
+    name: PopulationType.NUMERATOR,
     expected: false,
     actual: false,
   };
   const numerExclu: PopulationValue = {
-    name: MeasurePopulation.NUMERATOR_EXCLUSION,
+    name: PopulationType.NUMERATOR_EXCLUSION,
     expected: false,
     actual: false,
   };
@@ -342,45 +342,45 @@ it("return the input with IPP Expected, Denom Expected when Denom Exception is c
   expect(
     findExpectedForName(
       resultPops[0].populationValues,
-      MeasurePopulation.INITIAL_POPULATION
+      PopulationType.INITIAL_POPULATION
     )
   ).toBeTruthy();
   expect(
     findExpectedForName(
       resultPops[0].populationValues,
-      MeasurePopulation.DENOMINATOR
+      PopulationType.DENOMINATOR
     )
   ).toBeTruthy();
 });
 
 it("return the input with IPP Expected, Denom Expected when Denom Exclusion is checked", () => {
   const ipp: PopulationValue = {
-    name: MeasurePopulation.INITIAL_POPULATION,
+    name: PopulationType.INITIAL_POPULATION,
     expected: false,
     actual: false,
   };
   const denom: PopulationValue = {
-    name: MeasurePopulation.DENOMINATOR,
+    name: PopulationType.DENOMINATOR,
     expected: false,
     actual: false,
   };
   const denomExcep: PopulationValue = {
-    name: MeasurePopulation.DENOMINATOR_EXCEPTION,
+    name: PopulationType.DENOMINATOR_EXCEPTION,
     expected: false,
     actual: false,
   };
   const denomExclu: PopulationValue = {
-    name: MeasurePopulation.DENOMINATOR_EXCLUSION,
+    name: PopulationType.DENOMINATOR_EXCLUSION,
     expected: true,
     actual: false,
   };
   const numer: PopulationValue = {
-    name: MeasurePopulation.NUMERATOR,
+    name: PopulationType.NUMERATOR,
     expected: false,
     actual: false,
   };
   const numerExclu: PopulationValue = {
-    name: MeasurePopulation.NUMERATOR_EXCLUSION,
+    name: PopulationType.NUMERATOR_EXCLUSION,
     expected: false,
     actual: false,
   };
@@ -410,45 +410,45 @@ it("return the input with IPP Expected, Denom Expected when Denom Exclusion is c
   expect(
     findExpectedForName(
       resultPops[0].populationValues,
-      MeasurePopulation.INITIAL_POPULATION
+      PopulationType.INITIAL_POPULATION
     )
   ).toBeTruthy();
   expect(
     findExpectedForName(
       resultPops[0].populationValues,
-      MeasurePopulation.DENOMINATOR
+      PopulationType.DENOMINATOR
     )
   ).toBeTruthy();
 });
 
 it("return the input with IPP Expected, Denom Expected and Numer Expected when Numer Exclusion is checked", () => {
   const ipp: PopulationValue = {
-    name: MeasurePopulation.INITIAL_POPULATION,
+    name: PopulationType.INITIAL_POPULATION,
     expected: false,
     actual: false,
   };
   const denom: PopulationValue = {
-    name: MeasurePopulation.DENOMINATOR,
+    name: PopulationType.DENOMINATOR,
     expected: false,
     actual: false,
   };
   const denomExcep: PopulationValue = {
-    name: MeasurePopulation.DENOMINATOR_EXCEPTION,
+    name: PopulationType.DENOMINATOR_EXCEPTION,
     expected: false,
     actual: false,
   };
   const denomExclu: PopulationValue = {
-    name: MeasurePopulation.DENOMINATOR_EXCLUSION,
+    name: PopulationType.DENOMINATOR_EXCLUSION,
     expected: false,
     actual: false,
   };
   const numer: PopulationValue = {
-    name: MeasurePopulation.NUMERATOR,
+    name: PopulationType.NUMERATOR,
     expected: false,
     actual: false,
   };
   const numerExclu: PopulationValue = {
-    name: MeasurePopulation.NUMERATOR_EXCLUSION,
+    name: PopulationType.NUMERATOR_EXCLUSION,
     expected: true,
     actual: false,
   };
@@ -475,51 +475,51 @@ it("return the input with IPP Expected, Denom Expected and Numer Expected when N
   expect(
     findExpectedForName(
       resultPops[0].populationValues,
-      MeasurePopulation.INITIAL_POPULATION
+      PopulationType.INITIAL_POPULATION
     )
   ).toBeTruthy();
   expect(
     findExpectedForName(
       resultPops[0].populationValues,
-      MeasurePopulation.DENOMINATOR
+      PopulationType.DENOMINATOR
     )
   ).toBeTruthy();
   expect(
     findExpectedForName(
       resultPops[0].populationValues,
-      MeasurePopulation.NUMERATOR
+      PopulationType.NUMERATOR
     )
   ).toBeTruthy();
 });
 
 it("when Denom is unchecked, then Numer, Denom Exclusion, Denom Exception, Numerator Exclusion should also be uncheked", () => {
   const ipp: PopulationValue = {
-    name: MeasurePopulation.INITIAL_POPULATION,
+    name: PopulationType.INITIAL_POPULATION,
     expected: true,
     actual: false,
   };
   const denom: PopulationValue = {
-    name: MeasurePopulation.DENOMINATOR,
+    name: PopulationType.DENOMINATOR,
     expected: false,
     actual: false,
   };
   const denomExcep: PopulationValue = {
-    name: MeasurePopulation.DENOMINATOR_EXCEPTION,
+    name: PopulationType.DENOMINATOR_EXCEPTION,
     expected: true,
     actual: false,
   };
   const denomExclu: PopulationValue = {
-    name: MeasurePopulation.DENOMINATOR_EXCLUSION,
+    name: PopulationType.DENOMINATOR_EXCLUSION,
     expected: true,
     actual: false,
   };
   const numer: PopulationValue = {
-    name: MeasurePopulation.NUMERATOR,
+    name: PopulationType.NUMERATOR,
     expected: true,
     actual: false,
   };
   const numerExclu: PopulationValue = {
-    name: MeasurePopulation.NUMERATOR_EXCLUSION,
+    name: PopulationType.NUMERATOR_EXCLUSION,
     expected: true,
     actual: false,
   };
@@ -546,63 +546,63 @@ it("when Denom is unchecked, then Numer, Denom Exclusion, Denom Exception, Numer
   expect(
     findExpectedForName(
       resultPops[0].populationValues,
-      MeasurePopulation.INITIAL_POPULATION
+      PopulationType.INITIAL_POPULATION
     )
   ).toBeTruthy();
   expect(
     findExpectedForName(
       resultPops[0].populationValues,
-      MeasurePopulation.DENOMINATOR_EXCLUSION
+      PopulationType.DENOMINATOR_EXCLUSION
     )
   ).toBeFalsy();
   expect(
     findExpectedForName(
       resultPops[0].populationValues,
-      MeasurePopulation.DENOMINATOR_EXCEPTION
+      PopulationType.DENOMINATOR_EXCEPTION
     )
   ).toBeFalsy();
   expect(
     findExpectedForName(
       resultPops[0].populationValues,
-      MeasurePopulation.NUMERATOR
+      PopulationType.NUMERATOR
     )
   ).toBeFalsy();
   expect(
     findExpectedForName(
       resultPops[0].populationValues,
-      MeasurePopulation.NUMERATOR_EXCLUSION
+      PopulationType.NUMERATOR_EXCLUSION
     )
   ).toBeFalsy();
 });
 
 it("when IPP is unchecked then rest of populations expected values should also be unchecked", () => {
   const ipp: PopulationValue = {
-    name: MeasurePopulation.INITIAL_POPULATION,
+    name: PopulationType.INITIAL_POPULATION,
     expected: false,
     actual: false,
   };
   const denom: PopulationValue = {
-    name: MeasurePopulation.DENOMINATOR,
+    name: PopulationType.DENOMINATOR,
     expected: true,
     actual: false,
   };
   const denomExcep: PopulationValue = {
-    name: MeasurePopulation.DENOMINATOR_EXCEPTION,
+    name: PopulationType.DENOMINATOR_EXCEPTION,
     expected: false,
     actual: false,
   };
   const denomExclu: PopulationValue = {
-    name: MeasurePopulation.DENOMINATOR_EXCLUSION,
+    name: PopulationType.DENOMINATOR_EXCLUSION,
     expected: false,
     actual: false,
   };
   const numer: PopulationValue = {
-    name: MeasurePopulation.NUMERATOR,
+    name: PopulationType.NUMERATOR,
     expected: true,
     actual: false,
   };
   const numerExclu: PopulationValue = {
-    name: MeasurePopulation.NUMERATOR_EXCLUSION,
+    name: PopulationType.NUMERATOR_EXCLUSION,
     expected: true,
     actual: false,
   };
@@ -629,13 +629,13 @@ it("when IPP is unchecked then rest of populations expected values should also b
   expect(
     findExpectedForName(
       resultPops[0].populationValues,
-      MeasurePopulation.NUMERATOR
+      PopulationType.NUMERATOR
     )
   ).toBeFalsy();
   expect(
     findExpectedForName(
       resultPops[0].populationValues,
-      MeasurePopulation.DENOMINATOR
+      PopulationType.DENOMINATOR
     )
   ).toBeFalsy();
 });

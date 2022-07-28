@@ -1,6 +1,7 @@
-import { Measure, PopulationType } from "@madie/madie-models";
+import { Measure, Population } from "@madie/madie-models";
 import { FHIRHelpers } from "./FHIRHelpers";
 import { getFhirMeasurePopulationCode } from "./PopulationsMap";
+import _ from "lodash";
 
 export function buildMeasureBundle(measure: Measure): fhir4.Bundle {
   const bundle: fhir4.Bundle = {
@@ -60,37 +61,35 @@ function buildMeasureGroups(measure: Measure, measureResource: fhir4.Measure) {
   // verify if measureGroup is created? if not Calculation will fail, so return to user specifying to add atleast one measureGroup
   measure.groups?.map((group) => {
     const fhirMeasureGroup: fhir4.MeasureGroup = {};
-    fhirMeasureGroup.population = buildMeasureGroup(group.population);
+    fhirMeasureGroup.population = buildMeasureGroup(group.populations);
     measureResource.group.push(fhirMeasureGroup);
   });
 }
 
 function buildMeasureGroup(
-  measurePopulations: PopulationType
+  measurePopulations: Population[]
 ): fhir4.MeasureGroupPopulation[] {
-  const msrPops: [string, string][] = Object.entries(measurePopulations);
-  return msrPops.map((population) => {
-    return buildMeasureGroupPopulation(population);
+  return measurePopulations.map((population) => {
+    return buildGroupPopulation(population);
   });
 }
 
-function buildMeasureGroupPopulation(
-  measurePopulation: [string, string]
+function buildGroupPopulation(
+  population: Population
 ): fhir4.MeasureGroupPopulation {
   return {
     code: {
       coding: [
         {
           system: "http://terminology.hl7.org/CodeSystem/measure-population",
-          code: getFhirMeasurePopulationCode(measurePopulation[0]),
-          display: measurePopulation[0],
+          code: getFhirMeasurePopulationCode(population.name),
+          display: _.startCase(population.name),
         },
       ],
     },
     criteria: {
       language: "text/cql.identifier",
-      // TODO Use correct display content.
-      expression: measurePopulation[1],
+      expression: population.definition,
     },
   };
 }

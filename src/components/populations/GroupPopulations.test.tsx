@@ -3,7 +3,7 @@ import { render, screen, within } from "@testing-library/react";
 import GroupPopulations from "./GroupPopulations";
 import {
   GroupPopulation,
-  MeasurePopulation,
+  PopulationType,
   MeasureScoring,
 } from "@madie/madie-models";
 import userEvent from "@testing-library/user-event";
@@ -16,17 +16,17 @@ describe("Group Populations", () => {
         scoring: MeasureScoring.CONTINUOUS_VARIABLE,
         populationValues: [
           {
-            name: MeasurePopulation.INITIAL_POPULATION,
+            name: PopulationType.INITIAL_POPULATION,
             expected: true,
             actual: false,
           },
           {
-            name: MeasurePopulation.MEASURE_POPULATION,
+            name: PopulationType.MEASURE_POPULATION,
             expected: false,
             actual: false,
           },
           {
-            name: MeasurePopulation.MEASURE_POPULATION_EXCLUSION,
+            name: PopulationType.MEASURE_POPULATION_EXCLUSION,
             expected: false,
             actual: false,
           },
@@ -123,7 +123,7 @@ describe("Group Populations", () => {
         scoring: MeasureScoring.COHORT,
         populationValues: [
           {
-            name: MeasurePopulation.INITIAL_POPULATION,
+            name: PopulationType.INITIAL_POPULATION,
             expected: true,
             actual: true,
           },
@@ -157,7 +157,7 @@ describe("Group Populations", () => {
         scoring: MeasureScoring.CONTINUOUS_VARIABLE,
         populationValues: [
           {
-            name: MeasurePopulation.INITIAL_POPULATION,
+            name: PopulationType.INITIAL_POPULATION,
             expected: true,
             actual: true,
           },
@@ -188,7 +188,7 @@ describe("Group Populations", () => {
         scoring: MeasureScoring.CONTINUOUS_VARIABLE,
         populationValues: [
           {
-            name: MeasurePopulation.INITIAL_POPULATION,
+            name: PopulationType.INITIAL_POPULATION,
             expected: false,
             actual: true,
           },
@@ -203,7 +203,7 @@ describe("Group Populations", () => {
         scoring: MeasureScoring.CONTINUOUS_VARIABLE,
         populationValues: [
           {
-            name: MeasurePopulation.INITIAL_POPULATION,
+            name: PopulationType.INITIAL_POPULATION,
             expected: false,
             actual: false,
           },

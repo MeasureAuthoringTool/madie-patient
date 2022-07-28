@@ -33,7 +33,7 @@ import * as _ from "lodash";
 import { Ace } from "ace-builds";
 import {
   FHIR_POPULATION_CODES,
-  getPopulationsForScoring,
+  getPopulationTypesForScoring,
   triggerPopChanges,
 } from "../../util/PopulationsMap";
 import GroupPopulations from "../populations/GroupPopulations";
@@ -183,11 +183,13 @@ const CreateTestCase = () => {
     return {
       groupId: group.id,
       scoring: group.scoring,
-      populationValues: getPopulationsForScoring(group)?.map((population) => ({
-        name: population,
-        expected: false,
-        actual: false,
-      })),
+      populationValues: getPopulationTypesForScoring(group)?.map(
+        (population) => ({
+          name: population,
+          expected: false,
+          actual: false,
+        })
+      ),
     };
   };
 

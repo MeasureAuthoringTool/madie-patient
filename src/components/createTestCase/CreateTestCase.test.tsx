@@ -13,7 +13,7 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
 import {
   Measure,
-  MeasurePopulation,
+  PopulationType,
   MeasureScoring,
   TestCase,
 } from "@madie/madie-models";
@@ -96,9 +96,13 @@ const defaultMeasure = {
     {
       groupId: "Group1_ID",
       scoring: "Cohort",
-      population: {
-        initialPopulation: "Pop1",
-      },
+      populations: [
+        {
+          id: "id-1",
+          name: PopulationType.INITIAL_POPULATION,
+          definition: "Pop1",
+        },
+      ],
     },
   ],
 } as unknown as Measure;
@@ -368,12 +372,12 @@ describe("CreateTestCase component", () => {
           scoring: MeasureScoring.CONTINUOUS_VARIABLE,
           populationValues: [
             {
-              name: MeasurePopulation.INITIAL_POPULATION,
+              name: PopulationType.INITIAL_POPULATION,
               expected: true,
               actual: false,
             },
             {
-              name: MeasurePopulation.MEASURE_POPULATION,
+              name: PopulationType.MEASURE_POPULATION,
               expected: true,
               actual: false,
             },
@@ -478,12 +482,12 @@ describe("CreateTestCase component", () => {
         scoring: MeasureScoring.CONTINUOUS_VARIABLE,
         populationValues: [
           {
-            name: MeasurePopulation.INITIAL_POPULATION,
+            name: PopulationType.INITIAL_POPULATION,
             expected: true,
             actual: false,
           },
           {
-            name: MeasurePopulation.MEASURE_POPULATION,
+            name: PopulationType.MEASURE_POPULATION,
             expected: false,
             actual: false,
           },
@@ -576,12 +580,12 @@ describe("CreateTestCase component", () => {
           scoring: MeasureScoring.CONTINUOUS_VARIABLE,
           populationValues: [
             {
-              name: MeasurePopulation.INITIAL_POPULATION,
+              name: PopulationType.INITIAL_POPULATION,
               expected: true,
               actual: false,
             },
             {
-              name: MeasurePopulation.MEASURE_POPULATION,
+              name: PopulationType.MEASURE_POPULATION,
               expected: true,
               actual: false,
             },
@@ -693,12 +697,12 @@ describe("CreateTestCase component", () => {
         scoring: MeasureScoring.CONTINUOUS_VARIABLE,
         populationValues: [
           {
-            name: MeasurePopulation.INITIAL_POPULATION,
+            name: PopulationType.INITIAL_POPULATION,
             expected: true,
             actual: false,
           },
           {
-            name: MeasurePopulation.MEASURE_POPULATION,
+            name: PopulationType.MEASURE_POPULATION,
             expected: false,
             actual: false,
           },
@@ -719,12 +723,12 @@ describe("CreateTestCase component", () => {
           scoring: MeasureScoring.CONTINUOUS_VARIABLE,
           populationValues: [
             {
-              name: MeasurePopulation.INITIAL_POPULATION,
+              name: PopulationType.INITIAL_POPULATION,
               expected: true,
               actual: false,
             },
             {
-              name: MeasurePopulation.MEASURE_POPULATION,
+              name: PopulationType.MEASURE_POPULATION,
               expected: true,
               actual: false,
             },
@@ -837,12 +841,12 @@ describe("CreateTestCase component", () => {
         scoring: MeasureScoring.CONTINUOUS_VARIABLE,
         populationValues: [
           {
-            name: MeasurePopulation.INITIAL_POPULATION,
+            name: PopulationType.INITIAL_POPULATION,
             expected: true,
             actual: false,
           },
           {
-            name: MeasurePopulation.MEASURE_POPULATION,
+            name: PopulationType.MEASURE_POPULATION,
             expected: false,
             actual: false,
           },

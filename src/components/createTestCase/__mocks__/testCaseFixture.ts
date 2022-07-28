@@ -1,4 +1,4 @@
-import { MeasureScoring, MeasurePopulation } from "@madie/madie-models";
+import { MeasureScoring, PopulationType } from "@madie/madie-models";
 
 export const testCaseFixture = {
   id: "623cacffe74613783378c17c",
@@ -20,16 +20,16 @@ export const testCaseFixture = {
       scoring: MeasureScoring.PROPORTION,
       populationValues: [
         {
-          name: MeasurePopulation.INITIAL_POPULATION,
+          name: PopulationType.INITIAL_POPULATION,
           expected: true,
           actual: false,
         },
         {
-          name: MeasurePopulation.NUMERATOR,
+          name: PopulationType.NUMERATOR,
           expected: false,
           actual: false,
         },
-        { name: MeasurePopulation.DENOMINATOR, expected: true, actual: false },
+        { name: PopulationType.DENOMINATOR, expected: true, actual: false },
       ],
     },
   ],

@@ -2,7 +2,7 @@ import * as React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import TestCasePopulationList from "./TestCasePopulationList";
-import { MeasurePopulation } from "@madie/madie-models";
+import { PopulationType } from "@madie/madie-models";
 import userEvent from "@testing-library/user-event";
 
 describe("TestCasePopulationPopulation component", () => {
@@ -13,12 +13,12 @@ describe("TestCasePopulationPopulation component", () => {
   it("should render test case population list", () => {
     const testCasePopulations = [
       {
-        name: MeasurePopulation.INITIAL_POPULATION,
+        name: PopulationType.INITIAL_POPULATION,
         expected: true,
         actual: true,
       },
       {
-        name: MeasurePopulation.DENOMINATOR,
+        name: PopulationType.DENOMINATOR,
         expected: true,
         actual: true,
       },
@@ -56,12 +56,12 @@ describe("TestCasePopulationPopulation component", () => {
   it("should handle changes for the test case population", async () => {
     const testCasePopulations = [
       {
-        name: MeasurePopulation.INITIAL_POPULATION,
+        name: PopulationType.INITIAL_POPULATION,
         expected: true,
         actual: true,
       },
       {
-        name: MeasurePopulation.DENOMINATOR,
+        name: PopulationType.DENOMINATOR,
         expected: true,
         actual: true,
       },
