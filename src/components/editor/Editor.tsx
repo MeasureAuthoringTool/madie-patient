@@ -5,11 +5,12 @@ import "ace-builds/src-noconflict/mode-json";
 
 export interface EditorPropsType {
   value: string;
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
   parseDebounceTime?: number;
   inboundAnnotations?: Ace.Annotation[];
   setEditor?: (editor: Ace.Editor) => void;
   readOnly?: boolean;
+  editorType?: string;
 }
 
 const Editor = ({
@@ -19,6 +20,7 @@ const Editor = ({
   inboundAnnotations,
   setEditor,
   readOnly,
+  editorType,
 }: EditorPropsType) => {
   return (
     <>
@@ -33,7 +35,8 @@ const Editor = ({
               setEditor(editor);
             }
           }}
-          mode="json" // Temporary value of mode to prevent a dynamic search request.
+          mode={editorType !== "measureCql" ? "json" : "sql"} // Temporary value of mode to prevent a dynamic search request.
+          //theme= {editorType !=="measureCql" && "monokai"}
           theme="monokai"
           name="ace-editor-wrapper"
           enableBasicAutocompletion={true}
@@ -51,6 +54,7 @@ const Editor = ({
           }}
           editorProps={{ $blockScrolling: true }}
           readOnly={readOnly}
+          wrapEnabled={true}
         />
       </div>
     </>

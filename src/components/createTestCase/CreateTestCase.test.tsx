@@ -154,8 +154,8 @@ describe("CreateTestCase component", () => {
       ["/measures/m1234/edit/test-cases/create"],
       "/measures/:measureId/edit/test-cases/create"
     );
+    userEvent.click(screen.getByTestId("details-tab"));
     const editor = screen.getByTestId("test-case-editor");
-
     await waitFor(
       () => {
         expect(
@@ -194,6 +194,7 @@ describe("CreateTestCase component", () => {
       },
     });
 
+    userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(
       () => {
         const descriptionInput = screen.getByTestId(
@@ -239,6 +240,7 @@ describe("CreateTestCase component", () => {
       },
     });
 
+    userEvent.click(screen.getByTestId("details-tab"));
     const editor = screen.getByTestId("test-case-editor");
     userEvent.paste(editor, testCaseJson);
     expect(editor).toHaveValue(testCaseJson);
@@ -279,6 +281,7 @@ describe("CreateTestCase component", () => {
       },
     });
 
+    userEvent.click(screen.getByTestId("details-tab"));
     const editor = screen.getByTestId("test-case-editor");
     userEvent.paste(editor, testCaseJson);
     expect(editor).toHaveValue(testCaseJson);
@@ -306,6 +309,7 @@ describe("CreateTestCase component", () => {
       },
     });
 
+    userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(
       () => {
         const descriptionInput = screen.getByTestId(
@@ -339,6 +343,7 @@ describe("CreateTestCase component", () => {
             `,
     });
 
+    userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(
       () => {
         const descriptionInput = screen.getByTestId(
@@ -413,6 +418,7 @@ describe("CreateTestCase component", () => {
       measure
     );
 
+    userEvent.click(screen.getByTestId("details-tab"));
     const g1PopulationValues = await screen.findByText(
       "Group 1 (Continuous Variable) Population Values"
     );
@@ -428,6 +434,7 @@ describe("CreateTestCase component", () => {
       },
     });
 
+    userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(() => {
       expect(
         screen.getByRole("button", { name: "Update Test Case" })
@@ -458,6 +465,7 @@ describe("CreateTestCase component", () => {
     expect(mpExpectedCb).toBeChecked();
     userEvent.click(mpExpectedCb);
 
+    userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(() => {
       expect(
         screen.getByRole("button", { name: "Update Test Case" })
@@ -508,6 +516,7 @@ describe("CreateTestCase component", () => {
       },
     });
 
+    userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(
       () => {
         const descriptionInput = screen.getByTestId(
@@ -552,6 +561,7 @@ describe("CreateTestCase component", () => {
       "/measures/:measureId/edit/test-cases/:id"
     );
 
+    userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(
       () => {
         const descriptionTextArea = screen.getByTestId(
@@ -562,6 +572,7 @@ describe("CreateTestCase component", () => {
       },
       { timeout: 1500 }
     );
+    userEvent.click(screen.getByTestId("details-tab"));
     expect(
       screen.getByRole("button", { name: "Update Test Case" })
     ).toBeInTheDocument();
@@ -624,6 +635,7 @@ describe("CreateTestCase component", () => {
       measure
     );
 
+    userEvent.click(screen.getByTestId("details-tab"));
     const g1PopulationValues = await screen.findByText(
       "Group 1 (Continuous Variable) Population Values"
     );
@@ -639,6 +651,7 @@ describe("CreateTestCase component", () => {
       },
     });
 
+    userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(() => {
       expect(
         screen.getByRole("button", { name: "Update Test Case" })
@@ -673,6 +686,7 @@ describe("CreateTestCase component", () => {
     userEvent.paste(editor, testCaseJson);
     expect(editor).toHaveValue(testCaseJson);
 
+    userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(() => {
       expect(
         screen.getByRole("button", { name: "Update Test Case" })
@@ -768,6 +782,7 @@ describe("CreateTestCase component", () => {
       measure
     );
 
+    userEvent.click(screen.getByTestId("details-tab"));
     const g1PopulationValues = await screen.findByText(
       "Group 1 (Continuous Variable) Population Values"
     );
@@ -783,6 +798,7 @@ describe("CreateTestCase component", () => {
       },
     });
 
+    userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(() => {
       expect(
         screen.getByRole("button", { name: "Update Test Case" })
@@ -817,6 +833,7 @@ describe("CreateTestCase component", () => {
     userEvent.paste(editor, testCaseJson);
     expect(editor).toHaveValue(testCaseJson);
 
+    userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(() => {
       expect(
         screen.getByRole("button", { name: "Update Test Case" })
@@ -885,6 +902,7 @@ describe("CreateTestCase component", () => {
 
     mockedAxios.put.mockClear().mockRejectedValue(axiosError);
 
+    userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(() => {
       expect(
         screen.getByRole("button", { name: "Update Test Case" })
@@ -930,6 +948,7 @@ describe("CreateTestCase component", () => {
       data: null,
     });
 
+    userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(() => {
       expect(
         screen.getByRole("button", { name: "Update Test Case" })
@@ -947,6 +966,7 @@ describe("CreateTestCase component", () => {
     await waitFor(() => {
       expect(descriptionInput).toHaveTextContent(modifiedDescription);
     });
+    userEvent.click(screen.getByTestId("details-tab"));
     userEvent.click(screen.getByRole("button", { name: "Update Test Case" }));
 
     const debugOutput = await screen.findByText(
@@ -975,6 +995,7 @@ describe("CreateTestCase component", () => {
       "/measures/:measureId/edit/test-cases/:id"
     );
 
+    userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(() => {
       expect(
         screen.getByRole("button", { name: "Update Test Case" })
@@ -998,6 +1019,7 @@ describe("CreateTestCase component", () => {
       "/measures/:measureId/edit/test-cases/create"
     );
 
+    userEvent.click(screen.getByTestId("details-tab"));
     const g1PopulationValues = await screen.findByText(
       "Group 1 (Cohort) Population Values"
     );
@@ -1040,6 +1062,7 @@ describe("CreateTestCase component", () => {
       },
     });
 
+    userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(
       () => {
         const descriptionInput = screen.getByTestId(
@@ -1082,6 +1105,7 @@ describe("CreateTestCase component", () => {
       "/measures/:measureId/edit/test-cases/create"
     );
 
+    userEvent.click(screen.getByTestId("details-tab"));
     const debugOutput = await screen.findByText(
       "Unable to retrieve test case series, please try later."
     );
@@ -1116,6 +1140,7 @@ describe("CreateTestCase component", () => {
       "/measures/:measureId/edit/test-cases/create"
     );
 
+    userEvent.click(screen.getByTestId("details-tab"));
     const debugOutput = await screen.findByText(
       "Measure does not exist, unable to load test case series!"
     );
@@ -1128,6 +1153,7 @@ describe("CreateTestCase component", () => {
       "/measures/:measureId/edit/test-cases/create"
     );
 
+    userEvent.click(screen.getByTestId("details-tab"));
     const g1PopulationValues = await screen.findByText(
       "Group 1 (Cohort) Population Values"
     );
@@ -1169,6 +1195,7 @@ describe("CreateTestCase component", () => {
       },
     });
 
+    userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(
       () => {
         const titleInput = screen.getByTestId("create-test-case-title");
@@ -1207,6 +1234,7 @@ describe("CreateTestCase component", () => {
       },
     });
 
+    userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(
       () => {
         const seriesInput = screen.getByTestId("create-test-case-series");
@@ -1259,6 +1287,7 @@ describe("CreateTestCase component", () => {
       },
     });
 
+    userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(
       () => {
         const seriesInput = screen.getByTestId("create-test-case-series");
@@ -1357,6 +1386,7 @@ describe("CreateTestCase component", () => {
         },
       },
     });
+    userEvent.click(screen.getByTestId("details-tab"));
 
     await waitFor(() => {
       expect(
@@ -1451,6 +1481,7 @@ describe("CreateTestCase component", () => {
     mockedAxios.put.mockResolvedValue({
       data,
     });
+    userEvent.click(screen.getByTestId("details-tab"));
 
     await waitFor(() => {
       expect(
@@ -1537,6 +1568,7 @@ describe("CreateTestCase component", () => {
       "/measures/:measureId/edit/test-cases/:id"
     );
 
+    userEvent.click(screen.getByTestId("details-tab"));
     const ippRow = await screen.findByTestId(
       "test-row-population-id-initialPopulation"
     );
@@ -1564,6 +1596,7 @@ describe("CreateTestCase component", () => {
       measure
     );
 
+    userEvent.click(screen.getByTestId("details-tab"));
     const errorMessage = await screen.findByText(
       "No populations for current scoring. Please make sure at least one measure group has been created."
     );
@@ -1594,6 +1627,7 @@ describe("CreateTestCase component", () => {
       ["/measures/m1234/edit/test-cases/1234"],
       "/measures/:measureId/edit/test-cases/:id"
     );
+    userEvent.click(screen.getByTestId("details-tab"));
 
     expect(
       await screen.findByRole("button", {
@@ -1649,8 +1683,8 @@ describe("CreateTestCase component", () => {
       "/measures/:measureId/edit/test-cases/create",
       measure
     );
+    userEvent.click(screen.getByTestId("details-tab"));
     const editor = screen.getByTestId("test-case-editor");
-
     await waitFor(
       () => {
         expect(
@@ -1738,6 +1772,7 @@ describe("Measure Calculation ", () => {
       ],
       "/measures/:measureId/edit/test-cases/:id"
     );
+    userEvent.click(screen.getByTestId("details-tab"));
     const updateButton = await screen.findByRole("button", {
       name: "Update Test Case",
     });
@@ -1768,7 +1803,7 @@ describe("Measure Calculation ", () => {
       "/measures/:measureId/edit/test-cases/:id",
       measure
     );
-
+    userEvent.click(screen.getByTestId("details-tab"));
     expect(
       await screen.findByRole("button", {
         name: "Update Test Case",
@@ -1816,7 +1851,7 @@ describe("Measure Calculation ", () => {
       "/measures/:measureId/edit/test-cases/:id",
       measure
     );
-
+    userEvent.click(screen.getByTestId("details-tab"));
     expect(
       await screen.findByRole("button", {
         name: "Update Test Case",

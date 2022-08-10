@@ -44,6 +44,23 @@ import {
 } from "fqm-execution/build/types/Calculator";
 import { measureStore, useOktaTokens } from "@madie/madie-util";
 import useExecutionContext from "../routes/useExecutionContext";
+import { makeStyles } from "@mui/styles";
+
+const useStyles = makeStyles({
+  tabs: {
+    height: "16px",
+    left: "15px",
+    //marginRight:"10px",
+    marginTop: "12px",
+    marginBottom: "16px",
+    fontFamily: "Rubik",
+    fontStyle: "normal",
+    fontWeight: "500",
+    fontSize: "14px",
+    color: "#333333",
+    lineHeight: "16px",
+  },
+});
 
 const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
@@ -132,6 +149,17 @@ const INITIAL_VALUES = {
   groupPopulations: [],
 } as TestCase;
 
+interface PropTypes {
+  isActive?: boolean;
+}
+
+const MenuItemContainer = tw.ul`bg-transparent flex px-8`;
+const MenuItem = styled.li((props: PropTypes) => [
+  tw`mr-3 text-black rounded-t-md pl-3 pr-3 `,
+  props.isActive &&
+    tw`bg-white font-medium border-solid border-b border-blue-700`,
+]);
+
 const CreateTestCase = () => {
   const navigate = useNavigate();
   const { id, measureId } = useParams<
@@ -161,12 +189,14 @@ const CreateTestCase = () => {
   const [calculationErrors, setCalculationErrors] = useState<string>();
   const [createButtonDisabled, setCreateButtonDisabled] =
     useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<string>("measurecql");
 
   const { measureState, bundleState, valueSetsState } = useExecutionContext();
   const [measure] = measureState;
   const [measureBundle] = bundleState;
   const [valueSets] = valueSetsState;
   const { updateMeasure } = measureStore;
+  const classes = useStyles();
 
   const [canEdit, setCanEdit] = useState<boolean>(
     userName === measure?.createdBy
@@ -566,151 +596,202 @@ const CreateTestCase = () => {
   return (
     <>
       <div tw="flex flex-wrap w-screen">
-        <div tw="flex-none w-3/12">
-          <div tw="ml-2">
-            {alert && (
-              <Alert
-                status={alert.status}
-                role="alert"
-                aria-label="Create Alert"
-                data-testid="create-test-case-alert"
-              >
-                {alert.message}
-                <button
-                  data-testid="close-create-test-case-alert"
-                  type="button"
-                  tw="box-content h-4 p-1 ml-3 mb-1.5"
-                  data-bs-dismiss="alert"
-                  aria-label="Close Alert"
-                  onClick={() => setAlert(null)}
-                >
-                  <FontAwesomeIcon icon={faTimes} />
-                </button>
-              </Alert>
-            )}
-            <TestCaseForm
-              data-testid="create-test-case-form"
-              onSubmit={formik.handleSubmit}
-            >
-              {/*
-              TODO Replace with re-usable form component
-               label, input, and error => single input control component
-              */}
-              <FormControl>
-                <Label text="Test Case Title" />
-                {canEdit && (
-                  <TestCaseTitle
-                    type="text"
-                    id="testCaseTitle"
-                    data-testid="create-test-case-title"
-                    {...formik.getFieldProps("title")}
-                    // border radius classes don't take to tw.input
-                    style={{ borderRadius: ".375rem" }}
-                  />
-                )}
-                {canEdit && (
-                  <FormErrors>{formikErrorHandler("title", true)}</FormErrors>
-                )}
-                {!canEdit && formik.values.title}
-                <Label text="Test Case Description" />
-                {canEdit && (
-                  <TestCaseDescription
-                    id="testCaseDescription"
-                    data-testid="create-test-case-description"
-                    {...formik.getFieldProps("description")}
-                  />
-                )}
-                {canEdit && (
-                  <FormErrors>
-                    {formikErrorHandler("description", true)}
-                  </FormErrors>
-                )}
-                {!canEdit && formik.values.description}
-              </FormControl>
-              <FormControl>
-                <Label text="Test Case Series" />
-                {canEdit && (
-                  <TestCaseSeries
-                    value={formik.values.series}
-                    onChange={(nextValue) =>
-                      formik.setFieldValue("series", nextValue)
-                    }
-                    seriesOptions={seriesState.series}
-                    sx={{ width: "100%" }}
-                  />
-                )}
-                {canEdit && (
-                  <HelperText text={"Start typing to add a new series"} />
-                )}
-                {!canEdit && formik.values.series}
-              </FormControl>
-              <FormControl
-                tw="flex flex-col"
-                data-testid="create-test-case-populations"
-              >
-                <span tw="text-lg">Population Values</span>
-                <GroupPopulations
-                  disableActual={true}
-                  disableExpected={!canEdit}
-                  groupPopulations={mapGroups(
-                    formik.values.groupPopulations[0],
-                    populationGroupResult
-                  )}
-                  onChange={(groupPopulations) => {
-                    setPendingGroupPopulations(groupPopulations);
-                  }}
-                  setChangedPopulation={setChangedPopulation}
-                />
-              </FormControl>
-
-              <FormActions>
-                {canEdit && (
-                  <Button
-                    buttonTitle={
-                      testCase ? "Update Test Case" : "Create Test Case"
-                    }
-                    type="submit"
-                    data-testid="create-test-case-button"
-                    disabled={!isModified() || createButtonDisabled}
-                  />
-                )}
-                <Button
-                  buttonTitle="Run Test"
-                  type="button"
-                  variant="secondary"
-                  onClick={calculate}
-                  disabled={
-                    !!measure?.cqlErrors ||
-                    _.isNil(measure?.groups) ||
-                    measure?.groups.length === 0 ||
-                    validationErrors?.length > 0 ||
-                    isEmptyTestCaseJsonString(formik.values.json)
-                  }
-                  data-testid="run-test-case-button"
-                />
-                {canEdit && (
-                  <Button
-                    buttonTitle="Cancel"
-                    type="button"
-                    variant="white"
-                    onClick={navigateToTestCases}
-                    data-testid="create-test-case-cancel-button"
-                  />
-                )}
-              </FormActions>
-            </TestCaseForm>
-          </div>
-        </div>
-        <div tw="flex-auto w-3/12">
+        <div
+          tw="flex-none sm:w-full md:w-6/12 lg:w-6/12"
+          style={{ marginTop: 43 }}
+        >
+          {/* <div tw="ml-2"> */}
           <Editor
             onChange={(val: string) => setEditorVal(val)}
             value={editorVal}
             setEditor={setEditor}
             readOnly={!canEdit}
           />
+          {/* </div> */}
         </div>
+
+        <div style={{ width: "17px", background: "#DDDDDD" }}></div>
+        <div tw="flex-auto sm:w-full md:w-5/12 lg:w-4/12">
+          <MenuItemContainer>
+            <MenuItem
+              data-testid="measurecql-tab"
+              isActive={activeTab == "measurecql"}
+              onClick={() => {
+                setActiveTab("measurecql");
+              }}
+              className={classes.tabs}
+            >
+              Measure CQL(View Only)
+            </MenuItem>
+
+            <MenuItem
+              data-testid="expectoractual-tab"
+              isActive={activeTab == "expectoractual"}
+              onClick={() => setActiveTab("expectoractual")}
+              className={classes.tabs}
+            >
+              Expected / Actual
+            </MenuItem>
+
+            <MenuItem
+              data-testid="details-tab"
+              isActive={activeTab == "details"}
+              onClick={() => setActiveTab("details")}
+              className={classes.tabs}
+            >
+              Details
+            </MenuItem>
+          </MenuItemContainer>
+          {activeTab === "measurecql" &&
+            (!measure?.cqlErrors ? (
+              <Editor
+                value={measure?.cql}
+                setEditor={setEditor}
+                readOnly={true}
+                editorType={"measureCql"}
+              />
+            ) : (
+              "An error exists with the measure CQL, please review the CQL Editor tab"
+            ))}
+
+          {activeTab === "details" && (
+            <>
+              {alert && (
+                <Alert
+                  status={alert.status}
+                  role="alert"
+                  aria-label="Create Alert"
+                  data-testid="create-test-case-alert"
+                >
+                  {alert.message}
+                  <button
+                    data-testid="close-create-test-case-alert"
+                    type="button"
+                    tw="box-content h-4 p-1 ml-3 mb-1.5"
+                    data-bs-dismiss="alert"
+                    aria-label="Close Alert"
+                    onClick={() => setAlert(null)}
+                  >
+                    <FontAwesomeIcon icon={faTimes} />
+                  </button>
+                </Alert>
+              )}
+              <TestCaseForm
+                data-testid="create-test-case-form"
+                onSubmit={formik.handleSubmit}
+              >
+                {/* TODO Replace with re-usable form component
+               label, input, and error => single input control component */}
+
+                <FormControl>
+                  <Label text="Test Case Title" />
+                  {canEdit && (
+                    <TestCaseTitle
+                      type="text"
+                      id="testCaseTitle"
+                      data-testid="create-test-case-title"
+                      {...formik.getFieldProps("title")}
+                      // border radius classes don't take to tw.input
+                      style={{ borderRadius: ".375rem" }}
+                    />
+                  )}
+                  {canEdit && (
+                    <FormErrors>{formikErrorHandler("title", true)}</FormErrors>
+                  )}
+                  {!canEdit && formik.values.title}
+                  <Label text="Test Case Description" />
+                  {canEdit && (
+                    <TestCaseDescription
+                      id="testCaseDescription"
+                      data-testid="create-test-case-description"
+                      {...formik.getFieldProps("description")}
+                    />
+                  )}
+                  {canEdit && (
+                    <FormErrors>
+                      {formikErrorHandler("description", true)}
+                    </FormErrors>
+                  )}
+                  {!canEdit && formik.values.description}
+                </FormControl>
+                <FormControl>
+                  <Label text="Test Case Series" />
+                  {canEdit && (
+                    <TestCaseSeries
+                      value={formik.values.series}
+                      onChange={(nextValue) =>
+                        formik.setFieldValue("series", nextValue)
+                      }
+                      seriesOptions={seriesState.series}
+                      sx={{ width: "100%" }}
+                    />
+                  )}
+                  {canEdit && (
+                    <HelperText text={"Start typing to add a new series"} />
+                  )}
+                  {!canEdit && formik.values.series}
+                </FormControl>
+                <FormControl
+                  tw="flex flex-col"
+                  data-testid="create-test-case-populations"
+                >
+                  <span tw="text-lg">Population Values</span>
+                  <GroupPopulations
+                    disableActual={true}
+                    disableExpected={!canEdit}
+                    groupPopulations={mapGroups(
+                      formik.values.groupPopulations[0],
+                      populationGroupResult
+                    )}
+                    onChange={(groupPopulations) => {
+                      setPendingGroupPopulations(groupPopulations);
+                    }}
+                    setChangedPopulation={setChangedPopulation}
+                  />
+                </FormControl>
+
+                <FormActions>
+                  {canEdit && (
+                    <Button
+                      buttonTitle={
+                        testCase ? "Update Test Case" : "Create Test Case"
+                      }
+                      type="submit"
+                      data-testid="create-test-case-button"
+                      disabled={!isModified() || createButtonDisabled}
+                    />
+                  )}
+                  <Button
+                    buttonTitle="Run Test"
+                    type="button"
+                    variant="secondary"
+                    onClick={calculate}
+                    disabled={
+                      !!measure?.cqlErrors ||
+                      _.isNil(measure?.groups) ||
+                      measure?.groups.length === 0 ||
+                      validationErrors?.length > 0 ||
+                      isEmptyTestCaseJsonString(formik.values.json)
+                    }
+                    data-testid="run-test-case-button"
+                  />
+                  {canEdit && (
+                    <Button
+                      buttonTitle="Cancel"
+                      type="button"
+                      variant="white"
+                      onClick={navigateToTestCases}
+                      data-testid="create-test-case-cancel-button"
+                    />
+                  )}
+                </FormActions>
+              </TestCaseForm>
+            </>
+          )}
+        </div>
+
         {(populationGroupResult || calculationErrors) && (
-          <div tw="flex-auto w-3/12 p-2">
+          <div tw="flex-auto w-1/12 p-2">
             {calculationErrors && (
               <Alert
                 status="error"
