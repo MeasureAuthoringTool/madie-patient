@@ -606,6 +606,7 @@ const CreateTestCase = () => {
             value={editorVal}
             setEditor={setEditor}
             readOnly={!canEdit}
+            dataTestId="test-case-json-editor"
           />
           {/* </div> */}
         </div>
@@ -649,6 +650,7 @@ const CreateTestCase = () => {
                 setEditor={setEditor}
                 readOnly={true}
                 editorType={"measureCql"}
+                dataTestId="test-case-cql-editor"
               />
             ) : (
               "An error exists with the measure CQL, please review the CQL Editor tab"

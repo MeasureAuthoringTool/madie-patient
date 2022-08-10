@@ -38,25 +38,29 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 // mock editor to reduce errors and warnings
 const mockEditor = { resize: jest.fn() };
-jest.mock("../editor/Editor", () => ({ setEditor, value, onChange }) => {
-  const React = require("react");
-  React.useEffect(() => {
-    if (setEditor) {
-      setEditor(mockEditor);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+jest.mock(
+  "../editor/Editor",
+  () =>
+    ({ setEditor, value, onChange, dataTestId }) => {
+      const React = require("react");
+      React.useEffect(() => {
+        if (setEditor) {
+          setEditor(mockEditor);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, []);
 
-  return (
-    <input
-      data-testid="test-case-editor"
-      value={value}
-      onChange={(e: ChangeEvent<HTMLInputElement>) => {
-        onChange(e.target.value);
-      }}
-    />
-  );
-});
+      return (
+        <input
+          data-testid={dataTestId}
+          value={value}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => {
+            onChange(e.target.value);
+          }}
+        />
+      );
+    }
+);
 
 const serviceConfig: ServiceConfig = {
   measureService: {
@@ -154,8 +158,10 @@ describe("CreateTestCase component", () => {
       ["/measures/m1234/edit/test-cases/create"],
       "/measures/:measureId/edit/test-cases/create"
     );
+
+    expect(screen.getByTestId("test-case-json-editor")).toBeInTheDocument();
+    expect(screen.getByTestId("test-case-cql-editor")).toBeInTheDocument();
     userEvent.click(screen.getByTestId("details-tab"));
-    const editor = screen.getByTestId("test-case-editor");
     await waitFor(
       () => {
         expect(
@@ -172,7 +178,8 @@ describe("CreateTestCase component", () => {
     );
     expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
 
-    expect(editor).toBeInTheDocument();
+    userEvent.click(screen.getByTestId("measurecql-tab"));
+    expect(screen.getByTestId("test-case-cql-editor")).toBeInTheDocument();
   });
 
   it("should create test case when create button is clicked", async () => {
@@ -240,10 +247,10 @@ describe("CreateTestCase component", () => {
       },
     });
 
-    userEvent.click(screen.getByTestId("details-tab"));
-    const editor = screen.getByTestId("test-case-editor");
+    const editor = screen.getByTestId("test-case-json-editor");
     userEvent.paste(editor, testCaseJson);
     expect(editor).toHaveValue(testCaseJson);
+    userEvent.click(screen.getByTestId("details-tab"));
 
     const createBtn = await screen.findByRole("button", {
       name: "Create Test Case",
@@ -281,8 +288,8 @@ describe("CreateTestCase component", () => {
       },
     });
 
+    const editor = screen.getByTestId("test-case-json-editor");
     userEvent.click(screen.getByTestId("details-tab"));
-    const editor = screen.getByTestId("test-case-editor");
     userEvent.paste(editor, testCaseJson);
     expect(editor).toHaveValue(testCaseJson);
 
@@ -682,7 +689,7 @@ describe("CreateTestCase component", () => {
     expect(mpExpectedCb).toBeChecked();
     userEvent.click(mpExpectedCb);
 
-    const editor = screen.getByTestId("test-case-editor");
+    const editor = screen.getByTestId("test-case-json-editor");
     userEvent.paste(editor, testCaseJson);
     expect(editor).toHaveValue(testCaseJson);
 
@@ -829,7 +836,7 @@ describe("CreateTestCase component", () => {
     expect(mpExpectedCb).toBeChecked();
     userEvent.click(mpExpectedCb);
 
-    const editor = screen.getByTestId("test-case-editor");
+    const editor = screen.getByTestId("test-case-json-editor");
     userEvent.paste(editor, testCaseJson);
     expect(editor).toHaveValue(testCaseJson);
 
@@ -1604,6 +1611,39 @@ describe("CreateTestCase component", () => {
     expect(screen.getByRole("button", { name: "Run Test" })).toBeDisabled();
   });
 
+  it("showing the error message in the measure cql tab when there are errors in the cql", async () => {
+    const measure = { ...defaultMeasure, cqlErrors: true };
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/1234"],
+      "/measures/:measureId/edit/test-cases/:id",
+      measure
+    );
+
+    expect(screen.getByTestId("test-case-json-editor")).toBeInTheDocument();
+    expect(
+      await screen.findByText(
+        "An error exists with the measure CQL, please review the CQL Editor tab"
+      )
+    ).toBeInTheDocument();
+  });
+
+  it("checking if cql is being shown when there are no errors in the cql", async () => {
+    const measure = { ...defaultMeasure, cql: "MeasureCql" };
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/1234"],
+      "/measures/:measureId/edit/test-cases/:id",
+      measure
+    );
+
+    expect(screen.getByTestId("test-case-json-editor")).toBeInTheDocument();
+    expect(screen.getByTestId("test-case-cql-editor")).toBeInTheDocument();
+    userEvent.click(screen.getByTestId("expectoractual-tab"));
+    userEvent.click(screen.getByTestId("measurecql-tab"));
+
+    const editor = screen.getByTestId("test-case-cql-editor");
+    expect(editor).toHaveValue("MeasureCql");
+  });
+
   it("should disable run button when json string is empty", async () => {
     const testCase = {
       id: "1234",
@@ -1683,8 +1723,9 @@ describe("CreateTestCase component", () => {
       "/measures/:measureId/edit/test-cases/create",
       measure
     );
+
+    const editor = screen.getByTestId("test-case-json-editor");
     userEvent.click(screen.getByTestId("details-tab"));
-    const editor = screen.getByTestId("test-case-editor");
     await waitFor(
       () => {
         expect(

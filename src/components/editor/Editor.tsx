@@ -11,6 +11,7 @@ export interface EditorPropsType {
   setEditor?: (editor: Ace.Editor) => void;
   readOnly?: boolean;
   editorType?: string;
+  dataTestId?: string;
 }
 
 const Editor = ({
@@ -21,10 +22,11 @@ const Editor = ({
   setEditor,
   readOnly,
   editorType,
+  dataTestId,
 }: EditorPropsType) => {
   return (
     <>
-      <div data-testid="test-case-editor">
+      <div data-testid={dataTestId}>
         <AceEditor
           value={value}
           onChange={(value) => {
