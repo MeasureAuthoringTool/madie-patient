@@ -66,6 +66,7 @@ module.exports = {
         700: "#1d69b7",
         800: "#124a93",
         900: "#0b347a",
+        950: "#0073C8",
       },
       yellow: {
         50: "#fff6ce",
@@ -122,6 +123,9 @@ module.exports = {
         80: "20rem",
         96: "24rem",
         128: "32rem",
+      },
+      fontFamily: {
+        rubik: ["Rubik"],
       },
     },
   },

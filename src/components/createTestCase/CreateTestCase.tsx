@@ -44,23 +44,6 @@ import {
 } from "fqm-execution/build/types/Calculator";
 import { measureStore, useOktaTokens } from "@madie/madie-util";
 import useExecutionContext from "../routes/useExecutionContext";
-import { makeStyles } from "@mui/styles";
-
-const useStyles = makeStyles({
-  tabs: {
-    height: "16px",
-    left: "15px",
-    //marginRight:"10px",
-    marginTop: "12px",
-    marginBottom: "16px",
-    fontFamily: "Rubik",
-    fontStyle: "normal",
-    fontWeight: "500",
-    fontSize: "14px",
-    color: "#333333",
-    lineHeight: "16px",
-  },
-});
 
 const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
@@ -155,9 +138,9 @@ interface PropTypes {
 
 const MenuItemContainer = tw.ul`bg-transparent flex px-8`;
 const MenuItem = styled.li((props: PropTypes) => [
-  tw`mr-3 text-black rounded-t-md pl-3 pr-3 `,
+  tw`relative h-2 mr-3 ml-3 mt-3 mb-0 not-italic font-rubik font-medium text-sm leading-4 text-gray`,
   props.isActive &&
-    tw`bg-white font-medium border-solid border-b border-blue-700`,
+    tw`bg-white h-2 text-black font-medium pb-6 border-solid border-b-4 border-blue-950 bg-opacity-75`,
 ]);
 
 const CreateTestCase = () => {
@@ -196,7 +179,6 @@ const CreateTestCase = () => {
   const [measureBundle] = bundleState;
   const [valueSets] = valueSetsState;
   const { updateMeasure } = measureStore;
-  const classes = useStyles();
 
   const [canEdit, setCanEdit] = useState<boolean>(
     userName === measure?.createdBy
@@ -598,9 +580,8 @@ const CreateTestCase = () => {
       <div tw="flex flex-wrap w-screen">
         <div
           tw="flex-none sm:w-full md:w-6/12 lg:w-6/12"
-          style={{ marginTop: 43 }}
+          style={{ marginTop: 39 }}
         >
-          {/* <div tw="ml-2"> */}
           <Editor
             onChange={(val: string) => setEditorVal(val)}
             value={editorVal}
@@ -608,11 +589,10 @@ const CreateTestCase = () => {
             readOnly={!canEdit}
             dataTestId="test-case-json-editor"
           />
-          {/* </div> */}
         </div>
 
         <div style={{ width: "17px", background: "#DDDDDD" }}></div>
-        <div tw="flex-auto sm:w-full md:w-5/12 lg:w-4/12">
+        <div tw="flex-auto sm:w-full md:w-1/12 lg:w-3/12">
           <MenuItemContainer>
             <MenuItem
               data-testid="measurecql-tab"
@@ -620,7 +600,6 @@ const CreateTestCase = () => {
               onClick={() => {
                 setActiveTab("measurecql");
               }}
-              className={classes.tabs}
             >
               Measure CQL(View Only)
             </MenuItem>
@@ -629,7 +608,6 @@ const CreateTestCase = () => {
               data-testid="expectoractual-tab"
               isActive={activeTab == "expectoractual"}
               onClick={() => setActiveTab("expectoractual")}
-              className={classes.tabs}
             >
               Expected / Actual
             </MenuItem>
@@ -638,7 +616,6 @@ const CreateTestCase = () => {
               data-testid="details-tab"
               isActive={activeTab == "details"}
               onClick={() => setActiveTab("details")}
-              className={classes.tabs}
             >
               Details
             </MenuItem>
