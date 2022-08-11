@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import AceEditor from "react-ace";
 import { Ace } from "ace-builds";
 import "ace-builds/src-noconflict/mode-json";
