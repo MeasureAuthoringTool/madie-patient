@@ -38,29 +38,25 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 // mock editor to reduce errors and warnings
 const mockEditor = { resize: jest.fn() };
-jest.mock(
-  "../editor/Editor",
-  () =>
-    ({ setEditor, value, onChange, dataTestId }) => {
-      const React = require("react");
-      React.useEffect(() => {
-        if (setEditor) {
-          setEditor(mockEditor);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, []);
-
-      return (
-        <input
-          data-testid={dataTestId}
-          value={value}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => {
-            onChange(e.target.value);
-          }}
-        />
-      );
+jest.mock("../editor/Editor", () => ({ setEditor, value, onChange }) => {
+  const React = require("react");
+  React.useEffect(() => {
+    if (setEditor) {
+      setEditor(mockEditor);
     }
-);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <input
+      data-testid="test-case-json-editor"
+      value={value}
+      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+        onChange(e.target.value);
+      }}
+    />
+  );
+});
 
 const serviceConfig: ServiceConfig = {
   measureService: {

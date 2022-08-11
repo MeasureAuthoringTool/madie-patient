@@ -3,10 +3,6 @@ import AceEditor from "react-ace";
 import { Ace } from "ace-builds";
 import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/mode-sql";
-// import {
-//   CqlHighlightMode
-// } from "@madie/madie-editor";
-import CqlMode from "./cql-mode";
 
 export interface EditorPropsType {
   value: string;
@@ -26,22 +22,12 @@ const Editor = ({
   inboundAnnotations,
   setEditor,
   readOnly,
-  editorType,
-  dataTestId,
 }: EditorPropsType) => {
-  const aceRef = useRef<AceEditor>(null);
-  useEffect(() => {
-    const cqlMode = new CqlMode();
-    // @ts-ignore
-    aceRef?.current?.editor?.getSession()?.setMode(cqlMode);
-  }, []);
-
   return (
     <>
-      <div data-testid={dataTestId}>
+      <div data-testid="test-case-json-editor">
         <AceEditor
           value={value}
-          ref={editorType !== "measureCql" ? null : aceRef}
           onChange={(value) => {
             onChange(value);
           }}
@@ -50,9 +36,7 @@ const Editor = ({
               setEditor(editor);
             }
           }}
-          //mode="json"
-          mode={editorType !== "measureCql" ? "json" : "sql"} // Temporary value of mode to prevent a dynamic search request.
-          //theme= {editorType !=="measureCql" && "monokai"}
+          mode="json" // Temporary value of mode to prevent a dynamic search request.
           theme="monokai"
           name="ace-editor-wrapper"
           enableBasicAutocompletion={true}

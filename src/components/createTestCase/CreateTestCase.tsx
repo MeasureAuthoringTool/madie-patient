@@ -44,6 +44,7 @@ import {
 } from "fqm-execution/build/types/Calculator";
 import { measureStore, useOktaTokens } from "@madie/madie-util";
 import useExecutionContext from "../routes/useExecutionContext";
+import { MadieEditor } from "@madie/madie-editor";
 
 const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
@@ -587,7 +588,6 @@ const CreateTestCase = () => {
             value={editorVal}
             setEditor={setEditor}
             readOnly={!canEdit}
-            dataTestId="test-case-json-editor"
           />
         </div>
 
@@ -622,12 +622,11 @@ const CreateTestCase = () => {
           </MenuItemContainer>
           {activeTab === "measurecql" &&
             (!measure?.cqlErrors ? (
-              <Editor
+              <MadieEditor
                 value={measure?.cql}
-                setEditor={setEditor}
+                height={"909px"}
                 readOnly={true}
-                editorType={"measureCql"}
-                dataTestId="test-case-cql-editor"
+                validationsEnabled={false}
               />
             ) : (
               "An error exists with the measure CQL, please review the CQL Editor tab"
