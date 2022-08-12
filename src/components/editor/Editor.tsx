@@ -10,8 +10,6 @@ export interface EditorPropsType {
   inboundAnnotations?: Ace.Annotation[];
   setEditor?: (editor: Ace.Editor) => void;
   readOnly?: boolean;
-  editorType?: string;
-  dataTestId?: string;
 }
 
 const Editor = ({
