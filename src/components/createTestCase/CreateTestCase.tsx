@@ -45,6 +45,7 @@ import {
 import { measureStore, useOktaTokens } from "@madie/madie-util";
 import useExecutionContext from "../routes/useExecutionContext";
 import { MadieEditor } from "@madie/madie-editor";
+import CreateTestCaseNavTabs from "./CreateTestCaseNavTabs";
 
 const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
@@ -132,17 +133,6 @@ const INITIAL_VALUES = {
   series: "",
   groupPopulations: [],
 } as TestCase;
-
-interface PropTypes {
-  isActive?: boolean;
-}
-
-const MenuItemContainer = tw.ul`bg-transparent flex px-8`;
-const MenuItem = styled.li((props: PropTypes) => [
-  tw`relative h-2 mr-3 ml-3 mt-3 mb-0 not-italic font-rubik font-medium text-sm leading-4 text-gray`,
-  props.isActive &&
-    tw`bg-white h-2 text-black font-medium pb-6 border-solid border-b-4 border-blue-950 bg-opacity-75`,
-]);
 
 const CreateTestCase = () => {
   const navigate = useNavigate();
@@ -593,33 +583,11 @@ const CreateTestCase = () => {
 
         <div style={{ width: "17px", background: "#DDDDDD" }}></div>
         <div tw="flex-auto sm:w-full md:w-1/12 lg:w-3/12">
-          <MenuItemContainer>
-            <MenuItem
-              data-testid="measurecql-tab"
-              isActive={activeTab == "measurecql"}
-              onClick={() => {
-                setActiveTab("measurecql");
-              }}
-            >
-              Measure CQL(View Only)
-            </MenuItem>
+          <CreateTestCaseNavTabs
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+          />
 
-            <MenuItem
-              data-testid="expectoractual-tab"
-              isActive={activeTab == "expectoractual"}
-              onClick={() => setActiveTab("expectoractual")}
-            >
-              Expected / Actual
-            </MenuItem>
-
-            <MenuItem
-              data-testid="details-tab"
-              isActive={activeTab == "details"}
-              onClick={() => setActiveTab("details")}
-            >
-              Details
-            </MenuItem>
-          </MenuItemContainer>
           {activeTab === "measurecql" &&
             (!measure?.cqlErrors ? (
               <MadieEditor
