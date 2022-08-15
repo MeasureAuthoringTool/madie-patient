@@ -5,7 +5,7 @@ import "ace-builds/src-noconflict/mode-json";
 
 export interface EditorPropsType {
   value: string;
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
   parseDebounceTime?: number;
   inboundAnnotations?: Ace.Annotation[];
   setEditor?: (editor: Ace.Editor) => void;
@@ -22,7 +22,7 @@ const Editor = ({
 }: EditorPropsType) => {
   return (
     <>
-      <div data-testid="test-case-editor">
+      <div data-testid="test-case-json-editor">
         <AceEditor
           value={value}
           onChange={(value) => {
@@ -51,6 +51,7 @@ const Editor = ({
           }}
           editorProps={{ $blockScrolling: true }}
           readOnly={readOnly}
+          wrapEnabled={true}
         />
       </div>
     </>
