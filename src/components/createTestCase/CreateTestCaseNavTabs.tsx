@@ -8,7 +8,7 @@ interface PropTypes {
 const MenuItemContainer = tw.ul`bg-transparent flex px-8`;
 const MenuItem = styled.li((props: PropTypes) => [
   tw`relative h-2 mr-3 ml-3 mt-3 mb-0 font-rubik text-sm leading-4 text-gray-980`,
-  props.isActive && tw`bg-white h-2 text-black pb-6 border-b-4 border-blue-950`,
+  props.isActive && tw`bg-white text-black pb-6 border-b-4 border-blue-950`,
 ]);
 
 export interface NavTabProps {
