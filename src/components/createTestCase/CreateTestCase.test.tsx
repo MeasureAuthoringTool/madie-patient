@@ -1636,7 +1636,7 @@ describe("CreateTestCase component", () => {
     userEvent.click(screen.getByTestId("expectoractual-tab"));
     userEvent.click(screen.getByTestId("measurecql-tab"));
 
-    const editor = screen.getByTestId("test-case-cql-editor");
+    const editor = screen.getByTestId("test-case-cql-mock-editor");
     expect(editor).toHaveValue("MeasureCql");
   });
 

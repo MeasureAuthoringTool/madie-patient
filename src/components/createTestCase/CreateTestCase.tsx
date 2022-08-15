@@ -590,14 +590,19 @@ const CreateTestCase = () => {
 
           {activeTab === "measurecql" &&
             (!measure?.cqlErrors ? (
-              <MadieEditor
-                value={measure?.cql}
-                height={"909px"}
-                readOnly={true}
-                validationsEnabled={false}
-              />
+              <div data-testid="test-case-cql-editor">
+                <MadieEditor
+                  value={measure?.cql}
+                  height={"909px"}
+                  readOnly={true}
+                  validationsEnabled={false}
+                />
+              </div>
             ) : (
-              "An error exists with the measure CQL, please review the CQL Editor tab"
+              <div data-testid="test-case-cql-has-errors-message">
+                An error exists with the measure CQL, please review the CQL
+                Editor tab
+              </div>
             ))}
 
           {activeTab === "details" && (
