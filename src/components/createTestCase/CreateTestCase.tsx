@@ -571,7 +571,7 @@ const CreateTestCase = () => {
       data-testid="create-test-case-form"
       onSubmit={formik.handleSubmit}
     >
-      <div tw="flex flex-wrap w-screen">
+      <div tw="flex flex-wrap shadow-lg mx-8 my-6 rounded-md border border-slate bg-white">
         <div
           tw="flex-none sm:w-full md:w-6/12 lg:w-6/12"
           style={{ marginTop: 39 }}
