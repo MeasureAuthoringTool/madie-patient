@@ -1906,6 +1906,50 @@ describe("Measure Calculation ", () => {
         data: { ...testCaseFixture, createdBy: MEASURE_CREATEDBY },
       });
     });
+    const axiosError: AxiosError = {
+      response: {
+        status: 500,
+        data: {},
+      } as AxiosResponse,
+      toJSON: jest.fn(),
+    } as unknown as AxiosError;
+
+    mockedAxios.post.mockClear().mockRejectedValue(axiosError);
+    const measure = { ...simpleMeasureFixture, createdBy: MEASURE_CREATEDBY };
+    renderWithRouter(
+      [
+        "/measures/623cacebe74613783378c17b/edit/test-cases/623cacffe74613783378c17c",
+      ],
+      "/measures/:measureId/edit/test-cases/:id",
+      measure
+    );
+    userEvent.click(screen.getByTestId("details-tab"));
+    expect(
+      await screen.findByRole("button", {
+        name: "Update Test Case",
+      })
+    ).toBeInTheDocument();
+
+    await waitFor(async () => {
+      userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
+    });
+
+    const alert = await screen.findByRole("alert");
+    expect(alert).toBeInTheDocument();
+    expect(alert).toHaveTextContent(
+      "Test case execution was aborted because JSON could not be validated. If this error persists, please contact the help desk."
+    );
+  });
+
+  it("displays error when test case execution is aborted due to errors validating test case JSON", async () => {
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
+      }
+      return Promise.resolve({
+        data: { ...testCaseFixture, createdBy: MEASURE_CREATEDBY },
+      });
+    });
     mockedAxios.post.mockResolvedValue({
       data: {
         code: 200,

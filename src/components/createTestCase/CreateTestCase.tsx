@@ -373,19 +373,27 @@ const CreateTestCase = () => {
     let modifiedTestCase = { ...testCase };
     if (isModified()) {
       modifiedTestCase.json = editorVal;
-      // Validate test case JSON prior to execution
-      const validationResult =
-        await testCaseService.current.validateTestCaseBundle(
-          JSON.parse(editorVal)
-        );
-      const errors = handleHapiOutcome(validationResult);
-      if (!_.isNil(errors) && errors.length > 0) {
+      try {
+        // Validate test case JSON prior to execution
+        const validationResult =
+          await testCaseService.current.validateTestCaseBundle(
+            JSON.parse(editorVal)
+          );
+        const errors = handleHapiOutcome(validationResult);
+        if (!_.isNil(errors) && errors.length > 0) {
+          setAlert({
+            status: "warning",
+            message:
+              "Test case execution was aborted due to errors with the test case JSON.",
+          });
+          return;
+        }
+      } catch (error) {
         setAlert({
-          status: "warning",
+          status: "error",
           message:
-            "Test case execution was aborted due to errors with the test case JSON.",
+            "Test case execution was aborted because JSON could not be validated. If this error persists, please contact the help desk.",
         });
-        return;
       }
     }
 
