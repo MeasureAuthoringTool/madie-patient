@@ -102,6 +102,24 @@ export class TestCaseServiceApi {
       throw new Error(message);
     }
   }
+
+  async validateTestCaseBundle(bundle: any) {
+    try {
+      const response = await axios.post<TestCase>(
+        `${this.baseUrl}/validations/bundles`,
+        bundle,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      const message = `Unable to validate test case bundle`;
+      throw new Error(message);
+    }
+  }
 }
 
 const useTestCaseServiceApi = (): TestCaseServiceApi => {
