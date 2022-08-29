@@ -32,7 +32,7 @@ const measureBundle = {} as Bundle;
 const valueSets = [getExampleValueSet()];
 const measure = {
   id: "m1234",
-  model: "QI-Core",
+  model: "QI-Core v4.1.1",
   cqlLibraryName: "CM527Library",
   measurementPeriodStart: "01/05/2022",
   measurementPeriodEnd: "03/07/2022",

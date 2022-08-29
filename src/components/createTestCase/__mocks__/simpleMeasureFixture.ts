@@ -14,6 +14,7 @@ export const simpleMeasureFixture: Measure = {
   revisionNumber: null,
   state: null,
   cqlLibraryName: "SimpleFhirMeasure",
+  ecqmTitle: "ecqmTitle",
   measureName: "SimpleFhirMeasure",
   cql: 'library SimpleFhirMeasure version \'0.0.001\'\n\nusing FHIR version \'4.0.1\'\n\ninclude FHIRHelpers version \'4.0.001\' called FHIRHelpers\n\nparameter "Measurement Period" Interval<DateTime>\n\ncontext Patient\n\ndefine "first":\n  exists ["Encounter"] E where E.period.start during "Measurement Period"\n\ndefine "second":\n  "first"\n\ndefine "third":\n  exists ["Encounter"] E where E.status ~ \'finished\'',
   elmJson:

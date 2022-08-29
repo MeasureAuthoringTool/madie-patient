@@ -477,7 +477,7 @@ const CreateTestCase = () => {
     );
   }
 
-  function handleHapiOutcome(outcome: any) {
+  function handleHapiOutcome(outcome: HapiOperationOutcome) {
     if (
       _.isNil(outcome) ||
       (outcome.successful !== false &&
@@ -581,8 +581,11 @@ const CreateTestCase = () => {
   };
 
   return (
-    <>
-      <div tw="flex flex-wrap w-screen">
+    <TestCaseForm
+      data-testid="create-test-case-form"
+      onSubmit={formik.handleSubmit}
+    >
+      <div tw="flex flex-wrap shadow-lg mx-8 my-6 rounded-md border border-slate bg-white">
         <div
           tw="flex-none sm:w-full md:w-6/12 lg:w-6/12"
           style={{ marginTop: 39 }}
@@ -607,7 +610,7 @@ const CreateTestCase = () => {
               <div data-testid="test-case-cql-editor">
                 <MadieEditor
                   value={measure?.cql}
-                  height={"909px"}
+                  height="calc(100vh - 135px)"
                   readOnly={true}
                   validationsEnabled={false}
                 />
@@ -641,16 +644,13 @@ const CreateTestCase = () => {
                   </button>
                 </Alert>
               )}
-              <TestCaseForm
-                data-testid="create-test-case-form"
-                onSubmit={formik.handleSubmit}
-              >
-                {/* TODO Replace with re-usable form component
+              {/* TODO Replace with re-usable form component
                label, input, and error => single input control component */}
 
-                <FormControl>
-                  <Label text="Test Case Title" />
-                  {canEdit && (
+              <FormControl>
+                <Label text="Test Case Title" />
+                {canEdit && (
+                  <>
                     <TestCaseTitle
                       type="text"
                       id="testCaseTitle"
@@ -659,29 +659,29 @@ const CreateTestCase = () => {
                       // border radius classes don't take to tw.input
                       style={{ borderRadius: ".375rem" }}
                     />
-                  )}
-                  {canEdit && (
                     <FormErrors>{formikErrorHandler("title", true)}</FormErrors>
-                  )}
-                  {!canEdit && formik.values.title}
-                  <Label text="Test Case Description" />
-                  {canEdit && (
+                  </>
+                )}
+                {!canEdit && formik.values.title}
+
+                <Label text="Test Case Description" />
+                {canEdit && (
+                  <>
                     <TestCaseDescription
                       id="testCaseDescription"
                       data-testid="create-test-case-description"
                       {...formik.getFieldProps("description")}
                     />
-                  )}
-                  {canEdit && (
                     <FormErrors>
                       {formikErrorHandler("description", true)}
                     </FormErrors>
-                  )}
-                  {!canEdit && formik.values.description}
-                </FormControl>
-                <FormControl>
-                  <Label text="Test Case Series" />
-                  {canEdit && (
+                  </>
+                )}
+                {!canEdit && formik.values.description}
+
+                <Label text="Test Case Series" />
+                {canEdit && (
+                  <>
                     <TestCaseSeries
                       value={formik.values.series}
                       onChange={(nextValue) =>
@@ -690,68 +690,31 @@ const CreateTestCase = () => {
                       seriesOptions={seriesState.series}
                       sx={{ width: "100%" }}
                     />
-                  )}
-                  {canEdit && (
                     <HelperText text={"Start typing to add a new series"} />
+                  </>
+                )}
+                {!canEdit && formik.values.series}
+              </FormControl>
+              <FormControl
+                tw="flex flex-col"
+                data-testid="create-test-case-populations"
+              >
+                <span tw="text-lg">Population Values</span>
+                <GroupPopulations
+                  disableActual={true}
+                  disableExpected={!canEdit}
+                  groupPopulations={mapGroups(
+                    formik.values.groupPopulations[0],
+                    populationGroupResult
                   )}
-                  {!canEdit && formik.values.series}
-                </FormControl>
-                <FormControl
-                  tw="flex flex-col"
-                  data-testid="create-test-case-populations"
-                >
-                  <span tw="text-lg">Population Values</span>
-                  <GroupPopulations
-                    disableActual={true}
-                    disableExpected={!canEdit}
-                    groupPopulations={mapGroups(
-                      formik.values.groupPopulations[0],
-                      populationGroupResult
-                    )}
-                    onChange={(groupPopulations) => {
-                      setPendingGroupPopulations(groupPopulations);
-                    }}
-                    setChangedPopulation={setChangedPopulation}
-                  />
-                </FormControl>
+                  onChange={(groupPopulations) => {
+                    setPendingGroupPopulations(groupPopulations);
+                  }}
+                  setChangedPopulation={setChangedPopulation}
+                />
+              </FormControl>
 
-                <FormActions>
-                  form actions
-                  {canEdit && (
-                    <Button
-                      buttonTitle={
-                        testCase ? "Update Test Case" : "Create Test Case"
-                      }
-                      type="submit"
-                      data-testid="create-test-case-button"
-                      disabled={!isModified() || createButtonDisabled}
-                    />
-                  )}
-                  <Button
-                    buttonTitle="Run Test"
-                    type="button"
-                    variant="secondary"
-                    onClick={calculate}
-                    disabled={
-                      !!measure?.cqlErrors ||
-                      _.isNil(measure?.groups) ||
-                      measure?.groups.length === 0 ||
-                      (!isModified() && validationErrors?.length > 0) ||
-                      isEmptyTestCaseJsonString(formik.values.json)
-                    }
-                    data-testid="run-test-case-button"
-                  />
-                  {canEdit && (
-                    <Button
-                      buttonTitle="Cancel"
-                      type="button"
-                      variant="white"
-                      onClick={navigateToTestCases}
-                      data-testid="create-test-case-cancel-button"
-                    />
-                  )}
-                </FormActions>
-              </TestCaseForm>
+              <FormActions></FormActions>
             </>
           )}
         </div>
@@ -836,8 +799,50 @@ const CreateTestCase = () => {
             </ValidationErrorsButton>
           </aside>
         )}
+
+        <div tw="h-24 bg-gray-75 w-full sticky bottom-0 left-0 z-10">
+          <div tw="flex items-center">
+            <div tw="w-1/2 flex justify-end items-center px-10 py-6">
+              <Button
+                buttonTitle="Run Test"
+                type="button"
+                variant="secondary"
+                onClick={calculate}
+                disabled={
+                  !!measure?.cqlErrors ||
+                  _.isNil(measure?.groups) ||
+                  measure?.groups.length === 0 ||
+                  (!isModified() && validationErrors?.length > 0) ||
+                  isEmptyTestCaseJsonString(formik.values.json)
+                }
+                data-testid="run-test-case-button"
+              />
+            </div>
+            {canEdit && (
+              <div tw="w-1/2 flex justify-end items-center px-10 py-6">
+                <Button
+                  tw="m-2"
+                  buttonTitle="Cancel"
+                  type="button"
+                  variant="white"
+                  onClick={navigateToTestCases}
+                  data-testid="create-test-case-cancel-button"
+                />
+                <Button
+                  tw="m-2"
+                  buttonTitle={
+                    testCase ? "Update Test Case" : "Create Test Case"
+                  }
+                  type="submit"
+                  data-testid="create-test-case-button"
+                  disabled={!isModified() || createButtonDisabled}
+                />
+              </div>
+            )}
+          </div>
+        </div>
       </div>
-    </>
+    </TestCaseForm>
   );
 };
 

@@ -96,6 +96,7 @@ module.exports = {
       },
       gray: {
         50: "#f2f5fb",
+        75: "#F7F7F7",
         100: "#e5ecf7",
         200: "#cfd8e8",
         300: "#b6bed2",
@@ -109,6 +110,11 @@ module.exports = {
         950: "#20253a",
         975: "#080B1A",
         980: "#515151",
+      },
+      slate: {
+        DEFAULT: "#EDEDED",
+        90: "#242424",
+        80: "#333333",
       },
     },
     extend: {

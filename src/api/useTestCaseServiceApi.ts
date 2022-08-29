@@ -105,7 +105,7 @@ export class TestCaseServiceApi {
 
   async validateTestCaseBundle(bundle: any) {
     try {
-      const response = await axios.post<TestCase>(
+      const response = await axios.post<Hapi>(
         `${this.baseUrl}/validations/bundles`,
         bundle,
         {
