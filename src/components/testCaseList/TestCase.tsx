@@ -173,17 +173,10 @@ const TestCase = ({
               aria-label="population"
               data-testid={`population-table-${testCase.id}`}
             >
-              {/* <Table
-                size="small"
-                aria-label="population"
-                data-testid={`population-table-${testCase.id}`}
-              > */}
-              {/* group populations */}
               <GroupPopulations
                 groupPopulations={groupPopulations}
                 executionRun={executionRun}
               />
-              {/* </Table> */}
             </div>
           </Collapse>
         </TableCell>

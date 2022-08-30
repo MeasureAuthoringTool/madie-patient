@@ -4,6 +4,7 @@ import { DisplayPopulationValue, getPopulationCode } from "@madie/madie-models";
 import StyledCheckbox from "./StyledCheckBox";
 
 export interface TestCasePopulationProps {
+  executionRun: boolean;
   population: DisplayPopulationValue;
   showExpected?: boolean;
   disableExpected?: boolean;
@@ -12,6 +13,7 @@ export interface TestCasePopulationProps {
 }
 
 const TestCasePopulation = ({
+  executionRun,
   population,
   disableExpected = false,
   onChange,
@@ -44,15 +46,24 @@ const TestCasePopulation = ({
           />
         </td>
         <td role="cell">
-          <StyledCheckbox
-            id={`${population.name}-actual-cb`}
-            checked={population.actual}
-            onChange={(checked) => onChange({ ...population, actual: checked })}
-            setChangedPopulation={setChangedPopulation}
-            disabled={true}
-            data-testid={`test-population-${population.name}-actual`}
-            displayType="actual"
-          />
+          {executionRun ? (
+            <StyledCheckbox
+              id={`${population.name}-actual-cb`}
+              checked={population.actual}
+              onChange={(checked) =>
+                onChange({ ...population, actual: checked })
+              }
+              setChangedPopulation={setChangedPopulation}
+              disabled={true}
+              data-testid={`test-population-${population.name}-actual`}
+              displayType="actual"
+            />
+          ) : (
+            <pre data-testid={`test-population-${population.name}-actual`}>
+              {" "}
+              -
+            </pre>
+          )}
         </td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>

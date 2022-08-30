@@ -113,6 +113,7 @@ const TestCasePopulationList = ({
         <tbody>
           {populations?.map((population) => (
             <TestCasePopulation
+              executionRun={executionRun}
               population={population}
               key={population.name}
               disableExpected={disableExpected}

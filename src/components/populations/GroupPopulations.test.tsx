@@ -38,6 +38,7 @@ describe("Group Populations", () => {
     render(
       <GroupPopulations
         disableActual={true}
+        executionRun
         groupPopulations={groupPopulations}
         onChange={handleChange}
         setChangedPopulation={setChangedPopulation}
@@ -47,10 +48,6 @@ describe("Group Populations", () => {
     expect(g1MeasureName).toBeInTheDocument();
     const g1ScoringName = screen.getByTestId("scoring-unit-1");
     expect(g1ScoringName).toBeInTheDocument();
-    // const populationValuesLabel = screen.getByText(
-    //   "Group 1 (Continuous Variable) Population Values"
-    // );
-    // expect(populationValuesLabel).toBeInTheDocument();
 
     const ippRow = screen.getByRole("row", { name: "ipp" });
     expect(ippRow).toBeInTheDocument();
@@ -62,11 +59,10 @@ describe("Group Populations", () => {
     expect(ippCbs[1]).toBeDisabled();
     expect(ippCbs[1]).not.toBeChecked();
 
-    // const msrpoplRow = screen.getByRole("row", { name: "MSRPOPL" });
     const msrpoplRow = screen.getByTestId(
       "test-row-population-id-measurePopulationExclusion"
     );
-    // const msrpopl
+
     // test-row-population-id-measurePopulationExclusion
     expect(msrpoplRow).toBeInTheDocument();
     const msrpoplCell = within(msrpoplRow).getByText("msrpoplex");
@@ -94,7 +90,13 @@ describe("Group Populations", () => {
   });
 
   it("should handle null groupPopulation input", () => {
-    render(<GroupPopulations groupPopulations={null} onChange={jest.fn()} />);
+    render(
+      <GroupPopulations
+        groupPopulations={null}
+        onChange={jest.fn()}
+        executionRun
+      />
+    );
     expect(
       screen.getByText(
         "No populations for current scoring. Please make sure at least one measure group has been created."
@@ -104,7 +106,11 @@ describe("Group Populations", () => {
 
   it("should handle undefined groupPopulation input", () => {
     render(
-      <GroupPopulations groupPopulations={undefined} onChange={jest.fn()} />
+      <GroupPopulations
+        groupPopulations={undefined}
+        onChange={jest.fn()}
+        executionRun
+      />
     );
     expect(
       screen.getByText(
@@ -114,7 +120,13 @@ describe("Group Populations", () => {
   });
 
   it("should handle empty groupPopulation input", () => {
-    render(<GroupPopulations groupPopulations={[]} onChange={jest.fn()} />);
+    render(
+      <GroupPopulations
+        groupPopulations={[]}
+        onChange={jest.fn()}
+        executionRun
+      />
+    );
     expect(
       screen.getByText(
         "No populations for current scoring. Please make sure at least one measure group has been created."
@@ -142,6 +154,7 @@ describe("Group Populations", () => {
       <GroupPopulations
         disableActual={true}
         disableExpected={true}
+        executionRun
         groupPopulations={groupPopulations}
         onChange={handleChange}
         setChangedPopulation={setChangedPopulation}
@@ -174,6 +187,7 @@ describe("Group Populations", () => {
     const setChangedPopulation = jest.fn();
     render(
       <GroupPopulations
+        executionRun
         groupPopulations={groupPopulations}
         onChange={handleChange}
         setChangedPopulation={setChangedPopulation}
@@ -216,5 +230,35 @@ describe("Group Populations", () => {
         ],
       },
     ]);
+  });
+  it("should display empty on non run", () => {
+    const groupPopulations: GroupPopulation[] = [
+      {
+        groupId: "Group1_ID",
+        scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+        populationValues: [
+          {
+            name: PopulationType.INITIAL_POPULATION,
+            expected: true,
+            actual: true,
+          },
+        ],
+      },
+    ];
+    const handleChange = jest.fn();
+    const setChangedPopulation = jest.fn();
+    render(
+      <GroupPopulations
+        executionRun={false}
+        groupPopulations={groupPopulations}
+        onChange={handleChange}
+        setChangedPopulation={setChangedPopulation}
+      />
+    );
+
+    const actualColumn = screen.getByTestId(
+      "test-population-initialPopulation-actual"
+    );
+    expect(actualColumn).toBeInTheDocument();
   });
 });

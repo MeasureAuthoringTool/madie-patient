@@ -658,27 +658,27 @@ describe("CreateTestCase component", () => {
     expect(listItems[1]).toHaveTextContent("SeriesB");
     userEvent.click(listItems[1]);
 
-    // const ippExpectedCb = await screen.findByTestId(
-    //   "test-population-initialPopulation-expected"
-    // );
-    // expect(ippExpectedCb).toBeChecked();
-    // const mpExpectedCb = await screen.findByTestId(
-    //   "test-population-measurePopulation-expected"
-    // );
-    // expect(mpExpectedCb).toBeChecked();
-    // userEvent.click(mpExpectedCb);
+    //   const ippExpectedCb = await screen.findByTestId(
+    //     "test-population-initialPopulation-expected"
+    //   );
+    //   expect(ippExpectedCb).toBeChecked();
+    //   const mpExpectedCb = await screen.findByTestId(
+    //     "test-population-measurePopulation-expected"
+    //   );
+    //   expect(mpExpectedCb).toBeChecked();
+    //   userEvent.click(mpExpectedCb);
 
-    // const editor = screen.getByTestId("test-case-json-editor");
-    // userEvent.paste(editor, testCaseJson);
-    // expect(editor).toHaveValue(testCaseJson);
+    //   const editor = screen.getByTestId("test-case-json-editor");
+    //   userEvent.paste(editor, testCaseJson);
+    //   expect(editor).toHaveValue(testCaseJson);
 
-    // userEvent.click(screen.getByTestId("details-tab"));
-    // await waitFor(() => {
-    //   expect(
-    //     screen.getByRole("button", { name: "Update Test Case" })
-    //   ).toBeEnabled();
-    // });
-    // userEvent.click(screen.getByRole("button", { name: "Update Test Case" }));
+    userEvent.click(screen.getByTestId("details-tab"));
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Update Test Case" })
+      ).toBeEnabled();
+    });
+    userEvent.click(screen.getByRole("button", { name: "Update Test Case" }));
 
     // const debugOutput = await screen.findByText(
     //   "Test case updated successfully! Bundle ID has been auto generated"

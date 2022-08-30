@@ -13,7 +13,6 @@ const ExpectedActual = ({
       id="create-test-case-right-panel"
     >
       <GroupPopulations
-        executionRun={false}
         disableExpected={!canEdit}
         groupPopulations={groupPopulations}
         onChange={onChange}
