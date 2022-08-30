@@ -658,19 +658,21 @@ describe("CreateTestCase component", () => {
     expect(listItems[1]).toHaveTextContent("SeriesB");
     userEvent.click(listItems[1]);
 
-    //   const ippExpectedCb = await screen.findByTestId(
-    //     "test-population-initialPopulation-expected"
-    //   );
-    //   expect(ippExpectedCb).toBeChecked();
-    //   const mpExpectedCb = await screen.findByTestId(
-    //     "test-population-measurePopulation-expected"
-    //   );
-    //   expect(mpExpectedCb).toBeChecked();
-    //   userEvent.click(mpExpectedCb);
+    userEvent.click(screen.getByTestId("expectoractual-tab"));
 
-    //   const editor = screen.getByTestId("test-case-json-editor");
-    //   userEvent.paste(editor, testCaseJson);
-    //   expect(editor).toHaveValue(testCaseJson);
+    const ippExpectedCb = await screen.findByTestId(
+      "test-population-initialPopulation-expected"
+    );
+    expect(ippExpectedCb).toBeChecked();
+    const mpExpectedCb = await screen.findByTestId(
+      "test-population-measurePopulation-expected"
+    );
+    expect(mpExpectedCb).toBeChecked();
+    userEvent.click(mpExpectedCb);
+
+    const editor = screen.getByTestId("test-case-json-editor");
+    userEvent.paste(editor, testCaseJson);
+    expect(editor).toHaveValue(testCaseJson);
 
     userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(() => {
@@ -680,35 +682,35 @@ describe("CreateTestCase component", () => {
     });
     userEvent.click(screen.getByRole("button", { name: "Update Test Case" }));
 
-    // const debugOutput = await screen.findByText(
-    //   "Test case updated successfully! Bundle ID has been auto generated"
-    // );
-    // expect(debugOutput).toBeInTheDocument();
+    const debugOutput = await screen.findByText(
+      "Test case updated successfully!"
+    );
+    expect(debugOutput).toBeInTheDocument();
 
-    // const calls = mockedAxios.put.mock.calls;
-    // expect(calls).toBeTruthy();
-    // expect(calls[0]).toBeTruthy();
-    // const updatedTestCase = calls[0][1] as TestCase;
-    // expect(updatedTestCase).toBeTruthy();
-    // expect(updatedTestCase.series).toEqual("SeriesB");
-    // expect(updatedTestCase.groupPopulations).toEqual([
-    //   {
-    //     groupId: "Group1_ID",
-    //     scoring: MeasureScoring.CONTINUOUS_VARIABLE,
-    //     populationValues: [
-    //       {
-    //         name: PopulationType.INITIAL_POPULATION,
-    //         expected: true,
-    //         actual: false,
-    //       },
-    //       {
-    //         name: PopulationType.MEASURE_POPULATION,
-    //         expected: false,
-    //         actual: false,
-    //       },
-    //     ],
-    //   },
-    // ]);
+    const calls = mockedAxios.put.mock.calls;
+    expect(calls).toBeTruthy();
+    expect(calls[0]).toBeTruthy();
+    const updatedTestCase = calls[0][1] as TestCase;
+    expect(updatedTestCase).toBeTruthy();
+    expect(updatedTestCase.series).toEqual("SeriesB");
+    expect(updatedTestCase.groupPopulations).toEqual([
+      {
+        groupId: "Group1_ID",
+        scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+        populationValues: [
+          {
+            name: PopulationType.INITIAL_POPULATION,
+            expected: true,
+            actual: false,
+          },
+          {
+            name: PopulationType.MEASURE_POPULATION,
+            expected: false,
+            actual: false,
+          },
+        ],
+      },
+    ]);
   });
 
   it("should give a warning message when Id is present in the JSON while updating test case when update button is clicked", async () => {
@@ -779,7 +781,7 @@ describe("CreateTestCase component", () => {
     // expect(g1MeasureName).toBeInTheDocument();
     // const g1ScoringName = await screen.getByTestId('scoring-unit-1')
     // expect(g1ScoringName).toBeInTheDocument();
-    // userEvent.click(screen.getByTestId("details-tab"));
+    userEvent.click(screen.getByTestId("details-tab"));
 
     mockedAxios.put.mockResolvedValue({
       data: {
@@ -812,15 +814,16 @@ describe("CreateTestCase component", () => {
     expect(listItems[1]).toHaveTextContent("SeriesB");
     userEvent.click(listItems[1]);
 
-    // const ippExpectedCb = await screen.findByTestId(
-    //   "test-population-initialPopulation-expected"
-    // );
-    // expect(ippExpectedCb).toBeChecked();
-    // const mpExpectedCb = await screen.findByTestId(
-    //   "test-population-measurePopulation-expected"
-    // );
-    // expect(mpExpectedCb).toBeChecked();
-    // userEvent.click(mpExpectedCb);
+    userEvent.click(screen.getByTestId("expectoractual-tab"));
+    const ippExpectedCb = await screen.findByTestId(
+      "test-population-initialPopulation-expected"
+    );
+    expect(ippExpectedCb).toBeChecked();
+    const mpExpectedCb = await screen.findByTestId(
+      "test-population-measurePopulation-expected"
+    );
+    expect(mpExpectedCb).toBeChecked();
+    userEvent.click(mpExpectedCb);
 
     const editor = screen.getByTestId("test-case-json-editor");
     userEvent.paste(editor, testCaseJson);
@@ -844,25 +847,25 @@ describe("CreateTestCase component", () => {
     expect(calls[0]).toBeTruthy();
     const updatedTestCase = calls[0][1] as TestCase;
     expect(updatedTestCase).toBeTruthy();
-    // expect(updatedTestCase.series).toEqual("SeriesB");
-    // expect(updatedTestCase.groupPopulations).toEqual([
-    //   {
-    //     groupId: "Group1_ID",
-    //     scoring: MeasureScoring.CONTINUOUS_VARIABLE,
-    //     populationValues: [
-    //       {
-    //         name: PopulationType.INITIAL_POPULATION,
-    //         expected: true,
-    //         actual: false,
-    //       },
-    //       {
-    //         name: PopulationType.MEASURE_POPULATION,
-    //         expected: false,
-    //         actual: false,
-    //       },
-    //     ],
-    //   },
-    // ]);
+    expect(updatedTestCase.series).toEqual("SeriesB");
+    expect(updatedTestCase.groupPopulations).toEqual([
+      {
+        groupId: "Group1_ID",
+        scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+        populationValues: [
+          {
+            name: PopulationType.INITIAL_POPULATION,
+            expected: true,
+            actual: false,
+          },
+          {
+            name: PopulationType.MEASURE_POPULATION,
+            expected: false,
+            actual: false,
+          },
+        ],
+      },
+    ]);
   });
 
   it("should display an error when test case update fails", async () => {
