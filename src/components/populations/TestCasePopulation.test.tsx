@@ -35,7 +35,7 @@ describe("TestCasePopulation component", () => {
       `test-row-population-id-${testCasePopulation.name}`
     );
     const columns = row.querySelectorAll("td");
-    expect(columns[1]).toHaveTextContent("IPP");
+    expect(columns[1]).toHaveTextContent("ipp");
     const buttons = await screen.findAllByRole("checkbox");
     expect(buttons).toHaveLength(2);
   });
@@ -71,12 +71,12 @@ describe("TestCasePopulation component", () => {
     expect(ippActual).toBeInTheDocument();
     expect(ippExpected).not.toBeChecked();
     expect(ippActual).not.toBeChecked();
-
-    userEvent.click(ippActual);
-    expect(handleChange).toBeCalledWith({
-      name: PopulationType.INITIAL_POPULATION,
-      expected: false,
-      actual: true,
-    });
+    // actuall will always be disabled.
+    // userEvent.click(ippActual);
+    // expect(handleChange).toBeCalledWith({
+    //   name: PopulationType.INITIAL_POPULATION,
+    //   expected: false,
+    //   actual: true,
+    // });
   });
 });

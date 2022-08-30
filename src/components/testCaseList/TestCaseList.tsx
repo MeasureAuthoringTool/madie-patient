@@ -171,6 +171,7 @@ const TestCaseList = () => {
                       key={testCase.id}
                       canEdit={canEdit}
                       executionResult={executionResults[testCase.id]}
+                      // we assume all results have been run here
                     />
                   );
                 })}

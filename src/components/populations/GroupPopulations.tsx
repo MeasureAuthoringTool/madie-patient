@@ -7,7 +7,8 @@ import * as _ from "lodash";
 
 export interface PopulationsProps {
   disableExpected?: boolean;
-  disableActual?: boolean;
+  // we dont need disable actual as it's always disabled.
+  executionRun?: boolean;
   groupPopulations: DisplayGroupPopulation[];
   onChange?: (groupPopulations: GroupPopulation[]) => void;
   setChangedPopulation?: (string: string) => void;
@@ -15,7 +16,8 @@ export interface PopulationsProps {
 
 const GroupPopulations = ({
   disableExpected = false,
-  disableActual = false,
+  // Execution run determines weather we display one of 3 views.
+  executionRun = false,
   groupPopulations = [],
   onChange,
   setChangedPopulation,
@@ -23,13 +25,12 @@ const GroupPopulations = ({
   <>
     {groupPopulations && groupPopulations.length > 0 ? (
       groupPopulations.map((gp, i) => (
-        <div tw="my-2" key={gp.groupId}>
-          <span tw="text-base">
-            Group {`${i + 1} (${gp.scoring})`} Population Values
-          </span>
+        <div key={gp.groupId} style={{ marginTop: 16 }}>
           <TestCasePopulationList
+            i={i}
+            scoring={gp.scoring}
             disableExpected={disableExpected}
-            disableActual={disableActual}
+            executionRun={executionRun}
             populations={gp.populationValues}
             onChange={(populations) => {
               const nextPopulations = _.cloneDeep(groupPopulations);

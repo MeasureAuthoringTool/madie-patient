@@ -1,16 +1,7 @@
 import React from "react";
 import tw, { styled } from "twin.macro";
-
-interface PropTypes {
-  isActive?: boolean;
-}
-
-const MenuItemContainer = tw.ul`bg-transparent flex px-8`;
-const MenuItem = styled.li((props: PropTypes) => [
-  tw`relative h-2 mr-3 ml-3 mt-3 mb-0 font-rubik text-sm leading-4 text-gray-980`,
-  props.isActive && tw`bg-white text-black pb-6 border-b-4 border-blue-950`,
-]);
-
+import { Tabs, Tab } from "@mui/material";
+import "./CreateTestCaseNavTabs.scss";
 export interface NavTabProps {
   activeTab: string;
   setActiveTab: (value: string) => void;
@@ -19,32 +10,63 @@ export interface NavTabProps {
 export default function CreateTestCaseNavTabs(props: NavTabProps) {
   const { activeTab, setActiveTab } = props;
   return (
-    <MenuItemContainer>
-      <MenuItem
-        data-testid="measurecql-tab"
-        isActive={activeTab == "measurecql"}
-        onClick={() => {
-          setActiveTab("measurecql");
+    <Tabs
+      value={activeTab}
+      onChange={(e, v) => {
+        setActiveTab(v);
+      }}
+      sx={{
+        fontWeight: 400,
+        height: "45px",
+        minHeight: "45px",
+        padding: 0,
+        fontSize: "14px",
+        fontFamily: "Rubik, sans serif",
+        color: "#333333",
+        borderBottom: "solid 1px #DDDDDD",
+        "& .MuiTabs-indicator": {
+          height: "4px",
+          backgroundColor: "#209FA6",
+        },
+        "& .Mui-selected": {
+          fontWeight: 600,
+          color: "#515151 !important",
+        },
+      }}
+    >
+      <Tab
+        sx={{
+          padding: "0px 10px",
+          height: "45px",
+          minHeight: "45px",
+          textTransform: "none",
         }}
-      >
-        Measure CQL(View Only)
-      </MenuItem>
-
-      <MenuItem
+        label={`Measure CQL (View Only)`}
+        data-testid="measurecql-tab"
+        value="measurecql"
+      />
+      <Tab
+        sx={{
+          padding: "0px 10px",
+          height: "45px",
+          minHeight: "45px",
+          textTransform: "none",
+        }}
+        value="expectoractual"
+        label="Expected / Actual"
         data-testid="expectoractual-tab"
-        isActive={activeTab == "expectoractual"}
-        onClick={() => setActiveTab("expectoractual")}
-      >
-        Expected / Actual
-      </MenuItem>
-
-      <MenuItem
+      />
+      <Tab
+        sx={{
+          padding: "0px 10px",
+          height: "45px",
+          minHeight: "45px",
+          textTransform: "none",
+        }}
+        value="details"
+        label="Details"
         data-testid="details-tab"
-        isActive={activeTab == "details"}
-        onClick={() => setActiveTab("details")}
-      >
-        Details
-      </MenuItem>
-    </MenuItemContainer>
+      />
+    </Tabs>
   );
 }
