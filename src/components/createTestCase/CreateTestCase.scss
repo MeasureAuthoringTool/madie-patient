@@ -3,7 +3,7 @@
   margin: 0 31px;
   margin-right: 0;
   overflow-y: auto;
-  
+
   &::-webkit-scrollbar {
     width: 7px;
     border-radius: 25px;
@@ -54,7 +54,7 @@
     .pass {
       color: #4d7e23;
     }
-    
+
     .fail {
       color: #ae1c1c;
     }

@@ -719,41 +719,6 @@ const CreateTestCase = () => {
                 )}
                 {!canEdit && formik.values.series}
               </FormControl>
-                <FormActions>
-                  {canEdit && (
-                    <Button
-                      buttonTitle={
-                        testCase ? "Update Test Case" : "Create Test Case"
-                      }
-                      type="submit"
-                      data-testid="create-test-case-button"
-                      disabled={!isModified() || createButtonDisabled}
-                    />
-                  )}
-                  <Button
-                    buttonTitle="Run Test"
-                    type="button"
-                    variant="secondary"
-                    onClick={calculate}
-                    disabled={
-                      !!measure?.cqlErrors ||
-                      _.isNil(measure?.groups) ||
-                      measure?.groups.length === 0 ||
-                      validationErrors?.length > 0 ||
-                      isEmptyTestCaseJsonString(formik.values.json)
-                    }
-                    data-testid="run-test-case-button"
-                  />
-                  {canEdit && (
-                    <Button
-                      buttonTitle="Cancel"
-                      type="button"
-                      variant="white"
-                      onClick={navigateToTestCases}
-                      data-testid="create-test-case-cancel-button"
-                    />
-                  )}
-                </FormActions>
             </>
           )}
         </div>
@@ -858,7 +823,10 @@ const CreateTestCase = () => {
               />
             </div>
             {canEdit && (
-              <div tw="w-1/2 flex justify-end items-center px-10 py-6">
+              <div
+                tw="w-1/2 flex justify-end items-center px-10 py-6"
+                style={{ alignItems: "end" }}
+              >
                 <Button
                   tw="m-2"
                   buttonTitle="Cancel"
