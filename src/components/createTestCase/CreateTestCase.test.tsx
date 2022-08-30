@@ -1875,6 +1875,7 @@ describe("Measure Calculation ", () => {
         name: "Update Test Case",
       })
     ).toBeInTheDocument();
+    userEvent.click(screen.getByTestId("expectoractual-tab"));
 
     await waitFor(async () => {
       userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
@@ -1884,12 +1885,12 @@ describe("Measure Calculation ", () => {
       await screen.findByText("Population Group: population-group-1")
     ).toBeInTheDocument();
 
-    // expect(
-    //   await screen.findByTestId("test-population-initialPopulation-actual")
-    // ).toBeChecked();
-    // expect(
-    //   screen.getByTestId("test-population-numerator-actual")
-    // ).not.toBeChecked();
+    expect(
+      await screen.findByTestId("test-population-initialPopulation-actual")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId("test-population-numerator-actual")
+    ).not.toBeChecked();
   });
 
   it("displays warning when test case execution is aborted for invalid JSON", async () => {
