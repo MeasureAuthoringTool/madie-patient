@@ -1,7 +1,7 @@
 import axios from "axios";
 import useServiceConfig from "./useServiceConfig";
 import { ServiceConfig } from "./ServiceContext";
-import { TestCase } from "@madie/madie-models";
+import { HapiOperationOutcome, TestCase } from "@madie/madie-models";
 import { useOktaTokens } from "@madie/madie-util";
 
 export class TestCaseServiceApi {
@@ -99,6 +99,24 @@ export class TestCaseServiceApi {
       return response.data;
     } catch (err) {
       const message = `Unable to update test case`;
+      throw new Error(message);
+    }
+  }
+
+  async validateTestCaseBundle(bundle: any) {
+    try {
+      const response = await axios.post<HapiOperationOutcome>(
+        `${this.baseUrl}/validations/bundles`,
+        bundle,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      const message = `Unable to validate test case bundle`;
       throw new Error(message);
     }
   }

@@ -363,6 +363,7 @@ const CreateTestCase = () => {
   };
 
   const calculate = async () => {
+    setPopulationGroupResult(() => undefined);
     if (measure && measure.cqlErrors) {
       setCalculationErrors(
         "Cannot execute test case while errors exist in the measure CQL!"
@@ -372,6 +373,28 @@ const CreateTestCase = () => {
     let modifiedTestCase = { ...testCase };
     if (isModified()) {
       modifiedTestCase.json = editorVal;
+      try {
+        // Validate test case JSON prior to execution
+        const validationResult =
+          await testCaseService.current.validateTestCaseBundle(
+            JSON.parse(editorVal)
+          );
+        const errors = handleHapiOutcome(validationResult);
+        if (!_.isNil(errors) && errors.length > 0) {
+          setAlert({
+            status: "warning",
+            message:
+              "Test case execution was aborted due to errors with the test case JSON.",
+          });
+          return;
+        }
+      } catch (error) {
+        setAlert({
+          status: "error",
+          message:
+            "Test case execution was aborted because JSON could not be validated. If this error persists, please contact the help desk.",
+        });
+      }
     }
 
     try {
@@ -463,30 +486,29 @@ const CreateTestCase = () => {
   }
 
   function handleHapiOutcome(outcome: HapiOperationOutcome) {
-    if (_.isNil(outcome) || outcome.code === 200 || outcome.code === 201) {
-      setValidationErrors(() => []);
-      return;
-    }
     if (
-      (outcome.code === 400 ||
-        outcome.code === 409 ||
-        outcome.code === 412 ||
-        outcome.code === 422) &&
-      outcome.outcomeResponse &&
-      outcome.outcomeResponse.issue
+      _.isNil(outcome) ||
+      (outcome.successful !== false &&
+        (outcome.code === 200 || outcome.code === 201))
     ) {
-      setValidationErrors(() =>
-        outcome.outcomeResponse.issue.map((issue, index) => ({
-          ...issue,
-          key: index,
-        }))
-      );
+      setValidationErrors(() => []);
+      return [];
+    }
+    if (outcome.outcomeResponse?.issue?.length > 0) {
+      const ves = outcome.outcomeResponse.issue.map((issue, index) => ({
+        ...issue,
+        key: index,
+      }));
+      setValidationErrors(() => ves);
+      return ves;
     } else {
       const error =
         outcome.outcomeResponse?.text ||
         outcome.message ||
         `HAPI FHIR returned error code ${outcome.code} but no discernible error message`;
-      setValidationErrors([{ key: 0, diagnostics: error }]);
+      const ves = [{ key: 0, diagnostics: error }];
+      setValidationErrors(ves);
+      return ves;
     }
   }
 
@@ -798,7 +820,7 @@ const CreateTestCase = () => {
                   !!measure?.cqlErrors ||
                   _.isNil(measure?.groups) ||
                   measure?.groups.length === 0 ||
-                  validationErrors?.length > 0 ||
+                  (!isModified() && validationErrors?.length > 0) ||
                   isEmptyTestCaseJsonString(formik.values.json)
                 }
                 data-testid="run-test-case-button"

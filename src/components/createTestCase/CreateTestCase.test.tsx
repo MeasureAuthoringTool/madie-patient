@@ -1777,6 +1777,23 @@ describe("Measure Calculation ", () => {
   });
 
   it("executes a test case and shows the errors for invalid test case json", async () => {
+    mockedAxios.post.mockResolvedValue({
+      data: {
+        code: 200,
+        message: null,
+        successful: true,
+        outcomeResponse: {
+          resourceType: "OperationOutcome",
+          issue: [
+            {
+              severity: "informational",
+              code: "processing",
+              diagnostics: "No issues!",
+            },
+          ],
+        },
+      },
+    });
     const testCase = {
       id: "1234",
       title: "A Test Case",
@@ -1832,6 +1849,23 @@ describe("Measure Calculation ", () => {
         data: { ...testCaseFixture, createdBy: MEASURE_CREATEDBY },
       });
     });
+    mockedAxios.post.mockResolvedValue({
+      data: {
+        code: 200,
+        message: null,
+        successful: true,
+        outcomeResponse: {
+          resourceType: "OperationOutcome",
+          issue: [
+            {
+              severity: "informational",
+              code: "processing",
+              diagnostics: "No issues!",
+            },
+          ],
+        },
+      },
+    });
     const measure = { ...simpleMeasureFixture, createdBy: MEASURE_CREATEDBY };
     renderWithRouter(
       [
@@ -1850,6 +1884,7 @@ describe("Measure Calculation ", () => {
     await waitFor(async () => {
       userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
     });
+
     expect(
       await screen.findByText("Population Group: population-group-1")
     ).toBeInTheDocument();
@@ -1860,6 +1895,102 @@ describe("Measure Calculation ", () => {
     expect(
       screen.getByTestId("test-population-numerator-actual")
     ).not.toBeChecked();
+  });
+
+  it("displays warning when test case execution is aborted for invalid JSON", async () => {
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
+      }
+      return Promise.resolve({
+        data: { ...testCaseFixture, createdBy: MEASURE_CREATEDBY },
+      });
+    });
+    const axiosError: AxiosError = {
+      response: {
+        status: 500,
+        data: {},
+      } as AxiosResponse,
+      toJSON: jest.fn(),
+    } as unknown as AxiosError;
+
+    mockedAxios.post.mockClear().mockRejectedValue(axiosError);
+    const measure = { ...simpleMeasureFixture, createdBy: MEASURE_CREATEDBY };
+    renderWithRouter(
+      [
+        "/measures/623cacebe74613783378c17b/edit/test-cases/623cacffe74613783378c17c",
+      ],
+      "/measures/:measureId/edit/test-cases/:id",
+      measure
+    );
+    userEvent.click(screen.getByTestId("details-tab"));
+    expect(
+      await screen.findByRole("button", {
+        name: "Update Test Case",
+      })
+    ).toBeInTheDocument();
+
+    await waitFor(async () => {
+      userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
+    });
+
+    const alert = await screen.findByRole("alert");
+    expect(alert).toBeInTheDocument();
+    expect(alert).toHaveTextContent(
+      "Test case execution was aborted because JSON could not be validated. If this error persists, please contact the help desk."
+    );
+  });
+
+  it("displays error when test case execution is aborted due to errors validating test case JSON", async () => {
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
+      }
+      return Promise.resolve({
+        data: { ...testCaseFixture, createdBy: MEASURE_CREATEDBY },
+      });
+    });
+    mockedAxios.post.mockResolvedValue({
+      data: {
+        code: 200,
+        message: null,
+        successful: false,
+        outcomeResponse: {
+          resourceType: "OperationOutcome",
+          issue: [
+            {
+              severity: "error",
+              code: "processing",
+              diagnostics: "Major issue on line 1!",
+            },
+          ],
+        },
+      },
+    });
+    const measure = { ...simpleMeasureFixture, createdBy: MEASURE_CREATEDBY };
+    renderWithRouter(
+      [
+        "/measures/623cacebe74613783378c17b/edit/test-cases/623cacffe74613783378c17c",
+      ],
+      "/measures/:measureId/edit/test-cases/:id",
+      measure
+    );
+    userEvent.click(screen.getByTestId("details-tab"));
+    expect(
+      await screen.findByRole("button", {
+        name: "Update Test Case",
+      })
+    ).toBeInTheDocument();
+
+    await waitFor(async () => {
+      userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
+    });
+
+    const alert = await screen.findByRole("alert");
+    expect(alert).toBeInTheDocument();
+    expect(alert).toHaveTextContent(
+      "Test case execution was aborted due to errors with the test case JSON."
+    );
   });
 
   it("disables button to run the test case when Measure CQL errors exist", async () => {
