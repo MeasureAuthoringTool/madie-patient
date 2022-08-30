@@ -421,12 +421,11 @@ describe("CreateTestCase component", () => {
       measure
     );
 
-    userEvent.click(screen.getByTestId("details-tab"));
-    const g1PopulationValues = await screen.findByText(
-      "Group 1 (Continuous Variable) Population Values"
-    );
-    expect(g1PopulationValues).toBeInTheDocument();
-
+    // userEvent.click(screen.getByTestId("expectoractual-tab"));
+    // const errorMessage = await screen.findByText(
+    //   "No populations for current scoring. Please make sure at least one measure group has been created."
+    // );
+    // expect(errorMessage).toBeInTheDocument();
     mockedAxios.put.mockResolvedValue({
       data: {
         ...testCase,
@@ -458,15 +457,15 @@ describe("CreateTestCase component", () => {
     expect(listItems[1]).toHaveTextContent("SeriesB");
     userEvent.click(listItems[1]);
 
-    const ippExpectedCb = await screen.findByTestId(
-      "test-population-initialPopulation-expected"
-    );
-    expect(ippExpectedCb).toBeChecked();
-    const mpExpectedCb = await screen.findByTestId(
-      "test-population-measurePopulation-expected"
-    );
-    expect(mpExpectedCb).toBeChecked();
-    userEvent.click(mpExpectedCb);
+    // const ippExpectedCb = await screen.findByTestId(
+    //   "test-population-initialPopulation-expected"
+    // );
+    // expect(ippExpectedCb).toBeChecked();
+    // const mpExpectedCb = await screen.findByTestId(
+    //   "test-population-measurePopulation-expected"
+    // );
+    // expect(mpExpectedCb).toBeChecked();
+    // userEvent.click(mpExpectedCb);
 
     userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(() => {
@@ -499,7 +498,7 @@ describe("CreateTestCase component", () => {
           },
           {
             name: PopulationType.MEASURE_POPULATION,
-            expected: false,
+            expected: true,
             actual: false,
           },
         ],
@@ -639,22 +638,6 @@ describe("CreateTestCase component", () => {
     );
 
     userEvent.click(screen.getByTestId("details-tab"));
-    const g1PopulationValues = await screen.findByText(
-      "Group 1 (Continuous Variable) Population Values"
-    );
-    expect(g1PopulationValues).toBeInTheDocument();
-
-    mockedAxios.put.mockResolvedValue({
-      data: {
-        ...testCase,
-        description: testCaseDescription,
-        hapiOperationOutcome: {
-          code: 200,
-        },
-      },
-    });
-
-    userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(() => {
       expect(
         screen.getByRole("button", { name: "Update Test Case" })
@@ -674,6 +657,8 @@ describe("CreateTestCase component", () => {
     const listItems = within(list).getAllByRole("option");
     expect(listItems[1]).toHaveTextContent("SeriesB");
     userEvent.click(listItems[1]);
+
+    userEvent.click(screen.getByTestId("expectoractual-tab"));
 
     const ippExpectedCb = await screen.findByTestId(
       "test-population-initialPopulation-expected"
@@ -698,7 +683,7 @@ describe("CreateTestCase component", () => {
     userEvent.click(screen.getByRole("button", { name: "Update Test Case" }));
 
     const debugOutput = await screen.findByText(
-      "Test case updated successfully! Bundle ID has been auto generated"
+      "Test case updated successfully!"
     );
     expect(debugOutput).toBeInTheDocument();
 
@@ -785,11 +770,18 @@ describe("CreateTestCase component", () => {
       measure
     );
 
+    // userEvent.click(screen.getByTestId("expectoractual-tab"));
+    // const errorMessage = await screen.findByText(
+    //   "No populations for current scoring. Please make sure at least one measure group has been created."
+    // );
+    // expect(errorMessage).toBeInTheDocument();
+    // const g1MeasureName = await screen.getByTestId(
+    //   "measure-group-1"
+    // );
+    // expect(g1MeasureName).toBeInTheDocument();
+    // const g1ScoringName = await screen.getByTestId('scoring-unit-1')
+    // expect(g1ScoringName).toBeInTheDocument();
     userEvent.click(screen.getByTestId("details-tab"));
-    const g1PopulationValues = await screen.findByText(
-      "Group 1 (Continuous Variable) Population Values"
-    );
-    expect(g1PopulationValues).toBeInTheDocument();
 
     mockedAxios.put.mockResolvedValue({
       data: {
@@ -822,6 +814,7 @@ describe("CreateTestCase component", () => {
     expect(listItems[1]).toHaveTextContent("SeriesB");
     userEvent.click(listItems[1]);
 
+    userEvent.click(screen.getByTestId("expectoractual-tab"));
     const ippExpectedCb = await screen.findByTestId(
       "test-population-initialPopulation-expected"
     );
@@ -1022,12 +1015,13 @@ describe("CreateTestCase component", () => {
       "/measures/:measureId/edit/test-cases/create"
     );
 
-    userEvent.click(screen.getByTestId("details-tab"));
-    const g1PopulationValues = await screen.findByText(
-      "Group 1 (Cohort) Population Values"
-    );
-    expect(g1PopulationValues).toBeInTheDocument();
+    userEvent.click(screen.getByTestId("expectoractual-tab"));
+    const g1MeasureName = await screen.getByTestId("measure-group-1");
+    expect(g1MeasureName).toBeInTheDocument();
+    const g1ScoringName = await screen.getByTestId("scoring-unit-1");
+    expect(g1ScoringName).toBeInTheDocument();
 
+    userEvent.click(screen.getByTestId("details-tab"));
     const testCaseDescription =
       "abcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyz";
     const descriptionInput = screen.getByTestId("create-test-case-description");
@@ -1156,11 +1150,13 @@ describe("CreateTestCase component", () => {
       "/measures/:measureId/edit/test-cases/create"
     );
 
+    userEvent.click(screen.getByTestId("expectoractual-tab"));
+    const g1MeasureName = await screen.getByTestId("measure-group-1");
+    expect(g1MeasureName).toBeInTheDocument();
+    const g1ScoringName = await screen.getByTestId("scoring-unit-1");
+    expect(g1ScoringName).toBeInTheDocument();
+
     userEvent.click(screen.getByTestId("details-tab"));
-    const g1PopulationValues = await screen.findByText(
-      "Group 1 (Cohort) Population Values"
-    );
-    expect(g1PopulationValues).toBeInTheDocument();
 
     const testCaseTitle =
       "abcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyz";
@@ -1571,7 +1567,7 @@ describe("CreateTestCase component", () => {
       "/measures/:measureId/edit/test-cases/:id"
     );
 
-    userEvent.click(screen.getByTestId("details-tab"));
+    userEvent.click(screen.getByTestId("expectoractual-tab"));
     const ippRow = await screen.findByTestId(
       "test-row-population-id-initialPopulation"
     );
@@ -1599,12 +1595,11 @@ describe("CreateTestCase component", () => {
       measure
     );
 
-    userEvent.click(screen.getByTestId("details-tab"));
+    userEvent.click(screen.getByTestId("expectoractual-tab"));
     const errorMessage = await screen.findByText(
       "No populations for current scoring. Please make sure at least one measure group has been created."
     );
     expect(errorMessage).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Run Test" })).toBeDisabled();
   });
 
   it("showing the error message in the measure cql tab when there are errors in the cql", async () => {
@@ -1880,6 +1875,7 @@ describe("Measure Calculation ", () => {
         name: "Update Test Case",
       })
     ).toBeInTheDocument();
+    userEvent.click(screen.getByTestId("expectoractual-tab"));
 
     await waitFor(async () => {
       userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
@@ -1891,7 +1887,7 @@ describe("Measure Calculation ", () => {
 
     expect(
       await screen.findByTestId("test-population-initialPopulation-actual")
-    ).toBeChecked();
+    ).toBeInTheDocument();
     expect(
       screen.getByTestId("test-population-numerator-actual")
     ).not.toBeChecked();

@@ -65,6 +65,31 @@ module.exports = (webpackConfigEnv, argv) => {
             "postcss-loader",
           ],
         },
+        {
+          test: /\.scss$/,
+          resolve: {
+            extensions: [".scss", ".sass"],
+          },
+          use: [
+            {
+              loader: "style-loader",
+            },
+            {
+              loader: "css-loader",
+              options: { sourceMap: true, importLoaders: 2 },
+            },
+            {
+              loader: "postcss-loader",
+              options: {
+                sourceMap: true,
+              },
+            },
+            {
+              loader: "sass-loader",
+            },
+          ],
+          exclude: /node_modules/,
+        },
       ],
     },
     devServer: {

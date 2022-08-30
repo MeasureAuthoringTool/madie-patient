@@ -351,9 +351,7 @@ describe("TestCaseList component", () => {
     );
     userEvent.click(expand1Btn);
     expect(await screen.findByTestId("population-table-1")).toBeInTheDocument();
-    expect(
-      await screen.findByText("Group 1 (Proportion) Population Values")
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Measure Group 1")).toBeInTheDocument();
     expect(
       await screen.findByTestId("test-population-initialPopulation-actual")
     ).toBeChecked();

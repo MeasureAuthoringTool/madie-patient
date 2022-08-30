@@ -38,20 +38,20 @@ describe("Group Populations", () => {
     render(
       <GroupPopulations
         disableActual={true}
+        executionRun
         groupPopulations={groupPopulations}
         onChange={handleChange}
         setChangedPopulation={setChangedPopulation}
       />
     );
+    const g1MeasureName = screen.getByTestId("measure-group-1");
+    expect(g1MeasureName).toBeInTheDocument();
+    const g1ScoringName = screen.getByTestId("scoring-unit-1");
+    expect(g1ScoringName).toBeInTheDocument();
 
-    const populationValuesLabel = screen.getByText(
-      "Group 1 (Continuous Variable) Population Values"
-    );
-    expect(populationValuesLabel).toBeInTheDocument();
-
-    const ippRow = screen.getByRole("row", { name: "IPP" });
+    const ippRow = screen.getByRole("row", { name: "ipp" });
     expect(ippRow).toBeInTheDocument();
-    const ippCell = within(ippRow).getByRole("cell", { name: "IPP" });
+    const ippCell = within(ippRow).getByRole("cell", { name: "ipp" });
     expect(ippCell).toBeInTheDocument();
     const ippCbs = within(ippRow).getAllByRole("checkbox");
     expect(ippCbs[0]).not.toBeDisabled();
@@ -59,11 +59,13 @@ describe("Group Populations", () => {
     expect(ippCbs[1]).toBeDisabled();
     expect(ippCbs[1]).not.toBeChecked();
 
-    const msrpoplRow = screen.getByRole("row", { name: "MSRPOPL" });
+    const msrpoplRow = screen.getByTestId(
+      "test-row-population-id-measurePopulationExclusion"
+    );
+
+    // test-row-population-id-measurePopulationExclusion
     expect(msrpoplRow).toBeInTheDocument();
-    const msrpoplCell = within(msrpoplRow).getByRole("cell", {
-      name: "MSRPOPL",
-    });
+    const msrpoplCell = within(msrpoplRow).getByText("msrpoplex");
     expect(msrpoplCell).toBeInTheDocument();
     const msrpopl = within(msrpoplRow).getAllByRole("checkbox");
     expect(msrpopl[0]).not.toBeDisabled();
@@ -71,10 +73,10 @@ describe("Group Populations", () => {
     expect(msrpopl[0]).not.toBeChecked();
     expect(msrpopl[1]).not.toBeChecked();
 
-    const msrpoplexRow = screen.getByRole("row", { name: "MSRPOPLEX" });
+    const msrpoplexRow = screen.getByRole("row", { name: "msrpoplex" });
     expect(msrpoplexRow).toBeInTheDocument();
     const msrpoplexCell = within(msrpoplexRow).getByRole("cell", {
-      name: "MSRPOPLEX",
+      name: "msrpoplex",
     });
     expect(msrpoplexCell).toBeInTheDocument();
     const msrpoplexCbs = within(msrpoplexRow).getAllByRole("checkbox");
@@ -88,7 +90,13 @@ describe("Group Populations", () => {
   });
 
   it("should handle null groupPopulation input", () => {
-    render(<GroupPopulations groupPopulations={null} onChange={jest.fn()} />);
+    render(
+      <GroupPopulations
+        groupPopulations={null}
+        onChange={jest.fn()}
+        executionRun
+      />
+    );
     expect(
       screen.getByText(
         "No populations for current scoring. Please make sure at least one measure group has been created."
@@ -98,7 +106,11 @@ describe("Group Populations", () => {
 
   it("should handle undefined groupPopulation input", () => {
     render(
-      <GroupPopulations groupPopulations={undefined} onChange={jest.fn()} />
+      <GroupPopulations
+        groupPopulations={undefined}
+        onChange={jest.fn()}
+        executionRun
+      />
     );
     expect(
       screen.getByText(
@@ -108,7 +120,13 @@ describe("Group Populations", () => {
   });
 
   it("should handle empty groupPopulation input", () => {
-    render(<GroupPopulations groupPopulations={[]} onChange={jest.fn()} />);
+    render(
+      <GroupPopulations
+        groupPopulations={[]}
+        onChange={jest.fn()}
+        executionRun
+      />
+    );
     expect(
       screen.getByText(
         "No populations for current scoring. Please make sure at least one measure group has been created."
@@ -136,13 +154,14 @@ describe("Group Populations", () => {
       <GroupPopulations
         disableActual={true}
         disableExpected={true}
+        executionRun
         groupPopulations={groupPopulations}
         onChange={handleChange}
         setChangedPopulation={setChangedPopulation}
       />
     );
 
-    const ippRow = screen.getByRole("row", { name: "IPP" });
+    const ippRow = screen.getByRole("row", { name: "ipp" });
     const ippCbs = within(ippRow).getAllByRole("checkbox");
     expect(ippCbs[0]).toBeDisabled();
     expect(ippCbs[0]).toBeChecked();
@@ -168,17 +187,18 @@ describe("Group Populations", () => {
     const setChangedPopulation = jest.fn();
     render(
       <GroupPopulations
+        executionRun
         groupPopulations={groupPopulations}
         onChange={handleChange}
         setChangedPopulation={setChangedPopulation}
       />
     );
 
-    const ippRow = screen.getByRole("row", { name: "IPP" });
+    const ippRow = screen.getByRole("row", { name: "ipp" });
     const ippCbs = within(ippRow).getAllByRole("checkbox");
     expect(ippCbs[0]).not.toBeDisabled();
     expect(ippCbs[0]).toBeChecked();
-    expect(ippCbs[1]).not.toBeDisabled();
+    expect(ippCbs[1]).toBeDisabled();
     expect(ippCbs[1]).toBeChecked();
 
     userEvent.click(ippCbs[0]);
@@ -196,7 +216,7 @@ describe("Group Populations", () => {
       },
     ]);
 
-    userEvent.click(ippCbs[1]);
+    userEvent.click(ippCbs[0]);
     expect(handleChange).toHaveBeenCalledWith([
       {
         groupId: "Group1_ID",
@@ -205,10 +225,40 @@ describe("Group Populations", () => {
           {
             name: PopulationType.INITIAL_POPULATION,
             expected: false,
-            actual: false,
+            actual: true,
           },
         ],
       },
     ]);
+  });
+  it("should display empty on non run", () => {
+    const groupPopulations: GroupPopulation[] = [
+      {
+        groupId: "Group1_ID",
+        scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+        populationValues: [
+          {
+            name: PopulationType.INITIAL_POPULATION,
+            expected: true,
+            actual: true,
+          },
+        ],
+      },
+    ];
+    const handleChange = jest.fn();
+    const setChangedPopulation = jest.fn();
+    render(
+      <GroupPopulations
+        executionRun={false}
+        groupPopulations={groupPopulations}
+        onChange={handleChange}
+        setChangedPopulation={setChangedPopulation}
+      />
+    );
+
+    const actualColumn = screen.getByTestId(
+      "test-population-initialPopulation-actual"
+    );
+    expect(actualColumn).toBeInTheDocument();
   });
 });

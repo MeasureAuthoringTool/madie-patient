@@ -36,7 +36,6 @@ import {
   getPopulationTypesForScoring,
   triggerPopChanges,
 } from "../../util/PopulationsMap";
-import GroupPopulations from "../populations/GroupPopulations";
 import calculationService from "../../api/CalculationService";
 import {
   DetailedPopulationGroupResult,
@@ -46,6 +45,8 @@ import { measureStore, useOktaTokens } from "@madie/madie-util";
 import useExecutionContext from "../routes/useExecutionContext";
 import { MadieEditor } from "@madie/madie-editor";
 import CreateTestCaseNavTabs from "./CreateTestCaseNavTabs";
+import ExpectedActual from "./RightPanel/ExpectedActual/ExpectedActual";
+import "./CreateTestCase.scss";
 
 const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
@@ -596,7 +597,7 @@ const CreateTestCase = () => {
       <div tw="flex flex-wrap shadow-lg mx-8 my-6 rounded-md border border-slate bg-white">
         <div
           tw="flex-none sm:w-full md:w-6/12 lg:w-6/12"
-          style={{ marginTop: 39 }}
+          style={{ marginTop: 44 }}
         >
           <Editor
             onChange={(val: string) => setEditorVal(val)}
@@ -605,14 +606,13 @@ const CreateTestCase = () => {
             readOnly={!canEdit}
           />
         </div>
-
+        {/* pseudo divider */}
         <div style={{ width: "17px", background: "#DDDDDD" }}></div>
         <div tw="flex-auto sm:w-full md:w-1/12 lg:w-3/12">
           <CreateTestCaseNavTabs
             activeTab={activeTab}
             setActiveTab={setActiveTab}
           />
-
           {activeTab === "measurecql" &&
             (!measure?.cqlErrors ? (
               <div data-testid="test-case-cql-editor">
@@ -629,7 +629,23 @@ const CreateTestCase = () => {
                 Editor tab
               </div>
             ))}
-
+          {activeTab === "expectoractual" && (
+            <ExpectedActual
+              canEdit={canEdit}
+              groupPopulations={mapGroups(
+                formik.values.groupPopulations[0],
+                populationGroupResult
+              )}
+              onChange={(groupPopulations) => {
+                setPendingGroupPopulations(groupPopulations);
+              }}
+              setChangedPopulation={setChangedPopulation}
+            />
+          )}
+          {/* 
+            Independent views should be their own components when possible
+            This will allow for independent unit testing and help render performance.
+           */}
           {activeTab === "details" && (
             <>
               {alert && (
@@ -703,26 +719,6 @@ const CreateTestCase = () => {
                 )}
                 {!canEdit && formik.values.series}
               </FormControl>
-              <FormControl
-                tw="flex flex-col"
-                data-testid="create-test-case-populations"
-              >
-                <span tw="text-lg">Population Values</span>
-                <GroupPopulations
-                  disableActual={true}
-                  disableExpected={!canEdit}
-                  groupPopulations={mapGroups(
-                    formik.values.groupPopulations[0],
-                    populationGroupResult
-                  )}
-                  onChange={(groupPopulations) => {
-                    setPendingGroupPopulations(groupPopulations);
-                  }}
-                  setChangedPopulation={setChangedPopulation}
-                />
-              </FormControl>
-
-              <FormActions></FormActions>
             </>
           )}
         </div>
@@ -827,7 +823,10 @@ const CreateTestCase = () => {
               />
             </div>
             {canEdit && (
-              <div tw="w-1/2 flex justify-end items-center px-10 py-6">
+              <div
+                tw="w-1/2 flex justify-end items-center px-10 py-6"
+                style={{ alignItems: "end" }}
+              >
                 <Button
                   tw="m-2"
                   buttonTitle="Cancel"

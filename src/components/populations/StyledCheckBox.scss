@@ -1,0 +1,15 @@
+.madie-check {
+  margin: 0 !important;
+  &.actual {
+    background-color: #ddd;
+    &:checked {
+      background-color: #717171;
+    }
+  }
+  &.expected {
+    background-color: #fff;
+    &:checked {
+      background-color: #0073c8;
+    }
+  }
+}

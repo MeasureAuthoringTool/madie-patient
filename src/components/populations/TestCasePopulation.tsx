@@ -1,67 +1,21 @@
 import React from "react";
-import tw, { styled } from "twin.macro";
 import "styled-components/macro";
 import { DisplayPopulationValue, getPopulationCode } from "@madie/madie-models";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCheckCircle,
-  faTimesCircle,
-} from "@fortawesome/free-solid-svg-icons";
-
-const TD = tw.td`p-1 text-xs text-gray-600`;
-const StyledIcon = styled(FontAwesomeIcon)(
-  ({ errors }: { errors: boolean }) => [
-    errors ? tw`text-red-700` : tw`text-green-700`,
-  ]
-);
-
-const StyledInput = tw.input`
-  rounded!
-  h-4
-  w-4
-  text-primary-500
-  focus:ring-primary-500
-  border-gray-200!
-  checked:border-primary-500!
-  disabled:border-gray-100!
-  disabled:bg-gray-100!
-`;
-
-const StyledCheckbox = ({
-  checked,
-  onChange,
-  setChangedPopulation,
-  ...props
-}) => {
-  return (
-    <StyledInput
-      type="checkbox"
-      checked={checked}
-      onChange={(e) => {
-        if (setChangedPopulation) {
-          setChangedPopulation(props.name);
-        }
-        onChange(!!e.target.checked);
-      }}
-      {...props}
-    />
-  );
-};
+import StyledCheckbox from "./StyledCheckBox";
 
 export interface TestCasePopulationProps {
+  executionRun: boolean;
   population: DisplayPopulationValue;
   showExpected?: boolean;
-  showActual?: boolean;
   disableExpected?: boolean;
-  disableActual?: boolean;
   onChange: (population: DisplayPopulationValue) => void;
   setChangedPopulation?: (string: string) => void;
 }
 
 const TestCasePopulation = ({
+  executionRun,
   population,
   disableExpected = false,
-  disableActual = false,
   onChange,
   setChangedPopulation,
 }: TestCasePopulationProps) => {
@@ -71,20 +25,13 @@ const TestCasePopulation = ({
         tw="border-b"
         key={population.name}
         data-testid={`test-row-population-id-${population.name}`}
+        role="row"
       >
-        <TD>
-          <StyledIcon
-            icon={
-              population.expected === population.actual
-                ? faCheckCircle
-                : faTimesCircle
-            }
-            data-testid={`test-population-icon-${population.name}`}
-            errors={population.expected !== population.actual}
-          />
-        </TD>
-        <TD>{getPopulationCode(population.name)}</TD>
-        <TD>
+        <td>&nbsp;</td>
+        <td role="cell">
+          {getPopulationCode(population.name).toLocaleLowerCase()}
+        </td>
+        <td role="cell">
           <StyledCheckbox
             id={`${population.name}-expected-cb`}
             name={population.name}
@@ -95,18 +42,32 @@ const TestCasePopulation = ({
             setChangedPopulation={setChangedPopulation}
             disabled={disableExpected}
             data-testid={`test-population-${population.name}-expected`}
+            displayType="expected"
           />
-        </TD>
-        <TD>
-          <StyledCheckbox
-            id={`${population.name}-actual-cb`}
-            checked={population.actual}
-            onChange={(checked) => onChange({ ...population, actual: checked })}
-            setChangedPopulation={setChangedPopulation}
-            disabled={disableActual}
-            data-testid={`test-population-${population.name}-actual`}
-          />
-        </TD>
+        </td>
+        <td role="cell">
+          {executionRun ? (
+            <StyledCheckbox
+              id={`${population.name}-actual-cb`}
+              checked={population.actual}
+              onChange={(checked) =>
+                onChange({ ...population, actual: checked })
+              }
+              setChangedPopulation={setChangedPopulation}
+              disabled={true}
+              data-testid={`test-population-${population.name}-actual`}
+              displayType="actual"
+            />
+          ) : (
+            <pre data-testid={`test-population-${population.name}-actual`}>
+              {" "}
+              -
+            </pre>
+          )}
+        </td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
       </tr>
     </React.Fragment>
   );

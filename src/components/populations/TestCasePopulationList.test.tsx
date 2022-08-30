@@ -36,15 +36,15 @@ describe("TestCasePopulationPopulation component", () => {
     expect(tableHeaders[3]).toHaveTextContent("Actual");
 
     const tableRows = table.querySelectorAll("tbody tr");
-    expect(tableRows[0]).toHaveTextContent("IPP");
-    expect(
-      screen.getByTestId(`test-population-icon-${testCasePopulations[0].name}`)
-    ).toBeInTheDocument();
+    expect(tableRows[0]).toHaveTextContent("ipp");
+    // expect(
+    //   screen.getByTestId(`test-population-icon-${testCasePopulations[0].name}`)
+    // ).toBeInTheDocument();
 
-    expect(tableRows[1]).toHaveTextContent("DENOM");
-    expect(
-      screen.getByTestId(`test-population-icon-${testCasePopulations[1].name}`)
-    ).toBeInTheDocument();
+    expect(tableRows[1]).toHaveTextContent("denom");
+    // expect(
+    //   screen.getByTestId(`test-population-icon-${testCasePopulations[1].name}`)
+    // ).toBeInTheDocument();
 
     const ippCb = screen.getByTestId(
       "test-population-initialPopulation-expected"
@@ -81,8 +81,8 @@ describe("TestCasePopulationPopulation component", () => {
     const table = screen.getByTestId("test-case-population-list-tbl");
 
     const tableRows = table.querySelectorAll("tbody tr");
-    expect(tableRows[0]).toHaveTextContent("IPP");
-    expect(tableRows[1]).toHaveTextContent("DENOM");
+    expect(tableRows[0]).toHaveTextContent("ipp");
+    expect(tableRows[1]).toHaveTextContent("denom");
 
     const ippCb = screen.getByTestId(
       "test-population-initialPopulation-expected"
