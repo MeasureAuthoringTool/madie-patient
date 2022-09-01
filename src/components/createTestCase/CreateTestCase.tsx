@@ -605,6 +605,8 @@ const CreateTestCase = () => {
               </div>
             ))}
 
+          {activeTab === "expectoractual" && <div>Hello!</div>}
+
           {activeTab === "details" && (
             <>
               {alert && (
