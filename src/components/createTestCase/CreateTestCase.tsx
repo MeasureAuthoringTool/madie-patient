@@ -541,14 +541,30 @@ const CreateTestCase = () => {
   };
 
   const mapGroups = (
-    groupPopulation: GroupPopulation,
+    groupPopulations: GroupPopulation[],
     results: DetailedPopulationGroupResult
   ): DisplayGroupPopulation[] => {
-    if (_.isNil(groupPopulation)) {
+    if (_.isNil(groupPopulations)) {
       return null;
     }
-    return [
+
+    const gp = groupPopulations.map((g) => ({
+      ...g,
+      populationValues: g?.populationValues?.map((populationValue) => {
+        return {
+          ...populationValue,
+          actual: !!results?.populationResults?.find(
+            (popResult) =>
+              FHIR_POPULATION_CODES[popResult.populationType] ===
+              populationValue.name
+          )?.result,
+        };
+      }),
+    }));
+    return gp;
+    /*[
       {
+        
         ...groupPopulation,
         populationValues: groupPopulation?.populationValues?.map(
           (populationValue) => {
@@ -558,12 +574,12 @@ const CreateTestCase = () => {
                 (popResult) =>
                   FHIR_POPULATION_CODES[popResult.populationType] ===
                   populationValue.name
-              )?.result,
+              )?.result,*
             };
           }
         ),
       },
-    ];
+    ];*/
   };
 
   return (
@@ -605,7 +621,26 @@ const CreateTestCase = () => {
               </div>
             ))}
 
-          {activeTab === "expectoractual" && <div>Hello!</div>}
+          {
+            //aaaaaaa
+          }
+          {activeTab === "expectoractual" && (
+            <FormControl>
+              return{" "}
+              <GroupPopulations
+                disableActual={true}
+                disableExpected={!canEdit}
+                groupPopulations={mapGroups(
+                  formik.values.groupPopulations,
+                  populationGroupResult
+                )}
+                onChange={(groupPopulations) => {
+                  setPendingGroupPopulations(groupPopulations);
+                }}
+                setChangedPopulation={setChangedPopulation}
+              />
+            </FormControl>
+          )}
 
           {activeTab === "details" && (
             <>
@@ -693,7 +728,7 @@ const CreateTestCase = () => {
                     disableActual={true}
                     disableExpected={!canEdit}
                     groupPopulations={mapGroups(
-                      formik.values.groupPopulations[0],
+                      formik.values.groupPopulations,
                       populationGroupResult
                     )}
                     onChange={(groupPopulations) => {
