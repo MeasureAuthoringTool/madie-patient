@@ -548,9 +548,9 @@ const CreateTestCase = () => {
       return null;
     }
 
-    const gp = groupPopulations.map((g) => ({
-      ...g,
-      populationValues: g?.populationValues?.map((populationValue) => {
+    const gp = groupPopulations.map((groupPop) => ({
+      ...groupPop,
+      populationValues: groupPop?.populationValues?.map((populationValue) => {
         return {
           ...populationValue,
           actual: !!results?.populationResults?.find(
@@ -562,24 +562,6 @@ const CreateTestCase = () => {
       }),
     }));
     return gp;
-    /*[
-      {
-        
-        ...groupPopulation,
-        populationValues: groupPopulation?.populationValues?.map(
-          (populationValue) => {
-            return {
-              ...populationValue,
-              actual: !!results?.populationResults?.find(
-                (popResult) =>
-                  FHIR_POPULATION_CODES[popResult.populationType] ===
-                  populationValue.name
-              )?.result,*
-            };
-          }
-        ),
-      },
-    ];*/
   };
 
   return (
@@ -621,9 +603,6 @@ const CreateTestCase = () => {
               </div>
             ))}
 
-          {
-            //aaaaaaa
-          }
           {activeTab === "expectoractual" && (
             <FormControl>
               return{" "}
