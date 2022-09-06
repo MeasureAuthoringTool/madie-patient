@@ -47,6 +47,7 @@ import { MadieEditor } from "@madie/madie-editor";
 import CreateTestCaseNavTabs from "./CreateTestCaseNavTabs";
 import ExpectedActual from "./RightPanel/ExpectedActual/ExpectedActual";
 import "./CreateTestCase.scss";
+import GroupPopulations from "../populations/GroupPopulations";
 
 const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
@@ -627,29 +628,11 @@ const CreateTestCase = () => {
                 Editor tab
               </div>
             ))}
-
           {activeTab === "expectoractual" && (
-            <FormControl>
-              return{" "}
-              <GroupPopulations
-                disableActual={true}
-                disableExpected={!canEdit}
-                groupPopulations={mapGroups(
-                  formik.values.groupPopulations,
-                  populationGroupResult
-                )}
-                onChange={(groupPopulations) => {
-                  setPendingGroupPopulations(groupPopulations);
-                }}
-                setChangedPopulation={setChangedPopulation}
-              />
-            </FormControl>
-          )}
-          /*{activeTab === "expectoractual" && (
             <ExpectedActual
               canEdit={canEdit}
               groupPopulations={mapGroups(
-                formik.values.groupPopulations[0],
+                formik.values.groupPopulations,
                 populationGroupResult
               )}
               onChange={(groupPopulations) => {
@@ -657,7 +640,7 @@ const CreateTestCase = () => {
               }}
               setChangedPopulation={setChangedPopulation}
             />
-          )}*/
+          )}
           {/* 
             Independent views should be their own components when possible
             This will allow for independent unit testing and help render performance.
@@ -732,64 +715,10 @@ const CreateTestCase = () => {
                       sx={{ width: "100%" }}
                     />
                     <HelperText text={"Start typing to add a new series"} />
-                  )}
-                  {!canEdit && formik.values.series}
-                </FormControl>
-                <FormControl
-                  tw="flex flex-col"
-                  data-testid="create-test-case-populations"
-                >
-                  <span tw="text-lg">Population Values</span>
-                  <GroupPopulations
-                    disableActual={true}
-                    disableExpected={!canEdit}
-                    groupPopulations={mapGroups(
-                      formik.values.groupPopulations,
-                      populationGroupResult
-                    )}
-                    onChange={(groupPopulations) => {
-                      setPendingGroupPopulations(groupPopulations);
-                    }}
-                    setChangedPopulation={setChangedPopulation}
-                  />
-                </FormControl>
-
-                <FormActions>
-                  {canEdit && (
-                    <Button
-                      buttonTitle={
-                        testCase ? "Update Test Case" : "Create Test Case"
-                      }
-                      type="submit"
-                      data-testid="create-test-case-button"
-                      disabled={!isModified() || createButtonDisabled}
-                    />
-                  )}
-                  <Button
-                    buttonTitle="Run Test"
-                    type="button"
-                    variant="secondary"
-                    onClick={calculate}
-                    disabled={
-                      !!measure?.cqlErrors ||
-                      _.isNil(measure?.groups) ||
-                      measure?.groups.length === 0 ||
-                      validationErrors?.length > 0 ||
-                      isEmptyTestCaseJsonString(formik.values.json)
-                    }
-                    data-testid="run-test-case-button"
-                  />
-                  {canEdit && (
-                    <Button
-                      buttonTitle="Cancel"
-                      type="button"
-                      variant="white"
-                      onClick={navigateToTestCases}
-                      data-testid="create-test-case-cancel-button"
-                    />
-                  )}
-                </FormActions>
-              </TestCaseForm>
+                  </>
+                )}
+                {!canEdit && formik.values.series}
+              </FormControl>
             </>
           )}
         </div>
