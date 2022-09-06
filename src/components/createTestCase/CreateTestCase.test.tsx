@@ -136,6 +136,21 @@ const renderWithRouter = (
   );
 };
 
+const testTitle = async (title: string, clear = false) => {
+  const tcTitle = await screen.findByTestId("create-test-case-title");
+  expect(tcTitle).toBeInTheDocument();
+  if (clear) {
+    userEvent.clear(tcTitle);
+    await waitFor(() => {
+      expect(tcTitle).toHaveValue("");
+    });
+  }
+  userEvent.type(tcTitle, title);
+  await waitFor(() => {
+    expect(tcTitle).toHaveValue(title);
+  });
+};
+
 describe("CreateTestCase component", () => {
   beforeEach(() => {
     mockedAxios.get.mockImplementation((args) => {
@@ -198,6 +213,9 @@ describe("CreateTestCase component", () => {
     });
 
     userEvent.click(screen.getByTestId("details-tab"));
+
+    await testTitle("TC1");
+
     await waitFor(
       () => {
         const descriptionInput = screen.getByTestId(
@@ -248,6 +266,8 @@ describe("CreateTestCase component", () => {
     expect(editor).toHaveValue(testCaseJson);
     userEvent.click(screen.getByTestId("details-tab"));
 
+    await testTitle("TC1");
+
     const createBtn = await screen.findByRole("button", {
       name: "Create Test Case",
     });
@@ -289,6 +309,8 @@ describe("CreateTestCase component", () => {
     userEvent.paste(editor, testCaseJson);
     expect(editor).toHaveValue(testCaseJson);
 
+    await testTitle("TC1", true);
+
     const createBtn = await screen.findByRole("button", {
       name: "Create Test Case",
     });
@@ -313,6 +335,8 @@ describe("CreateTestCase component", () => {
     });
 
     userEvent.click(screen.getByTestId("details-tab"));
+    await testTitle("TC1");
+
     await waitFor(
       () => {
         const descriptionInput = screen.getByTestId(
@@ -347,6 +371,8 @@ describe("CreateTestCase component", () => {
     });
 
     userEvent.click(screen.getByTestId("details-tab"));
+    await testTitle("TC1");
+
     await waitFor(
       () => {
         const descriptionInput = screen.getByTestId(
@@ -468,6 +494,7 @@ describe("CreateTestCase component", () => {
     // userEvent.click(mpExpectedCb);
 
     userEvent.click(screen.getByTestId("details-tab"));
+    await testTitle("TC1");
     await waitFor(() => {
       expect(
         screen.getByRole("button", { name: "Update Test Case" })
@@ -519,6 +546,7 @@ describe("CreateTestCase component", () => {
     });
 
     userEvent.click(screen.getByTestId("details-tab"));
+    await testTitle("TC1");
     await waitFor(
       () => {
         const descriptionInput = screen.getByTestId(
@@ -586,6 +614,7 @@ describe("CreateTestCase component", () => {
       id: "1234",
       createdBy: MEASURE_CREATEDBY,
       description: "Test IPP",
+      title: "Original Title",
       series: "SeriesA",
       groupPopulations: [
         {
@@ -637,6 +666,15 @@ describe("CreateTestCase component", () => {
       measure
     );
 
+    mockedAxios.put.mockResolvedValue({
+      data: {
+        ...testCase,
+        hapiOperationOutcome: {
+          code: 200,
+        },
+      },
+    });
+
     userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(() => {
       expect(
@@ -646,6 +684,8 @@ describe("CreateTestCase component", () => {
 
     const seriesInput = screen.getByRole("combobox", { name: "Series" });
     expect(seriesInput).toHaveValue("SeriesA");
+
+    await testTitle("Updated Title", true);
 
     const descriptionInput = screen.getByTestId("create-test-case-description");
     expect(descriptionInput).toHaveTextContent(testCase.description);
@@ -683,7 +723,7 @@ describe("CreateTestCase component", () => {
     userEvent.click(screen.getByRole("button", { name: "Update Test Case" }));
 
     const debugOutput = await screen.findByText(
-      "Test case updated successfully!"
+      "Test case updated successfully! Bundle ID has been auto generated"
     );
     expect(debugOutput).toBeInTheDocument();
 
@@ -693,6 +733,7 @@ describe("CreateTestCase component", () => {
     const updatedTestCase = calls[0][1] as TestCase;
     expect(updatedTestCase).toBeTruthy();
     expect(updatedTestCase.series).toEqual("SeriesB");
+    expect(updatedTestCase.title).toEqual("Updated Title");
     expect(updatedTestCase.groupPopulations).toEqual([
       {
         groupId: "Group1_ID",
@@ -800,6 +841,8 @@ describe("CreateTestCase component", () => {
       ).toBeInTheDocument();
     });
 
+    await testTitle("Updated Title", true);
+
     const seriesInput = screen.getByRole("combobox", { name: "Series" });
     expect(seriesInput).toHaveValue("SeriesA");
 
@@ -847,6 +890,7 @@ describe("CreateTestCase component", () => {
     expect(calls[0]).toBeTruthy();
     const updatedTestCase = calls[0][1] as TestCase;
     expect(updatedTestCase).toBeTruthy();
+    expect(updatedTestCase.title).toEqual("Updated Title");
     expect(updatedTestCase.series).toEqual("SeriesB");
     expect(updatedTestCase.groupPopulations).toEqual([
       {
@@ -871,6 +915,7 @@ describe("CreateTestCase component", () => {
   it("should display an error when test case update fails", async () => {
     const testCase = {
       id: "1234",
+      title: "Original Title",
       createdBy: MEASURE_CREATEDBY,
       description: "Test IPP",
       json: `{"test":"test"}`,
@@ -923,6 +968,7 @@ describe("CreateTestCase component", () => {
   it("should display an error when test case update returns no data", async () => {
     const testCase = {
       id: "1234",
+      title: "Original Title",
       createdBy: MEASURE_CREATEDBY,
       description: "Test IPP",
       json: `{"test":"test"}`,
@@ -974,6 +1020,7 @@ describe("CreateTestCase component", () => {
   it("should ignore supplied changes when cancel button is clicked during test case edit", async () => {
     const testCase = {
       id: "1234",
+      title: "Original Title",
       createdBy: MEASURE_CREATEDBY,
       description: "Test IPP",
       json: `{"test":"test"}`,
@@ -1029,6 +1076,8 @@ describe("CreateTestCase component", () => {
 
     fireEvent.blur(descriptionInput);
 
+    testTitle("TC1");
+
     const createBtn = screen.getByRole("button", { name: "Create Test Case" });
     await waitFor(() => {
       expect(createBtn).toBeDisabled;
@@ -1060,23 +1109,42 @@ describe("CreateTestCase component", () => {
     });
 
     userEvent.click(screen.getByTestId("details-tab"));
-    await waitFor(
-      () => {
-        const descriptionInput = screen.getByTestId(
-          "create-test-case-description"
-        );
-        userEvent.type(descriptionInput, testCaseDescription);
-      },
-      { timeout: 1500 }
-    );
+    expect(
+      await screen.findByTestId("create-test-case-title")
+    ).toBeInTheDocument();
+    // await waitFor(
+    //   () => {
+    //     const descriptionInput = screen.getByTestId(
+    //       "create-test-case-description"
+    //     );
+    //     userEvent.type(descriptionInput, testCaseDescription);
+    //   },
+    //   { timeout: 1500 }
+    // );
+
+    await testTitle("TC1");
 
     const createBtn = screen.getByRole("button", { name: "Create Test Case" });
+    await waitFor(
+      () => {
+        expect(createBtn).not.toBeDisabled();
+      },
+      { timeout: 5000 }
+    );
     userEvent.click(createBtn);
 
-    const debugOutput = await screen.findByText(
-      "Test case created successfully!"
+    await waitFor(
+      () => {
+        expect(
+          screen.getByText("Test case created successfully!")
+        ).toBeInTheDocument();
+      },
+      { timeout: 2000 }
     );
-    expect(debugOutput).toBeInTheDocument();
+    // const debugOutput = await screen.findByText(
+    //   "Test case created successfully!"
+    // );
+    // expect(debugOutput).toBeInTheDocument();
   });
 
   it("should display an error when test case series fail to load", async () => {
@@ -1195,13 +1263,7 @@ describe("CreateTestCase component", () => {
     });
 
     userEvent.click(screen.getByTestId("details-tab"));
-    await waitFor(
-      () => {
-        const titleInput = screen.getByTestId("create-test-case-title");
-        userEvent.type(titleInput, testCaseTitle);
-      },
-      { timeout: 1500 }
-    );
+    await testTitle("TC1");
 
     const createBtn = screen.getByRole("button", { name: "Create Test Case" });
     userEvent.click(createBtn);
@@ -1241,6 +1303,7 @@ describe("CreateTestCase component", () => {
       },
       { timeout: 1500 }
     );
+    await testTitle("TC1");
 
     const createBtn = screen.getByRole("button", { name: "Create Test Case" });
     userEvent.click(createBtn);
@@ -1294,6 +1357,7 @@ describe("CreateTestCase component", () => {
       },
       { timeout: 1500 }
     );
+    await testTitle("TC1");
 
     const createBtn = screen.getByRole("button", { name: "Create Test Case" });
     userEvent.click(createBtn);
@@ -1393,6 +1457,7 @@ describe("CreateTestCase component", () => {
       ).toBeInTheDocument();
     });
 
+    await testTitle("TC1");
     const seriesInput = screen.getByTestId("create-test-case-description");
     userEvent.type(seriesInput, testCaseDescription);
     const updateBtn = screen.getByRole("button", { name: "Update Test Case" });
@@ -1429,6 +1494,7 @@ describe("CreateTestCase component", () => {
 
     const testCase = {
       id: "1234",
+      title: "Original Title",
       createdBy: MEASURE_CREATEDBY,
       description: "Test IPP",
       series: "SeriesA",
@@ -1488,6 +1554,12 @@ describe("CreateTestCase component", () => {
       ).toBeInTheDocument();
     });
 
+    const tcTitle = await screen.findByTestId("create-test-case-title");
+    expect(tcTitle).toBeInTheDocument();
+    userEvent.type(tcTitle, "TC1");
+    await waitFor(() => {
+      expect(tcTitle).toHaveValue("TC1");
+    });
     const seriesInput = screen.getByTestId("create-test-case-description");
     userEvent.type(seriesInput, testCaseDescription);
     const updateBtn = screen.getByRole("button", { name: "Update Test Case" });
@@ -1534,6 +1606,7 @@ describe("CreateTestCase component", () => {
   it("should handle displaying a test case with null groupPopulation data", async () => {
     const testCase = {
       id: "1234",
+      title: "Original Title",
       description: "Test IPP",
       series: "SeriesA",
       json: `{"test":"test"}`,
@@ -1741,6 +1814,7 @@ describe("CreateTestCase component", () => {
     expect(editor).toBeInTheDocument();
   });
 });
+
 describe("Measure Calculation ", () => {
   it("calculates a measure against a test case", async () => {
     const calculationSrv = calculationService();
