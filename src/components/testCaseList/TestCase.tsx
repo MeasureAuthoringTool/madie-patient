@@ -25,7 +25,6 @@ import {
 import * as _ from "lodash";
 import { FHIR_POPULATION_CODES } from "../../util/PopulationsMap";
 import GroupPopulations from "../populations/GroupPopulations";
-
 const EditButton = tw.button`text-blue-600 hover:text-blue-900`;
 const StyledCell = styled.td`
   white-space: pre;
@@ -70,12 +69,18 @@ const TestCase = ({
   const [open, setOpen] = React.useState(false);
   const status = testCase.executionStatus;
   const statusColor = testCase.executionStatus === "pass" ? "success" : "error";
-
   // only one group for now
   const groupPopulations = mapGroups(
     testCase?.groupPopulations?.[0],
     executionResult?.[0]
   );
+  const executionRun = executionResult && executionResult[0] ? true : false;
+  // Test how the screen will handle multiple values for the future.
+  // if (groupPopulations.length) {
+  //   groupPopulations = groupPopulations.concat(groupPopulations)
+  //   groupPopulations = groupPopulations.concat(groupPopulations)
+  //   groupPopulations = groupPopulations.concat(groupPopulations)
+  // }
 
   return (
     <React.Fragment key={`fragment-key-${testCase.id}`}>
@@ -158,17 +163,21 @@ const TestCase = ({
         key={`test-case-population-row-${testCase.id}`}
         data-testid={`test-case-population-row-${testCase.id}`}
       >
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+        <TableCell
+          style={{ paddingBottom: 0, paddingTop: 0, borderBottom: "none" }}
+          colSpan={6}
+        >
           <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Table
-                size="small"
-                aria-label="population"
-                data-testid={`population-table-${testCase.id}`}
-              >
-                <GroupPopulations groupPopulations={groupPopulations} />
-              </Table>
-            </Box>
+            <div
+              id="test-case-population-lower-tab"
+              aria-label="population"
+              data-testid={`population-table-${testCase.id}`}
+            >
+              <GroupPopulations
+                groupPopulations={groupPopulations}
+                executionRun={executionRun}
+              />
+            </div>
           </Collapse>
         </TableCell>
       </TableRow>

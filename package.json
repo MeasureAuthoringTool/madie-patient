@@ -37,7 +37,7 @@
     "@madie/madie-auth": "^0.0.1",
     "@madie/madie-components": "^0.0.4",
     "@madie/madie-editor": "^0.0.1",
-    "@madie/madie-models": "^1.1.0",
+    "@madie/madie-models": "^1.1.7",
     "@madie/madie-root": "^0.0.2",
     "@mui/lab": "^5.0.0-alpha.73",
     "@mui/material": "~5.5.0",
@@ -91,6 +91,8 @@
     "prettier": "^2.3.2",
     "pretty-quick": "^3.1.1",
     "react-ace": "^9.5.0",
+    "sass": "^1.54.5",
+    "sass-loader": "^13.0.2",
     "styled-components": "^5.3.1",
     "tailwindcss": "^2.2.9",
     "ts-config-single-spa": "^3.0.0",
@@ -106,6 +108,8 @@
     "yup": "^0.32.11"
   },
   "dependencies": {
+    "@madie/madie-design-system": "^1.0.15",
+    "classnames": "^2.3.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-router": "^6.2.1",
