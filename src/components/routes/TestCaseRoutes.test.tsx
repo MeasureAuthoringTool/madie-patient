@@ -150,7 +150,7 @@ describe("TestCaseRoutes", () => {
     );
     expect(tcDescriptionInput).toBeInTheDocument();
     const createBtn = await screen.findByRole("button", {
-      name: "Create Test Case",
+      name: "Save",
     });
     expect(createBtn).toBeInTheDocument();
     const cancelBtn = await screen.findByRole("button", { name: "Cancel" });
@@ -208,7 +208,9 @@ describe("TestCaseRoutes", () => {
     userEvent.click(screen.getByTestId("details-tab"));
     const testCaseForm = await screen.findByTestId("create-test-case-form");
     expect(testCaseForm).toBeInTheDocument();
-    const cancelBtn = await screen.findByRole("button", { name: "Cancel" });
+    const cancelBtn = await screen.findByRole("button", {
+      name: "Discard Changes",
+    });
     expect(cancelBtn).toBeInTheDocument();
     userEvent.click(cancelBtn);
     const newBtn2 = await screen.findByRole("button", {
@@ -280,7 +282,7 @@ describe("TestCaseRoutes", () => {
     await waitFor(() => {
       expect(tcDescriptionInput).toHaveValue("Some Description");
     });
-    const createBtn = screen.getByRole("button", { name: "Create Test Case" });
+    const createBtn = screen.getByRole("button", { name: "Save" });
     userEvent.click(createBtn);
     const feedback = await screen.findByRole("alert");
     expect(feedback).toHaveTextContent("Test case created successfully!");
