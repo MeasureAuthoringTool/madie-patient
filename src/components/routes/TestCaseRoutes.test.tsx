@@ -153,7 +153,9 @@ describe("TestCaseRoutes", () => {
       name: "Save",
     });
     expect(createBtn).toBeInTheDocument();
-    const cancelBtn = await screen.findByRole("button", { name: "Cancel" });
+    const cancelBtn = await screen.findByRole("button", {
+      name: "Discard Changes",
+    });
     expect(cancelBtn).toBeInTheDocument();
     const newBtn2 = screen.queryByRole("button", { name: "New Test Case" });
     expect(newBtn2).not.toBeInTheDocument();
