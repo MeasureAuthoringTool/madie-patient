@@ -1711,12 +1711,6 @@ describe("CreateTestCase component", () => {
     );
     userEvent.click(screen.getByTestId("details-tab"));
 
-    expect(
-      await screen.findByRole("button", {
-        name: "Save",
-      })
-    ).toBeInTheDocument();
-
     await waitFor(() => {
       expect(
         screen.getByRole("button", {
