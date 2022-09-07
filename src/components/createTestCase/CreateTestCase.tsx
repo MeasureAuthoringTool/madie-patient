@@ -531,12 +531,19 @@ const CreateTestCase = () => {
   }
 
   function isModified() {
-    return (
-      formik.isValid &&
-      (formik.dirty ||
-        editorVal !== testCase?.json ||
-        !_.isEqual(testCase?.groupPopulations, formik.values.groupPopulations))
-    );
+    if (testCase) {
+      return (
+        formik.isValid &&
+        (formik.dirty ||
+          editorVal !== testCase?.json ||
+          !_.isEqual(
+            testCase?.groupPopulations,
+            formik.values.groupPopulations
+          ))
+      );
+    } else {
+      return formik.isValid && formik.dirty;
+    }
   }
 
   function resizeEditor() {
@@ -641,7 +648,7 @@ const CreateTestCase = () => {
               setChangedPopulation={setChangedPopulation}
             />
           )}
-          {/* 
+          {/*
             Independent views should be their own components when possible
             This will allow for independent unit testing and help render performance.
            */}

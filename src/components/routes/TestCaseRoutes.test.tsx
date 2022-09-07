@@ -267,6 +267,12 @@ describe("TestCaseRoutes", () => {
     userEvent.click(screen.getByTestId("details-tab"));
     const testCaseForm = await screen.findByTestId("create-test-case-form");
     expect(testCaseForm).toBeInTheDocument();
+    const tcTitle = await screen.findByTestId("create-test-case-title");
+    expect(tcTitle).toBeInTheDocument();
+    userEvent.type(tcTitle, "TC1");
+    await waitFor(() => {
+      expect(tcTitle).toHaveValue("TC1");
+    });
     const tcDescriptionInput = screen.getByTestId(
       "create-test-case-description"
     );
