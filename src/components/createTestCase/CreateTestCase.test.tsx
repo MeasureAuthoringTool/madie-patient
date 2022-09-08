@@ -617,10 +617,15 @@ describe("CreateTestCase component", () => {
       groupPopulations: [
         {
           groupId: "Group1_ID",
-          scoring: MeasureScoring.COHORT,
+          scoring: MeasureScoring.CONTINUOUS_VARIABLE,
           populationValues: [
             {
               name: PopulationType.INITIAL_POPULATION,
+              expected: true,
+              actual: false,
+            },
+            {
+              name: PopulationType.MEASURE_POPULATION,
               expected: true,
               actual: false,
             },
@@ -642,11 +647,15 @@ describe("CreateTestCase component", () => {
       groups: [
         {
           id: "Group1_ID",
-          scoring: "Cohort",
+          scoring: "Continuous Variable",
           populations: [
             {
               name: PopulationType.INITIAL_POPULATION,
-              description: "Pop1",
+              definition: "Pop1",
+            },
+            {
+              name: PopulationType.MEASURE_POPULATION,
+              definition: "Measure Population",
             },
           ],
         },
@@ -724,10 +733,15 @@ describe("CreateTestCase component", () => {
     expect(updatedTestCase.groupPopulations).toEqual([
       {
         groupId: "Group1_ID",
-        scoring: MeasureScoring.COHORT,
+        scoring: MeasureScoring.CONTINUOUS_VARIABLE,
         populationValues: [
           {
             name: PopulationType.INITIAL_POPULATION,
+            expected: true,
+            actual: false,
+          },
+          {
+            name: PopulationType.MEASURE_POPULATION,
             expected: true,
             actual: false,
           },
@@ -779,11 +793,11 @@ describe("CreateTestCase component", () => {
           populations: [
             {
               name: PopulationType.INITIAL_POPULATION,
-              description: "Pop1",
+              definition: "Pop1",
             },
             {
               name: PopulationType.MEASURE_POPULATION,
-              description: "measure population",
+              definition: "measure population",
             },
           ],
         },
