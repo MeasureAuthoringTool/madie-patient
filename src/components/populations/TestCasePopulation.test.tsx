@@ -3,7 +3,6 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import TestCasePopulation from "./TestCasePopulation";
 import { PopulationType } from "@madie/madie-models";
-import userEvent from "@testing-library/user-event";
 
 describe("TestCasePopulation component", () => {
   afterEach(() => {
