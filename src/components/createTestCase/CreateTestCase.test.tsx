@@ -1925,9 +1925,9 @@ describe("Measure Calculation ", () => {
 
     userEvent.click(screen.getByTestId("expectoractual-tab"));
 
-    const runTestButton = screen.getByRole("button", { name: "Run Test" });
-    expect(runTestButton).not.toBeDisabled();
-    userEvent.click(runTestButton);
+    await waitFor(async () => {
+      userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
+    });
 
     expect(
       await screen.findByText("Population Group: population-group-1")
