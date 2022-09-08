@@ -1,8 +1,7 @@
 import React from "react";
 import "styled-components/macro";
 import { DisplayPopulationValue, getPopulationCode } from "@madie/madie-models";
-import StyledCheckbox from "./StyledCheckBox";
-import { TextField } from "@madie/madie-design-system/dist/react";
+import ExpectActualInput from "./ExpectActualInput";
 
 export interface TestCasePopulationProps {
   executionRun: boolean;
@@ -35,8 +34,7 @@ const TestCasePopulation = ({
           {getPopulationCode(population.name).toLocaleLowerCase()}
         </td>
         <td role="cell">
-          {/* {populationBasis==="Boolean"? */}
-          <StyledCheckbox
+          <ExpectActualInput
             id={`${population.name}-expected-cb`}
             name={population.name}
             checked={population.expected}
@@ -49,21 +47,17 @@ const TestCasePopulation = ({
             data-testid={`test-population-${population.name}-expected`}
             displayType="expected"
           />
-          {/* <TextField  onChange={(e) =>{
-            console.log(e.target.name)
-            onChange({ ...population, expected: e.target.value})
-          }
-          }size="small"/>} */}
         </td>
         <td role="cell">
           {executionRun ? (
-            <StyledCheckbox
+            <ExpectActualInput
               id={`${population.name}-actual-cb`}
               checked={population.actual}
               onChange={(checked) =>
                 onChange({ ...population, actual: checked })
               }
               setChangedPopulation={setChangedPopulation}
+              populationBasis={populationBasis}
               disabled={true}
               data-testid={`test-population-${population.name}-actual`}
               displayType="actual"

@@ -39,7 +39,7 @@ describe("TestCasePopulation component", () => {
     const columns = row.querySelectorAll("td");
     expect(columns[1]).toHaveTextContent("ipp");
     const buttons = await screen.findAllByRole("checkbox");
-    expect(buttons).toHaveLength(1);
+    expect(buttons).toHaveLength(2);
   });
 
   it("should handle changes to checkboxes", async () => {
