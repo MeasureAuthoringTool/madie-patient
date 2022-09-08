@@ -1,5 +1,4 @@
 import React from "react";
-import "styled-components/macro";
 import { Tabs, Tab } from "@mui/material";
 import "./CreateTestCaseNavTabs.scss";
 export interface NavTabProps {

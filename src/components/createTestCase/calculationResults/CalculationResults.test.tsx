@@ -24,6 +24,17 @@ describe("CalculationResults", () => {
     },
   ];
 
+  test("display info message when test case has not been ran yet", () => {
+    render(
+      <CalculationResults
+        calculationResults={undefined}
+        calculationErrors={undefined}
+      />
+    );
+    expect(
+      screen.getByText("To see the logic highlights, click 'Run Test'")
+    ).toBeInTheDocument();
+  });
   test("render calculation results", () => {
     render(
       <CalculationResults
@@ -48,7 +59,7 @@ describe("CalculationResults", () => {
         calculationErrors={calculationErrors}
       />
     );
-    expect(screen.getByRole("alert").innerHTML).toEqual(calculationErrors);
+    expect(screen.getByText(`${calculationErrors}`)).toBeInTheDocument();
     expect(screen.getByTestId("calculation-results").innerHTML).toEqual("");
   });
 });

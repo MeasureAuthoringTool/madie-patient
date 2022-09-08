@@ -1,9 +1,9 @@
 import React from "react";
 import parse from "html-react-parser";
-import { styled } from "twin.macro";
+import "twin.macro";
 import "styled-components/macro";
 import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calculator";
-const Alert = styled.div`rounded-lg p-2 m-2 text-base inline-flex items-center bg-red-100 text-red-700`;
+import { Alert } from "@madie/madie-design-system/dist/react";
 
 type CalculationResultType = {
   calculationResults: DetailedPopulationGroupResult[];
@@ -16,12 +16,14 @@ const CalculationResults = ({
 }: CalculationResultType) => {
   return (
     <div tw="p-5">
-      {calculationErrors && (
+      {!calculationResults && !calculationErrors && (
         <Alert
-          role="alert"
-          aria-label="Calculation Errors"
-          data-testid="calculation-error-alert"
-        >
+          data-testid="calculation-info-alert"
+          description="To see the logic highlights, click 'Run Test'"
+        />
+      )}
+      {calculationErrors && (
+        <Alert variant="error" data-testid="calculation-error-alert">
           {calculationErrors}
         </Alert>
       )}
