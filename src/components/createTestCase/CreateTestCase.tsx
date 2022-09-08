@@ -47,6 +47,7 @@ import { MadieEditor } from "@madie/madie-editor";
 import CreateTestCaseNavTabs from "./CreateTestCaseNavTabs";
 import ExpectedActual from "./RightPanel/ExpectedActual/ExpectedActual";
 import "./CreateTestCase.scss";
+import GroupPopulations from "../populations/GroupPopulations";
 
 const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
@@ -571,29 +572,27 @@ const CreateTestCase = () => {
   };
 
   const mapGroups = (
-    groupPopulation: GroupPopulation,
+    groupPopulations: GroupPopulation[],
     results: DetailedPopulationGroupResult
   ): DisplayGroupPopulation[] => {
-    if (_.isNil(groupPopulation)) {
+    if (_.isNil(groupPopulations)) {
       return null;
     }
-    return [
-      {
-        ...groupPopulation,
-        populationValues: groupPopulation?.populationValues?.map(
-          (populationValue) => {
-            return {
-              ...populationValue,
-              actual: !!results?.populationResults?.find(
-                (popResult) =>
-                  FHIR_POPULATION_CODES[popResult.populationType] ===
-                  populationValue.name
-              )?.result,
-            };
-          }
-        ),
-      },
-    ];
+
+    const gp = groupPopulations.map((groupPop) => ({
+      ...groupPop,
+      populationValues: groupPop?.populationValues?.map((populationValue) => {
+        return {
+          ...populationValue,
+          actual: !!results?.populationResults?.find(
+            (popResult) =>
+              FHIR_POPULATION_CODES[popResult.populationType] ===
+              populationValue.name
+          )?.result,
+        };
+      }),
+    }));
+    return gp;
   };
 
   return (
@@ -640,7 +639,7 @@ const CreateTestCase = () => {
             <ExpectedActual
               canEdit={canEdit}
               groupPopulations={mapGroups(
-                formik.values.groupPopulations[0],
+                formik.values.groupPopulations,
                 populationGroupResult
               )}
               onChange={(groupPopulations) => {
@@ -653,6 +652,7 @@ const CreateTestCase = () => {
             Independent views should be their own components when possible
             This will allow for independent unit testing and help render performance.
            */}
+
           {activeTab === "details" && (
             <>
               {alert && (
