@@ -1,11 +1,18 @@
 import React from "react";
-import tw, { styled } from "twin.macro";
+import "styled-components/macro";
 import { Tabs, Tab } from "@mui/material";
 import "./CreateTestCaseNavTabs.scss";
 export interface NavTabProps {
   activeTab: string;
   setActiveTab: (value: string) => void;
 }
+
+const defaultStyle = {
+  padding: "0px 10px",
+  height: "45px",
+  minHeight: "45px",
+  textTransform: "none",
+};
 
 export default function CreateTestCaseNavTabs(props: NavTabProps) {
   const { activeTab, setActiveTab } = props;
@@ -35,34 +42,25 @@ export default function CreateTestCaseNavTabs(props: NavTabProps) {
       }}
     >
       <Tab
-        sx={{
-          padding: "0px 10px",
-          height: "45px",
-          minHeight: "45px",
-          textTransform: "none",
-        }}
+        sx={defaultStyle}
         label={`Measure CQL (View Only)`}
         data-testid="measurecql-tab"
         value="measurecql"
       />
       <Tab
-        sx={{
-          padding: "0px 10px",
-          height: "45px",
-          minHeight: "45px",
-          textTransform: "none",
-        }}
+        sx={defaultStyle}
+        label={`Highlighting`}
+        data-testid="highlighting-tab"
+        value="highlighting"
+      />
+      <Tab
+        sx={defaultStyle}
         value="expectoractual"
         label="Expected / Actual"
         data-testid="expectoractual-tab"
       />
       <Tab
-        sx={{
-          padding: "0px 10px",
-          height: "45px",
-          minHeight: "45px",
-          textTransform: "none",
-        }}
+        sx={defaultStyle}
         value="details"
         label="Details"
         data-testid="details-tab"

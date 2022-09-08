@@ -619,15 +619,10 @@ describe("CreateTestCase component", () => {
       groupPopulations: [
         {
           groupId: "Group1_ID",
-          scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+          scoring: MeasureScoring.COHORT,
           populationValues: [
             {
               name: PopulationType.INITIAL_POPULATION,
-              expected: true,
-              actual: false,
-            },
-            {
-              name: PopulationType.MEASURE_POPULATION,
               expected: true,
               actual: false,
             },
@@ -650,9 +645,12 @@ describe("CreateTestCase component", () => {
         {
           id: "Group1_ID",
           scoring: "Cohort",
-          population: {
-            initialPopulation: "Pop1",
-          },
+          populations: [
+            {
+              name: PopulationType.INITIAL_POPULATION,
+              description: "Pop1",
+            },
+          ],
         },
       ],
     } as unknown as Measure;
@@ -704,11 +702,6 @@ describe("CreateTestCase component", () => {
       "test-population-initialPopulation-expected"
     );
     expect(ippExpectedCb).toBeChecked();
-    const mpExpectedCb = await screen.findByTestId(
-      "test-population-measurePopulation-expected"
-    );
-    expect(mpExpectedCb).toBeChecked();
-    userEvent.click(mpExpectedCb);
 
     const editor = screen.getByTestId("test-case-json-editor");
     userEvent.paste(editor, testCaseJson);
@@ -737,16 +730,11 @@ describe("CreateTestCase component", () => {
     expect(updatedTestCase.groupPopulations).toEqual([
       {
         groupId: "Group1_ID",
-        scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+        scoring: MeasureScoring.COHORT,
         populationValues: [
           {
             name: PopulationType.INITIAL_POPULATION,
             expected: true,
-            actual: false,
-          },
-          {
-            name: PopulationType.MEASURE_POPULATION,
-            expected: false,
             actual: false,
           },
         ],
@@ -763,15 +751,10 @@ describe("CreateTestCase component", () => {
       groupPopulations: [
         {
           groupId: "Group1_ID",
-          scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+          scoring: MeasureScoring.COHORT,
           populationValues: [
             {
               name: PopulationType.INITIAL_POPULATION,
-              expected: true,
-              actual: false,
-            },
-            {
-              name: PopulationType.MEASURE_POPULATION,
               expected: true,
               actual: false,
             },
@@ -794,9 +777,12 @@ describe("CreateTestCase component", () => {
         {
           id: "Group1_ID",
           scoring: "Cohort",
-          population: {
-            initialPopulation: "Pop1",
-          },
+          populations: [
+            {
+              name: PopulationType.INITIAL_POPULATION,
+              description: "Pop1",
+            },
+          ],
         },
       ],
     } as unknown as Measure;
@@ -810,18 +796,6 @@ describe("CreateTestCase component", () => {
       "/measures/:measureId/edit/test-cases/:id",
       measure
     );
-
-    // userEvent.click(screen.getByTestId("expectoractual-tab"));
-    // const errorMessage = await screen.findByText(
-    //   "No populations for current scoring. Please make sure at least one measure group has been created."
-    // );
-    // expect(errorMessage).toBeInTheDocument();
-    // const g1MeasureName = await screen.getByTestId(
-    //   "measure-group-1"
-    // );
-    // expect(g1MeasureName).toBeInTheDocument();
-    // const g1ScoringName = await screen.getByTestId('scoring-unit-1')
-    // expect(g1ScoringName).toBeInTheDocument();
     userEvent.click(screen.getByTestId("details-tab"));
 
     mockedAxios.put.mockResolvedValue({
@@ -862,11 +836,6 @@ describe("CreateTestCase component", () => {
       "test-population-initialPopulation-expected"
     );
     expect(ippExpectedCb).toBeChecked();
-    const mpExpectedCb = await screen.findByTestId(
-      "test-population-measurePopulation-expected"
-    );
-    expect(mpExpectedCb).toBeChecked();
-    userEvent.click(mpExpectedCb);
 
     const editor = screen.getByTestId("test-case-json-editor");
     userEvent.paste(editor, testCaseJson);
@@ -895,16 +864,11 @@ describe("CreateTestCase component", () => {
     expect(updatedTestCase.groupPopulations).toEqual([
       {
         groupId: "Group1_ID",
-        scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+        scoring: MeasureScoring.COHORT,
         populationValues: [
           {
             name: PopulationType.INITIAL_POPULATION,
             expected: true,
-            actual: false,
-          },
-          {
-            name: PopulationType.MEASURE_POPULATION,
-            expected: false,
             actual: false,
           },
         ],
@@ -1895,7 +1859,7 @@ describe("Measure Calculation ", () => {
       ],
       "/measures/:measureId/edit/test-cases/:id"
     );
-    userEvent.click(screen.getByTestId("details-tab"));
+    userEvent.click(screen.getByTestId("highlighting-tab"));
     const updateButton = await screen.findByRole("button", {
       name: "Update Test Case",
     });
@@ -1949,16 +1913,16 @@ describe("Measure Calculation ", () => {
         name: "Update Test Case",
       })
     ).toBeInTheDocument();
-    userEvent.click(screen.getByTestId("expectoractual-tab"));
 
     await waitFor(async () => {
       userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
     });
-
+    userEvent.click(screen.getByTestId("highlighting-tab"));
     expect(
       await screen.findByText("Population Group: population-group-1")
     ).toBeInTheDocument();
 
+    userEvent.click(screen.getByTestId("expectoractual-tab"));
     expect(
       await screen.findByTestId("test-population-initialPopulation-actual")
     ).toBeInTheDocument();
