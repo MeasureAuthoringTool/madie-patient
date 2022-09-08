@@ -7,6 +7,7 @@ import {
 
 export const simpleMeasureFixture: Measure = {
   id: "623cacebe74613783378c17b",
+  versionId: "",
   active: false,
   measureHumanReadableId: null,
   measureSetId: null,

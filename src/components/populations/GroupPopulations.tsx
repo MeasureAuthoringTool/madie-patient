@@ -21,40 +21,43 @@ const GroupPopulations = ({
   groupPopulations = [],
   onChange,
   setChangedPopulation,
-}: PopulationsProps) => (
-  <>
-    {groupPopulations && groupPopulations.length > 0 ? (
-      groupPopulations.map((gp, i) => (
-        <div key={gp.groupId} style={{ marginTop: 16 }}>
-          <TestCasePopulationList
-            i={i}
-            scoring={gp.scoring}
-            disableExpected={disableExpected}
-            executionRun={executionRun}
-            populations={gp.populationValues}
-            onChange={(populations) => {
-              const nextPopulations = _.cloneDeep(groupPopulations);
-              const groupPopulation = nextPopulations.find(
-                (np) => np.groupId === gp.groupId
-              );
-              if (groupPopulation) {
-                groupPopulation.populationValues = populations;
-              }
-              if (onChange) {
-                onChange(nextPopulations);
-              }
-            }}
-            setChangedPopulation={setChangedPopulation}
-          />
-        </div>
-      ))
-    ) : (
-      <span tw="text-sm">
-        No populations for current scoring. Please make sure at least one
-        measure group has been created.
-      </span>
-    )}
-  </>
-);
+}: PopulationsProps) => {
+  return (
+    <>
+      {groupPopulations && groupPopulations.length > 0 ? (
+        groupPopulations.map((gp, i) => (
+          <div key={gp.groupId} style={{ marginTop: 16 }}>
+            <TestCasePopulationList
+              i={i}
+              scoring={gp.scoring}
+              disableExpected={disableExpected}
+              executionRun={executionRun}
+              populations={gp.populationValues}
+              populationBasis={gp?.populationBasis}
+              onChange={(populations) => {
+                const nextPopulations = _.cloneDeep(groupPopulations);
+                const groupPopulation = nextPopulations.find(
+                  (np) => np.groupId === gp.groupId
+                );
+                if (groupPopulation) {
+                  groupPopulation.populationValues = populations;
+                }
+                if (onChange) {
+                  onChange(nextPopulations);
+                }
+              }}
+              setChangedPopulation={setChangedPopulation}
+            />
+          </div>
+        ))
+      ) : (
+        <span tw="text-sm">
+          No populations for current scoring. Please make sure at least one
+          measure group has been created.
+        </span>
+      )}
+    </>
+  );
+};
 
 export default GroupPopulations;

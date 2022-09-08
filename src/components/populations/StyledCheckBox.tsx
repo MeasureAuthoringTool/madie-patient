@@ -15,14 +15,20 @@ const StyledCheckbox = ({
   });
   return (
     <input
-      type="checkbox"
+      type={props.populationBasis === "Boolean" ? "checkbox" : "text"}
+      size={2}
+      //readOnly={true}
       className={checkBoxClass}
       checked={checked}
       onChange={(e) => {
         if (setChangedPopulation) {
           setChangedPopulation(props.name);
         }
-        onChange(!!e.target.checked);
+        if (props.populationBasis === "Boolean") {
+          onChange(!!e.target.checked);
+        } else {
+          onChange(e.target.value);
+        }
       }}
       {...props}
     />

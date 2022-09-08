@@ -14,6 +14,7 @@ describe("Group Populations", () => {
       {
         groupId: "Group1_ID",
         scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+        populationBasis: "Boolean",
         populationValues: [
           {
             name: PopulationType.INITIAL_POPULATION,
@@ -56,8 +57,8 @@ describe("Group Populations", () => {
     const ippCbs = within(ippRow).getAllByRole("checkbox");
     expect(ippCbs[0]).not.toBeDisabled();
     expect(ippCbs[0]).toBeChecked();
-    expect(ippCbs[1]).toBeDisabled();
-    expect(ippCbs[1]).not.toBeChecked();
+    // expect(ippCbs[1]).toBeDisabled();
+    // expect(ippCbs[1]).not.toBeChecked();
 
     const msrpoplRow = screen.getByTestId(
       "test-row-population-id-measurePopulationExclusion"
@@ -69,9 +70,9 @@ describe("Group Populations", () => {
     expect(msrpoplCell).toBeInTheDocument();
     const msrpopl = within(msrpoplRow).getAllByRole("checkbox");
     expect(msrpopl[0]).not.toBeDisabled();
-    expect(msrpopl[1]).toBeDisabled();
+    // expect(msrpopl[1]).toBeDisabled();
     expect(msrpopl[0]).not.toBeChecked();
-    expect(msrpopl[1]).not.toBeChecked();
+    // expect(msrpopl[1]).not.toBeChecked();
 
     const msrpoplexRow = screen.getByRole("row", { name: "msrpoplex" });
     expect(msrpoplexRow).toBeInTheDocument();
@@ -81,12 +82,12 @@ describe("Group Populations", () => {
     expect(msrpoplexCell).toBeInTheDocument();
     const msrpoplexCbs = within(msrpoplexRow).getAllByRole("checkbox");
     expect(msrpoplexCbs[0]).not.toBeDisabled();
-    expect(msrpoplexCbs[1]).toBeDisabled();
+    //expect(msrpoplexCbs[1]).toBeDisabled();
     expect(msrpoplexCbs[0]).not.toBeChecked();
-    expect(msrpoplexCbs[1]).not.toBeChecked();
+    //expect(msrpoplexCbs[1]).not.toBeChecked();
 
     const allCheckboxes = screen.getAllByRole("checkbox");
-    expect(allCheckboxes).toHaveLength(6);
+    expect(allCheckboxes).toHaveLength(3);
   });
 
   it("should handle null groupPopulation input", () => {
@@ -139,6 +140,7 @@ describe("Group Populations", () => {
       {
         groupId: "Group1_ID",
         scoring: MeasureScoring.COHORT,
+        populationBasis: "Boolean",
         populationValues: [
           {
             name: PopulationType.INITIAL_POPULATION,
@@ -165,8 +167,8 @@ describe("Group Populations", () => {
     const ippCbs = within(ippRow).getAllByRole("checkbox");
     expect(ippCbs[0]).toBeDisabled();
     expect(ippCbs[0]).toBeChecked();
-    expect(ippCbs[1]).toBeDisabled();
-    expect(ippCbs[1]).toBeChecked();
+    // expect(ippCbs[1]).toBeDisabled();
+    // expect(ippCbs[1]).toBeChecked();
   });
 
   it("should handle checkbox changes", () => {
@@ -174,6 +176,7 @@ describe("Group Populations", () => {
       {
         groupId: "Group1_ID",
         scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+        populationBasis: "Boolean",
         populationValues: [
           {
             name: PopulationType.INITIAL_POPULATION,
@@ -198,14 +201,15 @@ describe("Group Populations", () => {
     const ippCbs = within(ippRow).getAllByRole("checkbox");
     expect(ippCbs[0]).not.toBeDisabled();
     expect(ippCbs[0]).toBeChecked();
-    expect(ippCbs[1]).toBeDisabled();
-    expect(ippCbs[1]).toBeChecked();
+    // expect(ippCbs[1]).toBeDisabled();
+    // expect(ippCbs[1]).toBeChecked();
 
     userEvent.click(ippCbs[0]);
     expect(handleChange).toHaveBeenCalledWith([
       {
         groupId: "Group1_ID",
         scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+        populationBasis: "Boolean",
         populationValues: [
           {
             name: PopulationType.INITIAL_POPULATION,
@@ -221,6 +225,7 @@ describe("Group Populations", () => {
       {
         groupId: "Group1_ID",
         scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+        populationBasis: "Boolean",
         populationValues: [
           {
             name: PopulationType.INITIAL_POPULATION,
@@ -236,6 +241,7 @@ describe("Group Populations", () => {
       {
         groupId: "Group1_ID",
         scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+        populationBasis: "Boolean",
         populationValues: [
           {
             name: PopulationType.INITIAL_POPULATION,

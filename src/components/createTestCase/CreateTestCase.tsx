@@ -175,6 +175,7 @@ const CreateTestCase = () => {
   const [canEdit, setCanEdit] = useState<boolean>(
     userName === measure?.createdBy
   );
+  //console.log(userName,measure?.createdBy)
 
   const formik = useFormik({
     initialValues: { ...INITIAL_VALUES },
@@ -187,6 +188,7 @@ const CreateTestCase = () => {
     return {
       groupId: group.id,
       scoring: group.scoring,
+      populationBasis: group.populationBasis,
       populationValues: getPopulationTypesForScoring(group)?.map(
         (population) => ({
           name: population,
@@ -234,7 +236,10 @@ const CreateTestCase = () => {
                 );
                 return _.isNil(existingGroupPop)
                   ? mapMeasureGroup(group)
-                  : existingGroupPop;
+                  : {
+                      ...existingGroupPop,
+                      populationBasis: group?.populationBasis,
+                    };
               });
             } else {
               nextTc.groupPopulations = [];
@@ -571,29 +576,27 @@ const CreateTestCase = () => {
   };
 
   const mapGroups = (
-    groupPopulation: GroupPopulation,
+    groupPopulations: GroupPopulation[],
     results: DetailedPopulationGroupResult
   ): DisplayGroupPopulation[] => {
-    if (_.isNil(groupPopulation)) {
+    if (_.isNil(groupPopulations)) {
       return null;
     }
-    return [
-      {
-        ...groupPopulation,
-        populationValues: groupPopulation?.populationValues?.map(
-          (populationValue) => {
-            return {
-              ...populationValue,
-              actual: !!results?.populationResults?.find(
-                (popResult) =>
-                  FHIR_POPULATION_CODES[popResult.populationType] ===
-                  populationValue.name
-              )?.result,
-            };
-          }
-        ),
-      },
-    ];
+
+    const gp = groupPopulations.map((groupPop) => ({
+      ...groupPop,
+      populationValues: groupPop?.populationValues?.map((populationValue) => {
+        return {
+          ...populationValue,
+          actual: !!results?.populationResults?.find(
+            (popResult) =>
+              FHIR_POPULATION_CODES[popResult.populationType] ===
+              populationValue.name
+          )?.result,
+        };
+      }),
+    }));
+    return gp;
   };
 
   return (
@@ -640,7 +643,7 @@ const CreateTestCase = () => {
             <ExpectedActual
               canEdit={canEdit}
               groupPopulations={mapGroups(
-                formik.values.groupPopulations[0],
+                formik.values.groupPopulations,
                 populationGroupResult
               )}
               onChange={(groupPopulations) => {

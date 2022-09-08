@@ -2,10 +2,12 @@ import React from "react";
 import "styled-components/macro";
 import { DisplayPopulationValue, getPopulationCode } from "@madie/madie-models";
 import StyledCheckbox from "./StyledCheckBox";
+import { TextField } from "@madie/madie-design-system/dist/react";
 
 export interface TestCasePopulationProps {
   executionRun: boolean;
   population: DisplayPopulationValue;
+  populationBasis: string;
   showExpected?: boolean;
   disableExpected?: boolean;
   onChange: (population: DisplayPopulationValue) => void;
@@ -15,6 +17,7 @@ export interface TestCasePopulationProps {
 const TestCasePopulation = ({
   executionRun,
   population,
+  populationBasis,
   disableExpected = false,
   onChange,
   setChangedPopulation,
@@ -32,6 +35,7 @@ const TestCasePopulation = ({
           {getPopulationCode(population.name).toLocaleLowerCase()}
         </td>
         <td role="cell">
+          {/* {populationBasis==="Boolean"? */}
           <StyledCheckbox
             id={`${population.name}-expected-cb`}
             name={population.name}
@@ -40,10 +44,16 @@ const TestCasePopulation = ({
               onChange({ ...population, expected: checked })
             }
             setChangedPopulation={setChangedPopulation}
+            populationBasis={populationBasis}
             disabled={disableExpected}
             data-testid={`test-population-${population.name}-expected`}
             displayType="expected"
           />
+          {/* <TextField  onChange={(e) =>{
+            console.log(e.target.name)
+            onChange({ ...population, expected: e.target.value})
+          }
+          }size="small"/>} */}
         </td>
         <td role="cell">
           {executionRun ? (

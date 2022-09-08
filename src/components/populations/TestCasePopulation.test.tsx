@@ -27,6 +27,7 @@ describe("TestCasePopulation component", () => {
               population={testCasePopulation}
               onChange={handleChange}
               setChangedPopulation={setChangedPopulation}
+              populationBasis="Boolean"
             />
           </tbody>
         </table>
@@ -38,7 +39,7 @@ describe("TestCasePopulation component", () => {
     const columns = row.querySelectorAll("td");
     expect(columns[1]).toHaveTextContent("ipp");
     const buttons = await screen.findAllByRole("checkbox");
-    expect(buttons).toHaveLength(2);
+    expect(buttons).toHaveLength(1);
   });
 
   it("should handle changes to checkboxes", async () => {
@@ -58,6 +59,7 @@ describe("TestCasePopulation component", () => {
               population={testCasePopulation}
               onChange={handleChange}
               setChangedPopulation={setChangedPopulation}
+              populationBasis="Boolean"
             />
           </tbody>
         </table>
