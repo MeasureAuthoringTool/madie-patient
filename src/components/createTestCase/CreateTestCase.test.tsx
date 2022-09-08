@@ -1983,14 +1983,6 @@ describe("Measure Calculation ", () => {
     });
     userEvent.click(runButton);
 
-    // // this is to make form dirty so that run test button is enabled
-    // const tcTitle = await screen.findByTestId("create-test-case-title");
-    // userEvent.type(tcTitle, "testTitle");
-    //
-    // const runTestButton = screen.getByRole("button", { name: "Run Test" });
-    // expect(runTestButton).not.toBeDisabled();
-    // userEvent.click(runTestButton);
-
     const alert = await screen.findByRole("alert");
     expect(alert).toBeInTheDocument();
     expect(alert).toHaveTextContent(
