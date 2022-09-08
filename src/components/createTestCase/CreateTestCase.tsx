@@ -47,6 +47,7 @@ import { MadieEditor } from "@madie/madie-editor";
 import CreateTestCaseNavTabs from "./CreateTestCaseNavTabs";
 import ExpectedActual from "./RightPanel/ExpectedActual/ExpectedActual";
 import "./CreateTestCase.scss";
+import GroupPopulations from "../populations/GroupPopulations";
 
 const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
@@ -656,6 +657,7 @@ const CreateTestCase = () => {
             Independent views should be their own components when possible
             This will allow for independent unit testing and help render performance.
            */}
+
           {activeTab === "details" && (
             <>
               {alert && (
