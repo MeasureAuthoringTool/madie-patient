@@ -826,19 +826,17 @@ const CreateTestCase = () => {
               >
                 <Button
                   tw="m-2"
-                  buttonTitle="Cancel"
+                  buttonTitle="Discard Changes"
                   type="button"
                   variant="white"
                   onClick={navigateToTestCases}
-                  data-testid="create-test-case-cancel-button"
+                  data-testid="edit-test-case-discard-button"
                 />
                 <Button
                   tw="m-2"
-                  buttonTitle={
-                    testCase ? "Update Test Case" : "Create Test Case"
-                  }
+                  buttonTitle="Save"
                   type="submit"
-                  data-testid="create-test-case-button"
+                  data-testid="edit-test-case-save-button"
                   disabled={!isModified() || createButtonDisabled}
                 />
               </div>

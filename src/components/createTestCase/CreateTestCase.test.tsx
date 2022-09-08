@@ -182,12 +182,14 @@ describe("CreateTestCase component", () => {
           screen.getByTestId("create-test-case-description")
         ).toBeInTheDocument();
         expect(
-          screen.getByRole("button", { name: "Create Test Case" })
+          screen.getByRole("button", { name: "Save" })
         ).toBeInTheDocument();
       },
       { timeout: 1500 }
     );
-    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Discard Changes" })
+    ).toBeInTheDocument();
 
     userEvent.click(screen.getByTestId("measurecql-tab"));
     expect(screen.getByTestId("test-case-cql-editor")).toBeInTheDocument();
@@ -226,8 +228,8 @@ describe("CreateTestCase component", () => {
       { timeout: 1500 }
     );
 
-    const createBtn = screen.getByRole("button", { name: "Create Test Case" });
-    userEvent.click(createBtn);
+    const saveButton = screen.getByRole("button", { name: "Save" });
+    userEvent.click(saveButton);
 
     const debugOutput = await screen.findByText(
       "Test case created successfully!"
@@ -269,7 +271,7 @@ describe("CreateTestCase component", () => {
     await testTitle("TC1");
 
     const createBtn = await screen.findByRole("button", {
-      name: "Create Test Case",
+      name: "Save",
     });
     userEvent.click(createBtn);
 
@@ -312,7 +314,7 @@ describe("CreateTestCase component", () => {
     await testTitle("TC1", true);
 
     const createBtn = await screen.findByRole("button", {
-      name: "Create Test Case",
+      name: "Save",
     });
     userEvent.click(createBtn);
 
@@ -347,7 +349,7 @@ describe("CreateTestCase component", () => {
       { timeout: 1500 }
     );
 
-    const createBtn = screen.getByRole("button", { name: "Create Test Case" });
+    const createBtn = screen.getByRole("button", { name: "Save" });
     userEvent.click(createBtn);
 
     const alert = await screen.findByRole("alert");
@@ -383,7 +385,7 @@ describe("CreateTestCase component", () => {
       { timeout: 1500 }
     );
 
-    const createBtn = screen.getByRole("button", { name: "Create Test Case" });
+    const createBtn = screen.getByRole("button", { name: "Save" });
     userEvent.click(createBtn);
 
     const alert = await screen.findByRole("alert");
@@ -464,9 +466,7 @@ describe("CreateTestCase component", () => {
 
     userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: "Update Test Case" })
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
     });
 
     const seriesInput = screen.getByRole("combobox", { name: "Series" });
@@ -496,11 +496,9 @@ describe("CreateTestCase component", () => {
     userEvent.click(screen.getByTestId("details-tab"));
     await testTitle("TC1");
     await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: "Update Test Case" })
-      ).toBeEnabled();
+      expect(screen.getByRole("button", { name: "Save" })).toBeEnabled();
     });
-    userEvent.click(screen.getByRole("button", { name: "Update Test Case" }));
+    userEvent.click(screen.getByRole("button", { name: "Save" }));
 
     const debugOutput = await screen.findByText(
       "Test case updated successfully!"
@@ -557,7 +555,7 @@ describe("CreateTestCase component", () => {
       { timeout: 1500 }
     );
 
-    const createBtn = screen.getByRole("button", { name: "Create Test Case" });
+    const createBtn = screen.getByRole("button", { name: "Save" });
     userEvent.click(createBtn);
 
     const alert = await screen.findByRole("alert");
@@ -603,10 +601,10 @@ describe("CreateTestCase component", () => {
       { timeout: 1500 }
     );
     userEvent.click(screen.getByTestId("details-tab"));
+    expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Update Test Case" })
+      screen.getByRole("button", { name: "Discard Changes" })
     ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
   });
 
   it("should give a warning message when Id is not present in the JSON while updating test case when update button is clicked", async () => {
@@ -675,9 +673,7 @@ describe("CreateTestCase component", () => {
 
     userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: "Update Test Case" })
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
     });
 
     const seriesInput = screen.getByRole("combobox", { name: "Series" });
@@ -709,11 +705,9 @@ describe("CreateTestCase component", () => {
 
     userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: "Update Test Case" })
-      ).toBeEnabled();
+      expect(screen.getByRole("button", { name: "Save" })).toBeEnabled();
     });
-    userEvent.click(screen.getByRole("button", { name: "Update Test Case" }));
+    userEvent.click(screen.getByRole("button", { name: "Save" }));
 
     const debugOutput = await screen.findByText(
       "Test case updated successfully! Bundle ID has been auto generated"
@@ -810,9 +804,7 @@ describe("CreateTestCase component", () => {
 
     userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: "Update Test Case" })
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
     });
 
     await testTitle("Updated Title", true);
@@ -843,11 +835,9 @@ describe("CreateTestCase component", () => {
 
     userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: "Update Test Case" })
-      ).toBeEnabled();
+      expect(screen.getByRole("button", { name: "Save" })).toBeEnabled();
     });
-    userEvent.click(screen.getByRole("button", { name: "Update Test Case" }));
+    userEvent.click(screen.getByRole("button", { name: "Save" }));
 
     const debugOutput = await screen.findByText(
       "Test case updated successfully! Bundle IDs are auto generated on save. MADiE has over written the ID provided"
@@ -909,9 +899,7 @@ describe("CreateTestCase component", () => {
 
     userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: "Update Test Case" })
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
     });
 
     const descriptionInput = screen.getByTestId("create-test-case-description");
@@ -921,7 +909,7 @@ describe("CreateTestCase component", () => {
     await waitFor(() => {
       expect(descriptionInput).toHaveTextContent(modifiedDescription);
     });
-    userEvent.click(screen.getByRole("button", { name: "Update Test Case" }));
+    userEvent.click(screen.getByRole("button", { name: "Save" }));
 
     const debugOutput = await screen.findByText(
       "An error occurred while updating the test case."
@@ -956,24 +944,20 @@ describe("CreateTestCase component", () => {
 
     userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: "Update Test Case" })
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
     });
 
     const descriptionInput = screen.getByTestId("create-test-case-description");
     expect(descriptionInput).toHaveTextContent(testCase.description);
     userEvent.type(descriptionInput, `{selectall}{del}${modifiedDescription}`);
 
-    expect(
-      screen.getByRole("button", { name: "Update Test Case" })
-    ).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Save" })).toBeEnabled();
 
     await waitFor(() => {
       expect(descriptionInput).toHaveTextContent(modifiedDescription);
     });
     userEvent.click(screen.getByTestId("details-tab"));
-    userEvent.click(screen.getByRole("button", { name: "Update Test Case" }));
+    userEvent.click(screen.getByRole("button", { name: "Save" }));
 
     const debugOutput = await screen.findByText(
       "An error occurred while updating the test case."
@@ -1004,9 +988,7 @@ describe("CreateTestCase component", () => {
 
     userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: "Update Test Case" })
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
     });
 
     const descriptionInput = screen.getByTestId("create-test-case-description");
@@ -1016,7 +998,7 @@ describe("CreateTestCase component", () => {
     await waitFor(() => {
       expect(descriptionInput).toHaveTextContent(modifiedDescription);
     });
-    userEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    userEvent.click(screen.getByRole("button", { name: "Discard Changes" }));
     expect(mockedAxios.put).toBeCalledTimes(0);
   });
 
@@ -1042,7 +1024,7 @@ describe("CreateTestCase component", () => {
 
     testTitle("TC1");
 
-    const createBtn = screen.getByRole("button", { name: "Create Test Case" });
+    const createBtn = screen.getByRole("button", { name: "Save" });
     await waitFor(() => {
       expect(createBtn).toBeDisabled;
       expect(screen.getByTestId("description-helper-text")).toHaveTextContent(
@@ -1088,7 +1070,7 @@ describe("CreateTestCase component", () => {
 
     await testTitle("TC1");
 
-    const createBtn = screen.getByRole("button", { name: "Create Test Case" });
+    const createBtn = screen.getByRole("button", { name: "Save" });
     await waitFor(
       () => {
         expect(createBtn).not.toBeDisabled();
@@ -1196,7 +1178,7 @@ describe("CreateTestCase component", () => {
     userEvent.type(titleInput, testCaseTitle);
     fireEvent.blur(titleInput);
 
-    const createBtn = screen.getByRole("button", { name: "Create Test Case" });
+    const createBtn = screen.getByRole("button", { name: "Save" });
     await waitFor(() => {
       expect(createBtn).toBeDisabled;
       expect(screen.getByTestId("title-helper-text")).toHaveTextContent(
@@ -1229,7 +1211,7 @@ describe("CreateTestCase component", () => {
     userEvent.click(screen.getByTestId("details-tab"));
     await testTitle("TC1");
 
-    const createBtn = screen.getByRole("button", { name: "Create Test Case" });
+    const createBtn = screen.getByRole("button", { name: "Save" });
     userEvent.click(createBtn);
 
     const debugOutput = await screen.findByText(
@@ -1269,7 +1251,7 @@ describe("CreateTestCase component", () => {
     );
     await testTitle("TC1");
 
-    const createBtn = screen.getByRole("button", { name: "Create Test Case" });
+    const createBtn = screen.getByRole("button", { name: "Save" });
     userEvent.click(createBtn);
 
     const debugOutput = await screen.findByText(
@@ -1323,7 +1305,7 @@ describe("CreateTestCase component", () => {
     );
     await testTitle("TC1");
 
-    const createBtn = screen.getByRole("button", { name: "Create Test Case" });
+    const createBtn = screen.getByRole("button", { name: "Save" });
     userEvent.click(createBtn);
 
     const debugOutput = await screen.findByText(
@@ -1416,15 +1398,13 @@ describe("CreateTestCase component", () => {
     userEvent.click(screen.getByTestId("details-tab"));
 
     await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: "Update Test Case" })
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
     });
 
     await testTitle("TC1");
     const seriesInput = screen.getByTestId("create-test-case-description");
     userEvent.type(seriesInput, testCaseDescription);
-    const updateBtn = screen.getByRole("button", { name: "Update Test Case" });
+    const updateBtn = screen.getByRole("button", { name: "Save" });
     userEvent.click(updateBtn);
 
     const debugOutput = await screen.findByText(
@@ -1513,9 +1493,7 @@ describe("CreateTestCase component", () => {
     userEvent.click(screen.getByTestId("details-tab"));
 
     await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: "Update Test Case" })
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
     });
 
     const tcTitle = await screen.findByTestId("create-test-case-title");
@@ -1526,7 +1504,7 @@ describe("CreateTestCase component", () => {
     });
     const seriesInput = screen.getByTestId("create-test-case-description");
     userEvent.type(seriesInput, testCaseDescription);
-    const updateBtn = screen.getByRole("button", { name: "Update Test Case" });
+    const updateBtn = screen.getByRole("button", { name: "Save" });
     userEvent.click(updateBtn);
 
     const debugOutput = await screen.findByText(
@@ -1697,12 +1675,6 @@ describe("CreateTestCase component", () => {
     );
     userEvent.click(screen.getByTestId("details-tab"));
 
-    expect(
-      await screen.findByRole("button", {
-        name: "Update Test Case",
-      })
-    ).toBeInTheDocument();
-
     await waitFor(() => {
       expect(
         screen.getByRole("button", {
@@ -1859,14 +1831,16 @@ describe("Measure Calculation ", () => {
       ],
       "/measures/:measureId/edit/test-cases/:id"
     );
+    userEvent.click(screen.getByTestId("details-tab"));
+    // this is to make form dirty so that run test button is enabled
+    const tcTitle = await screen.findByTestId("create-test-case-title");
+    userEvent.type(tcTitle, "testTitle");
+
+    const runTestButton = screen.getByRole("button", { name: "Run Test" });
+    expect(runTestButton).not.toBeDisabled();
+    userEvent.click(runTestButton);
+
     userEvent.click(screen.getByTestId("highlighting-tab"));
-    const updateButton = await screen.findByRole("button", {
-      name: "Update Test Case",
-    });
-    expect(updateButton).toBeInTheDocument();
-    const runButton = await screen.findByRole("button", { name: "Run Test" });
-    await waitFor(() => expect(runButton).toBeEnabled(), { timeout: 5000 });
-    userEvent.click(runButton);
     const debugOutput = await screen.findByText(
       "No entries found in passed patient bundles"
     );
@@ -1908,11 +1882,12 @@ describe("Measure Calculation ", () => {
       measure
     );
     userEvent.click(screen.getByTestId("details-tab"));
-    expect(
-      await screen.findByRole("button", {
-        name: "Update Test Case",
-      })
-    ).toBeInTheDocument();
+
+    // this is to make form dirty so that run test button is enabled
+    const tcTitle = await screen.findByTestId("create-test-case-title");
+    userEvent.type(tcTitle, "testTitle");
+
+    userEvent.click(screen.getByTestId("expectoractual-tab"));
 
     await waitFor(async () => {
       userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
@@ -1958,15 +1933,14 @@ describe("Measure Calculation ", () => {
       measure
     );
     userEvent.click(screen.getByTestId("details-tab"));
-    expect(
-      await screen.findByRole("button", {
-        name: "Update Test Case",
-      })
-    ).toBeInTheDocument();
 
-    await waitFor(async () => {
-      userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
-    });
+    // this is to make form dirty so that run test button is enabled
+    const tcTitle = await screen.findByTestId("create-test-case-title");
+    userEvent.type(tcTitle, "testTitle");
+
+    const runTestButton = screen.getByRole("button", { name: "Run Test" });
+    expect(runTestButton).not.toBeDisabled();
+    userEvent.click(runTestButton);
 
     const alert = await screen.findByRole("alert");
     expect(alert).toBeInTheDocument();
@@ -1986,15 +1960,15 @@ describe("Measure Calculation ", () => {
     });
     mockedAxios.post.mockResolvedValue({
       data: {
-        code: 200,
-        message: null,
+        code: 400,
+        message: "An error occurred while parsing the resource",
         successful: false,
         outcomeResponse: {
           resourceType: "OperationOutcome",
           issue: [
             {
               severity: "error",
-              code: "processing",
+              code: "invalid",
               diagnostics: "Major issue on line 1!",
             },
           ],
@@ -2010,15 +1984,14 @@ describe("Measure Calculation ", () => {
       measure
     );
     userEvent.click(screen.getByTestId("details-tab"));
-    expect(
-      await screen.findByRole("button", {
-        name: "Update Test Case",
-      })
-    ).toBeInTheDocument();
 
-    await waitFor(async () => {
-      userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
-    });
+    // this is to make form dirty so that run test button is enabled
+    const tcTitle = await screen.findByTestId("create-test-case-title");
+    userEvent.type(tcTitle, "testTitle");
+
+    const runTestButton = screen.getByRole("button", { name: "Run Test" });
+    expect(runTestButton).not.toBeDisabled();
+    userEvent.click(runTestButton);
 
     const alert = await screen.findByRole("alert");
     expect(alert).toBeInTheDocument();
@@ -2053,12 +2026,6 @@ describe("Measure Calculation ", () => {
       "/measures/:measureId/edit/test-cases/:id",
       measure
     );
-    userEvent.click(screen.getByTestId("details-tab"));
-    expect(
-      await screen.findByRole("button", {
-        name: "Update Test Case",
-      })
-    ).toBeInTheDocument();
     const runButton = await screen.findByRole("button", { name: "Run Test" });
     expect(runButton).toBeDisabled();
   });
