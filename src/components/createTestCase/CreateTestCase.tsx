@@ -176,7 +176,6 @@ const CreateTestCase = () => {
   const [canEdit, setCanEdit] = useState<boolean>(
     userName === measure?.createdBy
   );
-  //console.log(userName,measure?.createdBy)
 
   const formik = useFormik({
     initialValues: { ...INITIAL_VALUES },
@@ -228,7 +227,7 @@ const CreateTestCase = () => {
           .then((tc: TestCase) => {
             setTestCase(_.cloneDeep(tc));
             setEditorVal(tc.json);
-            setCanEdit(userName === tc.createdBy);
+            setCanEdit(userName === measure?.createdBy);
             const nextTc = _.cloneDeep(tc);
             if (measure && measure.groups) {
               nextTc.groupPopulations = measure.groups.map((group) => {

@@ -2095,11 +2095,6 @@ describe("Measure Calculation ", () => {
       measure
     );
     userEvent.click(screen.getByTestId("details-tab"));
-    expect(
-      await screen.findByRole("button", {
-        name: "Update Test Case",
-      })
-    ).toBeInTheDocument();
     const runButton = await screen.findByRole("button", { name: "Run Test" });
     expect(runButton).toBeDisabled();
   });
