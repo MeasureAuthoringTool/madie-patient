@@ -364,7 +364,8 @@ const CreateTestCase = () => {
     }
   };
 
-  const calculate = async () => {
+  const calculate = async (e) => {
+    e.preventDefault();
     setPopulationGroupResult(() => undefined);
     if (measure && measure.cqlErrors) {
       setCalculationErrors(
@@ -372,8 +373,11 @@ const CreateTestCase = () => {
       );
       return;
     }
+    setValidationErrors(() => []);
     let modifiedTestCase = { ...testCase };
-    if (isModified()) {
+    console.log("calculate called");
+    if (isJsonModified()) {
+      console.log("json is modified...validating..");
       modifiedTestCase.json = editorVal;
       try {
         // Validate test case JSON prior to execution
@@ -391,6 +395,7 @@ const CreateTestCase = () => {
           return;
         }
       } catch (error) {
+        console.error("An error occurred with execution: ", error);
         setAlert({
           status: "error",
           message:
@@ -407,10 +412,12 @@ const CreateTestCase = () => {
           measureBundle,
           valueSets
         );
+      console.log("execution complete", executionResults[0]);
       setCalculationErrors("");
       // grab first group results because we only have one group for now
       setPopulationGroupResult(executionResults[0].detailedResults[0]);
     } catch (error) {
+      console.log("error occurred");
       setCalculationErrors(error.message);
     }
   };
@@ -546,6 +553,12 @@ const CreateTestCase = () => {
     }
   }
 
+  function isJsonModified() {
+    return testCase
+      ? editorVal !== testCase?.json
+      : !isEmptyTestCaseJsonString(editorVal);
+  }
+
   function resizeEditor() {
     // hack to force Ace to resize as it doesn't seem to be responsive
     setTimeout(() => {
@@ -566,6 +579,10 @@ const CreateTestCase = () => {
     groupPopulations: GroupPopulation[],
     changedPopulation: String
   ) => {
+    console.log(
+      `validatePOpulationDeps [${changedPopulation}]: `,
+      groupPopulations
+    );
     const output = triggerPopChanges(groupPopulations, changedPopulation);
     formik.setFieldValue("groupPopulations", output as GroupPopulation[]);
     setPendingGroupPopulations(null);
@@ -606,7 +623,10 @@ const CreateTestCase = () => {
           style={{ marginTop: 44 }}
         >
           <Editor
-            onChange={(val: string) => setEditorVal(val)}
+            onChange={(val: string) => {
+              console.log("onChange editor called");
+              setEditorVal(val);
+            }}
             value={editorVal}
             setEditor={setEditor}
             readOnly={!canEdit}
@@ -643,6 +663,11 @@ const CreateTestCase = () => {
                 populationGroupResult
               )}
               onChange={(groupPopulations) => {
+                console.log(
+                  "current groupPopulations: ",
+                  formik.values.groupPopulations
+                );
+                console.log("incoming pendingPopulations: ", groupPopulations);
                 setPendingGroupPopulations(groupPopulations);
               }}
               setChangedPopulation={setChangedPopulation}
@@ -823,9 +848,13 @@ const CreateTestCase = () => {
                   !!measure?.cqlErrors ||
                   _.isNil(measure?.groups) ||
                   measure?.groups.length === 0 ||
-                  (!isModified() && validationErrors?.length > 0) ||
-                  isEmptyTestCaseJsonString(formik.values.json)
+                  (!isJsonModified() && validationErrors?.length > 0) ||
+                  isEmptyTestCaseJsonString(editorVal)
                 }
+                /*
+                  if new test case
+                    enable run button if json modified, regardless of errors
+                 */
                 data-testid="run-test-case-button"
               />
             </div>
