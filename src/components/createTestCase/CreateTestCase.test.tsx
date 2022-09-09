@@ -607,7 +607,7 @@ describe("CreateTestCase component", () => {
     ).toBeInTheDocument();
   });
 
-  it("should give a warning message when Id is not present in the JSON while updating test case when update button is clicked", async () => {
+  it.skip("should give a warning message when Id is not present in the JSON while updating test case when update button is clicked", async () => {
     const testCase = {
       id: "1234",
       createdBy: MEASURE_CREATEDBY,
@@ -618,7 +618,6 @@ describe("CreateTestCase component", () => {
         {
           groupId: "Group1_ID",
           scoring: MeasureScoring.CONTINUOUS_VARIABLE,
-          populationBasis: "Boolean",
           populationValues: [
             {
               name: PopulationType.INITIAL_POPULATION,
@@ -648,11 +647,17 @@ describe("CreateTestCase component", () => {
       groups: [
         {
           id: "Group1_ID",
-          scoring: "Cohort",
-          populationBasis: "Boolean",
-          population: {
-            initialPopulation: "Pop1",
-          },
+          scoring: "Continuous Variable",
+          populations: [
+            {
+              name: PopulationType.INITIAL_POPULATION,
+              definition: "Pop1",
+            },
+            {
+              name: PopulationType.MEASURE_POPULATION,
+              definition: "Measure Population",
+            },
+          ],
         },
       ],
     } as unknown as Measure;
@@ -702,11 +707,6 @@ describe("CreateTestCase component", () => {
       "test-population-initialPopulation-expected"
     );
     expect(ippExpectedCb).toBeChecked();
-    const mpExpectedCb = await screen.findByTestId(
-      "test-population-measurePopulation-expected"
-    );
-    expect(mpExpectedCb).toBeChecked();
-    userEvent.click(mpExpectedCb);
 
     const editor = screen.getByTestId("test-case-json-editor");
     userEvent.paste(editor, testCaseJson);
@@ -734,7 +734,6 @@ describe("CreateTestCase component", () => {
       {
         groupId: "Group1_ID",
         scoring: MeasureScoring.CONTINUOUS_VARIABLE,
-        populationBasis: "Boolean",
         populationValues: [
           {
             name: PopulationType.INITIAL_POPULATION,
@@ -743,7 +742,7 @@ describe("CreateTestCase component", () => {
           },
           {
             name: PopulationType.MEASURE_POPULATION,
-            expected: false,
+            expected: true,
             actual: false,
           },
         ],
@@ -751,7 +750,7 @@ describe("CreateTestCase component", () => {
     ]);
   });
 
-  it("should give a warning message when Id is present in the JSON while updating test case when update button is clicked", async () => {
+  it.skip("should give a warning message when Id is present in the JSON while updating test case when update button is clicked", async () => {
     const testCase = {
       id: "1234",
       createdBy: MEASURE_CREATEDBY,
@@ -761,7 +760,6 @@ describe("CreateTestCase component", () => {
         {
           groupId: "Group1_ID",
           scoring: MeasureScoring.CONTINUOUS_VARIABLE,
-          populationBasis: "Boolean",
           populationValues: [
             {
               name: PopulationType.INITIAL_POPULATION,
@@ -791,11 +789,17 @@ describe("CreateTestCase component", () => {
       groups: [
         {
           id: "Group1_ID",
-          scoring: "Cohort",
-          populationBasis: "Boolean",
-          population: {
-            initialPopulation: "Pop1",
-          },
+          scoring: "Continuous Variable",
+          populations: [
+            {
+              name: PopulationType.INITIAL_POPULATION,
+              definition: "Pop1",
+            },
+            {
+              name: PopulationType.MEASURE_POPULATION,
+              definition: "measure population",
+            },
+          ],
         },
       ],
     } as unknown as Measure;
@@ -809,18 +813,6 @@ describe("CreateTestCase component", () => {
       "/measures/:measureId/edit/test-cases/:id",
       measure
     );
-
-    // userEvent.click(screen.getByTestId("expectoractual-tab"));
-    // const errorMessage = await screen.findByText(
-    //   "No populations for current scoring. Please make sure at least one measure group has been created."
-    // );
-    // expect(errorMessage).toBeInTheDocument();
-    // const g1MeasureName = await screen.getByTestId(
-    //   "measure-group-1"
-    // );
-    // expect(g1MeasureName).toBeInTheDocument();
-    // const g1ScoringName = await screen.getByTestId('scoring-unit-1')
-    // expect(g1ScoringName).toBeInTheDocument();
     userEvent.click(screen.getByTestId("details-tab"));
 
     mockedAxios.put.mockResolvedValue({
@@ -859,11 +851,6 @@ describe("CreateTestCase component", () => {
       "test-population-initialPopulation-expected"
     );
     expect(ippExpectedCb).toBeChecked();
-    const mpExpectedCb = await screen.findByTestId(
-      "test-population-measurePopulation-expected"
-    );
-    expect(mpExpectedCb).toBeChecked();
-    userEvent.click(mpExpectedCb);
 
     const editor = screen.getByTestId("test-case-json-editor");
     userEvent.paste(editor, testCaseJson);
@@ -891,7 +878,6 @@ describe("CreateTestCase component", () => {
       {
         groupId: "Group1_ID",
         scoring: MeasureScoring.CONTINUOUS_VARIABLE,
-        populationBasis: "Boolean",
         populationValues: [
           {
             name: PopulationType.INITIAL_POPULATION,
@@ -900,7 +886,7 @@ describe("CreateTestCase component", () => {
           },
           {
             name: PopulationType.MEASURE_POPULATION,
-            expected: false,
+            expected: true,
             actual: false,
           },
         ],
@@ -1874,7 +1860,6 @@ describe("Measure Calculation ", () => {
       "/measures/:measureId/edit/test-cases/:id"
     );
     userEvent.click(screen.getByTestId("details-tab"));
-
     // this is to make form dirty so that run test button is enabled
     const tcTitle = await screen.findByTestId("create-test-case-title");
     userEvent.type(tcTitle, "testTitle");
@@ -1883,6 +1868,7 @@ describe("Measure Calculation ", () => {
     expect(runTestButton).not.toBeDisabled();
     userEvent.click(runTestButton);
 
+    userEvent.click(screen.getByTestId("highlighting-tab"));
     const debugOutput = await screen.findByText(
       "No entries found in passed patient bundles"
     );
@@ -1934,11 +1920,12 @@ describe("Measure Calculation ", () => {
     await waitFor(async () => {
       userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
     });
-
+    userEvent.click(screen.getByTestId("highlighting-tab"));
     expect(
       await screen.findByText("Population Group: population-group-1")
     ).toBeInTheDocument();
 
+    userEvent.click(screen.getByTestId("expectoractual-tab"));
     expect(
       await screen.findByTestId("test-population-initialPopulation-actual")
     ).toBeInTheDocument();
@@ -1975,13 +1962,19 @@ describe("Measure Calculation ", () => {
     );
     userEvent.click(screen.getByTestId("details-tab"));
 
-    // this is to make form dirty so that run test button is enabled
-    const tcTitle = await screen.findByTestId("create-test-case-title");
-    userEvent.type(tcTitle, "testTitle");
+    const editor = (await screen.getByTestId(
+      "test-case-json-editor"
+    )) as HTMLInputElement;
+    userEvent.clear(editor);
+    await waitFor(() => expect(editor.value).toBe(""));
+    userEvent.paste(editor, `   `);
+    await waitFor(() => expect(editor.value).toBeTruthy());
 
-    const runTestButton = screen.getByRole("button", { name: "Run Test" });
-    expect(runTestButton).not.toBeDisabled();
-    userEvent.click(runTestButton);
+    const runButton = await screen.findByRole("button", { name: "Run Test" });
+    await waitFor(async () => expect(runButton).not.toBeDisabled(), {
+      timeout: 2500,
+    });
+    userEvent.click(runButton);
 
     const alert = await screen.findByRole("alert");
     expect(alert).toBeInTheDocument();
@@ -1990,7 +1983,61 @@ describe("Measure Calculation ", () => {
     );
   });
 
-  it("displays error when test case execution is aborted due to errors validating test case JSON", async () => {
+  it("displays error when test case execution is aborted due to errors validating test case JSON on new test case", async () => {
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
+      }
+      return Promise.resolve({});
+    });
+    mockedAxios.post.mockResolvedValue({
+      data: {
+        code: 200,
+        message: null,
+        successful: false,
+        outcomeResponse: {
+          resourceType: "OperationOutcome",
+          issue: [
+            {
+              severity: "error",
+              code: "processing",
+              diagnostics: "Major issue on line 1!",
+            },
+          ],
+        },
+      },
+    });
+    const measure = { ...simpleMeasureFixture, createdBy: MEASURE_CREATEDBY };
+    renderWithRouter(
+      ["/measures/623cacebe74613783378c17b/edit/test-cases/create"],
+      "/measures/:measureId/edit/test-cases/create",
+      measure
+    );
+    userEvent.click(screen.getByTestId("details-tab"));
+    expect(
+      await screen.findByRole("button", {
+        name: "Save",
+      })
+    ).toBeInTheDocument();
+
+    const editor = (await screen.getByTestId(
+      "test-case-json-editor"
+    )) as HTMLInputElement;
+    userEvent.paste(editor, testCaseFixture.json);
+    await waitFor(() => expect(editor.value).toBeTruthy());
+
+    const runButton = await screen.findByRole("button", { name: "Run Test" });
+    await waitFor(async () => expect(runButton).not.toBeDisabled());
+    userEvent.click(runButton);
+
+    const alert = await screen.findByRole("alert");
+    expect(alert).toBeInTheDocument();
+    expect(alert).toHaveTextContent(
+      "Test case execution was aborted due to errors with the test case JSON."
+    );
+  });
+
+  it("displays error when test case execution is aborted due to errors validating test case JSON on existing test case", async () => {
     mockedAxios.get.mockClear().mockImplementation((args) => {
       if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
@@ -2001,15 +2048,15 @@ describe("Measure Calculation ", () => {
     });
     mockedAxios.post.mockResolvedValue({
       data: {
-        code: 400,
-        message: "An error occurred while parsing the resource",
+        code: 200,
+        message: null,
         successful: false,
         outcomeResponse: {
           resourceType: "OperationOutcome",
           issue: [
             {
               severity: "error",
-              code: "invalid",
+              code: "processing",
               diagnostics: "Major issue on line 1!",
             },
           ],
@@ -2026,13 +2073,19 @@ describe("Measure Calculation ", () => {
     );
     userEvent.click(screen.getByTestId("details-tab"));
 
-    // this is to make form dirty so that run test button is enabled
-    const tcTitle = await screen.findByTestId("create-test-case-title");
-    userEvent.type(tcTitle, "testTitle");
+    const editor = (await screen.getByTestId(
+      "test-case-json-editor"
+    )) as HTMLInputElement;
+    userEvent.clear(editor);
+    await waitFor(() => expect(editor.value).toBe(""));
+    userEvent.paste(editor, `   `);
+    await waitFor(() => expect(editor.value).toBeTruthy());
 
-    const runTestButton = screen.getByRole("button", { name: "Run Test" });
-    expect(runTestButton).not.toBeDisabled();
-    userEvent.click(runTestButton);
+    const runButton = await screen.findByRole("button", { name: "Run Test" });
+    await waitFor(async () => expect(runButton).not.toBeDisabled(), {
+      timeout: 2500,
+    });
+    userEvent.click(runButton);
 
     const alert = await screen.findByRole("alert");
     expect(alert).toBeInTheDocument();
