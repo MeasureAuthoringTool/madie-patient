@@ -32,6 +32,33 @@ it("return the input matches output with no changes", () => {
   expect(resultPops[0].populationValues[0].expected).toBeTruthy();
 });
 
+it("return the input matches output with no changes if targetId not found", () => {
+  const populationVal: PopulationValue = {
+    name: PopulationType.INITIAL_POPULATION,
+    expected: true,
+    actual: false,
+  };
+  const populationValues: PopulationValue[] = [];
+  populationValues.push(populationVal);
+  const group1: GroupPopulation = {
+    groupId: "initialPopulation",
+    scoring: "Cohort",
+    populationValues: populationValues,
+  };
+  const groupPopulations: GroupPopulation[] = [group1];
+
+  const resultPops = triggerPopChanges(
+    groupPopulations,
+    "WRONG_ID",
+    "initialPopulation"
+  );
+
+  expect(resultPops.length).toEqual(groupPopulations.length);
+
+  expect(resultPops[0].populationValues[0].name).toEqual("initialPopulation");
+  expect(resultPops[0].populationValues[0].expected).toBeTruthy();
+});
+
 it("return the input with IPP changed to Expected because Denom is Expected", () => {
   const ipp: PopulationValue = {
     name: PopulationType.INITIAL_POPULATION,
