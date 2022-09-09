@@ -64,23 +64,31 @@ export function getFhirMeasurePopulationCode(population: string) {
 
 export function triggerPopChanges(
   groupPopulations: GroupPopulation[],
-  changedPopulation
+  changedGroupId: string,
+  changedPopulation: string
 ) {
-  let returnPop: GroupPopulation[] = [];
-  const expectedValue = groupPopulations[0]?.populationValues.filter(
+  let returnPops: GroupPopulation[] = [...groupPopulations];
+  const targetPopulation = returnPops.find(
+    (groupPop) => groupPop.groupId === changedGroupId
+  );
+
+  if (_.isNil(targetPopulation)) {
+    return groupPopulations;
+  }
+
+  const expectedValue = targetPopulation.populationValues.filter(
     (population) => population.name === changedPopulation
   )[0]?.expected;
-  returnPop.push(groupPopulations[0]);
   let myMap = {};
 
   //iterate through
-  groupPopulations[0].populationValues.forEach(
+  targetPopulation.populationValues.forEach(
     (value: PopulationExpectedValue) => {
       myMap[value.name] = value;
     }
   );
 
-  if (groupPopulations[0].scoring === "Proportion") {
+  if (targetPopulation.scoring === "Proportion") {
     //denominator
     if (changedPopulation === "denominator") {
       if (expectedValue === true) {
@@ -147,5 +155,5 @@ export function triggerPopChanges(
     }
   }
 
-  return returnPop;
+  return returnPops;
 }

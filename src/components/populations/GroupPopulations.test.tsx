@@ -202,35 +202,46 @@ describe("Group Populations", () => {
     expect(ippCbs[1]).toBeChecked();
 
     userEvent.click(ippCbs[0]);
-    expect(handleChange).toHaveBeenCalledWith([
-      {
-        groupId: "Group1_ID",
-        scoring: MeasureScoring.CONTINUOUS_VARIABLE,
-        populationValues: [
-          {
-            name: PopulationType.INITIAL_POPULATION,
-            expected: false,
-            actual: true,
-          },
-        ],
-      },
-    ]);
+    expect(handleChange).toHaveBeenNthCalledWith(
+      1,
+      [
+        {
+          groupId: "Group1_ID",
+          scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+          populationValues: [
+            {
+              name: PopulationType.INITIAL_POPULATION,
+              expected: false,
+              actual: true,
+            },
+          ],
+        },
+      ],
+      "Group1_ID",
+      { actual: true, expected: false, name: "initialPopulation" }
+    );
 
     userEvent.click(ippCbs[0]);
-    expect(handleChange).toHaveBeenCalledWith([
-      {
-        groupId: "Group1_ID",
-        scoring: MeasureScoring.CONTINUOUS_VARIABLE,
-        populationValues: [
-          {
-            name: PopulationType.INITIAL_POPULATION,
-            expected: false,
-            actual: true,
-          },
-        ],
-      },
-    ]);
+    expect(handleChange).toHaveBeenNthCalledWith(
+      2,
+      [
+        {
+          groupId: "Group1_ID",
+          scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+          populationValues: [
+            {
+              name: PopulationType.INITIAL_POPULATION,
+              expected: false,
+              actual: true,
+            },
+          ],
+        },
+      ],
+      "Group1_ID",
+      { actual: true, expected: false, name: "initialPopulation" }
+    );
   });
+
   it("should display empty on non run", () => {
     const groupPopulations: GroupPopulation[] = [
       {

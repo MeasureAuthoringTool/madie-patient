@@ -4,14 +4,18 @@ import "styled-components/macro";
 import TestCasePopulationList from "./TestCasePopulationList";
 import { DisplayGroupPopulation, GroupPopulation } from "@madie/madie-models";
 import * as _ from "lodash";
+import { DisplayPopulationValue } from "@madie/madie-models/dist/TestCase";
 
 export interface PopulationsProps {
   disableExpected?: boolean;
   // we dont need disable actual as it's always disabled.
   executionRun?: boolean;
   groupPopulations: DisplayGroupPopulation[];
-  onChange?: (groupPopulations: GroupPopulation[]) => void;
-  setChangedPopulation?: (string: string) => void;
+  onChange?: (
+    groupPopulations: GroupPopulation[],
+    changedGroupId: string,
+    changedPopulation: DisplayPopulationValue
+  ) => void;
 }
 
 const GroupPopulations = ({
@@ -20,7 +24,6 @@ const GroupPopulations = ({
   executionRun = false,
   groupPopulations = [],
   onChange,
-  setChangedPopulation,
 }: PopulationsProps) => (
   <>
     {groupPopulations && groupPopulations.length > 0 ? (
@@ -32,7 +35,7 @@ const GroupPopulations = ({
             disableExpected={disableExpected}
             executionRun={executionRun}
             populations={gp.populationValues}
-            onChange={(populations) => {
+            onChange={(populations, type, changedPopulation) => {
               const nextPopulations = _.cloneDeep(groupPopulations);
               const groupPopulation = nextPopulations.find(
                 (np) => np.groupId === gp.groupId
@@ -41,10 +44,13 @@ const GroupPopulations = ({
                 groupPopulation.populationValues = populations;
               }
               if (onChange) {
-                onChange(nextPopulations);
+                onChange(
+                  nextPopulations,
+                  groupPopulation.groupId,
+                  changedPopulation
+                );
               }
             }}
-            setChangedPopulation={setChangedPopulation}
           />
         </div>
       ))
