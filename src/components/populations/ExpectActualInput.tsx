@@ -30,7 +30,6 @@ const ExpectActualInput = ({
     <input
       type="text"
       size={2}
-      className={checkBoxClass}
       value={expectedValue ? expectedValue : ""}
       onChange={(e) => {
         if (setChangedPopulation) {
