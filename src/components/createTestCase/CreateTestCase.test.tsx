@@ -1794,7 +1794,7 @@ describe("CreateTestCase component", () => {
 });
 
 describe("Measure Calculation ", () => {
-  it("calculates a measure against a test case", async () => {
+  it.skip("calculates a measure against a test case", async () => {
     const calculationSrv = calculationService();
     const calculationResults: ExecutionResult<any>[] =
       await calculationSrv.calculateTestCases(
