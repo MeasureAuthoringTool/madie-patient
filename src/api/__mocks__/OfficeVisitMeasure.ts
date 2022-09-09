@@ -7,6 +7,7 @@ import {
 
 export const officeVisitMeasure: Measure = {
   version: 0,
+  versionId: "",
   id: "626be3ca0ca8110d3b22404a",
   active: true,
   cql: 'library SimpleFhirMeasureLib version \'0.0.004\'\n\nusing FHIR version \'4.0.1\'\n\ninclude FHIRHelpers version \'4.0.001\' called FHIRHelpers\n\nvalueset "Office Visit": \'http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1001\'\n\nparameter "Measurement Period" Interval<DateTime>\n\ncontext Patient\n\ndefine "ipp":\n  exists ["Encounter": "Office Visit"] E where E.period.start during "Measurement Period"\n\ndefine "denom":\n  "ipp"\n\ndefine "num":\n  exists ["Encounter": "Office Visit"] E where E.status ~ \'finished\'',
