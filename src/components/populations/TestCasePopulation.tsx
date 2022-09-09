@@ -37,9 +37,9 @@ const TestCasePopulation = ({
           <ExpectActualInput
             id={`${population.name}-expected-cb`}
             name={population.name}
-            checked={population.expected}
-            onChange={(checked) =>
-              onChange({ ...population, expected: checked })
+            expectedValue={population.expected}
+            onChange={(expectedValue) =>
+              onChange({ ...population, expected: expectedValue })
             }
             setChangedPopulation={setChangedPopulation}
             populationBasis={populationBasis}
@@ -52,9 +52,9 @@ const TestCasePopulation = ({
           {executionRun ? (
             <ExpectActualInput
               id={`${population.name}-actual-cb`}
-              checked={population.actual}
-              onChange={(checked) =>
-                onChange({ ...population, actual: checked })
+              expectedValue={population.actual}
+              onChange={(expectedValue) =>
+                onChange({ ...population, actual: expectedValue })
               }
               setChangedPopulation={setChangedPopulation}
               populationBasis={populationBasis}
