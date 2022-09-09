@@ -1,11 +1,12 @@
 import React from "react";
 import "styled-components/macro";
 import { DisplayPopulationValue, getPopulationCode } from "@madie/madie-models";
-import StyledCheckbox from "./StyledCheckBox";
+import ExpectActualInput from "./ExpectActualInput";
 
 export interface TestCasePopulationProps {
   executionRun: boolean;
   population: DisplayPopulationValue;
+  populationBasis: string;
   showExpected?: boolean;
   disableExpected?: boolean;
   onChange: (population: DisplayPopulationValue) => void;
@@ -15,6 +16,7 @@ export interface TestCasePopulationProps {
 const TestCasePopulation = ({
   executionRun,
   population,
+  populationBasis,
   disableExpected = false,
   onChange,
   setChangedPopulation,
@@ -32,14 +34,15 @@ const TestCasePopulation = ({
           {getPopulationCode(population.name).toLocaleLowerCase()}
         </td>
         <td role="cell">
-          <StyledCheckbox
+          <ExpectActualInput
             id={`${population.name}-expected-cb`}
             name={population.name}
-            checked={population.expected}
-            onChange={(checked) =>
-              onChange({ ...population, expected: checked })
+            expectedValue={population.expected}
+            onChange={(expectedValue) =>
+              onChange({ ...population, expected: expectedValue })
             }
             setChangedPopulation={setChangedPopulation}
+            populationBasis={populationBasis}
             disabled={disableExpected}
             data-testid={`test-population-${population.name}-expected`}
             displayType="expected"
@@ -47,13 +50,14 @@ const TestCasePopulation = ({
         </td>
         <td role="cell">
           {executionRun ? (
-            <StyledCheckbox
+            <ExpectActualInput
               id={`${population.name}-actual-cb`}
-              checked={population.actual}
-              onChange={(checked) =>
-                onChange({ ...population, actual: checked })
+              expectedValue={population.actual}
+              onChange={(expectedValue) =>
+                onChange({ ...population, actual: expectedValue })
               }
               setChangedPopulation={setChangedPopulation}
+              populationBasis={populationBasis}
               disabled={true}
               data-testid={`test-population-${population.name}-actual`}
               displayType="actual"

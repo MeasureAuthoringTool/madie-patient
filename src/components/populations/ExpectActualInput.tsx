@@ -2,8 +2,8 @@ import React from "react";
 import classNames from "classnames";
 import "./StyledCheckBox.scss";
 
-const StyledCheckbox = ({
-  checked,
+const ExpectActualInput = ({
+  expectedValue,
   onChange,
   setChangedPopulation,
   displayType,
@@ -13,11 +13,11 @@ const StyledCheckbox = ({
     expected: displayType === "expected",
     actual: displayType === "actual",
   });
-  return (
+  return props.populationBasis === "Boolean" ? (
     <input
       type="checkbox"
       className={checkBoxClass}
-      checked={checked}
+      checked={expectedValue}
       onChange={(e) => {
         if (setChangedPopulation) {
           setChangedPopulation(props.name);
@@ -26,7 +26,20 @@ const StyledCheckbox = ({
       }}
       {...props}
     />
+  ) : (
+    <input
+      type="text"
+      size={2}
+      value={expectedValue ? expectedValue : ""}
+      onChange={(e) => {
+        if (setChangedPopulation) {
+          setChangedPopulation(props.name);
+        }
+        onChange(e.target.value);
+      }}
+      {...props}
+    />
   );
 };
 
-export default StyledCheckbox;
+export default ExpectActualInput;

@@ -648,6 +648,7 @@ describe("CreateTestCase component", () => {
         {
           id: "Group1_ID",
           scoring: "Continuous Variable",
+          populationBasis: "Boolean",
           populations: [
             {
               name: PopulationType.INITIAL_POPULATION,
@@ -734,6 +735,7 @@ describe("CreateTestCase component", () => {
       {
         groupId: "Group1_ID",
         scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+        populationBasis: "Boolean",
         populationValues: [
           {
             name: PopulationType.INITIAL_POPULATION,
@@ -790,6 +792,7 @@ describe("CreateTestCase component", () => {
         {
           id: "Group1_ID",
           scoring: "Continuous Variable",
+          populationBasis: "Boolean",
           populations: [
             {
               name: PopulationType.INITIAL_POPULATION,
@@ -878,6 +881,7 @@ describe("CreateTestCase component", () => {
       {
         groupId: "Group1_ID",
         scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+        populationBasis: "Boolean",
         populationValues: [
           {
             name: PopulationType.INITIAL_POPULATION,
