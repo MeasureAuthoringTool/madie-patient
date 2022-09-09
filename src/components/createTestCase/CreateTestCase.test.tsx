@@ -1969,13 +1969,19 @@ describe("Measure Calculation ", () => {
     );
     userEvent.click(screen.getByTestId("details-tab"));
 
-    // this is to make form dirty so that run test button is enabled
-    const tcTitle = await screen.findByTestId("create-test-case-title");
-    userEvent.type(tcTitle, "testTitle");
+    const editor = (await screen.getByTestId(
+      "test-case-json-editor"
+    )) as HTMLInputElement;
+    userEvent.clear(editor);
+    await waitFor(() => expect(editor.value).toBe(""));
+    userEvent.paste(editor, `   `);
+    await waitFor(() => expect(editor.value).toBeTruthy());
 
-    const runTestButton = screen.getByRole("button", { name: "Run Test" });
-    expect(runTestButton).not.toBeDisabled();
-    userEvent.click(runTestButton);
+    const runButton = await screen.findByRole("button", { name: "Run Test" });
+    await waitFor(async () => expect(runButton).not.toBeDisabled(), {
+      timeout: 2500,
+    });
+    userEvent.click(runButton);
 
     const alert = await screen.findByRole("alert");
     expect(alert).toBeInTheDocument();
@@ -1984,7 +1990,61 @@ describe("Measure Calculation ", () => {
     );
   });
 
-  it("displays error when test case execution is aborted due to errors validating test case JSON", async () => {
+  it("displays error when test case execution is aborted due to errors validating test case JSON on new test case", async () => {
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
+      }
+      return Promise.resolve({});
+    });
+    mockedAxios.post.mockResolvedValue({
+      data: {
+        code: 200,
+        message: null,
+        successful: false,
+        outcomeResponse: {
+          resourceType: "OperationOutcome",
+          issue: [
+            {
+              severity: "error",
+              code: "processing",
+              diagnostics: "Major issue on line 1!",
+            },
+          ],
+        },
+      },
+    });
+    const measure = { ...simpleMeasureFixture, createdBy: MEASURE_CREATEDBY };
+    renderWithRouter(
+      ["/measures/623cacebe74613783378c17b/edit/test-cases/create"],
+      "/measures/:measureId/edit/test-cases/create",
+      measure
+    );
+    userEvent.click(screen.getByTestId("details-tab"));
+    expect(
+      await screen.findByRole("button", {
+        name: "Save",
+      })
+    ).toBeInTheDocument();
+
+    const editor = (await screen.getByTestId(
+      "test-case-json-editor"
+    )) as HTMLInputElement;
+    userEvent.paste(editor, testCaseFixture.json);
+    await waitFor(() => expect(editor.value).toBeTruthy());
+
+    const runButton = await screen.findByRole("button", { name: "Run Test" });
+    await waitFor(async () => expect(runButton).not.toBeDisabled());
+    userEvent.click(runButton);
+
+    const alert = await screen.findByRole("alert");
+    expect(alert).toBeInTheDocument();
+    expect(alert).toHaveTextContent(
+      "Test case execution was aborted due to errors with the test case JSON."
+    );
+  });
+
+  it("displays error when test case execution is aborted due to errors validating test case JSON on existing test case", async () => {
     mockedAxios.get.mockClear().mockImplementation((args) => {
       if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
@@ -1995,15 +2055,15 @@ describe("Measure Calculation ", () => {
     });
     mockedAxios.post.mockResolvedValue({
       data: {
-        code: 400,
-        message: "An error occurred while parsing the resource",
+        code: 200,
+        message: null,
         successful: false,
         outcomeResponse: {
           resourceType: "OperationOutcome",
           issue: [
             {
               severity: "error",
-              code: "invalid",
+              code: "processing",
               diagnostics: "Major issue on line 1!",
             },
           ],
@@ -2020,13 +2080,19 @@ describe("Measure Calculation ", () => {
     );
     userEvent.click(screen.getByTestId("details-tab"));
 
-    // this is to make form dirty so that run test button is enabled
-    const tcTitle = await screen.findByTestId("create-test-case-title");
-    userEvent.type(tcTitle, "testTitle");
+    const editor = (await screen.getByTestId(
+      "test-case-json-editor"
+    )) as HTMLInputElement;
+    userEvent.clear(editor);
+    await waitFor(() => expect(editor.value).toBe(""));
+    userEvent.paste(editor, `   `);
+    await waitFor(() => expect(editor.value).toBeTruthy());
 
-    const runTestButton = screen.getByRole("button", { name: "Run Test" });
-    expect(runTestButton).not.toBeDisabled();
-    userEvent.click(runTestButton);
+    const runButton = await screen.findByRole("button", { name: "Run Test" });
+    await waitFor(async () => expect(runButton).not.toBeDisabled(), {
+      timeout: 2500,
+    });
+    userEvent.click(runButton);
 
     const alert = await screen.findByRole("alert");
     expect(alert).toBeInTheDocument();
