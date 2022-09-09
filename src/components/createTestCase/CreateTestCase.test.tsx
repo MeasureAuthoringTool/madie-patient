@@ -647,10 +647,17 @@ describe("CreateTestCase component", () => {
       groups: [
         {
           id: "Group1_ID",
-          scoring: "Cohort",
-          population: {
-            initialPopulation: "Pop1",
-          },
+          scoring: "Continuous Variable",
+          populations: [
+            {
+              name: PopulationType.INITIAL_POPULATION,
+              definition: "Pop1",
+            },
+            {
+              name: PopulationType.MEASURE_POPULATION,
+              definition: "Measure Population",
+            },
+          ],
         },
       ],
     } as unknown as Measure;
@@ -700,11 +707,6 @@ describe("CreateTestCase component", () => {
       "test-population-initialPopulation-expected"
     );
     expect(ippExpectedCb).toBeChecked();
-    const mpExpectedCb = await screen.findByTestId(
-      "test-population-measurePopulation-expected"
-    );
-    expect(mpExpectedCb).toBeChecked();
-    userEvent.click(mpExpectedCb);
 
     const editor = screen.getByTestId("test-case-json-editor");
     userEvent.paste(editor, testCaseJson);
@@ -740,7 +742,7 @@ describe("CreateTestCase component", () => {
           },
           {
             name: PopulationType.MEASURE_POPULATION,
-            expected: false,
+            expected: true,
             actual: false,
           },
         ],
@@ -787,10 +789,17 @@ describe("CreateTestCase component", () => {
       groups: [
         {
           id: "Group1_ID",
-          scoring: "Cohort",
-          population: {
-            initialPopulation: "Pop1",
-          },
+          scoring: "Continuous Variable",
+          populations: [
+            {
+              name: PopulationType.INITIAL_POPULATION,
+              definition: "Pop1",
+            },
+            {
+              name: PopulationType.MEASURE_POPULATION,
+              definition: "measure population",
+            },
+          ],
         },
       ],
     } as unknown as Measure;
@@ -804,18 +813,6 @@ describe("CreateTestCase component", () => {
       "/measures/:measureId/edit/test-cases/:id",
       measure
     );
-
-    // userEvent.click(screen.getByTestId("expectoractual-tab"));
-    // const errorMessage = await screen.findByText(
-    //   "No populations for current scoring. Please make sure at least one measure group has been created."
-    // );
-    // expect(errorMessage).toBeInTheDocument();
-    // const g1MeasureName = await screen.getByTestId(
-    //   "measure-group-1"
-    // );
-    // expect(g1MeasureName).toBeInTheDocument();
-    // const g1ScoringName = await screen.getByTestId('scoring-unit-1')
-    // expect(g1ScoringName).toBeInTheDocument();
     userEvent.click(screen.getByTestId("details-tab"));
 
     mockedAxios.put.mockResolvedValue({
@@ -854,11 +851,6 @@ describe("CreateTestCase component", () => {
       "test-population-initialPopulation-expected"
     );
     expect(ippExpectedCb).toBeChecked();
-    const mpExpectedCb = await screen.findByTestId(
-      "test-population-measurePopulation-expected"
-    );
-    expect(mpExpectedCb).toBeChecked();
-    userEvent.click(mpExpectedCb);
 
     const editor = screen.getByTestId("test-case-json-editor");
     userEvent.paste(editor, testCaseJson);
@@ -894,7 +886,7 @@ describe("CreateTestCase component", () => {
           },
           {
             name: PopulationType.MEASURE_POPULATION,
-            expected: false,
+            expected: true,
             actual: false,
           },
         ],
@@ -1868,7 +1860,6 @@ describe("Measure Calculation ", () => {
       "/measures/:measureId/edit/test-cases/:id"
     );
     userEvent.click(screen.getByTestId("details-tab"));
-
     // this is to make form dirty so that run test button is enabled
     const tcTitle = await screen.findByTestId("create-test-case-title");
     userEvent.type(tcTitle, "testTitle");
@@ -1877,6 +1868,7 @@ describe("Measure Calculation ", () => {
     expect(runTestButton).not.toBeDisabled();
     userEvent.click(runTestButton);
 
+    userEvent.click(screen.getByTestId("highlighting-tab"));
     const debugOutput = await screen.findByText(
       "No entries found in passed patient bundles"
     );
@@ -1928,11 +1920,12 @@ describe("Measure Calculation ", () => {
     await waitFor(async () => {
       userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
     });
-
+    userEvent.click(screen.getByTestId("highlighting-tab"));
     expect(
       await screen.findByText("Population Group: population-group-1")
     ).toBeInTheDocument();
 
+    userEvent.click(screen.getByTestId("expectoractual-tab"));
     expect(
       await screen.findByTestId("test-population-initialPopulation-actual")
     ).toBeInTheDocument();

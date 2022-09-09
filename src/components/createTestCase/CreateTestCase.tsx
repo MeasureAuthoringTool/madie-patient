@@ -6,7 +6,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import parse from "html-react-parser";
 import { Button, HelperText, Label } from "@madie/madie-components";
 import { useNavigate, useParams } from "react-router-dom";
 import { useFormik } from "formik";
@@ -47,12 +46,11 @@ import { MadieEditor } from "@madie/madie-editor";
 import CreateTestCaseNavTabs from "./CreateTestCaseNavTabs";
 import ExpectedActual from "./RightPanel/ExpectedActual/ExpectedActual";
 import "./CreateTestCase.scss";
-import GroupPopulations from "../populations/GroupPopulations";
+import CalculationResults from "./calculationResults/CalculationResults";
 
 const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
 const TestCaseForm = tw.form`m-3`;
-const FormActions = tw.div`flex flex-row gap-2`;
 
 const TestCaseDescription = tw.textarea`
   min-w-full
@@ -160,8 +158,8 @@ const CreateTestCase = () => {
   const [changedPopulation, setChangedPopulation] = useState<string>("");
   const [pendingGroupPopulations, setPendingGroupPopulations] =
     useState<any>(null);
-  const [populationGroupResult, setPopulationGroupResult] =
-    useState<DetailedPopulationGroupResult>();
+  const [populationGroupResults, setPopulationGroupResults] =
+    useState<DetailedPopulationGroupResult[]>();
   const [calculationErrors, setCalculationErrors] = useState<string>();
   const [createButtonDisabled, setCreateButtonDisabled] =
     useState<boolean>(false);
@@ -366,7 +364,7 @@ const CreateTestCase = () => {
 
   const calculate = async (e) => {
     e.preventDefault();
-    setPopulationGroupResult(() => undefined);
+    setPopulationGroupResults(() => undefined);
     if (measure && measure.cqlErrors) {
       setCalculationErrors(
         "Cannot execute test case while errors exist in the measure CQL!"
@@ -410,8 +408,7 @@ const CreateTestCase = () => {
           valueSets
         );
       setCalculationErrors("");
-      // grab first group results because we only have one group for now
-      setPopulationGroupResult(executionResults[0].detailedResults[0]);
+      setPopulationGroupResults(executionResults[0].detailedResults);
     } catch (error) {
       setCalculationErrors(error.message);
     }
@@ -581,25 +578,32 @@ const CreateTestCase = () => {
 
   const mapGroups = (
     groupPopulations: GroupPopulation[],
-    results: DetailedPopulationGroupResult
+    populationGroupResults: DetailedPopulationGroupResult[]
   ): DisplayGroupPopulation[] => {
     if (_.isNil(groupPopulations)) {
       return null;
     }
 
-    const gp = groupPopulations.map((groupPop) => ({
-      ...groupPop,
-      populationValues: groupPop?.populationValues?.map((populationValue) => {
-        return {
-          ...populationValue,
-          actual: !!results?.populationResults?.find(
-            (popResult) =>
-              FHIR_POPULATION_CODES[popResult.populationType] ===
-              populationValue.name
-          )?.result,
-        };
-      }),
-    }));
+    const gp = groupPopulations.map((groupPopulation) => {
+      const results = populationGroupResults?.find(
+        (groupResult) => groupResult.groupId === groupPopulation.groupId
+      );
+      return {
+        ...groupPopulation,
+        populationValues: groupPopulation?.populationValues?.map(
+          (populationValue) => {
+            return {
+              ...populationValue,
+              actual: results?.populationResults?.find(
+                (popResult) =>
+                  FHIR_POPULATION_CODES[popResult.populationType] ===
+                  populationValue.name
+              )?.result,
+            };
+          }
+        ),
+      };
+    });
     return gp;
   };
 
@@ -643,12 +647,18 @@ const CreateTestCase = () => {
                 Editor tab
               </div>
             ))}
+          {activeTab === "highlighting" && (
+            <CalculationResults
+              calculationResults={populationGroupResults}
+              calculationErrors={calculationErrors}
+            />
+          )}
           {activeTab === "expectoractual" && (
             <ExpectedActual
               canEdit={canEdit}
               groupPopulations={mapGroups(
                 formik.values.groupPopulations,
-                populationGroupResult
+                populationGroupResults
               )}
               onChange={(groupPopulations) => {
                 setPendingGroupPopulations(groupPopulations);
@@ -737,26 +747,6 @@ const CreateTestCase = () => {
             </>
           )}
         </div>
-
-        {(populationGroupResult || calculationErrors) && (
-          <div tw="flex-auto w-1/12 p-2">
-            {calculationErrors && (
-              <Alert
-                status="error"
-                role="alert"
-                aria-label="Calculation Errors"
-                data-testid="calculation-error-alert"
-              >
-                {calculationErrors}
-              </Alert>
-            )}
-            {!calculationErrors && (
-              <div tw="text-sm" data-testid="calculation-results">
-                {parse(populationGroupResult.html)}
-              </div>
-            )}
-          </div>
-        )}
         {showValidationErrors ? (
           <aside
             tw="w-80 h-[500px] flex flex-col"
