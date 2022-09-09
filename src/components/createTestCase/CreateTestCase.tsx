@@ -362,7 +362,8 @@ const CreateTestCase = () => {
     }
   };
 
-  const calculate = async () => {
+  const calculate = async (e) => {
+    e.preventDefault();
     setPopulationGroupResults(() => undefined);
     if (measure && measure.cqlErrors) {
       setCalculationErrors(
@@ -370,8 +371,9 @@ const CreateTestCase = () => {
       );
       return;
     }
+    setValidationErrors(() => []);
     let modifiedTestCase = { ...testCase };
-    if (isModified()) {
+    if (isJsonModified()) {
       modifiedTestCase.json = editorVal;
       try {
         // Validate test case JSON prior to execution
@@ -541,6 +543,12 @@ const CreateTestCase = () => {
     } else {
       return formik.isValid && formik.dirty;
     }
+  }
+
+  function isJsonModified() {
+    return testCase
+      ? editorVal !== testCase?.json
+      : !isEmptyTestCaseJsonString(editorVal);
   }
 
   function resizeEditor() {
@@ -813,9 +821,13 @@ const CreateTestCase = () => {
                   !!measure?.cqlErrors ||
                   _.isNil(measure?.groups) ||
                   measure?.groups.length === 0 ||
-                  (!isModified() && validationErrors?.length > 0) ||
-                  isEmptyTestCaseJsonString(formik.values.json)
+                  (!isJsonModified() && validationErrors?.length > 0) ||
+                  isEmptyTestCaseJsonString(editorVal)
                 }
+                /*
+                  if new test case
+                    enable run button if json modified, regardless of errors
+                 */
                 data-testid="run-test-case-button"
               />
             </div>
