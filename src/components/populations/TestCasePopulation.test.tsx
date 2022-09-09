@@ -26,6 +26,7 @@ describe("TestCasePopulation component", () => {
               population={testCasePopulation}
               onChange={handleChange}
               setChangedPopulation={setChangedPopulation}
+              populationBasis="Boolean"
             />
           </tbody>
         </table>
@@ -57,6 +58,7 @@ describe("TestCasePopulation component", () => {
               population={testCasePopulation}
               onChange={handleChange}
               setChangedPopulation={setChangedPopulation}
+              populationBasis="Boolean"
             />
           </tbody>
         </table>
