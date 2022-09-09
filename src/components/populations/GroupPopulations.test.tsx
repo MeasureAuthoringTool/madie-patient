@@ -14,6 +14,7 @@ describe("Group Populations", () => {
       {
         groupId: "Group1_ID",
         scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+        populationBasis: "Boolean",
         populationValues: [
           {
             name: PopulationType.INITIAL_POPULATION,
@@ -139,6 +140,7 @@ describe("Group Populations", () => {
       {
         groupId: "Group1_ID",
         scoring: MeasureScoring.COHORT,
+        populationBasis: "Boolean",
         populationValues: [
           {
             name: PopulationType.INITIAL_POPULATION,
@@ -174,6 +176,7 @@ describe("Group Populations", () => {
       {
         groupId: "Group1_ID",
         scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+        populationBasis: "Boolean",
         populationValues: [
           {
             name: PopulationType.INITIAL_POPULATION,
@@ -208,6 +211,7 @@ describe("Group Populations", () => {
         {
           groupId: "Group1_ID",
           scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+          populationBasis: "Boolean",
           populationValues: [
             {
               name: PopulationType.INITIAL_POPULATION,
@@ -228,6 +232,7 @@ describe("Group Populations", () => {
         {
           groupId: "Group1_ID",
           scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+          populationBasis: "Boolean",
           populationValues: [
             {
               name: PopulationType.INITIAL_POPULATION,
@@ -247,6 +252,7 @@ describe("Group Populations", () => {
       {
         groupId: "Group1_ID",
         scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+        populationBasis: "Boolean",
         populationValues: [
           {
             name: PopulationType.INITIAL_POPULATION,

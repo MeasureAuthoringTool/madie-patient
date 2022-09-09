@@ -14,6 +14,7 @@ export interface TestCasePopulationListProps {
   i: number;
   scoring: string;
   populations: DisplayPopulationValue[];
+  populationBasis: string;
   disableExpected?: boolean;
   executionRun?: boolean;
   onChange?: (
@@ -33,6 +34,7 @@ const TestCasePopulationList = ({
   scoring,
   i,
   populations,
+  populationBasis,
   disableExpected = true,
   executionRun = false,
   onChange,
@@ -114,6 +116,7 @@ const TestCasePopulationList = ({
             <TestCasePopulation
               executionRun={executionRun}
               population={population}
+              populationBasis={populationBasis}
               key={population.name}
               disableExpected={disableExpected}
               onChange={handleChange}

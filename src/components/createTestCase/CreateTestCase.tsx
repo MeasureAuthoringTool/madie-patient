@@ -183,6 +183,7 @@ const CreateTestCase = () => {
     return {
       groupId: group.id,
       scoring: group.scoring,
+      populationBasis: group.populationBasis,
       populationValues: getPopulationTypesForScoring(group)?.map(
         (population) => ({
           name: population,
@@ -221,7 +222,7 @@ const CreateTestCase = () => {
           .then((tc: TestCase) => {
             setTestCase(_.cloneDeep(tc));
             setEditorVal(tc.json);
-            setCanEdit(userName === tc.createdBy);
+            setCanEdit(userName === measure?.createdBy);
             const nextTc = _.cloneDeep(tc);
             if (measure && measure.groups) {
               nextTc.groupPopulations = measure.groups.map((group) => {
@@ -230,7 +231,10 @@ const CreateTestCase = () => {
                 );
                 return _.isNil(existingGroupPop)
                   ? mapMeasureGroup(group)
-                  : existingGroupPop;
+                  : {
+                      ...existingGroupPop,
+                      populationBasis: group?.populationBasis,
+                    };
               });
             } else {
               nextTc.groupPopulations = [];

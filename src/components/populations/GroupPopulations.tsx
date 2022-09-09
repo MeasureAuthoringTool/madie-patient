@@ -35,6 +35,7 @@ const GroupPopulations = ({
             disableExpected={disableExpected}
             executionRun={executionRun}
             populations={gp.populationValues}
+            populationBasis={gp?.populationBasis}
             onChange={(populations, type, changedPopulation) => {
               const nextPopulations = _.cloneDeep(groupPopulations);
               const groupPopulation = nextPopulations.find(

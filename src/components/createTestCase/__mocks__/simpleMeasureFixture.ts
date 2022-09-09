@@ -7,6 +7,7 @@ import {
 
 export const simpleMeasureFixture: Measure = {
   id: "623cacebe74613783378c17b",
+  versionId: "",
   active: false,
   measureHumanReadableId: null,
   measureSetId: null,
@@ -23,6 +24,7 @@ export const simpleMeasureFixture: Measure = {
     {
       id: "population-group-1",
       scoring: "Proportion",
+      populationBasis: "Boolean",
       populations: [
         {
           id: "id-1",
