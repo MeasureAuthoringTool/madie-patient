@@ -5,7 +5,6 @@ import "./StyledCheckBox.scss";
 const ExpectActualInput = ({
   expectedValue,
   onChange,
-  setChangedPopulation,
   displayType,
   ...props
 }) => {
@@ -19,9 +18,6 @@ const ExpectActualInput = ({
       className={checkBoxClass}
       checked={expectedValue}
       onChange={(e) => {
-        if (setChangedPopulation) {
-          setChangedPopulation(props.name);
-        }
         onChange(!!e.target.checked);
       }}
       {...props}
@@ -32,9 +28,6 @@ const ExpectActualInput = ({
       size={2}
       value={expectedValue ? expectedValue : ""}
       onChange={(e) => {
-        if (setChangedPopulation) {
-          setChangedPopulation(props.name);
-        }
         onChange(e.target.value);
       }}
       {...props}

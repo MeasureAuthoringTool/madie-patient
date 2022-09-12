@@ -10,7 +10,6 @@ export interface TestCasePopulationProps {
   showExpected?: boolean;
   disableExpected?: boolean;
   onChange: (population: DisplayPopulationValue) => void;
-  setChangedPopulation?: (string: string) => void;
 }
 
 const TestCasePopulation = ({
@@ -19,7 +18,6 @@ const TestCasePopulation = ({
   populationBasis,
   disableExpected = false,
   onChange,
-  setChangedPopulation,
 }: TestCasePopulationProps) => {
   return (
     <React.Fragment key={`fragment-key-${population.name}`}>
@@ -41,7 +39,6 @@ const TestCasePopulation = ({
             onChange={(expectedValue) =>
               onChange({ ...population, expected: expectedValue })
             }
-            setChangedPopulation={setChangedPopulation}
             populationBasis={populationBasis}
             disabled={disableExpected}
             data-testid={`test-population-${population.name}-expected`}
@@ -56,7 +53,6 @@ const TestCasePopulation = ({
               onChange={(expectedValue) =>
                 onChange({ ...population, actual: expectedValue })
               }
-              setChangedPopulation={setChangedPopulation}
               populationBasis={populationBasis}
               disabled={true}
               data-testid={`test-population-${population.name}-actual`}

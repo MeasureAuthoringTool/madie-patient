@@ -3,6 +3,7 @@ import {
   GroupPopulation,
   Group,
   PopulationExpectedValue,
+  DisplayPopulationValue,
 } from "@madie/madie-models";
 import _ from "lodash";
 
@@ -64,25 +65,34 @@ export function getFhirMeasurePopulationCode(population: string) {
 
 export function triggerPopChanges(
   groupPopulations: GroupPopulation[],
-  changedPopulation
+  changedGroupId: string,
+  changedPopulation: DisplayPopulationValue
 ) {
-  let returnPop: GroupPopulation[] = [];
-  const expectedValue = groupPopulations[0]?.populationValues.filter(
-    (population) => population.name === changedPopulation
+  let returnPops: GroupPopulation[] = [...groupPopulations];
+  const targetPopulation = returnPops.find(
+    (groupPop) => groupPop.groupId === changedGroupId
+  );
+
+  if (_.isNil(targetPopulation)) {
+    return groupPopulations;
+  }
+
+  const changedPopulationName = changedPopulation?.name;
+  const expectedValue = targetPopulation.populationValues.filter(
+    (population) => population.name === changedPopulationName
   )[0]?.expected;
-  returnPop.push(groupPopulations[0]);
   let myMap = {};
 
   //iterate through
-  groupPopulations[0].populationValues.forEach(
+  targetPopulation.populationValues.forEach(
     (value: PopulationExpectedValue) => {
       myMap[value.name] = value;
     }
   );
 
-  if (groupPopulations[0].scoring === "Proportion") {
+  if (targetPopulation.scoring === "Proportion") {
     //denominator
-    if (changedPopulation === "denominator") {
+    if (changedPopulationName === "denominator") {
       if (expectedValue === true) {
         myMap[PopulationType.INITIAL_POPULATION].expected = true;
       }
@@ -99,7 +109,7 @@ export function triggerPopChanges(
     }
 
     //numerator
-    if (changedPopulation === "numerator") {
+    if (changedPopulationName === "numerator") {
       if (expectedValue === true) {
         myMap[PopulationType.INITIAL_POPULATION].expected = true;
         myMap[PopulationType.DENOMINATOR].expected = true;
@@ -111,14 +121,14 @@ export function triggerPopChanges(
     }
 
     //Denom Exclusion
-    if (changedPopulation === "denominatorExclusion") {
+    if (changedPopulationName === "denominatorExclusion") {
       if (expectedValue === true) {
         myMap[PopulationType.INITIAL_POPULATION].expected = true;
         myMap[PopulationType.DENOMINATOR].expected = true;
       }
     }
     //Denom Exception
-    if (changedPopulation === "denominatorException") {
+    if (changedPopulationName === "denominatorException") {
       if (expectedValue === true) {
         myMap[PopulationType.INITIAL_POPULATION].expected = true;
         myMap[PopulationType.DENOMINATOR].expected = true;
@@ -126,7 +136,7 @@ export function triggerPopChanges(
     }
 
     //Numer Exclusion
-    if (changedPopulation === "numeratorExclusion") {
+    if (changedPopulationName === "numeratorExclusion") {
       if (expectedValue === true) {
         myMap[PopulationType.INITIAL_POPULATION].expected = true;
         myMap[PopulationType.DENOMINATOR].expected = true;
@@ -135,7 +145,10 @@ export function triggerPopChanges(
     }
 
     //initialPopulation
-    if (changedPopulation === "initialPopulation" && expectedValue === false) {
+    if (
+      changedPopulationName === "initialPopulation" &&
+      expectedValue === false
+    ) {
       myMap[PopulationType.DENOMINATOR].expected = false;
       myMap[PopulationType.NUMERATOR].expected = false;
       myMap[PopulationType.DENOMINATOR_EXCLUSION] !== undefined &&
@@ -147,5 +160,5 @@ export function triggerPopChanges(
     }
   }
 
-  return returnPop;
+  return returnPops;
 }

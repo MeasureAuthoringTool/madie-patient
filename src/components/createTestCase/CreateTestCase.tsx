@@ -155,9 +155,6 @@ const CreateTestCase = () => {
   const userName = getUserName();
   const [editor, setEditor] = useState<Ace.Editor>(null);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
-  const [changedPopulation, setChangedPopulation] = useState<string>("");
-  const [pendingGroupPopulations, setPendingGroupPopulations] =
-    useState<any>(null);
   const [populationGroupResults, setPopulationGroupResults] =
     useState<DetailedPopulationGroupResult[]>();
   const [calculationErrors, setCalculationErrors] = useState<AlertProps>();
@@ -568,24 +565,6 @@ const CreateTestCase = () => {
     }, 500);
   }
 
-  useEffect(() => {
-    if (changedPopulation !== "" && pendingGroupPopulations) {
-      validatePopulationDependencies(
-        pendingGroupPopulations as GroupPopulation[],
-        changedPopulation
-      );
-    }
-  }, [changedPopulation, pendingGroupPopulations]);
-
-  const validatePopulationDependencies = (
-    groupPopulations: GroupPopulation[],
-    changedPopulation: String
-  ) => {
-    const output = triggerPopChanges(groupPopulations, changedPopulation);
-    formik.setFieldValue("groupPopulations", output as GroupPopulation[]);
-    setPendingGroupPopulations(null);
-  };
-
   const mapGroups = (
     groupPopulations: GroupPopulation[],
     populationGroupResults: DetailedPopulationGroupResult[]
@@ -670,10 +649,21 @@ const CreateTestCase = () => {
                 formik.values.groupPopulations,
                 populationGroupResults
               )}
-              onChange={(groupPopulations) => {
-                setPendingGroupPopulations(groupPopulations);
+              onChange={(
+                groupPopulations,
+                changedGroupId,
+                changedPopulation
+              ) => {
+                const output = triggerPopChanges(
+                  groupPopulations,
+                  changedGroupId,
+                  changedPopulation
+                );
+                formik.setFieldValue(
+                  "groupPopulations",
+                  output as GroupPopulation[]
+                );
               }}
-              setChangedPopulation={setChangedPopulation}
             />
           )}
           {/*

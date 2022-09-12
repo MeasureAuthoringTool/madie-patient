@@ -1781,6 +1781,44 @@ describe("CreateTestCase component", () => {
 
     expect(editor).toBeInTheDocument();
   });
+
+  it("handles checking expected values", async () => {
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
+      }
+      return Promise.resolve({});
+    });
+    const measure = { ...simpleMeasureFixture, createdBy: MEASURE_CREATEDBY };
+    renderWithRouter(
+      ["/measures/623cacebe74613783378c17b/edit/test-cases/create"],
+      "/measures/:measureId/edit/test-cases/create",
+      measure
+    );
+    userEvent.click(screen.getByTestId("expectoractual-tab"));
+
+    const ipCheckbox = await screen.findByTestId(
+      "test-population-initialPopulation-expected"
+    );
+    expect(ipCheckbox).toBeInTheDocument();
+    userEvent.click(ipCheckbox);
+    await waitFor(() => expect(ipCheckbox).toBeChecked());
+
+    userEvent.click(screen.getByTestId("details-tab"));
+
+    const tcTitle = await screen.findByTestId("create-test-case-title");
+    userEvent.type(tcTitle, "testTitle");
+    await waitFor(() => expect(tcTitle).toHaveValue("testTitle"));
+
+    const saveButton = await screen.findByRole("button", {
+      name: "Save",
+    });
+    await waitFor(() => expect(saveButton).not.toBeDisabled());
+    userEvent.click(saveButton);
+
+    const alert = await screen.findByRole("alert");
+    expect(alert).toBeInTheDocument();
+  });
 });
 
 describe("Measure Calculation ", () => {

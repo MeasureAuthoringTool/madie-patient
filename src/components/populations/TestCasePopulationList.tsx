@@ -19,9 +19,9 @@ export interface TestCasePopulationListProps {
   executionRun?: boolean;
   onChange?: (
     populations: DisplayPopulationValue[],
-    type: "actual" | "expected"
+    type: "actual" | "expected",
+    changedPopulation: DisplayPopulationValue
   ) => void;
-  setChangedPopulation?: (string: string) => void;
 }
 const StyledIcon = styled(FontAwesomeIcon)(
   ({ errors }: { errors: boolean }) => [
@@ -38,7 +38,6 @@ const TestCasePopulationList = ({
   disableExpected = true,
   executionRun = false,
   onChange,
-  setChangedPopulation,
 }: TestCasePopulationListProps) => {
   const handleChange = (population: DisplayPopulationValue) => {
     const newPopulations = [...populations];
@@ -52,7 +51,7 @@ const TestCasePopulationList = ({
     newPop.actual = population.actual;
     newPop.expected = population.expected;
     if (onChange) {
-      onChange(newPopulations, type);
+      onChange(newPopulations, type, population);
     }
   };
   // we need to do an all check here for pass / no pass
@@ -121,7 +120,6 @@ const TestCasePopulationList = ({
               key={population.name}
               disableExpected={disableExpected}
               onChange={handleChange}
-              setChangedPopulation={setChangedPopulation}
             />
           ))}
         </tbody>
