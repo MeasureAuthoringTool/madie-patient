@@ -15,16 +15,17 @@ it("return the input matches output with no changes", () => {
   populationValues.push(populationVal);
   const group1: GroupPopulation = {
     groupId: "initialPopulation",
+    populationBasis: "Boolean",
     scoring: "Cohort",
     populationValues: populationValues,
   };
   const groupPopulations: GroupPopulation[] = [group1];
 
-  const resultPops = triggerPopChanges(
-    groupPopulations,
-    group1.groupId,
-    "initialPopulation"
-  );
+  const resultPops = triggerPopChanges(groupPopulations, group1.groupId, {
+    name: PopulationType.INITIAL_POPULATION,
+    expected: true,
+    actual: undefined,
+  });
 
   expect(resultPops.length).toEqual(groupPopulations.length);
 
@@ -42,16 +43,17 @@ it("return the input matches output with no changes if targetId not found", () =
   populationValues.push(populationVal);
   const group1: GroupPopulation = {
     groupId: "initialPopulation",
+    populationBasis: "Boolean",
     scoring: "Cohort",
     populationValues: populationValues,
   };
   const groupPopulations: GroupPopulation[] = [group1];
 
-  const resultPops = triggerPopChanges(
-    groupPopulations,
-    "WRONG_ID",
-    "initialPopulation"
-  );
+  const resultPops = triggerPopChanges(groupPopulations, "WRONG_ID", {
+    name: PopulationType.INITIAL_POPULATION,
+    expected: true,
+    actual: undefined,
+  });
 
   expect(resultPops.length).toEqual(groupPopulations.length);
 
@@ -100,16 +102,17 @@ it("return the input with IPP changed to Expected because Denom is Expected", ()
 
   const group1: GroupPopulation = {
     groupId: "shrug",
+    populationBasis: "Boolean",
     scoring: "Proportion",
     populationValues: populationValues,
   };
   const groupPopulations: GroupPopulation[] = [];
   groupPopulations.push(group1);
-  const resultPops = triggerPopChanges(
-    groupPopulations,
-    group1.groupId,
-    "denominator"
-  );
+  const resultPops = triggerPopChanges(groupPopulations, group1.groupId, {
+    name: PopulationType.DENOMINATOR,
+    expected: true,
+    actual: undefined,
+  });
 
   expect(resultPops.length).toEqual(groupPopulations.length);
 
@@ -162,17 +165,18 @@ it("return the input with IPP Expected, Denom Expected because Denom Exception i
 
   const group1: GroupPopulation = {
     groupId: "shrug",
+    populationBasis: "Boolean",
     scoring: "Proportion",
     populationValues: populationValues,
   };
   const groupPopulations: GroupPopulation[] = [];
   groupPopulations.push(group1);
 
-  const resultPops = triggerPopChanges(
-    groupPopulations,
-    group1.groupId,
-    "denominatorException"
-  );
+  const resultPops = triggerPopChanges(groupPopulations, group1.groupId, {
+    name: PopulationType.DENOMINATOR_EXCEPTION,
+    expected: true,
+    actual: undefined,
+  });
 
   expect(resultPops.length).toEqual(groupPopulations.length);
 
@@ -231,17 +235,18 @@ it("return the input with IPP Expected, Denom Expected because Numer is Expected
 
   const group1: GroupPopulation = {
     groupId: "shrug",
+    populationBasis: "Boolean",
     scoring: "Proportion",
     populationValues: populationValues,
   };
   const groupPopulations: GroupPopulation[] = [];
   groupPopulations.push(group1);
 
-  const resultPops = triggerPopChanges(
-    groupPopulations,
-    group1.groupId,
-    "numerator"
-  );
+  const resultPops = triggerPopChanges(groupPopulations, group1.groupId, {
+    name: PopulationType.NUMERATOR,
+    expected: true,
+    actual: undefined,
+  });
 
   expect(resultPops.length).toEqual(groupPopulations.length);
 
@@ -300,17 +305,18 @@ it("return the input with IPP Expected, Denom Expected when Numer is Unchecked",
 
   const group1: GroupPopulation = {
     groupId: "shrug",
+    populationBasis: "Boolean",
     scoring: "Proportion",
     populationValues: populationValues,
   };
   const groupPopulations: GroupPopulation[] = [];
   groupPopulations.push(group1);
 
-  const resultPops = triggerPopChanges(
-    groupPopulations,
-    group1.groupId,
-    "numerator"
-  );
+  const resultPops = triggerPopChanges(groupPopulations, group1.groupId, {
+    name: PopulationType.NUMERATOR,
+    expected: true,
+    actual: undefined,
+  });
 
   expect(resultPops.length).toEqual(groupPopulations.length);
 
@@ -369,17 +375,18 @@ it("return the input with IPP Expected, Denom Expected when Denom Exception is c
 
   const group1: GroupPopulation = {
     groupId: "shrug",
+    populationBasis: "Boolean",
     scoring: "Proportion",
     populationValues: populationValues,
   };
   const groupPopulations: GroupPopulation[] = [];
   groupPopulations.push(group1);
 
-  const resultPops = triggerPopChanges(
-    groupPopulations,
-    group1.groupId,
-    "denominatorException"
-  );
+  const resultPops = triggerPopChanges(groupPopulations, group1.groupId, {
+    name: PopulationType.DENOMINATOR_EXCEPTION,
+    expected: true,
+    actual: undefined,
+  });
 
   expect(resultPops.length).toEqual(groupPopulations.length);
 
@@ -438,17 +445,18 @@ it("return the input with IPP Expected, Denom Expected when Denom Exclusion is c
 
   const group1: GroupPopulation = {
     groupId: "shrug",
+    populationBasis: "Boolean",
     scoring: "Proportion",
     populationValues: populationValues,
   };
   const groupPopulations: GroupPopulation[] = [];
   groupPopulations.push(group1);
 
-  const resultPops = triggerPopChanges(
-    groupPopulations,
-    group1.groupId,
-    "denominatorExclusion"
-  );
+  const resultPops = triggerPopChanges(groupPopulations, group1.groupId, {
+    name: PopulationType.DENOMINATOR_EXCLUSION,
+    expected: true,
+    actual: undefined,
+  });
 
   expect(resultPops.length).toEqual(groupPopulations.length);
 
@@ -507,17 +515,18 @@ it("return the input with IPP Expected, Denom Expected and Numer Expected when N
 
   const group1: GroupPopulation = {
     groupId: "shrug",
+    populationBasis: "Boolean",
     scoring: "Proportion",
     populationValues: populationValues,
   };
   const groupPopulations: GroupPopulation[] = [];
   groupPopulations.push(group1);
 
-  const resultPops = triggerPopChanges(
-    groupPopulations,
-    group1.groupId,
-    "numeratorExclusion"
-  );
+  const resultPops = triggerPopChanges(groupPopulations, group1.groupId, {
+    name: PopulationType.NUMERATOR_EXCLUSION,
+    expected: true,
+    actual: undefined,
+  });
 
   expect(resultPops.length).toEqual(groupPopulations.length);
 
@@ -582,17 +591,18 @@ it("when Denom is unchecked, then Numer, Denom Exclusion, Denom Exception, Numer
 
   const group1: GroupPopulation = {
     groupId: "shrug",
+    populationBasis: "Boolean",
     scoring: "Proportion",
     populationValues: populationValues,
   };
   const groupPopulations: GroupPopulation[] = [];
   groupPopulations.push(group1);
 
-  const resultPops = triggerPopChanges(
-    groupPopulations,
-    group1.groupId,
-    "denominator"
-  );
+  const resultPops = triggerPopChanges(groupPopulations, group1.groupId, {
+    name: PopulationType.DENOMINATOR,
+    expected: true,
+    actual: undefined,
+  });
 
   expect(resultPops.length).toEqual(groupPopulations.length);
 
@@ -669,17 +679,18 @@ it("when IPP is unchecked then rest of populations expected values should also b
 
   const group1: GroupPopulation = {
     groupId: "shrug",
+    populationBasis: "Boolean",
     scoring: "Proportion",
     populationValues: populationValues,
   };
   const groupPopulations: GroupPopulation[] = [];
   groupPopulations.push(group1);
 
-  const resultPops = triggerPopChanges(
-    groupPopulations,
-    group1.groupId,
-    "initialPopulation"
-  );
+  const resultPops = triggerPopChanges(groupPopulations, group1.groupId, {
+    name: PopulationType.INITIAL_POPULATION,
+    expected: true,
+    actual: undefined,
+  });
 
   expect(resultPops.length).toEqual(groupPopulations.length);
 
