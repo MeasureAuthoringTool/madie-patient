@@ -157,7 +157,7 @@ const CreateTestCase = () => {
   const [showValidationErrors, setShowValidationErrors] = useState(false);
   const [populationGroupResults, setPopulationGroupResults] =
     useState<DetailedPopulationGroupResult[]>();
-  const [calculationErrors, setCalculationErrors] = useState<string>();
+  const [calculationErrors, setCalculationErrors] = useState<AlertProps>();
   const [createButtonDisabled, setCreateButtonDisabled] =
     useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("measurecql");
@@ -367,9 +367,11 @@ const CreateTestCase = () => {
     e.preventDefault();
     setPopulationGroupResults(() => undefined);
     if (measure && measure.cqlErrors) {
-      setCalculationErrors(
-        "Cannot execute test case while errors exist in the measure CQL!"
-      );
+      setCalculationErrors({
+        status: "warning",
+        message:
+          "Cannot execute test case while errors exist in the measure CQL.",
+      });
       return;
     }
     setValidationErrors(() => []);
@@ -384,7 +386,7 @@ const CreateTestCase = () => {
           );
         const errors = handleHapiOutcome(validationResult);
         if (!_.isNil(errors) && errors.length > 0) {
-          setAlert({
+          setCalculationErrors({
             status: "warning",
             message:
               "Test case execution was aborted due to errors with the test case JSON.",
@@ -392,11 +394,12 @@ const CreateTestCase = () => {
           return;
         }
       } catch (error) {
-        setAlert({
+        setCalculationErrors({
           status: "error",
           message:
             "Test case execution was aborted because JSON could not be validated. If this error persists, please contact the help desk.",
         });
+        return;
       }
     }
 
@@ -408,10 +411,13 @@ const CreateTestCase = () => {
           measureBundle,
           valueSets
         );
-      setCalculationErrors("");
+      setCalculationErrors(undefined);
       setPopulationGroupResults(executionResults[0].detailedResults);
     } catch (error) {
-      setCalculationErrors(error.message);
+      setCalculationErrors({
+        status: "error",
+        message: error.message,
+      });
     }
   };
 

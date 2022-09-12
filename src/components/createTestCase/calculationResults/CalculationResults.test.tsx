@@ -39,7 +39,7 @@ describe("CalculationResults", () => {
     render(
       <CalculationResults
         calculationResults={calculationResults}
-        calculationErrors={""}
+        calculationErrors={undefined}
       />
     );
     expect(
@@ -52,14 +52,14 @@ describe("CalculationResults", () => {
   });
 
   test("render calculation errors if any", () => {
-    const calculationErrors = "Something is not right";
+    const errorMessage = "Something is not right";
     render(
       <CalculationResults
         calculationResults={[]}
-        calculationErrors={calculationErrors}
+        calculationErrors={{ status: "error", message: errorMessage }}
       />
     );
-    expect(screen.getByText(`${calculationErrors}`)).toBeInTheDocument();
+    expect(screen.getByText(`${errorMessage}`)).toBeInTheDocument();
     expect(screen.getByTestId("calculation-results").innerHTML).toEqual("");
   });
 });

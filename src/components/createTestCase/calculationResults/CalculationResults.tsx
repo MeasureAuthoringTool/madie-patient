@@ -5,9 +5,14 @@ import "styled-components/macro";
 import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calculator";
 import { Alert } from "@madie/madie-design-system/dist/react";
 
+type ErrorProps = {
+  status?: "success" | "warning" | "error";
+  message?: string;
+};
+
 type CalculationResultType = {
   calculationResults: DetailedPopulationGroupResult[];
-  calculationErrors: string;
+  calculationErrors: ErrorProps;
 };
 
 const CalculationResults = ({
@@ -23,9 +28,11 @@ const CalculationResults = ({
         />
       )}
       {calculationErrors && (
-        <Alert variant="error" data-testid="calculation-error-alert">
-          {calculationErrors}
-        </Alert>
+        <Alert
+          variant={calculationErrors.status}
+          data-testid="calculation-error-alert"
+          description={calculationErrors.message}
+        />
       )}
       {calculationResults && (
         <div tw="text-sm" data-testid="calculation-results">
