@@ -1964,7 +1964,6 @@ describe("Measure Calculation ", () => {
       "/measures/:measureId/edit/test-cases/:id",
       measure
     );
-    userEvent.click(screen.getByTestId("details-tab"));
 
     const editor = (await screen.getByTestId(
       "test-case-json-editor"
@@ -1975,10 +1974,10 @@ describe("Measure Calculation ", () => {
     await waitFor(() => expect(editor.value).toBeTruthy());
 
     const runButton = await screen.findByRole("button", { name: "Run Test" });
-    await waitFor(async () => expect(runButton).not.toBeDisabled(), {
-      timeout: 2500,
-    });
     userEvent.click(runButton);
+    await waitFor(async () =>
+      userEvent.click(screen.getByTestId("highlighting-tab"))
+    );
 
     const alert = await screen.findByRole("alert");
     expect(alert).toBeInTheDocument();
@@ -2017,12 +2016,6 @@ describe("Measure Calculation ", () => {
       "/measures/:measureId/edit/test-cases/create",
       measure
     );
-    userEvent.click(screen.getByTestId("details-tab"));
-    expect(
-      await screen.findByRole("button", {
-        name: "Save",
-      })
-    ).toBeInTheDocument();
 
     const editor = (await screen.getByTestId(
       "test-case-json-editor"
@@ -2031,9 +2024,10 @@ describe("Measure Calculation ", () => {
     await waitFor(() => expect(editor.value).toBeTruthy());
 
     const runButton = await screen.findByRole("button", { name: "Run Test" });
-    await waitFor(async () => expect(runButton).not.toBeDisabled());
     userEvent.click(runButton);
-
+    await waitFor(async () =>
+      userEvent.click(screen.getByTestId("highlighting-tab"))
+    );
     const alert = await screen.findByRole("alert");
     expect(alert).toBeInTheDocument();
     expect(alert).toHaveTextContent(
@@ -2075,7 +2069,6 @@ describe("Measure Calculation ", () => {
       "/measures/:measureId/edit/test-cases/:id",
       measure
     );
-    userEvent.click(screen.getByTestId("details-tab"));
 
     const editor = (await screen.getByTestId(
       "test-case-json-editor"
@@ -2086,11 +2079,10 @@ describe("Measure Calculation ", () => {
     await waitFor(() => expect(editor.value).toBeTruthy());
 
     const runButton = await screen.findByRole("button", { name: "Run Test" });
-    await waitFor(async () => expect(runButton).not.toBeDisabled(), {
-      timeout: 2500,
-    });
     userEvent.click(runButton);
+    await waitFor(async () => userEvent.click(runButton));
 
+    userEvent.click(screen.getByTestId("highlighting-tab"));
     const alert = await screen.findByRole("alert");
     expect(alert).toBeInTheDocument();
     expect(alert).toHaveTextContent(
