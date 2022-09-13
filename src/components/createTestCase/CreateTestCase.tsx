@@ -40,7 +40,11 @@ import {
   DetailedPopulationGroupResult,
   ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
-import { measureStore, useOktaTokens } from "@madie/madie-util";
+import {
+  measureStore,
+  routeHandlerStore,
+  useOktaTokens,
+} from "@madie/madie-util";
 import useExecutionContext from "../routes/useExecutionContext";
 import { MadieEditor } from "@madie/madie-editor";
 import CreateTestCaseNavTabs from "./CreateTestCaseNavTabs";
@@ -200,6 +204,14 @@ const CreateTestCase = () => {
     },
     []
   );
+
+  const { updateRouteHandlerState } = routeHandlerStore;
+  useEffect(() => {
+    updateRouteHandlerState({
+      canTravel: !formik.dirty,
+      pendingRoute: "",
+    });
+  }, [formik.dirty]);
 
   useEffect(() => {
     if (!seriesState.loaded) {
