@@ -60,7 +60,6 @@ jest.mock("@madie/madie-util", () => ({
   }),
   routeHandlerStore: {
     subscribe: (set) => {
-      // set(measure)
       return { unsubscribe: () => null };
     },
     updateRouteHandlerState: () => null,
