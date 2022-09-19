@@ -39,30 +39,20 @@ const TestCasePopulationList = ({
   executionRun = false,
   onChange,
 }: TestCasePopulationListProps) => {
-  //  const testing=(populationName)=>{
-  //   if(populationName=== "measureObservation"){
-  //     return getPopulationCode(populationName).toLocaleLowerCase() +" "+ 1
-  //   }
-  //   return getPopulationCode(populationName).toLocaleLowerCase()
-  // }
-
-  const testing = (populations) => {
-    const test = [];
-    const retnow = populations.map((popu) => {
-      if (scoring === "Ratio") {
-        if (popu.name === "measureObservation") {
-          test.push(popu.name);
-          const t = test.length;
-          return t;
-        }
+  let measureObservations = [];
+  const measureObservationsCount = (population) => {
+    const ratioMeasureObservations = populations.filter(
+      (res) => res.name === "measureObservation"
+    ).length;
+    if (ratioMeasureObservations > 1) {
+      if (population.name === "measureObservation") {
+        measureObservations.push(population.name);
+        return measureObservations.length;
       }
-    });
-
-    const retnow2 = retnow.filter((el) => el !== undefined);
-    return retnow2;
+    } else {
+      return 0;
+    }
   };
-
-  const outpit = testing(populations);
   const handleChange = (population: DisplayPopulationValue) => {
     // testing(populations)
     const newPopulations = [...populations];
@@ -145,7 +135,9 @@ const TestCasePopulationList = ({
               key={population.name}
               disableExpected={disableExpected}
               onChange={handleChange}
-              testing={outpit}
+              measureObservationsCount={
+                scoring === "Ratio" ? measureObservationsCount(population) : 0
+              }
             />
           ))}
         </tbody>

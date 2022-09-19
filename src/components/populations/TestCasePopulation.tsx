@@ -10,7 +10,7 @@ export interface TestCasePopulationProps {
   showExpected?: boolean;
   disableExpected?: boolean;
   onChange: (population: DisplayPopulationValue) => void;
-  testing: any;
+  measureObservationsCount: number;
 }
 
 const TestCasePopulation = ({
@@ -19,15 +19,18 @@ const TestCasePopulation = ({
   populationBasis,
   disableExpected = false,
   onChange,
-  testing,
-}: any) => {
-  // const testing=(populationName)=>{
-  //   if(populationName=== "measureObservation"){
-  //     return getPopulationCode(populationName).toLocaleLowerCase() +" "+ 1
-  //   }
-  //   return getPopulationCode(populationName).toLocaleLowerCase()
-  // }
-  //console.log(testing.lenth>0?"hello":"no")
+  measureObservationsCount,
+}: TestCasePopulationProps) => {
+  const populationNameTemplate = (prop) => {
+    if (prop === "measureObservation") {
+      return (
+        getPopulationCode(population.name).toLocaleLowerCase() +
+        (measureObservationsCount > 0 ? measureObservationsCount : "")
+      );
+    } else {
+      return getPopulationCode(population.name).toLocaleLowerCase();
+    }
+  };
   return (
     <React.Fragment key={`fragment-key-${population.name}`}>
       <tr
@@ -37,9 +40,7 @@ const TestCasePopulation = ({
         role="row"
       >
         <td>&nbsp;</td>
-        <td role="cell">
-          {getPopulationCode(population.name).toLocaleLowerCase()}
-        </td>
+        <td role="cell">{populationNameTemplate(population.name)}</td>
         <td role="cell">
           <ExpectActualInput
             id={`${population.name}-expected-cb`}

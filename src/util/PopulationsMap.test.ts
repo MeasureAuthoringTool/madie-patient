@@ -708,6 +708,82 @@ it("when IPP is unchecked then rest of populations expected values should also b
   ).toBeFalsy();
 });
 
+it("return the input with IPP Expected, Denom Expected because Denom Exception is Expected", () => {
+  const ipp: PopulationValue = {
+    name: PopulationType.INITIAL_POPULATION,
+    expected: false,
+    actual: false,
+  };
+  const denom: PopulationValue = {
+    name: PopulationType.DENOMINATOR,
+    expected: false,
+    actual: false,
+  };
+  const denomExcep: PopulationValue = {
+    name: PopulationType.DENOMINATOR_EXCEPTION,
+    expected: true,
+    actual: false,
+  };
+  const denomExclu: PopulationValue = {
+    name: PopulationType.DENOMINATOR_EXCLUSION,
+    expected: false,
+    actual: false,
+  };
+  const numer: PopulationValue = {
+    name: PopulationType.NUMERATOR,
+    expected: false,
+    actual: false,
+  };
+  const numerExclu: PopulationValue = {
+    name: PopulationType.NUMERATOR_EXCLUSION,
+    expected: false,
+    actual: false,
+  };
+  const measureObserv: PopulationValue = {
+    name: PopulationType.MEASURE_OBSERVATION,
+    expected: false,
+    actual: false,
+  };
+  const populationValues: PopulationValue[] = [];
+  populationValues.push(ipp);
+  populationValues.push(denom);
+  populationValues.push(denomExcep);
+  populationValues.push(denomExclu);
+  populationValues.push(numer);
+  populationValues.push(numerExclu);
+  populationValues.push(measureObserv);
+
+  const group1: GroupPopulation = {
+    groupId: "shrug",
+    populationBasis: "Boolean",
+    scoring: "Ratio",
+    populationValues: populationValues,
+  };
+  const groupPopulations: GroupPopulation[] = [];
+  groupPopulations.push(group1);
+
+  const resultPops = triggerPopChanges(groupPopulations, group1.groupId, {
+    name: PopulationType.DENOMINATOR_EXCEPTION,
+    expected: true,
+    actual: undefined,
+  });
+
+  expect(resultPops.length).toEqual(groupPopulations.length);
+
+  expect(
+    findExpectedForName(
+      resultPops[0].populationValues,
+      PopulationType.INITIAL_POPULATION
+    )
+  ).toEqual(false);
+  expect(
+    findExpectedForName(
+      resultPops[0].populationValues,
+      PopulationType.DENOMINATOR
+    )
+  ).toEqual(false);
+});
+
 function findExpectedForName(
   popVals: PopulationValue[],
   name: String

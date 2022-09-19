@@ -56,11 +56,11 @@ export function getPopulationTypesForScoring(group: Group) {
       criteriaReference: undefined,
     }));
   if (group.measureObservations) {
-    group.measureObservations.map((observ) => {
+    group.measureObservations.map((observation) => {
       populationTypesForScoring.push({
         name: PopulationType.MEASURE_OBSERVATION,
-        id: observ.id,
-        criteriaReference: observ.criteriaReference,
+        id: observation.id,
+        criteriaReference: observation.criteriaReference,
       });
     });
   }
@@ -109,7 +109,7 @@ export function triggerPopChanges(
     ) {
       targetPopulation.populationValues =
         targetPopulation.populationValues.filter(
-          (target) => target.name !== "measureObservation"
+          (population) => population.name !== "measureObservation"
         );
     }
 
@@ -118,12 +118,12 @@ export function triggerPopChanges(
         changedPopulationName === "denominatorExclusion") &&
       expectedValue === true
     ) {
-      const targeted =
+      const linkedPopulationName =
         changedPopulationName === "numeratorExclusion"
           ? "numerator"
           : "denominator";
       const test = targetPopulation.populationValues.filter(
-        (target) => target.name === targeted
+        (target) => target.name === linkedPopulationName
       )[0].id;
       targetPopulation.populationValues =
         targetPopulation.populationValues.filter(
@@ -152,17 +152,17 @@ export function triggerPopChanges(
         changedPopulationName === "denominatorExclusion") &&
       expectedValue === false
     ) {
-      const targeted =
+      const linkedPopulationName =
         changedPopulationName === "numeratorExclusion"
           ? "numerator"
           : "denominator";
       const criteriaReferenceID = targetPopulation.populationValues.filter(
-        (res) => res.name === targeted
+        (population) => population.name === linkedPopulationName
       )[0].id;
       const measureObservationId = measureGroups
         .filter((group) => group.id === changedGroupId)[0]
         .measureObservations.filter(
-          (res) => res.criteriaReference === criteriaReferenceID
+          (observation) => observation.criteriaReference === criteriaReferenceID
         )[0].id;
       targetPopulation.populationValues.push({
         name: PopulationType.MEASURE_OBSERVATION,
