@@ -39,7 +39,32 @@ const TestCasePopulationList = ({
   executionRun = false,
   onChange,
 }: TestCasePopulationListProps) => {
+  //  const testing=(populationName)=>{
+  //   if(populationName=== "measureObservation"){
+  //     return getPopulationCode(populationName).toLocaleLowerCase() +" "+ 1
+  //   }
+  //   return getPopulationCode(populationName).toLocaleLowerCase()
+  // }
+
+  const testing = (populations) => {
+    const test = [];
+    const retnow = populations.map((popu) => {
+      if (scoring === "Ratio") {
+        if (popu.name === "measureObservation") {
+          test.push(popu.name);
+          const t = test.length;
+          return t;
+        }
+      }
+    });
+
+    const retnow2 = retnow.filter((el) => el !== undefined);
+    return retnow2;
+  };
+
+  const outpit = testing(populations);
   const handleChange = (population: DisplayPopulationValue) => {
+    // testing(populations)
     const newPopulations = [...populations];
     const newPop = newPopulations.find((pop) => pop.name === population.name);
     const type =
@@ -120,6 +145,7 @@ const TestCasePopulationList = ({
               key={population.name}
               disableExpected={disableExpected}
               onChange={handleChange}
+              testing={outpit}
             />
           ))}
         </tbody>
