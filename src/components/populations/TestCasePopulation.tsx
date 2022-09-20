@@ -76,11 +76,14 @@ const TestCasePopulation = ({
         <tr tw="border-b">
           <td>&nbsp;</td>
           <td colSpan={5}>
-            <HelperText
+            <span
               data-testid={`${population.name}-error-helper-text`}
-              text={error?.expected}
-              isError={true}
-            />
+              role="alert"
+              className="qpp-error-message"
+              style={{ textTransform: "none" }}
+            >
+              {error?.expected}
+            </span>
           </td>
         </tr>
       )}
