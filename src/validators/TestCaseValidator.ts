@@ -30,24 +30,22 @@ export const TestCaseValidator = Yup.object().shape({
                         function (value) {
                           if (value === undefined || value === null) {
                             return true;
-                          }
-                          if (populationBasis === "Boolean") {
-                            if (typeof value === "boolean") {
-                              return true;
-                            } else {
-                              return this.createError({
-                                message: "Must be of type boolean",
-                              });
-                            }
-                          } else {
+                          } else if (
+                            populationBasis === "Boolean" &&
+                            typeof value === "boolean"
+                          ) {
+                            return true;
+                          } else if (populationBasis !== "Boolean") {
                             if (isNaN(+value)) {
                               return this.createError({
                                 message:
                                   "Only numeric values can be entered in the expected values",
                               });
+                            } else {
+                              return true;
                             }
                           }
-                          return true;
+                          return false;
                         }
                       ),
                     })
