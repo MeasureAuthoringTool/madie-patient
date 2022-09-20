@@ -30,6 +30,7 @@ import {
 import { ExecutionContextProvider } from "../routes/ExecutionContext";
 import { ChangeEvent } from "react";
 import { multiGroupMeasureFixture } from "./__mocks__/multiGroupMeasureFixture";
+import { TestCaseValidator } from "../../validators/TestCaseValidator";
 
 //temporary solution (after jest updated to version 27) for error: thrown: "Exceeded timeout of 5000 ms for a test.
 jest.setTimeout(60000);
@@ -2239,5 +2240,50 @@ describe("isEmptyTestCaseJsonString", () => {
 
   it("should return false for json object string with a field", () => {
     expect(isEmptyTestCaseJsonString(`{"field1":"value"}`)).toBeFalsy();
+  });
+});
+
+describe("validator", () => {
+  it("should provide error for bad boolean value", () => {
+    const tc = {
+      ...testCaseFixture,
+      groupPopulations: [
+        {
+          group: "Group One",
+          groupId: "1",
+          scoring: MeasureScoring.PROPORTION,
+          populationBasis: "Boolean",
+          populationValues: [
+            {
+              name: PopulationType.INITIAL_POPULATION,
+              expected: "WRONG",
+              actual: false,
+            },
+            {
+              name: PopulationType.NUMERATOR,
+              expected: false,
+              actual: false,
+            },
+            {
+              name: PopulationType.DENOMINATOR,
+              expected: true,
+              actual: false,
+            },
+          ],
+        },
+      ],
+    };
+    let expectedError: Error = null;
+    try {
+      TestCaseValidator.validateSync(tc);
+      fail("Expected an error");
+    } catch (error) {
+      expectedError = error;
+    }
+
+    expect(expectedError).toBeTruthy();
+    expect(expectedError.message).toEqual(
+      "Expected value type must match population basis type"
+    );
   });
 });
