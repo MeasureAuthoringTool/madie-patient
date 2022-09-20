@@ -125,11 +125,12 @@ export function triggerPopChanges(
       const linkedPopulationId = targetPopulation.populationValues.filter(
         (target) => target.name === linkedPopulationName
       )[0].id;
-
-      targetPopulation.populationValues =
-        targetPopulation.populationValues.filter(
-          (res) => res.criteriaReference !== linkedPopulationId
-        );
+      if (linkedPopulationId) {
+        targetPopulation.populationValues =
+          targetPopulation.populationValues.filter(
+            (population) => population.criteriaReference !== linkedPopulationId
+          );
+      }
     }
 
     //adding the observation(after removal)
@@ -160,20 +161,45 @@ export function triggerPopChanges(
       const criteriaReferenceID = targetPopulation.populationValues.filter(
         (population) => population.name === linkedPopulationName
       )[0].id;
+
       const changedPopulationObservations = measureGroups.filter(
         (group) => group.id === changedGroupId
       )[0].measureObservations;
 
-      if (changedPopulationObservations) {
+      if (changedPopulationObservations && criteriaReferenceID) {
         const measureObservationId = changedPopulationObservations.filter(
           (observation) => observation.criteriaReference === criteriaReferenceID
         )[0].id;
-        targetPopulation.populationValues.push({
-          name: PopulationType.MEASURE_OBSERVATION,
-          expected: false,
-          id: measureObservationId,
-          criteriaReference: criteriaReferenceID,
-        });
+
+        const numeratorMeasureObservationid =
+          targetPopulation.populationValues.findIndex((prop) => {
+            return prop.name === "measureObservation";
+          });
+
+        //always adding denominator obseravtion before numerator observation
+        if (
+          changedPopulationName === "denominatorExclusion" &&
+          numeratorMeasureObservationid > -1
+        ) {
+          const denominatorMeasureObservation = {
+            name: PopulationType.MEASURE_OBSERVATION,
+            expected: false,
+            id: measureObservationId,
+            criteriaReference: criteriaReferenceID,
+          };
+          targetPopulation.populationValues.splice(
+            numeratorMeasureObservationid,
+            0,
+            denominatorMeasureObservation
+          );
+        } else {
+          targetPopulation.populationValues.push({
+            name: PopulationType.MEASURE_OBSERVATION,
+            expected: false,
+            id: measureObservationId,
+            criteriaReference: criteriaReferenceID,
+          });
+        }
       }
     }
   }

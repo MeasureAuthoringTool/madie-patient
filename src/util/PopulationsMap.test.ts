@@ -117,9 +117,10 @@ it("return the input with IPP changed to Expected because Denom is Expected", ()
   expect(resultPops.length).toEqual(groupPopulations.length);
 
   expect(
-    findExpectedForName(
+    parsingTheExpectedResult(
       resultPops[0].populationValues,
-      PopulationType.INITIAL_POPULATION
+      PopulationType.INITIAL_POPULATION,
+      "Proportion"
     )
   ).toBeTruthy();
 });
@@ -181,15 +182,17 @@ it("return the input with IPP Expected, Denom Expected because Denom Exception i
   expect(resultPops.length).toEqual(groupPopulations.length);
 
   expect(
-    findExpectedForName(
+    parsingTheExpectedResult(
       resultPops[0].populationValues,
-      PopulationType.INITIAL_POPULATION
+      PopulationType.INITIAL_POPULATION,
+      "Proportion"
     )
   ).toBeTruthy();
   expect(
-    findExpectedForName(
+    parsingTheExpectedResult(
       resultPops[0].populationValues,
-      PopulationType.DENOMINATOR
+      PopulationType.DENOMINATOR,
+      "Proportion"
     )
   ).toBeTruthy();
 });
@@ -251,15 +254,17 @@ it("return the input with IPP Expected, Denom Expected because Numer is Expected
   expect(resultPops.length).toEqual(groupPopulations.length);
 
   expect(
-    findExpectedForName(
+    parsingTheExpectedResult(
       resultPops[0].populationValues,
-      PopulationType.INITIAL_POPULATION
+      PopulationType.INITIAL_POPULATION,
+      "Proportion"
     )
   ).toBeTruthy();
   expect(
-    findExpectedForName(
+    parsingTheExpectedResult(
       resultPops[0].populationValues,
-      PopulationType.DENOMINATOR
+      PopulationType.DENOMINATOR,
+      "Proportion"
     )
   ).toBeTruthy();
 });
@@ -321,15 +326,17 @@ it("return the input with IPP Expected, Denom Expected when Numer is Unchecked",
   expect(resultPops.length).toEqual(groupPopulations.length);
 
   expect(
-    findExpectedForName(
+    parsingTheExpectedResult(
       resultPops[0].populationValues,
-      PopulationType.INITIAL_POPULATION
+      PopulationType.INITIAL_POPULATION,
+      "Proportion"
     )
   ).toBeTruthy();
   expect(
-    findExpectedForName(
+    parsingTheExpectedResult(
       resultPops[0].populationValues,
-      PopulationType.DENOMINATOR
+      PopulationType.DENOMINATOR,
+      "Proportion"
     )
   ).toBeTruthy();
 });
@@ -391,15 +398,17 @@ it("return the input with IPP Expected, Denom Expected when Denom Exception is c
   expect(resultPops.length).toEqual(groupPopulations.length);
 
   expect(
-    findExpectedForName(
+    parsingTheExpectedResult(
       resultPops[0].populationValues,
-      PopulationType.INITIAL_POPULATION
+      PopulationType.INITIAL_POPULATION,
+      "Proportion"
     )
   ).toBeTruthy();
   expect(
-    findExpectedForName(
+    parsingTheExpectedResult(
       resultPops[0].populationValues,
-      PopulationType.DENOMINATOR
+      PopulationType.DENOMINATOR,
+      "Proportion"
     )
   ).toBeTruthy();
 });
@@ -461,15 +470,17 @@ it("return the input with IPP Expected, Denom Expected when Denom Exclusion is c
   expect(resultPops.length).toEqual(groupPopulations.length);
 
   expect(
-    findExpectedForName(
+    parsingTheExpectedResult(
       resultPops[0].populationValues,
-      PopulationType.INITIAL_POPULATION
+      PopulationType.INITIAL_POPULATION,
+      "Proportion"
     )
   ).toBeTruthy();
   expect(
-    findExpectedForName(
+    parsingTheExpectedResult(
       resultPops[0].populationValues,
-      PopulationType.DENOMINATOR
+      PopulationType.DENOMINATOR,
+      "Proportion"
     )
   ).toBeTruthy();
 });
@@ -531,21 +542,24 @@ it("return the input with IPP Expected, Denom Expected and Numer Expected when N
   expect(resultPops.length).toEqual(groupPopulations.length);
 
   expect(
-    findExpectedForName(
+    parsingTheExpectedResult(
       resultPops[0].populationValues,
-      PopulationType.INITIAL_POPULATION
+      PopulationType.INITIAL_POPULATION,
+      "Proportion"
     )
   ).toBeTruthy();
   expect(
-    findExpectedForName(
+    parsingTheExpectedResult(
       resultPops[0].populationValues,
-      PopulationType.DENOMINATOR
+      PopulationType.DENOMINATOR,
+      "Proportion"
     )
   ).toBeTruthy();
   expect(
-    findExpectedForName(
+    parsingTheExpectedResult(
       resultPops[0].populationValues,
-      PopulationType.NUMERATOR
+      PopulationType.NUMERATOR,
+      "Proportion"
     )
   ).toBeTruthy();
 });
@@ -607,33 +621,38 @@ it("when Denom is unchecked, then Numer, Denom Exclusion, Denom Exception, Numer
   expect(resultPops.length).toEqual(groupPopulations.length);
 
   expect(
-    findExpectedForName(
+    parsingTheExpectedResult(
       resultPops[0].populationValues,
-      PopulationType.INITIAL_POPULATION
+      PopulationType.INITIAL_POPULATION,
+      "Proportion"
     )
   ).toBeTruthy();
   expect(
-    findExpectedForName(
+    parsingTheExpectedResult(
       resultPops[0].populationValues,
-      PopulationType.DENOMINATOR_EXCLUSION
+      PopulationType.DENOMINATOR_EXCLUSION,
+      "Proportion"
     )
   ).toBeFalsy();
   expect(
-    findExpectedForName(
+    parsingTheExpectedResult(
       resultPops[0].populationValues,
-      PopulationType.DENOMINATOR_EXCEPTION
+      PopulationType.DENOMINATOR_EXCEPTION,
+      "Proportion"
     )
   ).toBeFalsy();
   expect(
-    findExpectedForName(
+    parsingTheExpectedResult(
       resultPops[0].populationValues,
-      PopulationType.NUMERATOR
+      PopulationType.NUMERATOR,
+      "Proportion"
     )
   ).toBeFalsy();
   expect(
-    findExpectedForName(
+    parsingTheExpectedResult(
       resultPops[0].populationValues,
-      PopulationType.NUMERATOR_EXCLUSION
+      PopulationType.NUMERATOR_EXCLUSION,
+      "Proportion"
     )
   ).toBeFalsy();
 });
@@ -695,20 +714,94 @@ it("when IPP is unchecked then rest of populations expected values should also b
   expect(resultPops.length).toEqual(groupPopulations.length);
 
   expect(
-    findExpectedForName(
+    parsingTheExpectedResult(
       resultPops[0].populationValues,
-      PopulationType.NUMERATOR
+      PopulationType.NUMERATOR,
+      "Proportion"
     )
   ).toBeFalsy();
   expect(
-    findExpectedForName(
+    parsingTheExpectedResult(
       resultPops[0].populationValues,
-      PopulationType.DENOMINATOR
+      PopulationType.DENOMINATOR,
+      "Proportion"
     )
   ).toBeFalsy();
 });
 
-it.skip("return the input with IPP Expected, Denom Expected because Denom Exception is Expected", () => {
+it("", () => {
+  const ipp: PopulationValue = {
+    name: PopulationType.INITIAL_POPULATION,
+    expected: false,
+    actual: false,
+  };
+  const msrpopl: PopulationValue = {
+    name: PopulationType.MEASURE_POPULATION,
+    expected: false,
+    actual: false,
+  };
+  const msrpoplex: PopulationValue = {
+    name: PopulationType.MEASURE_POPULATION_EXCLUSION,
+    expected: true,
+    actual: false,
+  };
+  const measureObserv: PopulationValue = {
+    name: PopulationType.MEASURE_OBSERVATION,
+    expected: true,
+    actual: false,
+  };
+  const populationValues: PopulationValue[] = [];
+  populationValues.push(ipp);
+  populationValues.push(msrpopl);
+  populationValues.push(msrpoplex);
+  populationValues.push(measureObserv);
+
+  const group1: GroupPopulation = {
+    groupId: "shrug",
+    populationBasis: "Boolean",
+    scoring: "Continuous Variable",
+    populationValues: populationValues,
+  };
+  const groupPopulations: GroupPopulation[] = [];
+  groupPopulations.push(group1);
+
+  const resultPops = triggerPopChanges(groupPopulations, group1.groupId, {
+    name: PopulationType.MEASURE_POPULATION_EXCLUSION,
+    expected: true,
+    actual: undefined,
+  });
+
+  expect(
+    parsingTheExpectedResult(
+      resultPops[0].populationValues,
+      PopulationType.INITIAL_POPULATION,
+      "Continuous Variable"
+    ).name
+  ).toEqual(PopulationType.INITIAL_POPULATION);
+  expect(
+    parsingTheExpectedResult(
+      resultPops[0].populationValues,
+      PopulationType.MEASURE_OBSERVATION,
+      "Continuous Variable"
+    )
+  ).toEqual(false);
+
+  const resultPops2 = triggerPopChanges(groupPopulations, group1.groupId, {
+    name: PopulationType.MEASURE_POPULATION_EXCLUSION,
+    expected: false,
+    actual: undefined,
+  });
+
+  expect(
+    parsingTheExpectedResult(
+      resultPops2[0].populationValues,
+      PopulationType.MEASURE_OBSERVATION,
+      "Continuous Variable"
+    )
+  ).toEqual(false);
+});
+
+it("", () => {
   const ipp: PopulationValue = {
     name: PopulationType.INITIAL_POPULATION,
     expected: false,
@@ -718,40 +811,49 @@ it.skip("return the input with IPP Expected, Denom Expected because Denom Except
     name: PopulationType.DENOMINATOR,
     expected: false,
     actual: false,
+    id: "2",
+    criteriaReference: "",
   };
-  const denomExcep: PopulationValue = {
-    name: PopulationType.DENOMINATOR_EXCEPTION,
-    expected: true,
-    actual: false,
-  };
+
   const denomExclu: PopulationValue = {
     name: PopulationType.DENOMINATOR_EXCLUSION,
-    expected: false,
+    expected: true,
     actual: false,
   };
   const numer: PopulationValue = {
     name: PopulationType.NUMERATOR,
     expected: false,
     actual: false,
+    id: "1",
+    criteriaReference: "",
   };
   const numerExclu: PopulationValue = {
     name: PopulationType.NUMERATOR_EXCLUSION,
-    expected: false,
+    expected: true,
     actual: false,
   };
-  const measureObserv: PopulationValue = {
+  const measureObserv1: PopulationValue = {
     name: PopulationType.MEASURE_OBSERVATION,
     expected: false,
     actual: false,
+    id: "3",
+    criteriaReference: "1",
+  };
+  const measureObserv2: PopulationValue = {
+    name: PopulationType.MEASURE_OBSERVATION,
+    expected: false,
+    actual: false,
+    id: "4",
+    criteriaReference: "2",
   };
   const populationValues: PopulationValue[] = [];
   populationValues.push(ipp);
   populationValues.push(denom);
-  populationValues.push(denomExcep);
   populationValues.push(denomExclu);
   populationValues.push(numer);
   populationValues.push(numerExclu);
-  populationValues.push(measureObserv);
+  populationValues.push(measureObserv1);
+  populationValues.push(measureObserv2);
 
   const group1: GroupPopulation = {
     groupId: "shrug",
@@ -763,35 +865,116 @@ it.skip("return the input with IPP Expected, Denom Expected because Denom Except
   groupPopulations.push(group1);
 
   const resultPops = triggerPopChanges(groupPopulations, group1.groupId, {
-    name: PopulationType.DENOMINATOR_EXCEPTION,
+    name: PopulationType.DENOMINATOR_EXCLUSION,
     expected: true,
     actual: undefined,
   });
 
   expect(resultPops.length).toEqual(groupPopulations.length);
+  expect(
+    parsingTheExpectedResult(
+      resultPops[0].populationValues,
+      PopulationType.INITIAL_POPULATION,
+      "Ratio"
+    ).name
+  ).toEqual(PopulationType.INITIAL_POPULATION);
+  expect(
+    parsingTheExpectedResult(
+      resultPops[0].populationValues,
+      PopulationType.DENOMINATOR,
+      "Ratio"
+    ).name
+  ).toEqual(PopulationType.DENOMINATOR);
+  expect(
+    parsingTheExpectedResult(
+      resultPops[0].populationValues,
+      PopulationType.MEASURE_OBSERVATION,
+      "Ratio"
+    ).id
+  ).toEqual("3");
+
+  const resultPops2 = triggerPopChanges(groupPopulations, group1.groupId, {
+    name: PopulationType.NUMERATOR_EXCLUSION,
+    expected: true,
+    actual: undefined,
+  });
 
   expect(
-    findExpectedForName(
-      resultPops[0].populationValues,
-      PopulationType.INITIAL_POPULATION
+    parsingTheExpectedResult(
+      resultPops2[0].populationValues,
+      PopulationType.MEASURE_OBSERVATION,
+      "Ratio"
     )
   ).toEqual(false);
-  expect(
-    findExpectedForName(
-      resultPops[0].populationValues,
-      PopulationType.DENOMINATOR
-    )
-  ).toEqual(false);
+
+  // const measureObserv3: PopulationValue = {
+  //   name: PopulationType.MEASURE_OBSERVATION,
+  //   expected: false,
+  //   actual: false,
+  //   id:'4',
+  //   criteriaReference:'2'
+  // };
+  // populationValues.push(populationValues.push(measureObserv3))
+
+  // const measureGroup={
+  //   id:'id-1',
+  //   measureObservations:[{
+
+  //   }],
+  //   populations:[]
+  // }
+  // const resultPops3 = triggerPopChanges(groupPopulations, group1.groupId, {
+  //   name: PopulationType.NUMERATOR_EXCLUSION,
+  //   expected: false,
+  //   actual: undefined,
+  // });
+  // expect( parsingTheExpectedResult(
+  //   resultPops3[0].populationValues,
+  //   PopulationType.MEASURE_OBSERVATION,
+  //   "Ratio"
+  // )
+  // ).toEqual(true);
 });
 
-function findExpectedForName(
+// it("", ()=>{
+//   group.scoring = "Ratio";
+//   group.measureObservations = [
+//     {
+//       id: "uuid-1",
+//       definition: "fun",
+//       aggregateMethod: AggregateFunctionType.AVERAGE,
+//       criteriaReference: "id-3",
+//     },
+//   ];
+//   group.populations = [
+//     {
+//       id: "id-1",
+//       name: PopulationType.INITIAL_POPULATION,
+//       definition: "Initial Population",
+//     },
+//     {
+//       id: "id-2",
+//       name: PopulationType.DENOMINATOR,
+//       definition: "Denominator",
+//     },
+//     {
+//       id: "id-3",
+//       name: PopulationType.NUMERATOR,
+//       definition: "Numerator",
+//     },
+//   ];
+//   measure.groups = [group];
+// })
+
+function parsingTheExpectedResult(
   popVals: PopulationValue[],
-  name: String
-): Boolean {
-  let returnVal: boolean = false;
+  name: String,
+  scoring: string
+): any {
+  let returnVal = false;
   popVals.forEach((value: PopulationValue, index: number) => {
     if (value.name === name) {
-      returnVal = value.expected;
+      returnVal = scoring === "Proportion" ? value.expected : value;
     }
   });
   return returnVal;
