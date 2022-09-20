@@ -16,6 +16,7 @@ export interface PopulationsProps {
     changedGroupId: string,
     changedPopulation: DisplayPopulationValue
   ) => void;
+  errors?: any[];
 }
 
 const GroupPopulations = ({
@@ -24,6 +25,7 @@ const GroupPopulations = ({
   executionRun = false,
   groupPopulations = [],
   onChange,
+  errors,
 }: PopulationsProps) => (
   <>
     {groupPopulations && groupPopulations.length > 0 ? (
@@ -32,6 +34,7 @@ const GroupPopulations = ({
           <TestCasePopulationList
             i={i}
             scoring={gp.scoring}
+            errors={errors?.[i]}
             disableExpected={disableExpected}
             executionRun={executionRun}
             populations={gp.populationValues}

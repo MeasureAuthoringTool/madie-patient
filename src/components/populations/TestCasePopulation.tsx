@@ -2,6 +2,7 @@ import React from "react";
 import "styled-components/macro";
 import { DisplayPopulationValue, getPopulationCode } from "@madie/madie-models";
 import ExpectActualInput from "./ExpectActualInput";
+import { HelperText } from "@madie/madie-components";
 
 export interface TestCasePopulationProps {
   executionRun: boolean;
@@ -10,6 +11,7 @@ export interface TestCasePopulationProps {
   showExpected?: boolean;
   disableExpected?: boolean;
   onChange: (population: DisplayPopulationValue) => void;
+  error: any;
 }
 
 const TestCasePopulation = ({
@@ -18,6 +20,7 @@ const TestCasePopulation = ({
   populationBasis,
   disableExpected = false,
   onChange,
+  error,
 }: TestCasePopulationProps) => {
   return (
     <React.Fragment key={`fragment-key-${population.name}`}>
@@ -69,6 +72,18 @@ const TestCasePopulation = ({
         <td>&nbsp;</td>
         <td>&nbsp;</td>
       </tr>
+      {error?.expected && (
+        <tr tw="border-b">
+          <td>&nbsp;</td>
+          <td colSpan={5}>
+            <HelperText
+              data-testid={`${population.name}-error-helper-text`}
+              text={error?.expected}
+              isError={true}
+            />
+          </td>
+        </tr>
+      )}
     </React.Fragment>
   );
 };
