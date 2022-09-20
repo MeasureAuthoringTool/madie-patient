@@ -2,7 +2,6 @@ import React from "react";
 import "styled-components/macro";
 import { DisplayPopulationValue, getPopulationCode } from "@madie/madie-models";
 import ExpectActualInput from "./ExpectActualInput";
-import { HelperText } from "@madie/madie-components";
 
 export interface TestCasePopulationProps {
   executionRun: boolean;
