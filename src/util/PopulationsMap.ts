@@ -122,12 +122,13 @@ export function triggerPopChanges(
         changedPopulationName === "numeratorExclusion"
           ? "numerator"
           : "denominator";
-      const test = targetPopulation.populationValues.filter(
+      const linkedPopulationId = targetPopulation.populationValues.filter(
         (target) => target.name === linkedPopulationName
       )[0].id;
+
       targetPopulation.populationValues =
         targetPopulation.populationValues.filter(
-          (res) => res.criteriaReference !== test
+          (res) => res.criteriaReference !== linkedPopulationId
         );
     }
 
@@ -159,17 +160,21 @@ export function triggerPopChanges(
       const criteriaReferenceID = targetPopulation.populationValues.filter(
         (population) => population.name === linkedPopulationName
       )[0].id;
-      const measureObservationId = measureGroups
-        .filter((group) => group.id === changedGroupId)[0]
-        .measureObservations.filter(
+      const changedPopulationObservations = measureGroups.filter(
+        (group) => group.id === changedGroupId
+      )[0].measureObservations;
+
+      if (changedPopulationObservations) {
+        const measureObservationId = changedPopulationObservations.filter(
           (observation) => observation.criteriaReference === criteriaReferenceID
         )[0].id;
-      targetPopulation.populationValues.push({
-        name: PopulationType.MEASURE_OBSERVATION,
-        expected: false,
-        id: measureObservationId,
-        criteriaReference: criteriaReferenceID,
-      });
+        targetPopulation.populationValues.push({
+          name: PopulationType.MEASURE_OBSERVATION,
+          expected: false,
+          id: measureObservationId,
+          criteriaReference: criteriaReferenceID,
+        });
+      }
     }
   }
 

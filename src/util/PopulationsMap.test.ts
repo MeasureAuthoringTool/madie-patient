@@ -708,7 +708,7 @@ it("when IPP is unchecked then rest of populations expected values should also b
   ).toBeFalsy();
 });
 
-it("return the input with IPP Expected, Denom Expected because Denom Exception is Expected", () => {
+it.skip("return the input with IPP Expected, Denom Expected because Denom Exception is Expected", () => {
   const ipp: PopulationValue = {
     name: PopulationType.INITIAL_POPULATION,
     expected: false,
