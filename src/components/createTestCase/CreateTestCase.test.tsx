@@ -29,6 +29,8 @@ import {
 } from "../../util/CalculationTestHelpers";
 import { ExecutionContextProvider } from "../routes/ExecutionContext";
 import { ChangeEvent } from "react";
+import { multiGroupMeasureFixture } from "./__mocks__/multiGroupMeasureFixture";
+import { TestCaseValidator } from "../../validators/TestCaseValidator";
 
 //temporary solution (after jest updated to version 27) for error: thrown: "Exceeded timeout of 5000 ms for a test.
 jest.setTimeout(60000);
@@ -1827,6 +1829,50 @@ describe("CreateTestCase component", () => {
     const alert = await screen.findByRole("alert");
     expect(alert).toBeInTheDocument();
   });
+
+  it("handles checking expected non-boolean values", async () => {
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
+      }
+      return Promise.resolve({});
+    });
+    const measure = {
+      ...multiGroupMeasureFixture,
+      createdBy: MEASURE_CREATEDBY,
+    };
+    renderWithRouter(
+      ["/measures/623cacebe74613783378c17b/edit/test-cases/create"],
+      "/measures/:measureId/edit/test-cases/create",
+      measure
+    );
+    userEvent.click(screen.getByTestId("expectoractual-tab"));
+
+    const ipInput = await screen.findByTestId(
+      "test-population-initialPopulation-expected"
+    );
+    expect(ipInput).toBeInTheDocument();
+    userEvent.type(ipInput, "BAD");
+    await waitFor(() => expect(ipInput).toHaveValue("BAD"));
+    await waitFor(() =>
+      expect(
+        screen.getByText(
+          "Only numeric values can be entered in the expected values"
+        )
+      ).toBeInTheDocument()
+    );
+
+    userEvent.click(screen.getByTestId("details-tab"));
+
+    const tcTitle = await screen.findByTestId("create-test-case-title");
+    userEvent.type(tcTitle, "testTitle");
+    await waitFor(() => expect(tcTitle).toHaveValue("testTitle"));
+
+    const saveButton = await screen.findByRole("button", {
+      name: "Save",
+    });
+    await waitFor(() => expect(saveButton).toBeDisabled());
+  });
 });
 
 describe("Measure Calculation ", () => {
@@ -2194,5 +2240,50 @@ describe("isEmptyTestCaseJsonString", () => {
 
   it("should return false for json object string with a field", () => {
     expect(isEmptyTestCaseJsonString(`{"field1":"value"}`)).toBeFalsy();
+  });
+});
+
+describe("validator", () => {
+  it("should provide error for bad boolean value", () => {
+    const tc = {
+      ...testCaseFixture,
+      groupPopulations: [
+        {
+          group: "Group One",
+          groupId: "1",
+          scoring: MeasureScoring.PROPORTION,
+          populationBasis: "Boolean",
+          populationValues: [
+            {
+              name: PopulationType.INITIAL_POPULATION,
+              expected: "WRONG",
+              actual: false,
+            },
+            {
+              name: PopulationType.NUMERATOR,
+              expected: false,
+              actual: false,
+            },
+            {
+              name: PopulationType.DENOMINATOR,
+              expected: true,
+              actual: false,
+            },
+          ],
+        },
+      ],
+    };
+    let expectedError: Error = null;
+    try {
+      TestCaseValidator.validateSync(tc);
+      fail("Expected an error");
+    } catch (error) {
+      expectedError = error;
+    }
+
+    expect(expectedError).toBeTruthy();
+    expect(expectedError.message).toEqual(
+      "Expected value type must match population basis type"
+    );
   });
 });

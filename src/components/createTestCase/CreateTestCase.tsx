@@ -191,8 +191,8 @@ const CreateTestCase = () => {
       populationValues: getPopulationTypesForScoring(group)?.map(
         (population) => ({
           name: population,
-          expected: false,
-          actual: false,
+          expected: group.populationBasis === "Boolean" ? false : null,
+          actual: group.populationBasis === "Boolean" ? false : null,
         })
       ),
     };
@@ -661,6 +661,7 @@ const CreateTestCase = () => {
                 formik.values.groupPopulations,
                 populationGroupResults
               )}
+              errors={formik.errors.groupPopulations}
               onChange={(
                 groupPopulations,
                 changedGroupId,

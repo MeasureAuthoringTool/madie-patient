@@ -10,6 +10,7 @@ export interface TestCasePopulationProps {
   showExpected?: boolean;
   disableExpected?: boolean;
   onChange: (population: DisplayPopulationValue) => void;
+  error: any;
 }
 
 const TestCasePopulation = ({
@@ -18,6 +19,7 @@ const TestCasePopulation = ({
   populationBasis,
   disableExpected = false,
   onChange,
+  error,
 }: TestCasePopulationProps) => {
   return (
     <React.Fragment key={`fragment-key-${population.name}`}>
@@ -69,6 +71,21 @@ const TestCasePopulation = ({
         <td>&nbsp;</td>
         <td>&nbsp;</td>
       </tr>
+      {error?.expected && (
+        <tr tw="border-b">
+          <td>&nbsp;</td>
+          <td colSpan={5}>
+            <span
+              data-testid={`${population.name}-error-helper-text`}
+              role="alert"
+              className="qpp-error-message"
+              style={{ textTransform: "none" }}
+            >
+              {error?.expected}
+            </span>
+          </td>
+        </tr>
+      )}
     </React.Fragment>
   );
 };
