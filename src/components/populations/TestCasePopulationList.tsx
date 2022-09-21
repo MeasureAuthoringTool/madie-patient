@@ -22,6 +22,7 @@ export interface TestCasePopulationListProps {
     type: "actual" | "expected",
     changedPopulation: DisplayPopulationValue
   ) => void;
+  errors?: any;
 }
 const StyledIcon = styled(FontAwesomeIcon)(
   ({ errors }: { errors: boolean }) => [
@@ -38,6 +39,7 @@ const TestCasePopulationList = ({
   disableExpected = true,
   executionRun = false,
   onChange,
+  errors,
 }: TestCasePopulationListProps) => {
   let measureObservations = [];
   const measureObservationsCount = (population) => {
@@ -127,7 +129,7 @@ const TestCasePopulationList = ({
           </tr>
         </thead>
         <tbody>
-          {populations?.map((population) => (
+          {populations?.map((population, j) => (
             <TestCasePopulation
               executionRun={executionRun}
               population={population}
@@ -138,6 +140,7 @@ const TestCasePopulationList = ({
               measureObservationsCount={
                 scoring === "Ratio" ? measureObservationsCount(population) : 0
               }
+              error={errors?.populationValues?.[j]}
             />
           ))}
         </tbody>

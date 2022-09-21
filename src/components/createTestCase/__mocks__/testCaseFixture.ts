@@ -23,6 +23,7 @@ export const testCaseFixture = {
       group: "Group One",
       groupId: "1",
       scoring: MeasureScoring.PROPORTION,
+      populationBasis: "Boolean",
       populationValues: [
         {
           name: PopulationType.INITIAL_POPULATION,

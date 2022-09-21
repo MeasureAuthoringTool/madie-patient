@@ -11,6 +11,7 @@ export interface TestCasePopulationProps {
   disableExpected?: boolean;
   onChange: (population: DisplayPopulationValue) => void;
   measureObservationsCount: number;
+  error: any;
 }
 
 const TestCasePopulation = ({
@@ -20,6 +21,7 @@ const TestCasePopulation = ({
   disableExpected = false,
   onChange,
   measureObservationsCount,
+  error,
 }: TestCasePopulationProps) => {
   const populationNameTemplate = (prop) => {
     if (prop === "measureObservation") {
@@ -79,6 +81,21 @@ const TestCasePopulation = ({
         <td>&nbsp;</td>
         <td>&nbsp;</td>
       </tr>
+      {error?.expected && (
+        <tr tw="border-b">
+          <td>&nbsp;</td>
+          <td colSpan={5}>
+            <span
+              data-testid={`${population.name}-error-helper-text`}
+              role="alert"
+              className="qpp-error-message"
+              style={{ textTransform: "none" }}
+            >
+              {error?.expected}
+            </span>
+          </td>
+        </tr>
+      )}
     </React.Fragment>
   );
 };
