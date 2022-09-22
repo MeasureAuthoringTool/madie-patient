@@ -12,7 +12,8 @@ const ExpectActualInput = ({
     expected: displayType === "expected",
     actual: displayType === "actual",
   });
-  return props.populationBasis === "Boolean" ? (
+  return props.populationBasis === "Boolean" &&
+    props.name !== "measureObservation" ? (
     <input
       type="checkbox"
       className={checkBoxClass}

@@ -190,9 +190,11 @@ const CreateTestCase = () => {
       populationBasis: group.populationBasis,
       populationValues: getPopulationTypesForScoring(group)?.map(
         (population) => ({
-          name: population,
+          name: population.name,
           expected: group.populationBasis === "Boolean" ? false : null,
           actual: group.populationBasis === "Boolean" ? false : null,
+          id: population.id,
+          criteriaReference: population.criteriaReference,
         })
       ),
     };
@@ -670,7 +672,8 @@ const CreateTestCase = () => {
                 const output = triggerPopChanges(
                   groupPopulations,
                   changedGroupId,
-                  changedPopulation
+                  changedPopulation,
+                  measure?.groups
                 );
                 formik.setFieldValue(
                   "groupPopulations",

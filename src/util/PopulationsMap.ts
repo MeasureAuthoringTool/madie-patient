@@ -44,13 +44,27 @@ export const FHIR_POPULATION_CODES = {
 };
 
 // filtering out populations for those that have definitions added.
-export function getPopulationTypesForScoring(group: Group): PopulationType[] {
-  return group.populations
+export function getPopulationTypesForScoring(group: Group) {
+  const populationTypesForScoring: any = group.populations
     .filter(
       (population) =>
         !_.isNil(population.definition) && !_.isEmpty(population.definition)
     )
-    .map((population) => population.name);
+    .map((population) => ({
+      name: population.name,
+      id: population.id,
+      criteriaReference: undefined,
+    }));
+  if (group.measureObservations) {
+    group.measureObservations.map((observation) => {
+      populationTypesForScoring.push({
+        name: PopulationType.MEASURE_OBSERVATION,
+        id: observation.id,
+        criteriaReference: observation.criteriaReference,
+      });
+    });
+  }
+  return populationTypesForScoring;
 }
 
 // for every MeasurePopulation value
@@ -66,7 +80,8 @@ export function getFhirMeasurePopulationCode(population: string) {
 export function triggerPopChanges(
   groupPopulations: GroupPopulation[],
   changedGroupId: string,
-  changedPopulation: DisplayPopulationValue
+  changedPopulation: DisplayPopulationValue,
+  measureGroups
 ) {
   let returnPops: GroupPopulation[] = [...groupPopulations];
   const targetPopulation = returnPops.find(
@@ -82,6 +97,112 @@ export function triggerPopChanges(
     (population) => population.name === changedPopulationName
   )[0]?.expected;
   let myMap = {};
+
+  if (
+    targetPopulation.scoring === "Continuous Variable" ||
+    targetPopulation.scoring === "Ratio"
+  ) {
+    //removing observations
+    if (
+      changedPopulationName === "measurePopulationExclusion" &&
+      expectedValue === true
+    ) {
+      targetPopulation.populationValues =
+        targetPopulation.populationValues.filter(
+          (population) => population.name !== "measureObservation"
+        );
+    }
+
+    if (
+      (changedPopulationName === "numeratorExclusion" ||
+        changedPopulationName === "denominatorExclusion") &&
+      expectedValue === true
+    ) {
+      const linkedPopulationName =
+        changedPopulationName === "numeratorExclusion"
+          ? "numerator"
+          : "denominator";
+      const linkedPopulationId = targetPopulation.populationValues.filter(
+        (target) => target.name === linkedPopulationName
+      )[0].id;
+      if (linkedPopulationId) {
+        targetPopulation.populationValues =
+          targetPopulation.populationValues.filter(
+            (population) => population.criteriaReference !== linkedPopulationId
+          );
+      }
+    }
+
+    //adding the observation(after removal)
+    if (
+      changedPopulationName === "measurePopulationExclusion" &&
+      expectedValue === false
+    ) {
+      const measureObservationId = measureGroups.filter(
+        (group) => group.id === changedGroupId
+      )[0].measureObservations[0].id;
+      targetPopulation.populationValues.push({
+        name: PopulationType.MEASURE_OBSERVATION,
+        expected: false,
+        id: measureObservationId,
+        criteriaReference: undefined,
+      });
+    }
+
+    if (
+      (changedPopulationName === "numeratorExclusion" ||
+        changedPopulationName === "denominatorExclusion") &&
+      expectedValue === false
+    ) {
+      const linkedPopulationName =
+        changedPopulationName === "numeratorExclusion"
+          ? "numerator"
+          : "denominator";
+      const criteriaReferenceID = targetPopulation.populationValues.filter(
+        (population) => population.name === linkedPopulationName
+      )[0].id;
+
+      const changedPopulationObservations = measureGroups.filter(
+        (group) => group.id === changedGroupId
+      )[0].measureObservations;
+
+      if (changedPopulationObservations && criteriaReferenceID) {
+        const measureObservationId = changedPopulationObservations.filter(
+          (observation) => observation.criteriaReference === criteriaReferenceID
+        )[0].id;
+
+        const numeratorMeasureObservationid =
+          targetPopulation.populationValues.findIndex((prop) => {
+            return prop.name === "measureObservation";
+          });
+
+        //always adding denominator obseravtion before numerator observation
+        if (
+          changedPopulationName === "denominatorExclusion" &&
+          numeratorMeasureObservationid > -1
+        ) {
+          const denominatorMeasureObservation = {
+            name: PopulationType.MEASURE_OBSERVATION,
+            expected: false,
+            id: measureObservationId,
+            criteriaReference: criteriaReferenceID,
+          };
+          targetPopulation.populationValues.splice(
+            numeratorMeasureObservationid,
+            0,
+            denominatorMeasureObservation
+          );
+        } else {
+          targetPopulation.populationValues.push({
+            name: PopulationType.MEASURE_OBSERVATION,
+            expected: false,
+            id: measureObservationId,
+            criteriaReference: criteriaReferenceID,
+          });
+        }
+      }
+    }
+  }
 
   //iterate through
   targetPopulation.populationValues.forEach(

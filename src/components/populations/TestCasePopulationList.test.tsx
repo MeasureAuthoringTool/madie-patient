@@ -65,6 +65,11 @@ describe("TestCasePopulationPopulation component", () => {
         expected: true,
         actual: true,
       },
+      {
+        name: PopulationType.MEASURE_OBSERVATION,
+        expected: true,
+        actual: true,
+      },
     ];
     const handleChange = jest.fn();
     const setChangedPopulation = jest.fn();
@@ -84,6 +89,7 @@ describe("TestCasePopulationPopulation component", () => {
     const tableRows = table.querySelectorAll("tbody tr");
     expect(tableRows[0]).toHaveTextContent("ipp");
     expect(tableRows[1]).toHaveTextContent("denom");
+    expect(tableRows[2]).toHaveTextContent("observ");
 
     const ippCb = screen.getByTestId(
       "test-population-initialPopulation-expected"

@@ -41,7 +41,22 @@ const TestCasePopulationList = ({
   onChange,
   errors,
 }: TestCasePopulationListProps) => {
+  let measureObservations = [];
+  const measureObservationsCount = (population) => {
+    const ratioMeasureObservations = populations.filter(
+      (res) => res.name === "measureObservation"
+    ).length;
+    if (ratioMeasureObservations > 1) {
+      if (population.name === "measureObservation") {
+        measureObservations.push(population.name);
+        return measureObservations.length;
+      }
+    } else {
+      return 0;
+    }
+  };
   const handleChange = (population: DisplayPopulationValue) => {
+    // testing(populations)
     const newPopulations = [...populations];
     const newPop = newPopulations.find((pop) => pop.name === population.name);
     const type =
@@ -122,6 +137,9 @@ const TestCasePopulationList = ({
               key={population.name}
               disableExpected={disableExpected}
               onChange={handleChange}
+              measureObservationsCount={
+                scoring === "Ratio" ? measureObservationsCount(population) : 0
+              }
               error={errors?.populationValues?.[j]}
             />
           ))}
