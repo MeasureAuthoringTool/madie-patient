@@ -16,6 +16,7 @@ import {
   PopulationType,
   MeasureScoring,
   TestCase,
+  HapiOperationOutcome,
 } from "@madie/madie-models";
 import TestCaseRoutes from "../routes/TestCaseRoutes";
 import { act } from "react-dom/test-utils";
@@ -1053,7 +1054,9 @@ describe("CreateTestCase component", () => {
     userEvent.click(screen.getByTestId("expectoractual-tab"));
     const g1MeasureName = await screen.getByTestId("measure-group-1");
     expect(g1MeasureName).toBeInTheDocument();
-    const g1ScoringName = await screen.getByTestId("scoring-unit-1");
+    const g1ScoringName = await screen.getByTestId(
+      "measure-group-scoring-unit-1"
+    );
     expect(g1ScoringName).toBeInTheDocument();
 
     userEvent.click(screen.getByTestId("details-tab"));
@@ -1198,35 +1201,6 @@ describe("CreateTestCase component", () => {
       "Measure does not exist, unable to load test case series!"
     );
     expect(debugOutput).toBeInTheDocument();
-  });
-
-  it("should generate field level error for test case title more than 250 characters", async () => {
-    renderWithRouter(
-      ["/measures/m1234/edit/test-cases/create"],
-      "/measures/:measureId/edit/test-cases/create"
-    );
-
-    userEvent.click(screen.getByTestId("expectoractual-tab"));
-    const g1MeasureName = await screen.getByTestId("measure-group-1");
-    expect(g1MeasureName).toBeInTheDocument();
-    const g1ScoringName = await screen.getByTestId("scoring-unit-1");
-    expect(g1ScoringName).toBeInTheDocument();
-
-    userEvent.click(screen.getByTestId("details-tab"));
-
-    const testCaseTitle =
-      "abcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyz";
-    const titleInput = screen.getByTestId("create-test-case-title");
-    userEvent.type(titleInput, testCaseTitle);
-    fireEvent.blur(titleInput);
-
-    const createBtn = screen.getByRole("button", { name: "Save" });
-    await waitFor(() => {
-      expect(createBtn).toBeDisabled;
-      expect(screen.getByTestId("title-helper-text")).toHaveTextContent(
-        "Test Case Title cannot be more than 250 characters."
-      );
-    });
   });
 
   it("should allow special characters for test case title", async () => {
@@ -1590,11 +1564,17 @@ describe("CreateTestCase component", () => {
   it("should handle displaying a test case with null groupPopulation data", async () => {
     const testCase = {
       id: "1234",
-      title: "Original Title",
       description: "Test IPP",
       series: "SeriesA",
-      json: `{"test":"test"}`,
-      groupPopulations: null,
+      createdBy: MEASURE_CREATEDBY,
+      createdAt: "",
+      lastModifiedAt: "",
+      lastModifiedBy: "null",
+      json: '{ "resourceType": "Bundle", "type": "collection", "entry": [] }',
+      title: "TestIPP",
+      name: "TestIPP",
+      executionStatus: "false",
+      hapiOperationOutcome: {} as HapiOperationOutcome,
     } as TestCase;
     mockedAxios.get.mockClear().mockImplementation((args) => {
       if (args && args.startsWith(serviceConfig.measureService.baseUrl)) {
@@ -1636,9 +1616,18 @@ describe("CreateTestCase component", () => {
       id: "1234",
       description: "Test IPP",
       series: "SeriesA",
-      json: `{"test":"test"}`,
-      groupPopulations: null,
+      createdBy: MEASURE_CREATEDBY,
+      createdAt: "",
+      lastModifiedAt: "",
+      lastModifiedBy: "null",
+      json: '{ "resourceType": "Bundle", "type": "collection", "entry": [] }',
+      groupPopulations: [],
+      title: "TestIPP",
+      name: "TestIPP",
+      executionStatus: "false",
+      hapiOperationOutcome: {} as HapiOperationOutcome,
     } as TestCase;
+
     mockedAxios.get.mockClear().mockImplementation((args) => {
       if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
@@ -1654,7 +1643,7 @@ describe("CreateTestCase component", () => {
 
     userEvent.click(screen.getByTestId("expectoractual-tab"));
     const errorMessage = await screen.findByText(
-      "No populations for current scoring. Please make sure at least one measure group has been created."
+      "No data for current scoring. Please make sure at least one measure group has been created."
     );
     expect(errorMessage).toBeInTheDocument();
   });
@@ -1695,12 +1684,18 @@ describe("CreateTestCase component", () => {
   it("should disable run button when json string is empty", async () => {
     const testCase = {
       id: "1234",
-      title: "A Test Case",
       description: "Test IPP",
       series: "SeriesA",
       createdBy: MEASURE_CREATEDBY,
+      createdAt: "",
+      lastModifiedAt: "",
+      lastModifiedBy: "null",
       json: "{}",
-      groupPopulations: null,
+      groupPopulations: [],
+      title: "TestIPP",
+      name: "TestIPP",
+      executionStatus: "false",
+      hapiOperationOutcome: {} as HapiOperationOutcome,
     } as TestCase;
     mockedAxios.get.mockClear().mockImplementation((args) => {
       if (args && args.startsWith(serviceConfig.measureService.baseUrl)) {
@@ -1925,12 +1920,16 @@ describe("Measure Calculation ", () => {
     });
     const testCase = {
       id: "1234",
-      title: "A Test Case",
       description: "Test IPP",
       series: "SeriesA",
       createdBy: MEASURE_CREATEDBY,
+      createdAt: "",
+      lastModifiedAt: "",
+      lastModifiedBy: "null",
+      title: "TestIPP",
+      name: "TestIPP",
+      executionStatus: "false",
       json: '{ "resourceType": "Bundle", "type": "collection", "entry": [] }',
-      groupPopulations: null,
     } as TestCase;
     mockedAxios.get.mockClear().mockImplementation((args) => {
       if (args && args.endsWith("/bundles")) {
@@ -1959,7 +1958,7 @@ describe("Measure Calculation ", () => {
     // this is to make form dirty so that run test button is enabled
     const tcTitle = await screen.findByTestId("create-test-case-title");
     userEvent.type(tcTitle, "testTitle");
-
+    screen.debug();
     const runTestButton = screen.getByRole("button", { name: "Run Test" });
     expect(runTestButton).not.toBeDisabled();
     userEvent.click(runTestButton);
@@ -2189,8 +2188,15 @@ describe("Measure Calculation ", () => {
       description: "Test IPP",
       series: "SeriesA",
       createdBy: MEASURE_CREATEDBY,
+      createdAt: "",
+      lastModifiedAt: "",
+      lastModifiedBy: "null",
       json: '{ "resourceType": "Bundle", "type": "collection", "entry": [] }',
-      groupPopulations: null,
+      groupPopulations: [],
+      title: "TestIPP",
+      name: "TestIPP",
+      executionStatus: "false",
+      hapiOperationOutcome: {} as HapiOperationOutcome,
     } as TestCase;
     mockedAxios.get.mockClear().mockImplementation((args) => {
       if (args && args.endsWith("series")) {
