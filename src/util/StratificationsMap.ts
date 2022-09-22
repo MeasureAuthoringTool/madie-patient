@@ -27,8 +27,7 @@ export function triggerStratChanges(
   )[0]?.expected;
   let stratMap = {};
   let popMap = {};
-
-  targetPopulation.stratificationValues.forEach(
+  targetPopulation.stratificationValues?.forEach(
     (value: PopulationExpectedValue) => {
       stratMap[value.name] = value;
       if (
@@ -41,6 +40,13 @@ export function triggerStratChanges(
       }
     }
   );
+
+  targetPopulation.populationValues.forEach(
+    (value: PopulationExpectedValue) => {
+      popMap[value.name] = value;
+    }
+  );
+
   if (
     targetPopulation.scoring === "Continuous Variable" ||
     targetPopulation.scoring === "Ratio"
@@ -147,12 +153,6 @@ export function triggerStratChanges(
     }
   }
 
-  targetPopulation.populationValues.forEach(
-    (value: PopulationExpectedValue) => {
-      popMap[value.name] = value;
-    }
-  );
-
   if (targetPopulation.scoring === "Proportion") {
     //denominator
     if (changedPopulationName === "denominator") {
@@ -222,6 +222,5 @@ export function triggerStratChanges(
         (popMap[PopulationType.NUMERATOR_EXCLUSION].expected = false);
     }
   }
-
   return returnPops;
 }

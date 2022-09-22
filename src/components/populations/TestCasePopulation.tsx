@@ -41,6 +41,7 @@ const TestCasePopulation = ({
       ).toLocaleLowerCase();
     }
   };
+
   return (
     <React.Fragment key={`fragment-key-${population.name}`}>
       <tr

@@ -1,9 +1,9 @@
-import { MeasureScoring, PopulationType } from "@madie/madie-models";
+import { MeasureScoring, PopulationType, TestCase } from "@madie/madie-models";
 
-export const testCaseFixture = {
+export const testCaseFixture: TestCase = {
   id: "623cacffe74613783378c17c",
-  executionStatus: null,
-  name: null,
+  executionStatus: "false",
+  name: "Initial Population",
   title: "Encounter",
   series: "DENOM_Pass",
   description: "Encounter start within MP.",
@@ -20,22 +20,29 @@ export const testCaseFixture = {
   },
   groupPopulations: [
     {
-      group: "Group One",
       groupId: "1",
       scoring: MeasureScoring.PROPORTION,
       populationBasis: "Boolean",
+      stratificationValues: [],
       populationValues: [
         {
+          id: "1",
           name: PopulationType.INITIAL_POPULATION,
           expected: true,
           actual: false,
         },
         {
+          id: "2",
           name: PopulationType.NUMERATOR,
           expected: false,
           actual: false,
         },
-        { name: PopulationType.DENOMINATOR, expected: true, actual: false },
+        {
+          id: "3",
+          name: PopulationType.DENOMINATOR,
+          expected: true,
+          actual: false,
+        },
       ],
     },
   ],

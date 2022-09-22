@@ -36,13 +36,14 @@ const GroupPopulations = ({
         return (
           <div key={gp.groupId} style={{ marginTop: 16 }}>
             <TestCasePopulationList
+              content="Measure Group"
               i={i}
               scoring={gp.scoring}
               errors={errors?.[i]}
               disableExpected={disableExpected}
               executionRun={executionRun}
               populations={gp.populationValues}
-              populationbasis={gp?.populationBasis}
+              populationBasis={gp?.populationBasis}
               onChange={(populations, type, changedPopulation) => {
                 const nextPopulations = _.cloneDeep(groupPopulations);
                 const groupPopulation = nextPopulations.find(
@@ -60,13 +61,15 @@ const GroupPopulations = ({
                 }
               }}
             />
+
             <TestCasePopulationList
               i={i}
+              content="Stratifications"
               scoring={gp.scoring}
               disableExpected={disableExpected}
               executionRun={executionRun}
               populations={gp.stratificationValues}
-              populationbasis={gp?.populationBasis}
+              populationBasis={gp.populationBasis}
               onChange={(populations, type, changedPopulation) => {
                 const nextPopulations = _.cloneDeep(groupPopulations);
                 const groupPopulation = nextPopulations.find(
