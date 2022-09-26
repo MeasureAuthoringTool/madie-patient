@@ -97,113 +97,204 @@ export function triggerPopChanges(
     (population) => population.name === changedPopulationName
   )[0]?.expected;
   let myMap = {};
-
-  if (
-    targetPopulation.scoring === "Continuous Variable" ||
-    targetPopulation.scoring === "Ratio"
-  ) {
-    //removing observations
+  //aaaa
+  if (targetPopulation.populationBasis === "Boolean") {
     if (
-      changedPopulationName === "measurePopulationExclusion" &&
-      expectedValue === true
+      targetPopulation.scoring === "Continuous Variable" ||
+      targetPopulation.scoring === "Ratio"
     ) {
-      targetPopulation.populationValues =
-        targetPopulation.populationValues.filter(
-          (population) => population.name !== "measureObservation"
-        );
-    }
-
-    if (
-      (changedPopulationName === "numeratorExclusion" ||
-        changedPopulationName === "denominatorExclusion") &&
-      expectedValue === true
-    ) {
-      const linkedPopulationName =
-        changedPopulationName === "numeratorExclusion"
-          ? "numerator"
-          : "denominator";
-      const linkedPopulationId = targetPopulation.populationValues.filter(
-        (target) => target.name === linkedPopulationName
-      )[0].id;
-      if (linkedPopulationId) {
+      //removing observations
+      if (
+        changedPopulationName === "measurePopulationExclusion" &&
+        expectedValue === true
+      ) {
         targetPopulation.populationValues =
           targetPopulation.populationValues.filter(
-            (population) => population.criteriaReference !== linkedPopulationId
+            (population) => population.name !== "measureObservation"
           );
       }
-    }
 
-    //adding the observation(after removal)
-    if (
-      changedPopulationName === "measurePopulationExclusion" &&
-      expectedValue === false
-    ) {
-      const measureObservationId = measureGroups.filter(
-        (group) => group.id === changedGroupId
-      )[0].measureObservations[0].id;
-      targetPopulation.populationValues.push({
-        name: PopulationType.MEASURE_OBSERVATION,
-        expected: false,
-        id: measureObservationId,
-        criteriaReference: undefined,
-      });
-    }
+      if (
+        (changedPopulationName === "numeratorExclusion" ||
+          changedPopulationName === "denominatorExclusion") &&
+        expectedValue === true
+      ) {
+        const linkedPopulationName =
+          changedPopulationName === "numeratorExclusion"
+            ? "numerator"
+            : "denominator";
+        const linkedPopulationId = targetPopulation.populationValues.filter(
+          (target) => target.name === linkedPopulationName
+        )[0].id;
+        if (linkedPopulationId) {
+          targetPopulation.populationValues =
+            targetPopulation.populationValues.filter(
+              (population) =>
+                population.criteriaReference !== linkedPopulationId
+            );
+        }
+      }
 
-    if (
-      (changedPopulationName === "numeratorExclusion" ||
-        changedPopulationName === "denominatorExclusion") &&
-      expectedValue === false
-    ) {
-      const linkedPopulationName =
-        changedPopulationName === "numeratorExclusion"
-          ? "numerator"
-          : "denominator";
-      const criteriaReferenceID = targetPopulation.populationValues.filter(
-        (population) => population.name === linkedPopulationName
-      )[0].id;
+      //adding the observation(after removal)
+      if (
+        changedPopulationName === "measurePopulationExclusion" &&
+        expectedValue === false
+      ) {
+        const measureObservationId = measureGroups.filter(
+          (group) => group.id === changedGroupId
+        )[0].measureObservations[0].id;
+        targetPopulation.populationValues.push({
+          name: PopulationType.MEASURE_OBSERVATION,
+          expected: false,
+          id: measureObservationId,
+          criteriaReference: undefined,
+        });
+      }
 
-      const changedPopulationObservations = measureGroups.filter(
-        (group) => group.id === changedGroupId
-      )[0].measureObservations;
-
-      if (changedPopulationObservations && criteriaReferenceID) {
-        const measureObservationId = changedPopulationObservations.filter(
-          (observation) => observation.criteriaReference === criteriaReferenceID
+      if (
+        (changedPopulationName === "numeratorExclusion" ||
+          changedPopulationName === "denominatorExclusion") &&
+        expectedValue === false
+      ) {
+        const linkedPopulationName =
+          changedPopulationName === "numeratorExclusion"
+            ? "numerator"
+            : "denominator";
+        const criteriaReferenceID = targetPopulation.populationValues.filter(
+          (population) => population.name === linkedPopulationName
         )[0].id;
 
-        const numeratorMeasureObservationid =
-          targetPopulation.populationValues.findIndex((prop) => {
-            return prop.name === "measureObservation";
-          });
+        const changedPopulationObservations = measureGroups.filter(
+          (group) => group.id === changedGroupId
+        )[0].measureObservations;
 
-        //always adding denominator obseravtion before numerator observation
+        if (changedPopulationObservations && criteriaReferenceID) {
+          const measureObservationId = changedPopulationObservations.filter(
+            (observation) =>
+              observation.criteriaReference === criteriaReferenceID
+          )[0].id;
+
+          const numeratorMeasureObservationid =
+            targetPopulation.populationValues.findIndex((prop) => {
+              return prop.name === "measureObservation";
+            });
+
+          //always adding denominator obseravtion before numerator observation
+          if (
+            changedPopulationName === "denominatorExclusion" &&
+            numeratorMeasureObservationid > -1
+          ) {
+            const denominatorMeasureObservation = {
+              name: PopulationType.MEASURE_OBSERVATION,
+              expected: false,
+              id: measureObservationId,
+              criteriaReference: criteriaReferenceID,
+            };
+            targetPopulation.populationValues.splice(
+              numeratorMeasureObservationid,
+              0,
+              denominatorMeasureObservation
+            );
+          } else {
+            targetPopulation.populationValues.push({
+              name: PopulationType.MEASURE_OBSERVATION,
+              expected: false,
+              id: measureObservationId,
+              criteriaReference: criteriaReferenceID,
+            });
+          }
+        }
+      }
+    }
+    //bbbbbb
+  } else {
+    if (
+      targetPopulation.scoring === "Continuous Variable" ||
+      targetPopulation.scoring === "Ratio"
+    ) {
+      //removing observations
+      // if (
+      //   changedPopulationName === "measurePopulationExclusion" &&
+      //   expectedValue === true
+      // ) {
+      //   targetPopulation.populationValues =
+      //     targetPopulation.populationValues.filter(
+      //       (population) => population.name !== "measureObservation"
+      //     );
+      // }
+
+      // if (
+      //   (changedPopulationName === "numeratorExclusion" ||
+      //     changedPopulationName === "denominatorExclusion") &&
+      //   expectedValue === true
+      // ) {
+      //   const linkedPopulationName =
+      //     changedPopulationName === "numeratorExclusion"
+      //       ? "numerator"
+      //       : "denominator";
+      //   const linkedPopulationId = targetPopulation.populationValues.filter(
+      //     (target) => target.name === linkedPopulationName
+      //   )[0].id;
+      //   if (linkedPopulationId) {
+      //     targetPopulation.populationValues =
+      //       targetPopulation.populationValues.filter(
+      //         (population) => population.criteriaReference !== linkedPopulationId
+      //       );
+      //   }
+      // }
+
+      //adding the observation(after removal)
+      //bbbbb
+      if (
+        changedPopulationName === "measurePopulationExclusion" ||
+        changedPopulationName === "measurePopulation"
+      ) {
         if (
-          changedPopulationName === "denominatorExclusion" &&
-          numeratorMeasureObservationid > -1
+          targetPopulation.populationValues.length <
+          3 +
+            Number(targetPopulation.populationValues[1].expected) -
+            Number(targetPopulation.populationValues[2].expected)
         ) {
-          const denominatorMeasureObservation = {
-            name: PopulationType.MEASURE_OBSERVATION,
-            expected: false,
-            id: measureObservationId,
-            criteriaReference: criteriaReferenceID,
-          };
-          targetPopulation.populationValues.splice(
-            numeratorMeasureObservationid,
-            0,
-            denominatorMeasureObservation
-          );
-        } else {
-          targetPopulation.populationValues.push({
-            name: PopulationType.MEASURE_OBSERVATION,
-            expected: false,
-            id: measureObservationId,
-            criteriaReference: criteriaReferenceID,
-          });
+          const measureObservationId = measureGroups.filter(
+            (group) => group.id === changedGroupId
+          )[0].measureObservations[0].id;
+          while (
+            targetPopulation.populationValues.length <
+            3 +
+              Number(targetPopulation.populationValues[1].expected) -
+              Number(targetPopulation.populationValues[2].expected)
+          ) {
+            targetPopulation.populationValues.push({
+              name: PopulationType.MEASURE_OBSERVATION,
+              expected: false,
+              id: measureObservationId,
+              criteriaReference: undefined,
+            });
+          }
+        } else if (
+          targetPopulation.populationValues.length >
+          3 +
+            Number(targetPopulation.populationValues[1].expected) -
+            Number(targetPopulation.populationValues[2].expected)
+        ) {
+          if (
+            Number(targetPopulation.populationValues[1].expected) -
+              Number(targetPopulation.populationValues[2].expected) >
+            0
+          ) {
+            while (
+              targetPopulation.populationValues.length >
+              3 +
+                Number(targetPopulation.populationValues[1].expected) -
+                Number(targetPopulation.populationValues[2].expected)
+            ) {
+              targetPopulation.populationValues.pop();
+            }
+          }
         }
       }
     }
   }
-
   //iterate through
   targetPopulation.populationValues.forEach(
     (value: PopulationExpectedValue) => {
