@@ -1,6 +1,10 @@
 import React from "react";
 import "styled-components/macro";
-import { DisplayPopulationValue, getPopulationCode } from "@madie/madie-models";
+import {
+  DisplayPopulationValue,
+  getPopulationCode,
+  PopulationType,
+} from "@madie/madie-models";
 import ExpectActualInput from "./ExpectActualInput";
 
 export interface TestCasePopulationProps {
@@ -26,13 +30,18 @@ const TestCasePopulation = ({
   const populationNameTemplate = (prop) => {
     if (prop === "measureObservation") {
       return (
-        getPopulationCode(population.name).toLocaleLowerCase() +
+        getPopulationCode(
+          population.name as PopulationType
+        ).toLocaleLowerCase() +
         (measureObservationsCount > 0 ? measureObservationsCount : "")
       );
     } else {
-      return getPopulationCode(population.name).toLocaleLowerCase();
+      return getPopulationCode(
+        population.name as PopulationType
+      ).toLocaleLowerCase();
     }
   };
+
   return (
     <React.Fragment key={`fragment-key-${population.name}`}>
       <tr
@@ -42,7 +51,9 @@ const TestCasePopulation = ({
         role="row"
       >
         <td>&nbsp;</td>
-        <td role="cell">{populationNameTemplate(population.name)}</td>
+        <td role="cell">
+          {populationNameTemplate(population.name as PopulationType)}
+        </td>
         <td role="cell">
           <ExpectActualInput
             id={`${population.name}-expected-cb`}

@@ -34,14 +34,15 @@ import { Ace } from "ace-builds";
 import {
   FHIR_POPULATION_CODES,
   getPopulationTypesForScoring,
-  triggerPopChanges,
 } from "../../util/PopulationsMap";
+import { triggerStratChanges } from "../../util/StratificationsMap";
 import calculationService, {
   GroupStatementResultMap,
   StatementResultMap,
 } from "../../api/CalculationService";
 import {
   DetailedPopulationGroupResult,
+  StratifierResult,
   ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
 import {
@@ -55,6 +56,8 @@ import CreateTestCaseNavTabs from "./CreateTestCaseNavTabs";
 import ExpectedActual from "./RightPanel/ExpectedActual/ExpectedActual";
 import "./CreateTestCase.scss";
 import CalculationResults from "./calculationResults/CalculationResults";
+
+import GroupPopulations from "../populations/GroupPopulations";
 
 const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
@@ -163,6 +166,8 @@ const CreateTestCase = () => {
   const userName = getUserName();
   const [editor, setEditor] = useState<Ace.Editor>(null);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
+  const [stratificationGroupResults, setStratificationGroupResults] =
+    useState<DetailedPopulationGroupResult[]>();
   const [populationGroupResults, setPopulationGroupResults] =
     useState<DetailedPopulationGroupResult[]>();
   const [groupStatementResults, setGroupStatementResults] = useState<any>();
@@ -193,6 +198,15 @@ const CreateTestCase = () => {
       groupId: group.id,
       scoring: group.scoring,
       populationBasis: group.populationBasis,
+      stratificationValues: group.stratifications?.map(
+        (stratification, index) => ({
+          name: "strata-" + (index + 1),
+          expected: false,
+          actual: false,
+          id: "",
+          criteriaReference: "",
+        })
+      ),
       populationValues: getPopulationTypesForScoring(group)?.map(
         (population) => ({
           name: population.name,
@@ -539,7 +553,7 @@ const CreateTestCase = () => {
     }, 500);
   }
 
-  const mapGroups = (
+  const mapGroupPopulations = (
     groupPopulations: GroupPopulation[],
     populationGroupResults: DetailedPopulationGroupResult[],
     groupStatementResults: GroupStatementResultMap
@@ -547,7 +561,6 @@ const CreateTestCase = () => {
     if (_.isNil(groupPopulations)) {
       return null;
     }
-
     const gp = groupPopulations.map((groupPopulation) => {
       const results = populationGroupResults?.find(
         (groupResult) => groupResult.groupId === groupPopulation.groupId
@@ -557,6 +570,16 @@ const CreateTestCase = () => {
       );
       return {
         ...groupPopulation,
+        stratificationValues: groupPopulation?.stratificationValues?.map(
+          (stratValue) => {
+            return {
+              ...stratValue,
+              actual: results?.stratifierResults?.find(
+                (popResult) => popResult.strataCode == stratValue.name
+              )?.result,
+            };
+          }
+        ),
         populationValues: groupPopulation?.populationValues?.map(
           (populationValue) => {
             // try to look up population on group to find the define
@@ -637,7 +660,7 @@ const CreateTestCase = () => {
           {activeTab === "expectoractual" && (
             <ExpectedActual
               canEdit={canEdit}
-              groupPopulations={mapGroups(
+              groupPopulations={mapGroupPopulations(
                 formik.values.groupPopulations,
                 populationGroupResults,
                 groupStatementResults
@@ -649,15 +672,16 @@ const CreateTestCase = () => {
                 changedGroupId,
                 changedPopulation
               ) => {
-                const output = triggerPopChanges(
+                const stratOutput = triggerStratChanges(
                   groupPopulations,
                   changedGroupId,
                   changedPopulation,
                   measure?.groups
                 );
+
                 formik.setFieldValue(
                   "groupPopulations",
-                  output as GroupPopulation[]
+                  stratOutput as GroupPopulation[]
                 );
               }}
             />
