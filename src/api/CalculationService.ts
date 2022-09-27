@@ -1,6 +1,7 @@
 import { Calculator } from "fqm-execution";
 import {
   CalculationOutput,
+  DetailedPopulationGroupResult,
   ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
 import { TestCase, Measure } from "@madie/madie-models";
@@ -81,32 +82,37 @@ export class CalculationService {
     }
   }
 
-  processRawResults(rawResults: any): TestCaseGroupStatementResult {
+  processRawResults(
+    executionResults: ExecutionResult<DetailedPopulationGroupResult>[]
+  ): TestCaseGroupStatementResult {
     const testCaseResultMap: TestCaseGroupStatementResult = {};
-    for (const tc of rawResults) {
-      const testCaseId: string = tc?.patientId;
-      const groupResults: any[] = tc?.detailedResults;
-      const outputGroupResultsMap: GroupStatementResultMap = {};
-      for (const groupResult of groupResults) {
-        const groupId = groupResult?.groupId;
-        const statementResults = groupResult?.statementResults;
-        const defineResultMap: StatementResultMap = {};
-        for (const statementResult of statementResults) {
-          if (statementResult && statementResult.statementName) {
-            if (typeof statementResult.raw === "boolean") {
-              defineResultMap[statementResult.statementName] =
-                statementResult?.raw ? 1 : 0;
-            } else if (Array.isArray(statementResult?.raw)) {
-              defineResultMap[statementResult.statementName] =
-                statementResult?.raw?.length || 0;
-            } else {
-              defineResultMap[statementResult.statementName] = 0;
+    if (executionResults) {
+      for (const tc of executionResults) {
+        const testCaseId: string = tc?.patientId;
+        const groupResults: DetailedPopulationGroupResult[] =
+          tc?.detailedResults || [];
+        const outputGroupResultsMap: GroupStatementResultMap = {};
+        for (const groupResult of groupResults) {
+          const groupId = groupResult?.groupId;
+          const statementResults = groupResult?.statementResults || [];
+          const defineResultMap: StatementResultMap = {};
+          for (const statementResult of statementResults) {
+            if (statementResult && statementResult.statementName) {
+              if (typeof statementResult.raw === "boolean") {
+                defineResultMap[statementResult.statementName] =
+                  statementResult?.raw ? 1 : 0;
+              } else if (Array.isArray(statementResult?.raw)) {
+                defineResultMap[statementResult.statementName] =
+                  statementResult?.raw?.length || 0;
+              } else {
+                defineResultMap[statementResult.statementName] = 0;
+              }
             }
           }
+          outputGroupResultsMap[groupId] = defineResultMap;
         }
-        outputGroupResultsMap[groupId] = defineResultMap;
+        testCaseResultMap[testCaseId] = outputGroupResultsMap;
       }
-      testCaseResultMap[testCaseId] = outputGroupResultsMap;
     }
 
     return testCaseResultMap;
