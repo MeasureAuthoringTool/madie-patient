@@ -397,10 +397,7 @@ const CreateTestCase = () => {
           measureBundle,
           valueSets
         );
-      console.time("processRawResults");
       const output = calculation.current.processRawResults(executionResults);
-      console.timeEnd("processRawResults");
-      console.log("raw results output: ", output);
       setCalculationErrors(undefined);
       setGroupStatementResults(output?.[testCase.id]);
       setPopulationGroupResults(executionResults[0].detailedResults);

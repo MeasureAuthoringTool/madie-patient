@@ -99,10 +99,7 @@ export class CalculationService {
             } else if (Array.isArray(statementResult?.raw)) {
               defineResultMap[statementResult.statementName] =
                 statementResult?.raw?.length || 0;
-            } else if (_.isNil(statementResult?.raw)) {
-              defineResultMap[statementResult.statementName] = 0;
             } else {
-              console.warn(`fell into else [${statementResult.statementName}]`, statementResult);
               defineResultMap[statementResult.statementName] = 0;
             }
           }
