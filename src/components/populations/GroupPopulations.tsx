@@ -34,64 +34,63 @@ const GroupPopulations = ({
     {groupPopulations && groupPopulations.length > 0 ? (
       groupPopulations.map((gp, i) => {
         return (
-        <div key={gp.groupId} style={{ marginTop: 16 }}>
-          <TestCasePopulationList
-            i={i}
-            scoring={gp.scoring}
-            errors={errors?.[i]}
-            disableExpected={disableExpected}
-            executionRun={executionRun}
-            populations={gp.populationValues}
-            populationbasis={gp?.populationBasis}
-            onChange={(populations, type, changedPopulation) => {
-              const nextPopulations = _.cloneDeep(groupPopulations);
-              const groupPopulation = nextPopulations.find(
-                (np) => np.groupId === gp.groupId
-              );
-              if (groupPopulation) {
-                groupPopulation.populationValues = populations;
-              }
-              if (onChange) {
-                onChange(
-                  nextPopulations,
-                  groupPopulation.groupId,
-                  changedPopulation
+          <div key={gp.groupId} style={{ marginTop: 16 }}>
+            <TestCasePopulationList
+              i={i}
+              scoring={gp.scoring}
+              errors={errors?.[i]}
+              disableExpected={disableExpected}
+              executionRun={executionRun}
+              populations={gp.populationValues}
+              populationbasis={gp?.populationBasis}
+              onChange={(populations, type, changedPopulation) => {
+                const nextPopulations = _.cloneDeep(groupPopulations);
+                const groupPopulation = nextPopulations.find(
+                  (np) => np.groupId === gp.groupId
                 );
-              }
-            }}
-          />
-          <TestCasePopulationList
-            i={i}
-            scoring={gp.scoring}
-            disableExpected={disableExpected}
-            executionRun={executionRun}
-            populations={gp.stratificationValues}
-            populationbasis={gp?.populationBasis}
-            onChange={(populations, type, changedPopulation) => {
-              const nextPopulations = _.cloneDeep(groupPopulations);
-              const groupPopulation = nextPopulations.find(
-                (np) => np.groupId === gp.groupId
-              );
-              if (groupPopulation) {
-                groupPopulation.stratificationValues = populations;
-              }
-              if (onChange) {
-
-                onChange(
-                  nextPopulations,
-                  groupPopulation.groupId,
-                  changedPopulation
+                if (groupPopulation) {
+                  groupPopulation.populationValues = populations;
+                }
+                if (onChange) {
+                  onChange(
+                    nextPopulations,
+                    groupPopulation.groupId,
+                    changedPopulation
+                  );
+                }
+              }}
+            />
+            <TestCasePopulationList
+              i={i}
+              scoring={gp.scoring}
+              disableExpected={disableExpected}
+              executionRun={executionRun}
+              populations={gp.stratificationValues}
+              populationbasis={gp?.populationBasis}
+              onChange={(populations, type, changedPopulation) => {
+                const nextPopulations = _.cloneDeep(groupPopulations);
+                const groupPopulation = nextPopulations.find(
+                  (np) => np.groupId === gp.groupId
                 );
-              }
-            }}
-          />
-        </div>
-      )}      
-      )    
+                if (groupPopulation) {
+                  groupPopulation.stratificationValues = populations;
+                }
+                if (onChange) {
+                  onChange(
+                    nextPopulations,
+                    groupPopulation.groupId,
+                    changedPopulation
+                  );
+                }
+              }}
+            />
+          </div>
+        );
+      })
     ) : (
       <span tw="text-sm">
-        No data for current scoring. Please make sure at least one
-        measure group has been created.
+        No data for current scoring. Please make sure at least one measure group
+        has been created.
       </span>
     )}
   </>

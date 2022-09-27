@@ -33,7 +33,6 @@ import { Ace } from "ace-builds";
 import {
   FHIR_POPULATION_CODES,
   getPopulationTypesForScoring,
-  triggerPopChanges,
 } from "../../util/PopulationsMap";
 import { triggerStratChanges } from "../../util/StratificationsMap";
 import calculationService from "../../api/CalculationService";
@@ -195,11 +194,15 @@ const CreateTestCase = () => {
       groupId: group.id,
       scoring: group.scoring,
       populationBasis: group.populationBasis,
-      stratificationValues: group.stratifications?.map((stratification, index) => ({
-        name: "strata-"+(index+1),
-        expected: false,
-        actual: false,
-      })),
+      stratificationValues: group.stratifications?.map(
+        (stratification, index) => ({
+          name: "strata-" + (index + 1),
+          expected: false,
+          actual: false,
+          id: "",
+          criteriaReference: "",
+        })
+      ),
       populationValues: getPopulationTypesForScoring(group)?.map(
         (population) => ({
           name: population.name,
@@ -312,7 +315,6 @@ const CreateTestCase = () => {
   };
 
   const createTestCase = async (testCase: TestCase) => {
-    console.log(testCase);
     try {
       testCase.json = editorVal || null;
       const savedTestCase = await testCaseService.current.createTestCase(
@@ -564,7 +566,7 @@ const CreateTestCase = () => {
               actual: results?.stratifierResults?.find(
                 (popResult) => popResult.strataCode == stratValue.name
               )?.result,
-            }
+            };
           }
         ),
         populationValues: groupPopulation?.populationValues?.map(
@@ -637,7 +639,6 @@ const CreateTestCase = () => {
                 formik.values.groupPopulations,
                 populationGroupResults
               )}
-
               errors={formik.errors.groupPopulations}
               onChange={(
                 groupPopulations,

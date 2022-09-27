@@ -2,10 +2,9 @@ import {
   DisplayPopulationValue,
   GroupPopulation,
   PopulationExpectedValue,
-  PopulationType
+  PopulationType,
 } from "@madie/madie-models";
 import _ from "lodash";
-
 
 export function triggerStratChanges(
   groupPopulations: GroupPopulation[],
@@ -13,14 +12,13 @@ export function triggerStratChanges(
   changedStratification: DisplayPopulationValue,
   measureGroups
 ) {
-
   let returnPops: GroupPopulation[] = [...groupPopulations];
-  
+
   const targetPopulation = returnPops.find(
     (groupPop) => groupPop.groupId === changedGroupId
   );
 
-  if (_.isNil(targetPopulation) ) {
+  if (_.isNil(targetPopulation)) {
     return groupPopulations;
   }
   const changedPopulationName = changedStratification?.name;
@@ -28,17 +26,19 @@ export function triggerStratChanges(
     (population) => population.name === changedPopulationName
   )[0]?.expected;
   let stratMap = {};
-  let popMap = {}
-  
-  
+  let popMap = {};
+
   targetPopulation.stratificationValues.forEach(
     (value: PopulationExpectedValue) => {
       stratMap[value.name] = value;
-        if (!_.isUndefined(changedStratification)  && value.name === changedStratification.name) {
-          if (stratMap[value.name].expected != true) {
-            stratMap[value.name].expected = false
-          } 
+      if (
+        !_.isUndefined(changedStratification) &&
+        value.name === changedStratification.name
+      ) {
+        if (stratMap[value.name].expected != true) {
+          stratMap[value.name].expected = false;
         }
+      }
     }
   );
   if (
@@ -147,7 +147,6 @@ export function triggerStratChanges(
     }
   }
 
-
   targetPopulation.populationValues.forEach(
     (value: PopulationExpectedValue) => {
       popMap[value.name] = value;
@@ -223,8 +222,6 @@ export function triggerStratChanges(
         (popMap[PopulationType.NUMERATOR_EXCLUSION].expected = false);
     }
   }
-
-
 
   return returnPops;
 }

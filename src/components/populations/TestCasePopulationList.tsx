@@ -129,7 +129,6 @@ const TestCasePopulationList = ({
           </tr>
         </thead>
         <tbody>
-
           {populations?.map((population, j) => (
             <TestCasePopulation
               executionRun={executionRun}
