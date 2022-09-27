@@ -22,6 +22,7 @@ import {
   GroupPopulation,
   DisplayGroupPopulation,
   HapiOperationOutcome,
+  Population,
 } from "@madie/madie-models";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import Editor from "../editor/Editor";
@@ -35,7 +36,10 @@ import {
   getPopulationTypesForScoring,
 } from "../../util/PopulationsMap";
 import { triggerStratChanges } from "../../util/StratificationsMap";
-import calculationService from "../../api/CalculationService";
+import calculationService, {
+  GroupStatementResultMap,
+  StatementResultMap,
+} from "../../api/CalculationService";
 import {
   DetailedPopulationGroupResult,
   StratifierResult,
@@ -166,7 +170,7 @@ const CreateTestCase = () => {
     useState<DetailedPopulationGroupResult[]>();
   const [populationGroupResults, setPopulationGroupResults] =
     useState<DetailedPopulationGroupResult[]>();
-
+  const [groupStatementResults, setGroupStatementResults] = useState<any>();
   const [calculationErrors, setCalculationErrors] = useState<AlertProps>();
   const [createButtonDisabled, setCreateButtonDisabled] =
     useState<boolean>(false);
@@ -361,6 +365,7 @@ const CreateTestCase = () => {
   const calculate = async (e) => {
     e.preventDefault();
     setPopulationGroupResults(() => undefined);
+    setGroupStatementResults(() => undefined);
     if (measure && measure.cqlErrors) {
       setCalculationErrors({
         status: "warning",
@@ -406,7 +411,9 @@ const CreateTestCase = () => {
           measureBundle,
           valueSets
         );
+      const output = calculation.current.processRawResults(executionResults);
       setCalculationErrors(undefined);
+      setGroupStatementResults(output?.[testCase.id]);
       setPopulationGroupResults(executionResults[0].detailedResults);
     } catch (error) {
       setCalculationErrors({
@@ -548,7 +555,8 @@ const CreateTestCase = () => {
 
   const mapGroupPopulations = (
     groupPopulations: GroupPopulation[],
-    populationGroupResults: DetailedPopulationGroupResult[]
+    populationGroupResults: DetailedPopulationGroupResult[],
+    groupStatementResults: GroupStatementResultMap
   ): DisplayGroupPopulation[] => {
     if (_.isNil(groupPopulations)) {
       return null;
@@ -556,6 +564,9 @@ const CreateTestCase = () => {
     const gp = groupPopulations.map((groupPopulation) => {
       const results = populationGroupResults?.find(
         (groupResult) => groupResult.groupId === groupPopulation.groupId
+      );
+      const measureGroup = measure?.groups?.find(
+        (group) => group.id === groupPopulation.groupId
       );
       return {
         ...groupPopulation,
@@ -571,13 +582,27 @@ const CreateTestCase = () => {
         ),
         populationValues: groupPopulation?.populationValues?.map(
           (populationValue) => {
+            // try to look up population on group to find the define
+            const measureGroupPopulation: Population =
+              measureGroup?.populations?.find(
+                (population) =>
+                  (!_.isNil(populationValue.id) &&
+                    population.id === populationValue.id) ||
+                  populationValue.name === population.name
+              );
+            const actualResult =
+              groupPopulation.populationBasis === "Boolean"
+                ? results?.populationResults?.find(
+                    (popResult) =>
+                      FHIR_POPULATION_CODES[popResult.populationType] ===
+                      populationValue.name
+                  )?.result
+                : groupStatementResults?.[groupPopulation.groupId]?.[
+                    measureGroupPopulation?.definition
+                  ];
             return {
               ...populationValue,
-              actual: results?.populationResults?.find(
-                (popResult) =>
-                  FHIR_POPULATION_CODES[popResult.populationType] ===
-                  populationValue.name
-              )?.result,
+              actual: actualResult,
             };
           }
         ),
@@ -637,8 +662,10 @@ const CreateTestCase = () => {
               canEdit={canEdit}
               groupPopulations={mapGroupPopulations(
                 formik.values.groupPopulations,
-                populationGroupResults
+                populationGroupResults,
+                groupStatementResults
               )}
+              executionRun={!_.isNil(populationGroupResults)}
               errors={formik.errors.groupPopulations}
               onChange={(
                 groupPopulations,

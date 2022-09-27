@@ -31,6 +31,7 @@ import {
 import { ExecutionContextProvider } from "../routes/ExecutionContext";
 import { ChangeEvent } from "react";
 import { multiGroupMeasureFixture } from "./__mocks__/multiGroupMeasureFixture";
+import { nonBoolTestCaseFixture } from "./__mocks__/nonBoolTestCaseFixture";
 import { TestCaseValidator } from "../../validators/TestCaseValidator";
 
 //temporary solution (after jest updated to version 27) for error: thrown: "Exceeded timeout of 5000 ms for a test.
@@ -2027,6 +2028,68 @@ describe("Measure Calculation ", () => {
     expect(
       screen.getByTestId("test-population-numerator-actual")
     ).not.toBeChecked();
+  });
+
+  it("displays non-boolean results", async () => {
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
+      }
+      return Promise.resolve({
+        data: { ...nonBoolTestCaseFixture, createdBy: MEASURE_CREATEDBY },
+      });
+    });
+    mockedAxios.post.mockResolvedValue({
+      data: {
+        code: 200,
+        message: null,
+        successful: true,
+        outcomeResponse: {
+          resourceType: "OperationOutcome",
+          issue: [
+            {
+              severity: "informational",
+              code: "processing",
+              diagnostics: "No issues!",
+            },
+          ],
+        },
+      },
+    });
+    const measure = {
+      ...multiGroupMeasureFixture,
+      createdBy: MEASURE_CREATEDBY,
+    };
+    renderWithRouter(
+      [
+        "/measures/623cacebe74613783378c17b/edit/test-cases/623cacffe74613783378c17c",
+      ],
+      "/measures/:measureId/edit/test-cases/:id",
+      measure
+    );
+    userEvent.click(screen.getByTestId("details-tab"));
+
+    // this is to make form dirty so that run test button is enabled
+    const tcTitle = await screen.findByTestId("create-test-case-title");
+    userEvent.type(tcTitle, "testTitle");
+
+    userEvent.click(screen.getByTestId("expectoractual-tab"));
+
+    await waitFor(async () => {
+      userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
+    });
+    userEvent.click(screen.getByTestId("highlighting-tab"));
+    expect(
+      await screen.findByText("Population Group: population-group-1")
+    ).toBeInTheDocument();
+
+    userEvent.click(screen.getByTestId("expectoractual-tab"));
+    expect(
+      await screen.findByTestId("test-population-initialPopulation-actual")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId("test-population-initialPopulation-expected")
+    ).toHaveValue("2");
   });
 
   it("displays warning when test case execution is aborted for invalid JSON", async () => {
