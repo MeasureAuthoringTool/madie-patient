@@ -247,7 +247,7 @@ describe("CreateTestCase component", () => {
     expect(debugOutput).toBeInTheDocument();
   });
 
-  it("should give a warning message when Id is present in the JSON while creating a test case", async () => {
+  it("Displaying successful message when Id is present in the JSON while creating a test case", async () => {
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
       "/measures/:measureId/edit/test-cases/create"
@@ -286,12 +286,12 @@ describe("CreateTestCase component", () => {
     userEvent.click(createBtn);
 
     const debugOutput = await screen.findByText(
-      "Test case created successfully! Bundle IDs are auto generated on save. MADiE has over written the ID provided"
+      "Test case created successfully!"
     );
     expect(debugOutput).toBeInTheDocument();
   });
 
-  it("should give a warning message when Id is not present in the JSON while creating a test case", async () => {
+  it("Displaying successful message when Id is not present in the JSON while creating a test case", async () => {
     renderWithRouter(
       ["/measures/m1234/edit/test-cases/create"],
       "/measures/:measureId/edit/test-cases/create"
@@ -329,7 +329,7 @@ describe("CreateTestCase component", () => {
     userEvent.click(createBtn);
 
     const debugOutput = await screen.findByText(
-      "Test case created successfully! Bundle ID has been auto generated"
+      "Test case created successfully!"
     );
     expect(debugOutput).toBeInTheDocument();
   });
@@ -617,7 +617,7 @@ describe("CreateTestCase component", () => {
     ).toBeInTheDocument();
   });
 
-  it("should give a warning message when Id is not present in the JSON while updating test case when update button is clicked", async () => {
+  it("Displaying successful message when Id is not present in the JSON while updating test case when update button is clicked", async () => {
     const testCase = {
       id: "1234",
       createdBy: MEASURE_CREATEDBY,
@@ -730,7 +730,7 @@ describe("CreateTestCase component", () => {
     userEvent.click(screen.getByRole("button", { name: "Save" }));
 
     const debugOutput = await screen.findByText(
-      "Test case updated successfully! Bundle ID has been auto generated"
+      "Test case updated successfully!"
     );
     expect(debugOutput).toBeInTheDocument();
 
@@ -762,7 +762,7 @@ describe("CreateTestCase component", () => {
     ]);
   });
 
-  it("should give a warning message when Id is present in the JSON while updating test case when update button is clicked", async () => {
+  it("Displaying successful message when Id is present in the JSON while updating test case when update button is clicked", async () => {
     const testCase = {
       id: "1234",
       createdBy: MEASURE_CREATEDBY,
@@ -876,7 +876,7 @@ describe("CreateTestCase component", () => {
     userEvent.click(screen.getByRole("button", { name: "Save" }));
 
     const debugOutput = await screen.findByText(
-      "Test case updated successfully! Bundle IDs are auto generated on save. MADiE has over written the ID provided"
+      "Test case updated successfully!"
     );
     expect(debugOutput).toBeInTheDocument();
 

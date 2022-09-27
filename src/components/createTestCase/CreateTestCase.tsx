@@ -307,7 +307,6 @@ const CreateTestCase = () => {
   const createTestCase = async (testCase: TestCase) => {
     try {
       testCase.json = editorVal || null;
-      const isTestCaseBundleIdPresent = hasTestCaseBundleId(editorVal);
       const savedTestCase = await testCaseService.current.createTestCase(
         testCase,
         measureId
@@ -315,11 +314,7 @@ const CreateTestCase = () => {
       setCreateButtonDisabled(true);
       setEditorVal(savedTestCase.json);
 
-      handleTestCaseResponse(
-        savedTestCase,
-        "create",
-        isTestCaseBundleIdPresent
-      );
+      handleTestCaseResponse(savedTestCase, "create");
     } catch (error) {
       setAlert(() => ({
         status: "error",
@@ -338,47 +333,18 @@ const CreateTestCase = () => {
         measureId
       );
 
-      const isTestCaseBundleIdPresent = hasTestCaseBundleId(editorVal);
-      const isPreviousBundleIdValueChanged = checkPreviousBundleIdVal(
-        updatedTestCase,
-        editorVal
-      );
-
       resetForm({
         values: { ...testCase },
       });
       setTestCase(updatedTestCase);
       setEditorVal(updatedTestCase.json);
 
-      handleTestCaseResponse(
-        updatedTestCase,
-        "update",
-        isTestCaseBundleIdPresent,
-        isPreviousBundleIdValueChanged
-      );
+      handleTestCaseResponse(updatedTestCase, "update");
     } catch (error) {
       setAlert(() => ({
         status: "error",
         message: "An error occurred while updating the test case.",
       }));
-    }
-  };
-
-  const hasTestCaseBundleId = (editorVal) => {
-    try {
-      return editorVal ? JSON.parse(editorVal).hasOwnProperty("id") : null;
-    } catch (e) {
-      return null;
-    }
-  };
-
-  const checkPreviousBundleIdVal = (updatedTestCase, editorVal) => {
-    try {
-      return JSON.parse(updatedTestCase?.json)?.id === JSON.parse(editorVal)?.id
-        ? true
-        : false;
-    } catch (e) {
-      return null;
     }
   };
 
@@ -448,27 +414,13 @@ const CreateTestCase = () => {
 
   function handleTestCaseResponse(
     testCase: TestCase,
-    action: "create" | "update",
-    isTestCaseBundleIdPresent?: boolean,
-    isPreviousBundleIdValueChanged?: boolean
+    action: "create" | "update"
   ) {
-    const editorValJsonIdMessage = isTestCaseBundleIdPresent
-      ? "Bundle IDs are auto generated on save. MADiE has over written the ID provided"
-      : isTestCaseBundleIdPresent !== null
-      ? "Bundle ID has been auto generated"
-      : "";
-
     if (testCase && testCase.id) {
       if (hasValidHapiOutcome(testCase)) {
         setAlert({
-          status: isPreviousBundleIdValueChanged
-            ? "success"
-            : isTestCaseBundleIdPresent
-            ? "warning"
-            : "success",
-          message: `Test case ${action}d successfully! ${
-            isPreviousBundleIdValueChanged ? "" : editorValJsonIdMessage
-          }`,
+          status: "success",
+          message: `Test case ${action}d successfully!`,
         });
       } else {
         setAlert({

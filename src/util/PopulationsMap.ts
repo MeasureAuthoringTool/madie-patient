@@ -171,7 +171,7 @@ export function triggerPopChanges(
           (observation) => observation.criteriaReference === criteriaReferenceID
         )[0].id;
 
-        const numeratorMeasureObservationid =
+        const numeratorMeasureObservationIndex =
           targetPopulation.populationValues.findIndex((prop) => {
             return prop.name === "measureObservation";
           });
@@ -179,7 +179,7 @@ export function triggerPopChanges(
         //always adding denominator obseravtion before numerator observation
         if (
           changedPopulationName === "denominatorExclusion" &&
-          numeratorMeasureObservationid > -1
+          numeratorMeasureObservationIndex > -1
         ) {
           const denominatorMeasureObservation = {
             name: PopulationType.MEASURE_OBSERVATION,
@@ -188,7 +188,7 @@ export function triggerPopChanges(
             criteriaReference: criteriaReferenceID,
           };
           targetPopulation.populationValues.splice(
-            numeratorMeasureObservationid,
+            numeratorMeasureObservationIndex,
             0,
             denominatorMeasureObservation
           );
