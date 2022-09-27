@@ -5,6 +5,19 @@ import {
 } from "fqm-execution/build/types/Calculator";
 import { TestCase, Measure } from "@madie/madie-models";
 import { ValueSet, Bundle } from "fhir/r4";
+import * as _ from "lodash";
+
+export interface StatementResultMap {
+  [statementName: string]: number;
+}
+
+export interface GroupStatementResultMap {
+  [groupId: string]: StatementResultMap;
+}
+
+export interface TestCaseGroupStatementResult {
+  [testCaseId: string]: GroupStatementResultMap;
+}
 
 // TODO consider converting into a context.
 // OR a re-usable hook.
@@ -66,6 +79,40 @@ export class CalculationService {
       console.error("An error occurred in FQM-Execution", err);
       throw err;
     }
+  }
+
+  processRawResults(rawResults: any): TestCaseGroupStatementResult {
+    const testCaseResultMap: TestCaseGroupStatementResult = {};
+    for (const tc of rawResults) {
+      const testCaseId: string = tc?.patientId;
+      const groupResults: any[] = tc?.detailedResults;
+      const outputGroupResultsMap: GroupStatementResultMap = {};
+      for (const groupResult of groupResults) {
+        const groupId = groupResult?.groupId;
+        const statementResults = groupResult?.statementResults;
+        const defineResultMap: StatementResultMap = {};
+        for (const statementResult of statementResults) {
+          if (statementResult && statementResult.statementName) {
+            if (typeof statementResult.raw === "boolean") {
+              defineResultMap[statementResult.statementName] =
+                statementResult?.raw ? 1 : 0;
+            } else if (Array.isArray(statementResult?.raw)) {
+              defineResultMap[statementResult.statementName] =
+                statementResult?.raw?.length || 0;
+            } else if (_.isNil(statementResult?.raw)) {
+              defineResultMap[statementResult.statementName] = 0;
+            } else {
+              console.warn(`fell into else [${statementResult.statementName}]`, statementResult);
+              defineResultMap[statementResult.statementName] = 0;
+            }
+          }
+        }
+        outputGroupResultsMap[groupId] = defineResultMap;
+      }
+      testCaseResultMap[testCaseId] = outputGroupResultsMap;
+    }
+
+    return testCaseResultMap;
   }
 }
 

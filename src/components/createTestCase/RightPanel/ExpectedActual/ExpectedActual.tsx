@@ -1,7 +1,13 @@
 import React from "react";
 import GroupPopulations from "../../../populations/GroupPopulations";
 
-const ExpectedActual = ({ canEdit, groupPopulations, onChange, errors }) => {
+const ExpectedActual = ({
+  canEdit,
+  groupPopulations,
+  onChange,
+  errors,
+  executionRun = false,
+}) => {
   return (
     <div
       data-testid="create-test-case-populations"
@@ -12,6 +18,7 @@ const ExpectedActual = ({ canEdit, groupPopulations, onChange, errors }) => {
         groupPopulations={groupPopulations}
         onChange={onChange}
         errors={errors}
+        executionRun={executionRun}
       />
     </div>
   );
