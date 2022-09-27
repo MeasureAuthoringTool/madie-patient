@@ -260,7 +260,10 @@ export function triggerPopChanges(
         }
       }
       //bbbb
-      else {
+      else if(changedPopulationName === "numeratorExclusion"||
+      changedPopulationName === "numerator"||
+      changedPopulationName === "denominatorExclusion"||
+      changedPopulationName === "denominator"){
         const numExIn = targetPopulation.populationValues.findIndex((prop) => {
           return prop.name === "numeratorExclusion";
         });
@@ -295,7 +298,7 @@ export function triggerPopChanges(
               console.log(targetPopulation.populationValues);
               targetPopulation.populationValues.push({
                 name: PopulationType.MEASURE_OBSERVATION,
-                expected: 0,
+                expected: 5,
                 id: null,
                 criteriaReference: null,
               });
@@ -303,6 +306,25 @@ export function triggerPopChanges(
           } else if (newLen < targetPopulation.populationValues.length) {
             while (targetPopulation.populationValues.length > newLen) {
               targetPopulation.populationValues.pop();
+            }
+          }
+        }else{
+          if(newLen>targetPopulation.populationValues.length){
+            let insertPoint = targetPopulation.populationValues.length - (num-numEx)
+            while(targetPopulation.populationValues.length<newLen){
+              targetPopulation.populationValues.splice(insertPoint,0,{
+                name: PopulationType.MEASURE_OBSERVATION,
+                expected: 2,
+                id: null,
+                criteriaReference: null,
+              })
+              insertPoint++;
+            }
+          }else if(newLen<targetPopulation.populationValues.length){
+            let delPoint = targetPopulation.populationValues.length - (num-numEx)
+            while(targetPopulation.populationValues.length>newLen){
+              targetPopulation.populationValues.splice(delPoint,1)
+              delPoint--;
             }
           }
         }
