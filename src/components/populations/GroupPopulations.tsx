@@ -2,9 +2,12 @@ import React from "react";
 import "twin.macro";
 import "styled-components/macro";
 import TestCasePopulationList from "./TestCasePopulationList";
-import { DisplayGroupPopulation, GroupPopulation } from "@madie/madie-models";
+import {
+  DisplayGroupPopulation,
+  GroupPopulation,
+  DisplayPopulationValue,
+} from "@madie/madie-models";
 import * as _ from "lodash";
-import { DisplayPopulationValue } from "@madie/madie-models/dist/TestCase";
 
 export interface PopulationsProps {
   disableExpected?: boolean;
@@ -29,39 +32,68 @@ const GroupPopulations = ({
 }: PopulationsProps) => (
   <>
     {groupPopulations && groupPopulations.length > 0 ? (
-      groupPopulations.map((gp, i) => (
-        <div key={gp.groupId} style={{ marginTop: 16 }}>
-          <TestCasePopulationList
-            i={i}
-            scoring={gp.scoring}
-            errors={errors?.[i]}
-            disableExpected={disableExpected}
-            executionRun={executionRun}
-            populations={gp.populationValues}
-            populationBasis={gp?.populationBasis}
-            onChange={(populations, type, changedPopulation) => {
-              const nextPopulations = _.cloneDeep(groupPopulations);
-              const groupPopulation = nextPopulations.find(
-                (np) => np.groupId === gp.groupId
-              );
-              if (groupPopulation) {
-                groupPopulation.populationValues = populations;
-              }
-              if (onChange) {
-                onChange(
-                  nextPopulations,
-                  groupPopulation.groupId,
-                  changedPopulation
+      groupPopulations.map((gp, i) => {
+        return (
+          <div key={gp.groupId} style={{ marginTop: 16 }}>
+            <TestCasePopulationList
+              content="Measure Group"
+              i={i}
+              scoring={gp.scoring}
+              errors={errors?.[i]}
+              disableExpected={disableExpected}
+              executionRun={executionRun}
+              populations={gp.populationValues}
+              populationBasis={gp?.populationBasis}
+              onChange={(populations, type, changedPopulation) => {
+                const nextPopulations = _.cloneDeep(groupPopulations);
+                const groupPopulation = nextPopulations.find(
+                  (np) => np.groupId === gp.groupId
                 );
-              }
-            }}
-          />
-        </div>
-      ))
+                if (groupPopulation) {
+                  groupPopulation.populationValues = populations;
+                }
+                if (onChange) {
+                  onChange(
+                    nextPopulations,
+                    groupPopulation.groupId,
+                    changedPopulation
+                  );
+                }
+              }}
+            />
+
+            <TestCasePopulationList
+              i={i}
+              content="Stratifications"
+              scoring={gp.scoring}
+              disableExpected={disableExpected}
+              executionRun={executionRun}
+              populations={gp.stratificationValues}
+              populationBasis={gp.populationBasis}
+              onChange={(populations, type, changedPopulation) => {
+                const nextPopulations = _.cloneDeep(groupPopulations);
+                const groupPopulation = nextPopulations.find(
+                  (np) => np.groupId === gp.groupId
+                );
+                if (groupPopulation) {
+                  groupPopulation.stratificationValues = populations;
+                }
+                if (onChange) {
+                  onChange(
+                    nextPopulations,
+                    groupPopulation.groupId,
+                    changedPopulation
+                  );
+                }
+              }}
+            />
+          </div>
+        );
+      })
     ) : (
       <span tw="text-sm">
-        No populations for current scoring. Please make sure at least one
-        measure group has been created.
+        No data for current scoring. Please make sure at least one measure group
+        has been created.
       </span>
     )}
   </>

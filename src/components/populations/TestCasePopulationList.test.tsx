@@ -79,7 +79,6 @@ describe("TestCasePopulationPopulation component", () => {
           populations={testCasePopulations}
           onChange={handleChange}
           disableExpected={false}
-          setChangedPopulation={setChangedPopulation}
           populationBasis="Boolean"
         />
       </MemoryRouter>

@@ -15,21 +15,28 @@ describe("Group Populations", () => {
         groupId: "Group1_ID",
         scoring: MeasureScoring.CONTINUOUS_VARIABLE,
         populationBasis: "Boolean",
+        stratificationValues: [],
         populationValues: [
           {
+            id: "1",
             name: PopulationType.INITIAL_POPULATION,
             expected: true,
             actual: false,
+            criteriaReference: "",
           },
           {
+            id: "2",
             name: PopulationType.MEASURE_POPULATION,
             expected: false,
             actual: false,
+            criteriaReference: "",
           },
           {
+            id: "3",
             name: PopulationType.MEASURE_POPULATION_EXCLUSION,
             expected: false,
             actual: false,
+            criteriaReference: "",
           },
         ],
       },
@@ -47,7 +54,7 @@ describe("Group Populations", () => {
     );
     const g1MeasureName = screen.getByTestId("measure-group-1");
     expect(g1MeasureName).toBeInTheDocument();
-    const g1ScoringName = screen.getByTestId("scoring-unit-1");
+    const g1ScoringName = screen.getByTestId("measure-group-scoring-unit-1");
     expect(g1ScoringName).toBeInTheDocument();
 
     const ippRow = screen.getByRole("row", { name: "ipp" });
@@ -100,7 +107,7 @@ describe("Group Populations", () => {
     );
     expect(
       screen.getByText(
-        "No populations for current scoring. Please make sure at least one measure group has been created."
+        "No data for current scoring. Please make sure at least one measure group has been created."
       )
     ).toBeInTheDocument();
   });
@@ -115,7 +122,7 @@ describe("Group Populations", () => {
     );
     expect(
       screen.getByText(
-        "No populations for current scoring. Please make sure at least one measure group has been created."
+        "No data for current scoring. Please make sure at least one measure group has been created."
       )
     ).toBeInTheDocument();
   });
@@ -130,7 +137,7 @@ describe("Group Populations", () => {
     );
     expect(
       screen.getByText(
-        "No populations for current scoring. Please make sure at least one measure group has been created."
+        "No data for current scoring. Please make sure at least one measure group has been created."
       )
     ).toBeInTheDocument();
   });
