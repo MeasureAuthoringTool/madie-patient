@@ -1,5 +1,11 @@
-import { PopulationType, GroupPopulation, DisplayPopulationValue, Measure, Group } from "@madie/madie-models";
-import { triggerPopChanges} from "../util/PopulationsMap"
+import {
+  PopulationType,
+  GroupPopulation,
+  DisplayPopulationValue,
+  Measure,
+  Group,
+} from "@madie/madie-models";
+import { triggerPopChanges } from "../util/PopulationsMap";
 
 let measureGroup = [
   {
@@ -35,12 +41,12 @@ it("return the input matches output with no changes", () => {
   const stratVal1: DisplayPopulationValue = {
     id: "1",
     name: "strata-1",
-    expected: true
+    expected: true,
   };
   const stratVal2: DisplayPopulationValue = {
     id: "2",
     name: "strata-2",
-    expected: false
+    expected: false,
   };
   const populationValues: DisplayPopulationValue[] = [];
   populationValues.push(populationVal);
@@ -49,20 +55,23 @@ it("return the input matches output with no changes", () => {
     populationBasis: "Boolean",
     scoring: "Cohort",
     populationValues: populationValues,
-    stratificationValues: [stratVal1, stratVal2]
+    stratificationValues: [stratVal1, stratVal2],
   };
   const groupPopulations: GroupPopulation[] = [groupPop1];
   const measure = {} as Measure;
   const group1 = {} as Group;
-  
-  const resultPops = triggerPopChanges(groupPopulations, groupPop1.groupId, {
+
+  const resultPops = triggerPopChanges(
+    groupPopulations,
+    groupPop1.groupId,
+    {
       id: "1",
       name: PopulationType.INITIAL_POPULATION,
       expected: true,
-      actual: undefined    
-    }, 
+      actual: undefined,
+    },
     measureGroup
-    );
+  );
 
   expect(resultPops.length).toEqual(groupPopulations.length);
 
@@ -85,12 +94,12 @@ it("return the input matches output with strat expected change", () => {
   const stratVal1: DisplayPopulationValue = {
     id: "1",
     name: "strata-1",
-    expected: true
+    expected: true,
   };
   const stratVal2: DisplayPopulationValue = {
     id: "2",
     name: "strata-2",
-    expected: false
+    expected: false,
   };
   const populationValues: DisplayPopulationValue[] = [];
   populationValues.push(populationVal);
@@ -99,20 +108,23 @@ it("return the input matches output with strat expected change", () => {
     populationBasis: "Boolean",
     scoring: "Cohort",
     populationValues: populationValues,
-    stratificationValues: [stratVal1, stratVal2]
+    stratificationValues: [stratVal1, stratVal2],
   };
   const groupPopulations: GroupPopulation[] = [groupPop1];
   const measure = {} as Measure;
   const group1 = {} as Group;
-  
-  const resultPops = triggerPopChanges(groupPopulations, groupPop1.groupId, {
+
+  const resultPops = triggerPopChanges(
+    groupPopulations,
+    groupPop1.groupId,
+    {
       id: "2",
       name: "strata-2",
       expected: true,
-      actual: undefined    
-    }, 
+      actual: undefined,
+    },
     measureGroup
-    );
+  );
 
   expect(resultPops.length).toEqual(groupPopulations.length);
 
@@ -135,7 +147,6 @@ it("return the input matches output with no changes if targetId not found", () =
   const populationValues: DisplayPopulationValue[] = [];
   populationValues.push(populationVal);
   const group1: GroupPopulation = {
-
     groupId: "initialPopulation",
     populationBasis: "Boolean",
     scoring: "Cohort",
@@ -144,11 +155,15 @@ it("return the input matches output with no changes if targetId not found", () =
   };
   const groupPopulations: GroupPopulation[] = [group1];
 
-  const resultPops = triggerPopChanges(groupPopulations, "WRONG_ID", {
-    id:"1",
-    name: PopulationType.INITIAL_POPULATION,
-    expected: true,
-    actual: undefined},
+  const resultPops = triggerPopChanges(
+    groupPopulations,
+    "WRONG_ID",
+    {
+      id: "1",
+      name: PopulationType.INITIAL_POPULATION,
+      expected: true,
+      actual: undefined,
+    },
     measureGroup
   );
 
@@ -208,17 +223,20 @@ it("return the input with IPP changed to Expected because Denom is Expected", ()
     populationBasis: "Boolean",
     scoring: "Proportion",
     populationValues: populationValues,
-    stratificationValues: []
+    stratificationValues: [],
   };
   const groupPopulations: GroupPopulation[] = [];
   groupPopulations.push(group1);
-  const resultPops = triggerPopChanges(groupPopulations, group1.groupId, {
-    id: "1",
-    name: PopulationType.DENOMINATOR,
-    expected: true,
-    actual: undefined    
-  }, 
-  measureGroup
+  const resultPops = triggerPopChanges(
+    groupPopulations,
+    group1.groupId,
+    {
+      id: "1",
+      name: PopulationType.DENOMINATOR,
+      expected: true,
+      actual: undefined,
+    },
+    measureGroup
   );
 
   expect(resultPops.length).toEqual(groupPopulations.length);
@@ -282,20 +300,23 @@ it("return the input with IPP Expected, Denom Expected because Denom Exception i
     populationBasis: "Boolean",
     scoring: "Proportion",
     populationValues: populationValues,
-    stratificationValues: []
+    stratificationValues: [],
   };
   const groupPopulations: GroupPopulation[] = [];
   groupPopulations.push(group1);
 
-  const resultPops = triggerPopChanges(groupPopulations, group1.groupId, {
-    id: "1",
-    name: PopulationType.DENOMINATOR_EXCEPTION,
-    expected: true,
-    actual: undefined    
-  }, 
-  measureGroup
+  const resultPops = triggerPopChanges(
+    groupPopulations,
+    group1.groupId,
+    {
+      id: "1",
+      name: PopulationType.DENOMINATOR_EXCEPTION,
+      expected: true,
+      actual: undefined,
+    },
+    measureGroup
   );
-  
+
   expect(resultPops.length).toEqual(groupPopulations.length);
 
   expect(
@@ -364,20 +385,22 @@ it("return the input with IPP Expected, Denom Expected because Numer is Expected
     populationBasis: "Boolean",
     scoring: "Proportion",
     populationValues: populationValues,
-    stratificationValues: []
+    stratificationValues: [],
   };
   const groupPopulations: GroupPopulation[] = [];
   groupPopulations.push(group1);
 
-  const resultPops = triggerPopChanges(groupPopulations, group1.groupId, {
-    id: "1",
-    name: PopulationType.NUMERATOR,
-    expected: true,
-    actual: undefined    
-  }, 
-  measureGroup
+  const resultPops = triggerPopChanges(
+    groupPopulations,
+    group1.groupId,
+    {
+      id: "1",
+      name: PopulationType.NUMERATOR,
+      expected: true,
+      actual: undefined,
+    },
+    measureGroup
   );
-
 
   expect(resultPops.length).toEqual(groupPopulations.length);
 
@@ -447,20 +470,22 @@ it("return the input with IPP Expected, Denom Expected when Numer is Unchecked",
     populationBasis: "Boolean",
     scoring: "Proportion",
     populationValues: populationValues,
-    stratificationValues: []
+    stratificationValues: [],
   };
   const groupPopulations: GroupPopulation[] = [];
   groupPopulations.push(group1);
 
-  const resultPops = triggerPopChanges(groupPopulations, group1.groupId, {
-    id: "1",
-    name: PopulationType.NUMERATOR,
-    expected: true,
-    actual: undefined    
-  }, 
-  measureGroup
+  const resultPops = triggerPopChanges(
+    groupPopulations,
+    group1.groupId,
+    {
+      id: "1",
+      name: PopulationType.NUMERATOR,
+      expected: true,
+      actual: undefined,
+    },
+    measureGroup
   );
-
 
   expect(resultPops.length).toEqual(groupPopulations.length);
 
@@ -530,18 +555,21 @@ it("return the input with IPP Expected, Denom Expected when Denom Exception is c
     populationBasis: "Boolean",
     scoring: "Proportion",
     populationValues: populationValues,
-    stratificationValues: []
+    stratificationValues: [],
   };
   const groupPopulations: GroupPopulation[] = [];
   groupPopulations.push(group1);
 
-  const resultPops = triggerPopChanges(groupPopulations, group1.groupId, {
-    id: "1",
-    name: PopulationType.DENOMINATOR_EXCEPTION,
-    expected: true,
-    actual: undefined    
-  }, 
-  measureGroup
+  const resultPops = triggerPopChanges(
+    groupPopulations,
+    group1.groupId,
+    {
+      id: "1",
+      name: PopulationType.DENOMINATOR_EXCEPTION,
+      expected: true,
+      actual: undefined,
+    },
+    measureGroup
   );
 
   expect(resultPops.length).toEqual(groupPopulations.length);
@@ -612,20 +640,22 @@ it("return the input with IPP Expected, Denom Expected when Denom Exclusion is c
     populationBasis: "Boolean",
     scoring: "Proportion",
     populationValues: populationValues,
-    stratificationValues: []
+    stratificationValues: [],
   };
   const groupPopulations: GroupPopulation[] = [];
   groupPopulations.push(group1);
 
-  const resultPops = triggerPopChanges(groupPopulations, group1.groupId, {
-    id: "1",
-    name: PopulationType.DENOMINATOR_EXCLUSION,
-    expected: true,
-    actual: undefined    
-  }, 
-  measureGroup
+  const resultPops = triggerPopChanges(
+    groupPopulations,
+    group1.groupId,
+    {
+      id: "1",
+      name: PopulationType.DENOMINATOR_EXCLUSION,
+      expected: true,
+      actual: undefined,
+    },
+    measureGroup
   );
-
 
   expect(resultPops.length).toEqual(groupPopulations.length);
 
@@ -651,7 +681,7 @@ it("return the input with IPP Expected, Denom Expected and Numer Expected when N
     name: PopulationType.INITIAL_POPULATION,
     expected: false,
     actual: false,
-  }; 
+  };
   const denom: DisplayPopulationValue = {
     id: "",
     name: PopulationType.DENOMINATOR,
@@ -695,18 +725,21 @@ it("return the input with IPP Expected, Denom Expected and Numer Expected when N
     populationBasis: "Boolean",
     scoring: "Proportion",
     populationValues: populationValues,
-    stratificationValues: []
+    stratificationValues: [],
   };
   const groupPopulations: GroupPopulation[] = [];
   groupPopulations.push(group1);
 
-  const resultPops = triggerPopChanges(groupPopulations, group1.groupId, {
-    id: "1",
-    name: PopulationType.NUMERATOR_EXCLUSION,
-    expected: true,
-    actual: undefined    
-  }, 
-  measureGroup
+  const resultPops = triggerPopChanges(
+    groupPopulations,
+    group1.groupId,
+    {
+      id: "1",
+      name: PopulationType.NUMERATOR_EXCLUSION,
+      expected: true,
+      actual: undefined,
+    },
+    measureGroup
   );
 
   expect(resultPops.length).toEqual(groupPopulations.length);
@@ -784,18 +817,21 @@ it("when Denom is unchecked, then Numer, Denom Exclusion, Denom Exception, Numer
     populationBasis: "Boolean",
     scoring: "Proportion",
     populationValues: populationValues,
-    stratificationValues: []
+    stratificationValues: [],
   };
   const groupPopulations: GroupPopulation[] = [];
   groupPopulations.push(group1);
 
-  const resultPops = triggerPopChanges(groupPopulations, group1.groupId, {
-    id: "1",
-    name: PopulationType.DENOMINATOR,
-    expected: true,
-    actual: undefined    
-  }, 
-  measureGroup
+  const resultPops = triggerPopChanges(
+    groupPopulations,
+    group1.groupId,
+    {
+      id: "1",
+      name: PopulationType.DENOMINATOR,
+      expected: true,
+      actual: undefined,
+    },
+    measureGroup
   );
 
   expect(resultPops.length).toEqual(groupPopulations.length);
@@ -887,20 +923,22 @@ it("when IPP is unchecked then rest of populations expected values should also b
     populationBasis: "Boolean",
     scoring: "Proportion",
     populationValues: populationValues,
-    stratificationValues: []
+    stratificationValues: [],
   };
   const groupPopulations: GroupPopulation[] = [];
   groupPopulations.push(group1);
 
-  const resultPops = triggerPopChanges(groupPopulations, group1.groupId, {
-    id: "1",
-    name: PopulationType.INITIAL_POPULATION,
-    expected: true,
-    actual: undefined    
-  }, 
-  measureGroup
+  const resultPops = triggerPopChanges(
+    groupPopulations,
+    group1.groupId,
+    {
+      id: "1",
+      name: PopulationType.INITIAL_POPULATION,
+      expected: true,
+      actual: undefined,
+    },
+    measureGroup
   );
- 
 
   expect(resultPops.length).toEqual(groupPopulations.length);
 
@@ -956,7 +994,7 @@ it("Removing and Adding the observations on clicking the measure population excl
     populationBasis: "Boolean",
     scoring: "Continuous Variable",
     populationValues: populationValues,
-    stratificationValues: []
+    stratificationValues: [],
   };
   const groupPopulations: GroupPopulation[] = [];
   groupPopulations.push(group1);
@@ -1076,7 +1114,7 @@ it("Removing the observations on clicking the numerator exclusion and denominato
     populationBasis: "Boolean",
     scoring: "Ratio",
     populationValues: populationValues,
-    stratificationValues: []
+    stratificationValues: [],
   };
   const groupPopulations: GroupPopulation[] = [];
   groupPopulations.push(group1);
@@ -1188,7 +1226,7 @@ it("Adding the observations on clicking the numerator exclusion and denominator 
     populationBasis: "Boolean",
     scoring: "Ratio",
     populationValues: populationValues,
-    stratificationValues: []
+    stratificationValues: [],
   };
   const groupPopulations: GroupPopulation[] = [];
   groupPopulations.push(group1);
@@ -1248,4 +1286,3 @@ function parsingTheExpectedResult(
   });
   return returnVal;
 }
- 

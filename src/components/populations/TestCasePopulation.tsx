@@ -73,9 +73,7 @@ const TestCasePopulation = ({
             <ExpectActualInput
               id={`${population.name}-actual-cb`}
               expectedValue={population.actual}
-              onChange={(expectedValue) =>
-                onChange({ ...population, actual: expectedValue })
-              }
+              onChange={() => {}} // do nothing - should not be editable here
               populationBasis={populationBasis}
               disabled={true}
               data-testid={`test-population-${population.name}-actual`}

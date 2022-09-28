@@ -42,7 +42,6 @@ describe("TruncateText component", () => {
     expect(container).toBeTruthy();
     expect(getByText(description)).toBeInTheDocument();
   });
-  
 
   it("should render truncated value", async () => {
     const description =

@@ -84,7 +84,7 @@ const TestCasePopulationList = ({
     for (let i = 0; i < populations?.length; i++) {
       const population = populations[i];
       const { expected, actual } = population;
-      if (expected !== actual) {
+      if (expected != actual) {
         return "fail";
       }
     }
