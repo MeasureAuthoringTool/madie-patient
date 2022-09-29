@@ -79,7 +79,6 @@ export const multiGroupMeasureFixture: Measure = {
     copyright: null,
     disclaimer: null,
     rationale: null,
-    author: null,
     guidance: null,
   },
   versionId: "0c2904ca-33dc-4583-bcd6-6cd1692f8e0f",

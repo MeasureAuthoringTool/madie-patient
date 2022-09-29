@@ -22,6 +22,7 @@ import {
   GroupPopulation,
   DisplayGroupPopulation,
   HapiOperationOutcome,
+  Population,
 } from "@madie/madie-models";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import Editor from "../editor/Editor";
@@ -33,11 +34,15 @@ import { Ace } from "ace-builds";
 import {
   FHIR_POPULATION_CODES,
   getPopulationTypesForScoring,
-  triggerPopChanges,
 } from "../../util/PopulationsMap";
-import calculationService from "../../api/CalculationService";
+import { triggerStratChanges } from "../../util/StratificationsMap";
+import calculationService, {
+  GroupStatementResultMap,
+  StatementResultMap,
+} from "../../api/CalculationService";
 import {
   DetailedPopulationGroupResult,
+  StratifierResult,
   ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
 import {
@@ -51,6 +56,8 @@ import CreateTestCaseNavTabs from "./CreateTestCaseNavTabs";
 import ExpectedActual from "./RightPanel/ExpectedActual/ExpectedActual";
 import "./CreateTestCase.scss";
 import CalculationResults from "./calculationResults/CalculationResults";
+
+import GroupPopulations from "../populations/GroupPopulations";
 
 const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
@@ -159,8 +166,11 @@ const CreateTestCase = () => {
   const userName = getUserName();
   const [editor, setEditor] = useState<Ace.Editor>(null);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
+  const [stratificationGroupResults, setStratificationGroupResults] =
+    useState<DetailedPopulationGroupResult[]>();
   const [populationGroupResults, setPopulationGroupResults] =
     useState<DetailedPopulationGroupResult[]>();
+  const [groupStatementResults, setGroupStatementResults] = useState<any>();
   const [calculationErrors, setCalculationErrors] = useState<AlertProps>();
   const [createButtonDisabled, setCreateButtonDisabled] =
     useState<boolean>(false);
@@ -188,6 +198,15 @@ const CreateTestCase = () => {
       groupId: group.id,
       scoring: group.scoring,
       populationBasis: group.populationBasis,
+      stratificationValues: group.stratifications?.map(
+        (stratification, index) => ({
+          name: "strata-" + (index + 1),
+          expected: false,
+          actual: false,
+          id: "",
+          criteriaReference: "",
+        })
+      ),
       populationValues: getPopulationTypesForScoring(group)?.map(
         (population) => ({
           name: population.name,
@@ -302,7 +321,6 @@ const CreateTestCase = () => {
   const createTestCase = async (testCase: TestCase) => {
     try {
       testCase.json = editorVal || null;
-      const isTestCaseBundleIdPresent = hasTestCaseBundleId(editorVal);
       const savedTestCase = await testCaseService.current.createTestCase(
         testCase,
         measureId
@@ -310,11 +328,7 @@ const CreateTestCase = () => {
       setCreateButtonDisabled(true);
       setEditorVal(savedTestCase.json);
 
-      handleTestCaseResponse(
-        savedTestCase,
-        "create",
-        isTestCaseBundleIdPresent
-      );
+      handleTestCaseResponse(savedTestCase, "create");
     } catch (error) {
       setAlert(() => ({
         status: "error",
@@ -333,24 +347,13 @@ const CreateTestCase = () => {
         measureId
       );
 
-      const isTestCaseBundleIdPresent = hasTestCaseBundleId(editorVal);
-      const isPreviousBundleIdValueChanged = checkPreviousBundleIdVal(
-        updatedTestCase,
-        editorVal
-      );
-
       resetForm({
         values: { ...testCase },
       });
       setTestCase(updatedTestCase);
       setEditorVal(updatedTestCase.json);
 
-      handleTestCaseResponse(
-        updatedTestCase,
-        "update",
-        isTestCaseBundleIdPresent,
-        isPreviousBundleIdValueChanged
-      );
+      handleTestCaseResponse(updatedTestCase, "update");
     } catch (error) {
       setAlert(() => ({
         status: "error",
@@ -359,27 +362,10 @@ const CreateTestCase = () => {
     }
   };
 
-  const hasTestCaseBundleId = (editorVal) => {
-    try {
-      return editorVal ? JSON.parse(editorVal).hasOwnProperty("id") : null;
-    } catch (e) {
-      return null;
-    }
-  };
-
-  const checkPreviousBundleIdVal = (updatedTestCase, editorVal) => {
-    try {
-      return JSON.parse(updatedTestCase?.json)?.id === JSON.parse(editorVal)?.id
-        ? true
-        : false;
-    } catch (e) {
-      return null;
-    }
-  };
-
   const calculate = async (e) => {
     e.preventDefault();
     setPopulationGroupResults(() => undefined);
+    setGroupStatementResults(() => undefined);
     if (measure && measure.cqlErrors) {
       setCalculationErrors({
         status: "warning",
@@ -425,7 +411,9 @@ const CreateTestCase = () => {
           measureBundle,
           valueSets
         );
+      const output = calculation.current.processRawResults(executionResults);
       setCalculationErrors(undefined);
+      setGroupStatementResults(output?.[testCase.id]);
       setPopulationGroupResults(executionResults[0].detailedResults);
     } catch (error) {
       setCalculationErrors({
@@ -437,27 +425,13 @@ const CreateTestCase = () => {
 
   function handleTestCaseResponse(
     testCase: TestCase,
-    action: "create" | "update",
-    isTestCaseBundleIdPresent?: boolean,
-    isPreviousBundleIdValueChanged?: boolean
+    action: "create" | "update"
   ) {
-    const editorValJsonIdMessage = isTestCaseBundleIdPresent
-      ? "Bundle IDs are auto generated on save. MADiE has over written the ID provided"
-      : isTestCaseBundleIdPresent !== null
-      ? "Bundle ID has been auto generated"
-      : "";
-
     if (testCase && testCase.id) {
       if (hasValidHapiOutcome(testCase)) {
         setAlert({
-          status: isPreviousBundleIdValueChanged
-            ? "success"
-            : isTestCaseBundleIdPresent
-            ? "warning"
-            : "success",
-          message: `Test case ${action}d successfully! ${
-            isPreviousBundleIdValueChanged ? "" : editorValJsonIdMessage
-          }`,
+          status: "success",
+          message: `Test case ${action}d successfully!`,
         });
       } else {
         setAlert({
@@ -579,29 +553,56 @@ const CreateTestCase = () => {
     }, 500);
   }
 
-  const mapGroups = (
+  const mapGroupPopulations = (
     groupPopulations: GroupPopulation[],
-    populationGroupResults: DetailedPopulationGroupResult[]
+    populationGroupResults: DetailedPopulationGroupResult[],
+    groupStatementResults: GroupStatementResultMap
   ): DisplayGroupPopulation[] => {
     if (_.isNil(groupPopulations)) {
       return null;
     }
-
     const gp = groupPopulations.map((groupPopulation) => {
       const results = populationGroupResults?.find(
         (groupResult) => groupResult.groupId === groupPopulation.groupId
       );
+      const measureGroup = measure?.groups?.find(
+        (group) => group.id === groupPopulation.groupId
+      );
       return {
         ...groupPopulation,
+        stratificationValues: groupPopulation?.stratificationValues?.map(
+          (stratValue) => {
+            return {
+              ...stratValue,
+              actual: results?.stratifierResults?.find(
+                (popResult) => popResult.strataCode == stratValue.name
+              )?.result,
+            };
+          }
+        ),
         populationValues: groupPopulation?.populationValues?.map(
           (populationValue) => {
+            // try to look up population on group to find the define
+            const measureGroupPopulation: Population =
+              measureGroup?.populations?.find(
+                (population) =>
+                  (!_.isNil(populationValue.id) &&
+                    population.id === populationValue.id) ||
+                  populationValue.name === population.name
+              );
+            const actualResult =
+              groupPopulation.populationBasis === "Boolean"
+                ? results?.populationResults?.find(
+                    (popResult) =>
+                      FHIR_POPULATION_CODES[popResult.populationType] ===
+                      populationValue.name
+                  )?.result
+                : groupStatementResults?.[groupPopulation.groupId]?.[
+                    measureGroupPopulation?.definition
+                  ];
             return {
               ...populationValue,
-              actual: results?.populationResults?.find(
-                (popResult) =>
-                  FHIR_POPULATION_CODES[popResult.populationType] ===
-                  populationValue.name
-              )?.result,
+              actual: actualResult,
             };
           }
         ),
@@ -659,25 +660,28 @@ const CreateTestCase = () => {
           {activeTab === "expectoractual" && (
             <ExpectedActual
               canEdit={canEdit}
-              groupPopulations={mapGroups(
+              groupPopulations={mapGroupPopulations(
                 formik.values.groupPopulations,
-                populationGroupResults
+                populationGroupResults,
+                groupStatementResults
               )}
+              executionRun={!_.isNil(populationGroupResults)}
               errors={formik.errors.groupPopulations}
               onChange={(
                 groupPopulations,
                 changedGroupId,
                 changedPopulation
               ) => {
-                const output = triggerPopChanges(
+                const stratOutput = triggerStratChanges(
                   groupPopulations,
                   changedGroupId,
                   changedPopulation,
                   measure?.groups
                 );
+
                 formik.setFieldValue(
                   "groupPopulations",
-                  output as GroupPopulation[]
+                  stratOutput as GroupPopulation[]
                 );
               }}
             />

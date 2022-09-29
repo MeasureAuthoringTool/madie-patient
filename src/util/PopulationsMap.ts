@@ -6,7 +6,8 @@ import {
   PopulationExpectedValue,
   DisplayPopulationValue,
 } from "@madie/madie-models";
-import _ from "lodash";
+
+import _, { isUndefined } from "lodash";
 
 const POPULATION_MAP = {
   Ratio: [

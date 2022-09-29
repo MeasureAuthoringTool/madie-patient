@@ -12,6 +12,7 @@ const ExpectActualInput = ({
     expected: displayType === "expected",
     actual: displayType === "actual",
   });
+
   return props.populationBasis === "Boolean" &&
     props.name !== "measureObservation" ? (
     <input
@@ -27,7 +28,7 @@ const ExpectActualInput = ({
     <input
       type="text"
       size={2}
-      value={expectedValue ? expectedValue : ""}
+      value={expectedValue || expectedValue == 0 ? expectedValue : ""}
       onChange={(e) => {
         onChange(e.target.value);
       }}

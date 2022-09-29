@@ -9,8 +9,10 @@ import {
   faCheckCircle,
   faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import * as _ from "lodash";
 
 export interface TestCasePopulationListProps {
+  content: string;
   i: number;
   scoring: string;
   populations: DisplayPopulationValue[];
@@ -32,6 +34,7 @@ const StyledIcon = styled(FontAwesomeIcon)(
 
 // Test case population table. We need to know if the execution has been
 const TestCasePopulationList = ({
+  content,
   scoring,
   i,
   populations,
@@ -42,6 +45,8 @@ const TestCasePopulationList = ({
   errors,
 }: TestCasePopulationListProps) => {
   let measureObservations = [];
+  content = _.isNil(content) ? "Measure Group" : content;
+  let contentId = content?.toLocaleLowerCase().replace(" ", "-");
   const measureObservationsCount = (population) => {
     const ratioMeasureObservations = populations.filter(
       (res) => res.name === "measureObservation"
@@ -76,10 +81,10 @@ const TestCasePopulationList = ({
     if (!executionRun) {
       return "initial";
     }
-    for (let i = 0; i < populations.length; i++) {
+    for (let i = 0; i < populations?.length; i++) {
       const population = populations[i];
       const { expected, actual } = population;
-      if (expected !== actual) {
+      if (expected != actual) {
         return "fail";
       }
     }
@@ -110,12 +115,12 @@ const TestCasePopulationList = ({
               errors={view === "fail"}
             />
           )}
-          <span data-testid={`measure-group-${i + 1}`} className={captionClass}>
-            Measure Group {`${i + 1}`}
+          <span data-testid={`${contentId}-${i + 1}`} className={captionClass}>
+            {content} {`${i + 1}`}
           </span>
           <span
             className="sub-caption"
-            data-testid={`scoring-unit-${i + 1}`}
+            data-testid={`${contentId}-scoring-unit-${i + 1}`}
           >{` - (${scoring})`}</span>
         </caption>
         <thead>
