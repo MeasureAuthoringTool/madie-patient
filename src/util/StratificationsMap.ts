@@ -191,10 +191,11 @@ export function triggerStratChanges(
           });
         }
       } else if (
+        
         targetPopulation.populationValues.length >
         3 + measurePopulation - measurePopulationEx
       ) {
-        if (measurePopulation - measurePopulationEx > 0) {
+        if (measurePopulation - measurePopulationEx >= 0) {
           while (
             targetPopulation.populationValues.length >
             3 + measurePopulation - measurePopulationEx
