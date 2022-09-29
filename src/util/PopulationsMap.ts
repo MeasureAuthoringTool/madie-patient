@@ -79,7 +79,7 @@ export function getFhirMeasurePopulationCode(population: string) {
   }
 }
 
-export function triggerPopChanges(
+/*export function triggerPopChanges(
   groupPopulations: GroupPopulation[],
   changedGroupId: string,
   changedPopulation: DisplayPopulationValue,
@@ -417,3 +417,4 @@ export function triggerPopChanges(
 
   return returnPops;
 }
+*/

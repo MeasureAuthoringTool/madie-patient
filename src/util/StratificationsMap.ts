@@ -46,7 +46,7 @@ export function triggerStratChanges(
       popMap[value.name] = value;
     }
   );
-
+  if (targetPopulation.populationBasis === "Boolean") {
   if (
     targetPopulation.scoring === "Continuous Variable" ||
     targetPopulation.scoring === "Ratio"
@@ -152,6 +152,139 @@ export function triggerStratChanges(
       }
     }
   }
+}else{
+
+  if (
+    targetPopulation.scoring === "Continuous Variable" ||
+    targetPopulation.scoring === "Ratio"
+  ) {
+    if (
+      changedPopulationName === "measurePopulationExclusion" ||
+      changedPopulationName === "measurePopulation"
+    ) {
+      const measurePopulation = Number(
+          targetPopulation.populationValues[1].expected
+        ),
+        measurePopulationEx = Number(
+          targetPopulation.populationValues[2].expected
+        );
+
+      if (
+        targetPopulation.populationValues.length <
+        3 + measurePopulation - measurePopulationEx
+      ) {
+        const measureObservationId = measureGroups.filter(
+          (group) => group.id === changedGroupId
+        )[0].measureObservations[0].id;
+        while (
+          targetPopulation.populationValues.length <
+          3 + measurePopulation - measurePopulationEx
+        ) {
+          targetPopulation.populationValues.push({
+            name: PopulationType.MEASURE_OBSERVATION,
+            expected: 0,
+            id:
+              `Observation` +
+              (targetPopulation.populationValues.length -
+                (measurePopulation - measurePopulationEx)),
+            criteriaReference: undefined,
+          });
+        }
+      } else if (
+        targetPopulation.populationValues.length >
+        3 + measurePopulation - measurePopulationEx
+      ) {
+        if (measurePopulation - measurePopulationEx > 0) {
+          while (
+            targetPopulation.populationValues.length >
+            3 + measurePopulation - measurePopulationEx
+          ) {
+            targetPopulation.populationValues.pop();
+          }
+        }
+      }
+    } else if (
+      changedPopulationName === "numeratorExclusion" ||
+      changedPopulationName === "numerator" ||
+      changedPopulationName === "denominatorExclusion" ||
+      changedPopulationName === "denominator"
+    ) {
+      const numExIn = targetPopulation.populationValues.findIndex((prop) => {
+        return prop.name === "numeratorExclusion";
+      });
+      const numIn = targetPopulation.populationValues.findIndex((prop) => {
+        return prop.name === "numerator";
+      });
+      const denomExIn = targetPopulation.populationValues.findIndex(
+        (prop) => {
+          return prop.name === "denominatorExclusion";
+        }
+      );
+      const denomIn = targetPopulation.populationValues.findIndex((prop) => {
+        return prop.name === "denominator";
+      });
+      const num = Number(targetPopulation.populationValues[numIn].expected),
+        numEx = Number(targetPopulation.populationValues[numExIn].expected),
+        denom = Number(targetPopulation.populationValues[denomIn].expected),
+        denomEx = Number(
+          targetPopulation.populationValues[denomExIn].expected
+        );
+
+      const headLength =
+        3 + (numExIn > -1 ? 1 : 0) + (denomExIn > -1 ? 1 : 0);
+      const numLen = num >= numEx ? num - numEx : 0;
+      const denomLen = denom >= denomEx ? denom - denomEx : 0;
+
+      const newLen = headLength + denomLen + numLen;
+
+      if (
+        (changedPopulationName === "numerator" && numExIn > -1) ||
+        changedPopulationName === "numeratorExclusion"
+      ) {
+        if (newLen > targetPopulation.populationValues.length) {
+          //ratio insert
+          while (targetPopulation.populationValues.length < newLen) {
+            targetPopulation.populationValues.push({
+              name: PopulationType.MEASURE_OBSERVATION,
+              expected: 0,
+              id:
+                "numeratorObservation" +
+                (targetPopulation.populationValues.length - denomLen),
+              criteriaReference: null,
+            });
+          }
+        } else if (newLen < targetPopulation.populationValues.length) {
+          while (targetPopulation.populationValues.length > newLen) {
+            targetPopulation.populationValues.pop();
+          }
+        }
+      } else {
+        if (newLen > targetPopulation.populationValues.length) {
+          let insertPoint = targetPopulation.populationValues.length - numLen;
+          while (targetPopulation.populationValues.length < newLen) {
+            targetPopulation.populationValues.splice(insertPoint, 0, {
+              name: PopulationType.MEASURE_OBSERVATION,
+              expected: 0,
+              id:
+                "denominatorObservation" +
+                (targetPopulation.populationValues.length - numLen),
+              criteriaReference: null,
+            });
+            insertPoint++;
+          }
+        } else if (newLen < targetPopulation.populationValues.length) {
+          let delPoint =
+            targetPopulation.populationValues.length - numLen - 1;
+          while (targetPopulation.populationValues.length > newLen) {
+            targetPopulation.populationValues.splice(delPoint, 1);
+            delPoint--;
+          }
+        }
+      }
+    }
+  }
+}
+
 
   if (targetPopulation.scoring === "Proportion") {
     //denominator
