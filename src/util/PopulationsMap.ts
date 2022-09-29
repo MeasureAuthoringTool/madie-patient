@@ -94,12 +94,10 @@ export function triggerPopChanges(
   }
 
   const changedPopulationName = changedPopulation?.name;
-  console.log(changedPopulation);
   const expectedValue = targetPopulation.populationValues.filter(
     (population) => population.name === changedPopulationName
   )[0]?.expected;
   let myMap = {};
-  //aaaa
   if (targetPopulation.populationBasis === "Boolean") {
     if (
       targetPopulation.scoring === "Continuous Variable" ||
@@ -208,14 +206,11 @@ export function triggerPopChanges(
         }
       }
     }
-    //bbbbbb
   } else {
-    //aaaaa
     if (
       targetPopulation.scoring === "Continuous Variable" ||
       targetPopulation.scoring === "Ratio"
     ) {
-      console.log(targetPopulation.populationValues);
       if (
         changedPopulationName === "measurePopulationExclusion" ||
         changedPopulationName === "measurePopulation"
@@ -241,7 +236,10 @@ export function triggerPopChanges(
             targetPopulation.populationValues.push({
               name: PopulationType.MEASURE_OBSERVATION,
               expected: 0,
-              id: measureObservationId,
+              id:
+                `Observation` +
+                (targetPopulation.populationValues.length -
+                  (measurePopulation - measurePopulationEx)),
               criteriaReference: undefined,
             });
           }
@@ -258,12 +256,12 @@ export function triggerPopChanges(
             }
           }
         }
-      }
-      //bbbb
-      else if(changedPopulationName === "numeratorExclusion"||
-      changedPopulationName === "numerator"||
-      changedPopulationName === "denominatorExclusion"||
-      changedPopulationName === "denominator"){
+      } else if (
+        changedPopulationName === "numeratorExclusion" ||
+        changedPopulationName === "numerator" ||
+        changedPopulationName === "denominatorExclusion" ||
+        changedPopulationName === "denominator"
+      ) {
         const numExIn = targetPopulation.populationValues.findIndex((prop) => {
           return prop.name === "numeratorExclusion";
         });
@@ -284,9 +282,13 @@ export function triggerPopChanges(
           denomEx = Number(
             targetPopulation.populationValues[denomExIn].expected
           );
+
         const headLength =
           3 + (numExIn > -1 ? 1 : 0) + (denomExIn > -1 ? 1 : 0);
-        const newLen = headLength + denom - denomEx + num - numEx;
+        const numLen = num >= numEx ? num - numEx : 0;
+        const denomLen = denom >= denomEx ? denom - denomEx : 0;
+
+        const newLen = headLength + denomLen + numLen;
 
         if (
           (changedPopulationName === "numerator" && numExIn > -1) ||
@@ -295,11 +297,12 @@ export function triggerPopChanges(
           if (newLen > targetPopulation.populationValues.length) {
             //ratio insert
             while (targetPopulation.populationValues.length < newLen) {
-              console.log(targetPopulation.populationValues);
               targetPopulation.populationValues.push({
                 name: PopulationType.MEASURE_OBSERVATION,
-                expected: 5,
-                id: null,
+                expected: 0,
+                id:
+                  "numeratorObservation" +
+                  (targetPopulation.populationValues.length - denomLen),
                 criteriaReference: null,
               });
             }
@@ -308,29 +311,31 @@ export function triggerPopChanges(
               targetPopulation.populationValues.pop();
             }
           }
-        }else{
-          if(newLen>targetPopulation.populationValues.length){
-            let insertPoint = targetPopulation.populationValues.length - (num-numEx)
-            while(targetPopulation.populationValues.length<newLen){
-              targetPopulation.populationValues.splice(insertPoint,0,{
+        } else {
+          if (newLen > targetPopulation.populationValues.length) {
+            let insertPoint = targetPopulation.populationValues.length - numLen;
+            while (targetPopulation.populationValues.length < newLen) {
+              targetPopulation.populationValues.splice(insertPoint, 0, {
                 name: PopulationType.MEASURE_OBSERVATION,
-                expected: 2,
-                id: null,
+                expected: 0,
+                id:
+                  "denominatorObservation" +
+                  (targetPopulation.populationValues.length - numLen),
                 criteriaReference: null,
-              })
+              });
               insertPoint++;
             }
-          }else if(newLen<targetPopulation.populationValues.length){
-            let delPoint = targetPopulation.populationValues.length - (num-numEx)
-            while(targetPopulation.populationValues.length>newLen){
-              targetPopulation.populationValues.splice(delPoint,1)
+          } else if (newLen < targetPopulation.populationValues.length) {
+            let delPoint =
+              targetPopulation.populationValues.length - numLen - 1;
+            while (targetPopulation.populationValues.length > newLen) {
+              targetPopulation.populationValues.splice(delPoint, 1);
               delPoint--;
             }
           }
         }
       }
     }
-    console.log(targetPopulation.populationValues);
   }
   //iterate through
   targetPopulation.populationValues.forEach(

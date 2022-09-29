@@ -58,7 +58,7 @@ const TestCasePopulationList = ({
   const handleChange = (population: DisplayPopulationValue) => {
     // testing(populations)
     const newPopulations = [...populations];
-    const newPop = newPopulations.find((pop) => pop.name === population.name);
+    const newPop = newPopulations.find((pop) => pop.id === population.id);
     const type =
       newPop.actual !== population.actual
         ? "actual"
