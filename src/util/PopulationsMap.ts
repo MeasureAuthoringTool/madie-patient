@@ -1,4 +1,3 @@
-import { faHourglassEnd } from "@fortawesome/free-solid-svg-icons";
 import {
   PopulationType,
   GroupPopulation,
@@ -224,9 +223,6 @@ export function triggerPopChanges(
           targetPopulation.populationValues.length <
           measPopLen + measurePopDif
         ) {
-          const measureObservationId = measureGroups.filter(
-            (group) => group.id === changedGroupId
-          )[0].measureObservations[0].id;
           while (
             targetPopulation.populationValues.length <
             measPopLen + measurePopDif
