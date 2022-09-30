@@ -34,8 +34,8 @@ import { Ace } from "ace-builds";
 import {
   FHIR_POPULATION_CODES,
   getPopulationTypesForScoring,
+  triggerPopChanges,
 } from "../../util/PopulationsMap";
-import { triggerStratChanges } from "../../util/StratificationsMap";
 import calculationService, {
   GroupStatementResultMap,
   StatementResultMap,
@@ -203,7 +203,7 @@ const CreateTestCase = () => {
           name: "strata-" + (index + 1),
           expected: false,
           actual: false,
-          id: "",
+          id: stratification.id,
           criteriaReference: "",
         })
       ),
@@ -672,7 +672,7 @@ const CreateTestCase = () => {
                 changedGroupId,
                 changedPopulation
               ) => {
-                const stratOutput = triggerStratChanges(
+                const stratOutput = triggerPopChanges(
                   groupPopulations,
                   changedGroupId,
                   changedPopulation,

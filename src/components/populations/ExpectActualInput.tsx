@@ -28,7 +28,12 @@ const ExpectActualInput = ({
     <input
       type="text"
       size={2}
-      value={expectedValue || expectedValue == 0 ? expectedValue : ""}
+      value={
+        expectedValue || (expectedValue == 0 && expectedValue !== false)
+          ? expectedValue
+          : ""
+      }
+      //value={expectedValue ? expectedValue : ""}
       onChange={(e) => {
         onChange(e.target.value);
       }}
