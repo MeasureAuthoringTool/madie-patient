@@ -24,6 +24,25 @@ describe("TruncateText component", () => {
     expect(getByText(description)).toBeInTheDocument();
   });
 
+  it("should render original value; default length", () => {
+    const description = "TestDescription";
+    const name = "title";
+    const testCaseId = "testcaseid";
+
+    const { container, getByText } = render(
+      <MemoryRouter>
+        <TruncateTextComponent
+          text={description}
+          name={name}
+          dataTestId={`test-case-title-${testCaseId}`}
+        />
+      </MemoryRouter>
+    );
+
+    expect(container).toBeTruthy();
+    expect(getByText(description)).toBeInTheDocument();
+  });
+
   it("should render truncated value", async () => {
     const description =
       "TestDescriptionTestDescriptionTestDescriptionTestDescriptionTestDescription";
