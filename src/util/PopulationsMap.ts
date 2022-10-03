@@ -63,8 +63,6 @@ export function triggerPopChanges(
   const expectedValue = targetPopulation.populationValues.filter(
     (population) => population.name === changedPopulationName
   )[0]?.expected;
-  // console.log(changedStratification)
-  // console.log(JSON.stringify(groupPopulations))
   let stratMap = {};
   let popMap = {};
 
@@ -306,7 +304,10 @@ export function triggerPopChanges(
                 expected: 0,
                 id:
                   "numeratorObservation" +
-                  (targetPopulation.populationValues.length - headLength - denomLen+1),
+                  (targetPopulation.populationValues.length -
+                    headLength -
+                    denomLen +
+                    1),
                 criteriaReference: null,
               });
             }
@@ -324,7 +325,10 @@ export function triggerPopChanges(
                 expected: 0,
                 id:
                   "denominatorObservation" +
-                  (targetPopulation.populationValues.length - headLength - numLen+1),
+                  (targetPopulation.populationValues.length -
+                    headLength -
+                    numLen +
+                    1),
                 criteriaReference: null,
               });
               insertPoint++;

@@ -1371,13 +1371,12 @@ it("NonBool: Adding and Removing the observations to numerator and denominator i
       "Ratio"
     ).id
   ).toEqual("denominatorObservation1");
-  groupPopulations[0].populationValues[3].expected=1
+  groupPopulations[0].populationValues[3].expected = 1;
   const resultPops = triggerPopChanges(
     groupPopulations,
     group1.groupId,
     {
       name: PopulationType.NUMERATOR,
-
     } as unknown as DisplayPopulationValue,
     measureGroup2
   );
@@ -1388,13 +1387,12 @@ it("NonBool: Adding and Removing the observations to numerator and denominator i
       "Ratio"
     ).id
   ).toEqual("numeratorObservation1");
-groupPopulations[0].populationValues[4].expected=10
+  groupPopulations[0].populationValues[4].expected = 10;
   const resultPops3 = triggerPopChanges(
     groupPopulations,
     group1.groupId,
     {
       name: PopulationType.NUMERATOR,
-
     } as unknown as DisplayPopulationValue,
     measureGroup2
   );
@@ -1405,13 +1403,12 @@ groupPopulations[0].populationValues[4].expected=10
       "Ratio"
     ).id
   ).toEqual("denominatorObservation1");
-  groupPopulations[0].populationValues[2].expected=10
+  groupPopulations[0].populationValues[2].expected = 10;
   const resultPops4 = triggerPopChanges(
     groupPopulations,
     group1.groupId,
     {
       name: PopulationType.DENOMINATOR,
-
     } as unknown as DisplayPopulationValue,
     measureGroup2
   );
@@ -1422,7 +1419,6 @@ groupPopulations[0].populationValues[4].expected=10
       "Ratio"
     ).id
   ).toBeFalsy();
-
 });
 
 it("NonBool: Removing and Adding the observations on changine the measure population exclusion in continuous variable ", () => {
@@ -1465,7 +1461,7 @@ it("NonBool: Removing and Adding the observations on changine the measure popula
   };
   const groupPopulations: GroupPopulation[] = [];
   groupPopulations.push(group1);
-groupPopulations[0].populationValues[2].expected=0
+  groupPopulations[0].populationValues[2].expected = 0;
   const resultPops = triggerPopChanges(
     groupPopulations,
     group1.groupId,
@@ -1493,7 +1489,7 @@ groupPopulations[0].populationValues[2].expected=0
       "Continuous Variable"
     ).id
   ).toEqual("Observation2");
-  groupPopulations[0].populationValues[2].expected=2
+  groupPopulations[0].populationValues[2].expected = 2;
   const resultPops2 = triggerPopChanges(
     groupPopulations,
     group1.groupId,
@@ -1512,9 +1508,8 @@ groupPopulations[0].populationValues[2].expected=0
       PopulationType.MEASURE_OBSERVATION,
       "Continuous Variable"
     ).id
-  ).toBeFalsy()
+  ).toBeFalsy();
 });
-
 
 function parsingTheExpectedResult(
   popVals: DisplayPopulationValue[],
