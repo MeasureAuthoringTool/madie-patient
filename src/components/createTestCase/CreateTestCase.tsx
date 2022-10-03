@@ -38,11 +38,9 @@ import {
 } from "../../util/PopulationsMap";
 import calculationService, {
   GroupStatementResultMap,
-  StatementResultMap,
 } from "../../api/CalculationService";
 import {
   DetailedPopulationGroupResult,
-  StratifierResult,
   ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
 import {
@@ -164,8 +162,6 @@ const CreateTestCase = () => {
   const userName = getUserName();
   const [editor, setEditor] = useState<Ace.Editor>(null);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
-  const [stratificationGroupResults, setStratificationGroupResults] =
-    useState<DetailedPopulationGroupResult[]>();
   const [populationGroupResults, setPopulationGroupResults] =
     useState<DetailedPopulationGroupResult[]>();
   const [groupStatementResults, setGroupStatementResults] = useState<any>();
@@ -199,7 +195,7 @@ const CreateTestCase = () => {
       populationBasis: group.populationBasis,
       stratificationValues: group.stratifications?.map(
         (stratification, index) => ({
-          name: `strata-${index + 1} ${stratification.association}`,
+          name: `Strata-${index + 1} ${stratification.association}`,
           expected: calculateEpisodes ? false : null,
           actual: calculateEpisodes ? false : null,
           id: stratification.id,
@@ -574,7 +570,6 @@ const CreateTestCase = () => {
             const startDefine = measureGroup.stratifications.find(
               (stratification) => stratification.id === stratValue.id
             )?.cqlDefinition;
-            debugger
             const actualResult =
               groupPopulation.populationBasis === "Boolean"
                 ? groupStatementResults?.[groupPopulation.groupId]?.[
