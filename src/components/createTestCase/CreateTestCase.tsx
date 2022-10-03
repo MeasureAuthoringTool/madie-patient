@@ -57,8 +57,6 @@ import ExpectedActual from "./RightPanel/ExpectedActual/ExpectedActual";
 import "./CreateTestCase.scss";
 import CalculationResults from "./calculationResults/CalculationResults";
 
-import GroupPopulations from "../populations/GroupPopulations";
-
 const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
 const TestCaseForm = tw.form`m-3`;
@@ -194,15 +192,16 @@ const CreateTestCase = () => {
   const { resetForm } = formik;
 
   const mapMeasureGroup = (group: Group): GroupPopulation => {
+    const calculateEpisodes = group.populationBasis === "Boolean";
     return {
       groupId: group.id,
       scoring: group.scoring,
       populationBasis: group.populationBasis,
       stratificationValues: group.stratifications?.map(
         (stratification, index) => ({
-          name: "strata-" + (index + 1),
-          expected: false,
-          actual: false,
+          name: `strata-${index + 1} ${stratification.association}`,
+          expected: calculateEpisodes ? false : null,
+          actual: calculateEpisodes ? false : null,
           id: stratification.id,
           criteriaReference: "",
         })
@@ -210,8 +209,8 @@ const CreateTestCase = () => {
       populationValues: getPopulationTypesForScoring(group)?.map(
         (population) => ({
           name: population.name,
-          expected: group.populationBasis === "Boolean" ? false : null,
-          actual: group.populationBasis === "Boolean" ? false : null,
+          expected: calculateEpisodes ? false : null,
+          actual: calculateEpisodes ? false : null,
           id: population.id,
           criteriaReference: population.criteriaReference,
         })
@@ -572,11 +571,22 @@ const CreateTestCase = () => {
         ...groupPopulation,
         stratificationValues: groupPopulation?.stratificationValues?.map(
           (stratValue) => {
+            const startDefine = measureGroup.stratifications.find(
+              (stratification) => stratification.id === stratValue.id
+            )?.cqlDefinition;
+            debugger
+            const actualResult =
+              groupPopulation.populationBasis === "Boolean"
+                ? groupStatementResults?.[groupPopulation.groupId]?.[
+                    startDefine
+                  ] > 0
+                : groupStatementResults?.[groupPopulation.groupId]?.[
+                    startDefine
+                  ];
+
             return {
               ...stratValue,
-              actual: results?.stratifierResults?.find(
-                (popResult) => popResult.strataCode == stratValue.name
-              )?.result,
+              actual: actualResult,
             };
           }
         ),

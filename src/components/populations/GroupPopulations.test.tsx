@@ -9,6 +9,33 @@ import {
 import userEvent from "@testing-library/user-event";
 
 describe("Group Populations", () => {
+  let testCaseGroups: GroupPopulation[];
+  beforeEach(() => {
+    testCaseGroups = [
+      {
+        groupId: "Group1_ID",
+        scoring: MeasureScoring.COHORT,
+        populationBasis: "Boolean",
+        populationValues: [
+          {
+            id: "123",
+            name: PopulationType.INITIAL_POPULATION,
+            expected: true,
+            actual: true,
+          },
+        ],
+        stratificationValues: [
+          {
+            id: "321",
+            name: "strata-1 Initial Population",
+            expected: true,
+            actual: true,
+          },
+        ],
+      },
+    ];
+  });
+
   it("should render the populations", () => {
     const groupPopulations: GroupPopulation[] = [
       {
@@ -42,19 +69,16 @@ describe("Group Populations", () => {
       },
     ];
     const handleChange = jest.fn();
-    const setChangedPopulation = jest.fn();
     render(
       <GroupPopulations
-        disableActual={true}
         executionRun
         groupPopulations={groupPopulations}
         onChange={handleChange}
-        setChangedPopulation={setChangedPopulation}
       />
     );
     const g1MeasureName = screen.getByTestId("measure-group-1");
     expect(g1MeasureName).toBeInTheDocument();
-    const g1ScoringName = screen.getByTestId("measure-group-scoring-unit-1");
+    const g1ScoringName = screen.getByTestId("measure-group-1-scoring-unit-1");
     expect(g1ScoringName).toBeInTheDocument();
 
     const ippRow = screen.getByRole("row", { name: "ipp" });
@@ -143,30 +167,13 @@ describe("Group Populations", () => {
   });
 
   it("should render the populations with both checkboxes disabled", () => {
-    const groupPopulations: GroupPopulation[] = [
-      {
-        groupId: "Group1_ID",
-        scoring: MeasureScoring.COHORT,
-        populationBasis: "Boolean",
-        populationValues: [
-          {
-            name: PopulationType.INITIAL_POPULATION,
-            expected: true,
-            actual: true,
-          },
-        ],
-      },
-    ];
     const handleChange = jest.fn();
-    const setChangedPopulation = jest.fn();
     render(
       <GroupPopulations
-        disableActual={true}
         disableExpected={true}
         executionRun
-        groupPopulations={groupPopulations}
+        groupPopulations={testCaseGroups}
         onChange={handleChange}
-        setChangedPopulation={setChangedPopulation}
       />
     );
 
@@ -179,28 +186,13 @@ describe("Group Populations", () => {
   });
 
   it("should handle checkbox changes", () => {
-    const groupPopulations: GroupPopulation[] = [
-      {
-        groupId: "Group1_ID",
-        scoring: MeasureScoring.CONTINUOUS_VARIABLE,
-        populationBasis: "Boolean",
-        populationValues: [
-          {
-            name: PopulationType.INITIAL_POPULATION,
-            expected: true,
-            actual: true,
-          },
-        ],
-      },
-    ];
+    testCaseGroups[0].scoring = MeasureScoring.CONTINUOUS_VARIABLE;
     const handleChange = jest.fn();
-    const setChangedPopulation = jest.fn();
     render(
       <GroupPopulations
         executionRun
-        groupPopulations={groupPopulations}
+        groupPopulations={testCaseGroups}
         onChange={handleChange}
-        setChangedPopulation={setChangedPopulation}
       />
     );
 
@@ -214,69 +206,27 @@ describe("Group Populations", () => {
     userEvent.click(ippCbs[0]);
     expect(handleChange).toHaveBeenNthCalledWith(
       1,
-      [
-        {
-          groupId: "Group1_ID",
-          scoring: MeasureScoring.CONTINUOUS_VARIABLE,
-          populationBasis: "Boolean",
-          populationValues: [
-            {
-              name: PopulationType.INITIAL_POPULATION,
-              expected: false,
-              actual: true,
-            },
-          ],
-        },
-      ],
+      testCaseGroups,
       "Group1_ID",
-      { actual: true, expected: false, name: "initialPopulation" }
+      { actual: true, expected: false, id: "123", name: "initialPopulation" }
     );
 
     userEvent.click(ippCbs[0]);
     expect(handleChange).toHaveBeenNthCalledWith(
       2,
-      [
-        {
-          groupId: "Group1_ID",
-          scoring: MeasureScoring.CONTINUOUS_VARIABLE,
-          populationBasis: "Boolean",
-          populationValues: [
-            {
-              name: PopulationType.INITIAL_POPULATION,
-              expected: false,
-              actual: true,
-            },
-          ],
-        },
-      ],
+      testCaseGroups,
       "Group1_ID",
-      { actual: true, expected: false, name: "initialPopulation" }
+      { actual: true, expected: false, id: "123", name: "initialPopulation" }
     );
   });
 
   it("should display empty on non run", () => {
-    const groupPopulations: GroupPopulation[] = [
-      {
-        groupId: "Group1_ID",
-        scoring: MeasureScoring.CONTINUOUS_VARIABLE,
-        populationBasis: "Boolean",
-        populationValues: [
-          {
-            name: PopulationType.INITIAL_POPULATION,
-            expected: true,
-            actual: true,
-          },
-        ],
-      },
-    ];
     const handleChange = jest.fn();
-    const setChangedPopulation = jest.fn();
     render(
       <GroupPopulations
         executionRun={false}
-        groupPopulations={groupPopulations}
+        groupPopulations={testCaseGroups}
         onChange={handleChange}
-        setChangedPopulation={setChangedPopulation}
       />
     );
 
