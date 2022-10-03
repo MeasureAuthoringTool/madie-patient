@@ -6,7 +6,7 @@ import {
   DisplayPopulationValue,
 } from "@madie/madie-models";
 
-import _ from "lodash";
+import _, { head } from "lodash";
 
 const POPULATION_MAP = {
   Ratio: [
@@ -47,11 +47,11 @@ export const FHIR_POPULATION_CODES = {
 export function triggerPopChanges(
   groupPopulations: GroupPopulation[],
   changedGroupId: string,
+  //should the below be changedPopulation?
   changedStratification: DisplayPopulationValue,
   measureGroups
 ) {
   let returnPops: GroupPopulation[] = [...groupPopulations];
-
   const targetPopulation = returnPops.find(
     (groupPop) => groupPop.groupId === changedGroupId
   );
@@ -63,6 +63,8 @@ export function triggerPopChanges(
   const expectedValue = targetPopulation.populationValues.filter(
     (population) => population.name === changedPopulationName
   )[0]?.expected;
+  // console.log(changedStratification)
+  // console.log(JSON.stringify(groupPopulations))
   let stratMap = {};
   let popMap = {};
 
@@ -304,7 +306,7 @@ export function triggerPopChanges(
                 expected: 0,
                 id:
                   "numeratorObservation" +
-                  (targetPopulation.populationValues.length - denomLen),
+                  (targetPopulation.populationValues.length - headLength - denomLen+1),
                 criteriaReference: null,
               });
             }
@@ -322,7 +324,7 @@ export function triggerPopChanges(
                 expected: 0,
                 id:
                   "denominatorObservation" +
-                  (targetPopulation.populationValues.length - numLen),
+                  (targetPopulation.populationValues.length - headLength - numLen+1),
                 criteriaReference: null,
               });
               insertPoint++;
