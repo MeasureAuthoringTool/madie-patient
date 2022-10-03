@@ -27,15 +27,19 @@ export const TestCaseValidator = Yup.object().shape({
                         "Expected value type must match population basis type",
                         // must use old school "function" instead of lambda to
                         // get access to "this" that is used to create error
-                        function (value) {
+                        function (value, population) {
                           if (value === undefined || value === null) {
                             return true;
                           } else if (
                             populationBasis === "Boolean" &&
+                            population.parent.name !== "measureObservation" &&
                             typeof value === "boolean"
                           ) {
                             return true;
-                          } else if (populationBasis !== "Boolean") {
+                          } else if (
+                            populationBasis !== "Boolean" ||
+                            population.parent.name === "measureObservation"
+                          ) {
                             if (isNaN(+value)) {
                               return this.createError({
                                 message:
