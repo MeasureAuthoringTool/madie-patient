@@ -203,10 +203,12 @@ export function triggerPopChanges(
       ) {
         const measurePopulation = Number(
             targetPopulation.populationValues[1].expected
-          ),
+          )>=0?Number(
+            targetPopulation.populationValues[1].expected
+          ):0,
           measurePopulationEx =
             targetPopulation.populationValues[2].name ===
-            "measurePopulationExclusion"
+            "measurePopulationExclusion" && Number(targetPopulation.populationValues[2].expected)>=0
               ? Number(targetPopulation.populationValues[2].expected)
               : 0;
         const measurePopDif =
@@ -264,12 +266,12 @@ export function triggerPopChanges(
         const denomIn = targetPopulation.populationValues.findIndex((prop) => {
           return prop.name === "denominator";
         });
-        const num = Number(targetPopulation.populationValues[numIn].expected),
-          numEx = targetPopulation.populationValues[numExIn]
+        const num = Number(targetPopulation.populationValues[numIn].expected)>=0?Number(targetPopulation.populationValues[numIn].expected):0,
+          numEx = targetPopulation.populationValues[numExIn]&&Number(targetPopulation.populationValues[numExIn].expected)>=0
             ? Number(targetPopulation.populationValues[numExIn].expected)
             : 0,
-          denom = Number(targetPopulation.populationValues[denomIn].expected),
-          denomEx = targetPopulation.populationValues[denomExIn]
+          denom = Number(targetPopulation.populationValues[denomIn].expected)>=0?Number(targetPopulation.populationValues[denomIn].expected):0,
+          denomEx = targetPopulation.populationValues[denomExIn]&&Number(targetPopulation.populationValues[denomExIn].expected)>=0
             ? Number(targetPopulation.populationValues[denomExIn].expected)
             : 0;
 
