@@ -213,7 +213,7 @@ export function triggerPopChanges(
           measurePopulationEx < measurePopulation
             ? measurePopulation - measurePopulationEx
             : 0;
-        const measPopLen =3;
+        const measPopLen = 3;
 
         if (
           targetPopulation.populationValues.length <
