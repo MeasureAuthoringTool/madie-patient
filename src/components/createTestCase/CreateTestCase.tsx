@@ -567,16 +567,16 @@ const CreateTestCase = () => {
         ...groupPopulation,
         stratificationValues: groupPopulation?.stratificationValues?.map(
           (stratValue) => {
-            const startDefine = measureGroup.stratifications.find(
+            const strataDefinition = measureGroup.stratifications.find(
               (stratification) => stratification.id === stratValue.id
             )?.cqlDefinition;
             const actualResult =
               groupPopulation.populationBasis === "Boolean"
                 ? groupStatementResults?.[groupPopulation.groupId]?.[
-                    startDefine
+                    strataDefinition
                   ] > 0
                 : groupStatementResults?.[groupPopulation.groupId]?.[
-                    startDefine
+                    strataDefinition
                   ];
 
             return {

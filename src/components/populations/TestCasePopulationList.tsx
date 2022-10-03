@@ -9,7 +9,6 @@ import {
   faCheckCircle,
   faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import * as _ from "lodash";
 
 export interface TestCasePopulationListProps {
   content: string;
