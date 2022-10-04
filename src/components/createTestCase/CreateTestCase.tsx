@@ -38,11 +38,9 @@ import {
 } from "../../util/PopulationsMap";
 import calculationService, {
   GroupStatementResultMap,
-  StatementResultMap,
 } from "../../api/CalculationService";
 import {
   DetailedPopulationGroupResult,
-  StratifierResult,
   ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
 import {
@@ -56,8 +54,6 @@ import CreateTestCaseNavTabs from "./CreateTestCaseNavTabs";
 import ExpectedActual from "./RightPanel/ExpectedActual/ExpectedActual";
 import "./CreateTestCase.scss";
 import CalculationResults from "./calculationResults/CalculationResults";
-
-import GroupPopulations from "../populations/GroupPopulations";
 
 const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
@@ -166,8 +162,6 @@ const CreateTestCase = () => {
   const userName = getUserName();
   const [editor, setEditor] = useState<Ace.Editor>(null);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
-  const [stratificationGroupResults, setStratificationGroupResults] =
-    useState<DetailedPopulationGroupResult[]>();
   const [populationGroupResults, setPopulationGroupResults] =
     useState<DetailedPopulationGroupResult[]>();
   const [groupStatementResults, setGroupStatementResults] = useState<any>();
@@ -194,15 +188,16 @@ const CreateTestCase = () => {
   const { resetForm } = formik;
 
   const mapMeasureGroup = (group: Group): GroupPopulation => {
+    const calculateEpisodes = group.populationBasis === "Boolean";
     return {
       groupId: group.id,
       scoring: group.scoring,
       populationBasis: group.populationBasis,
       stratificationValues: group.stratifications?.map(
         (stratification, index) => ({
-          name: "strata-" + (index + 1),
-          expected: false,
-          actual: false,
+          name: `Strata-${index + 1} ${stratification.association}`,
+          expected: calculateEpisodes ? false : null,
+          actual: calculateEpisodes ? false : null,
           id: stratification.id,
           criteriaReference: "",
         })
@@ -210,8 +205,8 @@ const CreateTestCase = () => {
       populationValues: getPopulationTypesForScoring(group)?.map(
         (population) => ({
           name: population.name,
-          expected: group.populationBasis === "Boolean" ? false : null,
-          actual: group.populationBasis === "Boolean" ? false : null,
+          expected: calculateEpisodes ? false : null,
+          actual: calculateEpisodes ? false : null,
           id: population.id,
           criteriaReference: population.criteriaReference,
         })
@@ -572,11 +567,21 @@ const CreateTestCase = () => {
         ...groupPopulation,
         stratificationValues: groupPopulation?.stratificationValues?.map(
           (stratValue) => {
+            const strataDefinition = measureGroup.stratifications.find(
+              (stratification) => stratification.id === stratValue.id
+            )?.cqlDefinition;
+            const actualResult =
+              groupPopulation.populationBasis === "Boolean"
+                ? groupStatementResults?.[groupPopulation.groupId]?.[
+                    strataDefinition
+                  ] > 0
+                : groupStatementResults?.[groupPopulation.groupId]?.[
+                    strataDefinition
+                  ];
+
             return {
               ...stratValue,
-              actual: results?.stratifierResults?.find(
-                (popResult) => popResult.strataCode == stratValue.name
-              )?.result,
+              actual: actualResult,
             };
           }
         ),

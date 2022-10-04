@@ -9,7 +9,6 @@ import {
   faCheckCircle,
   faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import * as _ from "lodash";
 
 export interface TestCasePopulationListProps {
   content: string;
@@ -45,8 +44,7 @@ const TestCasePopulationList = ({
   errors,
 }: TestCasePopulationListProps) => {
   let measureObservations = [];
-  content = _.isNil(content) ? "Measure Group" : content;
-  let contentId = content?.toLocaleLowerCase().replace(" ", "-");
+  let contentId = content?.toLocaleLowerCase().replace(/(\W)+/g, "-");
   const measureObservationsCount = (population) => {
     const ratioMeasureObservations = populations.filter(
       (res) => res.name === "measureObservation"
@@ -115,13 +113,13 @@ const TestCasePopulationList = ({
               errors={view === "fail"}
             />
           )}
-          <span data-testid={`${contentId}-${i + 1}`} className={captionClass}>
-            {content} {`${i + 1}`}
+          <span data-testid={contentId} className={captionClass}>
+            {content}
           </span>
           <span
             className="sub-caption"
             data-testid={`${contentId}-scoring-unit-${i + 1}`}
-          >{` - (${scoring})`}</span>
+          >{` - ${scoring} | ${populationBasis}`}</span>
         </caption>
         <thead>
           <tr>
