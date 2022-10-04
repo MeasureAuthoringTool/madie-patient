@@ -36,7 +36,7 @@ const GroupPopulations = ({
         return (
           <div key={gp.groupId} style={{ marginTop: 16 }}>
             <TestCasePopulationList
-              content="Measure Group"
+              content={`Measure Group ${i + 1}`}
               i={i}
               scoring={gp.scoring}
               errors={errors?.[i]}
@@ -64,7 +64,7 @@ const GroupPopulations = ({
 
             <TestCasePopulationList
               i={i}
-              content="Stratifications"
+              content={`Measure Group ${i + 1}: Stratifications`}
               scoring={gp.scoring}
               disableExpected={disableExpected}
               executionRun={executionRun}

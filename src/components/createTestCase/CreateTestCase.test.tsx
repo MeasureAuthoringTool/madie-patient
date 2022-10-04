@@ -1056,7 +1056,7 @@ describe("CreateTestCase component", () => {
     const g1MeasureName = await screen.getByTestId("measure-group-1");
     expect(g1MeasureName).toBeInTheDocument();
     const g1ScoringName = await screen.getByTestId(
-      "measure-group-scoring-unit-1"
+      "measure-group-1-scoring-unit-1"
     );
     expect(g1ScoringName).toBeInTheDocument();
 
