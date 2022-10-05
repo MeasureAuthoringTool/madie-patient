@@ -72,10 +72,6 @@ const TestCaseTitle = tw.input`
   sm:text-sm
 `;
 
-const ValidationErrorCard = tw.p`
-text-xs bg-white p-3 bg-red-100 rounded-xl mx-3 my-1 break-words
-`;
-
 const ValidationErrorsButton = tw.button`
   text-lg
   -translate-y-6
@@ -107,6 +103,11 @@ const styles = {
 const Alert = styled.div<AlertProps>(({ status = "default" }) => [
   styles[status],
   tw`rounded-lg p-2 m-2 text-base inline-flex items-center w-11/12`,
+]);
+
+const ValidationAlertCard = styled.p<AlertProps>(({ status = "default" }) => [
+  tw`text-xs bg-white p-3 rounded-xl mx-3 my-1 break-words`,
+  styles[status],
 ]);
 
 const StyledIcon = styled(FontAwesomeIcon)(({ errors }: { errors: number }) => [
@@ -801,9 +802,12 @@ const CreateTestCase = () => {
               {validationErrors && validationErrors.length > 0 ? (
                 validationErrors.map((error) => {
                   return (
-                    <ValidationErrorCard key={error.key}>
+                    <ValidationAlertCard
+                      key={error.key}
+                      status={error.severity}
+                    >
                       {error.diagnostics}
-                    </ValidationErrorCard>
+                    </ValidationAlertCard>
                   );
                 })
               ) : (
