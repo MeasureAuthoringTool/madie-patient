@@ -6,7 +6,7 @@ import {
   DisplayPopulationValue,
 } from "@madie/madie-models";
 
-import _, { head } from "lodash";
+import _ from "lodash";
 
 const POPULATION_MAP = {
   Ratio: [
@@ -293,7 +293,7 @@ export function triggerPopChanges(
         const newLen = headLength + denomLen + numLen;
 
         if (
-          (changedPopulationName === "numerator" && numExIn > -1) ||
+          changedPopulationName === "numerator" ||
           changedPopulationName === "numeratorExclusion"
         ) {
           if (newLen > targetPopulation.populationValues.length) {
