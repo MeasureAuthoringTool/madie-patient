@@ -39,7 +39,13 @@ const TestCaseList = () => {
   const [valueSets] = valueSetsState;
 
   useEffect(() => {
-    setCanEdit(userName === measure?.createdBy);
+    setCanEdit(
+      measure?.createdBy === userName ||
+        measure?.acls?.some(
+          (acl) =>
+            acl.userId === userName && acl.roles.indexOf("SHARED_WITH") >= 0
+        )
+    );
   }, [measure, userName]);
 
   useEffect(() => {
