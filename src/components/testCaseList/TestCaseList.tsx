@@ -5,7 +5,7 @@ import * as _ from "lodash";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import { TestCase } from "@madie/madie-models";
 import { useParams, useNavigate } from "react-router-dom";
-import { Button } from "@madie/madie-components";
+import { Button } from "@madie/madie-design-system/dist/react";
 import TestCaseComponent from "./TestCase";
 import calculationService from "../../api/CalculationService";
 import {
@@ -15,6 +15,8 @@ import {
 import { getFhirMeasurePopulationCode } from "../../util/PopulationsMap";
 import { useOktaTokens } from "@madie/madie-util";
 import useExecutionContext from "../routes/useExecutionContext";
+import CreateCodeCoverageNavTabs from "./CreateCodeCoverageNavTabs";
+import CodeCoverageHighlighting from "./CodeCoverageHighlighting";
 
 const TH = tw.th`p-3 border-b text-left text-sm font-bold uppercase`;
 const ErrorAlert = tw.div`bg-red-100 text-red-700 rounded-lg m-1 p-3`;
@@ -32,6 +34,8 @@ const TestCaseList = () => {
   const userName = getUserName();
   const navigate = useNavigate();
   const [canEdit, setCanEdit] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<string>("testCasesList");
+  const [click, setClick] = useState<boolean>(false);
 
   const { measureState, bundleState, valueSetsState } = useExecutionContext();
   const [measure] = measureState;
@@ -66,6 +70,7 @@ const TestCaseList = () => {
       );
       return null;
     }
+    console.log(click);
 
     if (testCases && measureBundle) {
       try {
@@ -110,6 +115,7 @@ const TestCaseList = () => {
             testCase.executionStatus = executionStatus ? "pass" : "fail";
           }
         });
+        setClick(true);
         setTestCases([...testCases]);
         setExecutionResults(nextExecutionResults);
       } catch (error) {
@@ -119,31 +125,41 @@ const TestCaseList = () => {
   };
 
   return (
-    <div>
+    <div tw="mx-6 my-6 shadow-lg rounded-md border border-slate bg-white">
       <div tw="flex flex-col">
-        <div tw="py-2">
-          {canEdit && (
-            <Button
-              buttonTitle="New Test Case"
-              disabled={false}
-              onClick={createNewTestCase}
-              data-testid="create-new-test-case-button"
-            />
-          )}
-        </div>
-        <div tw="py-2">
-          {canEdit && (
-            <Button
-              buttonTitle="Execute Test Cases"
-              disabled={
-                !!measure?.cqlErrors ||
-                _.isNil(measure?.groups) ||
-                measure?.groups.length === 0
-              }
-              onClick={executeTestCases}
-              data-testid="execute-test-cases-button"
-            />
-          )}
+        <div tw="flex flex-row">
+          <CreateCodeCoverageNavTabs
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            click={click}
+          />
+          <div tw="py-2">
+            {canEdit && (
+              <Button
+                disabled={false}
+                onClick={createNewTestCase}
+                data-testid="create-new-test-case-button"
+              >
+                New Test Case
+              </Button>
+            )}
+          </div>
+          <div tw="py-2">
+            {canEdit && (
+              <Button
+                tw="ml-2"
+                disabled={
+                  !!measure?.cqlErrors ||
+                  _.isNil(measure?.groups) ||
+                  measure?.groups.length === 0
+                }
+                onClick={executeTestCases}
+                data-testid="execute-test-cases-button"
+              >
+                Execute Test Cases
+              </Button>
+            )}
+          </div>
         </div>
 
         {error && (
@@ -151,34 +167,39 @@ const TestCaseList = () => {
             {error}
           </ErrorAlert>
         )}
-        <div tw="overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div tw="py-2 inline-block min-w-full sm:px-6 lg:px-8">
-            <table tw="min-w-full" data-testid="test-case-tbl">
-              <thead>
-                <tr>
-                  <TH scope="col" />
-                  <TH scope="col">Title</TH>
-                  <TH scope="col">Series</TH>
-                  <TH scope="col">Status</TH>
-                  <TH scope="col" />
-                </tr>
-              </thead>
-              <tbody>
-                {testCases?.map((testCase) => {
-                  return (
-                    <TestCaseComponent
-                      testCase={testCase}
-                      key={testCase.id}
-                      canEdit={canEdit}
-                      executionResult={executionResults[testCase.id]}
-                      // we assume all results have been run here
-                    />
-                  );
-                })}
-              </tbody>
-            </table>
+
+        {activeTab === "testCasesList" && (
+          <div tw="overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div tw="py-2 inline-block min-w-full sm:px-6 lg:px-8">
+              <table tw="min-w-full" data-testid="test-case-tbl">
+                <thead>
+                  <tr>
+                    <TH scope="col" />
+                    <TH scope="col">Title</TH>
+                    <TH scope="col">Series</TH>
+                    <TH scope="col">Status</TH>
+                    <TH scope="col" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {testCases?.map((testCase) => {
+                    return (
+                      <TestCaseComponent
+                        testCase={testCase}
+                        key={testCase.id}
+                        canEdit={canEdit}
+                        executionResult={executionResults[testCase.id]}
+                        // we assume all results have been run here
+                      />
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+        )}
+
+        {activeTab === "coverage" && <CodeCoverageHighlighting />}
       </div>
     </div>
   );
