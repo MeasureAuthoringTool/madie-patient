@@ -205,25 +205,27 @@ export function triggerPopChanges(
             Number(targetPopulation.populationValues[1].expected) >= 0
               ? Number(targetPopulation.populationValues[1].expected)
               : 0,
+          //checks if the exclusion exists, if not, sets value to zero
           measurePopulationEx =
             targetPopulation.populationValues[2].name ===
               "measurePopulationExclusion" &&
             Number(targetPopulation.populationValues[2].expected) >= 0
               ? Number(targetPopulation.populationValues[2].expected)
               : 0;
+        //catches potential negative, zeroing out if so
         const measurePopDif =
           measurePopulationEx < measurePopulation
             ? measurePopulation - measurePopulationEx
             : 0;
-        const measPopLen = 3;
+        const measaurePopulationLengnth = 3;
 
         if (
           targetPopulation.populationValues.length <
-          measPopLen + measurePopDif
+          measaurePopulationLengnth + measurePopDif
         ) {
           while (
             targetPopulation.populationValues.length <
-            measPopLen + measurePopDif
+            measaurePopulationLengnth + measurePopDif
           ) {
             targetPopulation.populationValues.push({
               name: PopulationType.MEASURE_OBSERVATION,
@@ -237,11 +239,11 @@ export function triggerPopChanges(
           }
         } else if (
           targetPopulation.populationValues.length >
-          measPopLen + measurePopDif
+          measaurePopulationLengnth + measurePopDif
         ) {
           while (
             targetPopulation.populationValues.length >
-            measPopLen + measurePopDif
+            measaurePopulationLengnth + measurePopDif
           ) {
             targetPopulation.populationValues.pop();
           }
@@ -252,6 +254,7 @@ export function triggerPopChanges(
         changedPopulationName === "denominatorExclusion" ||
         changedPopulationName === "denominator"
       ) {
+        //check which fields are present and grab their indexes
         const numExIn = targetPopulation.populationValues.findIndex((prop) => {
           return prop.name === "numeratorExclusion";
         });
@@ -266,6 +269,7 @@ export function triggerPopChanges(
         const denomIn = targetPopulation.populationValues.findIndex((prop) => {
           return prop.name === "denominator";
         });
+        //grabs the number within each index, if negative set it to zero
         const num =
             Number(targetPopulation.populationValues[numIn].expected) >= 0
               ? Number(targetPopulation.populationValues[numIn].expected)
@@ -284,20 +288,21 @@ export function triggerPopChanges(
             Number(targetPopulation.populationValues[denomExIn].expected) >= 0
               ? Number(targetPopulation.populationValues[denomExIn].expected)
               : 0;
-
+        //headLength is the total length of the array before observations are put in
         const headLength =
           3 + (numExIn > -1 ? 1 : 0) + (denomExIn > -1 ? 1 : 0);
+        //total length of numerator and denominator observations
         const numLen = num >= numEx ? num - numEx : 0;
         const denomLen = denom >= denomEx ? denom - denomEx : 0;
-
+        //target length
         const newLen = headLength + denomLen + numLen;
 
         if (
           changedPopulationName === "numerator" ||
           changedPopulationName === "numeratorExclusion"
         ) {
+          //numerator observation insert
           if (newLen > targetPopulation.populationValues.length) {
-            //ratio insert
             while (targetPopulation.populationValues.length < newLen) {
               targetPopulation.populationValues.push({
                 name: PopulationType.MEASURE_OBSERVATION,
@@ -312,12 +317,15 @@ export function triggerPopChanges(
               });
             }
           } else if (newLen < targetPopulation.populationValues.length) {
+            //numerator observation removal
             while (targetPopulation.populationValues.length > newLen) {
               targetPopulation.populationValues.pop();
             }
           }
         } else {
+          //denominator insert
           if (newLen > targetPopulation.populationValues.length) {
+            //insert point is before the numerator's observations
             let insertPoint = targetPopulation.populationValues.length - numLen;
             while (targetPopulation.populationValues.length < newLen) {
               targetPopulation.populationValues.splice(insertPoint, 0, {
@@ -334,6 +342,7 @@ export function triggerPopChanges(
               insertPoint++;
             }
           } else if (newLen < targetPopulation.populationValues.length) {
+            //denominator observation removal
             let delPoint =
               targetPopulation.populationValues.length - numLen - 1;
             while (targetPopulation.populationValues.length > newLen) {
