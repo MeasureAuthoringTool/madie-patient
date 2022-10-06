@@ -5,7 +5,6 @@ import * as _ from "lodash";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import { TestCase } from "@madie/madie-models";
 import { useParams, useNavigate } from "react-router-dom";
-import { Button } from "@madie/madie-design-system/dist/react";
 import TestCaseComponent from "./TestCase";
 import calculationService from "../../api/CalculationService";
 import {
@@ -70,7 +69,6 @@ const TestCaseList = () => {
       );
       return null;
     }
-    console.log(click);
 
     if (testCases && measureBundle) {
       try {
@@ -126,40 +124,17 @@ const TestCaseList = () => {
 
   return (
     <div tw="mx-6 my-6 shadow-lg rounded-md border border-slate bg-white">
-      <div tw="flex flex-col">
-        <div tw="flex flex-row">
+      <div tw="flex-auto">
+        <div tw="pl-12">
           <CreateCodeCoverageNavTabs
             activeTab={activeTab}
             setActiveTab={setActiveTab}
             click={click}
+            canEdit={canEdit}
+            measure={measure}
+            createNewTestCase={createNewTestCase}
+            executeTestCases={executeTestCases}
           />
-          <div tw="py-2">
-            {canEdit && (
-              <Button
-                disabled={false}
-                onClick={createNewTestCase}
-                data-testid="create-new-test-case-button"
-              >
-                New Test Case
-              </Button>
-            )}
-          </div>
-          <div tw="py-2">
-            {canEdit && (
-              <Button
-                tw="ml-2"
-                disabled={
-                  !!measure?.cqlErrors ||
-                  _.isNil(measure?.groups) ||
-                  measure?.groups.length === 0
-                }
-                onClick={executeTestCases}
-                data-testid="execute-test-cases-button"
-              >
-                Execute Test Cases
-              </Button>
-            )}
-          </div>
         </div>
 
         {error && (
