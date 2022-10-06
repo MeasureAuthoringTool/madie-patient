@@ -1888,14 +1888,17 @@ describe("Measure Calculation ", () => {
       calculationResults[0].detailedResults[0].populationResults;
     expect(populationResults).toHaveLength(3);
     expect(populationResults).toContainEqual({
+      criteriaExpression: "first",
       populationType: "initial-population",
       result: true,
     });
     expect(populationResults).toContainEqual({
+      criteriaExpression: "second",
       populationType: "denominator",
       result: true,
     });
     expect(populationResults).toContainEqual({
+      criteriaExpression: "third",
       populationType: "numerator",
       result: false,
     });
