@@ -26,9 +26,17 @@ describe("CalculationService Tests", () => {
     const expectedPopulationResults =
       calculationResults[0].detailedResults[0].populationResults;
     expect(expectedPopulationResults).toEqual([
-      { populationType: "initial-population", result: true },
-      { populationType: "denominator", result: true },
-      { populationType: "numerator", result: true },
+      {
+        criteriaExpression: "ipp",
+        populationType: "initial-population",
+        result: true,
+      },
+      {
+        criteriaExpression: "denom",
+        populationType: "denominator",
+        result: true,
+      },
+      { criteriaExpression: "num", populationType: "numerator", result: true },
     ]);
   });
 
