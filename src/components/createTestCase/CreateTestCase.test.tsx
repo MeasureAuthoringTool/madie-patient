@@ -1898,7 +1898,7 @@ describe("CreateTestCase component", () => {
     await waitFor(() =>
       expect(
         screen.getByText(
-          "Only numeric values can be entered in the expected values"
+          "Only positive numeric values can be entered in the expected values"
         )
       ).toBeInTheDocument()
     );
