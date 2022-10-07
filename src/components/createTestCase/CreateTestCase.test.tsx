@@ -33,6 +33,7 @@ import { ChangeEvent } from "react";
 import { multiGroupMeasureFixture } from "./__mocks__/multiGroupMeasureFixture";
 import { nonBoolTestCaseFixture } from "./__mocks__/nonBoolTestCaseFixture";
 import { TestCaseValidator } from "../../validators/TestCaseValidator";
+import { useOktaTokens } from "@madie/madie-util";
 
 //temporary solution (after jest updated to version 27) for error: thrown: "Exceeded timeout of 5000 ms for a test.
 jest.setTimeout(60000);
@@ -86,10 +87,10 @@ jest.mock("@madie/madie-util", () => ({
     },
     unsubscribe: () => null,
   },
-  useOktaTokens: () => ({
+  useOktaTokens: jest.fn(() => ({
+    getUserName: jest.fn(() => MEASURE_CREATEDBY), //#nosec
     getAccessToken: () => "test.jwt",
-    getUserName: () => MEASURE_CREATEDBY,
-  }),
+  })),
   routeHandlerStore: {
     subscribe: (set) => {
       return { unsubscribe: () => null };
@@ -117,6 +118,7 @@ const defaultMeasure = {
       ],
     },
   ],
+  acls: [{ userId: "othertestuser@example.com", roles: ["SHARED_WITH"] }],
 } as unknown as Measure;
 const measureBundle = buildMeasureBundle(simpleMeasureFixture);
 const valueSets = [getExampleValueSet()];
@@ -1746,7 +1748,7 @@ describe("CreateTestCase component", () => {
     expect(screen.getByTestId("404-page-link")).toBeInTheDocument();
   });
 
-  it("should render no text input and no create or update button if user is not the measure owner", async () => {
+  it("should render no text input and no create or update button if measure is not shared with user", async () => {
     mockedAxios.get.mockImplementation((args) => {
       if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["SeriesA"] });
@@ -1776,14 +1778,57 @@ describe("CreateTestCase component", () => {
           screen.queryByTestId("create-test-case-series")
         ).not.toBeInTheDocument();
         expect(
-          screen.queryByRole("button", { name: "Create Test Case" })
+          screen.queryByRole("button", { name: "Save" })
         ).not.toBeInTheDocument();
       },
       { timeout: 1500 }
     );
     expect(
-      screen.queryByRole("button", { name: "Cancel" })
+      screen.queryByRole("button", { name: "Discard Changes" })
     ).not.toBeInTheDocument();
+
+    expect(editor).toBeInTheDocument();
+  });
+
+  it("should render text input and create or update button if measure is shared with the user", async () => {
+    useOktaTokens.mockImplementationOnce(() => ({
+      getUserName: () => "othertestuser@example.com", //#nosec
+    }));
+    mockedAxios.get.mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["SeriesA"] });
+      }
+      return Promise.resolve({ data: null });
+    });
+
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases/create"],
+      "/measures/:measureId/edit/test-cases/create",
+      defaultMeasure
+    );
+
+    const editor = await screen.getByTestId("test-case-json-editor");
+    await userEvent.click(screen.getByTestId("details-tab"));
+    await waitFor(
+      () => {
+        expect(
+          screen.queryByTestId("create-test-case-title")
+        ).toBeInTheDocument();
+        expect(
+          screen.queryByTestId("create-test-case-description")
+        ).toBeInTheDocument();
+        expect(
+          screen.queryByTestId("create-test-case-series")
+        ).toBeInTheDocument();
+        expect(
+          screen.queryByRole("button", { name: "Save" })
+        ).toBeInTheDocument();
+      },
+      { timeout: 1500 }
+    );
+    expect(
+      screen.queryByRole("button", { name: "Discard Changes" })
+    ).toBeInTheDocument();
 
     expect(editor).toBeInTheDocument();
   });
@@ -1853,7 +1898,7 @@ describe("CreateTestCase component", () => {
     await waitFor(() =>
       expect(
         screen.getByText(
-          "Only numeric values can be entered in the expected values"
+          "Only positive numeric values can be entered in the expected values"
         )
       ).toBeInTheDocument()
     );

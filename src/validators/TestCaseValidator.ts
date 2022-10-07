@@ -40,10 +40,10 @@ export const TestCaseValidator = Yup.object().shape({
                             populationBasis !== "Boolean" ||
                             population.parent.name === "measureObservation"
                           ) {
-                            if (isNaN(+value)) {
+                            if (isNaN(+value) || +value < 0) {
                               return this.createError({
                                 message:
-                                  "Only numeric values can be entered in the expected values",
+                                  "Only positive numeric values can be entered in the expected values",
                               });
                             } else {
                               return true;
