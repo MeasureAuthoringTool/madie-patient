@@ -5,8 +5,6 @@ import {
   Measure,
   Group,
 } from "@madie/madie-models";
-import userEvent from "@testing-library/user-event";
-import { render, screen, waitFor } from "@testing-library/react";
 import { triggerPopChanges } from "../util/PopulationsMap";
 
 let measureGroup = [
@@ -1346,7 +1344,7 @@ it("NonBool: Adding and Removing the observations to numerator and denominator i
     groupId: "shrug",
     populationBasis: "Encounter",
     scoring: "Ratio",
-    populationValues: populationValues,
+    populationValues,
     stratificationValues: [],
   };
   const groupPopulations: GroupPopulation[] = [];
