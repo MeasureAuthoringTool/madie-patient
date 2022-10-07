@@ -238,7 +238,7 @@ describe("CalculationService Tests", () => {
     expect(output["P111"]["group1"]["denomDef"]).toBeFalsy();
   });
 
-  it("calculates overall coverage for a selected group when no coverage info not available", () => {
+  it("calculates overall coverage for a selected group when coverage info not available", () => {
     // No groups provided
     let overallCoverage = calculationService.getCoveragePercentageForGroup(
       "id-123",
@@ -267,7 +267,7 @@ describe("CalculationService Tests", () => {
     expect(overallCoverage).toBe(0);
   });
 
-  it("calculates overall coverage for a selected group when no coverage info available", () => {
+  it("calculates overall coverage for a selected group when coverage info available", () => {
     let overallCoverage = calculationService.getCoveragePercentageForGroup(
       "633dae796efe1b323e5bf3a8",
       groupResults
