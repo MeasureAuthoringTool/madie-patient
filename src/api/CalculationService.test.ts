@@ -280,4 +280,15 @@ describe("CalculationService Tests", () => {
     );
     expect(overallCoverage).toBe(83);
   });
+
+  it("test isClauseIgnored", () => {
+    const clause = {};
+    clause["raw"] = { name: "something" };
+    expect(calculationService.isClauseIgnored(clause)).toBeFalsy();
+
+    clause["final"] = "NA";
+    expect(calculationService.isClauseIgnored(clause)).toBeTruthy();
+    clause["raw"] = { name: "ValueSet" };
+    expect(calculationService.isClauseIgnored(clause)).toBeTruthy();
+  });
 });
