@@ -63,7 +63,7 @@ const TestCase = ({
 }: {
   testCase: TestCaseModel;
   canEdit: boolean;
-  executionResult: ExecutionResult<DetailedPopulationGroupResult>;
+  executionResult: DetailedPopulationGroupResult[];
 }) => {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);

@@ -3,6 +3,8 @@ import { officeVisitMeasure } from "./__mocks__/OfficeVisitMeasure";
 import { officeVisitValueSet } from "./__mocks__/OfficeVisitValueSet";
 import { officeVisitMeasureBundle } from "./__mocks__/OfficeVisitMeasureBundle";
 import { testCaseOfficeVisit } from "./__mocks__/TestCaseOfficeVisit";
+import { groupResults } from "./__mocks__/GroupExecutionResults";
+
 import {
   DetailedPopulationGroupResult,
   ExecutionResult,
@@ -234,5 +236,48 @@ describe("CalculationService Tests", () => {
     expect(Object.keys(output["P111"]["group1"]).length).toBe(2);
     expect(output["P111"]["group1"]["ippDef"]).toBeTruthy();
     expect(output["P111"]["group1"]["denomDef"]).toBeFalsy();
+  });
+
+  it("calculates overall coverage for a selected group when no coverage info not available", () => {
+    // No groups provided
+    let overallCoverage = calculationService.getCoveragePercentageForGroup(
+      "id-123",
+      undefined
+    );
+    expect(overallCoverage).toBe(0);
+    // Empty group Array
+    overallCoverage = calculationService.getCoveragePercentageForGroup(
+      "id-123",
+      []
+    );
+    expect(overallCoverage).toBe(0);
+
+    // selected group missing clauseResults
+    overallCoverage = calculationService.getCoveragePercentageForGroup(
+      "633dae976efe1b323e5bf3d3",
+      groupResults
+    );
+    expect(overallCoverage).toBe(0);
+
+    // selected group not present in groupResults
+    overallCoverage = calculationService.getCoveragePercentageForGroup(
+      "invalid-group-id",
+      groupResults
+    );
+    expect(overallCoverage).toBe(0);
+  });
+
+  it("calculates overall coverage for a selected group when no coverage info available", () => {
+    let overallCoverage = calculationService.getCoveragePercentageForGroup(
+      "633dae796efe1b323e5bf3a8",
+      groupResults
+    );
+    expect(overallCoverage).toBe(66);
+
+    overallCoverage = calculationService.getCoveragePercentageForGroup(
+      "633dae976efe1b323e5bf3a9",
+      groupResults
+    );
+    expect(overallCoverage).toBe(83);
   });
 });
