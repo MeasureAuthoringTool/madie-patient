@@ -1421,7 +1421,7 @@ it("NonBool: Adding and Removing the observations to numerator and denominator i
   ).toBeFalsy();
 });
 
-it("NonBool: Removing and Adding the observations on changine the measure population exclusion in continuous variable ", () => {
+it("NonBool: Adding and Removing observations on changes to the measure population exclusion in continuous variable ", () => {
   const ipp: DisplayPopulationValue = {
     id: "",
     name: PopulationType.INITIAL_POPULATION,
