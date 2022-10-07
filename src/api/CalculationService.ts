@@ -161,6 +161,7 @@ export class CalculationService {
   }
 
   // value sets should not be considered while calculating coverage
+  // All clauses with NA, should not be considered
   isClauseIgnored(clause) {
     if (clause.raw && clause.raw.name && clause.raw.name === "ValueSet")
       return true;
