@@ -33,7 +33,7 @@ const TestCaseList = () => {
   const userName = getUserName();
   const navigate = useNavigate();
   const [canEdit, setCanEdit] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<string>("testCasesList");
+  const [activeTab, setActiveTab] = useState<string>("passing");
   const [executeAllTestCases, setExecuteAllTestCases] =
     useState<boolean>(false);
 
@@ -132,7 +132,7 @@ const TestCaseList = () => {
   return (
     <div tw="mx-6 my-6 shadow-lg rounded-md border border-slate bg-white">
       <div tw="flex-auto">
-        <div tw="pl-12">
+        <div tw="pl-12" data-testid="code-coverage-tabs">
           <CreateCodeCoverageNavTabs
             activeTab={activeTab}
             setActiveTab={setActiveTab}
@@ -150,7 +150,7 @@ const TestCaseList = () => {
           </ErrorAlert>
         )}
 
-        {activeTab === "testCasesList" && (
+        {activeTab === "passing" && (
           <div tw="overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div tw="py-2 inline-block min-w-full sm:px-6 lg:px-8">
               <table tw="min-w-full" data-testid="test-case-tbl">

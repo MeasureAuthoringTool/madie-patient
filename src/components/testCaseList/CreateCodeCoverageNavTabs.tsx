@@ -79,8 +79,8 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
       <Tab
         sx={defaultStyle}
         label={executionResultsDisplayTemplate("Passing")}
-        data-testid="testCasesList-tab"
-        value="testCasesList"
+        data-testid="passing-tab"
+        value="passing"
       />
       <Tab
         sx={defaultStyle}
