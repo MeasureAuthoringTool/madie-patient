@@ -30,6 +30,29 @@ let measureGroup = [
     populationBasis: "Boolean",
   },
 ];
+let measureGroup2 = [
+  {
+    id: "shrug",
+    measureName: "the measure for testing",
+    cql: "",
+    elmJson: "",
+    createdBy: "testuser@example.com",
+    measureObservations: [
+      {
+        id: "uuid-1",
+        definition: "fun",
+        criteriaReference: "pid-2",
+      },
+      {
+        id: "uuid-2",
+        definition: "fun",
+        criteriaReference: "pid-4",
+      },
+    ],
+    scoring: "Ratio",
+    populationBasis: "Encounter",
+  },
+];
 
 it("return the input matches output with no changes", () => {
   const populationVal: DisplayPopulationValue = {
@@ -1271,6 +1294,219 @@ it("Adding the observations on clicking the numerator exclusion and denominator 
       "Ratio"
     ).id
   ).toEqual("uuid-2");
+});
+
+it("NonBool: Adding and Removing the observations to numerator and denominator in Ratio", () => {
+  const ipp: DisplayPopulationValue = {
+    name: PopulationType.INITIAL_POPULATION,
+    expected: 0,
+    actual: false,
+    id: "pid-1",
+    criteriaReference: "",
+  };
+  const denom: DisplayPopulationValue = {
+    name: PopulationType.DENOMINATOR,
+    expected: 1,
+    actual: false,
+    id: "pid-2",
+    criteriaReference: "",
+  };
+
+  const denomExclu: DisplayPopulationValue = {
+    name: PopulationType.DENOMINATOR_EXCLUSION,
+    expected: 0,
+    actual: false,
+    id: "pid-3",
+    criteriaReference: "",
+  };
+  const numer: DisplayPopulationValue = {
+    name: PopulationType.NUMERATOR,
+    expected: 0,
+    actual: false,
+    id: "pid-4",
+    criteriaReference: "",
+  };
+  const numerExclu: DisplayPopulationValue = {
+    name: PopulationType.NUMERATOR_EXCLUSION,
+    expected: 0,
+    actual: false,
+    id: "pid-5",
+    criteriaReference: "",
+  };
+  const populationValues: DisplayPopulationValue[] = [];
+  populationValues.push(ipp);
+  populationValues.push(denom);
+  populationValues.push(denomExclu);
+  populationValues.push(numer);
+  populationValues.push(numerExclu);
+
+  const group1: GroupPopulation = {
+    groupId: "shrug",
+    populationBasis: "Encounter",
+    scoring: "Ratio",
+    populationValues,
+    stratificationValues: [],
+  };
+  const groupPopulations: GroupPopulation[] = [];
+  groupPopulations.push(group1);
+  const resultPops2 = triggerPopChanges(
+    groupPopulations,
+    group1.groupId,
+    {
+      name: PopulationType.DENOMINATOR,
+      expected: 1,
+      actual: false,
+      id: "pid-2",
+      criteriaReference: "",
+    },
+    measureGroup2
+  );
+
+  expect(
+    parsingTheExpectedResult(
+      resultPops2[0].populationValues,
+      PopulationType.MEASURE_OBSERVATION,
+      "Ratio"
+    ).id
+  ).toEqual("denominatorObservation1");
+  groupPopulations[0].populationValues[3].expected = 1;
+  const resultPops = triggerPopChanges(
+    groupPopulations,
+    group1.groupId,
+    {
+      name: PopulationType.NUMERATOR,
+    } as unknown as DisplayPopulationValue,
+    measureGroup2
+  );
+  expect(
+    parsingTheExpectedResult(
+      resultPops[0].populationValues,
+      PopulationType.MEASURE_OBSERVATION,
+      "Ratio"
+    ).id
+  ).toEqual("numeratorObservation1");
+  groupPopulations[0].populationValues[4].expected = 10;
+  const resultPops3 = triggerPopChanges(
+    groupPopulations,
+    group1.groupId,
+    {
+      name: PopulationType.NUMERATOR,
+    } as unknown as DisplayPopulationValue,
+    measureGroup2
+  );
+  expect(
+    parsingTheExpectedResult(
+      resultPops3[0].populationValues,
+      PopulationType.MEASURE_OBSERVATION,
+      "Ratio"
+    ).id
+  ).toEqual("denominatorObservation1");
+  groupPopulations[0].populationValues[2].expected = 10;
+  const resultPops4 = triggerPopChanges(
+    groupPopulations,
+    group1.groupId,
+    {
+      name: PopulationType.DENOMINATOR,
+    } as unknown as DisplayPopulationValue,
+    measureGroup2
+  );
+  expect(
+    parsingTheExpectedResult(
+      resultPops4[0].populationValues,
+      PopulationType.MEASURE_OBSERVATION,
+      "Ratio"
+    ).id
+  ).toBeFalsy();
+});
+
+it("NonBool: Adding and Removing observations on changes to the measure population exclusion in continuous variable ", () => {
+  const ipp: DisplayPopulationValue = {
+    id: "",
+    name: PopulationType.INITIAL_POPULATION,
+    expected: 0,
+    actual: 0,
+  };
+  const msrpopl: DisplayPopulationValue = {
+    id: "",
+    name: PopulationType.MEASURE_POPULATION,
+    expected: 2,
+    actual: 0,
+  };
+  const msrpoplex: DisplayPopulationValue = {
+    id: "",
+    name: PopulationType.MEASURE_POPULATION_EXCLUSION,
+    expected: 1,
+    actual: 0,
+  };
+  const measureObserv: DisplayPopulationValue = {
+    id: "",
+    name: PopulationType.MEASURE_OBSERVATION,
+    expected: 0,
+    actual: 0,
+  };
+  const populationValues: DisplayPopulationValue[] = [];
+  populationValues.push(ipp);
+  populationValues.push(msrpopl);
+  populationValues.push(msrpoplex);
+  populationValues.push(measureObserv);
+
+  const group1: GroupPopulation = {
+    groupId: "shrug",
+    populationBasis: "Encounter",
+    scoring: "Continuous Variable",
+    populationValues: populationValues,
+    stratificationValues: [],
+  };
+  const groupPopulations: GroupPopulation[] = [];
+  groupPopulations.push(group1);
+  groupPopulations[0].populationValues[2].expected = 0;
+  const resultPops = triggerPopChanges(
+    groupPopulations,
+    group1.groupId,
+    {
+      name: PopulationType.MEASURE_POPULATION_EXCLUSION,
+      expected: 0,
+      actual: undefined,
+      id: "",
+      criteriaReference: "",
+    },
+    measureGroup
+  );
+
+  expect(
+    parsingTheExpectedResult(
+      resultPops[0].populationValues,
+      PopulationType.INITIAL_POPULATION,
+      "Continuous Variable"
+    ).name
+  ).toEqual(PopulationType.INITIAL_POPULATION);
+  expect(
+    parsingTheExpectedResult(
+      resultPops[0].populationValues,
+      PopulationType.MEASURE_OBSERVATION,
+      "Continuous Variable"
+    ).id
+  ).toEqual("Observation2");
+  groupPopulations[0].populationValues[2].expected = 2;
+  const resultPops2 = triggerPopChanges(
+    groupPopulations,
+    group1.groupId,
+    {
+      name: PopulationType.MEASURE_POPULATION_EXCLUSION,
+      expected: false,
+      actual: undefined,
+      id: "",
+      criteriaReference: "",
+    },
+    measureGroup
+  );
+  expect(
+    parsingTheExpectedResult(
+      resultPops2[0].populationValues,
+      PopulationType.MEASURE_OBSERVATION,
+      "Continuous Variable"
+    ).id
+  ).toBeFalsy();
 });
 
 function parsingTheExpectedResult(
