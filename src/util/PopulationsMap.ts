@@ -125,14 +125,14 @@ export function triggerPopChanges(
       changedPopulationName === "measurePopulationExclusion" &&
       expectedValue === false
     ) {
-      const measureObservationId = measureGroups.filter(
+      const measureObservation = measureGroups.filter(
         (group) => group.id === changedGroupId
-      )[0].measureObservations[0].id;
+      )[0].measureObservations[0];
       targetPopulation.populationValues.push({
         name: PopulationType.MEASURE_OBSERVATION,
         expected: false,
-        id: measureObservationId,
-        criteriaReference: undefined,
+        id: measureObservation.id,
+        criteriaReference: measureObservation.criteriaReference,
       });
     }
 
@@ -260,6 +260,7 @@ export function triggerPopChanges(
         (popMap[PopulationType.NUMERATOR_EXCLUSION].expected = false);
     }
   }
+
   return returnPops;
 }
 
