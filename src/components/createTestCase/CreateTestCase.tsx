@@ -294,7 +294,11 @@ const CreateTestCase = () => {
         resetForm();
       };
     } else if (measure && measure.groups) {
-      setCanEdit(measure.createdBy === userName);
+      setCanEdit(measure?.createdBy === userName ||
+        measure?.acls?.some(
+          (acl) =>
+            acl.userId === userName && acl.roles.indexOf("SHARED_WITH") >= 0
+        ));
       resetForm({
         values: {
           ...INITIAL_VALUES,
