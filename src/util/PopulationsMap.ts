@@ -127,6 +127,7 @@ export function triggerPopChanges(
         (popMap[PopulationType.NUMERATOR_EXCLUSION].expected = false);
     }
   }
+
   return returnPops;
 }
 

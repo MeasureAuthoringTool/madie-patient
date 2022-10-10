@@ -117,6 +117,56 @@ export class CalculationService {
 
     return testCaseResultMap;
   }
+
+  getCoveragePercentageForGroup(
+    groupId: string,
+    groupResults: DetailedPopulationGroupResult[]
+  ) {
+    if (groupId && !_.isEmpty(groupResults)) {
+      const selectedGroups = groupResults?.filter(
+        (groupResult) => groupResult.groupId === groupId
+      );
+      const allClauses = {};
+      let passedClauses = 0;
+      for (const groupResult of selectedGroups) {
+        for (const clauseResult of groupResult.clauseResults) {
+          if (!this.isClauseIgnored(clauseResult)) {
+            const key = `${clauseResult.libraryName}_${clauseResult.localId}`;
+            if (!allClauses[key]) {
+              allClauses[key] = false;
+            }
+            allClauses[key] = allClauses[key] || this.isCovered(clauseResult);
+          }
+        }
+      }
+      // Count total number of clauses that evaluated to true
+      for (const localId in allClauses)
+        if (allClauses[localId]) {
+          passedClauses += 1;
+        }
+      if (!_.isEmpty(allClauses)) {
+        return Math.floor(
+          (passedClauses * 100) / Object.keys(allClauses).length
+        );
+      } else {
+        return 0;
+      }
+    } else {
+      return 0;
+    }
+  }
+
+  isCovered(clause) {
+    return clause?.final === "TRUE";
+  }
+
+  // value sets should not be considered while calculating coverage
+  // clauses with NA, should not be considered
+  isClauseIgnored(clause) {
+    if (clause.raw && clause.raw.name && clause.raw.name === "ValueSet")
+      return true;
+    return clause.final === "NA";
+  }
 }
 
 export default function calculationService(): CalculationService {
