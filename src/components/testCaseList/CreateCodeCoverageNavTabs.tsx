@@ -39,10 +39,10 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
       : "-";
     return (
       <div>
-        <div style={{ fontSize: "28px" }}>
+        <div style={{ fontSize: "29px" }}>
           {executeAllTestCases ? term + "%" : "-"}{" "}
         </div>
-        <div style={{ fontSize: "16px" }}>
+        <div style={{ fontSize: "19px" }}>
           {label} {executeAllTestCases && label !== "Coverage" && "(1/2)"}
         </div>
       </div>
@@ -57,22 +57,22 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
       }}
       sx={{
         width: "96.5%",
-        fontWeight: 500,
+        fontWeight: 470,
         height: "95px",
         minHeight: "95px",
         padding: 0,
         fontSize: "39px",
         fontFamily: "Rubik, sans serif",
-        color: "#333333",
+        color: "#515151",
         borderBottom: "solid 1px #DDDDDD",
         "& .MuiTabs-indicator": {
           height: "4px",
           backgroundColor: "#209FA6",
         },
         "& .Mui-selected": {
-          fontWeight: 600,
+          fontWeight: 500,
           fontHeight: "35px",
-          color: "#515151 !important",
+          color: "#242424 !important",
         },
       }}
     >
