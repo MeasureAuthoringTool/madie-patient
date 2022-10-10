@@ -7,7 +7,7 @@ import { Measure } from "@madie/madie-models";
 export interface NavTabProps {
   activeTab: string;
   setActiveTab: (value: string) => void;
-  click: boolean;
+  executeAllTestCases: boolean;
   canEdit: boolean;
   measure: Measure;
   createNewTestCase: (value: string) => void;
@@ -16,28 +16,35 @@ export interface NavTabProps {
 
 const defaultStyle = {
   padding: "0px 10px",
-  height: "45px",
-  minHeight: "45px",
+  height: "90px",
+  minHeight: "90px",
   textTransform: "none",
+  marginRight: "36px",
 };
 
 export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
   const {
     activeTab,
     setActiveTab,
-    click,
+    executeAllTestCases,
     canEdit,
     createNewTestCase,
     measure,
     executeTestCases,
   } = props;
 
-  const testing = (label, click) => {
-    const term = click ? [0, 50, 100][Math.floor(Math.random() * 3)] : "-";
+  const executionResultsDisplayTemplate = (label) => {
+    const term = executeAllTestCases
+      ? [0, 50, 100][Math.floor(Math.random() * 3)]
+      : "-";
     return (
       <div>
-        <div>{click ? term + "%" : "-"} </div>
-        {label} {click && label !== "Coverage" && "(" + +term / 100 + ")"}
+        <div style={{ fontSize: "28px" }}>
+          {executeAllTestCases ? term + "%" : "-"}{" "}
+        </div>
+        <div style={{ fontSize: "16px" }}>
+          {label} {executeAllTestCases && label !== "Coverage" && "(1/2)"}
+        </div>
       </div>
     );
   };
@@ -49,10 +56,10 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
         setActiveTab(v);
       }}
       sx={{
-        width: "97%",
+        width: "96.5%",
         fontWeight: 500,
-        height: "55px",
-        minHeight: "75px",
+        height: "95px",
+        minHeight: "95px",
         padding: 0,
         fontSize: "39px",
         fontFamily: "Rubik, sans serif",
@@ -71,33 +78,30 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     >
       <Tab
         sx={defaultStyle}
-        label={testing("Passing", click)}
+        label={executionResultsDisplayTemplate("Passing")}
         data-testid="testCasesList-tab"
         value="testCasesList"
       />
       <Tab
         sx={defaultStyle}
-        label={testing("Coverage", click)}
+        label={executionResultsDisplayTemplate("Coverage")}
         data-testid="coverage-tab"
         value="coverage"
       />
-      <div style={{ marginLeft: "auto", display: "flex" }}>
-        <div style={{ marginRight: "6px" }}>
+      <div style={{ margin: "6px 0 0 auto", display: "flex" }}>
+        <div>
           {canEdit && (
             <Button
               disabled={false}
               onClick={createNewTestCase}
               data-testid="create-new-test-case-button"
             >
-              <AddIcon
-                style={{ marginRight: "5px", marginLeft: "-2px" }}
-                fontSize="small"
-              />
+              <AddIcon style={{ margin: "0 5px 0 -2px" }} fontSize="small" />
               New Test Case
             </Button>
           )}
         </div>
-        <div style={{ marginLeft: "16px", marginRight: "6px" }}>
+        <div style={{ margin: "0 6px 0 26px" }}>
           {canEdit && (
             <Button
               style={{ backgroundColor: "#048087" }}

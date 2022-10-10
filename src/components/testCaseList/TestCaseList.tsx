@@ -34,7 +34,8 @@ const TestCaseList = () => {
   const navigate = useNavigate();
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("testCasesList");
-  const [click, setClick] = useState<boolean>(false);
+  const [executeAllTestCases, setExecuteAllTestCases] =
+    useState<boolean>(false);
 
   const { measureState, bundleState, valueSetsState } = useExecutionContext();
   const [measure] = measureState;
@@ -119,7 +120,7 @@ const TestCaseList = () => {
             testCase.executionStatus = executionStatus ? "pass" : "fail";
           }
         });
-        setClick(true);
+        setExecuteAllTestCases(true);
         setTestCases([...testCases]);
         setExecutionResults(nextExecutionResults);
       } catch (error) {
@@ -135,7 +136,7 @@ const TestCaseList = () => {
           <CreateCodeCoverageNavTabs
             activeTab={activeTab}
             setActiveTab={setActiveTab}
-            click={click}
+            executeAllTestCases={executeAllTestCases}
             canEdit={canEdit}
             measure={measure}
             createNewTestCase={createNewTestCase}
