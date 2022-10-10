@@ -23,7 +23,7 @@ const ErrorAlert = tw.div`bg-red-100 text-red-700 rounded-lg m-1 p-3`;
 const TestCaseList = () => {
   const [testCases, setTestCases] = useState<TestCase[]>(null);
   const [executionResults, setExecutionResults] = useState<{
-    [key: string]: ExecutionResult<DetailedPopulationGroupResult>;
+    [key: string]: DetailedPopulationGroupResult[];
   }>({});
   const [error, setError] = useState("");
   const { measureId } = useParams<{ measureId: string }>();
@@ -42,7 +42,13 @@ const TestCaseList = () => {
   const [valueSets] = valueSetsState;
 
   useEffect(() => {
-    setCanEdit(userName === measure?.createdBy);
+    setCanEdit(
+      measure?.createdBy === userName ||
+        measure?.acls?.some(
+          (acl) =>
+            acl.userId === userName && acl.roles.indexOf("SHARED_WITH") >= 0
+        )
+    );
   }, [measure, userName]);
 
   useEffect(() => {

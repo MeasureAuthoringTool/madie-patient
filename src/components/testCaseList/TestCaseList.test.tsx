@@ -33,6 +33,7 @@ import {
   getExampleValueSet,
 } from "../../util/CalculationTestHelpers";
 import { ExecutionContextProvider } from "../routes/ExecutionContext";
+import { useOktaTokens } from "@madie/madie-util";
 
 const serviceConfig: ServiceConfig = {
   testCaseService: {
@@ -48,10 +49,10 @@ const serviceConfig: ServiceConfig = {
 
 const MEASURE_CREATEDBY = "testuser";
 jest.mock("@madie/madie-util", () => ({
-  useOktaTokens: () => ({
+  useOktaTokens: jest.fn(() => ({
+    getUserName: jest.fn(() => MEASURE_CREATEDBY), //#nosec
     getAccessToken: () => "test.jwt",
-    getUserName: () => MEASURE_CREATEDBY,
-  }),
+  })),
 }));
 
 const mockedUsedNavigate = jest.fn();
@@ -211,6 +212,7 @@ const measure = {
       ],
     },
   ],
+  acls: [{ userId: "othertestuser@example.com", roles: ["SHARED_WITH"] }],
 } as Measure;
 
 // mocking measureService
@@ -313,6 +315,18 @@ describe("TestCaseList component", () => {
   });
 
   it("should navigate to the Test Case details page on edit button click", async () => {
+    const { getByTestId } = renderTestCaseListComponent();
+    await waitFor(() => {
+      const editButton = getByTestId(`edit-test-case-${testCases[0].id}`);
+      fireEvent.click(editButton);
+      expect(mockedUsedNavigate).toHaveBeenCalled();
+    });
+  });
+
+  it("should navigate to the Test Case details page on edit button click for shared user", async () => {
+    useOktaTokens.mockImplementationOnce(() => ({
+      getUserName: () => "othertestuser@example.com", //#nosec
+    }));
     const { getByTestId } = renderTestCaseListComponent();
     await waitFor(() => {
       const editButton = getByTestId(`edit-test-case-${testCases[0].id}`);
