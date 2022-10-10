@@ -141,7 +141,9 @@ const TestCasePopulationList = ({
               disableExpected={disableExpected}
               onChange={handleChange}
               measureObservationsCount={
-                scoring === "Ratio" ? measureObservationsCount(population) : 0
+                scoring === "Ratio" || scoring === "Continuous Variable"
+                  ? measureObservationsCount(population)
+                  : 0
               }
               error={errors?.populationValues?.[j]}
             />
