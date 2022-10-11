@@ -2,11 +2,14 @@ import { Calculator } from "fqm-execution";
 import {
   CalculationOutput,
   DetailedPopulationGroupResult,
+  EpisodeResults,
   ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
 import { TestCase, Measure } from "@madie/madie-models";
 import { ValueSet, Bundle } from "fhir/r4";
 import * as _ from "lodash";
+import { Group } from "@madie/madie-models/dist/Measure";
+import { PopulationType } from "fqm-execution/build/types/Enums";
 
 export interface StatementResultMap {
   [statementName: string]: number;
@@ -18,6 +21,20 @@ export interface GroupStatementResultMap {
 
 export interface TestCaseGroupStatementResult {
   [testCaseId: string]: GroupStatementResultMap;
+}
+
+export interface TestCaseGroupEpisodeResult {
+  [testCaseId: string]: GroupPopulationEpisodeResultMap;
+}
+
+export interface GroupPopulationEpisodeResultMap {
+  [groupId: string]: PopulationEpisodeResult[];
+}
+
+export interface PopulationEpisodeResult {
+  populationType: PopulationType;
+  define: string;
+  value: number;
 }
 
 // TODO consider converting into a context.
@@ -80,6 +97,56 @@ export class CalculationService {
       console.error("An error occurred in FQM-Execution", err);
       throw err;
     }
+  }
+
+  processEpisodeResults(
+    executionResults: ExecutionResult<DetailedPopulationGroupResult>[]
+  ): TestCaseGroupEpisodeResult {
+    const testCaseResultMap: TestCaseGroupEpisodeResult = {};
+    if (executionResults) {
+      for (const tc of executionResults) {
+        const testCaseId: string = tc?.patientId;
+        const groupResults: DetailedPopulationGroupResult[] =
+          tc?.detailedResults || [];
+        const outputGroupResultsMap: GroupPopulationEpisodeResultMap = {};
+        for (const groupResult of groupResults) {
+          const groupId = groupResult?.groupId;
+          let groupPopResults: PopulationEpisodeResult[] = [];
+          if (groupResult.episodeResults) {
+            for (const episodeResult of groupResult.episodeResults) {
+              groupPopResults = this.mergeResults(
+                episodeResult,
+                groupPopResults
+              );
+            }
+          }
+          outputGroupResultsMap[groupId] = groupPopResults;
+        }
+        testCaseResultMap[testCaseId] = outputGroupResultsMap;
+      }
+    }
+    return testCaseResultMap;
+  }
+
+  mergeResults(
+    episodeResult: EpisodeResults,
+    groupPopResults: PopulationEpisodeResult[]
+  ): PopulationEpisodeResult[] {
+    // TODO: if/when fqm-execution returns IDs for populations, replace
+    // position/index based logic with ID lookup
+    if (!groupPopResults || groupPopResults.length === 0) {
+      groupPopResults =
+        episodeResult?.populationResults?.map((pr) => ({
+          populationType: pr.populationType,
+          define: pr.criteriaExpression,
+          value: pr?.result ? 1 : 0,
+        })) || [];
+    } else {
+      episodeResult?.populationResults?.forEach((pr, i) => {
+        groupPopResults[i].value += pr.result ? 1 : 0;
+      });
+    }
+    return groupPopResults;
   }
 
   processRawResults(
