@@ -9,7 +9,11 @@ import {
   DetailedPopulationGroupResult,
   ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
-import { FinalResult, Relevance } from "fqm-execution/build/types/Enums";
+import {
+  FinalResult,
+  PopulationType,
+  Relevance,
+} from "fqm-execution/build/types/Enums";
 
 describe("CalculationService Tests", () => {
   let calculationService: CalculationService;
@@ -236,6 +240,167 @@ describe("CalculationService Tests", () => {
     expect(Object.keys(output["P111"]["group1"]).length).toBe(2);
     expect(output["P111"]["group1"]["ippDef"]).toBeTruthy();
     expect(output["P111"]["group1"]["denomDef"]).toBeFalsy();
+  });
+
+  it("aggregates episode results for initial-population", () => {
+    const executionResults: ExecutionResult<DetailedPopulationGroupResult>[] = [
+      {
+        patientId: "P111",
+        detailedResults: [
+          {
+            groupId: "group1",
+            statementResults: [],
+            episodeResults: [
+              {
+                episodeId: "1",
+                populationResults: [
+                  {
+                    populationType: PopulationType.IPP,
+                    criteriaExpression: "ipp",
+                    result: true,
+                  },
+                ],
+              },
+              {
+                episodeId: "2",
+                populationResults: [
+                  {
+                    populationType: PopulationType.IPP,
+                    criteriaExpression: "ipp",
+                    result: true,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ];
+
+    const output = calculationService.processEpisodeResults(executionResults);
+    expect(output).toBeTruthy();
+    expect(output).toEqual({
+      P111: {
+        group1: [
+          {
+            populationType: PopulationType.IPP,
+            define: "ipp",
+            value: 2,
+          },
+        ],
+      },
+    });
+  });
+
+  it("handles undefined episode results", () => {
+    const executionResults = undefined;
+
+    const output = calculationService.processEpisodeResults(executionResults);
+    expect(output).toBeTruthy();
+    expect(output).toEqual({});
+  });
+
+  it("handles null episode results", () => {
+    const executionResults = null;
+
+    const output = calculationService.processEpisodeResults(executionResults);
+    expect(output).toBeTruthy();
+    expect(output).toEqual({});
+  });
+
+  it("aggregates episode results for multiple pops, multiple IPs", () => {
+    const executionResults: ExecutionResult<DetailedPopulationGroupResult>[] = [
+      {
+        patientId: "P111",
+        detailedResults: [
+          {
+            groupId: "group1",
+            statementResults: [],
+            episodeResults: [
+              {
+                episodeId: "1",
+                populationResults: [
+                  {
+                    populationType: PopulationType.IPP,
+                    criteriaExpression: "ipp",
+                    result: true,
+                  },
+                  {
+                    populationType: PopulationType.IPP,
+                    criteriaExpression: "ipp2",
+                    result: false,
+                  },
+                  {
+                    populationType: PopulationType.DENOM,
+                    criteriaExpression: "den",
+                    result: false,
+                  },
+                  {
+                    populationType: PopulationType.NUMER,
+                    criteriaExpression: "num",
+                    result: true,
+                  },
+                ],
+              },
+              {
+                episodeId: "2",
+                populationResults: [
+                  {
+                    populationType: PopulationType.IPP,
+                    criteriaExpression: "ipp",
+                    result: true,
+                  },
+                  {
+                    populationType: PopulationType.IPP,
+                    criteriaExpression: "ipp2",
+                    result: true,
+                  },
+                  {
+                    populationType: PopulationType.DENOM,
+                    criteriaExpression: "den",
+                    result: true,
+                  },
+                  {
+                    populationType: PopulationType.NUMER,
+                    criteriaExpression: "num",
+                    result: true,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ];
+
+    const output = calculationService.processEpisodeResults(executionResults);
+    expect(output).toBeTruthy();
+    expect(output).toEqual({
+      P111: {
+        group1: [
+          {
+            populationType: PopulationType.IPP,
+            define: "ipp",
+            value: 2,
+          },
+          {
+            populationType: PopulationType.IPP,
+            define: "ipp2",
+            value: 1,
+          },
+          {
+            populationType: PopulationType.DENOM,
+            define: "den",
+            value: 1,
+          },
+          {
+            populationType: PopulationType.NUMER,
+            define: "num",
+            value: 2,
+          },
+        ],
+      },
+    });
   });
 
   it("calculates overall coverage for a selected group when coverage info not available", () => {

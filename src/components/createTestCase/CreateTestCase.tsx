@@ -424,10 +424,8 @@ const CreateTestCase = () => {
           valueSets
         );
       const output = calculation.current.processRawResults(executionResults);
-      const episodeResults = calculation.current.processEpisodeResults(
-        executionResults,
-        measure.groups
-      );
+      const episodeResults =
+        calculation.current.processEpisodeResults(executionResults);
       setCalculationErrors(undefined);
       setGroupStatementResults(output?.[testCase.id]);
       setGroupEpisodeResults(episodeResults?.[testCase.id]);
@@ -591,7 +589,7 @@ const CreateTestCase = () => {
   ) {
     const groupEpisodeResult = populationEpisodeResults?.find(
       (popEpResult) =>
-        FHIR_POPULATION_CODES[popEpResult.populationName] ===
+        FHIR_POPULATION_CODES[popEpResult.populationType] ===
           populationValue.name &&
         measureGroupPopulation?.definition === popEpResult.define
     );

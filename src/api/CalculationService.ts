@@ -32,7 +32,7 @@ export interface GroupPopulationEpisodeResultMap {
 }
 
 export interface PopulationEpisodeResult {
-  populationName: PopulationType;
+  populationType: PopulationType;
   define: string;
   value: number;
 }
@@ -100,8 +100,7 @@ export class CalculationService {
   }
 
   processEpisodeResults(
-    executionResults: ExecutionResult<DetailedPopulationGroupResult>[],
-    groups: Group[]
+    executionResults: ExecutionResult<DetailedPopulationGroupResult>[]
   ): TestCaseGroupEpisodeResult {
     const testCaseResultMap: TestCaseGroupEpisodeResult = {};
     if (executionResults) {
@@ -112,9 +111,8 @@ export class CalculationService {
         const outputGroupResultsMap: GroupPopulationEpisodeResultMap = {};
         for (const groupResult of groupResults) {
           const groupId = groupResult?.groupId;
-          const measureGroup = groups?.find((group) => group.id === groupId);
           let groupPopResults: PopulationEpisodeResult[] = [];
-          if (groupResult.episodeResults && measureGroup) {
+          if (groupResult.episodeResults) {
             for (const episodeResult of groupResult.episodeResults) {
               groupPopResults = this.mergeResults(
                 episodeResult,
@@ -139,7 +137,7 @@ export class CalculationService {
     if (!groupPopResults || groupPopResults.length === 0) {
       groupPopResults =
         episodeResult?.populationResults?.map((pr) => ({
-          populationName: pr.populationType,
+          populationType: pr.populationType,
           define: pr.criteriaExpression,
           value: pr?.result ? 1 : 0,
         })) || [];
