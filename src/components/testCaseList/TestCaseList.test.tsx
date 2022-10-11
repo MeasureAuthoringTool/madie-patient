@@ -475,11 +475,27 @@ describe("TestCaseList component", () => {
 
   it("should render New Test Case button and navigate to the Create New Test Case page when button clicked", async () => {
     const { getByTestId } = renderTestCaseListComponent();
+
+    const codeCoverageTabs = await screen.findByTestId("code-coverage-tabs");
+    expect(codeCoverageTabs).toBeInTheDocument();
+    const passingTab = await screen.findByTestId("passing-tab");
+    expect(passingTab).toBeInTheDocument();
+    const testCaseList = await screen.findByTestId("test-case-tbl");
+    expect(testCaseList).toBeInTheDocument();
+
     await waitFor(() => {
       const createNewButton = getByTestId("create-new-test-case-button");
       fireEvent.click(createNewButton);
       expect(mockedUsedNavigate).toHaveBeenCalled();
     });
+
+    const coverageTab = await screen.findByTestId("coverage-tab");
+    expect(coverageTab).toBeInTheDocument();
+    userEvent.click(screen.getByTestId("coverage-tab"));
+    const codeCoverageHighlighting = await screen.findByTestId(
+      "code-coverage-highlighting"
+    );
+    expect(codeCoverageHighlighting).toBeInTheDocument();
   });
 
   it("should not render New Test Case button for user who is not the owner of the measure", () => {
