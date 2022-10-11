@@ -231,8 +231,11 @@ function addRemoveObservationsForNonBooleanPopulationCritieria(
     const { num, numEx, denom, denomEx, numExIndex, denomExIndex } =
       getPopulationValues(targetPopulationCriteria);
 
-     //if there is a second initial population, increases headlength by one
-     const secondIPP = targetPopulationCriteria.populationValues[1].name==="initialPopulation"?1:0
+    //if there is a second initial population, increases headlength by one
+    const secondIPP =
+      targetPopulationCriteria.populationValues[1].name === "initialPopulation"
+        ? 1
+        : 0;
 
     //headLength is the total length of the array before observations are put in
     // ipp, num, and denom are required and expected, hence headLength starts at 3.
