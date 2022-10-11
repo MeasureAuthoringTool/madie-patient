@@ -39,7 +39,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
       : "-";
     return (
       <div>
-        <div style={{ fontSize: "29px" }}>
+        <div style={{ fontSize: "29px", fontWeight: "600" }}>
           {executeAllTestCases ? term + "%" : "-"}{" "}
         </div>
         <div style={{ fontSize: "19px" }}>
@@ -57,7 +57,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
       }}
       sx={{
         width: "96.5%",
-        fontWeight: 470,
+        fontWeight: 450,
         height: "95px",
         minHeight: "95px",
         padding: 0,
@@ -70,7 +70,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           backgroundColor: "#209FA6",
         },
         "& .Mui-selected": {
-          fontWeight: 500,
+          fontWeight: 480,
           fontHeight: "35px",
           color: "#242424 !important",
         },
