@@ -72,6 +72,10 @@ const TestCaseTitle = tw.input`
   sm:text-sm
 `;
 
+const ValidationErrorCard = tw.p`
+text-xs bg-white p-3 bg-red-100 rounded-xl mx-3 my-1 break-words
+`;
+
 const ValidationErrorsButton = tw.button`
   text-lg
   -translate-y-6
@@ -103,11 +107,6 @@ const styles = {
 const Alert = styled.div<AlertProps>(({ status = "default" }) => [
   styles[status],
   tw`rounded-lg p-2 m-2 text-base inline-flex items-center w-11/12`,
-]);
-
-const ValidationAlertCard = styled.p<AlertProps>(({ status = "default" }) => [
-  tw`text-xs bg-white p-3 rounded-xl mx-3 my-1 break-words`,
-  styles[status],
 ]);
 
 const StyledIcon = styled(FontAwesomeIcon)(({ errors }: { errors: number }) => [
@@ -178,11 +177,7 @@ const CreateTestCase = () => {
   const { updateMeasure } = measureStore;
 
   const [canEdit, setCanEdit] = useState<boolean>(
-    measure?.createdBy === userName ||
-      measure?.acls?.some(
-        (acl) =>
-          acl.userId === userName && acl.roles.indexOf("SHARED_WITH") >= 0
-      )
+    userName === measure?.createdBy
   );
 
   const formik = useFormik({
@@ -255,14 +250,7 @@ const CreateTestCase = () => {
           .then((tc: TestCase) => {
             setTestCase(_.cloneDeep(tc));
             setEditorVal(tc.json);
-            setCanEdit(
-              measure?.createdBy === userName ||
-                measure?.acls?.some(
-                  (acl) =>
-                    acl.userId === userName &&
-                    acl.roles.indexOf("SHARED_WITH") >= 0
-                )
-            );
+            setCanEdit(userName === measure?.createdBy);
             const nextTc = _.cloneDeep(tc);
             if (measure && measure.groups) {
               nextTc.groupPopulations = measure.groups.map((group) => {
@@ -813,12 +801,9 @@ const CreateTestCase = () => {
               {validationErrors && validationErrors.length > 0 ? (
                 validationErrors.map((error) => {
                   return (
-                    <ValidationAlertCard
-                      key={error.key}
-                      status={error.severity}
-                    >
+                    <ValidationErrorCard key={error.key}>
                       {error.diagnostics}
-                    </ValidationAlertCard>
+                    </ValidationErrorCard>
                   );
                 })
               ) : (
