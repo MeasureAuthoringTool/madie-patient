@@ -39,7 +39,8 @@ import {
 } from "../../util/PopulationsMap";
 import calculationService, {
   GroupPopulationEpisodeResultMap,
-  GroupStatementResultMap, PopulationEpisodeResult
+  GroupStatementResultMap,
+  PopulationEpisodeResult,
 } from "../../api/CalculationService";
 import {
   DetailedPopulationGroupResult,
