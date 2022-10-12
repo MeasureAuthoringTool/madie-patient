@@ -23,6 +23,7 @@ import {
   DisplayGroupPopulation,
   HapiOperationOutcome,
   Population,
+  PopulationExpectedValue,
 } from "@madie/madie-models";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import Editor from "../editor/Editor";
@@ -37,7 +38,9 @@ import {
   triggerPopChanges,
 } from "../../util/PopulationsMap";
 import calculationService, {
+  GroupPopulationEpisodeResultMap,
   GroupStatementResultMap,
+  PopulationEpisodeResult,
 } from "../../api/CalculationService";
 import {
   DetailedPopulationGroupResult,
@@ -166,6 +169,8 @@ const CreateTestCase = () => {
   const [populationGroupResults, setPopulationGroupResults] =
     useState<DetailedPopulationGroupResult[]>();
   const [groupStatementResults, setGroupStatementResults] = useState<any>();
+  const [groupEpisodeResults, setGroupEpisodeResults] =
+    useState<GroupPopulationEpisodeResultMap>();
   const [calculationErrors, setCalculationErrors] = useState<AlertProps>();
   const [createButtonDisabled, setCreateButtonDisabled] =
     useState<boolean>(false);
@@ -423,10 +428,14 @@ const CreateTestCase = () => {
           valueSets
         );
       const output = calculation.current.processRawResults(executionResults);
+      const episodeResults =
+        calculation.current.processEpisodeResults(executionResults);
       setCalculationErrors(undefined);
       setGroupStatementResults(output?.[testCase.id]);
+      setGroupEpisodeResults(episodeResults?.[testCase.id]);
       setPopulationGroupResults(executionResults[0].detailedResults);
     } catch (error) {
+      console.error("Error occurred during calculation", error);
       setCalculationErrors({
         status: "error",
         message: error.message,
@@ -564,10 +573,38 @@ const CreateTestCase = () => {
     }, 500);
   }
 
+  function findMeasureGroupPopulation(
+    measureGroup: Group,
+    populationValue: PopulationExpectedValue
+  ): Population {
+    return measureGroup?.populations?.find(
+      (population) =>
+        (!_.isNil(populationValue.id) &&
+          population.id === populationValue.id) ||
+        (_.isNil(populationValue.id) &&
+          populationValue.name === population.name)
+    );
+  }
+
+  function findEpisodeActualValue(
+    populationEpisodeResults: PopulationEpisodeResult[],
+    measureGroupPopulation: Population,
+    populationValue: PopulationExpectedValue
+  ) {
+    const groupEpisodeResult = populationEpisodeResults?.find(
+      (popEpResult) =>
+        FHIR_POPULATION_CODES[popEpResult.populationType] ===
+          populationValue.name &&
+        measureGroupPopulation?.definition === popEpResult.define
+    );
+    return _.isNil(groupEpisodeResult) ? 0 : groupEpisodeResult.value;
+  }
+
   const mapGroupPopulations = (
     groupPopulations: GroupPopulation[],
     populationGroupResults: DetailedPopulationGroupResult[],
-    groupStatementResults: GroupStatementResultMap
+    groupStatementResults: GroupStatementResultMap,
+    groupEpisodeResults: GroupPopulationEpisodeResultMap
   ): DisplayGroupPopulation[] => {
     if (_.isNil(groupPopulations)) {
       return null;
@@ -605,12 +642,13 @@ const CreateTestCase = () => {
           (populationValue) => {
             // try to look up population on group to find the define
             const measureGroupPopulation: Population =
-              measureGroup?.populations?.find(
-                (population) =>
-                  (!_.isNil(populationValue.id) &&
-                    population.id === populationValue.id) ||
-                  populationValue.name === population.name
-              );
+              findMeasureGroupPopulation(measureGroup, populationValue);
+            const episodeActualValue = findEpisodeActualValue(
+              groupEpisodeResults?.[measureGroup.id],
+              measureGroupPopulation,
+              populationValue
+            );
+
             const actualResult =
               groupPopulation.populationBasis === "Boolean"
                 ? results?.populationResults?.find(
@@ -618,9 +656,7 @@ const CreateTestCase = () => {
                       FHIR_POPULATION_CODES[popResult.populationType] ===
                       populationValue.name
                   )?.result
-                : groupStatementResults?.[groupPopulation.groupId]?.[
-                    measureGroupPopulation?.definition
-                  ];
+                : episodeActualValue;
             return {
               ...populationValue,
               actual: actualResult,
@@ -684,7 +720,8 @@ const CreateTestCase = () => {
               groupPopulations={mapGroupPopulations(
                 formik.values.groupPopulations,
                 populationGroupResults,
-                groupStatementResults
+                groupStatementResults,
+                groupEpisodeResults
               )}
               executionRun={!_.isNil(populationGroupResults)}
               errors={formik.errors.groupPopulations}
