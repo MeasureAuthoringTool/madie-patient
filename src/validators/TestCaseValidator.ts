@@ -48,7 +48,7 @@ export const TestCaseValidator = Yup.object().shape({
                               ) {
                                 return this.createError({
                                   message:
-                                    "Decimals cannot be entered in the expected values",
+                                    "Decimals values cannot be entered in the population expected values",
                                 });
                               } else {
                                 return true;
