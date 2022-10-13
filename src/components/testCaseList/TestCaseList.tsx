@@ -42,8 +42,6 @@ const TestCaseList = () => {
   const [measureBundle] = bundleState;
   const [valueSets] = valueSetsState;
 
-  console.log("hello");
-
   useEffect(() => {
     setCanEdit(
       measure?.createdBy === userName ||
