@@ -532,6 +532,7 @@ const CreateTestCase = () => {
     if (formik.touched[name] && formik.errors[name]) {
       return (
         <HelperText
+          id={`${name}-helper-text`}
           data-testid={`${name}-helper-text`}
           text={formik.errors[name]?.toString()}
           isError={isError}
@@ -771,12 +772,13 @@ const CreateTestCase = () => {
                label, input, and error => single input control component */}
 
               <FormControl>
-                <Label text="Test Case Title" />
+                <label htmlFor="test-case-title">Test Case Title</label>
                 {canEdit && (
                   <>
                     <TestCaseTitle
                       type="text"
-                      id="testCaseTitle"
+                      id="test-case-title"
+                      aria-describedby="title-helper-text"
                       data-testid="create-test-case-title"
                       {...formik.getFieldProps("title")}
                       // border radius classes don't take to tw.input
@@ -787,12 +789,15 @@ const CreateTestCase = () => {
                 )}
                 {!canEdit && formik.values.title}
 
-                <Label text="Test Case Description" />
+                <label htmlFor="test-case-description">
+                  Test Case Description
+                </label>
                 {canEdit && (
                   <>
                     <TestCaseDescription
-                      id="testCaseDescription"
+                      id="test-case-description"
                       data-testid="create-test-case-description"
+                      aria-describedby="description-helper-text"
                       {...formik.getFieldProps("description")}
                     />
                     <FormErrors>
@@ -802,7 +807,7 @@ const CreateTestCase = () => {
                 )}
                 {!canEdit && formik.values.description}
 
-                <Label text="Test Case Series" />
+                <label htmlFor="test-case-series">Test Case Series</label>
                 {canEdit && (
                   <>
                     <TestCaseSeries
