@@ -124,7 +124,8 @@ const TestCaseList = () => {
             if(executionStatus){
             if(stratVal.expected!=stratVal.actual){
               executionStatus=false
-            }}})
+            }}}
+            )
           }
             testCase.executionStatus = executionStatus ? "pass" : "fail";
           }
