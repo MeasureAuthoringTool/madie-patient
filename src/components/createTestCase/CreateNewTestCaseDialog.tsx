@@ -263,6 +263,7 @@ const CreateNewTestCaseDialog = ({ open, onClose }) => {
               fontWeight: 500,
               color: "rgb(51, 51, 51)",
             }}
+            htmlFor="test-case-series"
           >
             Test Case Group
           </InputLabel>

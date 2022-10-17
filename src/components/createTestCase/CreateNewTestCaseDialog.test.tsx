@@ -111,7 +111,9 @@ describe("Create New Test Case Dialog", () => {
       expect(descriptionInput.value).toBe(formikInfo.description);
       Simulate.change(descriptionInput);
 
-      const seriesInput = getByRole("combobox", { name: "" });
+      screen.debug(undefined, 20000);
+
+      const seriesInput = getByRole("combobox");
       userEvent.type(seriesInput, formikInfo.series);
       const seriesOption = getByText('Add "test case series"');
       expect(
@@ -155,7 +157,7 @@ describe("Create New Test Case Dialog", () => {
       expect(descriptionInput.value).toBe(formikInfo.description);
       Simulate.change(descriptionInput);
 
-      const seriesInput = getByRole("combobox", { name: "" });
+      const seriesInput = getByRole("combobox");
       userEvent.type(seriesInput, formikInfo.series);
       const seriesOption = getByText('Add "test case series"');
       expect(

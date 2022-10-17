@@ -24,6 +24,7 @@ const TestCaseSeries = ({
 
   return (
     <Autocomplete
+      id="test-case-series"
       freeSolo
       clearOnBlur
       value={value}
