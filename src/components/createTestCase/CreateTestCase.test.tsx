@@ -483,7 +483,9 @@ describe("CreateTestCase component", () => {
       expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
     });
 
-    const seriesInput = screen.getByRole("combobox", { name: "Series" });
+    const seriesInput = screen
+      .getByTestId("create-test-case-series")
+      .querySelector("input");
     expect(seriesInput).toHaveValue("SeriesA");
 
     const descriptionInput = screen.getByTestId("create-test-case-description");
@@ -700,7 +702,9 @@ describe("CreateTestCase component", () => {
       expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
     });
 
-    const seriesInput = screen.getByRole("combobox", { name: "Series" });
+    const seriesInput = screen
+      .getByTestId("create-test-case-series")
+      .querySelector("input");
     expect(seriesInput).toHaveValue("SeriesA");
 
     await testTitle("Updated Title", true);
@@ -849,7 +853,9 @@ describe("CreateTestCase component", () => {
 
     await testTitle("Updated Title", true);
 
-    const seriesInput = screen.getByRole("combobox", { name: "Series" });
+    const seriesInput = screen
+      .getByTestId("create-test-case-series")
+      .querySelector("input");
     expect(seriesInput).toHaveValue("SeriesA");
 
     const descriptionInput = screen.getByTestId("create-test-case-description");
