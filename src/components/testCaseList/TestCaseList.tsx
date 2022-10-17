@@ -4,8 +4,7 @@ import "styled-components/macro";
 import * as _ from "lodash";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import { TestCase } from "@madie/madie-models";
-import { useParams, useNavigate } from "react-router-dom";
-import { Button } from "@madie/madie-components";
+import { useParams } from "react-router-dom";
 import TestCaseComponent from "./TestCase";
 import calculationService from "../../api/CalculationService";
 import {
@@ -15,6 +14,8 @@ import {
 import { getFhirMeasurePopulationCode } from "../../util/PopulationsMap";
 import { useOktaTokens } from "@madie/madie-util";
 import useExecutionContext from "../routes/useExecutionContext";
+import CreateCodeCoverageNavTabs from "./CreateCodeCoverageNavTabs";
+import CodeCoverageHighlighting from "./CodeCoverageHighlighting";
 import CreateNewTestCaseDialog from "../createTestCase/CreateNewTestCaseDialog";
 
 const TH = tw.th`p-3 border-b text-left text-sm font-bold uppercase`;
@@ -31,8 +32,10 @@ const TestCaseList = () => {
   const calculation = useRef(calculationService());
   const { getUserName } = useOktaTokens();
   const userName = getUserName();
-  //const navigate = useNavigate();
   const [canEdit, setCanEdit] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<string>("passing");
+  const [executeAllTestCases, setExecuteAllTestCases] =
+    useState<boolean>(false);
 
   const { measureState, bundleState, valueSetsState } = useExecutionContext();
   const [measure] = measureState;
@@ -142,6 +145,7 @@ const TestCaseList = () => {
             testCase.executionStatus = executionStatus ? "pass" : "fail";
           }
         });
+        setExecuteAllTestCases(true);
         setTestCases([...testCases]);
         setExecutionResults(nextExecutionResults);
       } catch (error) {
@@ -151,67 +155,58 @@ const TestCaseList = () => {
   };
 
   return (
-    <div>
-      <div tw="flex flex-col">
-        <div tw="py-2">
-          <CreateNewTestCaseDialog open={createOpen} onClose={handleClose} />
-          {canEdit && (
-            <Button
-              buttonTitle="New Test Case"
-              disabled={false}
-              onClick={createNewTestCase}
-              data-testid="create-new-test-case-button"
-            />
-          )}
+    <div tw="mx-6 my-6 shadow-lg rounded-md border border-slate bg-white">
+      <div tw="flex-auto">
+        <div tw="pl-12" data-testid="code-coverage-tabs">
+          <CreateCodeCoverageNavTabs
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            executeAllTestCases={executeAllTestCases}
+            canEdit={canEdit}
+            measure={measure}
+            createNewTestCase={createNewTestCase}
+            executeTestCases={executeTestCases}
+          />
         </div>
-        <div tw="py-2">
-          {canEdit && (
-            <Button
-              buttonTitle="Execute Test Cases"
-              disabled={
-                !!measure?.cqlErrors ||
-                _.isNil(measure?.groups) ||
-                measure?.groups.length === 0
-              }
-              onClick={executeTestCases}
-              data-testid="execute-test-cases-button"
-            />
-          )}
-        </div>
-
+        <CreateNewTestCaseDialog open={createOpen} onClose={handleClose} />
         {error && (
           <ErrorAlert data-testid="display-tests-error" role="alert">
             {error}
           </ErrorAlert>
         )}
-        <div tw="overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div tw="py-2 inline-block min-w-full sm:px-6 lg:px-8">
-            <table tw="min-w-full" data-testid="test-case-tbl">
-              <thead>
-                <tr>
-                  <TH scope="col" />
-                  <TH scope="col">Title</TH>
-                  <TH scope="col">Series</TH>
-                  <TH scope="col">Status</TH>
-                  <TH scope="col" />
-                </tr>
-              </thead>
-              <tbody>
-                {testCases?.map((testCase) => {
-                  return (
-                    <TestCaseComponent
-                      testCase={testCase}
-                      key={testCase.id}
-                      canEdit={canEdit}
-                      executionResult={executionResults[testCase.id]}
-                      // we assume all results have been run here
-                    />
-                  );
-                })}
-              </tbody>
-            </table>
+
+        {activeTab === "passing" && (
+          <div tw="overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div tw="py-2 inline-block min-w-full sm:px-6 lg:px-8">
+              <table tw="min-w-full" data-testid="test-case-tbl">
+                <thead>
+                  <tr>
+                    <TH scope="col" />
+                    <TH scope="col">Title</TH>
+                    <TH scope="col">Series</TH>
+                    <TH scope="col">Status</TH>
+                    <TH scope="col" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {testCases?.map((testCase) => {
+                    return (
+                      <TestCaseComponent
+                        testCase={testCase}
+                        key={testCase.id}
+                        canEdit={canEdit}
+                        executionResult={executionResults[testCase.id]}
+                        // we assume all results have been run here
+                      />
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+        )}
+
+        {activeTab === "coverage" && <CodeCoverageHighlighting />}
       </div>
     </div>
   );
