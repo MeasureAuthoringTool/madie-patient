@@ -28,7 +28,7 @@ import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import Editor from "../editor/Editor";
 import { TestCaseValidator } from "../../validators/TestCaseValidator";
 import { sanitizeUserInput } from "../../util/Utils.js";
-import TestCaseSeries from "./TestCaseSeries";
+import TestCaseSeries from "../createTestCase/TestCaseSeries";
 import * as _ from "lodash";
 import { Ace } from "ace-builds";
 import {
@@ -50,10 +50,10 @@ import {
 } from "@madie/madie-util";
 import useExecutionContext from "../routes/useExecutionContext";
 import { MadieEditor } from "@madie/madie-editor";
-import CreateTestCaseNavTabs from "./CreateTestCaseNavTabs";
-import ExpectedActual from "./RightPanel/ExpectedActual/ExpectedActual";
-import "./CreateTestCase.scss";
-import CalculationResults from "./calculationResults/CalculationResults";
+import CreateTestCaseNavTabs from "../createTestCase/CreateTestCaseNavTabs";
+import ExpectedActual from "../createTestCase/RightPanel/ExpectedActual/ExpectedActual";
+import "./EditTestCase.scss";
+import CalculationResults from "../createTestCase/calculationResults/CalculationResults";
 
 const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
@@ -774,7 +774,15 @@ const CreateTestCase = () => {
                         formik.setFieldValue("series", nextValue)
                       }
                       seriesOptions={seriesState.series}
-                      sx={{ width: "100%" }}
+                      sx={{
+                        width: "100%",
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          borderRadius: "3px",
+                          "& legend": {
+                            width: 0,
+                          },
+                        },
+                      }}
                     />
                     <HelperText text={"Start typing to add a new series"} />
                   </>

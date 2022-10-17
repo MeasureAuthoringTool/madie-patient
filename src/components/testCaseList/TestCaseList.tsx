@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import tw from "twin.macro";
 import "styled-components/macro";
 import * as _ from "lodash";
@@ -15,6 +15,7 @@ import {
 import { getFhirMeasurePopulationCode } from "../../util/PopulationsMap";
 import { useOktaTokens } from "@madie/madie-util";
 import useExecutionContext from "../routes/useExecutionContext";
+import CreateNewTestCaseDialog from "../createTestCase/CreateNewTestCaseDialog";
 
 const TH = tw.th`p-3 border-b text-left text-sm font-bold uppercase`;
 const ErrorAlert = tw.div`bg-red-100 text-red-700 rounded-lg m-1 p-3`;
@@ -30,13 +31,15 @@ const TestCaseList = () => {
   const calculation = useRef(calculationService());
   const { getUserName } = useOktaTokens();
   const userName = getUserName();
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   const [canEdit, setCanEdit] = useState<boolean>(false);
 
   const { measureState, bundleState, valueSetsState } = useExecutionContext();
   const [measure] = measureState;
   const [measureBundle] = bundleState;
   const [valueSets] = valueSetsState;
+
+  const [createOpen, setCreateOpen] = useState<boolean>(false);
 
   useEffect(() => {
     setCanEdit(
@@ -48,7 +51,7 @@ const TestCaseList = () => {
     );
   }, [measure, userName]);
 
-  useEffect(() => {
+  const retrieveTestCases = useCallback(() => {
     testCaseService.current
       .getTestCasesByMeasureId(measureId)
       .then((testCaseList: TestCase[]) => {
@@ -62,9 +65,32 @@ const TestCaseList = () => {
       });
   }, [measureId, testCaseService]);
 
+  useEffect(() => {
+    retrieveTestCases();
+  }, [measureId, testCaseService]);
+
+  useEffect(() => {
+    const createTestCaseListener = () => {
+      retrieveTestCases();
+    };
+    window.addEventListener("createTestCase", createTestCaseListener, false);
+    return () => {
+      window.removeEventListener(
+        "createTestCase",
+        createTestCaseListener,
+        false
+      );
+    };
+  }, []);
+
   const createNewTestCase = () => {
-    navigate("create");
+    setCreateOpen(true);
   };
+
+  const handleClose = () => {
+    setCreateOpen(false);
+  };
+
   const executeTestCases = async () => {
     if (measure && measure.cqlErrors) {
       setError(
@@ -128,6 +154,7 @@ const TestCaseList = () => {
     <div>
       <div tw="flex flex-col">
         <div tw="py-2">
+          <CreateNewTestCaseDialog open={createOpen} onClose={handleClose} />
           {canEdit && (
             <Button
               buttonTitle="New Test Case"

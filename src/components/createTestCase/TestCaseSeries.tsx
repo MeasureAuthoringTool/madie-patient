@@ -44,9 +44,9 @@ const TestCaseSeries = ({
       renderInput={(params) => (
         <TextField
           {...params}
-          label="Series"
           inputProps={{ ...params.inputProps, maxLength: 250 }}
           data-testid="create-test-case-series"
+          placeholder="Start typing or select"
         />
       )}
       options={cleanedOptions}

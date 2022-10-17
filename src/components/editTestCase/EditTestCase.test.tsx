@@ -7,7 +7,7 @@ import {
   within,
 } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import CreateTestCase, { isEmptyTestCaseJsonString } from "./CreateTestCase";
+import CreateTestCase, { isEmptyTestCaseJsonString } from "./EditTestCase";
 import userEvent from "@testing-library/user-event";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
@@ -21,8 +21,8 @@ import {
 import TestCaseRoutes from "../routes/TestCaseRoutes";
 import { act } from "react-dom/test-utils";
 import calculationService from "../../api/CalculationService";
-import { simpleMeasureFixture } from "./__mocks__/simpleMeasureFixture";
-import { testCaseFixture } from "./__mocks__/testCaseFixture";
+import { simpleMeasureFixture } from "../createTestCase/__mocks__/simpleMeasureFixture";
+import { testCaseFixture } from "../createTestCase/__mocks__/testCaseFixture";
 import { ExecutionResult } from "fqm-execution/build/types/Calculator";
 import {
   buildMeasureBundle,
@@ -30,8 +30,8 @@ import {
 } from "../../util/CalculationTestHelpers";
 import { ExecutionContextProvider } from "../routes/ExecutionContext";
 import { ChangeEvent } from "react";
-import { multiGroupMeasureFixture } from "./__mocks__/multiGroupMeasureFixture";
-import { nonBoolTestCaseFixture } from "./__mocks__/nonBoolTestCaseFixture";
+import { multiGroupMeasureFixture } from "../createTestCase/__mocks__/multiGroupMeasureFixture";
+import { nonBoolTestCaseFixture } from "../createTestCase/__mocks__/nonBoolTestCaseFixture";
 import { TestCaseValidator } from "../../validators/TestCaseValidator";
 import { useOktaTokens } from "@madie/madie-util";
 
@@ -114,6 +114,11 @@ const defaultMeasure = {
           id: "id-1",
           name: PopulationType.INITIAL_POPULATION,
           definition: "Pop1",
+        },
+      ],
+      stratifications: [
+        {
+          id: "strat-id-1",
         },
       ],
     },
@@ -483,7 +488,7 @@ describe("CreateTestCase component", () => {
       expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
     });
 
-    const seriesInput = screen.getByRole("combobox", { name: "Series" });
+    const seriesInput = screen.getByRole("combobox", { name: "" });
     expect(seriesInput).toHaveValue("SeriesA");
 
     const descriptionInput = screen.getByTestId("create-test-case-description");
@@ -700,7 +705,7 @@ describe("CreateTestCase component", () => {
       expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
     });
 
-    const seriesInput = screen.getByRole("combobox", { name: "Series" });
+    const seriesInput = screen.getByRole("combobox", { name: "" });
     expect(seriesInput).toHaveValue("SeriesA");
 
     await testTitle("Updated Title", true);
@@ -849,7 +854,7 @@ describe("CreateTestCase component", () => {
 
     await testTitle("Updated Title", true);
 
-    const seriesInput = screen.getByRole("combobox", { name: "Series" });
+    const seriesInput = screen.getByRole("combobox", { name: "" });
     expect(seriesInput).toHaveValue("SeriesA");
 
     const descriptionInput = screen.getByTestId("create-test-case-description");
@@ -2007,7 +2012,6 @@ describe("Measure Calculation ", () => {
     // this is to make form dirty so that run test button is enabled
     const tcTitle = await screen.findByTestId("create-test-case-title");
     userEvent.type(tcTitle, "testTitle");
-    screen.debug();
     const runTestButton = screen.getByRole("button", { name: "Run Test" });
     expect(runTestButton).not.toBeDisabled();
     userEvent.click(runTestButton);

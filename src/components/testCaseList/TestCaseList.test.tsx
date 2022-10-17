@@ -181,6 +181,9 @@ const useTestCaseServiceMock =
 
 const useTestCaseServiceMockResolved = {
   getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
+  getTestCaseSeriesForMeasure: jest
+    .fn()
+    .mockResolvedValue(["Series 1", "Series 2"]),
 } as unknown as TestCaseServiceApi;
 
 // Mock data for Measure retrieved from MeasureService
@@ -299,6 +302,9 @@ describe("TestCaseList component", () => {
 
     const useTestCaseServiceMockRejected = {
       getTestCasesByMeasureId: jest.fn().mockRejectedValue(error),
+      getTestCaseSeriesForMeasure: jest
+        .fn()
+        .mockResolvedValue(["Series 1", "Series 2"]),
     } as unknown as TestCaseServiceApi;
 
     useTestCaseServiceMock.mockImplementation(() => {
@@ -420,6 +426,9 @@ describe("TestCaseList component", () => {
 
     const useTestCaseServiceMockResolved = {
       getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
+      getTestCaseSeriesForMeasure: jest
+        .fn()
+        .mockResolvedValue(["Series 1", "Series 2"]),
     } as unknown as TestCaseServiceApi;
 
     useTestCaseServiceMock.mockImplementation(() => {
@@ -478,7 +487,8 @@ describe("TestCaseList component", () => {
     await waitFor(() => {
       const createNewButton = getByTestId("create-new-test-case-button");
       fireEvent.click(createNewButton);
-      expect(mockedUsedNavigate).toHaveBeenCalled();
+
+      expect(getByTestId("create-test-case-dialog")).toBeInTheDocument();
     });
   });
 
