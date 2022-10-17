@@ -93,9 +93,9 @@ const TestCaseList = () => {
             (result) => result.patientId === testCase.id
           )?.detailedResults;
           nextExecutionResults[testCase.id] = detailedResults;
-          const stratificationValues = testCase.groupPopulations[0]?.stratificationValues
+          const stratificationValues =
+            testCase.groupPopulations[0]?.stratificationValues;
 
-          console.log(detailedResults)
           const { populationResults } = detailedResults?.[0]; // Since we have only 1 population group
 
           const populationValues =
@@ -113,19 +113,20 @@ const TestCaseList = () => {
                 );
 
                 if (groupPopulation) {
-                  groupPopulation.actual = populationResult.result;
                   executionStatus =
                     groupPopulation.expected === populationResult.result;
                 }
               }
             });
-          if(executionStatus && stratificationValues){
-            stratificationValues.forEach((stratVal)=>{
-            if(executionStatus){
-            if(stratVal.expected!=stratVal.actual){
-              executionStatus=false
-            }}})
-          }
+            if (executionStatus && stratificationValues) {
+              stratificationValues.forEach((stratVal) => {
+                if (executionStatus) {
+                  if (stratVal.expected != stratVal.actual) {
+                    executionStatus = false;
+                  }
+                }
+              });
+            }
             testCase.executionStatus = executionStatus ? "pass" : "fail";
           }
         });
