@@ -118,7 +118,7 @@ const TestCaseList = () => {
                 }
               }
             });
-            if (executionStatus && stratificationValues) {
+            if (executionStatus && !!stratificationValues) {
               stratificationValues.forEach((stratVal) => {
                 if (executionStatus) {
                   if (stratVal.expected != stratVal.actual) {
