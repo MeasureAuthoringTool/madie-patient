@@ -138,6 +138,19 @@ export function isEmptyTestCaseJsonString(
   }
 }
 
+export function findEpisodeActualValue(
+  populationEpisodeResults: PopulationEpisodeResult[],
+  populationValue: PopulationExpectedValue,
+  populationDefinition: string
+): number {
+  const groupEpisodeResult = populationEpisodeResults?.find(
+    (popEpResult) =>
+      FHIR_POPULATION_CODES[popEpResult.populationType] ===
+        populationValue.name && populationDefinition === popEpResult.define
+  );
+  return _.isNil(groupEpisodeResult) ? 0 : groupEpisodeResult.value;
+}
+
 const INITIAL_VALUES = {
   title: "",
   description: "",
@@ -437,7 +450,6 @@ const CreateTestCase = () => {
       setGroupEpisodeResults(episodeResults?.[testCase.id]);
       setPopulationGroupResults(executionResults[0].detailedResults);
     } catch (error) {
-      console.error("Error occurred during calculation", error);
       setCalculationErrors({
         status: "error",
         message: error.message,
@@ -588,20 +600,6 @@ const CreateTestCase = () => {
     );
   }
 
-  function findEpisodeActualValue(
-    populationEpisodeResults: PopulationEpisodeResult[],
-    measureGroupPopulation: Population,
-    populationValue: PopulationExpectedValue
-  ) {
-    const groupEpisodeResult = populationEpisodeResults?.find(
-      (popEpResult) =>
-        FHIR_POPULATION_CODES[popEpResult.populationType] ===
-          populationValue.name &&
-        measureGroupPopulation?.definition === popEpResult.define
-    );
-    return _.isNil(groupEpisodeResult) ? 0 : groupEpisodeResult.value;
-  }
-
   const mapGroupPopulations = (
     groupPopulations: GroupPopulation[],
     populationGroupResults: DetailedPopulationGroupResult[],
@@ -647,8 +645,8 @@ const CreateTestCase = () => {
               findMeasureGroupPopulation(measureGroup, populationValue);
             const episodeActualValue = findEpisodeActualValue(
               groupEpisodeResults?.[measureGroup.id],
-              measureGroupPopulation,
-              populationValue
+              populationValue,
+              measureGroupPopulation?.definition
             );
 
             const actualResult =
