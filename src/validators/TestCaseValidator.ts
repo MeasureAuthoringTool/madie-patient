@@ -40,13 +40,24 @@ export const TestCaseValidator = Yup.object().shape({
                             populationBasis !== "Boolean" ||
                             population.parent.name === "measureObservation"
                           ) {
-                            if (isNaN(+value) || +value < 0) {
+                            if (!isNaN(+value) && +value >= 0) {
+                              if (
+                                population.parent.name !==
+                                  "measureObservation" &&
+                                !Number.isInteger(+value)
+                              ) {
+                                return this.createError({
+                                  message:
+                                    "Decimals values cannot be entered in the population expected values",
+                                });
+                              } else {
+                                return true;
+                              }
+                            } else {
                               return this.createError({
                                 message:
                                   "Only positive numeric values can be entered in the expected values",
                               });
-                            } else {
-                              return true;
                             }
                           }
                           return false;
