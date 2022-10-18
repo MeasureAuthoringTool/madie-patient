@@ -113,7 +113,7 @@ const TestCaseList = () => {
 
                 if (groupPopulation) {
                   executionStatus =
-                    groupPopulation.expected == populationResult.result;
+                    groupPopulation.expected === populationResult.result;
                 }
               }
             });
