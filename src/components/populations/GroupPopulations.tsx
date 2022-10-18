@@ -62,31 +62,33 @@ const GroupPopulations = ({
               }}
             />
 
-            <TestCasePopulationList
-              i={i}
-              content={`Measure Group ${i + 1}: Stratifications`}
-              scoring={gp.scoring}
-              disableExpected={disableExpected}
-              executionRun={executionRun}
-              populations={gp.stratificationValues}
-              populationBasis={gp.populationBasis}
-              onChange={(populations, type, changedPopulation) => {
-                const nextPopulations = _.cloneDeep(groupPopulations);
-                const groupPopulation = nextPopulations.find(
-                  (np) => np.groupId === gp.groupId
-                );
-                if (groupPopulation) {
-                  groupPopulation.stratificationValues = populations;
-                }
-                if (onChange) {
-                  onChange(
-                    nextPopulations,
-                    groupPopulation.groupId,
-                    changedPopulation
+            {gp?.stratificationValues?.length > 0 && (
+              <TestCasePopulationList
+                i={i}
+                content={`Measure Group ${i + 1}: Stratifications`}
+                scoring={gp.scoring}
+                disableExpected={disableExpected}
+                executionRun={executionRun}
+                populations={gp.stratificationValues}
+                populationBasis={gp.populationBasis}
+                onChange={(populations, type, changedPopulation) => {
+                  const nextPopulations = _.cloneDeep(groupPopulations);
+                  const groupPopulation = nextPopulations.find(
+                    (np) => np.groupId === gp.groupId
                   );
-                }
-              }}
-            />
+                  if (groupPopulation) {
+                    groupPopulation.stratificationValues = populations;
+                  }
+                  if (onChange) {
+                    onChange(
+                      nextPopulations,
+                      groupPopulation.groupId,
+                      changedPopulation
+                    );
+                  }
+                }}
+              />
+            )}
           </div>
         );
       })
