@@ -1,6 +1,7 @@
 import React from "react";
 import tw, { styled } from "twin.macro";
 import "styled-components/macro";
+import * as _ from "lodash";
 import TestCasePopulation from "./TestCasePopulation";
 import { DisplayPopulationValue } from "@madie/madie-models";
 import classNames from "classnames";
@@ -30,6 +31,37 @@ const StyledIcon = styled(FontAwesomeIcon)(
     errors ? tw`text-red-700 mr-1.5` : tw`text-green-700 mr-1.5`,
   ]
 );
+
+export const determineGroupResult = (
+  populationBasis: string,
+  populations: DisplayPopulationValue[],
+  executionRun?: boolean
+) => {
+  if (!executionRun) {
+    return "initial";
+  }
+  for (let i = 0; i < populations?.length; i++) {
+    const population = populations[i];
+    const { expected, actual } = population;
+    if (populationBasis === "Boolean" && expected != actual) {
+      return "fail";
+    } else if (populationBasis !== "Boolean") {
+      const expectedNum =
+        _.isNil(expected) ||
+        (typeof expected === "string" && _.isEmpty(expected))
+          ? 0
+          : expected;
+      const actualNum =
+        _.isNil(actual) || (typeof actual === "string" && _.isEmpty(actual))
+          ? 0
+          : actual;
+      if (expectedNum != actualNum) {
+        return "fail";
+      }
+    }
+  }
+  return "pass";
+};
 
 // Test case population table. We need to know if the execution has been
 const TestCasePopulationList = ({
@@ -75,19 +107,8 @@ const TestCasePopulationList = ({
     }
   };
   // we need to do an all check here for pass / no pass
-  const view = (() => {
-    if (!executionRun) {
-      return "initial";
-    }
-    for (let i = 0; i < populations?.length; i++) {
-      const population = populations[i];
-      const { expected, actual } = population;
-      if (expected != actual) {
-        return "fail";
-      }
-    }
-    return "pass";
-  })();
+  const view = determineGroupResult(populationBasis, populations, executionRun);
+
   /*
     we have three seperate views
     - not run

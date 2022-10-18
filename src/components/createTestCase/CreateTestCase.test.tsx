@@ -1,4 +1,5 @@
 import * as React from "react";
+import { ChangeEvent } from "react";
 import {
   fireEvent,
   render,
@@ -7,20 +8,27 @@ import {
   within,
 } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import CreateTestCase, { isEmptyTestCaseJsonString } from "./CreateTestCase";
+import CreateTestCase, {
+  findEpisodeActualValue,
+  isEmptyTestCaseJsonString,
+} from "./CreateTestCase";
 import userEvent from "@testing-library/user-event";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
 import {
-  Measure,
-  PopulationType,
-  MeasureScoring,
-  TestCase,
   HapiOperationOutcome,
+  Measure,
+  MeasureScoring,
+  Population,
+  PopulationExpectedValue,
+  PopulationType,
+  TestCase,
 } from "@madie/madie-models";
 import TestCaseRoutes from "../routes/TestCaseRoutes";
 import { act } from "react-dom/test-utils";
-import calculationService from "../../api/CalculationService";
+import calculationService, {
+  PopulationEpisodeResult,
+} from "../../api/CalculationService";
 import { simpleMeasureFixture } from "./__mocks__/simpleMeasureFixture";
 import { testCaseFixture } from "./__mocks__/testCaseFixture";
 import { ExecutionResult } from "fqm-execution/build/types/Calculator";
@@ -29,11 +37,11 @@ import {
   getExampleValueSet,
 } from "../../util/CalculationTestHelpers";
 import { ExecutionContextProvider } from "../routes/ExecutionContext";
-import { ChangeEvent } from "react";
 import { multiGroupMeasureFixture } from "./__mocks__/multiGroupMeasureFixture";
 import { nonBoolTestCaseFixture } from "./__mocks__/nonBoolTestCaseFixture";
 import { TestCaseValidator } from "../../validators/TestCaseValidator";
 import { useOktaTokens } from "@madie/madie-util";
+import { PopulationType as FqmPopulationType } from "fqm-execution/build/types/Enums";
 
 //temporary solution (after jest updated to version 27) for error: thrown: "Exceeded timeout of 5000 ms for a test.
 jest.setTimeout(60000);
@@ -2408,5 +2416,130 @@ describe("validator", () => {
     expect(expectedError.message).toEqual(
       "Expected value type must match population basis type"
     );
+  });
+});
+
+describe("findEpisodeActualValue", () => {
+  it("should return 0 if episode results is null", () => {
+    const popValue: PopulationExpectedValue = {
+      id: "abc",
+      name: PopulationType.INITIAL_POPULATION,
+      expected: 1,
+    };
+    const output = findEpisodeActualValue(null, popValue, "ipp");
+    expect(output).toEqual(0);
+  });
+
+  it("should return 0 if episode results is undefined", () => {
+    const popValue: PopulationExpectedValue = {
+      id: "abc",
+      name: PopulationType.INITIAL_POPULATION,
+      expected: 1,
+    };
+    const output = findEpisodeActualValue(undefined, popValue, "ipp");
+    expect(output).toEqual(0);
+  });
+
+  it("should return 0 if episode results is empty array", () => {
+    const popValue: PopulationExpectedValue = {
+      id: "abc",
+      name: PopulationType.INITIAL_POPULATION,
+      expected: 1,
+    };
+    const output = findEpisodeActualValue([], popValue, "ipp");
+    expect(output).toEqual(0);
+  });
+
+  it("should return actual value for matching name and type IPP", () => {
+    const popEpisodeResults: PopulationEpisodeResult[] = [
+      {
+        populationType: FqmPopulationType.IPP,
+        define: "ipp",
+        value: 2,
+      },
+    ];
+    const measureGroupPop: Population = {
+      id: "abc",
+      name: PopulationType.INITIAL_POPULATION,
+      definition: "ipp",
+    };
+    const popValue: PopulationExpectedValue = {
+      id: "abc",
+      name: PopulationType.INITIAL_POPULATION,
+      expected: 1,
+    };
+    const output = findEpisodeActualValue(popEpisodeResults, popValue, "ipp");
+    expect(output).toEqual(2);
+  });
+
+  it("should return actual value for matching name and type DENOM", () => {
+    const popEpisodeResults: PopulationEpisodeResult[] = [
+      {
+        populationType: FqmPopulationType.IPP,
+        define: "ipp",
+        value: 2,
+      },
+      {
+        populationType: FqmPopulationType.DENOM,
+        define: "den",
+        value: 1,
+      },
+    ];
+    const popValue: PopulationExpectedValue = {
+      id: "bbb",
+      name: PopulationType.DENOMINATOR,
+      expected: 1,
+    };
+    const output = findEpisodeActualValue(popEpisodeResults, popValue, "den");
+    expect(output).toEqual(1);
+  });
+
+  it("should return zero value for matching type DENOM but missing definition", () => {
+    const popEpisodeResults: PopulationEpisodeResult[] = [
+      {
+        populationType: FqmPopulationType.IPP,
+        define: "ipp",
+        value: 2,
+      },
+      {
+        populationType: FqmPopulationType.DENOM,
+        define: "den",
+        value: 1,
+      },
+    ];
+    const popValue: PopulationExpectedValue = {
+      id: "bbb",
+      name: PopulationType.INITIAL_POPULATION,
+      expected: 1,
+    };
+    const output = findEpisodeActualValue(popEpisodeResults, popValue, "ipp2");
+    expect(output).toEqual(0);
+  });
+
+  it("should return zero value for matching type DENOM but missing definition", () => {
+    const popEpisodeResults: PopulationEpisodeResult[] = [
+      {
+        populationType: FqmPopulationType.IPP,
+        define: "ipp",
+        value: 2,
+      },
+      {
+        populationType: FqmPopulationType.IPP,
+        define: "ipp2",
+        value: 3,
+      },
+      {
+        populationType: FqmPopulationType.DENOM,
+        define: "den",
+        value: 1,
+      },
+    ];
+    const popValue: PopulationExpectedValue = {
+      id: "bbb",
+      name: PopulationType.INITIAL_POPULATION,
+      expected: 1,
+    };
+    const output = findEpisodeActualValue(popEpisodeResults, popValue, "ipp2");
+    expect(output).toEqual(3);
   });
 });
