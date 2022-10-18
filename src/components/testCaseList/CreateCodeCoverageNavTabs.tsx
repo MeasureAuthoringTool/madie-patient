@@ -87,6 +87,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
         label={executionResultsDisplayTemplate("Coverage")}
         data-testid="coverage-tab"
         value="coverage"
+        tabIndex={0}
       />
       <div style={{ margin: "6px 0 0 auto", display: "flex" }}>
         <div>
