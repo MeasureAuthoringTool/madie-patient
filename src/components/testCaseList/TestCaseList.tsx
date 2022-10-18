@@ -95,7 +95,6 @@ const TestCaseList = () => {
           nextExecutionResults[testCase.id] = detailedResults;
           const stratificationValues =
             testCase.groupPopulations[0]?.stratificationValues;
-
           const { populationResults } = detailedResults?.[0]; // Since we have only 1 population group
 
           const populationValues =
@@ -114,7 +113,7 @@ const TestCaseList = () => {
 
                 if (groupPopulation) {
                   executionStatus =
-                    groupPopulation.expected === populationResult.result;
+                    groupPopulation.expected == populationResult.result;
                 }
               }
             });
