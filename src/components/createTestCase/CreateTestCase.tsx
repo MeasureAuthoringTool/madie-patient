@@ -442,6 +442,7 @@ const CreateTestCase = () => {
           measureBundle,
           valueSets
         );
+
       const output = calculation.current.processRawResults(executionResults);
       const episodeResults =
         calculation.current.processEpisodeResults(executionResults);

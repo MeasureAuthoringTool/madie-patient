@@ -111,9 +111,21 @@ const TestCaseList = () => {
                     populationResult.populationType.toString()
                 );
 
-                if (groupPopulation) {
+                if (
+                  groupPopulation &&
+                  groupPopulation.name != "measureObservation"
+                ) {
                   executionStatus =
                     groupPopulation.expected === populationResult.result;
+
+                  //measure observations have a different result field. only relevant for boolean, looping needed for nonbool
+                } else if (
+                  groupPopulation &&
+                  groupPopulation.name == "measureObservation"
+                ) {
+                  executionStatus =
+                    Number(groupPopulation.expected) ===
+                    populationResult.observations[0];
                 }
               }
             });
