@@ -44,7 +44,8 @@ export const TestCaseValidator = Yup.object().shape({
                               if (
                                 population.parent.name !==
                                   "measureObservation" &&
-                                !Number.isInteger(+value)
+                                (!Number.isInteger(+value) ||
+                                  String(value).indexOf(".") > 0)
                               ) {
                                 return this.createError({
                                   message:
