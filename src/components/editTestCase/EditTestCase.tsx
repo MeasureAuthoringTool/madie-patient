@@ -138,6 +138,19 @@ export function isEmptyTestCaseJsonString(
   }
 }
 
+export function findEpisodeActualValue(
+  populationEpisodeResults: PopulationEpisodeResult[],
+  populationValue: PopulationExpectedValue,
+  populationDefinition: string
+): number {
+  const groupEpisodeResult = populationEpisodeResults?.find(
+    (popEpResult) =>
+      FHIR_POPULATION_CODES[popEpResult.populationType] ===
+        populationValue.name && populationDefinition === popEpResult.define
+  );
+  return _.isNil(groupEpisodeResult) ? 0 : groupEpisodeResult.value;
+}
+
 const INITIAL_VALUES = {
   title: "",
   description: "",
@@ -145,7 +158,7 @@ const INITIAL_VALUES = {
   groupPopulations: [],
 } as TestCase;
 
-const CreateTestCase = () => {
+const EditTestCase = () => {
   const navigate = useNavigate();
   const { id, measureId } = useParams<
     keyof navigationParams
@@ -205,7 +218,9 @@ const CreateTestCase = () => {
       populationBasis: group.populationBasis,
       stratificationValues: group.stratifications?.map(
         (stratification, index) => ({
-          name: `Strata-${index + 1} ${stratification.association}`,
+          name: `Strata-${index + 1} ${_.startCase(
+            stratification.association
+          )}`,
           expected: calculateEpisodes ? false : null,
           actual: calculateEpisodes ? false : null,
           id: stratification.id,
@@ -299,7 +314,13 @@ const CreateTestCase = () => {
         resetForm();
       };
     } else if (measure && measure.groups) {
-      setCanEdit(measure.createdBy === userName);
+      setCanEdit(
+        measure?.createdBy === userName ||
+          measure?.acls?.some(
+            (acl) =>
+              acl.userId === userName && acl.roles.indexOf("SHARED_WITH") >= 0
+          )
+      );
       resetForm({
         values: {
           ...INITIAL_VALUES,
@@ -431,7 +452,6 @@ const CreateTestCase = () => {
       setGroupEpisodeResults(episodeResults?.[testCase.id]);
       setPopulationGroupResults(executionResults[0].detailedResults);
     } catch (error) {
-      console.error("Error occurred during calculation", error);
       setCalculationErrors({
         status: "error",
         message: error.message,
@@ -532,6 +552,7 @@ const CreateTestCase = () => {
     if (formik.touched[name] && formik.errors[name]) {
       return (
         <HelperText
+          id={`${name}-helper-text`}
           data-testid={`${name}-helper-text`}
           text={formik.errors[name]?.toString()}
           isError={isError}
@@ -582,20 +603,6 @@ const CreateTestCase = () => {
     );
   }
 
-  function findEpisodeActualValue(
-    populationEpisodeResults: PopulationEpisodeResult[],
-    measureGroupPopulation: Population,
-    populationValue: PopulationExpectedValue
-  ) {
-    const groupEpisodeResult = populationEpisodeResults?.find(
-      (popEpResult) =>
-        FHIR_POPULATION_CODES[popEpResult.populationType] ===
-          populationValue.name &&
-        measureGroupPopulation?.definition === popEpResult.define
-    );
-    return _.isNil(groupEpisodeResult) ? 0 : groupEpisodeResult.value;
-  }
-
   const mapGroupPopulations = (
     groupPopulations: GroupPopulation[],
     populationGroupResults: DetailedPopulationGroupResult[],
@@ -641,8 +648,8 @@ const CreateTestCase = () => {
               findMeasureGroupPopulation(measureGroup, populationValue);
             const episodeActualValue = findEpisodeActualValue(
               groupEpisodeResults?.[measureGroup.id],
-              measureGroupPopulation,
-              populationValue
+              populationValue,
+              measureGroupPopulation?.definition
             );
 
             const actualResult =
@@ -771,12 +778,13 @@ const CreateTestCase = () => {
                label, input, and error => single input control component */}
 
               <FormControl>
-                <Label text="Test Case Title" />
+                <label htmlFor="test-case-title">Test Case Title</label>
                 {canEdit && (
                   <>
                     <TestCaseTitle
                       type="text"
-                      id="testCaseTitle"
+                      id="test-case-title"
+                      aria-describedby="title-helper-text"
                       data-testid="create-test-case-title"
                       {...formik.getFieldProps("title")}
                       // border radius classes don't take to tw.input
@@ -787,12 +795,15 @@ const CreateTestCase = () => {
                 )}
                 {!canEdit && formik.values.title}
 
-                <Label text="Test Case Description" />
+                <label htmlFor="test-case-description">
+                  Test Case Description
+                </label>
                 {canEdit && (
                   <>
                     <TestCaseDescription
-                      id="testCaseDescription"
+                      id="test-case-description"
                       data-testid="create-test-case-description"
+                      aria-describedby="description-helper-text"
                       {...formik.getFieldProps("description")}
                     />
                     <FormErrors>
@@ -802,7 +813,7 @@ const CreateTestCase = () => {
                 )}
                 {!canEdit && formik.values.description}
 
-                <Label text="Test Case Series" />
+                <label htmlFor="test-case-series">Test Case Series</label>
                 {canEdit && (
                   <>
                     <TestCaseSeries
@@ -945,4 +956,4 @@ const CreateTestCase = () => {
   );
 };
 
-export default CreateTestCase;
+export default EditTestCase;
