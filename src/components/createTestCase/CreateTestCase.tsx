@@ -218,7 +218,9 @@ const CreateTestCase = () => {
       populationBasis: group.populationBasis,
       stratificationValues: group.stratifications?.map(
         (stratification, index) => ({
-          name: `Strata-${index + 1} ${stratification.association}`,
+          name: `Strata-${index + 1} ${_.startCase(
+            stratification.association
+          )}`,
           expected: calculateEpisodes ? false : null,
           actual: calculateEpisodes ? false : null,
           id: stratification.id,
