@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import AceEditor from "react-ace";
 import { Ace } from "ace-builds";
 import "ace-builds/src-noconflict/mode-json";
@@ -20,10 +20,20 @@ const Editor = ({
   setEditor,
   readOnly,
 }: EditorPropsType) => {
+  const aceRef = useRef<AceEditor>(null);
+
+  useEffect(() => {
+    // This is to set aria-label on textarea for accessibility
+    aceRef.current.editor.container
+      .getElementsByClassName("ace_text-input")[0]
+      .setAttribute("aria-label", "Test case editor");
+  });
+
   return (
     <>
       <div data-testid="test-case-json-editor">
         <AceEditor
+          ref={aceRef}
           value={value}
           onChange={(value) => {
             onChange(value);
