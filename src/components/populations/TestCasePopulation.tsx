@@ -56,7 +56,8 @@ const TestCasePopulation = ({
         </td>
         <td role="cell">
           <ExpectActualInput
-            id={`${population.name}-expected-cb`}
+            id={`${population.id}-expected-cb`}
+            aria-labelledby={`${population.name}-expected`}
             name={population.name}
             expectedValue={population.expected}
             onChange={(expectedValue) =>
@@ -71,7 +72,8 @@ const TestCasePopulation = ({
         <td role="cell">
           {executionRun ? (
             <ExpectActualInput
-              id={`${population.name}-actual-cb`}
+              id={`${population.id}-actual-cb`}
+              aria-labelledby={`${population.name}-actual`}
               expectedValue={population.actual}
               onChange={() => {}} // do nothing - should not be editable here
               populationBasis={populationBasis}
