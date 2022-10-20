@@ -57,6 +57,7 @@ import CreateTestCaseNavTabs from "./CreateTestCaseNavTabs";
 import ExpectedActual from "./RightPanel/ExpectedActual/ExpectedActual";
 import "./CreateTestCase.scss";
 import CalculationResults from "./calculationResults/CalculationResults";
+import { MadieDiscardDialog } from "@madie/madie-design-system/dist/react/";
 
 const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
@@ -188,6 +189,7 @@ const CreateTestCase = () => {
   const [createButtonDisabled, setCreateButtonDisabled] =
     useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("measurecql");
+  const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
 
   const { measureState, bundleState, valueSetsState } = useExecutionContext();
   const [measure] = measureState;
@@ -927,7 +929,7 @@ const CreateTestCase = () => {
                   buttonTitle="Discard Changes"
                   type="button"
                   variant="white"
-                  onClick={navigateToTestCases}
+                  onClick={() => setDiscardDialogOpen(true)}
                   data-testid="edit-test-case-discard-button"
                 />
                 <Button
@@ -942,6 +944,11 @@ const CreateTestCase = () => {
           </div>
         </div>
       </div>
+      <MadieDiscardDialog
+        open={discardDialogOpen}
+        onClose={() => setDiscardDialogOpen(false)}
+        onContinue={navigateToTestCases}
+      />
     </TestCaseForm>
   );
 };

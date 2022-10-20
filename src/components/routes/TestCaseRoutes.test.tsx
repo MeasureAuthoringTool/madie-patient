@@ -169,7 +169,7 @@ describe("TestCaseRoutes", () => {
     expect(newBtn2).not.toBeInTheDocument();
   });
 
-  it("should allow navigation to create page, then back to landing page ", async () => {
+  it.skip("should allow navigation to create page, then back to landing page ", async () => {
     mockedAxios.get.mockImplementation((args) => {
       if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["SeriesA"] });
