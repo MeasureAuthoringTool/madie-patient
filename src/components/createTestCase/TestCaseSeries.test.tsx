@@ -92,7 +92,6 @@ describe("", () => {
     const seriesAutocomplete = screen.getByRole("combobox");
     userEvent.click(seriesAutocomplete);
     const list = await screen.findByRole("listbox");
-    // screen.debug();
     expect(list).toBeInTheDocument();
     const listItems = within(list).getAllByRole("option");
     userEvent.click(listItems[0]);
@@ -116,7 +115,6 @@ describe("", () => {
     const seriesAutocomplete = screen.getByRole("combobox");
     userEvent.click(seriesAutocomplete);
     const list = await screen.findByRole("listbox");
-    // screen.debug();
     expect(list).toBeInTheDocument();
     const listItems = within(list).getAllByRole("option");
     expect(listItems.length).toEqual(3);

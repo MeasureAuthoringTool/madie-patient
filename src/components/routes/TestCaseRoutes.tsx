@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import { Alert } from "@mui/material";
 import TestCaseLanding from "../testCaseLanding/TestCaseLanding";
-import CreateTestCase from "../createTestCase/CreateTestCase";
+import EditTestCase from "../editTestCase/EditTestCase";
 import NotFound from "../notfound/NotFound";
 import { measureStore } from "@madie/madie-util";
 import { Bundle, ValueSet } from "fhir/r4";
@@ -69,8 +69,8 @@ const TestCaseRoutes = () => {
       <Routes>
         <Route path="/measures/:measureId/edit/test-cases">
           <Route index element={<TestCaseLanding />} />
-          <Route path="create" element={<CreateTestCase />} />
-          <Route path=":id" element={<CreateTestCase />} />
+          <Route path="edit" element={<EditTestCase />} />
+          <Route path=":id" element={<EditTestCase />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
