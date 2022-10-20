@@ -223,10 +223,11 @@ const CreateNewTestCaseDialog = ({ open, onClose }) => {
               placeholder="Enter Title"
               required
               label="Title"
-              id="create-test-case-title"
+              id="title"
               inputProps={{
                 "data-testid": "create-test-case-title-input",
-                "aria-describedby": "create-test-case-title",
+                "aria-describedby": "title-helper-text",
+                required: true,
               }}
               helperText={formikErrorHandler("title", true)}
               data-testid="create-test-case-title"
@@ -244,7 +245,6 @@ const CreateNewTestCaseDialog = ({ open, onClose }) => {
               id="create-test-case-description"
               inputProps={{
                 "data-testid": "create-test-case-description-input",
-                "aria-describedby": "create-test-case-description",
               }}
               onChange={formik.handleChange}
               value={formik.values.description}
