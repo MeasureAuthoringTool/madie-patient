@@ -81,7 +81,6 @@ describe("TestCaseLanding component", () => {
   it("should render the landing component without create new test case button if user is not the owner of the measure", async () => {
     const readOnlyMeasure = { ...measure, createdBy: "not me" };
     renderTestCaseLandingComponent(readOnlyMeasure);
-    screen.debug();
     const newTestCase = await screen.queryByRole("button", {
       name: "New Test Case",
     });
