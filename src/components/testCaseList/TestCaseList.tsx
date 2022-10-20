@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import tw from "twin.macro";
 import "styled-components/macro";
 import * as _ from "lodash";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import { TestCase } from "@madie/madie-models";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import TestCaseComponent from "./TestCase";
 import calculationService from "../../api/CalculationService";
 import {
@@ -16,6 +16,7 @@ import { useOktaTokens } from "@madie/madie-util";
 import useExecutionContext from "../routes/useExecutionContext";
 import CreateCodeCoverageNavTabs from "./CreateCodeCoverageNavTabs";
 import CodeCoverageHighlighting from "./CodeCoverageHighlighting";
+import CreateNewTestCaseDialog from "../createTestCase/CreateNewTestCaseDialog";
 
 const TH = tw.th`p-3 border-b text-left text-sm font-bold uppercase`;
 const ErrorAlert = tw.div`bg-red-100 text-red-700 rounded-lg m-1 p-3`;
@@ -31,7 +32,6 @@ const TestCaseList = () => {
   const calculation = useRef(calculationService());
   const { getUserName } = useOktaTokens();
   const userName = getUserName();
-  const navigate = useNavigate();
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("passing");
   const [executeAllTestCases, setExecuteAllTestCases] =
@@ -41,6 +41,8 @@ const TestCaseList = () => {
   const [measure] = measureState;
   const [measureBundle] = bundleState;
   const [valueSets] = valueSetsState;
+
+  const [createOpen, setCreateOpen] = useState<boolean>(false);
 
   useEffect(() => {
     setCanEdit(
@@ -52,7 +54,7 @@ const TestCaseList = () => {
     );
   }, [measure, userName]);
 
-  useEffect(() => {
+  const retrieveTestCases = useCallback(() => {
     testCaseService.current
       .getTestCasesByMeasureId(measureId)
       .then((testCaseList: TestCase[]) => {
@@ -66,9 +68,32 @@ const TestCaseList = () => {
       });
   }, [measureId, testCaseService]);
 
+  useEffect(() => {
+    retrieveTestCases();
+  }, [measureId, testCaseService]);
+
+  useEffect(() => {
+    const createTestCaseListener = () => {
+      retrieveTestCases();
+    };
+    window.addEventListener("createTestCase", createTestCaseListener, false);
+    return () => {
+      window.removeEventListener(
+        "createTestCase",
+        createTestCaseListener,
+        false
+      );
+    };
+  }, []);
+
   const createNewTestCase = () => {
-    navigate("create");
+    setCreateOpen(true);
   };
+
+  const handleClose = () => {
+    setCreateOpen(false);
+  };
+
   const executeTestCases = async () => {
     if (measure && measure.cqlErrors) {
       setError(
@@ -143,7 +168,7 @@ const TestCaseList = () => {
             executeTestCases={executeTestCases}
           />
         </div>
-
+        <CreateNewTestCaseDialog open={createOpen} onClose={handleClose} />
         {error && (
           <ErrorAlert data-testid="display-tests-error" role="alert">
             {error}
