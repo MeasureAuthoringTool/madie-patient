@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Button, HelperText, Label } from "@madie/madie-components";
+import { Button, HelperText } from "@madie/madie-components";
 import { useNavigate, useParams } from "react-router-dom";
 import { useFormik } from "formik";
 import tw, { styled } from "twin.macro";
@@ -57,23 +57,10 @@ import CreateTestCaseNavTabs from "../createTestCase/CreateTestCaseNavTabs";
 import ExpectedActual from "../createTestCase/RightPanel/ExpectedActual/ExpectedActual";
 import "./EditTestCase.scss";
 import CalculationResults from "../createTestCase/calculationResults/CalculationResults";
+import { TextField } from "@madie/madie-design-system/dist/react";
 
-const FormControl = tw.div`mb-3`;
 const FormErrors = tw.div`h-6`;
 const TestCaseForm = tw.form`m-3`;
-
-const TestCaseDescription = tw.textarea`
-  min-w-full
-  resize
-  h-24
-  rounded-md
-  sm:text-sm
-`;
-const TestCaseTitle = tw.input`
-  min-w-full
-  rounded
-  sm:text-sm
-`;
 
 const ValidationErrorsButton = tw.button`
   text-lg
@@ -116,6 +103,19 @@ const ValidationAlertCard = styled.p<AlertProps>(({ status = "default" }) => [
 const StyledIcon = styled(FontAwesomeIcon)(({ errors }: { errors: number }) => [
   errors > 0 ? tw`text-red-700` : "",
 ]);
+
+const testCaseSeriesStyles = {
+  border: "1px solid #DDDDDD",
+  "& .MuiOutlinedInput-notchedOutline": {
+    borderRadius: "3px",
+    "& legend": {
+      width: 0,
+    },
+  },
+  "& .MuiOutlinedInput-root": {
+    padding: 0,
+  },
+};
 
 /*
 For population values...
@@ -777,66 +777,60 @@ const EditTestCase = () => {
               {/* TODO Replace with re-usable form component
                label, input, and error => single input control component */}
 
-              <FormControl>
-                <label htmlFor="test-case-title">Test Case Title</label>
-                {canEdit && (
-                  <>
-                    <TestCaseTitle
-                      type="text"
-                      id="test-case-title"
-                      aria-describedby="title-helper-text"
-                      data-testid="create-test-case-title"
-                      {...formik.getFieldProps("title")}
-                      // border radius classes don't take to tw.input
-                      style={{ borderRadius: ".375rem" }}
-                    />
-                    <FormErrors>{formikErrorHandler("title", true)}</FormErrors>
-                  </>
-                )}
-                {!canEdit && formik.values.title}
+              <div tw="flex flex-col flex-wrap p-5 w-9/12">
+                <TextField
+                  placeholder="Test Case Title"
+                  required
+                  disabled={!canEdit}
+                  label="Test Case Title"
+                  id="test-case-title"
+                  inputProps={{
+                    "data-testid": "test-case-title",
+                    "aria-describedby": "title-helper-text",
+                  }}
+                  helperText={formikErrorHandler("title", true)}
+                  size="small"
+                  error={formik.touched.title && Boolean(formik.errors.title)}
+                  {...formik.getFieldProps("title")}
+                />
 
-                <label htmlFor="test-case-description">
-                  Test Case Description
-                </label>
-                {canEdit && (
-                  <>
-                    <TestCaseDescription
-                      id="test-case-description"
-                      data-testid="create-test-case-description"
-                      aria-describedby="description-helper-text"
-                      {...formik.getFieldProps("description")}
-                    />
-                    <FormErrors>
-                      {formikErrorHandler("description", true)}
-                    </FormErrors>
-                  </>
-                )}
-                {!canEdit && formik.values.description}
+                <div tw="mt-4">
+                  <label htmlFor="test-case-description" tw="text-gray-980">
+                    Test Case Description
+                  </label>
+                  <textarea
+                    tw="min-w-full
+                        resize
+                        h-24
+                        rounded-md
+                        sm:text-sm"
+                    placeholder="Test Case Description"
+                    id="test-case-description"
+                    data-testid="test-case-description"
+                    aria-describedby="description-helper-text"
+                    disabled={!canEdit}
+                    {...formik.getFieldProps("description")}
+                  />
+                  <FormErrors>
+                    {formikErrorHandler("description", true)}
+                  </FormErrors>
+                </div>
 
-                <label htmlFor="test-case-series">Test Case Series</label>
-                {canEdit && (
-                  <>
-                    <TestCaseSeries
-                      value={formik.values.series}
-                      onChange={(nextValue) =>
-                        formik.setFieldValue("series", nextValue)
-                      }
-                      seriesOptions={seriesState.series}
-                      sx={{
-                        width: "100%",
-                        "& .MuiOutlinedInput-notchedOutline": {
-                          borderRadius: "3px",
-                          "& legend": {
-                            width: 0,
-                          },
-                        },
-                      }}
-                    />
-                    <HelperText text={"Start typing to add a new series"} />
-                  </>
-                )}
-                {!canEdit && formik.values.series}
-              </FormControl>
+                <div tw="-mt-5">
+                  <label htmlFor="test-case-series" tw="text-gray-980">
+                    Test Case Series
+                  </label>
+                  <TestCaseSeries
+                    disabled={!canEdit}
+                    value={formik.values.series}
+                    onChange={(nextValue) =>
+                      formik.setFieldValue("series", nextValue)
+                    }
+                    seriesOptions={seriesState.series}
+                    sx={testCaseSeriesStyles}
+                  />
+                </div>
+              </div>
             </>
           )}
         </div>

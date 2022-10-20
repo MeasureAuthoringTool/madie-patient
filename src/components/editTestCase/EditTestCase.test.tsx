@@ -164,7 +164,7 @@ const renderWithRouter = (
 };
 
 const testTitle = async (title: string, clear = false) => {
-  const tcTitle = await screen.findByTestId("create-test-case-title");
+  const tcTitle = await screen.findByTestId("test-case-title");
   expect(tcTitle).toBeInTheDocument();
   if (clear) {
     userEvent.clear(tcTitle);
@@ -202,12 +202,8 @@ describe("EditTestCase component", () => {
     userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(
       () => {
-        expect(
-          screen.getByTestId("create-test-case-title")
-        ).toBeInTheDocument();
-        expect(
-          screen.getByTestId("create-test-case-description")
-        ).toBeInTheDocument();
+        expect(screen.getByTestId("test-case-title")).toBeInTheDocument();
+        expect(screen.getByTestId("test-case-description")).toBeInTheDocument();
         expect(
           screen.getByRole("button", { name: "Save" })
         ).toBeInTheDocument();
@@ -247,9 +243,7 @@ describe("EditTestCase component", () => {
 
     await waitFor(
       () => {
-        const descriptionInput = screen.getByTestId(
-          "create-test-case-description"
-        );
+        const descriptionInput = screen.getByTestId("test-case-description");
         userEvent.type(descriptionInput, testCaseDescription);
       },
       { timeout: 1500 }
@@ -368,9 +362,7 @@ describe("EditTestCase component", () => {
 
     await waitFor(
       () => {
-        const descriptionInput = screen.getByTestId(
-          "create-test-case-description"
-        );
+        const descriptionInput = screen.getByTestId("test-case-description");
         userEvent.type(descriptionInput, testCaseDescription);
       },
       { timeout: 1500 }
@@ -404,9 +396,7 @@ describe("EditTestCase component", () => {
 
     await waitFor(
       () => {
-        const descriptionInput = screen.getByTestId(
-          "create-test-case-description"
-        );
+        const descriptionInput = screen.getByTestId("test-case-description");
         userEvent.type(descriptionInput, testCaseDescription);
       },
       { timeout: 1500 }
@@ -497,11 +487,11 @@ describe("EditTestCase component", () => {
     });
 
     const seriesInput = screen
-      .getByTestId("create-test-case-series")
+      .getByTestId("test-case-series")
       .querySelector("input");
     expect(seriesInput).toHaveValue("SeriesA");
 
-    const descriptionInput = screen.getByTestId("create-test-case-description");
+    const descriptionInput = screen.getByTestId("test-case-description");
     expect(descriptionInput).toHaveTextContent(testCase.description);
     userEvent.type(descriptionInput, `{selectall}{del}${testCaseDescription}`);
 
@@ -576,9 +566,7 @@ describe("EditTestCase component", () => {
     await testTitle("TC1");
     await waitFor(
       () => {
-        const descriptionInput = screen.getByTestId(
-          "create-test-case-description"
-        );
+        const descriptionInput = screen.getByTestId("test-case-description");
         userEvent.type(descriptionInput, testCaseDescription);
       },
       { timeout: 1500 }
@@ -621,9 +609,7 @@ describe("EditTestCase component", () => {
     userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(
       () => {
-        const descriptionTextArea = screen.getByTestId(
-          "create-test-case-description"
-        );
+        const descriptionTextArea = screen.getByTestId("test-case-description");
         expect(descriptionTextArea).toBeInTheDocument();
         expect(descriptionTextArea).toHaveTextContent(testCase.description);
       },
@@ -716,13 +702,13 @@ describe("EditTestCase component", () => {
     });
 
     const seriesInput = screen
-      .getByTestId("create-test-case-series")
+      .getByTestId("test-case-series")
       .querySelector("input");
     expect(seriesInput).toHaveValue("SeriesA");
 
     await testTitle("Updated Title", true);
 
-    const descriptionInput = screen.getByTestId("create-test-case-description");
+    const descriptionInput = screen.getByTestId("test-case-description");
     expect(descriptionInput).toHaveTextContent(testCase.description);
     userEvent.type(descriptionInput, `{selectall}{del}${testCaseDescription}`);
 
@@ -867,11 +853,11 @@ describe("EditTestCase component", () => {
     await testTitle("Updated Title", true);
 
     const seriesInput = screen
-      .getByTestId("create-test-case-series")
+      .getByTestId("test-case-series")
       .querySelector("input");
     expect(seriesInput).toHaveValue("SeriesA");
 
-    const descriptionInput = screen.getByTestId("create-test-case-description");
+    const descriptionInput = screen.getByTestId("test-case-description");
     expect(descriptionInput).toHaveTextContent(testCase.description);
     userEvent.type(descriptionInput, `{selectall}{del}${testCaseDescription}`);
 
@@ -967,7 +953,7 @@ describe("EditTestCase component", () => {
       expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
     });
 
-    const descriptionInput = screen.getByTestId("create-test-case-description");
+    const descriptionInput = screen.getByTestId("test-case-description");
     expect(descriptionInput).toHaveTextContent(testCase.description);
     userEvent.type(descriptionInput, `{selectall}{del}${modifiedDescription}`);
 
@@ -1012,7 +998,7 @@ describe("EditTestCase component", () => {
       expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
     });
 
-    const descriptionInput = screen.getByTestId("create-test-case-description");
+    const descriptionInput = screen.getByTestId("test-case-description");
     expect(descriptionInput).toHaveTextContent(testCase.description);
     userEvent.type(descriptionInput, `{selectall}{del}${modifiedDescription}`);
 
@@ -1056,7 +1042,7 @@ describe("EditTestCase component", () => {
       expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
     });
 
-    const descriptionInput = screen.getByTestId("create-test-case-description");
+    const descriptionInput = screen.getByTestId("test-case-description");
     expect(descriptionInput).toHaveTextContent(testCase.description);
     userEvent.type(descriptionInput, `{selectall}{del}${modifiedDescription}`);
 
@@ -1084,7 +1070,7 @@ describe("EditTestCase component", () => {
     userEvent.click(screen.getByTestId("details-tab"));
     const testCaseDescription =
       "abcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyz";
-    const descriptionInput = screen.getByTestId("create-test-case-description");
+    const descriptionInput = screen.getByTestId("test-case-description");
     userEvent.type(descriptionInput, testCaseDescription);
 
     fireEvent.blur(descriptionInput);
@@ -1122,13 +1108,11 @@ describe("EditTestCase component", () => {
     });
 
     userEvent.click(screen.getByTestId("details-tab"));
-    expect(
-      await screen.findByTestId("create-test-case-title")
-    ).toBeInTheDocument();
+    expect(await screen.findByTestId("test-case-title")).toBeInTheDocument();
     // await waitFor(
     //   () => {
     //     const descriptionInput = screen.getByTestId(
-    //       "create-test-case-description"
+    //       "test-case-description"
     //     );
     //     userEvent.type(descriptionInput, testCaseDescription);
     //   },
@@ -1282,7 +1266,7 @@ describe("EditTestCase component", () => {
     userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(
       () => {
-        const seriesInput = screen.getByTestId("create-test-case-series");
+        const seriesInput = screen.getByTestId("test-case-series");
         userEvent.type(seriesInput, testCaseSeries);
       },
       { timeout: 1500 }
@@ -1336,7 +1320,7 @@ describe("EditTestCase component", () => {
     userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(
       () => {
-        const seriesInput = screen.getByTestId("create-test-case-series");
+        const seriesInput = screen.getByTestId("test-case-series");
         userEvent.type(seriesInput, testCaseSeries);
       },
       { timeout: 1500 }
@@ -1440,7 +1424,7 @@ describe("EditTestCase component", () => {
     });
 
     await testTitle("TC1");
-    const seriesInput = screen.getByTestId("create-test-case-description");
+    const seriesInput = screen.getByTestId("test-case-description");
     userEvent.type(seriesInput, testCaseDescription);
     const updateBtn = screen.getByRole("button", { name: "Save" });
     userEvent.click(updateBtn);
@@ -1534,13 +1518,13 @@ describe("EditTestCase component", () => {
       expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
     });
 
-    const tcTitle = await screen.findByTestId("create-test-case-title");
+    const tcTitle = await screen.findByTestId("test-case-title");
     expect(tcTitle).toBeInTheDocument();
     userEvent.type(tcTitle, "TC1");
     await waitFor(() => {
       expect(tcTitle).toHaveValue("TC1");
     });
-    const seriesInput = screen.getByTestId("create-test-case-description");
+    const seriesInput = screen.getByTestId("test-case-description");
     userEvent.type(seriesInput, testCaseDescription);
     const updateBtn = screen.getByRole("button", { name: "Save" });
     userEvent.click(updateBtn);
@@ -1767,7 +1751,7 @@ describe("EditTestCase component", () => {
     expect(screen.getByTestId("404-page-link")).toBeInTheDocument();
   });
 
-  it("should render no text input and no create or update button if measure is not shared with user", async () => {
+  it("should disable text input and no create or update button if measure is not shared with user", async () => {
     mockedAxios.get.mockImplementation((args) => {
       if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["SeriesA"] });
@@ -1787,15 +1771,9 @@ describe("EditTestCase component", () => {
     userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(
       () => {
-        expect(
-          screen.queryByTestId("create-test-case-title")
-        ).not.toBeInTheDocument();
-        expect(
-          screen.queryByTestId("create-test-case-description")
-        ).not.toBeInTheDocument();
-        expect(
-          screen.queryByTestId("create-test-case-series")
-        ).not.toBeInTheDocument();
+        expect(screen.getByTestId("test-case-title")).toBeDisabled();
+        expect(screen.getByTestId("test-case-description")).toBeDisabled();
+        expect(screen.getByLabelText("Test Case Series")).toBeDisabled();
         expect(
           screen.queryByRole("button", { name: "Save" })
         ).not.toBeInTheDocument();
@@ -1830,15 +1808,11 @@ describe("EditTestCase component", () => {
     await userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(
       () => {
+        expect(screen.queryByTestId("test-case-title")).toBeInTheDocument();
         expect(
-          screen.queryByTestId("create-test-case-title")
+          screen.queryByTestId("test-case-description")
         ).toBeInTheDocument();
-        expect(
-          screen.queryByTestId("create-test-case-description")
-        ).toBeInTheDocument();
-        expect(
-          screen.queryByTestId("create-test-case-series")
-        ).toBeInTheDocument();
+        expect(screen.queryByTestId("test-case-series")).toBeInTheDocument();
         expect(
           screen.queryByRole("button", { name: "Save" })
         ).toBeInTheDocument();
@@ -1876,7 +1850,7 @@ describe("EditTestCase component", () => {
 
     userEvent.click(screen.getByTestId("details-tab"));
 
-    const tcTitle = await screen.findByTestId("create-test-case-title");
+    const tcTitle = await screen.findByTestId("test-case-title");
     userEvent.type(tcTitle, "testTitle");
     await waitFor(() => expect(tcTitle).toHaveValue("testTitle"));
 
@@ -1924,7 +1898,7 @@ describe("EditTestCase component", () => {
 
     userEvent.click(screen.getByTestId("details-tab"));
 
-    const tcTitle = await screen.findByTestId("create-test-case-title");
+    const tcTitle = await screen.findByTestId("test-case-title");
     userEvent.type(tcTitle, "testTitle");
     await waitFor(() => expect(tcTitle).toHaveValue("testTitle"));
 
@@ -2024,7 +1998,7 @@ describe("Measure Calculation ", () => {
     );
     userEvent.click(screen.getByTestId("details-tab"));
     // this is to make form dirty so that run test button is enabled
-    const tcTitle = await screen.findByTestId("create-test-case-title");
+    const tcTitle = await screen.findByTestId("test-case-title");
     userEvent.type(tcTitle, "testTitle");
     const runTestButton = screen.getByRole("button", { name: "Run Test" });
     expect(runTestButton).not.toBeDisabled();
@@ -2074,7 +2048,7 @@ describe("Measure Calculation ", () => {
     userEvent.click(screen.getByTestId("details-tab"));
 
     // this is to make form dirty so that run test button is enabled
-    const tcTitle = await screen.findByTestId("create-test-case-title");
+    const tcTitle = await screen.findByTestId("test-case-title");
     userEvent.type(tcTitle, "testTitle");
 
     userEvent.click(screen.getByTestId("expectoractual-tab"));
@@ -2136,7 +2110,7 @@ describe("Measure Calculation ", () => {
     userEvent.click(screen.getByTestId("details-tab"));
 
     // this is to make form dirty so that run test button is enabled
-    const tcTitle = await screen.findByTestId("create-test-case-title");
+    const tcTitle = await screen.findByTestId("test-case-title");
     userEvent.type(tcTitle, "testTitle");
 
     userEvent.click(screen.getByTestId("expectoractual-tab"));
