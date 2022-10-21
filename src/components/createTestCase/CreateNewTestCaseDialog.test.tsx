@@ -131,7 +131,7 @@ describe("Create New Test Case Dialog", () => {
         expect(queryByTestId("server-error-alerts")).not.toBeInTheDocument();
       });
     });
-  });
+  }, 10000);
 
   test("should render errors when saving test case inputs failed", async () => {
     mockedAxios.post.mockRejectedValue({
