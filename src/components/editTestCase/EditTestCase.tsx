@@ -49,6 +49,7 @@ import {
 import {
   measureStore,
   routeHandlerStore,
+  useDocumentTitle,
   useOktaTokens,
 } from "@madie/madie-util";
 import useExecutionContext from "../routes/useExecutionContext";
@@ -159,6 +160,7 @@ const INITIAL_VALUES = {
 } as TestCase;
 
 const EditTestCase = () => {
+  useDocumentTitle("MADiE Edit Measure Edit Test Case");
   const navigate = useNavigate();
   const { id, measureId } = useParams<
     keyof navigationParams
