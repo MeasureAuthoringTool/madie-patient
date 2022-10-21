@@ -6,6 +6,7 @@ import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 const filter = createFilterOptions();
 
 export interface TestCaseSeriesProps {
+  disabled?: boolean;
   value: string;
   onChange: (nextValue: string) => void;
   seriesOptions?: string[];
@@ -13,6 +14,7 @@ export interface TestCaseSeriesProps {
 }
 
 const TestCaseSeries = ({
+  disabled,
   value,
   onChange,
   seriesOptions = [],
@@ -24,6 +26,7 @@ const TestCaseSeries = ({
 
   return (
     <Autocomplete
+      disabled={disabled}
       id="test-case-series"
       freeSolo
       clearOnBlur
@@ -46,7 +49,7 @@ const TestCaseSeries = ({
         <TextField
           {...params}
           inputProps={{ ...params.inputProps, maxLength: 250 }}
-          data-testid="create-test-case-series"
+          data-testid="test-case-series"
           placeholder="Start typing or select"
         />
       )}

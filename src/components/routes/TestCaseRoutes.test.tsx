@@ -145,6 +145,8 @@ describe("TestCaseRoutes", () => {
       </MemoryRouter>
     );
 
+    expect(await screen.getByTestId("code-coverage-tabs")).toBeInTheDocument();
+
     const testCaseTitle = await screen.findByText("TC1");
     expect(testCaseTitle).toBeInTheDocument();
     const newBtn = await screen.findByRole("button", { name: "New Test Case" });
@@ -162,7 +164,7 @@ describe("TestCaseRoutes", () => {
       "create-test-case-description"
     );
     expect(testcaseDescription).toBeInTheDocument();
-    const testcaseSeries = await screen.findByTestId("create-test-case-series");
+    const testcaseSeries = await screen.findByTestId("test-case-series");
     expect(testcaseSeries).toBeInTheDocument();
     const saveButton = await screen.findByTestId(
       "create-test-case-save-button"
@@ -236,7 +238,7 @@ describe("TestCaseRoutes", () => {
       "create-test-case-description"
     );
     expect(testcaseDescription).toBeInTheDocument();
-    const testcaseSeries = await screen.findByTestId("create-test-case-series");
+    const testcaseSeries = await screen.findByTestId("test-case-series");
     expect(testcaseSeries).toBeInTheDocument();
     const saveButton = await screen.findByTestId(
       "create-test-case-save-button"
@@ -312,7 +314,7 @@ describe("TestCaseRoutes", () => {
       "create-test-case-description"
     );
     expect(testcaseDescription).toBeInTheDocument();
-    const testcaseSeries = await screen.findByTestId("create-test-case-series");
+    const testcaseSeries = await screen.findByTestId("test-case-series");
     expect(testcaseSeries).toBeInTheDocument();
     const saveButton = await screen.findByTestId(
       "create-test-case-save-button"
@@ -395,7 +397,7 @@ describe("TestCaseRoutes", () => {
       "create-test-case-description"
     );
     expect(testcaseDescription).toBeInTheDocument();
-    const testcaseSeries = await screen.findByTestId("create-test-case-series");
+    const testcaseSeries = await screen.findByTestId("test-case-series");
     expect(testcaseSeries).toBeInTheDocument();
     const saveButton = await screen.findByTestId(
       "create-test-case-save-button"
