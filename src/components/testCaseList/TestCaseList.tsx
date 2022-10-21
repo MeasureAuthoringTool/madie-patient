@@ -58,8 +58,8 @@ const TestCaseList = () => {
     testCaseService.current
       .getTestCasesByMeasureId(measureId)
       .then((testCaseList: TestCase[]) => {
-        testCaseList.forEach((testCase) => {
-          testCase.executionStatus = "NA";
+        testCaseList.forEach((testCase: any) => {
+          testCase.executionStatus = testCase.validResource ? "NA" : "Invalid";
         });
         setTestCases(testCaseList);
       })
@@ -101,19 +101,20 @@ const TestCaseList = () => {
       );
       return null;
     }
+    const validTestCases = testCases?.filter((tc) => tc.validResource);
 
-    if (testCases && measureBundle) {
+    if (validTestCases && measureBundle) {
       try {
         const executionResults: ExecutionResult<DetailedPopulationGroupResult>[] =
           await calculation.current.calculateTestCases(
             measure,
-            testCases,
+            validTestCases,
             measureBundle,
             valueSets
           );
 
         const nextExecutionResults = {};
-        testCases.forEach((testCase) => {
+        validTestCases.forEach((testCase) => {
           const detailedResults = executionResults.find(
             (result) => result.patientId === testCase.id
           )?.detailedResults;
@@ -151,6 +152,8 @@ const TestCaseList = () => {
       } catch (error) {
         setError(error.message);
       }
+    } else if (_.isNil(validTestCases) || _.isEmpty(validTestCases)) {
+      setError("No valid test cases to execute!");
     }
   };
 
