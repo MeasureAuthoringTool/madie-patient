@@ -1087,14 +1087,16 @@ describe("EditTestCase component", () => {
   });
 
   it("should allow special characters for test case description", async () => {
+    const testCaseDescription =
+      "{{[[{shift}{ctrl/}a{/shift}~!@#$% ^&*() _-+= }|] \\ :;,. <>?/ '\"";
+    const testCaseTitle = "TestTitle";
+
     renderWithRouter(
       ["/measures/m1234/edit/test-cases"],
       "/measures/:measureId/edit/test-cases"
     );
 
-    const testCaseDescription =
-      "{{[[{shift}{ctrl/}a{/shift}~!@#$% ^&*() _-+= }|] \\ :;,. <>?/ '\"";
-    const testCaseTitle = "TestTitle";
+    // mock update to test case
     mockedAxios.post.mockResolvedValue({
       data: {
         id: "testID",
@@ -1108,40 +1110,25 @@ describe("EditTestCase component", () => {
     });
 
     userEvent.click(screen.getByTestId("details-tab"));
-    expect(await screen.findByTestId("test-case-title")).toBeInTheDocument();
-    // await waitFor(
-    //   () => {
-    //     const descriptionInput = screen.getByTestId(
-    //       "test-case-description"
-    //     );
-    //     userEvent.type(descriptionInput, testCaseDescription);
-    //   },
-    //   { timeout: 1500 }
-    // );
 
     await testTitle("TC1");
 
-    const createBtn = screen.getByRole("button", { name: "Save" });
+    // description with special characters is added
     await waitFor(
       () => {
-        expect(createBtn).not.toBeDisabled();
+        const descriptionInput = screen.getByTestId("test-case-description");
+        userEvent.type(descriptionInput, testCaseDescription);
       },
-      { timeout: 5000 }
+      { timeout: 1500 }
     );
-    userEvent.click(createBtn);
 
-    await waitFor(
-      () => {
-        expect(
-          screen.getByText("Test case created successfully!")
-        ).toBeInTheDocument();
-      },
-      { timeout: 2000 }
+    const saveButton = screen.getByRole("button", { name: "Save" });
+    userEvent.click(saveButton);
+
+    const debugOutput = await screen.findByText(
+      "Test case created successfully!"
     );
-    // const debugOutput = await screen.findByText(
-    //   "Test case created successfully!"
-    // );
-    // expect(debugOutput).toBeInTheDocument();
+    expect(debugOutput).toBeInTheDocument();
   });
 
   it("should display an error when test case series fail to load", async () => {
