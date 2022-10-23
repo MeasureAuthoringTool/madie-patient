@@ -20,6 +20,10 @@ const defaultStyle = {
   minHeight: "90px",
   textTransform: "none",
   marginRight: "36px",
+  "&:focus": {
+    outline: "9px auto -webkit-focus-ring-color",
+    outlineOffset: "-1px",
+  },
 };
 
 export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
@@ -66,7 +70,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
         color: "#515151",
         borderBottom: "solid 1px #DDDDDD",
         "& .MuiTabs-indicator": {
-          height: "4px",
+          height: "5px",
           backgroundColor: "#209FA6",
         },
         "& .Mui-selected": {
@@ -81,6 +85,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
         label={executionResultsDisplayTemplate("Passing")}
         data-testid="passing-tab"
         value="passing"
+        tabIndex={0}
       />
       <Tab
         sx={defaultStyle}
