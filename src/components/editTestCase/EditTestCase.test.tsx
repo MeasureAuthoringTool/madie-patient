@@ -85,6 +85,7 @@ const serviceConfig: ServiceConfig = {
 const MEASURE_CREATEDBY = "testuser";
 
 jest.mock("@madie/madie-util", () => ({
+  useDocumentTitle: jest.fn(),
   measureStore: {
     updateMeasure: jest.fn((measure) => measure),
     state: null,
