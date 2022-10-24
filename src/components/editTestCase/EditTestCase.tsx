@@ -228,7 +228,7 @@ const EditTestCase = () => {
         })
       ),
       populationValues: getPopulationTypesForScoring(group)?.map(
-        (population) => ({
+        (population: PopulationExpectedValue) => ({
           name: population.name,
           expected: calculateEpisodes ? false : null,
           actual: calculateEpisodes ? false : null,
