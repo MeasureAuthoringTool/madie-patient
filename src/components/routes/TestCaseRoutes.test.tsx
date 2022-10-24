@@ -8,6 +8,7 @@ import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
 import { MeasureScoring } from "@madie/madie-models";
 import { getExampleValueSet } from "../../util/CalculationTestHelpers";
 import { Bundle } from "fhir/r4";
+import { act } from "react-dom/test-utils";
 
 // mock the editor cause we don't care for this test and it gets rid of errors
 jest.mock("../editor/Editor", () => () => <div>editor contents</div>);
@@ -44,6 +45,7 @@ const measure = {
 };
 
 jest.mock("@madie/madie-util", () => ({
+  useDocumentTitle: jest.fn(),
   measureStore: {
     updateMeasure: jest.fn((measure) => measure),
     state: null,
@@ -103,7 +105,7 @@ describe("TestCaseRoutes", () => {
     expect(editBtn).toBeInTheDocument();
   });
 
-  it("should allow navigation to create page from landing page ", async () => {
+  it("should allow navigation to create test case dialog from landing page ", async () => {
     mockedAxios.get.mockImplementation((args) => {
       if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["SeriesA"] });
@@ -144,32 +146,41 @@ describe("TestCaseRoutes", () => {
       </MemoryRouter>
     );
 
+    expect(await screen.getByTestId("code-coverage-tabs")).toBeInTheDocument();
+
     const testCaseTitle = await screen.findByText("TC1");
     expect(testCaseTitle).toBeInTheDocument();
     const newBtn = await screen.findByRole("button", { name: "New Test Case" });
     userEvent.click(newBtn);
-    userEvent.click(screen.getByTestId("details-tab"));
-    const testCaseForm = await screen.findByTestId("create-test-case-form");
-    expect(testCaseForm).toBeInTheDocument();
-    const tcDescriptionLabel = await screen.findByText("Test Case Description");
-    expect(tcDescriptionLabel).toBeInTheDocument();
-    const tcDescriptionInput = await screen.findByTestId(
+
+    const createTestCaseDialog = await screen.findByTestId(
+      "create-test-case-dialog"
+    );
+    expect(createTestCaseDialog).toBeInTheDocument();
+    const testcaseTitle = await screen.findByTestId(
+      "create-test-case-title-input"
+    );
+    expect(testcaseTitle).toBeInTheDocument();
+    const testcaseDescription = await screen.findByTestId(
       "create-test-case-description"
     );
-    expect(tcDescriptionInput).toBeInTheDocument();
-    const createBtn = await screen.findByRole("button", {
-      name: "Save",
-    });
-    expect(createBtn).toBeInTheDocument();
-    const cancelBtn = await screen.findByRole("button", {
-      name: "Discard Changes",
-    });
-    expect(cancelBtn).toBeInTheDocument();
+    expect(testcaseDescription).toBeInTheDocument();
+    const testcaseSeries = await screen.findByTestId("test-case-series");
+    expect(testcaseSeries).toBeInTheDocument();
+    const saveButton = await screen.findByTestId(
+      "create-test-case-save-button"
+    );
+    expect(saveButton).toBeInTheDocument();
+    const cancelButton = await screen.findByTestId(
+      "create-test-case-cancel-button"
+    );
+    expect(cancelButton).toBeInTheDocument();
+
     const newBtn2 = screen.queryByRole("button", { name: "New Test Case" });
     expect(newBtn2).not.toBeInTheDocument();
   });
 
-  it("should allow navigation to create page, then back to landing page ", async () => {
+  it("should allow navigation to create test case dialog page, then back to landing page ", async () => {
     mockedAxios.get.mockImplementation((args) => {
       if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["SeriesA"] });
@@ -215,14 +226,32 @@ describe("TestCaseRoutes", () => {
 
     const newBtn = await screen.findByRole("button", { name: "New Test Case" });
     userEvent.click(newBtn);
-    userEvent.click(screen.getByTestId("details-tab"));
-    const testCaseForm = await screen.findByTestId("create-test-case-form");
-    expect(testCaseForm).toBeInTheDocument();
-    const cancelBtn = await screen.findByRole("button", {
-      name: "Discard Changes",
-    });
-    expect(cancelBtn).toBeInTheDocument();
-    userEvent.click(cancelBtn);
+
+    const createTestCaseDialog = await screen.findByTestId(
+      "create-test-case-dialog"
+    );
+    expect(createTestCaseDialog).toBeInTheDocument();
+    const testcaseTitle = await screen.findByTestId(
+      "create-test-case-title-input"
+    );
+    expect(testcaseTitle).toBeInTheDocument();
+    const testcaseDescription = await screen.findByTestId(
+      "create-test-case-description"
+    );
+    expect(testcaseDescription).toBeInTheDocument();
+    const testcaseSeries = await screen.findByTestId("test-case-series");
+    expect(testcaseSeries).toBeInTheDocument();
+    const saveButton = await screen.findByTestId(
+      "create-test-case-save-button"
+    );
+    expect(saveButton).toBeInTheDocument();
+    const cancelButton = await screen.findByTestId(
+      "create-test-case-cancel-button"
+    );
+    expect(cancelButton).toBeInTheDocument();
+
+    userEvent.click(cancelButton);
+
     const newBtn2 = await screen.findByRole("button", {
       name: "New Test Case",
     });
@@ -264,11 +293,8 @@ describe("TestCaseRoutes", () => {
     mockedAxios.post.mockResolvedValue({
       data: {
         id: "testID",
-        description: "Some Description",
+        title: "TC2",
         createdBy: MEASURE_CREATEDBY,
-        hapiOperationOutcome: {
-          code: 201,
-        },
       },
     });
 
@@ -276,26 +302,132 @@ describe("TestCaseRoutes", () => {
     expect(testCaseTitle).toBeInTheDocument();
     const newBtn = screen.getByRole("button", { name: "New Test Case" });
     userEvent.click(newBtn);
-    userEvent.click(screen.getByTestId("details-tab"));
-    const testCaseForm = await screen.findByTestId("create-test-case-form");
-    expect(testCaseForm).toBeInTheDocument();
-    const tcTitle = await screen.findByTestId("create-test-case-title");
-    expect(tcTitle).toBeInTheDocument();
-    userEvent.type(tcTitle, "TC1");
-    await waitFor(() => {
-      expect(tcTitle).toHaveValue("TC1");
-    });
-    const tcDescriptionInput = screen.getByTestId(
+
+    const createTestCaseDialog = await screen.findByTestId(
+      "create-test-case-dialog"
+    );
+    expect(createTestCaseDialog).toBeInTheDocument();
+    const testcaseTitle = await screen.findByTestId(
+      "create-test-case-title-input"
+    );
+    expect(testcaseTitle).toBeInTheDocument();
+    const testcaseDescription = await screen.findByTestId(
       "create-test-case-description"
     );
-    userEvent.type(tcDescriptionInput, "Some Description");
+    expect(testcaseDescription).toBeInTheDocument();
+    const testcaseSeries = await screen.findByTestId("test-case-series");
+    expect(testcaseSeries).toBeInTheDocument();
+    const saveButton = await screen.findByTestId(
+      "create-test-case-save-button"
+    );
+    expect(saveButton).toBeInTheDocument();
+    const cancelButton = await screen.findByTestId(
+      "create-test-case-cancel-button"
+    );
+    expect(cancelButton).toBeInTheDocument();
+
+    userEvent.type(testcaseTitle, "TC2");
     await waitFor(() => {
-      expect(tcDescriptionInput).toHaveValue("Some Description");
+      expect(testcaseTitle).toHaveValue("TC2");
     });
+
     const createBtn = screen.getByRole("button", { name: "Save" });
-    userEvent.click(createBtn);
-    const feedback = await screen.findByRole("alert");
-    expect(feedback).toHaveTextContent("Test case created successfully!");
+    await act(async () => {
+      userEvent.click(createBtn);
+    });
+
+    await waitFor(() => {
+      expect(screen.queryByText("error")).not.toBeInTheDocument();
+    });
+  });
+
+  it("save test case failed", async () => {
+    jest.useFakeTimers("modern");
+    mockedAxios.get.mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["SeriesA"] });
+      } else if (args && args.endsWith("test-cases")) {
+        return Promise.resolve({
+          data: [
+            {
+              id: "id1",
+              title: "TC1",
+              description: "Desc1",
+              series: "IPP_Pass",
+              status: null,
+            },
+          ],
+        });
+      } else if (args?.endsWith("/bundles")) {
+        return Promise.resolve({ data: measureBundle });
+      } else if (args?.endsWith("/value-sets/searches")) {
+        return Promise.resolve({ data: [valueSets] });
+      }
+    });
+
+    render(
+      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases"]}>
+        <ApiContextProvider value={serviceConfig}>
+          <TestCaseRoutes />
+        </ApiContextProvider>
+      </MemoryRouter>
+    );
+
+    mockedAxios.post.mockRejectedValue({
+      data: {
+        error: "error",
+      },
+    });
+
+    const testCaseTitle = await screen.findByText("TC1");
+    expect(testCaseTitle).toBeInTheDocument();
+    const newBtn = screen.getByRole("button", { name: "New Test Case" });
+    await act(async () => {
+      userEvent.click(newBtn);
+    });
+
+    const createTestCaseDialog = await screen.findByTestId(
+      "create-test-case-dialog"
+    );
+    expect(createTestCaseDialog).toBeInTheDocument();
+    const testcaseTitle = await screen.findByTestId(
+      "create-test-case-title-input"
+    );
+    expect(testcaseTitle).toBeInTheDocument();
+    const testcaseDescription = await screen.findByTestId(
+      "create-test-case-description"
+    );
+    expect(testcaseDescription).toBeInTheDocument();
+    const testcaseSeries = await screen.findByTestId("test-case-series");
+    expect(testcaseSeries).toBeInTheDocument();
+    const saveButton = await screen.findByTestId(
+      "create-test-case-save-button"
+    );
+    expect(saveButton).toBeInTheDocument();
+    const cancelButton = await screen.findByTestId(
+      "create-test-case-cancel-button"
+    );
+    expect(cancelButton).toBeInTheDocument();
+
+    userEvent.type(testcaseTitle, "TC2");
+    await waitFor(() => {
+      expect(testcaseTitle).toHaveValue("TC2");
+    });
+
+    const createBtn = screen.getByRole("button", { name: "Save" });
+    await act(async () => {
+      userEvent.click(createBtn);
+    });
+
+    await waitFor(() => {
+      expect(screen.findByTestId("server-error-alerts")).toBeTruthy();
+      expect(
+        screen.findByText(
+          "An error occurred while creating the test case: Unable to create new test case"
+        )
+      ).toBeTruthy();
+      expect(screen.findByTestId("close-error-button")).toBeTruthy();
+    });
   });
 
   it("Fetch measure bundle on Routes load", async () => {

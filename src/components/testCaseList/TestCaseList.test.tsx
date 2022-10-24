@@ -125,6 +125,7 @@ const testCases = [
     description: "Test IPP",
     title: "WhenAllGood",
     series: "IPP_Pass",
+    validResource: true,
     groupPopulations: [
       {
         groupId: "1",
@@ -151,6 +152,34 @@ const testCases = [
     description: "Test IPP Fail when something is wrong",
     title: "WhenSomethingIsWrong",
     series: "IPP_Fail",
+    validResource: true,
+    groupPopulations: [
+      {
+        groupId: "1",
+        scoring: MeasureScoring.PROPORTION,
+        populationValues: [
+          {
+            name: "initialPopulation",
+            expected: false,
+          },
+          {
+            name: "denominator",
+            expected: false,
+          },
+          {
+            name: "numerator",
+            expected: true,
+          },
+        ] as PopulationExpectedValue[],
+      },
+    ] as GroupPopulation[],
+  },
+  {
+    id: "3",
+    description: "Invalid test case",
+    title: "WhenJsonIsInvalid",
+    series: "IPP_Fail",
+    validResource: false,
     groupPopulations: [
       {
         groupId: "1",
@@ -181,6 +210,9 @@ const useTestCaseServiceMock =
 
 const useTestCaseServiceMockResolved = {
   getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
+  getTestCaseSeriesForMeasure: jest
+    .fn()
+    .mockResolvedValue(["Series 1", "Series 2"]),
 } as unknown as TestCaseServiceApi;
 
 // Mock data for Measure retrieved from MeasureService
@@ -299,6 +331,9 @@ describe("TestCaseList component", () => {
 
     const useTestCaseServiceMockRejected = {
       getTestCasesByMeasureId: jest.fn().mockRejectedValue(error),
+      getTestCaseSeriesForMeasure: jest
+        .fn()
+        .mockResolvedValue(["Series 1", "Series 2"]),
     } as unknown as TestCaseServiceApi;
 
     useTestCaseServiceMock.mockImplementation(() => {
@@ -351,6 +386,12 @@ describe("TestCaseList component", () => {
 
     const table = await screen.findByTestId("test-case-tbl");
     const tableRows = table.querySelectorAll("tbody tr");
+    await waitFor(() => {
+      expect(tableRows[0]).toHaveTextContent("NA");
+      expect(tableRows[2]).toHaveTextContent("NA");
+      expect(tableRows[4]).toHaveTextContent("Invalid");
+    });
+
     const executeAllTestCasesButton = screen.getByRole("button", {
       name: "Execute Test Cases",
     });
@@ -359,7 +400,9 @@ describe("TestCaseList component", () => {
     await waitFor(() => {
       expect(tableRows[0]).toHaveTextContent("pass");
       expect(tableRows[2]).toHaveTextContent("fail");
+      expect(tableRows[4]).toHaveTextContent("Invalid");
     });
+    const table2 = screen.getByTestId("test-case-tbl");
     const expand1Btn = await within(tableRows[0] as HTMLElement).findByRole(
       "button",
       { name: "expand row" }
@@ -420,6 +463,9 @@ describe("TestCaseList component", () => {
 
     const useTestCaseServiceMockResolved = {
       getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
+      getTestCaseSeriesForMeasure: jest
+        .fn()
+        .mockResolvedValue(["Series 1", "Series 2"]),
     } as unknown as TestCaseServiceApi;
 
     useTestCaseServiceMock.mockImplementation(() => {
@@ -486,7 +532,8 @@ describe("TestCaseList component", () => {
     await waitFor(() => {
       const createNewButton = getByTestId("create-new-test-case-button");
       fireEvent.click(createNewButton);
-      expect(mockedUsedNavigate).toHaveBeenCalled();
+
+      expect(getByTestId("create-test-case-dialog")).toBeInTheDocument();
     });
 
     const coverageTab = await screen.findByTestId("coverage-tab");
