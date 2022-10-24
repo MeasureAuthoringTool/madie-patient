@@ -49,7 +49,7 @@ describe("Create New Test Case Dialog", () => {
       expect(
         await findByTestId("create-test-case-description")
       ).toBeInTheDocument();
-      expect(await findByTestId("create-test-case-series")).toBeInTheDocument();
+      expect(await findByTestId("test-case-series")).toBeInTheDocument();
 
       const cancelButton = await findByTestId("create-test-case-cancel-button");
       expect(cancelButton).toBeInTheDocument();
@@ -131,7 +131,7 @@ describe("Create New Test Case Dialog", () => {
         expect(queryByTestId("server-error-alerts")).not.toBeInTheDocument();
       });
     });
-  });
+  }, 10000);
 
   test("should render errors when saving test case inputs failed", async () => {
     mockedAxios.post.mockRejectedValue({

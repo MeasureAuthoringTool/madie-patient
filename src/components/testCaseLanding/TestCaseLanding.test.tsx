@@ -35,6 +35,7 @@ const setMeasureBundle = jest.fn();
 const setValueSets = jest.fn();
 
 jest.mock("@madie/madie-util", () => ({
+  useDocumentTitle: jest.fn(),
   useOktaTokens: () => ({
     getAccessToken: () => "test.jwt",
     getUserName: () => MEASURE_CREATEDBY,
