@@ -5,12 +5,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 
-import Table from "@mui/material/Table";
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 import IconButton from "@mui/material/IconButton";
 import Collapse from "@mui/material/Collapse";
-import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import TruncateText from "./TruncateText";
 import {
@@ -18,10 +16,7 @@ import {
   GroupPopulation,
   TestCase as TestCaseModel,
 } from "@madie/madie-models";
-import {
-  DetailedPopulationGroupResult,
-  ExecutionResult,
-} from "fqm-execution/build/types/Calculator";
+import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calculator";
 import * as _ from "lodash";
 import { FHIR_POPULATION_CODES } from "../../util/PopulationsMap";
 import GroupPopulations from "../populations/GroupPopulations";
@@ -56,6 +51,18 @@ const mapGroups = (
   ];
 };
 
+export function getStatusColor(executionStatus: string) {
+  if (executionStatus === "Invalid") {
+    return "secondary";
+  } else if (executionStatus === "NA") {
+    return "default";
+  } else if (executionStatus === "pass") {
+    return "success";
+  } else {
+    return "error";
+  }
+}
+
 const TestCase = ({
   testCase,
   canEdit,
@@ -68,7 +75,8 @@ const TestCase = ({
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
   const status = testCase.executionStatus;
-  const statusColor = testCase.executionStatus === "pass" ? "success" : "error";
+  // const statusColor = testCase.executionStatus === "pass" ? "success" : "error";
+  const statusColor = getStatusColor(testCase.executionStatus);
   // only one group for now
   const groupPopulations = mapGroups(
     testCase?.groupPopulations?.[0],
@@ -127,12 +135,16 @@ const TestCase = ({
           />
         </StyledCell>
 
-        {status === "NA" && <td>{status}</td>}
-        {status !== "NA" && (
-          <td>
-            <Chip label={status} color={statusColor} />
-          </td>
-        )}
+        {/*{status === "NA" && (*/}
+        {/*  <td>*/}
+        {/*    <Chip label={status} color="primary" />*/}
+        {/*  </td>*/}
+        {/*)}*/}
+        {/*{status !== "NA" && (*/}
+        <td>
+          <Chip label={status} color={statusColor} />
+        </td>
+        {/*)}*/}
         {canEdit && (
           <td>
             <EditButton
