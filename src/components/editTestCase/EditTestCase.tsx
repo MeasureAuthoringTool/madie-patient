@@ -261,12 +261,6 @@ const EditTestCase = () => {
       pendingRoute: "",
     });
   }, [formik.dirty, editorVal, originalEditorVal]);
-  useEffect(() => {
-    updateRouteHandlerState({
-      canTravel: !formik.dirty,
-      pendingRoute: "",
-    });
-  }, [formik.dirty]);
 
   useEffect(() => {
     if (!seriesState.loaded) {
