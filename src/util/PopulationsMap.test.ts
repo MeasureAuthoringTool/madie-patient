@@ -53,6 +53,334 @@ let measureGroup2 = [
     populationBasis: "Encounter",
   },
 ];
+it("shall return array of populationexpectvalues with no observations if denomr expected are zero", () => {
+  const populationVal: DisplayPopulationValue = {
+    id: "1",
+    name: PopulationType.DENOMINATOR,
+    expected: 0,
+    actual: undefined,
+  };
+
+  const populationValues: DisplayPopulationValue[] = [];
+  populationValues.push(populationVal);
+
+  const groupPop1: GroupPopulation = {
+    groupId: "shrug",
+    populationBasis: "Encounter",
+    scoring: "Ratio",
+    populationValues,
+    stratificationValues: [],
+  };
+
+  const groupPopulations: GroupPopulation[] = [groupPop1];
+
+  const resultPops = triggerPopChanges(
+    groupPopulations,
+    groupPop1.groupId,
+    {
+      id: "1",
+      name: PopulationType.DENOMINATOR,
+      expected: 0,
+      actual: undefined,
+    },
+    measureGroup
+  );
+  expect(resultPops.length).toEqual(groupPopulations.length);
+
+  expect(resultPops[0].populationValues[0].name).toEqual(
+    PopulationType.DENOMINATOR
+  );
+});
+
+it("shall return array of populationexpectvalues with no observations if numer expected are zero", () => {
+  const ippPopulationVal: DisplayPopulationValue = {
+    id: "1",
+    name: PopulationType.INITIAL_POPULATION,
+    expected: 0,
+    actual: undefined,
+  };
+
+  const denomPopulationVal: DisplayPopulationValue = {
+    id: "2",
+    name: PopulationType.DENOMINATOR,
+    expected: 0,
+    actual: undefined,
+  };
+  const numerPopulationVal: DisplayPopulationValue = {
+    id: "3",
+    name: PopulationType.NUMERATOR,
+    expected: 0,
+    actual: undefined,
+  };
+  const numerObservValue: DisplayPopulationValue = {
+    id: "o-3",
+    name: PopulationType.MEASURE_OBSERVATION,
+    expected: 0,
+    actual: undefined,
+    criteriaReference: "3",
+  };
+
+  const populationValues: DisplayPopulationValue[] = [];
+  populationValues.push(ippPopulationVal);
+  populationValues.push(denomPopulationVal);
+  populationValues.push(numerPopulationVal);
+  populationValues.push(numerObservValue);
+
+  const groupPop1: GroupPopulation = {
+    groupId: "shrug",
+    populationBasis: "Encounter",
+    scoring: "Ratio",
+    populationValues,
+    stratificationValues: [],
+  };
+
+  const groupPopulations: GroupPopulation[] = [groupPop1];
+
+  const resultPops = triggerPopChanges(
+    groupPopulations,
+    groupPop1.groupId,
+    {
+      id: "1",
+      name: PopulationType.NUMERATOR,
+      expected: 0,
+      actual: undefined,
+    },
+    measureGroup
+  );
+  expect(resultPops[0].populationValues.length).toEqual(3);
+
+  expect(resultPops[0].populationValues[0].name).toEqual(
+    PopulationType.INITIAL_POPULATION
+  );
+  expect(resultPops[0].populationValues[1].name).toEqual(
+    PopulationType.DENOMINATOR
+  );
+  expect(resultPops[0].populationValues[2].name).toEqual(
+    PopulationType.NUMERATOR
+  );
+});
+
+it("shall not add an observation if denominator expected value changes from 0 to 1, but no observation exists", () => {
+  const ippPopulationVal: DisplayPopulationValue = {
+    id: "3",
+    name: PopulationType.INITIAL_POPULATION,
+    expected: 0,
+    actual: undefined,
+  };
+
+  const denomPopulationVal: DisplayPopulationValue = {
+    id: "2",
+    name: PopulationType.DENOMINATOR,
+    expected: 0,
+    actual: undefined,
+  };
+
+  const denomObservValue: DisplayPopulationValue = {
+    id: "o-3",
+    name: PopulationType.MEASURE_OBSERVATION,
+    expected: 1,
+    actual: undefined,
+    criteriaReference: "2",
+  };
+
+  const populationValues: DisplayPopulationValue[] = [];
+  populationValues.push(ippPopulationVal);
+  populationValues.push(denomPopulationVal);
+  populationValues.push(denomObservValue);
+
+  const groupPop1: GroupPopulation = {
+    groupId: "shrug",
+    populationBasis: "Encounter",
+    scoring: "Ratio",
+    populationValues,
+    stratificationValues: [],
+  };
+
+  const groupPopulations: GroupPopulation[] = [groupPop1];
+
+  const resultPops: GroupPopulation[] = triggerPopChanges(
+    groupPopulations,
+    groupPop1.groupId,
+    {
+      id: "1",
+      name: PopulationType.DENOMINATOR,
+      expected: 1,
+      actual: undefined,
+    },
+    measureGroup
+  );
+
+  expect(resultPops[0].populationValues.length).toEqual(2);
+});
+
+it("shall remove an observation if denominator_exclusion is added, and an observation exists", () => {
+  const ippPopulationVal: DisplayPopulationValue = {
+    id: "1",
+    name: PopulationType.INITIAL_POPULATION,
+    expected: 0,
+    actual: undefined,
+  };
+
+  const denomPopulationVal: DisplayPopulationValue = {
+    id: "pid-2",
+    name: PopulationType.DENOMINATOR,
+    expected: 2,
+    actual: undefined,
+  };
+  const denomExclusion: DisplayPopulationValue = {
+    id: "3",
+    name: PopulationType.DENOMINATOR_EXCLUSION,
+    expected: 1,
+    actual: undefined,
+  };
+
+  const denomObservValue: DisplayPopulationValue = {
+    id: "o-3",
+    name: PopulationType.MEASURE_OBSERVATION,
+    expected: 1,
+    actual: undefined,
+    criteriaReference: "2",
+  };
+
+  const populationValues: DisplayPopulationValue[] = [];
+  populationValues.push(ippPopulationVal);
+  populationValues.push(denomPopulationVal);
+  populationValues.push(denomExclusion);
+  populationValues.push(denomObservValue);
+
+  const groupPop1: GroupPopulation = {
+    groupId: "shrug",
+    populationBasis: "Encounter",
+    scoring: "Ratio",
+    populationValues,
+    stratificationValues: [],
+  };
+
+  const groupPopulations: GroupPopulation[] = [groupPop1];
+  let myMeasureGroup = [
+    {
+      id: "shrug",
+      measureName: "the measure for testing",
+      cql: "",
+      elmJson: "",
+      createdBy: "testuser@example.com",
+      measureObservations: [
+        {
+          id: "uuid-1",
+          definition: "fun",
+          criteriaReference: "pid-2",
+        },
+      ],
+      scoring: "Ratio",
+      populationBasis: "Encounter",
+    },
+  ];
+  const resultPops: GroupPopulation[] = triggerPopChanges(
+    groupPopulations,
+    groupPop1.groupId,
+    {
+      id: "3",
+      name: PopulationType.DENOMINATOR_EXCLUSION,
+      expected: 1,
+      actual: undefined,
+    },
+    myMeasureGroup
+  );
+
+  expect(resultPops[0].populationValues.length).toEqual(4);
+});
+
+it("shall add an observation if numerator expected value changes from 0 to 1, and an observation exists", () => {
+  const ippPopulationVal: DisplayPopulationValue = {
+    id: "pid-1",
+    name: PopulationType.INITIAL_POPULATION,
+    expected: 0,
+    actual: undefined,
+  };
+
+  const denomPopulationVal: DisplayPopulationValue = {
+    id: "pid-2",
+    name: PopulationType.DENOMINATOR,
+    expected: 0,
+    actual: undefined,
+  };
+
+  const numerPopulationVal: DisplayPopulationValue = {
+    id: "pid-3",
+    name: PopulationType.NUMERATOR,
+    expected: 1,
+    actual: undefined,
+  };
+
+  const numerObservValue: DisplayPopulationValue = {
+    id: "o-3",
+    name: PopulationType.MEASURE_OBSERVATION,
+    expected: 1,
+    actual: undefined,
+    criteriaReference: "pid-3",
+  };
+
+  const populationValues: DisplayPopulationValue[] = [];
+  populationValues.push(ippPopulationVal);
+  populationValues.push(denomPopulationVal);
+  populationValues.push(numerPopulationVal);
+  populationValues.push(numerObservValue);
+
+  const groupPop1: GroupPopulation = {
+    groupId: "shrug",
+    populationBasis: "Encounter",
+    scoring: "Ratio",
+    populationValues,
+    stratificationValues: [],
+  };
+
+  const groupPopulations: GroupPopulation[] = [groupPop1];
+  const measureGroup3 = [
+    {
+      id: "shrug",
+      measureName: "the measure for testing",
+      cql: "",
+      elmJson: "",
+      createdBy: "testuser@example.com",
+      measureObservations: [
+        {
+          id: "uuid-2",
+          definition: "fun",
+          criteriaReference: "pid-3",
+        },
+      ],
+      scoring: "Ratio",
+      populationBasis: "Encounter",
+    },
+  ];
+  const resultPops: GroupPopulation[] = triggerPopChanges(
+    groupPopulations,
+    groupPop1.groupId,
+    {
+      id: "pid-3",
+      name: PopulationType.NUMERATOR,
+      expected: 1,
+      actual: undefined,
+    },
+    measureGroup3
+  );
+
+  expect(resultPops[0].populationValues.length).toEqual(4);
+
+  expect(resultPops[0].populationValues[0].name).toEqual(
+    PopulationType.INITIAL_POPULATION
+  );
+  expect(resultPops[0].populationValues[1].name).toEqual(
+    PopulationType.DENOMINATOR
+  );
+  expect(resultPops[0].populationValues[2].name).toEqual(
+    PopulationType.NUMERATOR
+  );
+  expect(resultPops[0].populationValues[3].name).toEqual(
+    PopulationType.NUMERATOR_OBSERVATION
+  );
+  expect(resultPops[0].populationValues[3].id).toEqual("numeratorObservation");
+});
 
 it("return the input matches output with no changes", () => {
   const populationVal: DisplayPopulationValue = {
@@ -1333,12 +1661,31 @@ it("NonBool: Adding and Removing the observations to numerator and denominator i
     id: "pid-5",
     criteriaReference: "",
   };
+
+  const denomObv1: DisplayPopulationValue = {
+    name: PopulationType.MEASURE_OBSERVATION,
+    expected: false,
+    actual: false,
+    id: "moid-1",
+    criteriaReference: "pid-2",
+  };
+
+  const numerObv1: DisplayPopulationValue = {
+    name: PopulationType.MEASURE_OBSERVATION,
+    expected: false,
+    actual: false,
+    id: "moid-2",
+    criteriaReference: "pid-4",
+  };
+
   const populationValues: DisplayPopulationValue[] = [];
   populationValues.push(ipp);
   populationValues.push(denom);
   populationValues.push(denomExclu);
   populationValues.push(numer);
   populationValues.push(numerExclu);
+  populationValues.push(denomObv1);
+  populationValues.push(numerObv1);
 
   const group1: GroupPopulation = {
     groupId: "shrug",
@@ -1363,60 +1710,13 @@ it("NonBool: Adding and Removing the observations to numerator and denominator i
   );
 
   expect(
-    parsingTheExpectedResult(
-      resultPops2[0].populationValues,
-      PopulationType.MEASURE_OBSERVATION,
-      "Ratio"
-    ).id
-  ).toEqual("denominatorObservation1");
-  groupPopulations[0].populationValues[3].expected = 1;
-  const resultPops = triggerPopChanges(
-    groupPopulations,
-    group1.groupId,
-    {
-      name: PopulationType.NUMERATOR,
-    } as unknown as DisplayPopulationValue,
-    measureGroup2
-  );
+    findObservationByCriteriaReference(resultPops2[0].populationValues, "pid-2")
+      .id
+  ).toEqual("denominatorObservation");
   expect(
-    parsingTheExpectedResult(
-      resultPops[0].populationValues,
-      PopulationType.MEASURE_OBSERVATION,
-      "Ratio"
-    ).id
-  ).toEqual("numeratorObservation1");
-  groupPopulations[0].populationValues[4].expected = 10;
-  const resultPops3 = triggerPopChanges(
-    groupPopulations,
-    group1.groupId,
-    {
-      name: PopulationType.NUMERATOR,
-    } as unknown as DisplayPopulationValue,
-    measureGroup2
-  );
-  expect(
-    parsingTheExpectedResult(
-      resultPops3[0].populationValues,
-      PopulationType.MEASURE_OBSERVATION,
-      "Ratio"
-    ).id
-  ).toEqual("denominatorObservation1");
-  groupPopulations[0].populationValues[2].expected = 10;
-  const resultPops4 = triggerPopChanges(
-    groupPopulations,
-    group1.groupId,
-    {
-      name: PopulationType.DENOMINATOR,
-    } as unknown as DisplayPopulationValue,
-    measureGroup2
-  );
-  expect(
-    parsingTheExpectedResult(
-      resultPops4[0].populationValues,
-      PopulationType.MEASURE_OBSERVATION,
-      "Ratio"
-    ).id
-  ).toBeFalsy();
+    findObservationByCriteriaReference(resultPops2[0].populationValues, "pid-4")
+      ?.id
+  ).toBeUndefined();
 });
 
 it("NonBool: Adding and Removing observations on changes to the measure population exclusion in continuous variable ", () => {
@@ -1518,6 +1818,19 @@ function parsingTheExpectedResult(
   popVals.forEach((value: DisplayPopulationValue, index: number) => {
     if (value.name === name) {
       returnVal = scoring === "Proportion" ? value.expected : value;
+    }
+  });
+  return returnVal;
+}
+
+function findObservationByCriteriaReference(
+  popVals: DisplayPopulationValue[],
+  id: string
+): any {
+  let returnVal: boolean | number | DisplayPopulationValue = false;
+  popVals.forEach((value: DisplayPopulationValue, index: number) => {
+    if (value.criteriaReference === id) {
+      returnVal = value;
     }
   });
   return returnVal;

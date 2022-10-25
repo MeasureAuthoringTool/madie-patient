@@ -8,7 +8,7 @@ import {
 import { TestCase, Measure } from "@madie/madie-models";
 import { ValueSet, Bundle } from "fhir/r4";
 import * as _ from "lodash";
-import { Group } from "@madie/madie-models/dist/Measure";
+
 import { PopulationType } from "fqm-execution/build/types/Enums";
 
 export interface StatementResultMap {
