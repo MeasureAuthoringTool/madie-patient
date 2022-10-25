@@ -81,7 +81,6 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
       }}
     >
       <Tab
-        role="tabpanel"
         tabIndex={0}
         aria-label="Passing tab panel"
         sx={defaultStyle}
@@ -90,7 +89,6 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
         value="passing"
       />
       <Tab
-        role="tabpanel"
         tabIndex={0}
         aria-label="Coverage tab panel"
         sx={defaultStyle}
