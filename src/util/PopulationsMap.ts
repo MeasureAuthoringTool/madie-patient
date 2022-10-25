@@ -1,3 +1,4 @@
+import { parseExpression } from "@babel/parser";
 import {
   PopulationType,
   GroupPopulation,
@@ -9,6 +10,7 @@ import {
 } from "@madie/madie-models";
 
 import _ from "lodash";
+import { bool } from "yup";
 
 export const FHIR_POPULATION_CODES = {
   "initial-population": PopulationType.INITIAL_POPULATION,
@@ -49,13 +51,6 @@ export function triggerPopChanges(
   let stratMap = buildStratificationMap(targetGroup, changedTarget);
   let popMap = buildPopulationMap(targetGroup);
 
-  addRemoveObservationsForBooleanBasedPopulationCriteria(
-    targetGroup,
-    measureGroups,
-    changedPopulationName,
-    expectedValue,
-    changedGroupId
-  );
   addRemoveObservationsForNonBooleanPopulationCritieria(
     targetGroup,
     changedPopulationName,
@@ -170,31 +165,31 @@ function addRemoveObservationsForNonBooleanPopulationCritieria(
   changedGroupId: string,
   measureGroups: Group[]
 ) {
-  if (targetPopulationCriteria.populationBasis === "Boolean") return;
+  //if (targetPopulationCriteria.populationBasis === "Boolean") return;
 
   if (
-    targetPopulationCriteria.scoring === "Continuous Variable" &&
+    targetPopulationCriteria.scoring === "CCCContinuous Variable" &&
     (changedPopulationName === "measurePopulationExclusion" ||
       changedPopulationName === "measurePopulation")
   ) {
     const measurePopulation =
-        Number(targetPopulationCriteria.populationValues[1].expected) >= 0
-          ? Number(targetPopulationCriteria.populationValues[1].expected)
-          : 0,
-      //checks if the exclusion exists, if not, sets value to zero
-      measurePopulationEx =
-        targetPopulationCriteria.populationValues[2].name ===
-          "measurePopulationExclusion" &&
-        Number(targetPopulationCriteria.populationValues[2].expected) >= 0
-          ? Number(targetPopulationCriteria.populationValues[2].expected)
-          : 0;
+      Number(targetPopulationCriteria.populationValues[1].expected) >= 0
+        ? Number(targetPopulationCriteria.populationValues[1].expected)
+        : 0;
+    //checks if the exclusion exists, if not, sets value to zero
+    const measurePopulationEx =
+      targetPopulationCriteria.populationValues[2]?.name ===
+        "measurePopulationExclusion" &&
+      Number(targetPopulationCriteria.populationValues[2].expected) >= 0
+        ? Number(targetPopulationCriteria.populationValues[2].expected)
+        : 0;
     //catches potential negative, zeroing out if so
     const measurePopDif =
       measurePopulationEx < measurePopulation
         ? measurePopulation - measurePopulationEx
         : 0;
-    const measurePopulationLength = 3;
-
+    const measurePopulationLength =
+      targetPopulationCriteria.populationValues.length;
     if (
       targetPopulationCriteria.populationValues.length <
       measurePopulationLength + measurePopDif
@@ -226,11 +221,13 @@ function addRemoveObservationsForNonBooleanPopulationCritieria(
     }
     // handle non-boolean based Ratio
   } else if (
-    targetPopulationCriteria.scoring === "Ratio" &&
-    (changedPopulationName === PopulationType.NUMERATOR_EXCLUSION ||
-      changedPopulationName === PopulationType.NUMERATOR ||
-      changedPopulationName === PopulationType.DENOMINATOR_EXCLUSION ||
-      changedPopulationName === PopulationType.DENOMINATOR)
+    //targetPopulationCriteria.scoring === "Ratio" &&
+    changedPopulationName === PopulationType.NUMERATOR_EXCLUSION ||
+    changedPopulationName === PopulationType.NUMERATOR ||
+    changedPopulationName === PopulationType.DENOMINATOR_EXCLUSION ||
+    changedPopulationName === PopulationType.DENOMINATOR ||
+    changedPopulationName === PopulationType.MEASURE_POPULATION ||
+    changedPopulationName === PopulationType.MEASURE_POPULATION_EXCLUSION
   ) {
     //for denom add observations 1 * expectedValue
 
@@ -309,12 +306,10 @@ function addObservations(
     populationBucket.forEach((value) => {
       if (value.name === popType) {
         for (let i = 0; i < expectedObservationsPerPop; i++) {
-          let obvType = undefined;
-          if (String(popType) === String(PopulationType.DENOMINATOR)) {
-            obvType = PopulationType.DENOMINATOR_OBSERVATION;
-          } else {
-            obvType = PopulationType.NUMERATOR_OBSERVATION;
-          }
+          let obvType: PopulationType = <PopulationType>(
+            String(popType).concat("Observation")
+          );
+
           observationBucket.push({
             name: obvType,
             expected: 0,
@@ -338,49 +333,36 @@ function countObservationsPerType(
   //if changedPop == denominator exclusion or denominator get a sum of denominator.expected - denominator_exclusion.expected
 
   let id = "";
-  let count: number = 0;
+  let count: string;
+  let countNbr: number;
+  let countBool: boolean;
+  const popTypeExclusion: PopulationType = <PopulationType>(
+    String(expectedPopType).concat("Exclusion")
+  );
 
-  if (String(expectedPopType) === String(PopulationType.DENOMINATOR)) {
-    id = targetPopulationCriteria.find(
-      (value) => value.name === PopulationType.DENOMINATOR
-    ).id;
-    count = targetPopulationCriteria.find(
-      (value) => value.name === PopulationType.DENOMINATOR
-    ).expected as number;
-    count =
-      count -
-      (targetPopulationCriteria.find(
-        (value) => value.name === PopulationType.DENOMINATOR_EXCLUSION
-      ) === undefined
-        ? 0
-        : (targetPopulationCriteria.find(
-            (value) => value.name === PopulationType.DENOMINATOR_EXCLUSION
-          ).expected as number));
-  } else if (String(expectedPopType) === String(PopulationType.NUMERATOR)) {
-    id = targetPopulationCriteria.find(
-      (value) => value.name === PopulationType.NUMERATOR
-    ).id;
-    count = targetPopulationCriteria.find(
-      (value) => value.name === PopulationType.NUMERATOR
-    ).expected as number;
-    count =
-      count -
-      (targetPopulationCriteria.find(
-        (value) => value.name === PopulationType.NUMERATOR_EXCLUSION
-      ) === undefined
-        ? 0
-        : (targetPopulationCriteria.find(
-            (value) => value.name === PopulationType.NUMERATOR_EXCLUSION
-          ).expected as number));
+  id = targetPopulationCriteria.find(
+    (value) => value.name === expectedPopType
+  ).id;
+  count = targetPopulationCriteria
+    .find((value) => value.name === expectedPopType)
+    .expected.toString();
+
+  if (isNaN(parseInt(count))) {
+    countNbr = count === "true" ? 1 : 0;
+  } else {
+    countNbr = parseInt(count);
   }
-
+  const exclusions: number = targetPopulationCriteria.filter(
+    (value) => value.name === popTypeExclusion
+  ).length;
+  countNbr = countNbr - exclusions;
+  //if we expect 2 results for the denom, then we should get two expected results per observation
   const observations: MeasureObservation[] = measureGroups
     .find((group) => group.id === changedGroupId)
-    .measureObservations.filter(
+    .measureObservations?.filter(
       (observation) => observation.criteriaReference === id
     );
-
-  return count * observations.length;
+  return typeof count === "boolean" ? 1 : countNbr * observations.length;
 }
 
 // filtering out populations for those that have definitions added.
@@ -398,114 +380,6 @@ export function getPopulationTypesForScoring(group: Group) {
 
   return populationTypesForScoring;
 }
-
-const addRemoveObservationsForBooleanBasedPopulationCriteria = (
-  targetPopulationCriteria: GroupPopulation,
-  measureGroups: Group[],
-  changedPopulationName: string,
-  expectedValue: boolean | number,
-  changedGroupId: string
-) => {
-  if (targetPopulationCriteria.populationBasis !== "Boolean") {
-    return;
-  }
-
-  // Modifying Observations for Boolean based CV
-  if (
-    targetPopulationCriteria.scoring === "Continuous Variable" &&
-    changedPopulationName === "measurePopulationExclusion"
-  ) {
-    if (expectedValue) {
-      // Remove Observation
-      targetPopulationCriteria.populationValues =
-        targetPopulationCriteria.populationValues.filter(
-          (population) => population.name !== "measureObservation"
-        );
-    } else {
-      // Add Observation
-      const measureObservationId = measureGroups.find(
-        (group) => group.id === changedGroupId
-      ).measureObservations[0].id;
-      targetPopulationCriteria.populationValues.push({
-        name: PopulationType.MEASURE_OBSERVATION,
-        expected: false,
-        id: measureObservationId,
-        criteriaReference: undefined,
-      });
-    }
-  }
-
-  // Modifying Observations for Boolean based Ratio
-  if (
-    targetPopulationCriteria.scoring === "Ratio" &&
-    (changedPopulationName === "numeratorExclusion" ||
-      changedPopulationName === "denominatorExclusion")
-  ) {
-    const linkedPopulationName =
-      changedPopulationName === "numeratorExclusion"
-        ? "numerator"
-        : "denominator";
-    if (expectedValue) {
-      // Remove Observation
-      const linkedPopulationId =
-        targetPopulationCriteria.populationValues.filter(
-          (target) => target.name === linkedPopulationName
-        )[0].id;
-      if (linkedPopulationId) {
-        targetPopulationCriteria.populationValues =
-          targetPopulationCriteria.populationValues.filter(
-            (population) => population.criteriaReference !== linkedPopulationId
-          );
-      }
-    } else {
-      // Add Observation
-      const criteriaReferenceID =
-        targetPopulationCriteria.populationValues.filter(
-          (population) => population.name === linkedPopulationName
-        )[0].id;
-
-      const changedPopulationObservations = measureGroups.filter(
-        (group) => group.id === changedGroupId
-      )[0].measureObservations;
-
-      if (changedPopulationObservations && criteriaReferenceID) {
-        const measureObservationId = changedPopulationObservations.filter(
-          (observation) => observation.criteriaReference === criteriaReferenceID
-        )[0].id;
-
-        const numeratorMeasureObservationIndex =
-          targetPopulationCriteria.populationValues.findIndex((prop) => {
-            return prop.name === "measureObservation";
-          });
-
-        //always adding denominator obseravtion before numerator observation
-        if (
-          changedPopulationName === "denominatorExclusion" &&
-          numeratorMeasureObservationIndex > -1
-        ) {
-          const denominatorMeasureObservation = {
-            name: PopulationType.MEASURE_OBSERVATION,
-            expected: false,
-            id: measureObservationId,
-            criteriaReference: criteriaReferenceID,
-          };
-          targetPopulationCriteria.populationValues.splice(
-            numeratorMeasureObservationIndex,
-            0,
-            denominatorMeasureObservation
-          );
-        } else {
-          targetPopulationCriteria.populationValues.push({
-            name: PopulationType.MEASURE_OBSERVATION,
-            expected: false,
-            id: measureObservationId,
-            criteriaReference: criteriaReferenceID,
-          });
-        }
-      }
-    }
-  }
-};
 
 const getPopulationValues = (targetPopulationCriteria: GroupPopulation) => {
   // Checks if a value exists for the pop

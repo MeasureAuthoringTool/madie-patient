@@ -14,7 +14,9 @@ const ExpectActualInput = ({
   });
 
   return props.populationBasis === "Boolean" &&
-    props.name !== "measureObservation" ? (
+    props.name !== "measureObservation" &&
+    props.name !== "numeratorObservation" &&
+    props.name != "denominatorObservation" ? (
     <input
       type="checkbox"
       className={checkBoxClass}
