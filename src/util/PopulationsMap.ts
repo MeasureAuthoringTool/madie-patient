@@ -131,7 +131,6 @@ export function triggerPopChanges(
         (popMap[PopulationType.NUMERATOR_EXCLUSION].expected = false);
     }
   }
-
   return returnPops;
 }
 
@@ -254,7 +253,8 @@ function addRemoveObservationsForNonBooleanPopulationCritieria(
     const tempBucket: PopulationExpectedValue[] = addObservations(
       expectedObservationsPerPop,
       populationBucket,
-      expectedPopType
+      expectedPopType,
+      index
     );
     if (expectedPopType === PopulationType.DENOMINATOR) {
       populationBucket = [
@@ -300,7 +300,8 @@ function defineExpectedPopulationType(changedPopulationName: PopulationType) {
 function addObservations(
   expectedObservationsPerPop: number,
   populationBucket: PopulationExpectedValue[],
-  popType: PopulationType
+  popType: PopulationType,
+  index: number
 ): PopulationExpectedValue[] {
   const observationBucket: PopulationExpectedValue[] = [];
 
@@ -314,11 +315,11 @@ function addObservations(
           } else {
             obvType = PopulationType.NUMERATOR_OBSERVATION;
           }
-
           observationBucket.push({
             name: obvType,
             expected: 0,
-            id: String(popType).toLocaleLowerCase() + "Observation",
+            id:
+              String(popType).toLocaleLowerCase() + "Observation" + (index + i),
             criteriaReference: value.id,
           } as unknown as PopulationExpectedValue);
         }
