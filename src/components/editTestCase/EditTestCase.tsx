@@ -230,7 +230,7 @@ const EditTestCase = () => {
         })
       ),
       populationValues: getPopulationTypesForScoring(group)?.map(
-        (population) => ({
+        (population: PopulationExpectedValue) => ({
           name: population.name,
           expected: calculateEpisodes ? false : null,
           actual: calculateEpisodes ? false : null,
@@ -446,6 +446,7 @@ const EditTestCase = () => {
           measureBundle,
           valueSets
         );
+
       const output = calculation.current.processRawResults(executionResults);
       const episodeResults =
         calculation.current.processEpisodeResults(executionResults);

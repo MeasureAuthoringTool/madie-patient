@@ -119,7 +119,8 @@ const TestCaseList = () => {
             (result) => result.patientId === testCase.id
           )?.detailedResults;
           nextExecutionResults[testCase.id] = detailedResults;
-
+          const stratificationValues =
+            testCase.groupPopulations[0]?.stratificationValues;
           const { populationResults } = detailedResults?.[0]; // Since we have only 1 population group
 
           const populationValues =
@@ -136,13 +137,33 @@ const TestCaseList = () => {
                     populationResult.populationType.toString()
                 );
 
-                if (groupPopulation) {
-                  groupPopulation.actual = populationResult.result;
+                if (
+                  groupPopulation &&
+                  groupPopulation.name != "measureObservation"
+                ) {
                   executionStatus =
                     groupPopulation.expected === populationResult.result;
+
+                  //measure observations have a different result field. only relevant for boolean, looping needed for nonbool
+                } else if (
+                  groupPopulation &&
+                  groupPopulation.name == "measureObservation"
+                ) {
+                  executionStatus =
+                    Number(groupPopulation.expected) ===
+                    populationResult.observations[0];
                 }
               }
             });
+            if (executionStatus && !!stratificationValues) {
+              stratificationValues.forEach((stratVal) => {
+                if (executionStatus) {
+                  if (stratVal.expected != stratVal.actual) {
+                    executionStatus = false;
+                  }
+                }
+              });
+            }
             testCase.executionStatus = executionStatus ? "pass" : "fail";
           }
         });
