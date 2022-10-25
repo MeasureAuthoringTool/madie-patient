@@ -379,7 +379,7 @@ it("shall add an observation if numerator expected value changes from 0 to 1, an
   expect(resultPops[0].populationValues[3].name).toEqual(
     PopulationType.NUMERATOR_OBSERVATION
   );
-  expect(resultPops[0].populationValues[3].id).toEqual("numeratorObservation");
+  expect(resultPops[0].populationValues[3].id).toEqual("numeratorObservation3");
 });
 
 it("return the input matches output with no changes", () => {
@@ -1708,11 +1708,11 @@ it("NonBool: Adding and Removing the observations to numerator and denominator i
     },
     measureGroup2
   );
-
+  //Key is the index of the value and is appended to the end of the observation ID
   expect(
     findObservationByCriteriaReference(resultPops2[0].populationValues, "pid-2")
       .id
-  ).toEqual("denominatorObservation");
+  ).toEqual("denominatorObservation2");
   expect(
     findObservationByCriteriaReference(resultPops2[0].populationValues, "pid-4")
       ?.id
