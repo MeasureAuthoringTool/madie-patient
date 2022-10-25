@@ -6,6 +6,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { MadieDiscardDialog } from "@madie/madie-design-system/dist/react/";
 import { Button, HelperText } from "@madie/madie-components";
 import { useNavigate, useParams } from "react-router-dom";
 import { useFormik } from "formik";
@@ -172,6 +173,10 @@ const EditTestCase = () => {
   const [testCase, setTestCase] = useState<TestCase>(null);
   const [editorVal, setEditorVal]: [string, Dispatch<SetStateAction<string>>] =
     useState("");
+  const [originalEditorVal, setOriginalEditorVal]: [
+    string,
+    Dispatch<SetStateAction<string>>
+  ] = useState("");
   const [validationErrors, setValidationErrors] = useState<any[]>([]);
   const [seriesState, setSeriesState] = useState<any>({
     loaded: false,
@@ -195,6 +200,7 @@ const EditTestCase = () => {
   const [measure] = measureState;
   const [measureBundle] = bundleState;
   const [valueSets] = valueSetsState;
+  const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
   const { updateMeasure } = measureStore;
 
   const [canEdit, setCanEdit] = useState<boolean>(
@@ -251,10 +257,10 @@ const EditTestCase = () => {
   const { updateRouteHandlerState } = routeHandlerStore;
   useEffect(() => {
     updateRouteHandlerState({
-      canTravel: !formik.dirty,
+      canTravel: !formik.dirty && editorVal == originalEditorVal,
       pendingRoute: "",
     });
-  }, [formik.dirty]);
+  }, [formik.dirty, editorVal, originalEditorVal]);
 
   useEffect(() => {
     if (!seriesState.loaded) {
@@ -277,6 +283,7 @@ const EditTestCase = () => {
           .then((tc: TestCase) => {
             setTestCase(_.cloneDeep(tc));
             setEditorVal(tc.json);
+            setOriginalEditorVal(tc.json);
             setCanEdit(
               measure?.createdBy === userName ||
                 measure?.acls?.some(
@@ -933,7 +940,7 @@ const EditTestCase = () => {
                   buttonTitle="Discard Changes"
                   type="button"
                   variant="white"
-                  onClick={navigateToTestCases}
+                  onClick={() => setDiscardDialogOpen(true)}
                   data-testid="edit-test-case-discard-button"
                 />
                 <Button
@@ -948,6 +955,11 @@ const EditTestCase = () => {
           </div>
         </div>
       </div>
+      <MadieDiscardDialog
+        open={discardDialogOpen}
+        onClose={() => setDiscardDialogOpen(false)}
+        onContinue={navigateToTestCases}
+      />
     </TestCaseForm>
   );
 };
