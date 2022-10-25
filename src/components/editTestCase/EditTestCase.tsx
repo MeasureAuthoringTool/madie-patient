@@ -749,7 +749,6 @@ const EditTestCase = () => {
                   changedPopulation,
                   measure?.groups
                 );
-
                 formik.setFieldValue(
                   "groupPopulations",
                   stratOutput as GroupPopulation[]
