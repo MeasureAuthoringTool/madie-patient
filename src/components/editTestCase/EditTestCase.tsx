@@ -6,6 +6,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { MadieDiscardDialog } from "@madie/madie-design-system/dist/react/";
 import { Button, HelperText } from "@madie/madie-components";
 import { useNavigate, useParams } from "react-router-dom";
 import { useFormik } from "formik";
@@ -195,6 +196,7 @@ const EditTestCase = () => {
   const [measure] = measureState;
   const [measureBundle] = bundleState;
   const [valueSets] = valueSetsState;
+  const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
   const { updateMeasure } = measureStore;
 
   const [canEdit, setCanEdit] = useState<boolean>(
@@ -934,7 +936,7 @@ const EditTestCase = () => {
                   buttonTitle="Discard Changes"
                   type="button"
                   variant="white"
-                  onClick={navigateToTestCases}
+                  onClick={() => setDiscardDialogOpen(true)}
                   data-testid="edit-test-case-discard-button"
                 />
                 <Button
@@ -949,6 +951,11 @@ const EditTestCase = () => {
           </div>
         </div>
       </div>
+      <MadieDiscardDialog
+        open={discardDialogOpen}
+        onClose={() => setDiscardDialogOpen(false)}
+        onContinue={navigateToTestCases}
+      />
     </TestCaseForm>
   );
 };
