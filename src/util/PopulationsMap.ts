@@ -8,7 +8,6 @@ import {
 } from "@madie/madie-models";
 
 import _ from "lodash";
-import { bool } from "yup";
 
 export const FHIR_POPULATION_CODES = {
   "initial-population": PopulationType.INITIAL_POPULATION,
@@ -277,7 +276,6 @@ function countObservationsPerType(
   let id = "";
   let count: string;
   let countNbr: number;
-  let countBool: boolean;
   const popTypeExclusion: PopulationType = <PopulationType>(
     String(expectedPopType).concat("Exclusion")
   );
