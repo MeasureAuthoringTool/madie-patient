@@ -15,6 +15,7 @@ const ExpectActualInput = ({
 
   return props.populationBasis === "Boolean" &&
     props.name !== "measureObservation" &&
+    props.name !== "measurePopulationObservation" &&
     props.name !== "numeratorObservation" &&
     props.name != "denominatorObservation" ? (
     <input

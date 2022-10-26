@@ -1,4 +1,3 @@
-import { parseExpression } from "@babel/parser";
 import {
   PopulationType,
   GroupPopulation,
@@ -6,7 +5,6 @@ import {
   PopulationExpectedValue,
   DisplayPopulationValue,
   MeasureObservation,
-  Population,
 } from "@madie/madie-models";
 
 import _ from "lodash";
@@ -165,63 +163,7 @@ function addRemoveObservationsForNonBooleanPopulationCritieria(
   changedGroupId: string,
   measureGroups: Group[]
 ) {
-  //if (targetPopulationCriteria.populationBasis === "Boolean") return;
-
   if (
-    targetPopulationCriteria.scoring === "CCCContinuous Variable" &&
-    (changedPopulationName === "measurePopulationExclusion" ||
-      changedPopulationName === "measurePopulation")
-  ) {
-    const measurePopulation =
-      Number(targetPopulationCriteria.populationValues[1].expected) >= 0
-        ? Number(targetPopulationCriteria.populationValues[1].expected)
-        : 0;
-    //checks if the exclusion exists, if not, sets value to zero
-    const measurePopulationEx =
-      targetPopulationCriteria.populationValues[2]?.name ===
-        "measurePopulationExclusion" &&
-      Number(targetPopulationCriteria.populationValues[2].expected) >= 0
-        ? Number(targetPopulationCriteria.populationValues[2].expected)
-        : 0;
-    //catches potential negative, zeroing out if so
-    const measurePopDif =
-      measurePopulationEx < measurePopulation
-        ? measurePopulation - measurePopulationEx
-        : 0;
-    const measurePopulationLength =
-      targetPopulationCriteria.populationValues.length;
-    if (
-      targetPopulationCriteria.populationValues.length <
-      measurePopulationLength + measurePopDif
-    ) {
-      while (
-        targetPopulationCriteria.populationValues.length <
-        measurePopulationLength + measurePopDif
-      ) {
-        targetPopulationCriteria.populationValues.push({
-          name: PopulationType.MEASURE_OBSERVATION,
-          expected: 0,
-          id:
-            `Observation` +
-            (targetPopulationCriteria.populationValues.length -
-              (measurePopulation - measurePopulationEx)),
-          criteriaReference: undefined,
-        });
-      }
-    } else if (
-      targetPopulationCriteria.populationValues.length >
-      measurePopulationLength + measurePopDif
-    ) {
-      while (
-        targetPopulationCriteria.populationValues.length >
-        measurePopulationLength + measurePopDif
-      ) {
-        targetPopulationCriteria.populationValues.pop();
-      }
-    }
-    // handle non-boolean based Ratio
-  } else if (
-    //targetPopulationCriteria.scoring === "Ratio" &&
     changedPopulationName === PopulationType.NUMERATOR_EXCLUSION ||
     changedPopulationName === PopulationType.NUMERATOR ||
     changedPopulationName === PopulationType.DENOMINATOR_EXCLUSION ||
@@ -355,14 +297,14 @@ function countObservationsPerType(
   const exclusions: number = targetPopulationCriteria.filter(
     (value) => value.name === popTypeExclusion
   ).length;
-  countNbr = countNbr - exclusions;
+  countNbr = countNbr < 0 ? 0 : countNbr - exclusions;
   //if we expect 2 results for the denom, then we should get two expected results per observation
   const observations: MeasureObservation[] = measureGroups
     .find((group) => group.id === changedGroupId)
     .measureObservations?.filter(
       (observation) => observation.criteriaReference === id
     );
-  return typeof count === "boolean" ? 1 : countNbr * observations.length;
+  return countNbr * (observations === undefined ? 0 : observations.length);
 }
 
 // filtering out populations for those that have definitions added.
@@ -381,6 +323,7 @@ export function getPopulationTypesForScoring(group: Group) {
   return populationTypesForScoring;
 }
 
+//@deprecated?
 const getPopulationValues = (targetPopulationCriteria: GroupPopulation) => {
   // Checks if a value exists for the pop
   const numExIndex = targetPopulationCriteria.populationValues.findIndex(

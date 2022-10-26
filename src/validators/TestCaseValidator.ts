@@ -38,7 +38,11 @@ export const TestCaseValidator = Yup.object().shape({
                             return true;
                           } else if (
                             populationBasis !== "Boolean" ||
-                            population.parent.name === "measureObservation"
+                            population.parent.name === "measureObservation" ||
+                            population.parent.name ===
+                              "measurePopulationObservation" ||
+                            population.parent.name === "numeratorObservation" ||
+                            population.parent.name === "denominatorObservation"
                           ) {
                             if (!isNaN(+value) && +value >= 0) {
                               if (
