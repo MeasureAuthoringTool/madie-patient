@@ -48,7 +48,7 @@ export function triggerPopChanges(
   let stratMap = buildStratificationMap(targetGroup, changedTarget);
   let popMap = buildPopulationMap(targetGroup);
 
-  addRemoveObservationsForNonBooleanPopulationCritieria(
+  addRemoveObservationsForPopulationCritieria(
     targetGroup,
     changedPopulationName,
     changedGroupId,
@@ -156,7 +156,7 @@ const buildPopulationMap = (populationCritiera: GroupPopulation) => {
   return popMap;
 };
 
-function addRemoveObservationsForNonBooleanPopulationCritieria(
+function addRemoveObservationsForPopulationCritieria(
   targetPopulationCriteria: GroupPopulation,
   changedPopulationName: PopulationType,
   changedGroupId: string,
