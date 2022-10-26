@@ -321,61 +321,6 @@ export function getPopulationTypesForScoring(group: Group) {
   return populationTypesForScoring;
 }
 
-//@deprecated?
-const getPopulationValues = (targetPopulationCriteria: GroupPopulation) => {
-  // Checks if a value exists for the pop
-  const numExIndex = targetPopulationCriteria.populationValues.findIndex(
-    (prop) => {
-      return prop.name === "numeratorExclusion";
-    }
-  );
-  const numIndex = targetPopulationCriteria.populationValues.findIndex(
-    (prop) => {
-      return prop.name === "numerator";
-    }
-  );
-  const denomExIndex = targetPopulationCriteria.populationValues.findIndex(
-    (prop) => {
-      return prop.name === "denominatorExclusion";
-    }
-  );
-  const denomIndex = targetPopulationCriteria.populationValues.findIndex(
-    (prop) => {
-      return prop.name === "denominator";
-    }
-  );
-
-  // Grabs the number within each population. If negative set it to zero
-  return {
-    num:
-      Number(targetPopulationCriteria.populationValues[numIndex].expected) >= 0
-        ? Number(targetPopulationCriteria.populationValues[numIndex].expected)
-        : 0,
-    numEx:
-      targetPopulationCriteria.populationValues[numExIndex] &&
-      Number(targetPopulationCriteria.populationValues[numExIndex].expected) >=
-        0
-        ? Number(targetPopulationCriteria.populationValues[numExIndex].expected)
-        : 0,
-    denom:
-      Number(targetPopulationCriteria.populationValues[denomIndex].expected) >=
-      0
-        ? Number(targetPopulationCriteria.populationValues[denomIndex].expected)
-        : 0,
-    denomEx:
-      targetPopulationCriteria.populationValues[denomExIndex] &&
-      Number(
-        targetPopulationCriteria.populationValues[denomExIndex].expected
-      ) >= 0
-        ? Number(
-            targetPopulationCriteria.populationValues[denomExIndex].expected
-          )
-        : 0,
-    numExIndex,
-    denomExIndex,
-  };
-};
-
 // for every MeasurePopulation value
 // this method returns its equivalent fqm-execution PopulationResult identifier.
 export function getFhirMeasurePopulationCode(population: string) {
