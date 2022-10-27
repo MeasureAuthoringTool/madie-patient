@@ -81,18 +81,20 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
       }}
     >
       <Tab
+        tabIndex={0}
+        aria-label="Passing tab panel"
         sx={defaultStyle}
         label={executionResultsDisplayTemplate("Passing")}
         data-testid="passing-tab"
         value="passing"
-        tabIndex={0}
       />
       <Tab
+        tabIndex={0}
+        aria-label="Coverage tab panel"
         sx={defaultStyle}
         label={executionResultsDisplayTemplate("Coverage")}
         data-testid="coverage-tab"
         value="coverage"
-        tabIndex={0}
       />
       <div style={{ margin: "6px 0 0 auto", display: "flex" }}>
         <div>

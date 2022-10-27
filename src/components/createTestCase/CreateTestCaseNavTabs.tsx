@@ -45,32 +45,36 @@ export default function CreateTestCaseNavTabs(props: NavTabProps) {
       }}
     >
       <Tab
+        tabIndex={0}
+        aria-label="Measure CQL View Only tab panel"
         sx={defaultStyle}
         label={`Measure CQL (View Only)`}
         data-testid="measurecql-tab"
         value="measurecql"
-        tabIndex={0}
       />
       <Tab
+        tabIndex={0}
+        aria-label="Highlighting tab panel"
         sx={defaultStyle}
         label={`Highlighting`}
         data-testid="highlighting-tab"
         value="highlighting"
-        tabIndex={0}
       />
       <Tab
+        tabIndex={0}
+        aria-label="Expected or Actual tab panel"
         sx={defaultStyle}
         value="expectoractual"
         label="Expected / Actual"
         data-testid="expectoractual-tab"
-        tabIndex={0}
       />
       <Tab
+        tabIndex={0}
+        aria-label="Details tab panel"
         sx={defaultStyle}
         value="details"
         label="Details"
         data-testid="details-tab"
-        tabIndex={0}
       />
     </Tabs>
   );

@@ -28,7 +28,12 @@ const TestCasePopulation = ({
   error,
 }: TestCasePopulationProps) => {
   const populationNameTemplate = (prop) => {
-    if (prop === "measureObservation") {
+    if (
+      prop === "measureObservation" ||
+      prop === "measurePopulationObservation" ||
+      prop === "numeratorObservation" ||
+      prop === "denominatorObservation"
+    ) {
       return (
         getPopulationCode(
           population.name as PopulationType
