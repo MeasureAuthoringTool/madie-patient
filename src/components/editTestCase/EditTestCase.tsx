@@ -257,7 +257,7 @@ const EditTestCase = () => {
   const { updateRouteHandlerState } = routeHandlerStore;
   useEffect(() => {
     updateRouteHandlerState({
-      canTravel: !formik.dirty && editorVal == originalEditorVal,
+      canTravel: !formik.dirty && editorVal === originalEditorVal,
       pendingRoute: "",
     });
   }, [formik.dirty, editorVal, originalEditorVal]);
@@ -958,7 +958,12 @@ const EditTestCase = () => {
       <MadieDiscardDialog
         open={discardDialogOpen}
         onClose={() => setDiscardDialogOpen(false)}
-        onContinue={navigateToTestCases}
+        onContinue={async () => {
+          //async await to prevent warning dialog from coming up twice when editor is changed and discard is clicked
+          await setOriginalEditorVal("cool");
+          await setEditorVal("cool");
+          navigateToTestCases();
+        }}
       />
     </TestCaseForm>
   );
