@@ -41,7 +41,7 @@ const TestCaseList = () => {
   const [activeTab, setActiveTab] = useState<string>("passing");
   const [executeAllTestCases, setExecuteAllTestCases] =
     useState<boolean>(false);
-  const [passingCoverage, setPassingCoverage] =
+  const [testCasePassFailStats, setTestCasePassFailStats] =
     useState<TestCasesPassingDetailsProps>({
       passPercentage: undefined,
       passFailRatio: "",
@@ -181,7 +181,7 @@ const TestCaseList = () => {
         setExecuteAllTestCases(true);
         const { passPercentage, passFailRatio } =
           calculation.current.getPassingPercentageForTestCases(testCases);
-        setPassingCoverage({
+        setTestCasePassFailStats({
           passPercentage: passPercentage,
           passFailRatio: passFailRatio,
         });
@@ -207,7 +207,7 @@ const TestCaseList = () => {
             measure={measure}
             createNewTestCase={createNewTestCase}
             executeTestCases={executeTestCases}
-            passingCoverage={passingCoverage}
+            testCasePassFailStats={testCasePassFailStats}
           />
         </div>
         <CreateNewTestCaseDialog open={createOpen} onClose={handleClose} />

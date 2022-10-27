@@ -14,7 +14,7 @@ export interface NavTabProps {
   measure: Measure;
   createNewTestCase: (value: string) => void;
   executeTestCases: (value: string) => void;
-  passingCoverage: TestCasesPassingDetailsProps;
+  testCasePassFailStats: TestCasesPassingDetailsProps;
 }
 
 const defaultStyle = {
@@ -38,7 +38,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     createNewTestCase,
     measure,
     executeTestCases,
-    passingCoverage,
+    testCasePassFailStats,
   } = props;
 
   const executionResultsDisplayTemplate = (label) => {
@@ -46,7 +46,9 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
       ? [0, 50, 100][Math.floor(Math.random() * 3)]
       : "-";
     const displayPercentage =
-      label !== "Coverage" ? passingCoverage.passPercentage : codeCoverage;
+      label !== "Coverage"
+        ? testCasePassFailStats.passPercentage
+        : codeCoverage;
     return (
       <div>
         <div style={{ fontSize: "29px", fontWeight: "600" }}>
@@ -56,7 +58,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           {label}{" "}
           {executeAllTestCases &&
             label !== "Coverage" &&
-            `(${passingCoverage.passFailRatio})`}
+            `(${testCasePassFailStats.passFailRatio})`}
         </div>
       </div>
     );
