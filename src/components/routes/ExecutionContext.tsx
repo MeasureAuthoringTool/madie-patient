@@ -18,7 +18,9 @@ export interface ExecutionContextHolder {
 
 const ExecutionContext = createContext<ExecutionContextHolder>(null);
 
-const ExecutionProvider = ({ children }: any) => {
+/*
+// TODO: refactor to use this custom provider to manage state in context
+export const ExecutionProvider = ({ children }: any) => {
   const [measureBundle, setMeasureBundle] = useState<Bundle>();
   const [valueSets, setValueSets] = useState<ValueSet[]>();
   const [measure, setMeasure] = useState<any>(measureStore.state);
@@ -41,6 +43,7 @@ const ExecutionProvider = ({ children }: any) => {
     </ExecutionContext.Provider>
   );
 };
+*/
 
 export default ExecutionContext;
 export const ExecutionContextProvider = ExecutionContext.Provider;
