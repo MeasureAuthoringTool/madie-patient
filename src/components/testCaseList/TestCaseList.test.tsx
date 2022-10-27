@@ -289,6 +289,7 @@ describe("TestCaseList component", () => {
               measureState: [measure, setMeasure],
               bundleState: [measureBundle, setMeasureBundle],
               valueSetsState: [valueSets, setValueSets],
+              executionContextReady: true,
             }}
           >
             <TestCaseList />

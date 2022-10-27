@@ -153,6 +153,7 @@ const renderWithRouter = (
             measureState: [measure, setMeasure],
             bundleState: [measureBundle, setMeasureBundle],
             valueSetsState: [valueSets, setValueSets],
+            executionContextReady: true,
           }}
         >
           <Routes>
