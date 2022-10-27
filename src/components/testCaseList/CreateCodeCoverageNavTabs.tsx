@@ -4,6 +4,8 @@ import { Button } from "@madie/madie-design-system/dist/react";
 import AddIcon from "@mui/icons-material/Add";
 import * as _ from "lodash";
 import { Measure } from "@madie/madie-models";
+import { TestCasesPassingDetailsProps } from "./TestCaseList";
+
 export interface NavTabProps {
   activeTab: string;
   setActiveTab: (value: string) => void;
@@ -12,6 +14,7 @@ export interface NavTabProps {
   measure: Measure;
   createNewTestCase: (value: string) => void;
   executeTestCases: (value: string) => void;
+  passingCoverage: TestCasesPassingDetailsProps;
 }
 
 const defaultStyle = {
@@ -35,19 +38,25 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     createNewTestCase,
     measure,
     executeTestCases,
+    passingCoverage,
   } = props;
 
   const executionResultsDisplayTemplate = (label) => {
-    const term = executeAllTestCases
+    const codeCoverage = executeAllTestCases
       ? [0, 50, 100][Math.floor(Math.random() * 3)]
       : "-";
+    const displayPercentage =
+      label !== "Coverage" ? passingCoverage.passPercentage : codeCoverage;
     return (
       <div>
         <div style={{ fontSize: "29px", fontWeight: "600" }}>
-          {executeAllTestCases ? term + "%" : "-"}{" "}
+          {executeAllTestCases ? displayPercentage + "%" : "-"}{" "}
         </div>
         <div style={{ fontSize: "19px" }}>
-          {label} {executeAllTestCases && label !== "Coverage" && "(1/2)"}
+          {label}{" "}
+          {executeAllTestCases &&
+            label !== "Coverage" &&
+            `(${passingCoverage.passFailRatio})`}
         </div>
       </div>
     );
