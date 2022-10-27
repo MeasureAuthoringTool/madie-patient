@@ -185,6 +185,18 @@ export class CalculationService {
     return testCaseResultMap;
   }
 
+  getPassingPercentageForTestCases(testCases: TestCase[]) {
+    const totalTestCases = testCases?.length;
+    const passedTests = testCases?.filter(
+      (testCase) => testCase.executionStatus === "pass"
+    ).length;
+
+    return {
+      passPercentage: Math.floor((passedTests / totalTestCases) * 100),
+      passFailRatio: passedTests + "/" + totalTestCases,
+    };
+  }
+
   getCoveragePercentageForGroup(
     groupId: string,
     groupResults: DetailedPopulationGroupResult[]
