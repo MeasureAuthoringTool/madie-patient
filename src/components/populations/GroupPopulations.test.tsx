@@ -15,7 +15,7 @@ describe("Group Populations", () => {
       {
         groupId: "Group1_ID",
         scoring: MeasureScoring.COHORT,
-        populationBasis: "Boolean",
+        populationBasis: "boolean",
         populationValues: [
           {
             id: "123",
@@ -41,7 +41,7 @@ describe("Group Populations", () => {
       {
         groupId: "Group1_ID",
         scoring: MeasureScoring.CONTINUOUS_VARIABLE,
-        populationBasis: "Boolean",
+        populationBasis: "boolean",
         stratificationValues: [],
         populationValues: [
           {

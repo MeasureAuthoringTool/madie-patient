@@ -30,7 +30,7 @@ describe("TestCasePopulationPopulation component", () => {
     render(
       <MemoryRouter>
         <TestCasePopulationList
-          populationBasis="Boolean"
+          populationBasis="boolean"
           populations={testCasePopulations}
           content="population"
           i={0}
@@ -92,7 +92,7 @@ describe("TestCasePopulationPopulation component", () => {
           populations={testCasePopulations}
           onChange={handleChange}
           disableExpected={false}
-          populationBasis="Boolean"
+          populationBasis="boolean"
           content="population"
           i={0}
           scoring="Proportion"
@@ -157,7 +157,7 @@ describe("TestCasePopulationPopulation component", () => {
           populations={testCasePopulations}
           onChange={handleChange}
           disableExpected={false}
-          populationBasis="Boolean"
+          populationBasis="boolean"
           content="ratio"
           i={0}
           scoring="Ratio"
@@ -177,22 +177,22 @@ describe("TestCasePopulationPopulation component", () => {
 
 describe("determineGroupResult", () => {
   it("should return initial for missing executionRun input", () => {
-    const output = determineGroupResult("Boolean", [], undefined);
+    const output = determineGroupResult("boolean", [], undefined);
     expect(output).toEqual("initial");
   });
 
   it("should return initial for null executionRun input", () => {
-    const output = determineGroupResult("Boolean", [], null);
+    const output = determineGroupResult("boolean", [], null);
     expect(output).toEqual("initial");
   });
 
   it("should return initial for false executionRun input", () => {
-    const output = determineGroupResult("Boolean", [], false);
+    const output = determineGroupResult("boolean", [], false);
     expect(output).toEqual("initial");
   });
 
   it("should return pass for empty populations for boolean PopBasis", () => {
-    const output = determineGroupResult("Boolean", [], true);
+    const output = determineGroupResult("boolean", [], true);
     expect(output).toEqual("pass");
   });
 

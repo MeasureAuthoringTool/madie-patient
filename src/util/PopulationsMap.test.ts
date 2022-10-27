@@ -27,7 +27,7 @@ let measureGroup = [
       },
     ],
     scoring: "Ratio",
-    populationBasis: "Boolean",
+    populationBasis: "boolean",
   },
 ];
 let measureGroup2 = [
@@ -403,7 +403,7 @@ it("return the input matches output with no changes", () => {
   populationValues.push(populationVal);
   const groupPop1: GroupPopulation = {
     groupId: "initialPopulation",
-    populationBasis: "Boolean",
+    populationBasis: "boolean",
     scoring: "Cohort",
     populationValues: populationValues,
     stratificationValues: [stratVal1, stratVal2],
@@ -456,7 +456,7 @@ it("return the input matches output with strat expected change", () => {
   populationValues.push(populationVal);
   const groupPop1: GroupPopulation = {
     groupId: "initialPopulation",
-    populationBasis: "Boolean",
+    populationBasis: "boolean",
     scoring: "Cohort",
     populationValues: populationValues,
     stratificationValues: [stratVal1, stratVal2],
@@ -499,7 +499,7 @@ it("return the input matches output with no changes if targetId not found", () =
   populationValues.push(populationVal);
   const group1: GroupPopulation = {
     groupId: "initialPopulation",
-    populationBasis: "Boolean",
+    populationBasis: "boolean",
     scoring: "Cohort",
     populationValues: populationValues,
     stratificationValues: [],
@@ -571,7 +571,7 @@ it("return the input with IPP changed to Expected because Denom is Expected", ()
 
   const group1: GroupPopulation = {
     groupId: "shrug",
-    populationBasis: "Boolean",
+    populationBasis: "boolean",
     scoring: "Proportion",
     populationValues: populationValues,
     stratificationValues: [],
@@ -648,7 +648,7 @@ it("return the input with IPP Expected, Denom Expected because Denom Exception i
 
   const group1: GroupPopulation = {
     groupId: "shrug",
-    populationBasis: "Boolean",
+    populationBasis: "boolean",
     scoring: "Proportion",
     populationValues: populationValues,
     stratificationValues: [],
@@ -733,7 +733,7 @@ it("return the input with IPP Expected, Denom Expected because Numer is Expected
 
   const group1: GroupPopulation = {
     groupId: "shrug",
-    populationBasis: "Boolean",
+    populationBasis: "boolean",
     scoring: "Proportion",
     populationValues: populationValues,
     stratificationValues: [],
@@ -818,7 +818,7 @@ it("return the input with IPP Expected, Denom Expected when Numer is Unchecked",
 
   const group1: GroupPopulation = {
     groupId: "shrug",
-    populationBasis: "Boolean",
+    populationBasis: "boolean",
     scoring: "Proportion",
     populationValues: populationValues,
     stratificationValues: [],
@@ -903,7 +903,7 @@ it("return the input with IPP Expected, Denom Expected when Denom Exception is c
 
   const group1: GroupPopulation = {
     groupId: "shrug",
-    populationBasis: "Boolean",
+    populationBasis: "boolean",
     scoring: "Proportion",
     populationValues: populationValues,
     stratificationValues: [],
@@ -988,7 +988,7 @@ it("return the input with IPP Expected, Denom Expected when Denom Exclusion is c
 
   const group1: GroupPopulation = {
     groupId: "shrug",
-    populationBasis: "Boolean",
+    populationBasis: "boolean",
     scoring: "Proportion",
     populationValues: populationValues,
     stratificationValues: [],
@@ -1073,7 +1073,7 @@ it("return the input with IPP Expected, Denom Expected and Numer Expected when N
 
   const group1: GroupPopulation = {
     groupId: "shrug",
-    populationBasis: "Boolean",
+    populationBasis: "boolean",
     scoring: "Proportion",
     populationValues: populationValues,
     stratificationValues: [],
@@ -1165,7 +1165,7 @@ it("when Denom is unchecked, then Numer, Denom Exclusion, Denom Exception, Numer
 
   const group1: GroupPopulation = {
     groupId: "shrug",
-    populationBasis: "Boolean",
+    populationBasis: "boolean",
     scoring: "Proportion",
     populationValues: populationValues,
     stratificationValues: [],
@@ -1271,7 +1271,7 @@ it("when IPP is unchecked then rest of populations expected values should also b
 
   const group1: GroupPopulation = {
     groupId: "shrug",
-    populationBasis: "Boolean",
+    populationBasis: "boolean",
     scoring: "Proportion",
     populationValues: populationValues,
     stratificationValues: [],
@@ -1342,7 +1342,7 @@ it.skip("Removing and Adding the observations on clicking the measure population
 
   const group1: GroupPopulation = {
     groupId: "shrug",
-    populationBasis: "Boolean",
+    populationBasis: "boolean",
     scoring: "Continuous Variable",
     populationValues: populationValues,
     stratificationValues: [],
@@ -1441,7 +1441,7 @@ it.skip("Removing the observations on clicking the numerator exclusion and denom
 
   const group1: GroupPopulation = {
     groupId: "shrug",
-    populationBasis: "Boolean",
+    populationBasis: "boolean",
     scoring: "Ratio",
     populationValues: populationValues,
     stratificationValues: [],
@@ -1553,7 +1553,7 @@ it.skip("Adding the observations on clicking the numerator exclusion and denomin
 
   const group1: GroupPopulation = {
     groupId: "shrug",
-    populationBasis: "Boolean",
+    populationBasis: "boolean",
     scoring: "Ratio",
     populationValues: populationValues,
     stratificationValues: [],

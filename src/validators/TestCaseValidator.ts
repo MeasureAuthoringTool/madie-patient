@@ -31,13 +31,13 @@ export const TestCaseValidator = Yup.object().shape({
                           if (value === undefined || value === null) {
                             return true;
                           } else if (
-                            populationBasis === "Boolean" &&
+                            populationBasis === "boolean" &&
                             population.parent.name !== "measureObservation" &&
                             typeof value === "boolean"
                           ) {
                             return true;
                           } else if (
-                            populationBasis !== "Boolean" ||
+                            populationBasis !== "boolean" ||
                             population.parent.name === "measureObservation" ||
                             population.parent.name ===
                               "measurePopulationObservation" ||

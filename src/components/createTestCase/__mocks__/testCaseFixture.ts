@@ -23,7 +23,7 @@ export const testCaseFixture: TestCase = {
     {
       groupId: "1",
       scoring: MeasureScoring.PROPORTION,
-      populationBasis: "Boolean",
+      populationBasis: "boolean",
       stratificationValues: [],
       populationValues: [
         {
