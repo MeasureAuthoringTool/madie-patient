@@ -42,7 +42,7 @@ const TestCaseList = () => {
   const [activeTab, setActiveTab] = useState<string>("passing");
   const [executeAllTestCases, setExecuteAllTestCases] =
     useState<boolean>(false);
-  const [testCaseHTML, setTestCaseHTML] = useState<string>("")
+  const [coverageHTML, setCoverageHTML] = useState<string>("");
   const [testCasePassFailStats, setTestCasePassFailStats] =
     useState<TestCasesPassingDetailsProps>({
       passPercentage: undefined,
@@ -118,17 +118,16 @@ const TestCaseList = () => {
 
     if (validTestCases && measureBundle) {
       try {
-        const calculationResults: CalculationOutput<any> =
+        const calculationOutput: CalculationOutput<any> =
           await calculation.current.calculateTestCases(
             measure,
             validTestCases,
             measureBundle,
             valueSets
           );
-          const executionResults = calculationResults.results,
-                executionHTML = calculationResults.coverageHTML
-          setTestCaseHTML(executionHTML)
-          console.log(executionHTML)
+        const executionResults = calculationOutput.results,
+          executionHTML = calculationOutput.coverageHTML;
+        setCoverageHTML(executionHTML);
         const nextExecutionResults = {};
         validTestCases.forEach((testCase) => {
           const detailedResults = executionResults.find(
@@ -253,9 +252,9 @@ const TestCaseList = () => {
           </div>
         )}
 
-        {activeTab === "coverage" && <CodeCoverageHighlighting 
-                                      testCaseHTML={testCaseHTML}
-                                      />}
+        {activeTab === "coverage" && (
+          <CodeCoverageHighlighting coverageHTML={coverageHTML} />
+        )}
       </div>
     </div>
   );
