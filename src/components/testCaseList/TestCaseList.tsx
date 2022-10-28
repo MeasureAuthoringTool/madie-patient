@@ -8,6 +8,7 @@ import { useParams } from "react-router-dom";
 import TestCaseComponent from "./TestCase";
 import calculationService from "../../api/CalculationService";
 import {
+  CalculationOutput,
   DetailedPopulationGroupResult,
   ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
@@ -36,7 +37,7 @@ const TestCaseList = () => {
   const [activeTab, setActiveTab] = useState<string>("passing");
   const [executeAllTestCases, setExecuteAllTestCases] =
     useState<boolean>(false);
-
+  const [testCaseHTML, setTestCaseHTML] = useState<string>("")
   const { measureState, bundleState, valueSetsState } = useExecutionContext();
   const [measure] = measureState;
   const [measureBundle] = bundleState;
@@ -105,14 +106,17 @@ const TestCaseList = () => {
 
     if (validTestCases && measureBundle) {
       try {
-        const executionResults: ExecutionResult<DetailedPopulationGroupResult>[] =
+        const calculationResults: CalculationOutput<any> =
           await calculation.current.calculateTestCases(
             measure,
             validTestCases,
             measureBundle,
             valueSets
           );
-
+          const executionResults = calculationResults.results,
+                executionHTML = calculationResults.coverageHTML
+          setTestCaseHTML(executionHTML)
+          console.log(executionHTML)
         const nextExecutionResults = {};
         validTestCases.forEach((testCase) => {
           const detailedResults = executionResults.find(
@@ -230,7 +234,9 @@ const TestCaseList = () => {
           </div>
         )}
 
-        {activeTab === "coverage" && <CodeCoverageHighlighting />}
+        {activeTab === "coverage" && <CodeCoverageHighlighting 
+                                      testCaseHTML={testCaseHTML}
+                                      />}
       </div>
     </div>
   );

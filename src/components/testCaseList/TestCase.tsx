@@ -75,6 +75,7 @@ const TestCase = ({
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
   const status = testCase.executionStatus;
+  console.log(status)
   // const statusColor = testCase.executionStatus === "pass" ? "success" : "error";
   const statusColor = getStatusColor(testCase.executionStatus);
   // only one group for now
