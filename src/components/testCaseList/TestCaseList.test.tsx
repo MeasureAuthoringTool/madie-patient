@@ -224,7 +224,7 @@ const measure = {
     {
       id: "1",
       scoring: MeasureScoring.PROPORTION,
-      populationBasis: "Boolean",
+      populationBasis: "boolean",
       populations: [
         {
           id: "id-1",
