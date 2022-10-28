@@ -14,6 +14,7 @@ const TestCaseRoutes = () => {
   const [measureBundle, setMeasureBundle] = useState<Bundle>();
   const [valueSets, setValueSets] = useState<ValueSet[]>();
   const [errors, setErrors] = useState<string>();
+  const [executionContextReady, setExecutionContextReady] = useState<boolean>();
 
   const terminologyService = useRef(useTerminologyServiceApi());
   const measureService = useRef(useMeasureServiceApi());
@@ -53,12 +54,17 @@ const TestCaseRoutes = () => {
     }
   }, [measureBundle]);
 
+  useEffect(() => {
+    setExecutionContextReady(!!measureBundle && !!valueSets && !!measure);
+  }, [measureBundle, measure, valueSets]);
+
   return (
     <ExecutionContextProvider
       value={{
         measureState: [measure, setMeasure],
         bundleState: [measureBundle, setMeasureBundle],
         valueSetsState: [valueSets, setValueSets],
+        executionContextReady,
       }}
     >
       {errors && (

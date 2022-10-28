@@ -153,6 +153,7 @@ const renderWithRouter = (
             measureState: [measure, setMeasure],
             bundleState: [measureBundle, setMeasureBundle],
             valueSetsState: [valueSets, setValueSets],
+            executionContextReady: true,
           }}
         >
           <Routes>
@@ -664,7 +665,7 @@ describe("EditTestCase component", () => {
         {
           id: "Group1_ID",
           scoring: "Continuous Variable",
-          populationBasis: "Boolean",
+          populationBasis: "boolean",
           populations: [
             {
               name: PopulationType.INITIAL_POPULATION,
@@ -753,7 +754,7 @@ describe("EditTestCase component", () => {
       {
         groupId: "Group1_ID",
         scoring: MeasureScoring.CONTINUOUS_VARIABLE,
-        populationBasis: "Boolean",
+        populationBasis: "boolean",
         populationValues: [
           {
             name: PopulationType.INITIAL_POPULATION,
@@ -810,7 +811,7 @@ describe("EditTestCase component", () => {
         {
           id: "Group1_ID",
           scoring: "Continuous Variable",
-          populationBasis: "Boolean",
+          populationBasis: "boolean",
           populations: [
             {
               name: PopulationType.INITIAL_POPULATION,
@@ -901,7 +902,7 @@ describe("EditTestCase component", () => {
       {
         groupId: "Group1_ID",
         scoring: MeasureScoring.CONTINUOUS_VARIABLE,
-        populationBasis: "Boolean",
+        populationBasis: "boolean",
         populationValues: [
           {
             name: PopulationType.INITIAL_POPULATION,
@@ -2349,7 +2350,7 @@ describe("validator", () => {
           group: "Group One",
           groupId: "1",
           scoring: MeasureScoring.PROPORTION,
-          populationBasis: "Boolean",
+          populationBasis: "boolean",
           populationValues: [
             {
               name: PopulationType.INITIAL_POPULATION,

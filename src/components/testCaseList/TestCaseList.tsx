@@ -22,6 +22,11 @@ import CreateNewTestCaseDialog from "../createTestCase/CreateNewTestCaseDialog";
 const TH = tw.th`p-3 border-b text-left text-sm font-bold uppercase`;
 const ErrorAlert = tw.div`bg-red-100 text-red-700 rounded-lg m-1 p-3`;
 
+export interface TestCasesPassingDetailsProps {
+  passPercentage: number;
+  passFailRatio: string;
+}
+
 const TestCaseList = () => {
   const [testCases, setTestCases] = useState<TestCase[]>(null);
   const [executionResults, setExecutionResults] = useState<{
@@ -38,6 +43,12 @@ const TestCaseList = () => {
   const [executeAllTestCases, setExecuteAllTestCases] =
     useState<boolean>(false);
   const [testCaseHTML, setTestCaseHTML] = useState<string>("")
+  const [testCasePassFailStats, setTestCasePassFailStats] =
+    useState<TestCasesPassingDetailsProps>({
+      passPercentage: undefined,
+      passFailRatio: "",
+    });
+
   const { measureState, bundleState, valueSetsState } = useExecutionContext();
   const [measure] = measureState;
   const [measureBundle] = bundleState;
@@ -89,6 +100,7 @@ const TestCaseList = () => {
 
   const createNewTestCase = () => {
     setCreateOpen(true);
+    setExecuteAllTestCases(false);
   };
 
   const handleClose = () => {
@@ -172,6 +184,12 @@ const TestCaseList = () => {
           }
         });
         setExecuteAllTestCases(true);
+        const { passPercentage, passFailRatio } =
+          calculation.current.getPassingPercentageForTestCases(testCases);
+        setTestCasePassFailStats({
+          passPercentage: passPercentage,
+          passFailRatio: passFailRatio,
+        });
         setTestCases([...testCases]);
         setExecutionResults(nextExecutionResults);
       } catch (error) {
@@ -194,6 +212,7 @@ const TestCaseList = () => {
             measure={measure}
             createNewTestCase={createNewTestCase}
             executeTestCases={executeTestCases}
+            testCasePassFailStats={testCasePassFailStats}
           />
         </div>
         <CreateNewTestCaseDialog open={createOpen} onClose={handleClose} />
