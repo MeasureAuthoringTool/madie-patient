@@ -5,7 +5,6 @@ import {
   EpisodeResults,
   ExecutionResult,
   PopulationGroupResult,
-  PopulationResult,
 } from "fqm-execution/build/types/Calculator";
 import {
   Group,
@@ -266,45 +265,8 @@ export class CalculationService {
     }
   }
 
-  /**
-   * Returns an array
-   *
-   * @param episodeResults
-   */
-  processEpisodeObservations(
-    episodeResults: EpisodeResults[],
-    scoring: "Ratio" | "CV"
-  ) {
-    const observationResults = [];
-
-    for (const episodeResult of episodeResults) {
-      const outEpisodeObservations = [];
-      const observationPopulations = episodeResult.populationResults.filter(
-        (popResult) => popResult.populationType === FqmPopulationType.OBSERV
-      );
-      // if there are any passing observations
-      if (observationPopulations.find((observ) => observ.result)) {
-      }
-      if (outEpisodeObservations.length > 0) {
-        observationResults.push(outEpisodeObservations);
-      }
-    }
-
-    return observationResults;
-  }
-
-  isPopulationPass(
-    populationResults: PopulationResult[],
-    fqmPopulationType: FqmPopulationType
-  ) {
-    return !!populationResults?.find(
-      (pop) => pop.populationType === fqmPopulationType && pop.result
-    );
-  }
-
   findEpisodeObservationResult(
     episodeResults: EpisodeResults[],
-    // denominatorObservationExists: boolean,
     index: number,
     criteriaExpression: string,
     populationType: PopulationType | string
@@ -328,14 +290,6 @@ export class CalculationService {
        */
       const observationPopulation = observationPopulations?.[0];
       if (observationPopulation && observationPopulation.result) {
-        // const isMeasurePop = !!episodeResult.populationResults.find(
-        //   (pop) =>
-        //     pop.populationType === FqmPopulationType.MSRPOPL && pop.result
-        // );
-        // const isMeasurePopEx = !!episodeResult.populationResults.find(
-        //   (pop) =>
-        //     pop.populationType === FqmPopulationType.MSRPOPLEX && pop.result
-        // );
         if (
           populationType === PopulationType.DENOMINATOR_OBSERVATION ||
           populationType === "denominatorObservation" ||
@@ -371,22 +325,6 @@ export class CalculationService {
             // This logic is for Ratio, single IP, where NUMER is dependent on DENOM
             return observationPopulation?.observations?.[1];
           }
-          // const isDenom = !!episodeResult.populationResults.find(
-          //   (pop) =>
-          //     pop.populationType === FqmPopulationType.DENOM && pop.result
-          // );
-          // const isDenomEx = !!episodeResult.populationResults.find(
-          //   (pop) =>
-          //     pop.populationType === FqmPopulationType.DENEX && pop.result
-          // );
-          // const isNumer = !!episodeResult.populationResults.find(
-          //   (pop) =>
-          //     pop.populationType === FqmPopulationType.NUMER && pop.result
-          // );
-          // const isNumerEx = !!episodeResult.populationResults.find(
-          //   (pop) =>
-          //     pop.populationType === FqmPopulationType.NUMEX && pop.result
-          // );
         }
       }
     }
@@ -399,7 +337,7 @@ export class CalculationService {
     populationGroupResults: DetailedPopulationGroupResult[],
     testAllGroups = true
   ) {
-    console.log("measureGroups: ", measureGroups);
+    // eslint-disable-next-line no-console
     console.log("processTestCaseResults input: ", _.cloneDeep(testCase));
     const updatedTestCase = _.cloneDeep(testCase);
     const groupResultsMap = this.buildGroupResultsMap(populationGroupResults);
@@ -420,22 +358,6 @@ export class CalculationService {
       const tcPopTypeCount = {};
       const patientBased =
         "boolean" === _.lowerCase(tcGroupPopulation.populationBasis);
-
-      const denomObservExists = !!measureGroup?.measureObservations?.find(
-        (mobs) => {
-          return (
-            mobs.criteriaReference ===
-            measureGroup?.populations?.find(
-              (pop) => pop.name === PopulationType.DENOMINATOR
-            )?.id
-          );
-        }
-      );
-
-      console.log(
-        `group [${tcGroupPopulation.groupId}] denom observation exists: `,
-        denomObservExists
-      );
 
       tcGroupPopulation?.populationValues.forEach((tcPopVal, idx) => {
         // Set the actual population value for measure observations
@@ -464,19 +386,7 @@ export class CalculationService {
 
             // Denom observ and CV observ will always be first observation on episode
             // If denom observ exists, numer observ is second. If no denom observ, numer is first (and only)
-            let popObsIndex =
-              denomObservExists &&
-              (tcPopVal.name === PopulationType.NUMERATOR_OBSERVATION ||
-                tcPopVal.name === "numeratorObservation")
-                ? 1
-                : 0;
-
             let currentTCObserv = tcPopTypeCount[tcPopVal.name] ?? 0;
-            // let episodeObsCount = 0;
-            // const episodeWithObservation =
-            //   populationGroupResult.episodeResults?.find((episodeResult) => {
-            //     // if (episodeResult.populationResults.find)
-            //   });
             tcPopVal.actual = this.findEpisodeObservationResult(
               populationGroupResult.episodeResults,
               currentTCObserv,
@@ -538,6 +448,7 @@ export class CalculationService {
       }
     }
 
+    // eslint-disable-next-line no-console
     console.log(
       "processTestCaseResults output: ",
       _.cloneDeep(updatedTestCase)
