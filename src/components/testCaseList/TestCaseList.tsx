@@ -6,7 +6,10 @@ import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import { TestCase } from "@madie/madie-models";
 import { useParams } from "react-router-dom";
 import TestCaseComponent from "./TestCase";
-import calculationService from "../../api/CalculationService";
+import calculationService, {
+  GroupPopulationEpisodeResultMap,
+  PopulationEpisodeResult,
+} from "../../api/CalculationService";
 import {
   DetailedPopulationGroupResult,
   ExecutionResult,
@@ -37,7 +40,8 @@ const TestCaseList = () => {
   const [executeAllTestCases, setExecuteAllTestCases] =
     useState<boolean>(false);
 
-  const { measureState, bundleState, valueSetsState } = useExecutionContext();
+  const { measureState, bundleState, valueSetsState, executionContextReady } =
+    useExecutionContext();
   const [measure] = measureState;
   const [measureBundle] = bundleState;
   const [valueSets] = valueSetsState;
@@ -112,60 +116,89 @@ const TestCaseList = () => {
             measureBundle,
             valueSets
           );
+        const testCaseGroupEpisodeResultMap =
+          calculation.current.processEpisodeResults(executionResults);
 
         const nextExecutionResults = {};
         validTestCases.forEach((testCase) => {
-          const detailedResults = executionResults.find(
-            (result) => result.patientId === testCase.id
-          )?.detailedResults;
+          const detailedResults: DetailedPopulationGroupResult[] =
+            executionResults.find(
+              (result) => result.patientId === testCase.id
+            )?.detailedResults;
           nextExecutionResults[testCase.id] = detailedResults;
-          const stratificationValues =
-            testCase.groupPopulations[0]?.stratificationValues;
-          const { populationResults } = detailedResults?.[0]; // Since we have only 1 population group
+          const testCaseEpisodeResults: GroupPopulationEpisodeResultMap =
+            testCaseGroupEpisodeResultMap[testCase.id];
 
-          const populationValues =
-            testCase?.groupPopulations?.[0]?.populationValues;
-
-          // executionStatus is set to false if any of the populationResults (calculation result) doesn't match with populationValues (Given from testCase)
-          if (populationResults && populationValues) {
+          for (const groupPopulation of testCase?.groupPopulations) {
+            const groupResult = detailedResults?.find(
+              (result) => result.groupId === groupPopulation.groupId
+            );
+            const { populationResults, episodeResults } = groupResult;
+            const populationValues = groupPopulation.populationValues;
+            const stratificationValues = groupPopulation.stratificationValues;
             let executionStatus = true;
-            populationResults.forEach((populationResult) => {
-              if (executionStatus) {
-                const groupPopulation: any = populationValues.find(
-                  (populationValue) =>
-                    getFhirMeasurePopulationCode(populationValue.name) ===
-                    populationResult.populationType.toString()
-                );
 
-                if (
-                  groupPopulation &&
-                  groupPopulation.name != "measureObservation"
-                ) {
-                  executionStatus =
-                    groupPopulation.expected === populationResult.result;
+            console.log(
+              `groupPopulation [] has popBasis [${groupPopulation.populationBasis}] `
+            );
 
-                  //measure observations have a different result field. only relevant for boolean, looping needed for nonbool
-                } else if (
-                  groupPopulation &&
-                  groupPopulation.name == "measureObservation"
-                ) {
-                  executionStatus =
-                    Number(groupPopulation.expected) ===
-                    populationResult.observations[0];
-                }
-              }
-            });
-            if (executionStatus && !!stratificationValues) {
-              stratificationValues.forEach((stratVal) => {
+            // executionStatus is set to false if any of the populationResults (calculation result) doesn't match with populationValues (Given from testCase)
+            if (
+              groupPopulation.populationBasis === "Boolean" &&
+              populationResults &&
+              populationValues
+            ) {
+              populationResults.forEach((populationResult) => {
                 if (executionStatus) {
-                  if (stratVal.expected != stratVal.actual) {
-                    executionStatus = false;
+                  const groupPopulation: any = populationValues.find(
+                    (populationValue) =>
+                      getFhirMeasurePopulationCode(populationValue.name) ===
+                      populationResult.populationType.toString()
+                  );
+
+                  if (
+                    groupPopulation &&
+                    groupPopulation.name != "measureObservation"
+                  ) {
+                    executionStatus =
+                      groupPopulation.expected === populationResult.result;
+
+                    //measure observations have a different result field. only relevant for boolean, looping needed for nonbool
+                  } else if (
+                    groupPopulation &&
+                    groupPopulation.name == "measureObservation"
+                  ) {
+                    executionStatus =
+                      Number(groupPopulation.expected) ===
+                      populationResult.observations[0];
                   }
                 }
               });
+              if (executionStatus && !!stratificationValues) {
+                stratificationValues.forEach((stratVal) => {
+                  if (executionStatus) {
+                    if (stratVal.expected != stratVal.actual) {
+                      executionStatus = false;
+                    }
+                  }
+                });
+              }
+              testCase.executionStatus = executionStatus ? "pass" : "fail";
+            } else if (
+              groupPopulation.populationBasis !== "Boolean" &&
+              episodeResults &&
+              populationValues &&
+              executionStatus
+            ) {
+              const testCaseEpisodeResult: PopulationEpisodeResult[] =
+                testCaseEpisodeResults[groupPopulation.groupId];
             }
-            testCase.executionStatus = executionStatus ? "pass" : "fail";
+
+            // TODO: remove this when we want to support more than one group
+            break;
           }
+
+          // const { populationResults } = detailedResults?.[0]; // Since we have only 1 population group
         });
         setExecuteAllTestCases(true);
         setTestCases([...testCases]);
@@ -180,6 +213,7 @@ const TestCaseList = () => {
 
   return (
     <div tw="mx-6 my-6 shadow-lg rounded-md border border-slate bg-white">
+      <span>executionReady: {executionContextReady ? "yes" : "no"}</span>
       <div tw="flex-auto">
         <div tw="pl-12" data-testid="code-coverage-tabs">
           <CreateCodeCoverageNavTabs
