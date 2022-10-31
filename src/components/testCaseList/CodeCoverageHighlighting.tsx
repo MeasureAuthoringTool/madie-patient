@@ -9,7 +9,7 @@ function CodeCoverageHighlighting({ coverageHTML }) {
     <div tw="text-sm p-5" data-testid="code-coverage-highlighting">
       <Alert
         data-testid="coverage-info-alert"
-        description="Only first measure group coverage shown"
+        description="Only first test case coverage shown"
       />
       {parse(coverageHTML)}
     </div>
