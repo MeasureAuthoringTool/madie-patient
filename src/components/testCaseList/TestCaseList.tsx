@@ -6,10 +6,7 @@ import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import { TestCase } from "@madie/madie-models";
 import { useParams } from "react-router-dom";
 import TestCaseComponent from "./TestCase";
-import calculationService, {
-  GroupPopulationEpisodeResultMap,
-  PopulationEpisodeResult,
-} from "../../api/CalculationService";
+import calculationService from "../../api/CalculationService";
 import {
   DetailedPopulationGroupResult,
   ExecutionResult,
@@ -50,8 +47,7 @@ const TestCaseList = () => {
       passFailRatio: "",
     });
 
-  const { measureState, bundleState, valueSetsState, executionContextReady } =
-    useExecutionContext();
+  const { measureState, bundleState, valueSetsState } = useExecutionContext();
   const [measure] = measureState;
   const [measureBundle] = bundleState;
   const [valueSets] = valueSetsState;
@@ -61,10 +57,10 @@ const TestCaseList = () => {
   useEffect(() => {
     setCanEdit(
       measure?.createdBy === userName ||
-        measure?.acls?.some(
-          (acl) =>
-            acl.userId === userName && acl.roles.indexOf("SHARED_WITH") >= 0
-        )
+      measure?.acls?.some(
+        (acl) =>
+          acl.userId === userName && acl.roles.indexOf("SHARED_WITH") >= 0
+      )
     );
   }, [measure, userName]);
 
@@ -127,89 +123,60 @@ const TestCaseList = () => {
             measureBundle,
             valueSets
           );
-        const testCaseGroupEpisodeResultMap =
-          calculation.current.processEpisodeResults(executionResults);
 
         const nextExecutionResults = {};
         validTestCases.forEach((testCase) => {
-          const detailedResults: DetailedPopulationGroupResult[] =
-            executionResults.find(
-              (result) => result.patientId === testCase.id
-            )?.detailedResults;
+          const detailedResults = executionResults.find(
+            (result) => result.patientId === testCase.id
+          )?.detailedResults;
           nextExecutionResults[testCase.id] = detailedResults;
-          const testCaseEpisodeResults: GroupPopulationEpisodeResultMap =
-            testCaseGroupEpisodeResultMap[testCase.id];
+          const stratificationValues =
+            testCase.groupPopulations[0]?.stratificationValues;
+          const { populationResults } = detailedResults?.[0]; // Since we have only 1 population group
 
-          for (const groupPopulation of testCase?.groupPopulations) {
-            const groupResult = detailedResults?.find(
-              (result) => result.groupId === groupPopulation.groupId
-            );
-            const { populationResults, episodeResults } = groupResult;
-            const populationValues = groupPopulation.populationValues;
-            const stratificationValues = groupPopulation.stratificationValues;
+          const populationValues =
+            testCase?.groupPopulations?.[0]?.populationValues;
+
+          // executionStatus is set to false if any of the populationResults (calculation result) doesn't match with populationValues (Given from testCase)
+          if (populationResults && populationValues) {
             let executionStatus = true;
+            populationResults.forEach((populationResult) => {
+              if (executionStatus) {
+                const groupPopulation: any = populationValues.find(
+                  (populationValue) =>
+                    getFhirMeasurePopulationCode(populationValue.name) ===
+                    populationResult.populationType.toString()
+                );
 
-            console.log(
-              `groupPopulation [] has popBasis [${groupPopulation.populationBasis}] `
-            );
+                if (
+                  groupPopulation &&
+                  groupPopulation.name != "measureObservation"
+                ) {
+                  executionStatus =
+                    groupPopulation.expected === populationResult.result;
 
-            // executionStatus is set to false if any of the populationResults (calculation result) doesn't match with populationValues (Given from testCase)
-            if (
-              groupPopulation.populationBasis === "Boolean" &&
-              populationResults &&
-              populationValues
-            ) {
-              populationResults.forEach((populationResult) => {
+                  //measure observations have a different result field. only relevant for boolean, looping needed for nonbool
+                } else if (
+                  groupPopulation &&
+                  groupPopulation.name == "measureObservation"
+                ) {
+                  executionStatus =
+                    Number(groupPopulation.expected) ===
+                    populationResult.observations[0];
+                }
+              }
+            });
+            if (executionStatus && !!stratificationValues) {
+              stratificationValues.forEach((stratVal) => {
                 if (executionStatus) {
-                  const groupPopulation: any = populationValues.find(
-                    (populationValue) =>
-                      getFhirMeasurePopulationCode(populationValue.name) ===
-                      populationResult.populationType.toString()
-                  );
-
-                  if (
-                    groupPopulation &&
-                    groupPopulation.name != "measureObservation"
-                  ) {
-                    executionStatus =
-                      groupPopulation.expected === populationResult.result;
-
-                    //measure observations have a different result field. only relevant for boolean, looping needed for nonbool
-                  } else if (
-                    groupPopulation &&
-                    groupPopulation.name == "measureObservation"
-                  ) {
-                    executionStatus =
-                      Number(groupPopulation.expected) ===
-                      populationResult.observations[0];
+                  if (stratVal.expected != stratVal.actual) {
+                    executionStatus = false;
                   }
                 }
               });
-              if (executionStatus && !!stratificationValues) {
-                stratificationValues.forEach((stratVal) => {
-                  if (executionStatus) {
-                    if (stratVal.expected != stratVal.actual) {
-                      executionStatus = false;
-                    }
-                  }
-                });
-              }
-              testCase.executionStatus = executionStatus ? "pass" : "fail";
-            } else if (
-              groupPopulation.populationBasis !== "Boolean" &&
-              episodeResults &&
-              populationValues &&
-              executionStatus
-            ) {
-              const testCaseEpisodeResult: PopulationEpisodeResult[] =
-                testCaseEpisodeResults[groupPopulation.groupId];
             }
-
-            // TODO: remove this when we want to support more than one group
-            break;
+            testCase.executionStatus = executionStatus ? "pass" : "fail";
           }
-
-          // const { populationResults } = detailedResults?.[0]; // Since we have only 1 population group
         });
         setExecuteAllTestCases(true);
         const { passPercentage, passFailRatio } =
@@ -230,7 +197,6 @@ const TestCaseList = () => {
 
   return (
     <div tw="mx-6 my-6 shadow-lg rounded-md border border-slate bg-white">
-      <span>executionReady: {executionContextReady ? "yes" : "no"}</span>
       <div tw="flex-auto">
         <div tw="pl-12" data-testid="code-coverage-tabs">
           <CreateCodeCoverageNavTabs
@@ -256,26 +222,26 @@ const TestCaseList = () => {
             <div tw="py-2 inline-block min-w-full sm:px-6 lg:px-8">
               <table tw="min-w-full" data-testid="test-case-tbl">
                 <thead>
-                  <tr>
-                    <TH scope="col" />
-                    <TH scope="col">Title</TH>
-                    <TH scope="col">Series</TH>
-                    <TH scope="col">Status</TH>
-                    <TH scope="col" />
-                  </tr>
+                <tr>
+                  <TH scope="col" />
+                  <TH scope="col">Title</TH>
+                  <TH scope="col">Series</TH>
+                  <TH scope="col">Status</TH>
+                  <TH scope="col" />
+                </tr>
                 </thead>
                 <tbody>
-                  {testCases?.map((testCase) => {
-                    return (
-                      <TestCaseComponent
-                        testCase={testCase}
-                        key={testCase.id}
-                        canEdit={canEdit}
-                        executionResult={executionResults[testCase.id]}
-                        // we assume all results have been run here
-                      />
-                    );
-                  })}
+                {testCases?.map((testCase) => {
+                  return (
+                    <TestCaseComponent
+                      testCase={testCase}
+                      key={testCase.id}
+                      canEdit={canEdit}
+                      executionResult={executionResults[testCase.id]}
+                      // we assume all results have been run here
+                    />
+                  );
+                })}
                 </tbody>
               </table>
             </div>
