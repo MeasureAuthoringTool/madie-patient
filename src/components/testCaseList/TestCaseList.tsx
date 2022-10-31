@@ -225,6 +225,7 @@ const TestCaseList = () => {
             createNewTestCase={createNewTestCase}
             executeTestCases={executeTestCases}
             testCasePassFailStats={testCasePassFailStats}
+            coveragePercentage={coveragePercentage}
           />
         </div>
         <CreateNewTestCaseDialog open={createOpen} onClose={handleClose} />
