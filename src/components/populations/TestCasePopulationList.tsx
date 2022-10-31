@@ -43,9 +43,9 @@ export const determineGroupResult = (
   for (let i = 0; i < populations?.length; i++) {
     const population = populations[i];
     const { expected, actual } = population;
-    if (populationBasis === "Boolean" && expected != actual) {
+    if (populationBasis === "boolean" && expected != actual) {
       return "fail";
-    } else if (populationBasis !== "Boolean") {
+    } else if (populationBasis !== "boolean") {
       const expectedNum =
         _.isNil(expected) ||
         (typeof expected === "string" && _.isEmpty(expected))

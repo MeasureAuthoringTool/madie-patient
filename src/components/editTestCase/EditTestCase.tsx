@@ -219,7 +219,7 @@ const EditTestCase = () => {
   const { resetForm } = formik;
 
   const mapMeasureGroup = (group: Group): GroupPopulation => {
-    const calculateEpisodes = group.populationBasis === "Boolean";
+    const calculateEpisodes = group.populationBasis === "boolean";
     return {
       groupId: group.id,
       scoring: group.scoring,
@@ -644,7 +644,7 @@ const EditTestCase = () => {
               (stratification) => stratification.id === stratValue.id
             )?.cqlDefinition;
             const actualResult =
-              groupPopulation.populationBasis === "Boolean"
+              groupPopulation.populationBasis === "boolean"
                 ? groupStatementResults?.[groupPopulation.groupId]?.[
                     strataDefinition
                   ] > 0
@@ -670,7 +670,7 @@ const EditTestCase = () => {
             );
 
             const actualResult =
-              groupPopulation.populationBasis === "Boolean"
+              groupPopulation.populationBasis === "boolean"
                 ? results?.populationResults?.find(
                     (popResult) =>
                       FHIR_POPULATION_CODES[popResult.populationType] ===

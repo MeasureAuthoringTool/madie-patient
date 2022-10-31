@@ -205,6 +205,18 @@ export class CalculationService {
     return outputGroupResultsMap;
   }
 
+  getPassingPercentageForTestCases(testCases: TestCase[]) {
+    const totalTestCases = testCases?.length;
+    const passedTests = testCases?.filter(
+      (testCase) => testCase.executionStatus === "pass"
+    ).length;
+
+    return {
+      passPercentage: Math.floor((passedTests / totalTestCases) * 100),
+      passFailRatio: passedTests + "/" + totalTestCases,
+    };
+  }
+
   getCoveragePercentageForGroup(
     groupId: string,
     groupResults: DetailedPopulationGroupResult[]
@@ -339,6 +351,10 @@ export class CalculationService {
   ) {
     // eslint-disable-next-line no-console
     console.log("processTestCaseResults input: ", _.cloneDeep(testCase));
+    if (_.isNil(testCase) || _.isNil(testCase?.groupPopulations)) {
+      return testCase;
+    }
+
     const updatedTestCase = _.cloneDeep(testCase);
     const groupResultsMap = this.buildGroupResultsMap(populationGroupResults);
     const episodeResults: GroupPopulationEpisodeResultMap =

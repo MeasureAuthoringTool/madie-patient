@@ -224,7 +224,7 @@ const measure = {
     {
       id: "1",
       scoring: MeasureScoring.PROPORTION,
-      populationBasis: "Boolean",
+      populationBasis: "boolean",
       populations: [
         {
           id: "id-1",
@@ -323,6 +323,21 @@ describe("TestCaseList component", () => {
         screen.getByTestId(`edit-test-case-${testCases[1].id}`)
       ).toBeInTheDocument();
     });
+  });
+
+  it("should render coverage tabs", async () => {
+    renderTestCaseListComponent();
+    expect(screen.getByTestId("code-coverage-tabs")).toBeInTheDocument();
+    expect(screen.getByTestId("passing-tab")).toBeInTheDocument();
+    expect(screen.getByTestId("coverage-tab")).toBeInTheDocument();
+
+    userEvent.click(screen.getByTestId("coverage-tab"));
+    expect(
+      screen.getByTestId("code-coverage-highlighting")
+    ).toBeInTheDocument();
+
+    userEvent.click(screen.getByTestId("passing-tab"));
+    expect(screen.getByTestId("test-case-tbl")).toBeInTheDocument();
   });
 
   it("should display error message when fetch test cases fails", async () => {

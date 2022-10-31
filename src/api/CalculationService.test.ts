@@ -23,6 +23,29 @@ describe("CalculationService Tests", () => {
     calculationService = new CalculationService();
   });
 
+  const testCases = [
+    {
+      id: "1",
+      title: "testing",
+      description: "description for test",
+      json: "",
+      executionStatus: "pass",
+      groupPopulations: [],
+      validResource: true,
+      hapiOperationOutcome: "",
+    },
+    {
+      id: "2",
+      title: "testing",
+      description: "description for test",
+      json: "",
+      executionStatus: "fail",
+      groupPopulations: [],
+      validResource: true,
+      hapiOperationOutcome: "",
+    },
+  ];
+
   it("IPP, denominator and numerator Pass test", async () => {
     const calculationResults = await calculationService.calculateTestCases(
       officeVisitMeasure,
@@ -51,6 +74,14 @@ describe("CalculationService Tests", () => {
     const output = calculationService.processRawResults(null);
     expect(output).toBeTruthy();
     expect(Object.keys(output).length).toBe(0);
+  });
+
+  it("should provide pass fail stats for test cases", () => {
+    const output =
+      calculationService.getPassingPercentageForTestCases(testCases);
+    expect(output.passPercentage).toBe(50);
+    expect(output.passFailRatio).toBe("1/2");
+    expect(Object.keys(output).length).toBe(2);
   });
 
   it("should handle undefined raw results", () => {

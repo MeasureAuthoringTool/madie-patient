@@ -24,7 +24,7 @@ export const simpleMeasureFixture: Measure = {
     {
       id: "population-group-1",
       scoring: "Proportion",
-      populationBasis: "Boolean",
+      populationBasis: "boolean",
       populations: [
         {
           id: "id-1",
