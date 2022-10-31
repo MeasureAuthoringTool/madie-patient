@@ -458,12 +458,6 @@ const EditTestCase = () => {
       const episodeResults =
         calculation.current.processEpisodeResults(executionResults);
 
-      calculation.current.processTestCaseResults(
-        testCase,
-        measure.groups,
-        executionResults[0].detailedResults
-      );
-
       setCalculationErrors(undefined);
       setGroupStatementResults(output?.[testCase.id]);
       setGroupEpisodeResults(episodeResults?.[testCase.id]);
