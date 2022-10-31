@@ -414,8 +414,10 @@ describe("TestCaseList component", () => {
 
     userEvent.click(executeAllTestCasesButton);
     await waitFor(() => {
-      expect(tableRows[0]).toHaveTextContent("pass");
-      expect(tableRows[2]).toHaveTextContent("fail");
+      expect(tableRows[0]).toHaveTextContent("WhenAllGoodIPP_PassNAEdit");
+      expect(tableRows[2]).toHaveTextContent(
+        "WhenSomethingIsWrongIPP_FailNAEdit"
+      );
       expect(tableRows[4]).toHaveTextContent("Invalid");
     });
     const table2 = screen.getByTestId("test-case-tbl");

@@ -8,6 +8,7 @@ import { groupResults } from "./__mocks__/GroupExecutionResults";
 import {
   DetailedPopulationGroupResult,
   ExecutionResult,
+  CalculationOutput,
 } from "fqm-execution/build/types/Calculator";
 import {
   FinalResult,
@@ -45,7 +46,7 @@ describe("CalculationService Tests", () => {
     },
   ];
 
-  it("IPP, denominator and numerator Pass test", async () => {
+  it.only("IPP, denominator and numerator Pass test", async () => {
     const calculationResults = await calculationService.calculateTestCases(
       officeVisitMeasure,
       [testCaseOfficeVisit],
@@ -53,7 +54,7 @@ describe("CalculationService Tests", () => {
       [officeVisitValueSet]
     );
     const expectedPopulationResults =
-      calculationResults[0].detailedResults[0].populationResults;
+      calculationResults.results[0].detailedResults[0].populationResults;
     expect(expectedPopulationResults).toEqual([
       {
         criteriaExpression: "ipp",

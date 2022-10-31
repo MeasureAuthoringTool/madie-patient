@@ -454,14 +454,16 @@ const EditTestCase = () => {
           measureBundle,
           valueSets
         );
-      const executionResults=calculationOutput.results;
+      const executionResults = calculationOutput.results;
       const output = calculation.current.processRawResults(executionResults);
       const episodeResults =
         calculation.current.processEpisodeResults(executionResults);
       setCalculationErrors(undefined);
       setGroupStatementResults(output?.[testCase.id]);
       setGroupEpisodeResults(episodeResults?.[testCase.id]);
-      setPopulationGroupResults(executionResults[0].detailedResults as DetailedPopulationGroupResult[]);
+      setPopulationGroupResults(
+        executionResults[0].detailedResults as DetailedPopulationGroupResult[]
+      );
     } catch (error) {
       setCalculationErrors({
         status: "error",
