@@ -15,11 +15,12 @@ const TestCaseRoutes = () => {
   const [valueSets, setValueSets] = useState<ValueSet[]>();
   const [errors, setErrors] = useState<string>();
   const [executionContextReady, setExecutionContextReady] = useState<boolean>();
+  const [executing, setExecuting] = useState<boolean>();
 
   const terminologyService = useRef(useTerminologyServiceApi());
   const measureService = useRef(useMeasureServiceApi());
 
-  const [measure, setMeasure] = useState<any>(measureStore.state);
+  const [measure, setMeasure] = useState<any>();
   useEffect(() => {
     const subscription = measureStore.subscribe(setMeasure);
     return () => {
@@ -65,6 +66,8 @@ const TestCaseRoutes = () => {
         bundleState: [measureBundle, setMeasureBundle],
         valueSetsState: [valueSets, setValueSets],
         executionContextReady,
+        executing,
+        setExecuting,
       }}
     >
       {errors && (
