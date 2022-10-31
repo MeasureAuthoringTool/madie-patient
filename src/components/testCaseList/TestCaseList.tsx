@@ -57,10 +57,10 @@ const TestCaseList = () => {
   useEffect(() => {
     setCanEdit(
       measure?.createdBy === userName ||
-      measure?.acls?.some(
-        (acl) =>
-          acl.userId === userName && acl.roles.indexOf("SHARED_WITH") >= 0
-      )
+        measure?.acls?.some(
+          (acl) =>
+            acl.userId === userName && acl.roles.indexOf("SHARED_WITH") >= 0
+        )
     );
   }, [measure, userName]);
 
@@ -222,26 +222,26 @@ const TestCaseList = () => {
             <div tw="py-2 inline-block min-w-full sm:px-6 lg:px-8">
               <table tw="min-w-full" data-testid="test-case-tbl">
                 <thead>
-                <tr>
-                  <TH scope="col" />
-                  <TH scope="col">Title</TH>
-                  <TH scope="col">Series</TH>
-                  <TH scope="col">Status</TH>
-                  <TH scope="col" />
-                </tr>
+                  <tr>
+                    <TH scope="col" />
+                    <TH scope="col">Title</TH>
+                    <TH scope="col">Series</TH>
+                    <TH scope="col">Status</TH>
+                    <TH scope="col" />
+                  </tr>
                 </thead>
                 <tbody>
-                {testCases?.map((testCase) => {
-                  return (
-                    <TestCaseComponent
-                      testCase={testCase}
-                      key={testCase.id}
-                      canEdit={canEdit}
-                      executionResult={executionResults[testCase.id]}
-                      // we assume all results have been run here
-                    />
-                  );
-                })}
+                  {testCases?.map((testCase) => {
+                    return (
+                      <TestCaseComponent
+                        testCase={testCase}
+                        key={testCase.id}
+                        canEdit={canEdit}
+                        executionResult={executionResults[testCase.id]}
+                        // we assume all results have been run here
+                      />
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

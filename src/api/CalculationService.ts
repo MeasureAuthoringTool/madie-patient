@@ -349,8 +349,6 @@ export class CalculationService {
     populationGroupResults: DetailedPopulationGroupResult[],
     testAllGroups = true
   ) {
-    // eslint-disable-next-line no-console
-    console.log("processTestCaseResults input: ", _.cloneDeep(testCase));
     if (_.isNil(testCase) || _.isNil(testCase?.groupPopulations)) {
       return testCase;
     }
@@ -463,12 +461,6 @@ export class CalculationService {
         break;
       }
     }
-
-    // eslint-disable-next-line no-console
-    console.log(
-      "processTestCaseResults output: ",
-      _.cloneDeep(updatedTestCase)
-    );
 
     return updatedTestCase;
   }
