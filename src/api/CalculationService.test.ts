@@ -46,7 +46,7 @@ describe("CalculationService Tests", () => {
     },
   ];
 
-  it.only("IPP, denominator and numerator Pass test", async () => {
+  it("IPP, denominator and numerator Pass test", async () => {
     const calculationResults = await calculationService.calculateTestCases(
       officeVisitMeasure,
       [testCaseOfficeVisit],
