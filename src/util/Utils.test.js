@@ -1,4 +1,4 @@
-import { sanitizeUserInput, truncateInput } from "./Utils.js";
+import { sanitizeUserInput, truncateInput } from "./Utils.ts";
 
 describe("Utils tests", () => {
   it("sanitizeUserInput Should remove script", () => {
