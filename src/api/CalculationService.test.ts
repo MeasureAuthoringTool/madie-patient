@@ -5,15 +5,23 @@ import { officeVisitMeasureBundle } from "./__mocks__/OfficeVisitMeasureBundle";
 import { testCaseOfficeVisit } from "./__mocks__/TestCaseOfficeVisit";
 import { groupResults } from "./__mocks__/GroupExecutionResults";
 
-import { DetailedPopulationGroupResult, EpisodeResults, ExecutionResult } from "fqm-execution/build/types/Calculator";
-import { FinalResult, PopulationType as FqmPopulationType, Relevance } from "fqm-execution/build/types/Enums";
+import {
+  DetailedPopulationGroupResult,
+  EpisodeResults,
+  ExecutionResult,
+} from "fqm-execution/build/types/Calculator";
+import {
+  FinalResult,
+  PopulationType as FqmPopulationType,
+  Relevance,
+} from "fqm-execution/build/types/Enums";
 import {
   Group,
   GroupPopulation,
   MeasureGroupTypes,
   MeasureScoring,
   PopulationType,
-  TestCase
+  TestCase,
 } from "@madie/madie-models";
 
 describe("CalculationService Tests", () => {
@@ -1326,7 +1334,7 @@ describe("CalculationService Tests", () => {
                 id: "pop1",
                 name: PopulationType.INITIAL_POPULATION,
                 expected: true,
-              }
+              },
             ],
             stratificationValues: [
               {
