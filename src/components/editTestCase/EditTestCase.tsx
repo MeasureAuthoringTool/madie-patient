@@ -29,7 +29,7 @@ import {
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import Editor from "../editor/Editor";
 import { TestCaseValidator } from "../../validators/TestCaseValidator";
-import { sanitizeUserInput } from "../../util/Utils.js";
+import { sanitizeUserInput } from "../../util/Utils";
 import TestCaseSeries from "../createTestCase/TestCaseSeries";
 import * as _ from "lodash";
 import { Ace } from "ace-builds";
@@ -458,6 +458,7 @@ const EditTestCase = () => {
       const output = calculation.current.processRawResults(executionResults);
       const episodeResults =
         calculation.current.processEpisodeResults(executionResults);
+
       setCalculationErrors(undefined);
       setGroupStatementResults(output?.[testCase.id]);
       setGroupEpisodeResults(episodeResults?.[testCase.id]);

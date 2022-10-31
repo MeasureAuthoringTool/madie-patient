@@ -75,7 +75,6 @@ const TestCase = ({
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
   const status = testCase.executionStatus;
-  // const statusColor = testCase.executionStatus === "pass" ? "success" : "error";
   const statusColor = getStatusColor(testCase.executionStatus);
   // only one group for now
   const groupPopulations = mapGroups(
@@ -135,16 +134,9 @@ const TestCase = ({
           />
         </StyledCell>
 
-        {/*{status === "NA" && (*/}
-        {/*  <td>*/}
-        {/*    <Chip label={status} color="primary" />*/}
-        {/*  </td>*/}
-        {/*)}*/}
-        {/*{status !== "NA" && (*/}
         <td>
           <Chip label={status} color={statusColor} />
         </td>
-        {/*)}*/}
         {canEdit && (
           <td>
             <EditButton
