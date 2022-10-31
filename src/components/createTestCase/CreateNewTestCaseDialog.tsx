@@ -10,11 +10,11 @@ import {
 import { Box } from "@mui/system";
 import { FormHelperText, InputLabel } from "@mui/material";
 import { useFormik } from "formik";
-import { sanitizeUserInput } from "../../util/Utils.js";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import * as _ from "lodash";
 import TextArea from "./TextArea";
 import TestCaseSeries from "./TestCaseSeries";
+import { sanitizeUserInput } from "../../util/Utils";
 
 interface Toast {
   toastOpen: boolean;
