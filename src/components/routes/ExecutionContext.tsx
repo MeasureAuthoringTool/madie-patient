@@ -14,6 +14,8 @@ export interface ExecutionContextHolder {
     setValueSets: (valueSets: ValueSet[]) => void
   ];
   executionContextReady: boolean;
+  executing: boolean;
+  setExecuting: (executing: boolean) => void;
 }
 
 const ExecutionContext = createContext<ExecutionContextHolder>(null);
