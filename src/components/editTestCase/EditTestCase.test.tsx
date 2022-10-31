@@ -1904,19 +1904,20 @@ describe("EditTestCase component", () => {
 describe("Measure Calculation ", () => {
   it("calculates a measure against a test case", async () => {
     const calculationSrv = calculationService();
-    const executionResults: CalculationOutput<any>[] =
+    const executionResults: CalculationOutput<any> =
       await calculationSrv.calculateTestCases(
         simpleMeasureFixture,
         [testCaseFixture],
         buildMeasureBundle(simpleMeasureFixture),
         []
       );
-    const calculationResults = executionResults.results;
+
+    /*const calculationResults = executionResults[0].results;
     expect(calculationResults).toHaveLength(1);
     expect(calculationResults[0].detailedResults).toHaveLength(1);
-
+    */
     const populationResults =
-      calculationResults[0].detailedResults[0].populationResults;
+      executionResults.results[0].detailedResults[0].populationResults;
     expect(populationResults).toHaveLength(3);
     expect(populationResults).toContainEqual({
       criteriaExpression: "first",

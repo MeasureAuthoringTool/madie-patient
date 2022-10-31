@@ -70,8 +70,7 @@ export class CalculationService {
 
     // set onto window for any environment debug purposes
     (window as any).executionResults = calculationOutput?.results;
-    return calculationOutput?.results;
-
+    return calculationOutput;
   }
 
   // fqm Execution requires each patient to be with unique ID.
