@@ -43,6 +43,7 @@ const TestCaseList = () => {
   const [executeAllTestCases, setExecuteAllTestCases] =
     useState<boolean>(false);
   const [coverageHTML, setCoverageHTML] = useState<string>("");
+  const [coveragePercentage, setCoveragePercentage] = useState<number>(0);
   const [testCasePassFailStats, setTestCasePassFailStats] =
     useState<TestCasesPassingDetailsProps>({
       passPercentage: undefined,
@@ -191,6 +192,18 @@ const TestCaseList = () => {
         });
         setTestCases([...testCases]);
         setExecutionResults(nextExecutionResults);
+        // execution results for all groups for all test cases
+        const populationGroupResults: DetailedPopulationGroupResult[] =
+          Object.values(
+            nextExecutionResults
+          ).flat() as DetailedPopulationGroupResult[];
+
+        const coveragePercentage =
+          calculation.current.getCoveragePercentageForGroup(
+            measure.groups[0].id,
+            populationGroupResults
+          );
+        setCoveragePercentage(coveragePercentage);
       } catch (error) {
         setError(error.message);
       }
