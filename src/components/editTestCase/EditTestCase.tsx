@@ -470,6 +470,13 @@ const EditTestCase = () => {
     }
   };
 
+  const discardChanges = () => {
+    setOriginalEditorVal("");
+    setEditorVal(testCase.json);
+    resetForm();
+    setDiscardDialogOpen(false);
+  };
+
   function handleTestCaseResponse(
     testCase: TestCase,
     action: "create" | "update"
@@ -553,10 +560,6 @@ const EditTestCase = () => {
       setValidationErrors(ves);
       return ves;
     }
-  }
-
-  function navigateToTestCases() {
-    navigate("..");
   }
 
   function formikErrorHandler(name: string, isError: boolean) {
@@ -959,12 +962,7 @@ const EditTestCase = () => {
       <MadieDiscardDialog
         open={discardDialogOpen}
         onClose={() => setDiscardDialogOpen(false)}
-        onContinue={async () => {
-          //async await to prevent warning dialog from coming up twice when editor is changed and discard is clicked
-          await setOriginalEditorVal("cool");
-          await setEditorVal("cool");
-          navigateToTestCases();
-        }}
+        onContinue={discardChanges}
       />
     </TestCaseForm>
   );
