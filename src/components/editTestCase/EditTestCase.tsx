@@ -46,7 +46,6 @@ import calculationService, {
 import {
   CalculationOutput,
   DetailedPopulationGroupResult,
-  ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
 import {
   measureStore,
