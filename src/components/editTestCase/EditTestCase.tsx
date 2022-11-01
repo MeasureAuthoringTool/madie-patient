@@ -472,7 +472,7 @@ const EditTestCase = () => {
 
   const discardChanges = () => {
     setOriginalEditorVal("");
-    setEditorVal(testCase.json);
+    setEditorVal(testCase.json ? testCase.json : "");
     resetForm();
     setDiscardDialogOpen(false);
   };
