@@ -189,8 +189,6 @@ export class CalculationService {
 
     return testCaseResultMap;
   }
-  //aaaaa
-
   buildGroupResultsMap(groupResults: DetailedPopulationGroupResult[]) {
     const outputGroupResultsMap: GroupStatementResultMap = {};
     for (const groupResult of groupResults) {

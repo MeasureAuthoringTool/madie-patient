@@ -227,7 +227,6 @@ const TestCaseList = () => {
 
   return (
     <div tw="mx-6 my-6 shadow-lg rounded-md border border-slate bg-white">
-
       {!initialLoad && (
         <div tw="flex-auto">
           <div tw="pl-12" data-testid="code-coverage-tabs">
@@ -288,8 +287,9 @@ const TestCaseList = () => {
             </div>
           )}
 
-
-          {activeTab === "coverage" && <CodeCoverageHighlighting coverageHTML={coverageHTML}/>}
+          {activeTab === "coverage" && (
+            <CodeCoverageHighlighting coverageHTML={coverageHTML} />
+          )}
         </div>
       )}
       {initialLoad && (
