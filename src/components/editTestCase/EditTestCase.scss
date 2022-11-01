@@ -66,10 +66,6 @@
 
   tbody > tr > td:first-of-type,
   thead > tr > th:first-of-type {
-    max-width: 25px;
-    min-width: 0px;
-    width: auto;
-    width: 25px;
     border-bottom: solid 1px transparent;
   }
 
@@ -94,7 +90,7 @@
       line-height: 24px;
       font-size: 14px;
       text-transform: capitalize;
-      max-width: 25px;
+      max-width: 40px;
     }
 
     > th {

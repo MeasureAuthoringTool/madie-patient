@@ -3,7 +3,7 @@ import tw, { styled } from "twin.macro";
 import "styled-components/macro";
 import * as _ from "lodash";
 import TestCasePopulation from "./TestCasePopulation";
-import { DisplayPopulationValue } from "@madie/madie-models";
+import { DisplayPopulationValue, PopulationType } from "@madie/madie-models";
 import classNames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -77,16 +77,28 @@ const TestCasePopulationList = ({
 }: TestCasePopulationListProps) => {
   let measureObservations = [];
   let contentId = content?.toLocaleLowerCase().replace(/(\W)+/g, "-");
+  const getObservationCount = (
+    populations: DisplayPopulationValue[],
+    observationType: PopulationType
+  ) => {
+    return populations.filter((res) => res.name === observationType).length;
+  };
+
   const measureObservationsCount = (population) => {
-    const ratioMeasureObservations = populations.filter(
-      (res) => res.name === "measureObservation"
-    ).length;
-    if (ratioMeasureObservations > 1) {
-      if (population.name === "measureObservation") {
-        measureObservations.push(population.name);
-        return measureObservations.length;
-      }
+    let observationCount = 0;
+    if (
+      population.name === PopulationType.MEASURE_OBSERVATION ||
+      population.name === PopulationType.DENOMINATOR_OBSERVATION ||
+      population.name === PopulationType.NUMERATOR_OBSERVATION
+    ) {
+      observationCount = getObservationCount(populations, population.name);
+    }
+
+    if (observationCount > 1) {
+      measureObservations.push(population.name);
+      return measureObservations.length;
     } else {
+      measureObservations = [];
       return 0;
     }
   };
@@ -110,7 +122,7 @@ const TestCasePopulationList = ({
   const view = determineGroupResult(populationBasis, populations, executionRun);
 
   /*
-    we have three seperate views
+    we have three separate views
     - not run
     - run and all pass
     - run and not all pass

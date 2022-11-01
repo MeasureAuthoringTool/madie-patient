@@ -81,9 +81,11 @@ describe("Group Populations", () => {
     const g1ScoringName = screen.getByTestId("measure-group-1-scoring-unit-1");
     expect(g1ScoringName).toBeInTheDocument();
 
-    const ippRow = screen.getByRole("row", { name: "ipp" });
+    const ippRow = screen.getByRole("row", { name: "Initial Population" });
     expect(ippRow).toBeInTheDocument();
-    const ippCell = within(ippRow).getByRole("cell", { name: "ipp" });
+    const ippCell = within(ippRow).getByRole("cell", {
+      name: "Initial Population",
+    });
     expect(ippCell).toBeInTheDocument();
     const ippCbs = within(ippRow).getAllByRole("checkbox");
     expect(ippCbs[0]).not.toBeDisabled();
@@ -97,7 +99,9 @@ describe("Group Populations", () => {
 
     // test-row-population-id-measurePopulationExclusion
     expect(msrpoplRow).toBeInTheDocument();
-    const msrpoplCell = within(msrpoplRow).getByText("msrpoplex");
+    const msrpoplCell = within(msrpoplRow).getByText(
+      "Measure Population Exclusion"
+    );
     expect(msrpoplCell).toBeInTheDocument();
     const msrpopl = within(msrpoplRow).getAllByRole("checkbox");
     expect(msrpopl[0]).not.toBeDisabled();
@@ -105,10 +109,12 @@ describe("Group Populations", () => {
     expect(msrpopl[0]).not.toBeChecked();
     expect(msrpopl[1]).not.toBeChecked();
 
-    const msrpoplexRow = screen.getByRole("row", { name: "msrpoplex" });
+    const msrpoplexRow = screen.getByRole("row", {
+      name: "Measure Population Exclusion",
+    });
     expect(msrpoplexRow).toBeInTheDocument();
     const msrpoplexCell = within(msrpoplexRow).getByRole("cell", {
-      name: "msrpoplex",
+      name: "Measure Population Exclusion",
     });
     expect(msrpoplexCell).toBeInTheDocument();
     const msrpoplexCbs = within(msrpoplexRow).getAllByRole("checkbox");
@@ -177,7 +183,7 @@ describe("Group Populations", () => {
       />
     );
 
-    const ippRow = screen.getByRole("row", { name: "ipp" });
+    const ippRow = screen.getByRole("row", { name: "Initial Population" });
     const ippCbs = within(ippRow).getAllByRole("checkbox");
     expect(ippCbs[0]).toBeDisabled();
     expect(ippCbs[0]).toBeChecked();
@@ -196,7 +202,7 @@ describe("Group Populations", () => {
       />
     );
 
-    const ippRow = screen.getByRole("row", { name: "ipp" });
+    const ippRow = screen.getByRole("row", { name: "Initial Population" });
     const ippCbs = within(ippRow).getAllByRole("checkbox");
     expect(ippCbs[0]).not.toBeDisabled();
     expect(ippCbs[0]).toBeChecked();

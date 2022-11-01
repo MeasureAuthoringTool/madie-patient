@@ -1,10 +1,10 @@
 import {
-  PopulationType,
-  GroupPopulation,
-  Group,
-  PopulationExpectedValue,
   DisplayPopulationValue,
+  Group,
+  GroupPopulation,
   MeasureObservation,
+  PopulationExpectedValue,
+  PopulationType,
 } from "@madie/madie-models";
 
 import _ from "lodash";
@@ -247,15 +247,14 @@ function addObservations(
     populationBucket.forEach((value) => {
       if (value.name === popType) {
         for (let i = 0; i < expectedObservationsPerPop; i++) {
-          let obvType: PopulationType = <PopulationType>(
-            String(popType).concat("Observation")
-          );
-
+          let obvType: PopulationType =
+            value.name === PopulationType.MEASURE_POPULATION
+              ? PopulationType.MEASURE_OBSERVATION
+              : (`${popType}Observation` as PopulationType);
           observationBucket.push({
             name: obvType,
             expected: 0,
-            id:
-              String(popType).toLocaleLowerCase() + "Observation" + (index + i),
+            id: `${obvType}${index + i}`,
             criteriaReference: value.id,
           } as unknown as PopulationExpectedValue);
         }

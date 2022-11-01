@@ -36,7 +36,7 @@ describe("TestCasePopulation component", () => {
       `test-row-population-id-${testCasePopulation.name}`
     );
     const columns = row.querySelectorAll("td");
-    expect(columns[1]).toHaveTextContent("ipp");
+    expect(columns[1]).toHaveTextContent("Initial Population");
     const buttons = await screen.findAllByRole("checkbox");
     expect(buttons).toHaveLength(2);
   });
