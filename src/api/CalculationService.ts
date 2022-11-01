@@ -95,9 +95,9 @@ export class CalculationService {
   }
 
   async calculate(
-    measureBundle,
-    patientBundles,
-    valueSets,
+    measureBundle: Bundle,
+    patientBundles: Bundle[],
+    valueSets: ValueSet[],
     measurementPeriodStart,
     measurementPeriodEnd
   ): Promise<CalculationOutput<any>> {
