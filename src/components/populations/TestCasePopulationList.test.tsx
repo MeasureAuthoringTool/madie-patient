@@ -169,7 +169,7 @@ describe("TestCasePopulationPopulation component", () => {
           populationBasis="boolean"
           content="ratio"
           i={0}
-          scoring="Ratio"
+          scoring={MeasureScoring.RATIO}
         />
       </MemoryRouter>
     );
