@@ -44,8 +44,8 @@ import calculationService, {
   PopulationEpisodeResult,
 } from "../../api/CalculationService";
 import {
+  CalculationOutput,
   DetailedPopulationGroupResult,
-  ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
 import {
   measureStore,
@@ -459,7 +459,7 @@ const EditTestCase = () => {
     }
 
     try {
-      const executionResults: ExecutionResult<DetailedPopulationGroupResult>[] =
+      const calculationOutput: CalculationOutput<any> =
         await calculation.current.calculateTestCases(
           measure,
           [modifiedTestCase],
@@ -467,8 +467,12 @@ const EditTestCase = () => {
           valueSets
         );
 
+      const executionResults = calculationOutput.results;
+
       setCalculationErrors(undefined);
-      setPopulationGroupResults(executionResults[0].detailedResults);
+      setPopulationGroupResults(
+        executionResults[0].detailedResults as DetailedPopulationGroupResult[]
+      );
     } catch (error) {
       setCalculationErrors({
         status: "error",

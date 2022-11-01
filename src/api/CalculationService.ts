@@ -63,7 +63,7 @@ export class CalculationService {
     testCases: TestCase[],
     measureBundle: Bundle,
     valueSets: ValueSet[]
-  ): Promise<ExecutionResult<any>[]> {
+  ): Promise<CalculationOutput<any>> {
     const TestCaseBundles = testCases.map((testCase) => {
       return this.buildPatientBundle(testCase);
     });
@@ -75,9 +75,10 @@ export class CalculationService {
       measure.measurementPeriodStart,
       measure.measurementPeriodEnd
     );
+
     // set onto window for any environment debug purposes
     (window as any).executionResults = calculationOutput?.results;
-    return calculationOutput?.results;
+    return calculationOutput;
   }
 
   // fqm Execution requires each patient to be with unique ID.
@@ -188,7 +189,6 @@ export class CalculationService {
 
     return testCaseResultMap;
   }
-
   buildGroupResultsMap(groupResults: DetailedPopulationGroupResult[]) {
     const outputGroupResultsMap: GroupStatementResultMap = {};
     groupResults?.forEach((groupResult) => {

@@ -8,6 +8,7 @@ import { useParams } from "react-router-dom";
 import TestCaseComponent from "./TestCase";
 import calculationService from "../../api/CalculationService";
 import {
+  CalculationOutput,
   DetailedPopulationGroupResult,
   ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
@@ -42,6 +43,8 @@ const TestCaseList = () => {
   const [activeTab, setActiveTab] = useState<string>("passing");
   const [executeAllTestCases, setExecuteAllTestCases] =
     useState<boolean>(false);
+  const [coverageHTML, setCoverageHTML] = useState<string>("");
+  const [coveragePercentage, setCoveragePercentage] = useState<number>(0);
   const [testCasePassFailStats, setTestCasePassFailStats] =
     useState<TestCasesPassingDetailsProps>({
       passPercentage: undefined,
@@ -128,14 +131,17 @@ const TestCaseList = () => {
     if (validTestCases && validTestCases.length > 0 && measureBundle) {
       setExecuting(true);
       try {
-        const executionResults: ExecutionResult<DetailedPopulationGroupResult>[] =
+        const calculationOutput: CalculationOutput<any> =
           await calculation.current.calculateTestCases(
             measure,
             validTestCases,
             measureBundle,
             valueSets
           );
-
+        const regex = /<h2> Clause Coverage: [0-9]*\.[0-9]+%<\/h2>/i;
+        const executionResults = calculationOutput.results,
+          executionHTML = calculationOutput.coverageHTML.replace(regex, "");
+        setCoverageHTML(executionHTML);
         const nextExecutionResults = {};
         validTestCases.forEach((testCase, i) => {
           const detailedResults = executionResults.find(
@@ -146,7 +152,7 @@ const TestCaseList = () => {
           const processedTC = calculationService().processTestCaseResults(
             testCase,
             measure.groups,
-            detailedResults,
+            detailedResults as DetailedPopulationGroupResult[],
             false
           );
           testCase.groupPopulations = processedTC.groupPopulations;
@@ -161,6 +167,18 @@ const TestCaseList = () => {
         });
         setTestCases([...testCases]);
         setExecutionResults(nextExecutionResults);
+        // execution results for all groups for all test cases
+        const populationGroupResults: DetailedPopulationGroupResult[] =
+          Object.values(
+            nextExecutionResults
+          ).flat() as DetailedPopulationGroupResult[];
+
+        const coveragePercentage =
+          calculation.current.getCoveragePercentageForGroup(
+            measure.groups[0].id,
+            populationGroupResults
+          );
+        setCoveragePercentage(coveragePercentage);
       } catch (error) {
         setError(error.message);
       }
@@ -184,6 +202,7 @@ const TestCaseList = () => {
               createNewTestCase={createNewTestCase}
               executeTestCases={executeTestCases}
               testCasePassFailStats={testCasePassFailStats}
+              coveragePercentage={coveragePercentage}
             />
           </div>
           <CreateNewTestCaseDialog open={createOpen} onClose={handleClose} />
@@ -231,7 +250,9 @@ const TestCaseList = () => {
             </div>
           )}
 
-          {activeTab === "coverage" && <CodeCoverageHighlighting />}
+          {activeTab === "coverage" && (
+            <CodeCoverageHighlighting coverageHTML={coverageHTML} />
+          )}
         </div>
       )}
       {initialLoad && (
