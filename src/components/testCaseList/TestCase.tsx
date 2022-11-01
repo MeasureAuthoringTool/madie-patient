@@ -11,9 +11,7 @@ import IconButton from "@mui/material/IconButton";
 import Collapse from "@mui/material/Collapse";
 import Chip from "@mui/material/Chip";
 import TruncateText from "./TruncateText";
-import {
-  TestCase as TestCaseModel,
-} from "@madie/madie-models";
+import { TestCase as TestCaseModel } from "@madie/madie-models";
 import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calculator";
 import GroupPopulations from "../populations/GroupPopulations";
 const EditButton = tw.button`text-blue-600 hover:text-blue-900`;
