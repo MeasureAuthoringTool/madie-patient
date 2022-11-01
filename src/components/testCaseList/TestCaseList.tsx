@@ -128,7 +128,7 @@ const TestCaseList = () => {
     }
     const validTestCases = testCases?.filter((tc) => tc.validResource);
 
-    if (validTestCases && measureBundle) {
+    if (validTestCases && validTestCases.length > 0 && measureBundle) {
       setExecuting(true);
       try {
         const calculationOutput: CalculationOutput<any> =
@@ -143,58 +143,20 @@ const TestCaseList = () => {
           executionHTML = calculationOutput.coverageHTML.replace(regex, "");
         setCoverageHTML(executionHTML);
         const nextExecutionResults = {};
-        validTestCases.forEach((testCase) => {
+        validTestCases.forEach((testCase, i) => {
           const detailedResults = executionResults.find(
             (result) => result.patientId === testCase.id
           )?.detailedResults;
           nextExecutionResults[testCase.id] = detailedResults;
-          const stratificationValues =
-            testCase.groupPopulations[0]?.stratificationValues;
-          const { populationResults } = detailedResults?.[0]; // Since we have only 1 population group
 
-          const populationValues =
-            testCase?.groupPopulations?.[0]?.populationValues;
-
-          // executionStatus is set to false if any of the populationResults (calculation result) doesn't match with populationValues (Given from testCase)
-          if (populationResults && populationValues) {
-            let executionStatus = true;
-            populationResults.forEach((populationResult) => {
-              if (executionStatus) {
-                const groupPopulation: any = populationValues.find(
-                  (populationValue) =>
-                    getFhirMeasurePopulationCode(populationValue.name) ===
-                    populationResult.populationType.toString()
-                );
-
-                if (
-                  groupPopulation &&
-                  groupPopulation.name != "measureObservation"
-                ) {
-                  executionStatus =
-                    groupPopulation.expected === populationResult.result;
-
-                  //measure observations have a different result field. only relevant for boolean, looping needed for nonbool
-                } else if (
-                  groupPopulation &&
-                  groupPopulation.name == "measureObservation"
-                ) {
-                  executionStatus =
-                    Number(groupPopulation.expected) ===
-                    populationResult.observations[0];
-                }
-              }
-            });
-            if (executionStatus && !!stratificationValues) {
-              stratificationValues.forEach((stratVal) => {
-                if (executionStatus) {
-                  if (stratVal.expected != stratVal.actual) {
-                    executionStatus = false;
-                  }
-                }
-              });
-            }
-            testCase.executionStatus = executionStatus ? "pass" : "fail";
-          }
+          const processedTC = calculationService().processTestCaseResults(
+            testCase,
+            measure.groups,
+            detailedResults,
+            false
+          );
+          testCase.groupPopulations = processedTC.groupPopulations;
+          testCase.executionStatus = processedTC.executionStatus;
         });
         setExecuteAllTestCases(true);
         const { passPercentage, passFailRatio } =

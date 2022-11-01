@@ -96,9 +96,9 @@ export class CalculationService {
   }
 
   async calculate(
-    measureBundle,
-    patientBundles,
-    valueSets,
+    measureBundle: Bundle,
+    patientBundles: Bundle[],
+    valueSets: ValueSet[],
     measurementPeriodStart,
     measurementPeriodEnd
   ): Promise<CalculationOutput<any>> {
@@ -140,7 +140,7 @@ export class CalculationService {
     groupResults: DetailedPopulationGroupResult[]
   ): GroupPopulationEpisodeResultMap {
     const outputGroupResultsMap: GroupPopulationEpisodeResultMap = {};
-    for (const groupResult of groupResults) {
+    groupResults?.forEach((groupResult) => {
       const groupId = groupResult?.groupId;
       let groupPopResults: PopulationEpisodeResult[] = [];
       if (groupResult.episodeResults) {
@@ -149,7 +149,7 @@ export class CalculationService {
         }
       }
       outputGroupResultsMap[groupId] = groupPopResults;
-    }
+    });
     return outputGroupResultsMap;
   }
 
@@ -191,7 +191,7 @@ export class CalculationService {
   }
   buildGroupResultsMap(groupResults: DetailedPopulationGroupResult[]) {
     const outputGroupResultsMap: GroupStatementResultMap = {};
-    for (const groupResult of groupResults) {
+    groupResults?.forEach((groupResult) => {
       const groupId = groupResult?.groupId;
       const statementResults = groupResult?.statementResults || [];
       const defineResultMap: StatementResultMap = {};
@@ -209,7 +209,7 @@ export class CalculationService {
         }
       }
       outputGroupResultsMap[groupId] = defineResultMap;
-    }
+    });
     return outputGroupResultsMap;
   }
 
@@ -293,6 +293,9 @@ export class CalculationService {
   ) {
     // TODO: when multiple IPs are supported by fqm-execution this logic may need to be refactored
     let observationCount = 0;
+    if (_.isNil(episodeResults)) {
+      return null;
+    }
     for (const episodeResult of episodeResults) {
       // Get all observation populations that match our criteria expression (observation function)
       const observationPopulations = episodeResult.populationResults.filter(
@@ -313,6 +316,7 @@ export class CalculationService {
         if (
           populationType === PopulationType.DENOMINATOR_OBSERVATION ||
           populationType === "denominatorObservation" ||
+          populationType === PopulationType.MEASURE_POPULATION_OBSERVATION ||
           populationType === "measurePopulationObservation"
         ) {
           if (index === observationCount) {
@@ -429,12 +433,11 @@ export class CalculationService {
             // Observation results are on each episode (resource) that matched
             // For CV there should be only one observation per episode
             // For Ratio there could be 0-2 (max of one denom and one numer)
-
             // Denom observ and CV observ will always be first observation on episode
             // If denom observ exists, numer observ is second. If no denom observ, numer is first (and only)
             let currentTCObserv = tcPopTypeCount[tcPopVal.name] ?? 0;
             tcPopVal.actual = this.findEpisodeObservationResult(
-              populationGroupResult.episodeResults,
+              populationGroupResult?.episodeResults,
               currentTCObserv,
               criteriaExpression,
               tcPopVal.name
