@@ -44,8 +44,8 @@ import calculationService, {
   PopulationEpisodeResult,
 } from "../../api/CalculationService";
 import {
+  CalculationOutput,
   DetailedPopulationGroupResult,
-  ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
 import {
   measureStore,
@@ -188,13 +188,13 @@ const EditTestCase = () => {
   const [showValidationErrors, setShowValidationErrors] = useState(false);
   const [populationGroupResults, setPopulationGroupResults] =
     useState<DetailedPopulationGroupResult[]>();
-  const [groupStatementResults, setGroupStatementResults] = useState<any>();
-  const [groupEpisodeResults, setGroupEpisodeResults] =
-    useState<GroupPopulationEpisodeResultMap>();
   const [calculationErrors, setCalculationErrors] = useState<AlertProps>();
   const [createButtonDisabled, setCreateButtonDisabled] =
     useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("measurecql");
+  const [groupPopulations, setGroupPopulations] = useState<GroupPopulation[]>(
+    []
+  );
 
   const { measureState, bundleState, valueSetsState } = useExecutionContext();
   const [measure] = measureState;
@@ -217,6 +217,20 @@ const EditTestCase = () => {
     onSubmit: async (values: TestCase) => await handleSubmit(values),
   });
   const { resetForm } = formik;
+
+  useEffect(() => {
+    if (_.isNil(populationGroupResults) || _.isEmpty(populationGroupResults)) {
+      setGroupPopulations(formik.values.groupPopulations);
+    } else {
+      setGroupPopulations(
+        calculation.current.processTestCaseResults(
+          formik.values,
+          measure.groups,
+          populationGroupResults
+        )?.groupPopulations
+      );
+    }
+  }, [formik.values.groupPopulations, populationGroupResults]);
 
   const mapMeasureGroup = (group: Group): GroupPopulation => {
     const calculateEpisodes = group.populationBasis === "boolean";
@@ -407,7 +421,6 @@ const EditTestCase = () => {
   const calculate = async (e) => {
     e.preventDefault();
     setPopulationGroupResults(() => undefined);
-    setGroupStatementResults(() => undefined);
     if (measure && measure.cqlErrors) {
       setCalculationErrors({
         status: "warning",
@@ -446,7 +459,7 @@ const EditTestCase = () => {
     }
 
     try {
-      const executionResults: ExecutionResult<DetailedPopulationGroupResult>[] =
+      const calculationOutput: CalculationOutput<any> =
         await calculation.current.calculateTestCases(
           measure,
           [modifiedTestCase],
@@ -454,20 +467,25 @@ const EditTestCase = () => {
           valueSets
         );
 
-      const output = calculation.current.processRawResults(executionResults);
-      const episodeResults =
-        calculation.current.processEpisodeResults(executionResults);
+      const executionResults = calculationOutput.results;
 
       setCalculationErrors(undefined);
-      setGroupStatementResults(output?.[testCase.id]);
-      setGroupEpisodeResults(episodeResults?.[testCase.id]);
-      setPopulationGroupResults(executionResults[0].detailedResults);
+      setPopulationGroupResults(
+        executionResults[0].detailedResults as DetailedPopulationGroupResult[]
+      );
     } catch (error) {
       setCalculationErrors({
         status: "error",
         message: error.message,
       });
     }
+  };
+
+  const discardChanges = () => {
+    setOriginalEditorVal("");
+    setEditorVal(testCase.json ? testCase.json : "");
+    resetForm();
+    setDiscardDialogOpen(false);
   };
 
   function handleTestCaseResponse(
@@ -555,10 +573,6 @@ const EditTestCase = () => {
     }
   }
 
-  function navigateToTestCases() {
-    navigate("..");
-  }
-
   function formikErrorHandler(name: string, isError: boolean) {
     if (formik.touched[name] && formik.errors[name]) {
       return (
@@ -600,87 +614,6 @@ const EditTestCase = () => {
       editor?.resize(true);
     }, 500);
   }
-
-  function findMeasureGroupPopulation(
-    measureGroup: Group,
-    populationValue: PopulationExpectedValue
-  ): Population {
-    return measureGroup?.populations?.find(
-      (population) =>
-        (!_.isNil(populationValue.id) &&
-          population.id === populationValue.id) ||
-        (_.isNil(populationValue.id) &&
-          populationValue.name === population.name)
-    );
-  }
-
-  const mapGroupPopulations = (
-    groupPopulations: GroupPopulation[],
-    populationGroupResults: DetailedPopulationGroupResult[],
-    groupStatementResults: GroupStatementResultMap,
-    groupEpisodeResults: GroupPopulationEpisodeResultMap
-  ): DisplayGroupPopulation[] => {
-    if (_.isNil(groupPopulations)) {
-      return null;
-    }
-    const gp = groupPopulations.map((groupPopulation) => {
-      const results = populationGroupResults?.find(
-        (groupResult) => groupResult.groupId === groupPopulation.groupId
-      );
-      const measureGroup = measure?.groups?.find(
-        (group) => group.id === groupPopulation.groupId
-      );
-      return {
-        ...groupPopulation,
-        stratificationValues: groupPopulation?.stratificationValues?.map(
-          (stratValue) => {
-            const strataDefinition = measureGroup.stratifications.find(
-              (stratification) => stratification.id === stratValue.id
-            )?.cqlDefinition;
-            const actualResult =
-              groupPopulation.populationBasis === "boolean"
-                ? groupStatementResults?.[groupPopulation.groupId]?.[
-                    strataDefinition
-                  ] > 0
-                : groupStatementResults?.[groupPopulation.groupId]?.[
-                    strataDefinition
-                  ];
-
-            return {
-              ...stratValue,
-              actual: actualResult,
-            };
-          }
-        ),
-        populationValues: groupPopulation?.populationValues?.map(
-          (populationValue) => {
-            // try to look up population on group to find the define
-            const measureGroupPopulation: Population =
-              findMeasureGroupPopulation(measureGroup, populationValue);
-            const episodeActualValue = findEpisodeActualValue(
-              groupEpisodeResults?.[measureGroup.id],
-              populationValue,
-              measureGroupPopulation?.definition
-            );
-
-            const actualResult =
-              groupPopulation.populationBasis === "boolean"
-                ? results?.populationResults?.find(
-                    (popResult) =>
-                      FHIR_POPULATION_CODES[popResult.populationType] ===
-                      populationValue.name
-                  )?.result
-                : episodeActualValue;
-            return {
-              ...populationValue,
-              actual: actualResult,
-            };
-          }
-        ),
-      };
-    });
-    return gp;
-  };
 
   return (
     <TestCaseForm
@@ -731,12 +664,7 @@ const EditTestCase = () => {
           {activeTab === "expectoractual" && (
             <ExpectedActual
               canEdit={canEdit}
-              groupPopulations={mapGroupPopulations(
-                formik.values.groupPopulations,
-                populationGroupResults,
-                groupStatementResults,
-                groupEpisodeResults
-              )}
+              groupPopulations={groupPopulations}
               executionRun={!_.isNil(populationGroupResults)}
               errors={formik.errors.groupPopulations}
               onChange={(
@@ -959,12 +887,7 @@ const EditTestCase = () => {
       <MadieDiscardDialog
         open={discardDialogOpen}
         onClose={() => setDiscardDialogOpen(false)}
-        onContinue={async () => {
-          //async await to prevent warning dialog from coming up twice when editor is changed and discard is clicked
-          await setOriginalEditorVal("cool");
-          await setEditorVal("cool");
-          navigateToTestCases();
-        }}
+        onContinue={discardChanges}
       />
     </TestCaseForm>
   );

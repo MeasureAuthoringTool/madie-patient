@@ -109,15 +109,6 @@ const executionResults = [
   },
 ];
 
-// mocking calculationService
-jest.mock("../../api/CalculationService");
-const calculationServiceMock =
-  calculationService as jest.Mock<CalculationService>;
-
-const calculationServiceMockResolved = {
-  calculateTestCases: jest.fn().mockResolvedValue(executionResults),
-} as unknown as CalculationService;
-
 // mock data for list of testCases retrieved from testCaseService
 const testCases = [
   {
@@ -202,6 +193,112 @@ const testCases = [
     ] as GroupPopulation[],
   },
 ] as TestCase[];
+
+const failingTestCaseResults = [
+  {
+    id: "1",
+    description: "Test IPP",
+    title: "WhenAllGood",
+    series: "IPP_Pass",
+    validResource: true,
+    executionStatus: "pass",
+    groupPopulations: [
+      {
+        groupId: "1",
+        scoring: MeasureScoring.PROPORTION,
+        populationValues: [
+          {
+            name: "initialPopulation",
+            expected: true,
+            actual: true,
+          },
+          {
+            name: "denominator",
+            expected: false,
+            actual: false,
+          },
+          {
+            name: "numerator",
+            expected: true,
+            actual: true,
+          },
+        ] as PopulationExpectedValue[],
+      },
+    ] as GroupPopulation[],
+  },
+  {
+    id: "2",
+    description: "Test IPP Fail when something is wrong",
+    title: "WhenSomethingIsWrong",
+    series: "IPP_Fail",
+    validResource: true,
+    executionStatus: "fail",
+    groupPopulations: [
+      {
+        groupId: "1",
+        scoring: MeasureScoring.PROPORTION,
+        populationValues: [
+          {
+            name: "initialPopulation",
+            expected: false,
+            actual: false,
+          },
+          {
+            name: "denominator",
+            expected: false,
+            actual: false,
+          },
+          {
+            name: "numerator",
+            expected: true,
+            actual: false,
+          },
+        ] as PopulationExpectedValue[],
+      },
+    ] as GroupPopulation[],
+  },
+  {
+    id: "3",
+    description: "Invalid test case",
+    title: "WhenJsonIsInvalid",
+    series: "IPP_Fail",
+    validResource: false,
+    groupPopulations: [
+      {
+        groupId: "1",
+        scoring: MeasureScoring.PROPORTION,
+        populationValues: [
+          {
+            name: "initialPopulation",
+            expected: false,
+          },
+          {
+            name: "denominator",
+            expected: false,
+          },
+          {
+            name: "numerator",
+            expected: true,
+          },
+        ] as PopulationExpectedValue[],
+      },
+    ] as GroupPopulation[],
+  },
+] as TestCase[];
+
+// mocking calculationService
+jest.mock("../../api/CalculationService");
+const calculationServiceMock =
+  calculationService as jest.Mock<CalculationService>;
+
+const calculationServiceMockResolved = {
+  calculateTestCases: jest.fn().mockResolvedValue(executionResults),
+  processTestCaseResults: jest
+    .fn()
+    .mockImplementation((testCase, groups, results) => {
+      return failingTestCaseResults.find((tc) => tc.id === testCase.id);
+    }),
+} as unknown as CalculationService;
 
 // mocking testCaseService
 jest.mock("../../api/useTestCaseServiceApi");
@@ -413,8 +510,8 @@ describe("TestCaseList component", () => {
 
     userEvent.click(executeAllTestCasesButton);
     await waitFor(() => {
-      expect(tableRows[0]).toHaveTextContent("pass");
-      expect(tableRows[2]).toHaveTextContent("fail");
+      expect(tableRows[0]).toHaveTextContent("Pass");
+      expect(tableRows[2]).toHaveTextContent("Fail");
       expect(tableRows[4]).toHaveTextContent("Invalid");
     });
     const table2 = screen.getByTestId("test-case-tbl");

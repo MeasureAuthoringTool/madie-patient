@@ -31,7 +31,10 @@ import calculationService, {
 } from "../../api/CalculationService";
 import { simpleMeasureFixture } from "../createTestCase/__mocks__/simpleMeasureFixture";
 import { testCaseFixture } from "../createTestCase/__mocks__/testCaseFixture";
-import { ExecutionResult } from "fqm-execution/build/types/Calculator";
+import {
+  ExecutionResult,
+  CalculationOutput,
+} from "fqm-execution/build/types/Calculator";
 import {
   buildMeasureBundle,
   getExampleValueSet,
@@ -1901,18 +1904,20 @@ describe("EditTestCase component", () => {
 describe("Measure Calculation ", () => {
   it("calculates a measure against a test case", async () => {
     const calculationSrv = calculationService();
-    const calculationResults: ExecutionResult<any>[] =
+    const executionResults: CalculationOutput<any> =
       await calculationSrv.calculateTestCases(
         simpleMeasureFixture,
         [testCaseFixture],
         buildMeasureBundle(simpleMeasureFixture),
         []
       );
+
+    /*const calculationResults = executionResults[0].results;
     expect(calculationResults).toHaveLength(1);
     expect(calculationResults[0].detailedResults).toHaveLength(1);
-
+    */
     const populationResults =
-      calculationResults[0].detailedResults[0].populationResults;
+      executionResults.results[0].detailedResults[0].populationResults;
     expect(populationResults).toHaveLength(3);
     expect(populationResults).toContainEqual({
       criteriaExpression: "first",
