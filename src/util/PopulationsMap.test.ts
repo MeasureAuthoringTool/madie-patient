@@ -427,7 +427,7 @@ it("shall add an observation if measure population for CV group changes from 0 t
       measureName: "the measure for testing",
       cql: "",
       elmJson: "",
-      createdBy: "testuser@example.com",
+      createdBy: "test-user",
       measureObservations: [
         {
           id: "uuid-2",
