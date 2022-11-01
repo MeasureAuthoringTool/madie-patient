@@ -472,18 +472,13 @@ export class CalculationService {
         }
       });
 
-      tcGroupPopulation?.stratificationValues?.map((stratValue) => {
+      tcGroupPopulation?.stratificationValues?.forEach((stratValue) => {
         const strataDefinition = measureGroup.stratifications.find(
           (stratification) => stratification.id === stratValue.id
         )?.cqlDefinition;
-        const actualResult = patientBased
+        stratValue.actual = patientBased
           ? groupResultsMap[groupId]?.[strataDefinition] > 0
           : groupResultsMap[groupId]?.[strataDefinition];
-
-        return {
-          ...stratValue,
-          actual: actualResult,
-        };
       });
 
       allGroupsPass = allGroupsPass && this.isGroupPass(tcGroupPopulation);

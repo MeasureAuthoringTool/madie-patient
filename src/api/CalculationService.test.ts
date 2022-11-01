@@ -1372,12 +1372,12 @@ describe("CalculationService Tests", () => {
           ],
           stratifications: [
             {
-              id: "strat1",
+              id: "strata1",
               cqlDefinition: "strat1Def",
               association: PopulationType.INITIAL_POPULATION,
             },
             {
-              id: "strat2",
+              id: "strata2",
               cqlDefinition: "strat2Def",
               association: PopulationType.INITIAL_POPULATION,
             },
