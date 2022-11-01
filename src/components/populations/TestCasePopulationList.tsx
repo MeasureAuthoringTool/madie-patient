@@ -77,12 +77,6 @@ const TestCasePopulationList = ({
 }: TestCasePopulationListProps) => {
   let measureObservations = [];
   let contentId = content?.toLocaleLowerCase().replace(/(\W)+/g, "-");
-  const getObservationCount = (
-    populations: DisplayPopulationValue[],
-    observationType: PopulationType
-  ) => {
-    return populations.filter((res) => res.name === observationType).length;
-  };
 
   const measureObservationsCount = (population) => {
     let observationCount = 0;
@@ -91,7 +85,9 @@ const TestCasePopulationList = ({
       population.name === PopulationType.DENOMINATOR_OBSERVATION ||
       population.name === PopulationType.NUMERATOR_OBSERVATION
     ) {
-      observationCount = getObservationCount(populations, population.name);
+      observationCount = populations.filter(
+        (res) => res.name === population.name
+      ).length;
     }
 
     if (observationCount > 1) {
