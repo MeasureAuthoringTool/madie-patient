@@ -146,7 +146,7 @@ describe("TestCaseRoutes", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.getByTestId("code-coverage-tabs")).toBeInTheDocument();
+    expect(await screen.findByTestId("code-coverage-tabs")).toBeInTheDocument();
 
     const testCaseTitle = await screen.findByText("TC1");
     expect(testCaseTitle).toBeInTheDocument();

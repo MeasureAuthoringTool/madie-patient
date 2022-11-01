@@ -1,4 +1,4 @@
-import { CalculationService } from "./CalculationService";
+import { CalculationService, ExecutionStatusType } from "./CalculationService";
 import { officeVisitMeasure } from "./__mocks__/OfficeVisitMeasure";
 import { officeVisitValueSet } from "./__mocks__/OfficeVisitValueSet";
 import { officeVisitMeasureBundle } from "./__mocks__/OfficeVisitMeasureBundle";
@@ -7,6 +7,7 @@ import { groupResults } from "./__mocks__/GroupExecutionResults";
 
 import {
   DetailedPopulationGroupResult,
+  EpisodeResults,
   ExecutionResult,
   CalculationOutput,
 } from "fqm-execution/build/types/Calculator";
@@ -15,7 +16,14 @@ import {
   PopulationType as FqmPopulationType,
   Relevance,
 } from "fqm-execution/build/types/Enums";
-import { Group, PopulationType, TestCase } from "@madie/madie-models";
+import {
+  Group,
+  GroupPopulation,
+  MeasureGroupTypes,
+  MeasureScoring,
+  PopulationType,
+  TestCase,
+} from "@madie/madie-models";
 
 describe("CalculationService Tests", () => {
   let calculationService: CalculationService;
@@ -24,28 +32,30 @@ describe("CalculationService Tests", () => {
     calculationService = new CalculationService();
   });
 
-  const testCases = [
+  const testCases: TestCase[] = [
     {
       id: "1",
       title: "testing",
+      name: "testing",
       description: "description for test",
       json: "",
       executionStatus: "pass",
       groupPopulations: [],
       validResource: true,
-      hapiOperationOutcome: "",
+      hapiOperationOutcome: undefined,
     },
     {
       id: "2",
       title: "testing",
+      name: "testing",
       description: "description for test",
       json: "",
       executionStatus: "fail",
       groupPopulations: [],
       validResource: true,
-      hapiOperationOutcome: "",
+      hapiOperationOutcome: undefined,
     },
-  ];
+  ] as unknown as TestCase[];
 
   it("IPP, denominator and numerator Pass test", async () => {
     const calculationResults = await calculationService.calculateTestCases(
@@ -491,12 +501,6 @@ describe("CalculationService Tests", () => {
   });
 
   describe("CalculationService.isValuePass", () => {
-    // let calculationService: CalculationService;
-    //
-    // beforeEach(() => {
-    //   calculationService = new CalculationService();
-    // });
-
     it("should pass two blanks", () => {
       const output = calculationService.isValuePass("", "", false);
       expect(output).toBeTruthy();
@@ -534,12 +538,6 @@ describe("CalculationService Tests", () => {
   });
 
   describe("CalculationService.findPatientActualResult", () => {
-    // let calculationService: CalculationService;
-    //
-    // beforeEach(() => {
-    //   calculationService = new CalculationService();
-    // });
-
     it("should return first result for matching population", () => {
       const popGroupResult: DetailedPopulationGroupResult = {
         groupId: "group1ID",
@@ -690,39 +688,726 @@ describe("CalculationService Tests", () => {
     });
   });
 
+  describe("CalculationService.isGroupPass", () => {
+    it("should pass null group", () => {
+      const output = calculationService.isGroupPass(null);
+      expect(output).toEqual(true);
+    });
+
+    it("should pass undefined group", () => {
+      const output = calculationService.isGroupPass(undefined);
+      expect(output).toEqual(true);
+    });
+
+    it("should pass group with undefined populationValues", () => {
+      const groupPop: GroupPopulation = {
+        groupId: "group1ID",
+        scoring: MeasureScoring.RATIO,
+        populationBasis: "boolean",
+        populationValues: undefined,
+        stratificationValues: undefined,
+      };
+      const output = calculationService.isGroupPass(groupPop);
+      expect(output).toEqual(true);
+    });
+
+    it("should pass group with empty populationValues and undefined stratifications", () => {
+      const groupPop: GroupPopulation = {
+        groupId: "group1ID",
+        scoring: MeasureScoring.RATIO,
+        populationBasis: "boolean",
+        populationValues: [],
+        stratificationValues: undefined,
+      };
+      const output = calculationService.isGroupPass(groupPop);
+      expect(output).toEqual(true);
+    });
+
+    it("should pass group with empty populationValues and empty stratifications", () => {
+      const groupPop: GroupPopulation = {
+        groupId: "group1ID",
+        scoring: MeasureScoring.RATIO,
+        populationBasis: "boolean",
+        populationValues: [],
+        stratificationValues: [],
+      };
+      const output = calculationService.isGroupPass(groupPop);
+      expect(output).toEqual(true);
+    });
+
+    it("should pass group with matching populations and empty stratifications for Cohort", () => {
+      const groupPop: GroupPopulation = {
+        groupId: "group1ID",
+        scoring: MeasureScoring.COHORT,
+        populationBasis: "boolean",
+        populationValues: [
+          {
+            id: "1",
+            expected: true,
+            actual: true,
+            criteriaReference: "ipp",
+            name: PopulationType.INITIAL_POPULATION,
+          },
+        ],
+        stratificationValues: [],
+      };
+      const output = calculationService.isGroupPass(groupPop);
+      expect(output).toEqual(true);
+    });
+
+    it("should pass group with matching populations and empty stratifications for Ratio", () => {
+      const groupPop: GroupPopulation = {
+        groupId: "group1ID",
+        scoring: MeasureScoring.RATIO,
+        populationBasis: "boolean",
+        populationValues: [
+          {
+            id: "1",
+            expected: true,
+            actual: true,
+            criteriaReference: "ipp",
+            name: PopulationType.INITIAL_POPULATION,
+          },
+          {
+            id: "1",
+            expected: true,
+            actual: true,
+            criteriaReference: "den",
+            name: PopulationType.DENOMINATOR,
+          },
+          {
+            id: "1",
+            expected: false,
+            actual: false,
+            criteriaReference: "num",
+            name: PopulationType.NUMERATOR,
+          },
+        ],
+        stratificationValues: [],
+      };
+      const output = calculationService.isGroupPass(groupPop);
+      expect(output).toEqual(true);
+    });
+
+    it("should fail group with failing populations and empty stratifications for Ratio", () => {
+      const groupPop: GroupPopulation = {
+        groupId: "group1ID",
+        scoring: MeasureScoring.RATIO,
+        populationBasis: "boolean",
+        populationValues: [
+          {
+            id: "1",
+            expected: true,
+            actual: true,
+            criteriaReference: "ipp",
+            name: PopulationType.INITIAL_POPULATION,
+          },
+          {
+            id: "1",
+            expected: true,
+            actual: true,
+            criteriaReference: "den",
+            name: PopulationType.DENOMINATOR,
+          },
+          {
+            id: "1",
+            expected: true,
+            actual: false,
+            criteriaReference: "num",
+            name: PopulationType.NUMERATOR,
+          },
+        ],
+        stratificationValues: [],
+      };
+      const output = calculationService.isGroupPass(groupPop);
+      expect(output).toEqual(false);
+    });
+
+    it("should pass group with matching populations and matching stratifications for Cohort", () => {
+      const groupPop: GroupPopulation = {
+        groupId: "group1ID",
+        scoring: MeasureScoring.COHORT,
+        populationBasis: "boolean",
+        populationValues: [
+          {
+            id: "1",
+            expected: true,
+            actual: true,
+            criteriaReference: "ipp",
+            name: PopulationType.INITIAL_POPULATION,
+          },
+        ],
+        stratificationValues: [
+          {
+            id: "321",
+            name: "strata-1 Initial Population",
+            expected: true,
+            actual: true,
+          },
+        ],
+      };
+      const output = calculationService.isGroupPass(groupPop);
+      expect(output).toEqual(true);
+    });
+
+    it("should pass group with matching populations and failing stratifications for Cohort", () => {
+      const groupPop: GroupPopulation = {
+        groupId: "group1ID",
+        scoring: MeasureScoring.COHORT,
+        populationBasis: "boolean",
+        populationValues: [
+          {
+            id: "1",
+            expected: true,
+            actual: true,
+            criteriaReference: "ipp",
+            name: PopulationType.INITIAL_POPULATION,
+          },
+        ],
+        stratificationValues: [
+          {
+            id: "321",
+            name: "strata-1 Initial Population",
+            expected: true,
+            actual: false,
+          },
+        ],
+      };
+      const output = calculationService.isGroupPass(groupPop);
+      expect(output).toEqual(false);
+    });
+  });
+
+  describe("CalculationService.findEpisodeObservationResult", () => {
+    it("should return first denominator observation", () => {
+      // This represents which of how many of this type of observation are present
+      // e.g. this is the first of the DENOMINATOR_OBSERVATIONs present
+      const observationTypeCount = 0;
+      const episodeResults: EpisodeResults[] = [
+        {
+          episodeId: "1",
+          populationResults: [
+            {
+              populationType: FqmPopulationType.IPP,
+              criteriaExpression: "ipp",
+              result: true,
+            },
+            {
+              populationType: FqmPopulationType.DENOM,
+              criteriaExpression: "den",
+              result: true,
+            },
+            {
+              populationType: FqmPopulationType.NUMER,
+              criteriaExpression: "num",
+              result: true,
+            },
+            {
+              populationType: FqmPopulationType.OBSERV,
+              criteriaExpression: "denomFunc",
+              result: true,
+              observations: [4],
+            },
+            {
+              populationType: FqmPopulationType.IPP,
+              criteriaExpression: "numerFunc",
+              result: true,
+              observations: [18],
+            },
+          ],
+        },
+      ];
+      const observationCriteriaExpression = "denomFunc";
+
+      const output = calculationService.findEpisodeObservationResult(
+        episodeResults,
+        observationTypeCount,
+        observationCriteriaExpression,
+        PopulationType.DENOMINATOR_OBSERVATION
+      );
+
+      expect(output).toEqual(4);
+    });
+
+    it("should return numerator observation when Denon and Numer obs using different functions", () => {
+      // This represents which of how many of this type of observation are present
+      // e.g. this is the first of the DENOMINATOR_OBSERVATIONs present
+      const observationTypeCount = 0;
+      const episodeResults: EpisodeResults[] = [
+        {
+          episodeId: "1",
+          populationResults: [
+            {
+              populationType: FqmPopulationType.IPP,
+              criteriaExpression: "ipp",
+              result: true,
+            },
+            {
+              populationType: FqmPopulationType.DENOM,
+              criteriaExpression: "den",
+              result: true,
+            },
+            {
+              populationType: FqmPopulationType.NUMER,
+              criteriaExpression: "num",
+              result: true,
+            },
+            {
+              populationType: FqmPopulationType.OBSERV,
+              criteriaExpression: "denomFunc",
+              result: true,
+              observations: [4],
+            },
+            {
+              populationType: FqmPopulationType.OBSERV,
+              criteriaExpression: "numerFunc",
+              result: true,
+              observations: [18],
+            },
+          ],
+        },
+      ];
+      const observationCriteriaExpression = "numerFunc";
+
+      const output = calculationService.findEpisodeObservationResult(
+        episodeResults,
+        observationTypeCount,
+        observationCriteriaExpression,
+        PopulationType.NUMERATOR_OBSERVATION
+      );
+
+      expect(output).toEqual(18);
+    });
+
+    it("should return numerator observation when Denon and Numer obs using same functions", () => {
+      // TODO: update this is fqm-execution stops putting Numer observation in denom observation output
+      // This represents which of how many of this type of observation are present
+      // e.g. this is the first of the DENOMINATOR_OBSERVATIONs present
+      const observationTypeCount = 0;
+      const episodeResults: EpisodeResults[] = [
+        {
+          episodeId: "1",
+          populationResults: [
+            {
+              populationType: FqmPopulationType.IPP,
+              criteriaExpression: "ipp",
+              result: true,
+            },
+            {
+              populationType: FqmPopulationType.DENOM,
+              criteriaExpression: "den",
+              result: true,
+            },
+            {
+              populationType: FqmPopulationType.NUMER,
+              criteriaExpression: "num",
+              result: true,
+            },
+            {
+              populationType: FqmPopulationType.OBSERV,
+              criteriaExpression: "observationFunc",
+              result: true,
+              // fqm-execution currently just sticks observation result in first matching population
+              observations: [4, 18],
+            },
+            {
+              populationType: FqmPopulationType.OBSERV,
+              criteriaExpression: "observationFunc",
+              result: false,
+            },
+          ],
+        },
+      ];
+      const observationCriteriaExpression = "observationFunc";
+
+      const output = calculationService.findEpisodeObservationResult(
+        episodeResults,
+        observationTypeCount,
+        observationCriteriaExpression,
+        PopulationType.NUMERATOR_OBSERVATION
+      );
+
+      expect(output).toEqual(18);
+    });
+
+    it("should return numerator observation when Denon and Numer obs using same functions and numer fails", () => {
+      // TODO: update this is fqm-execution stops putting Numer observation in denom observation output
+      // This represents which of how many of this type of observation are present
+      // e.g. this is the first of the DENOMINATOR_OBSERVATIONs present
+      const observationTypeCount = 0;
+      const episodeResults: EpisodeResults[] = [
+        {
+          episodeId: "1",
+          populationResults: [
+            {
+              populationType: FqmPopulationType.IPP,
+              criteriaExpression: "ipp",
+              result: true,
+            },
+            {
+              populationType: FqmPopulationType.DENOM,
+              criteriaExpression: "den",
+              result: true,
+            },
+            {
+              populationType: FqmPopulationType.NUMER,
+              criteriaExpression: "num",
+              result: false,
+            },
+            {
+              populationType: FqmPopulationType.OBSERV,
+              criteriaExpression: "observationFunc",
+              result: true,
+              observations: [4],
+            },
+            {
+              populationType: FqmPopulationType.OBSERV,
+              criteriaExpression: "observationFunc",
+              result: false,
+            },
+          ],
+        },
+      ];
+      const observationCriteriaExpression = "observationFunc";
+
+      const output = calculationService.findEpisodeObservationResult(
+        episodeResults,
+        observationTypeCount,
+        observationCriteriaExpression,
+        PopulationType.NUMERATOR_OBSERVATION
+      );
+
+      expect(output).toEqual(null);
+    });
+
+    it("should return missing observation for observation count greater than number of episodes", () => {
+      // This represents which of how many of this type of observation are present
+      // e.g. this is the first of the DENOMINATOR_OBSERVATIONs present
+      const observationTypeCount = 1;
+      const episodeResults: EpisodeResults[] = [
+        {
+          episodeId: "1",
+          populationResults: [
+            {
+              populationType: FqmPopulationType.IPP,
+              criteriaExpression: "ipp",
+              result: true,
+            },
+            {
+              populationType: FqmPopulationType.DENOM,
+              criteriaExpression: "den",
+              result: true,
+            },
+            {
+              populationType: FqmPopulationType.NUMER,
+              criteriaExpression: "num",
+              result: true,
+            },
+            {
+              populationType: FqmPopulationType.OBSERV,
+              criteriaExpression: "denomFunc",
+              result: true,
+              observations: [4],
+            },
+            {
+              populationType: FqmPopulationType.IPP,
+              criteriaExpression: "numerFunc",
+              result: true,
+              observations: [18],
+            },
+          ],
+        },
+      ];
+      const observationCriteriaExpression = "denomFunc";
+
+      const output = calculationService.findEpisodeObservationResult(
+        episodeResults,
+        observationTypeCount,
+        observationCriteriaExpression,
+        PopulationType.DENOMINATOR_OBSERVATION
+      );
+
+      expect(output).toEqual(null);
+    });
+  });
+
   describe("CalculationService.processTestCaseResults", () => {
-    it("should return test case results for boolean popBasis", () => {
+    it("should return test case results for Cohort, boolean popBasis and pass executionStatus", () => {
       const popGroupResults: DetailedPopulationGroupResult[] = [
         {
           groupId: "groupID",
-          statementResults: [],
+          statementResults: [], //only needed for strats currently
           populationResults: [
             {
               populationType: FqmPopulationType.IPP,
               criteriaExpression: "boolIpp",
               result: true,
             },
-            {
-              populationType: FqmPopulationType.MSRPOPL,
-              criteriaExpression: "boolDenom",
-              result: true,
-            },
-            {
-              populationType: FqmPopulationType.OBSERV,
-              criteriaExpression: "boolFunc",
-              result: true,
-              observations: [1],
-            },
           ],
         },
       ];
-      const testCase = {} as unknown as TestCase;
-      const groups: Group[] = [];
+      const testCase: TestCase = {
+        id: "TC1",
+        name: "TestCase1",
+        title: "TestCase1",
+        description: "first",
+        validResource: true,
+        groupPopulations: [
+          {
+            groupId: "groupID",
+            scoring: MeasureScoring.COHORT,
+            populationBasis: "boolean",
+            populationValues: [
+              {
+                id: "pop1ID",
+                name: PopulationType.INITIAL_POPULATION,
+                criteriaReference: "boolIpp",
+                expected: true,
+              },
+            ],
+            stratificationValues: [],
+          },
+        ],
+        createdAt: "",
+        createdBy: "",
+        lastModifiedAt: "",
+        lastModifiedBy: "",
+        executionStatus: "NA",
+        series: undefined,
+        hapiOperationOutcome: undefined,
+      };
+      const groups: Group[] = [
+        {
+          id: "groupID",
+          scoring: MeasureScoring.COHORT,
+          populationBasis: "boolean",
+          populations: [
+            {
+              id: "pop1ID",
+              name: PopulationType.INITIAL_POPULATION,
+              definition: "boolIpp",
+            },
+          ],
+          stratifications: [],
+          measureObservations: [],
+          measureGroupTypes: [MeasureGroupTypes.OUTCOME],
+        },
+      ];
       const output = calculationService.processTestCaseResults(
         testCase,
         groups,
         popGroupResults
       );
+      expect(output).toBeTruthy();
+      expect(output.executionStatus).toEqual(ExecutionStatusType.PASS);
+      const outputGroupPopulations = output.groupPopulations;
+      expect(outputGroupPopulations).toBeTruthy();
+      expect(outputGroupPopulations.length).toEqual(1);
+      const group1PopVals = outputGroupPopulations[0].populationValues;
+      expect(group1PopVals).toBeTruthy();
+      expect(group1PopVals.length).toEqual(1);
+      expect(group1PopVals[0]).toBeTruthy();
+      expect(group1PopVals[0].expected).toBeTruthy();
+      expect(group1PopVals[0].actual).toBeTruthy();
+    });
+
+    it("should return test case results for Cohort, boolean popBasis and fail execution status", () => {
+      const popGroupResults: DetailedPopulationGroupResult[] = [
+        {
+          groupId: "groupID",
+          statementResults: [], //only needed for strats currently
+          populationResults: [
+            {
+              populationType: FqmPopulationType.IPP,
+              criteriaExpression: "boolIpp",
+              result: false,
+            },
+          ],
+        },
+      ];
+      const testCase: TestCase = {
+        id: "TC1",
+        name: "TestCase1",
+        title: "TestCase1",
+        description: "first",
+        validResource: true,
+        groupPopulations: [
+          {
+            groupId: "groupID",
+            scoring: MeasureScoring.COHORT,
+            populationBasis: "boolean",
+            populationValues: [
+              {
+                id: "pop1ID",
+                name: PopulationType.INITIAL_POPULATION,
+                criteriaReference: "boolIpp",
+                expected: true,
+              },
+            ],
+            stratificationValues: [],
+          },
+        ],
+        createdAt: "",
+        createdBy: "",
+        lastModifiedAt: "",
+        lastModifiedBy: "",
+        executionStatus: "NA",
+        series: undefined,
+        hapiOperationOutcome: undefined,
+      };
+      const groups: Group[] = [
+        {
+          id: "groupID",
+          scoring: MeasureScoring.COHORT,
+          populationBasis: "boolean",
+          populations: [
+            {
+              id: "pop1ID",
+              name: PopulationType.INITIAL_POPULATION,
+              definition: "boolIpp",
+            },
+          ],
+          stratifications: [],
+          measureObservations: [],
+          measureGroupTypes: [MeasureGroupTypes.OUTCOME],
+        },
+      ];
+      const output = calculationService.processTestCaseResults(
+        testCase,
+        groups,
+        popGroupResults
+      );
+      expect(output).toBeTruthy();
+      expect(output.executionStatus).toEqual(ExecutionStatusType.FAIL);
+      const outputGroupPopulations = output.groupPopulations;
+      expect(outputGroupPopulations).toBeTruthy();
+      expect(outputGroupPopulations.length).toEqual(1);
+      const group1PopVals = outputGroupPopulations[0].populationValues;
+      expect(group1PopVals).toBeTruthy();
+      expect(group1PopVals.length).toEqual(1);
+      expect(group1PopVals[0]).toBeTruthy();
+      expect(group1PopVals[0].expected).toBeTruthy();
+      expect(group1PopVals[0].actual).toBeFalsy();
+    });
+
+    it("should return test case results for cohort, boolean popBasis with stratification", () => {
+      const popGroupResults: DetailedPopulationGroupResult[] = [
+        {
+          groupId: "groupID",
+          statementResults: [
+            {
+              libraryName: "TestLib",
+              raw: true,
+              statementName: "strat1Def",
+              final: FinalResult.TRUE,
+              relevance: Relevance.TRUE,
+            },
+            {
+              libraryName: "TestLib",
+              raw: false,
+              statementName: "strat2Def",
+              final: FinalResult.TRUE,
+              relevance: Relevance.TRUE,
+            },
+          ],
+          populationResults: [
+            {
+              populationType: FqmPopulationType.IPP,
+              criteriaExpression: "boolIpp",
+              result: true,
+            },
+          ],
+        },
+      ];
+      const testCase: TestCase = {
+        id: "TC1",
+        name: "TestCase1",
+        title: "TestCase1",
+        description: "first",
+        validResource: true,
+        groupPopulations: [
+          {
+            groupId: "groupID",
+            scoring: MeasureScoring.COHORT,
+            populationBasis: "boolean",
+            populationValues: [
+              {
+                id: "pop1",
+                name: PopulationType.INITIAL_POPULATION,
+                expected: true,
+              },
+            ],
+            stratificationValues: [
+              {
+                id: "strata1",
+                name: "strata-1 Initial Population",
+                expected: true,
+              },
+              {
+                id: "strata2",
+                name: "strata-2 Initial Population",
+                expected: false,
+              },
+            ],
+          },
+        ],
+        createdAt: "",
+        createdBy: "",
+        lastModifiedAt: "",
+        lastModifiedBy: "",
+        executionStatus: "NA",
+        series: undefined,
+        hapiOperationOutcome: undefined,
+      };
+      const groups: Group[] = [
+        {
+          id: "groupID",
+          scoring: MeasureScoring.COHORT,
+          populationBasis: "boolean",
+          populations: [
+            {
+              id: "pop1",
+              name: PopulationType.INITIAL_POPULATION,
+              definition: "boolIpp",
+            },
+          ],
+          stratifications: [
+            {
+              id: "strata1",
+              cqlDefinition: "strat1Def",
+              association: PopulationType.INITIAL_POPULATION,
+            },
+            {
+              id: "strata2",
+              cqlDefinition: "strat2Def",
+              association: PopulationType.INITIAL_POPULATION,
+            },
+          ],
+          measureObservations: [],
+          measureGroupTypes: [MeasureGroupTypes.OUTCOME],
+        },
+      ];
+      const output = calculationService.processTestCaseResults(
+        testCase,
+        groups,
+        popGroupResults
+      );
+      expect(output).toBeTruthy();
+      expect(output.executionStatus).toEqual(ExecutionStatusType.PASS);
+      const outputGroupPopulations = output.groupPopulations;
+      expect(outputGroupPopulations).toBeTruthy();
+      expect(outputGroupPopulations.length).toEqual(1);
+      const group1PopVals = outputGroupPopulations[0].populationValues;
+      expect(group1PopVals).toBeTruthy();
+      expect(group1PopVals.length).toEqual(1);
+      expect(group1PopVals[0]).toBeTruthy();
+      expect(group1PopVals[0].expected).toBeTruthy();
+      expect(group1PopVals[0].actual).toBeTruthy();
+      const group1StratVals = outputGroupPopulations[0].stratificationValues;
+      expect(group1StratVals).toBeTruthy();
+      expect(group1StratVals.length).toEqual(2);
+      expect(group1StratVals[0].actual).toEqual(true);
+      expect(group1StratVals[1].actual).toEqual(false);
     });
   });
 });

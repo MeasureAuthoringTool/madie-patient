@@ -20,6 +20,14 @@ import * as _ from "lodash";
 import { PopulationType as FqmPopulationType } from "fqm-execution/build/types/Enums";
 import { FHIR_POPULATION_CODES } from "../util/PopulationsMap";
 import { isTestCasePopulationObservation } from "../util/Utils";
+import { GroupPopulation } from "@madie/madie-models/dist/TestCase";
+
+export enum ExecutionStatusType {
+  NA = "NA",
+  INVALID = "Invalid",
+  PASS = "pass",
+  FAIL = "fail",
+}
 
 export interface StatementResultMap {
   [statementName: string]: number;
@@ -345,12 +353,36 @@ export class CalculationService {
     return null;
   }
 
+  isGroupPass(groupPopulation: GroupPopulation) {
+    let groupPass = true;
+
+    if (groupPopulation) {
+      const patientBased =
+        "boolean" === _.lowerCase(groupPopulation.populationBasis);
+      groupPopulation.populationValues?.every((popVal) => {
+        groupPass =
+          groupPass &&
+          this.isValuePass(popVal.actual, popVal.expected, patientBased);
+        return groupPass;
+      });
+
+      groupPopulation?.stratificationValues?.every((stratVal) => {
+        groupPass =
+          groupPass &&
+          this.isValuePass(stratVal.actual, stratVal.expected, patientBased);
+        return groupPass;
+      });
+    }
+
+    return groupPass;
+  }
+
   processTestCaseResults(
     testCase: TestCase,
     measureGroups: Group[],
     populationGroupResults: DetailedPopulationGroupResult[],
     testAllGroups = true
-  ) {
+  ): TestCase {
     if (_.isNil(testCase) || _.isNil(testCase?.groupPopulations)) {
       return testCase;
     }
@@ -359,6 +391,7 @@ export class CalculationService {
     const groupResultsMap = this.buildGroupResultsMap(populationGroupResults);
     const episodeResults: GroupPopulationEpisodeResultMap =
       this.processEpisodeResultsForGroups(populationGroupResults);
+    let allGroupsPass = true;
 
     for (const tcGroupPopulation of updatedTestCase?.groupPopulations) {
       const groupId = tcGroupPopulation.groupId;
@@ -369,7 +402,6 @@ export class CalculationService {
         );
       const groupEpisodeResult: PopulationEpisodeResult[] =
         episodeResults[groupId];
-      let groupPass = true;
 
       const tcPopTypeCount = {};
       const patientBased =
@@ -433,9 +465,7 @@ export class CalculationService {
               measureGroupPopulation?.definition
             );
           }
-          groupPass =
-            groupPass &&
-            this.isValuePass(tcPopVal.actual, tcPopVal.expected, patientBased);
+
           if (tcPopTypeCount[tcPopVal.name]) {
             tcPopTypeCount[tcPopVal.name] = tcPopTypeCount[tcPopVal.name] + 1;
           } else {
@@ -444,25 +474,26 @@ export class CalculationService {
         }
       });
 
-      tcGroupPopulation?.stratificationValues?.map((stratValue) => {
+      tcGroupPopulation?.stratificationValues?.forEach((stratValue) => {
         const strataDefinition = measureGroup.stratifications.find(
           (stratification) => stratification.id === stratValue.id
         )?.cqlDefinition;
-        const actualResult = patientBased
+        stratValue.actual = patientBased
           ? groupResultsMap[groupId]?.[strataDefinition] > 0
           : groupResultsMap[groupId]?.[strataDefinition];
-
-        return {
-          ...stratValue,
-          actual: actualResult,
-        };
       });
+
+      allGroupsPass = allGroupsPass && this.isGroupPass(tcGroupPopulation);
 
       if (!testAllGroups) {
         // TODO: remove when supporting multiple groups on list page
         break;
       }
     }
+
+    updatedTestCase.executionStatus = allGroupsPass
+      ? ExecutionStatusType.PASS
+      : ExecutionStatusType.FAIL;
 
     return updatedTestCase;
   }

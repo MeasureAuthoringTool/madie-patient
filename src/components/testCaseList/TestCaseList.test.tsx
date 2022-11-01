@@ -290,6 +290,8 @@ describe("TestCaseList component", () => {
               bundleState: [measureBundle, setMeasureBundle],
               valueSetsState: [valueSets, setValueSets],
               executionContextReady: true,
+              executing: false,
+              setExecuting: jest.fn(),
             }}
           >
             <TestCaseList />
@@ -327,7 +329,7 @@ describe("TestCaseList component", () => {
 
   it("should render coverage tabs", async () => {
     renderTestCaseListComponent();
-    expect(screen.getByTestId("code-coverage-tabs")).toBeInTheDocument();
+    expect(await screen.findByTestId("code-coverage-tabs")).toBeInTheDocument();
     expect(screen.getByTestId("passing-tab")).toBeInTheDocument();
     expect(screen.getByTestId("coverage-tab")).toBeInTheDocument();
 
@@ -357,12 +359,9 @@ describe("TestCaseList component", () => {
     });
 
     renderTestCaseListComponent();
-    await waitFor(() => {
-      const errorMessage = screen.getByTestId("display-tests-error");
-      expect(errorMessage).toHaveTextContent(
-        "Unable to retrieve test cases, please try later."
-      );
-    });
+    expect(await screen.findByTestId("display-tests-error")).toHaveTextContent(
+      "Unable to retrieve test cases, please try later."
+    );
   });
 
   it("should navigate to the Test Case details page on edit button click", async () => {
