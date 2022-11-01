@@ -9,6 +9,7 @@ import {
   DetailedPopulationGroupResult,
   EpisodeResults,
   ExecutionResult,
+  CalculationOutput,
 } from "fqm-execution/build/types/Calculator";
 import {
   FinalResult,
@@ -64,7 +65,7 @@ describe("CalculationService Tests", () => {
       [officeVisitValueSet]
     );
     const expectedPopulationResults =
-      calculationResults[0].detailedResults[0].populationResults;
+      calculationResults.results[0].detailedResults[0].populationResults;
     expect(expectedPopulationResults).toEqual([
       {
         criteriaExpression: "ipp",
