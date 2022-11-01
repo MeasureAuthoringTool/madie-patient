@@ -138,8 +138,9 @@ const TestCaseList = () => {
             measureBundle,
             valueSets
           );
+        const regex = /<h2> Clause Coverage: [0-9]*\.[0-9]+%<\/h2>/i;
         const executionResults = calculationOutput.results,
-          executionHTML = calculationOutput.coverageHTML;
+          executionHTML = calculationOutput.coverageHTML.replace(regex, "");
         setCoverageHTML(executionHTML);
         const nextExecutionResults = {};
         validTestCases.forEach((testCase) => {
