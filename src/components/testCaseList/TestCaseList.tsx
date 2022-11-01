@@ -152,7 +152,7 @@ const TestCaseList = () => {
           const processedTC = calculationService().processTestCaseResults(
             testCase,
             measure.groups,
-            detailedResults,
+            detailedResults as DetailedPopulationGroupResult[],
             false
           );
           testCase.groupPopulations = processedTC.groupPopulations;
