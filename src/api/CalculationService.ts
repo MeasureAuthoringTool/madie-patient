@@ -316,6 +316,7 @@ export class CalculationService {
         if (
           populationType === PopulationType.DENOMINATOR_OBSERVATION ||
           populationType === "denominatorObservation" ||
+          populationType === PopulationType.MEASURE_POPULATION_OBSERVATION ||
           populationType === "measurePopulationObservation"
         ) {
           if (index === observationCount) {
