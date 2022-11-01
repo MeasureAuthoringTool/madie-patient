@@ -1,9 +1,10 @@
 import React from "react";
-import { Tabs, Tab } from "@mui/material";
+import { Tabs, Tab, CircularProgress, Box } from "@mui/material";
 import { Button } from "@madie/madie-design-system/dist/react";
 import AddIcon from "@mui/icons-material/Add";
 import * as _ from "lodash";
 import { Measure } from "@madie/madie-models";
+import useExecutionContext from "../routes/useExecutionContext";
 import { TestCasesPassingDetailsProps } from "./TestCaseList";
 
 export interface NavTabProps {
@@ -30,6 +31,7 @@ const defaultStyle = {
 };
 
 export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
+  const { executionContextReady, executing } = useExecutionContext();
   const {
     activeTab,
     setActiveTab,
@@ -122,18 +124,35 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
         </div>
         <div style={{ margin: "0 6px 0 26px" }}>
           {canEdit && (
-            <Button
-              style={{ backgroundColor: "#048087" }}
-              disabled={
-                !!measure?.cqlErrors ||
-                _.isNil(measure?.groups) ||
-                measure?.groups.length === 0
-              }
-              onClick={executeTestCases}
-              data-testid="execute-test-cases-button"
-            >
-              Execute Test Cases
-            </Button>
+            <Box sx={{ position: "relative" }}>
+              <Button
+                variant="cyan"
+                disabled={
+                  !!measure?.cqlErrors ||
+                  _.isNil(measure?.groups) ||
+                  measure?.groups.length === 0 ||
+                  !executionContextReady ||
+                  executing
+                }
+                onClick={executeTestCases}
+                data-testid="execute-test-cases-button"
+              >
+                Execute Test Cases
+              </Button>
+              {executing && (
+                <CircularProgress
+                  size={24}
+                  sx={{
+                    color: "#209FA6",
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    marginTop: "-5px",
+                    marginLeft: "-12px",
+                  }}
+                />
+              )}
+            </Box>
           )}
         </div>
       </div>

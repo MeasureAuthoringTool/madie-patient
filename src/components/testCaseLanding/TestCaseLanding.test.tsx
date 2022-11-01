@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import TestCaseLanding from "./TestCaseLanding";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
@@ -33,6 +33,7 @@ const valueSets = [] as ValueSet[];
 const setMeasure = jest.fn();
 const setMeasureBundle = jest.fn();
 const setValueSets = jest.fn();
+const setExecuting = jest.fn();
 
 jest.mock("@madie/madie-util", () => ({
   useDocumentTitle: jest.fn(),
@@ -57,6 +58,8 @@ describe("TestCaseLanding component", () => {
               bundleState: [measureBundle, setMeasureBundle],
               valueSetsState: [valueSets, setValueSets],
               executionContextReady: true,
+              executing: false,
+              setExecuting: setExecuting,
             }}
           >
             <Routes>
