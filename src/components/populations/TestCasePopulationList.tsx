@@ -81,7 +81,7 @@ const TestCasePopulationList = ({
   const measureObservationsCount = (population) => {
     let observationCount = 0;
     if (
-      population.name === PopulationType.MEASURE_OBSERVATION ||
+      population.name === PopulationType.MEASURE_POPULATION_OBSERVATION ||
       population.name === PopulationType.DENOMINATOR_OBSERVATION ||
       population.name === PopulationType.NUMERATOR_OBSERVATION
     ) {

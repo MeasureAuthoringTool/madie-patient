@@ -249,10 +249,7 @@ function addObservations(
   //so observationBucket has original observations that came from a Population ist
   // and tempPopBucket is just non-observation populations
   populationBucket.forEach((value) => {
-    let obvType: PopulationType =
-      value.name === PopulationType.MEASURE_POPULATION
-        ? PopulationType.MEASURE_OBSERVATION
-        : (`${popType}Observation` as PopulationType);
+    let obvType: PopulationType = `${popType}Observation` as PopulationType;
     if (value.name === popType) {
       //if we need to add observations?
       if (expectedObservationsPerPop > observationBucket.length) {

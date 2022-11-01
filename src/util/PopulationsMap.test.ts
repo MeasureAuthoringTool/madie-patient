@@ -475,7 +475,7 @@ it("shall add an observation if measure population for CV group changes from 0 t
     PopulationType.MEASURE_POPULATION
   );
   expect(resultPops[0].populationValues[2].name).toEqual(
-    PopulationType.MEASURE_OBSERVATION
+    PopulationType.MEASURE_POPULATION_OBSERVATION
   );
 });
 

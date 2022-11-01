@@ -201,13 +201,13 @@ describe("TestCasePopulationPopulation component", () => {
       },
       {
         id: "4",
-        name: PopulationType.MEASURE_OBSERVATION,
+        name: PopulationType.MEASURE_POPULATION_OBSERVATION,
         expected: 1,
         actual: 1,
       },
       {
         id: "5",
-        name: PopulationType.MEASURE_OBSERVATION,
+        name: PopulationType.MEASURE_POPULATION_OBSERVATION,
         expected: 2,
         actual: 2,
       },
@@ -231,8 +231,8 @@ describe("TestCasePopulationPopulation component", () => {
     const tableRows = table.querySelectorAll("tbody tr");
     expect(tableRows[0]).toHaveTextContent("Initial Population");
     expect(tableRows[1]).toHaveTextContent("Measure Population");
-    expect(tableRows[2]).toHaveTextContent("Measure Observation 1");
-    expect(tableRows[3]).toHaveTextContent("Measure Observation 2");
+    expect(tableRows[2]).toHaveTextContent("Measure Population Observation 1");
+    expect(tableRows[3]).toHaveTextContent("Measure Population Observation 2");
   });
 });
 
