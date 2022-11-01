@@ -11,45 +11,13 @@ import IconButton from "@mui/material/IconButton";
 import Collapse from "@mui/material/Collapse";
 import Chip from "@mui/material/Chip";
 import TruncateText from "./TruncateText";
-import {
-  DisplayGroupPopulation,
-  GroupPopulation,
-  TestCase as TestCaseModel,
-} from "@madie/madie-models";
+import { TestCase as TestCaseModel } from "@madie/madie-models";
 import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calculator";
-import * as _ from "lodash";
-import { FHIR_POPULATION_CODES } from "../../util/PopulationsMap";
 import GroupPopulations from "../populations/GroupPopulations";
 const EditButton = tw.button`text-blue-600 hover:text-blue-900`;
 const StyledCell = styled.td`
   white-space: pre;
 `;
-
-const mapGroups = (
-  groupPopulation: GroupPopulation,
-  results: DetailedPopulationGroupResult
-): DisplayGroupPopulation[] => {
-  if (_.isNil(groupPopulation)) {
-    return null;
-  }
-  return [
-    {
-      ...groupPopulation,
-      populationValues: groupPopulation?.populationValues?.map(
-        (populationValue) => {
-          return {
-            ...populationValue,
-            actual: !!results?.populationResults?.find(
-              (popResult) =>
-                FHIR_POPULATION_CODES[popResult.populationType] ===
-                populationValue.name
-            )?.result,
-          };
-        }
-      ),
-    },
-  ];
-};
 
 export function getStatusColor(executionStatus: string) {
   if (executionStatus === "Invalid") {
@@ -77,10 +45,7 @@ const TestCase = ({
   const status = testCase.executionStatus;
   const statusColor = getStatusColor(testCase.executionStatus);
   // only one group for now
-  const groupPopulations = mapGroups(
-    testCase?.groupPopulations?.[0],
-    executionResult?.[0]
-  );
+  const groupPops = [testCase?.groupPopulations?.[0]].filter((tc) => !!tc);
   const executionRun = executionResult && executionResult[0] ? true : false;
   // Test how the screen will handle multiple values for the future.
   // if (groupPopulations.length) {
@@ -178,7 +143,7 @@ const TestCase = ({
               data-testid={`population-table-${testCase.id}`}
             >
               <GroupPopulations
-                groupPopulations={groupPopulations}
+                groupPopulations={groupPops}
                 executionRun={executionRun}
               />
             </div>
