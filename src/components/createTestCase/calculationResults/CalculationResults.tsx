@@ -30,7 +30,7 @@ const CalculationResults = ({
   };
 
   const coverageHtmls = calculationResults?.map((result, index) =>
-    result.html?.replace(
+    result.html.replace(
       originalGroupName(result.groupId),
       updatedGroupName(index + 1)
     )

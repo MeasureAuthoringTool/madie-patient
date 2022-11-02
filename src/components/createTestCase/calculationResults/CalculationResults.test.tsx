@@ -58,17 +58,4 @@ describe("CalculationResults", () => {
     expect(screen.getByText(`${errorMessage}`)).toBeInTheDocument();
     expect(screen.getByTestId("calculation-results").innerHTML).toEqual("");
   });
-
-  test("render highlighting if calculation results not have coverage html", () => {
-    // no coverage html present in results
-    calculationResults[0].html = undefined;
-    calculationResults[1].html = undefined;
-    render(
-      <CalculationResults
-        calculationResults={[]}
-        calculationErrors={undefined}
-      />
-    );
-    expect(screen.getByTestId("calculation-results").innerHTML).toEqual("");
-  });
 });
