@@ -157,6 +157,8 @@ const renderWithRouter = (
             bundleState: [measureBundle, setMeasureBundle],
             valueSetsState: [valueSets, setValueSets],
             executionContextReady: true,
+            executing: false,
+            setExecuting: jest.fn(),
           }}
         >
           <Routes>
@@ -2263,11 +2265,12 @@ describe("Measure Calculation ", () => {
     )) as HTMLInputElement;
     userEvent.clear(editor);
     await waitFor(() => expect(editor.value).toBe(""));
-    userEvent.paste(editor, `   `);
+    // paste is either including the original editor.value content or
+    //  somehow the cleared editor state is reverted to its original.
+    userEvent.paste(editor, "    ");
     await waitFor(() => expect(editor.value).toBeTruthy());
 
     const runButton = await screen.findByRole("button", { name: "Run Test" });
-    userEvent.click(runButton);
     await waitFor(async () => userEvent.click(runButton));
 
     userEvent.click(screen.getByTestId("highlighting-tab"));
