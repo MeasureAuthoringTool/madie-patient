@@ -19,6 +19,23 @@ const CalculationResults = ({
   calculationResults,
   calculationErrors,
 }: CalculationResultType) => {
+  // template for group name coming from execution engine
+  const originalGroupName = (name) => {
+    return `<h2>Population Group: ${name}</h2>`;
+  };
+
+  // We wanted to have our own group name. This is the template for group name
+  const updatedGroupName = (name) => {
+    return `<br/><h4>Population Criteria ${name}</h4>`;
+  };
+
+  const coverageHtmls = calculationResults?.map((result, index) =>
+    result.html?.replace(
+      originalGroupName(result.groupId),
+      updatedGroupName(index + 1)
+    )
+  );
+
   return (
     <div tw="p-5">
       {!calculationResults && !calculationErrors && (
@@ -34,11 +51,9 @@ const CalculationResults = ({
           description={calculationErrors.message}
         />
       )}
-      {calculationResults && (
+      {coverageHtmls && (
         <div tw="text-sm" data-testid="calculation-results">
-          {calculationResults.map((calculationResult) =>
-            parse(calculationResult.html)
-          )}
+          {coverageHtmls.map((coverageHtml) => parse(coverageHtml))}
         </div>
       )}
     </div>
