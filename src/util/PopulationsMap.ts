@@ -209,7 +209,7 @@ function addRemoveObservationsForPopulationCritieria(
     newPopBucket.splice(denomIdx, 0, ...denomBucket);
 
     const numerIdx =
-      populationBucket.findIndex(
+      newPopBucket.findIndex(
         (value) => value.name === PopulationType.NUMERATOR
       ) + 1;
 
