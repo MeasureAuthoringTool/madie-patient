@@ -1,4 +1,5 @@
 import * as Yup from "yup";
+import { PopulationType } from "@madie/madie-models";
 
 export const TestCaseValidator = Yup.object().shape({
   title: Yup.string()
@@ -29,9 +30,9 @@ export const TestCaseValidator = Yup.object().shape({
                         // get access to "this" that is used to create error
                         function (value, population) {
                           const observations = [
-                            "measurePopulationObservation",
-                            "numeratorObservation",
-                            "denominatorObservation",
+                            PopulationType.MEASURE_POPULATION_OBSERVATION,
+                            PopulationType.NUMERATOR_OBSERVATION,
+                            PopulationType.DENOMINATOR_OBSERVATION,
                           ];
                           if (value === undefined || value === null) {
                             return true;
