@@ -157,6 +157,8 @@ const renderWithRouter = (
             bundleState: [measureBundle, setMeasureBundle],
             valueSetsState: [valueSets, setValueSets],
             executionContextReady: true,
+            executing: false,
+            setExecuting: jest.fn(),
           }}
         >
           <Routes>
