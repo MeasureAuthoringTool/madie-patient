@@ -190,21 +190,35 @@ function addRemoveObservationsForPopulationCritieria(
       PopulationType,
       PopulationType
     ] = determinePopType(expectedPopType);
-    const index =
-      populationBucket.findIndex((value) => value.name === nonExcludedPopType) +
-      1;
-    const [newPopBucket, tempBucket]: [
+
+    const [newPopBucket, denomBucket, numerBucket, msrPopBucket]: [
+      PopulationExpectedValue[],
+      PopulationExpectedValue[],
       PopulationExpectedValue[],
       PopulationExpectedValue[]
     ] = addObservations(
       expectedObservationsPerPop,
       populationBucket,
-      nonExcludedPopType,
-      index
+      nonExcludedPopType
     );
+    const denomIdx =
+      populationBucket.findIndex(
+        (value) => value.name === PopulationType.DENOMINATOR
+      ) + 1;
 
-    newPopBucket.splice(index, 0, ...tempBucket);
+    newPopBucket.splice(denomIdx, 0, ...denomBucket);
 
+    const numerIdx =
+      populationBucket.findIndex(
+        (value) => value.name === PopulationType.NUMERATOR
+      ) + 1;
+
+    newPopBucket.splice(numerIdx, 0, ...numerBucket);
+    const msrPpIdx =
+      populationBucket.findIndex(
+        (value) => value.name === PopulationType.MEASURE_POPULATION
+      ) + 1;
+    newPopBucket.splice(msrPpIdx, 0, ...msrPopBucket);
     targetPopulationCriteria.populationValues = [...newPopBucket];
   }
 }
@@ -230,15 +244,23 @@ function defineExpectedPopulationType(changedPopulationName: PopulationType) {
 function addObservations(
   expectedObservationsPerPop: number,
   populationBucket: PopulationExpectedValue[],
-  popType: PopulationType,
-  index: number
-): [PopulationExpectedValue[], PopulationExpectedValue[]] {
-  const observationBucket: PopulationExpectedValue[] = populationBucket.filter(
-    (value) =>
-      value.name == PopulationType.MEASURE_POPULATION_OBSERVATION ||
-      value.name == PopulationType.DENOMINATOR_OBSERVATION ||
-      value.name == PopulationType.NUMERATOR_OBSERVATION
+  popType: PopulationType
+): [
+  PopulationExpectedValue[],
+  PopulationExpectedValue[],
+  PopulationExpectedValue[],
+  PopulationExpectedValue[]
+] {
+  let denominatorBucket: PopulationExpectedValue[] = populationBucket.filter(
+    (value) => value.name == PopulationType.DENOMINATOR_OBSERVATION
   );
+  let numeratorBucket: PopulationExpectedValue[] = populationBucket.filter(
+    (value) => value.name == PopulationType.NUMERATOR_OBSERVATION
+  );
+  let measurePopulationObservationBucket: PopulationExpectedValue[] =
+    populationBucket.filter(
+      (value) => value.name == PopulationType.MEASURE_POPULATION_OBSERVATION
+    );
 
   const tempPopBucket: PopulationExpectedValue[] = populationBucket.filter(
     (value) =>
@@ -254,31 +276,71 @@ function addObservations(
     );
     if (value.name === popType) {
       //if we neeed to add observations?
-      if (expectedObservationsPerPop > observationBucket.length) {
-        let addObservations =
-          expectedObservationsPerPop - observationBucket.length;
-        for (let i = 0; i < addObservations; i++) {
-          observationBucket.push({
-            name: obvType,
-            expected: 0,
-            id: String(popType) + "Observation" + (index + i),
-            criteriaReference: value.id,
-          } as unknown as PopulationExpectedValue);
-        }
-        //or remove observations
-      } else if (expectedObservationsPerPop < observationBucket.length) {
-        let removeObservations =
-          observationBucket.length - expectedObservationsPerPop;
-        for (let i = 0; i < removeObservations; i++) {
-          observationBucket.pop();
-        }
+      if (popType === PopulationType.DENOMINATOR) {
+        denominatorBucket = modifyBucket(
+          denominatorBucket,
+          expectedObservationsPerPop,
+          obvType,
+          popType,
+          value
+        );
+      } else if (popType === PopulationType.NUMERATOR) {
+        numeratorBucket = modifyBucket(
+          numeratorBucket,
+          expectedObservationsPerPop,
+          obvType,
+          popType,
+          value
+        );
+      } else if (popType === PopulationType.MEASURE_POPULATION) {
+        measurePopulationObservationBucket = modifyBucket(
+          measurePopulationObservationBucket,
+          expectedObservationsPerPop,
+          obvType,
+          popType,
+          value
+        );
       }
+
       //return the new array and mutated copy of the original
     }
   });
 
-  return [tempPopBucket, observationBucket];
+  return [
+    tempPopBucket,
+    denominatorBucket,
+    numeratorBucket,
+    measurePopulationObservationBucket,
+  ];
 }
+function modifyBucket(
+  observationBucket: PopulationExpectedValue[],
+  expectedObservationsPerPop: number,
+  obvType: PopulationType,
+  popType: PopulationType,
+  value: PopulationExpectedValue
+): PopulationExpectedValue[] {
+  const existingObvLen: number = observationBucket.length;
+  if (expectedObservationsPerPop > existingObvLen) {
+    let addObservations = expectedObservationsPerPop - existingObvLen;
+    for (let i = 0; i < addObservations; i++) {
+      observationBucket.push({
+        name: obvType,
+        expected: 0,
+        id: String(popType) + "Observation" + (i + existingObvLen),
+        criteriaReference: value.id,
+      } as unknown as PopulationExpectedValue);
+    }
+    //or remove observations
+  } else if (expectedObservationsPerPop < existingObvLen) {
+    let removeObservations = existingObvLen - expectedObservationsPerPop;
+    for (let i = 0; i < removeObservations; i++) {
+      observationBucket.pop();
+    }
+  }
+  return observationBucket;
+}
+
 function determinePopType(
   popType: PopulationType
 ): [PopulationType, PopulationType] {
