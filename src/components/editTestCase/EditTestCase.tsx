@@ -670,17 +670,17 @@ const EditTestCase = () => {
                 Editor tab
               </div>
             ))}
-          {activeTab === "highlighting" && (
+          {activeTab === "highlighting" && !executing && (
             <CalculationResults
               calculationResults={populationGroupResults}
               calculationErrors={calculationErrors}
             />
           )}
-          {/* {activeTab === "highlighting" && executing && (
+          {activeTab === "highlighting" && executing && (
             <div style={{ display: "flex", justifyContent: "center" }}>
               <MadieSpinner style={{ height: 50, width: 50 }} />
             </div>
-          )} */}
+          )}
           {activeTab === "expectoractual" && (
             <ExpectedActual
               canEdit={canEdit}
