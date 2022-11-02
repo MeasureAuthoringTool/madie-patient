@@ -25,12 +25,13 @@ const TestCasePopulation = ({
   error,
 }: TestCasePopulationProps) => {
   const populationNameTemplate = (prop) => {
-    if (
-      prop === "measureObservation" ||
-      prop === "measurePopulationObservation" ||
-      prop === "numeratorObservation" ||
-      prop === "denominatorObservation"
-    ) {
+    if (prop === "measurePopulationObservation") {
+      return (
+        _.startCase(PopulationType.MEASURE_OBSERVATION) +
+        (measureObservationsCount > 0 ? " " + measureObservationsCount : "")
+      );
+    }
+    if (prop === "numeratorObservation" || prop === "denominatorObservation") {
       return (
         _.startCase(population.name) +
         (measureObservationsCount > 0 ? " " + measureObservationsCount : "")

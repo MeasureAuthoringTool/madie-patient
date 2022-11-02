@@ -231,8 +231,8 @@ describe("TestCasePopulationPopulation component", () => {
     const tableRows = table.querySelectorAll("tbody tr");
     expect(tableRows[0]).toHaveTextContent("Initial Population");
     expect(tableRows[1]).toHaveTextContent("Measure Population");
-    expect(tableRows[2]).toHaveTextContent("Measure Population Observation 1");
-    expect(tableRows[3]).toHaveTextContent("Measure Population Observation 2");
+    expect(tableRows[2]).toHaveTextContent("Measure Observation 1");
+    expect(tableRows[3]).toHaveTextContent("Measure Observation 2");
   });
 });
 
