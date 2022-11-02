@@ -404,9 +404,9 @@ const EditTestCase = () => {
       );
 
       resetForm({
-        values: { ...testCase },
+        values: _.cloneDeep(updatedTestCase),
       });
-      setTestCase(updatedTestCase);
+      setTestCase(_.cloneDeep(updatedTestCase));
       setEditorVal(updatedTestCase.json);
 
       handleTestCaseResponse(updatedTestCase, "update");
@@ -484,7 +484,10 @@ const EditTestCase = () => {
   const discardChanges = () => {
     setOriginalEditorVal("");
     setEditorVal(testCase.json ? testCase.json : "");
-    resetForm();
+    resetForm({
+      values: _.cloneDeep(testCase),
+    });
+    setTestCase(_.cloneDeep(testCase));
     setDiscardDialogOpen(false);
   };
 
