@@ -4,6 +4,7 @@ import {
   DisplayPopulationValue,
   Measure,
   Group,
+  MeasureScoring,
 } from "@madie/madie-models";
 import {
   triggerPopChanges,
@@ -395,6 +396,87 @@ it("shall add an observation if numerator expected value changes from 0 to 1, an
     PopulationType.NUMERATOR_OBSERVATION
   );
   expect(resultPops[0].populationValues[3].id).toEqual("numeratorObservation0");
+});
+
+it("shall add an observation if measure population for CV group changes from 0 to 1", () => {
+  const initialPopulation: DisplayPopulationValue = {
+    id: "pid-1",
+    name: PopulationType.INITIAL_POPULATION,
+    expected: 0,
+    actual: undefined,
+  };
+
+  const measurePopulation: DisplayPopulationValue = {
+    id: "pid-2",
+    name: PopulationType.MEASURE_POPULATION,
+    expected: 1,
+    actual: undefined,
+  };
+
+  const measureObservation: DisplayPopulationValue = {
+    id: "o-3",
+    name: PopulationType.MEASURE_OBSERVATION,
+    expected: 1,
+    actual: undefined,
+    criteriaReference: "pid-2",
+  };
+
+  const populationValues: DisplayPopulationValue[] = [
+    initialPopulation,
+    measurePopulation,
+    measureObservation,
+  ];
+
+  const testCaseGroup: GroupPopulation = {
+    groupId: "shrug",
+    populationBasis: "Encounter",
+    scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+    populationValues,
+    stratificationValues: [],
+  };
+
+  const testCaseGroups: GroupPopulation[] = [testCaseGroup];
+  const measureGroup = [
+    {
+      id: "shrug",
+      measureName: "the measure for testing",
+      cql: "",
+      elmJson: "",
+      createdBy: "test-user",
+      measureObservations: [
+        {
+          id: "uuid-2",
+          definition: "fun",
+          criteriaReference: "pid-2",
+        },
+      ],
+      scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+      populationBasis: "Encounter",
+    },
+  ];
+  const resultPops: GroupPopulation[] = triggerPopChanges(
+    testCaseGroups,
+    testCaseGroup.groupId,
+    {
+      id: "pid-3",
+      name: PopulationType.MEASURE_POPULATION,
+      expected: 1,
+      actual: undefined,
+    },
+    measureGroup
+  );
+
+  expect(resultPops[0].populationValues.length).toEqual(3);
+
+  expect(resultPops[0].populationValues[0].name).toEqual(
+    PopulationType.INITIAL_POPULATION
+  );
+  expect(resultPops[0].populationValues[1].name).toEqual(
+    PopulationType.MEASURE_POPULATION
+  );
+  expect(resultPops[0].populationValues[2].name).toEqual(
+    PopulationType.MEASURE_POPULATION_OBSERVATION
+  );
 });
 
 it("return the input matches output with no changes", () => {

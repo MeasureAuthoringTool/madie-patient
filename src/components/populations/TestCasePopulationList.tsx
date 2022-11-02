@@ -3,7 +3,7 @@ import tw, { styled } from "twin.macro";
 import "styled-components/macro";
 import * as _ from "lodash";
 import TestCasePopulation from "./TestCasePopulation";
-import { DisplayPopulationValue } from "@madie/madie-models";
+import { DisplayPopulationValue, PopulationType } from "@madie/madie-models";
 import classNames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -76,16 +76,43 @@ const TestCasePopulationList = ({
   errors,
 }: TestCasePopulationListProps) => {
   let measureObservations = [];
+  let numeratorObservations = [];
+  let denominatorObservations = [];
   let contentId = content?.toLocaleLowerCase().replace(/(\W)+/g, "-");
+
+  const getPopulationCount = (populations, type: PopulationType): number => {
+    return populations.filter((res) => res.name === type).length;
+  };
+
+  const getObservationCount = (
+    observationCount: number,
+    observation: PopulationType,
+    observations: Array<PopulationType>
+  ) => {
+    if (observationCount > 1) {
+      observations.push(observation);
+      return observations.length;
+    } else {
+      observations = [];
+      return 0;
+    }
+  };
+
   const measureObservationsCount = (population) => {
-    const ratioMeasureObservations = populations.filter(
-      (res) => res.name === "measureObservation"
-    ).length;
-    if (ratioMeasureObservations > 1) {
-      if (population.name === "measureObservation") {
-        measureObservations.push(population.name);
-        return measureObservations.length;
-      }
+    let count = 0;
+    if (population.name === PopulationType.MEASURE_POPULATION_OBSERVATION) {
+      count = getPopulationCount(populations, population.name);
+      return getObservationCount(count, population.name, measureObservations);
+    } else if (population.name === PopulationType.DENOMINATOR_OBSERVATION) {
+      count = getPopulationCount(populations, population.name);
+      return getObservationCount(
+        count,
+        population.name,
+        denominatorObservations
+      );
+    } else if (population.name === PopulationType.NUMERATOR_OBSERVATION) {
+      count = getPopulationCount(populations, population.name);
+      return getObservationCount(count, population.name, numeratorObservations);
     } else {
       return 0;
     }
@@ -110,7 +137,7 @@ const TestCasePopulationList = ({
   const view = determineGroupResult(populationBasis, populations, executionRun);
 
   /*
-    we have three seperate views
+    we have three separate views
     - not run
     - run and all pass
     - run and not all pass

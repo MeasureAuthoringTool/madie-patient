@@ -7,7 +7,7 @@ import {
   MeasureObservation,
 } from "@madie/madie-models";
 
-import _, { remove } from "lodash";
+import _ from "lodash";
 
 export const FHIR_POPULATION_CODES = {
   "initial-population": PopulationType.INITIAL_POPULATION,
@@ -275,7 +275,7 @@ function addObservations(
       String(popType).concat("Observation")
     );
     if (value.name === popType) {
-      //if we neeed to add observations?
+      //if we need to add observations?
       if (popType === PopulationType.DENOMINATOR) {
         denominatorBucket = modifyBucket(
           denominatorBucket,

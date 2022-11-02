@@ -1,10 +1,7 @@
 import React from "react";
 import "styled-components/macro";
-import {
-  DisplayPopulationValue,
-  getPopulationCode,
-  PopulationType,
-} from "@madie/madie-models";
+import { DisplayPopulationValue, PopulationType } from "@madie/madie-models";
+import _ from "lodash";
 import ExpectActualInput from "./ExpectActualInput";
 
 export interface TestCasePopulationProps {
@@ -28,22 +25,22 @@ const TestCasePopulation = ({
   error,
 }: TestCasePopulationProps) => {
   const populationNameTemplate = (prop) => {
+    if (prop === PopulationType.MEASURE_POPULATION_OBSERVATION) {
+      return (
+        _.startCase(PopulationType.MEASURE_OBSERVATION) +
+        (measureObservationsCount > 0 ? " " + measureObservationsCount : "")
+      );
+    }
     if (
-      prop === "measureObservation" ||
-      prop === "measurePopulationObservation" ||
-      prop === "numeratorObservation" ||
-      prop === "denominatorObservation"
+      prop === PopulationType.NUMERATOR_OBSERVATION ||
+      prop === PopulationType.DENOMINATOR_OBSERVATION
     ) {
       return (
-        getPopulationCode(
-          population.name as PopulationType
-        ).toLocaleLowerCase() +
-        (measureObservationsCount > 0 ? measureObservationsCount : "")
+        _.startCase(population.name) +
+        (measureObservationsCount > 0 ? " " + measureObservationsCount : "")
       );
     } else {
-      return getPopulationCode(
-        population.name as PopulationType
-      ).toLocaleLowerCase();
+      return _.startCase(population.name);
     }
   };
 

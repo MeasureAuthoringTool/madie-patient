@@ -4,7 +4,11 @@ import { MemoryRouter } from "react-router-dom";
 import TestCasePopulationList, {
   determineGroupResult,
 } from "./TestCasePopulationList";
-import { DisplayPopulationValue, PopulationType } from "@madie/madie-models";
+import {
+  DisplayPopulationValue,
+  MeasureScoring,
+  PopulationType,
+} from "@madie/madie-models";
 import userEvent from "@testing-library/user-event";
 
 describe("TestCasePopulationPopulation component", () => {
@@ -46,15 +50,9 @@ describe("TestCasePopulationPopulation component", () => {
     expect(tableHeaders[3]).toHaveTextContent("Actual");
 
     const tableRows = table.querySelectorAll("tbody tr");
-    expect(tableRows[0]).toHaveTextContent("ipp");
-    // expect(
-    //   screen.getByTestId(`test-population-icon-${testCasePopulations[0].name}`)
-    // ).toBeInTheDocument();
+    expect(tableRows[0]).toHaveTextContent("Initial Population");
 
-    expect(tableRows[1]).toHaveTextContent("denom");
-    // expect(
-    //   screen.getByTestId(`test-population-icon-${testCasePopulations[1].name}`)
-    // ).toBeInTheDocument();
+    expect(tableRows[1]).toHaveTextContent("Denominator");
 
     const ippCb = screen.getByTestId(
       "test-population-initialPopulation-expected"
@@ -102,9 +100,9 @@ describe("TestCasePopulationPopulation component", () => {
     const table = screen.getByTestId("test-case-population-list-tbl");
 
     const tableRows = table.querySelectorAll("tbody tr");
-    expect(tableRows[0]).toHaveTextContent("ipp");
-    expect(tableRows[1]).toHaveTextContent("denom");
-    expect(tableRows[2]).toHaveTextContent("observ");
+    expect(tableRows[0]).toHaveTextContent("Initial Population");
+    expect(tableRows[1]).toHaveTextContent("Denominator");
+    expect(tableRows[2]).toHaveTextContent("Measure Observation");
 
     const ippCb = screen.getByTestId(
       "test-population-initialPopulation-expected"
@@ -131,26 +129,37 @@ describe("TestCasePopulationPopulation component", () => {
         actual: 1,
       },
       {
+        id: "4",
+        name: PopulationType.DENOMINATOR_OBSERVATION,
+        expected: 1,
+        actual: 1,
+      },
+      {
+        id: "5",
+        name: PopulationType.DENOMINATOR_OBSERVATION,
+        expected: 2,
+        actual: 2,
+      },
+      {
         id: "3",
         name: PopulationType.NUMERATOR,
         expected: 1,
         actual: 1,
       },
       {
-        id: "4",
-        name: "measureObservation",
+        id: "6",
+        name: PopulationType.NUMERATOR_OBSERVATION,
         expected: 1,
         actual: 1,
       },
       {
-        id: "5",
-        name: "measureObservation",
-        expected: 2,
-        actual: 2,
+        id: "7",
+        name: PopulationType.NUMERATOR_OBSERVATION,
+        expected: 1,
+        actual: 1,
       },
     ];
     const handleChange = jest.fn();
-    const setChangedPopulation = jest.fn();
     render(
       <MemoryRouter>
         <TestCasePopulationList
@@ -160,18 +169,70 @@ describe("TestCasePopulationPopulation component", () => {
           populationBasis="boolean"
           content="ratio"
           i={0}
-          scoring="Ratio"
+          scoring={MeasureScoring.RATIO}
         />
       </MemoryRouter>
     );
     const table = screen.getByTestId("test-case-population-list-tbl");
 
     const tableRows = table.querySelectorAll("tbody tr");
-    expect(tableRows[0]).toHaveTextContent("ipp");
-    expect(tableRows[1]).toHaveTextContent("denom");
-    expect(tableRows[2]).toHaveTextContent("num");
-    expect(tableRows[3]).toHaveTextContent("observ");
-    expect(tableRows[4]).toHaveTextContent("observ");
+    expect(tableRows[0]).toHaveTextContent("Initial Population");
+    expect(tableRows[1]).toHaveTextContent("Denominator");
+    expect(tableRows[2]).toHaveTextContent("Denominator Observation 1");
+    expect(tableRows[3]).toHaveTextContent("Denominator Observation 2");
+    expect(tableRows[4]).toHaveTextContent("Numerator");
+    expect(tableRows[5]).toHaveTextContent("Numerator Observation 1");
+    expect(tableRows[6]).toHaveTextContent("Numerator Observation 2");
+  });
+
+  it("should render CV observations", async () => {
+    const testCasePopulations = [
+      {
+        id: "1",
+        name: PopulationType.INITIAL_POPULATION,
+        expected: 2,
+        actual: 2,
+      },
+      {
+        id: "2",
+        name: PopulationType.MEASURE_POPULATION,
+        expected: 1,
+        actual: 1,
+      },
+      {
+        id: "4",
+        name: PopulationType.MEASURE_POPULATION_OBSERVATION,
+        expected: 1,
+        actual: 1,
+      },
+      {
+        id: "5",
+        name: PopulationType.MEASURE_POPULATION_OBSERVATION,
+        expected: 2,
+        actual: 2,
+      },
+    ];
+    const handleChange = jest.fn();
+    render(
+      <MemoryRouter>
+        <TestCasePopulationList
+          populations={testCasePopulations}
+          onChange={handleChange}
+          disableExpected={false}
+          populationBasis="boolean"
+          content="ratio"
+          i={0}
+          scoring={MeasureScoring.CONTINUOUS_VARIABLE}
+        />
+      </MemoryRouter>
+    );
+    const table = screen.getByTestId("test-case-population-list-tbl");
+
+    const tableRows = table.querySelectorAll("tbody tr");
+    expect(tableRows[0]).toHaveTextContent("Initial Population");
+    expect(tableRows[1]).toHaveTextContent("Measure Population");
+    expect(tableRows[2]).toHaveTextContent("Measure Observation 1");
+    expect(tableRows[3]).toHaveTextContent("Measure Observation 2");
   });
 });
 
