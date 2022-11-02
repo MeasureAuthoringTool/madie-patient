@@ -77,7 +77,10 @@ export class CalculationService {
     );
 
     // set onto window for any environment debug purposes
-    (window as any).executionResults = calculationOutput?.results;
+    if (localStorage.getItem("madieDebug") || (window as any).madieDebug) {
+      // eslint-disable-next-line no-console
+      console.log(_.cloneDeep(calculationOutput?.results));
+    }
     return calculationOutput;
   }
 
