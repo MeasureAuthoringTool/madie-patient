@@ -1,4 +1,5 @@
 import * as Yup from "yup";
+import { PopulationType } from "@madie/madie-models";
 
 export const TestCaseValidator = Yup.object().shape({
   title: Yup.string()
@@ -28,26 +29,27 @@ export const TestCaseValidator = Yup.object().shape({
                         // must use old school "function" instead of lambda to
                         // get access to "this" that is used to create error
                         function (value, population) {
+                          const observations = [
+                            PopulationType.MEASURE_POPULATION_OBSERVATION,
+                            PopulationType.NUMERATOR_OBSERVATION,
+                            PopulationType.DENOMINATOR_OBSERVATION,
+                          ];
                           if (value === undefined || value === null) {
                             return true;
                           } else if (
                             populationBasis === "boolean" &&
-                            population.parent.name !== "measureObservation" &&
                             typeof value === "boolean"
                           ) {
                             return true;
                           } else if (
                             populationBasis !== "boolean" ||
-                            population.parent.name === "measureObservation" ||
-                            population.parent.name ===
-                              "measurePopulationObservation" ||
-                            population.parent.name === "numeratorObservation" ||
-                            population.parent.name === "denominatorObservation"
+                            observations.includes(population.parent.name)
                           ) {
                             if (!isNaN(+value) && +value >= 0) {
                               if (
-                                population.parent.name !==
-                                  "measureObservation" &&
+                                !observations.includes(
+                                  population.parent.name
+                                ) &&
                                 (!Number.isInteger(+value) ||
                                   String(value).indexOf(".") > 0)
                               ) {
