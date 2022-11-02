@@ -42,13 +42,9 @@ describe("CalculationResults", () => {
         calculationErrors={undefined}
       />
     );
-    expect(
-      screen.getByText(`Population Group: ${calculationResults[0].groupId}`)
-    ).toBeInTheDocument();
+    expect(screen.getByText("Population Criteria 1")).toBeInTheDocument();
 
-    expect(
-      screen.getByText(`Population Group: ${calculationResults[1].groupId}`)
-    ).toBeInTheDocument();
+    expect(screen.getByText("Population Criteria 2")).toBeInTheDocument();
   });
 
   test("render calculation errors if any", () => {

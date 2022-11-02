@@ -2052,7 +2052,7 @@ describe("Measure Calculation ", () => {
     });
     userEvent.click(screen.getByTestId("highlighting-tab"));
     expect(
-      await screen.findByText("Population Group: population-group-1")
+      await screen.findByText("Population Criteria 1")
     ).toBeInTheDocument();
 
     userEvent.click(screen.getByTestId("expectoractual-tab"));
@@ -2114,7 +2114,7 @@ describe("Measure Calculation ", () => {
     });
     userEvent.click(screen.getByTestId("highlighting-tab"));
     expect(
-      await screen.findByText("Population Group: population-group-1")
+      await screen.findByText("Population Criteria 1")
     ).toBeInTheDocument();
 
     userEvent.click(screen.getByTestId("expectoractual-tab"));
