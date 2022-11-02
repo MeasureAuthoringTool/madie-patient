@@ -59,7 +59,7 @@ import CreateTestCaseNavTabs from "../createTestCase/CreateTestCaseNavTabs";
 import ExpectedActual from "../createTestCase/RightPanel/ExpectedActual/ExpectedActual";
 import "./EditTestCase.scss";
 import CalculationResults from "../createTestCase/calculationResults/CalculationResults";
-import { TextField } from "@madie/madie-design-system/dist/react";
+import { TextField, MadieSpinner } from "@madie/madie-design-system/dist/react";
 
 const FormErrors = tw.div`h-6`;
 const TestCaseForm = tw.form`m-3`;
@@ -196,7 +196,14 @@ const EditTestCase = () => {
     []
   );
 
-  const { measureState, bundleState, valueSetsState } = useExecutionContext();
+  const {
+    measureState,
+    bundleState,
+    valueSetsState,
+    executionContextReady,
+    executing,
+    setExecuting,
+  } = useExecutionContext();
   const [measure] = measureState;
   const [measureBundle] = bundleState;
   const [valueSets] = valueSetsState;
@@ -420,6 +427,7 @@ const EditTestCase = () => {
 
   const calculate = async (e) => {
     e.preventDefault();
+    setExecuting(true);
     setPopulationGroupResults(() => undefined);
     if (measure && measure.cqlErrors) {
       setCalculationErrors({
@@ -455,6 +463,8 @@ const EditTestCase = () => {
             "Test case execution was aborted because JSON could not be validated. If this error persists, please contact the help desk.",
         });
         return;
+      } finally {
+        setExecuting(false);
       }
     }
 
@@ -478,6 +488,8 @@ const EditTestCase = () => {
         status: "error",
         message: error.message,
       });
+    } finally {
+      setExecuting(false);
     }
   };
 
@@ -658,11 +670,16 @@ const EditTestCase = () => {
                 Editor tab
               </div>
             ))}
-          {activeTab === "highlighting" && (
+          {activeTab === "highlighting" && !executing && (
             <CalculationResults
               calculationResults={populationGroupResults}
               calculationErrors={calculationErrors}
             />
+          )}
+          {activeTab === "highlighting" && executing && (
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <MadieSpinner style={{ height: 50, width: 50 }} />
+            </div>
           )}
           {activeTab === "expectoractual" && (
             <ExpectedActual
@@ -853,7 +870,9 @@ const EditTestCase = () => {
                   _.isNil(measure?.groups) ||
                   measure?.groups.length === 0 ||
                   (!isJsonModified() && validationErrors?.length > 0) ||
-                  isEmptyTestCaseJsonString(editorVal)
+                  isEmptyTestCaseJsonString(editorVal) ||
+                  !executionContextReady ||
+                  executing
                 }
                 /*
                   if new test case
