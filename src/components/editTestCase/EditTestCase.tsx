@@ -220,14 +220,16 @@ const EditTestCase = () => {
 
   useEffect(() => {
     if (_.isNil(populationGroupResults) || _.isEmpty(populationGroupResults)) {
-      setGroupPopulations(formik.values.groupPopulations);
+      setGroupPopulations(_.cloneDeep(formik.values.groupPopulations));
     } else {
       setGroupPopulations(
-        calculation.current.processTestCaseResults(
-          formik.values,
-          measure.groups,
-          populationGroupResults
-        )?.groupPopulations
+        _.cloneDeep(
+          calculation.current.processTestCaseResults(
+            formik.values,
+            measure.groups,
+            populationGroupResults
+          )?.groupPopulations
+        )
       );
     }
   }, [formik.values.groupPopulations, populationGroupResults]);
@@ -276,6 +278,46 @@ const EditTestCase = () => {
     });
   }, [formik.dirty, editorVal, originalEditorVal]);
 
+  const loadTestCase = () => {
+    testCaseService.current
+      .getTestCase(id, measureId)
+      .then((tc: TestCase) => {
+        setTestCase(_.cloneDeep(tc));
+        setEditorVal(tc.json);
+        setOriginalEditorVal(tc.json);
+        setCanEdit(
+          measure?.createdBy === userName ||
+            measure?.acls?.some(
+              (acl) =>
+                acl.userId === userName && acl.roles.indexOf("SHARED_WITH") >= 0
+            )
+        );
+        const nextTc = _.cloneDeep(tc);
+        if (measure && measure.groups) {
+          nextTc.groupPopulations = measure.groups.map((group) => {
+            const existingGroupPop = tc.groupPopulations?.find(
+              (gp) => gp.groupId === group.id
+            );
+            return _.isNil(existingGroupPop)
+              ? mapMeasureGroup(group)
+              : {
+                  ...existingGroupPop,
+                  populationBasis: group?.populationBasis,
+                };
+          });
+        } else {
+          nextTc.groupPopulations = [];
+        }
+        resetForm({ values: _.cloneDeep(nextTc) });
+        handleHapiOutcome(tc?.hapiOperationOutcome);
+      })
+      .catch((error) => {
+        if (error.toString().includes("404")) {
+          navigate("/404");
+        }
+      });
+  };
+
   useEffect(() => {
     if (!seriesState.loaded) {
       testCaseService.current
@@ -290,48 +332,8 @@ const EditTestCase = () => {
           }));
         });
     }
-    if (id) {
-      const updateTestCase = () => {
-        testCaseService.current
-          .getTestCase(id, measureId)
-          .then((tc: TestCase) => {
-            setTestCase(_.cloneDeep(tc));
-            setEditorVal(tc.json);
-            setOriginalEditorVal(tc.json);
-            setCanEdit(
-              measure?.createdBy === userName ||
-                measure?.acls?.some(
-                  (acl) =>
-                    acl.userId === userName &&
-                    acl.roles.indexOf("SHARED_WITH") >= 0
-                )
-            );
-            const nextTc = _.cloneDeep(tc);
-            if (measure && measure.groups) {
-              nextTc.groupPopulations = measure.groups.map((group) => {
-                const existingGroupPop = tc.groupPopulations?.find(
-                  (gp) => gp.groupId === group.id
-                );
-                return _.isNil(existingGroupPop)
-                  ? mapMeasureGroup(group)
-                  : {
-                      ...existingGroupPop,
-                      populationBasis: group?.populationBasis,
-                    };
-              });
-            } else {
-              nextTc.groupPopulations = [];
-            }
-            resetForm({ values: nextTc });
-            handleHapiOutcome(tc?.hapiOperationOutcome);
-          })
-          .catch((error) => {
-            if (error.toString().includes("404")) {
-              navigate("/404");
-            }
-          });
-      };
-      updateTestCase();
+    if (id && _.isNil(testCase) && measure) {
+      loadTestCase();
       return () => {
         setTestCase(null);
         resetForm();
@@ -481,13 +483,11 @@ const EditTestCase = () => {
     }
   };
 
-  const discardChanges = () => {
+  const discardChanges = async () => {
     setOriginalEditorVal("");
     setEditorVal(testCase.json ? testCase.json : "");
-    resetForm({
-      values: _.cloneDeep(testCase),
-    });
-    setTestCase(_.cloneDeep(testCase));
+    //To DO: need to optimize it as it is calling the backend
+    await loadTestCase();
     setDiscardDialogOpen(false);
   };
 
