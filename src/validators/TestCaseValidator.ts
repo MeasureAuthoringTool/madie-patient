@@ -32,13 +32,11 @@ export const TestCaseValidator = Yup.object().shape({
                             return true;
                           } else if (
                             populationBasis === "boolean" &&
-                            population.parent.name !== "measureObservation" &&
                             typeof value === "boolean"
                           ) {
                             return true;
                           } else if (
                             populationBasis !== "boolean" ||
-                            population.parent.name === "measureObservation" ||
                             population.parent.name ===
                               "measurePopulationObservation" ||
                             population.parent.name === "numeratorObservation" ||
@@ -47,7 +45,11 @@ export const TestCaseValidator = Yup.object().shape({
                             if (!isNaN(+value) && +value >= 0) {
                               if (
                                 population.parent.name !==
-                                  "measureObservation" &&
+                                  "measurePopulationObservation" &&
+                                population.parent.name !==
+                                  "numeratorObservation" &&
+                                population.parent.name !==
+                                  "denominatorObservation" &&
                                 (!Number.isInteger(+value) ||
                                   String(value).indexOf(".") > 0)
                               ) {
