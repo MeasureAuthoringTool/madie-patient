@@ -395,7 +395,7 @@ it("shall add an observation if numerator expected value changes from 0 to 1, an
   expect(resultPops[0].populationValues[3].name).toEqual(
     PopulationType.NUMERATOR_OBSERVATION
   );
-  expect(resultPops[0].populationValues[3].id).toEqual("numeratorObservation3");
+  expect(resultPops[0].populationValues[3].id).toEqual("numeratorObservation0");
 });
 
 it("shall add an observation if measure population for CV group changes from 0 to 1", () => {
@@ -1602,19 +1602,15 @@ it("CV Bool  MsrPop = true; MsrPopEx; true; 0 Measure Observation: Change MsrPop
   );
   expect(
     parsingTheExpectedResult(
-      resultPops[0].populationValues,
+      resultPops2[0].populationValues,
       PopulationType.MEASURE_POPULATION,
       "Continuous Variable"
     ).name
   ).toEqual(PopulationType.MEASURE_POPULATION);
 
-  expect(
-    parsingTheExpectedResult(
-      resultPops[0].populationValues,
-      PopulationType.MEASURE_POPULATION_OBSERVATION,
-      "Continuous Variable"
-    )
-  ).toBeTruthy();
+  expect(resultPops2[0].populationValues[2].name).toEqual(
+    PopulationType.MEASURE_POPULATION_OBSERVATION
+  );
 });
 
 it("CV Bool  MsrPop = true; MsrPopEx; false; 1 Measure Observation: Change MsrPopEx to true -> should remove Measure Observation ", () => {
@@ -2027,13 +2023,9 @@ it("Ratio Bool: Adding the observations on clicking the numerator exclusion and 
     measureGroup
   );
 
-  expect(
-    parsingTheExpectedResult(
-      resultPops2[0].populationValues,
-      PopulationType.DENOMINATOR_OBSERVATION,
-      "Ratio"
-    ).id
-  ).toEqual("denominatorObservation2");
+  expect(resultPops2[0].populationValues[2].id).toEqual(
+    "denominatorObservation0"
+  );
 });
 
 it("Ratio NonBool Denom = 1; Denom Exclusion = 0; 1 Measure Observation; should result in a single DenomObservation result", () => {
@@ -2112,18 +2104,132 @@ it("Ratio NonBool Denom = 1; Denom Exclusion = 0; 1 Measure Observation; should 
     measureGroup2
   );
   //Key is the index of the value and is appended to the end of the observation ID
+  expect(resultPops2[0].populationValues[2].id).toEqual(
+    "denominatorObservation0"
+  );
 
-  expect(
-    findObservationByCriteriaReference(resultPops2[0].populationValues, "pid-2")
-      .id
-    //number at the end is the index in the table (so ipp is 0 , denom is 1 ) + a counter..
-    // so the ID can indicate the position which might be helpful longer term in defining
-    // the relationship between results and expectations
-  ).toEqual("denominatorObservation2");
   expect(
     findObservationByCriteriaReference(resultPops2[0].populationValues, "pid-4")
       ?.id
   ).toBeUndefined();
+});
+
+it("Ratio NonBool Adding / removing Denom & Num ; ", () => {
+  const ipp: DisplayPopulationValue = {
+    name: PopulationType.INITIAL_POPULATION,
+    expected: 1,
+    actual: false,
+    id: "pid-1",
+    criteriaReference: "",
+  };
+  const denom: DisplayPopulationValue = {
+    name: PopulationType.DENOMINATOR,
+    expected: 1,
+    actual: false,
+    id: "pid-2",
+    criteriaReference: "",
+  };
+
+  const denomExclu: DisplayPopulationValue = {
+    name: PopulationType.DENOMINATOR_EXCLUSION,
+    expected: 0,
+    actual: false,
+    id: "pid-3",
+    criteriaReference: "",
+  };
+  const numer: DisplayPopulationValue = {
+    name: PopulationType.NUMERATOR,
+    expected: 0,
+    actual: false,
+    id: "pid-4",
+    criteriaReference: "",
+  };
+  const numerExclu: DisplayPopulationValue = {
+    name: PopulationType.NUMERATOR_EXCLUSION,
+    expected: 0,
+    actual: false,
+    id: "pid-5",
+    criteriaReference: "",
+  };
+
+  const denomObv1: DisplayPopulationValue = {
+    name: PopulationType.MEASURE_OBSERVATION,
+    expected: false,
+    actual: false,
+    id: "moid-1",
+    criteriaReference: "pid-2",
+  };
+
+  const numerObv1: DisplayPopulationValue = {
+    name: PopulationType.MEASURE_OBSERVATION,
+    expected: false,
+    actual: false,
+    id: "moid-2",
+    criteriaReference: "pid-4",
+  };
+
+  const populationValues: DisplayPopulationValue[] = [];
+  populationValues.push(ipp);
+  populationValues.push(denom);
+  populationValues.push(denomExclu);
+  populationValues.push(numer);
+  populationValues.push(numerExclu);
+  populationValues.push(denomObv1);
+  populationValues.push(numerObv1);
+
+  const group1: GroupPopulation = {
+    groupId: "shrug",
+    populationBasis: "Encounter",
+    scoring: "Ratio",
+    populationValues,
+    stratificationValues: [],
+  };
+  const groupPopulations: GroupPopulation[] = [];
+  groupPopulations.push(group1);
+  //First change to denom expected should result in 1 denom observation in the 3rd place
+  const resultPops1 = triggerPopChanges(
+    groupPopulations,
+    group1.groupId,
+    {
+      name: PopulationType.DENOMINATOR,
+      expected: 1,
+      actual: false,
+      id: "pid-2",
+      criteriaReference: "",
+    },
+    measureGroup2
+  );
+  //Key is the index of the value and is appended to the end of the observation ID
+
+  expect(resultPops1[0].populationValues[2].id).toEqual(
+    "denominatorObservation0"
+  );
+  expect(
+    findObservationByCriteriaReference(resultPops1[0].populationValues, "pid-4")
+      ?.id
+  ).toBeUndefined(); //<-- means there is no Numer Observation
+
+  //Let's update Numerator so that we get a Numerator Observation
+  numer.expected = 1;
+  const resultPops2 = triggerPopChanges(
+    groupPopulations,
+    group1.groupId,
+    {
+      name: PopulationType.NUMERATOR,
+      expected: 1,
+      actual: false,
+      id: "pid-4",
+      criteriaReference: "",
+    },
+    measureGroup2
+  );
+
+  expect(resultPops1[0].populationValues[2].id).toEqual(
+    "denominatorObservation0"
+  );
+  expect(resultPops1[0].populationValues[5].id).toEqual(
+    "numeratorObservation0"
+  );
 });
 
 it("CV NonBool MsrPop = 2; MsrPopEx; 0; 1 Measure Observation; should result in 2 MeasurePopulationObservation results", () => {
@@ -2198,6 +2304,7 @@ it("CV NonBool MsrPop = 2; MsrPopEx; 0; 1 Measure Observation; should result in 
     },
     measureGroup4
   );
+
   expect(resultPops[0].populationValues.length).toEqual(5);
   expect(
     parsingTheExpectedResult(
@@ -2206,13 +2313,13 @@ it("CV NonBool MsrPop = 2; MsrPopEx; 0; 1 Measure Observation; should result in 
       "Continuous Variable"
     ).name
   ).toEqual(PopulationType.INITIAL_POPULATION);
-  expect(
-    parsingTheExpectedResult(
-      resultPops[0].populationValues,
-      PopulationType.MEASURE_POPULATION_OBSERVATION,
-      "Continuous Variable"
-    ).id
-  ).toEqual("measurePopulationObservation3");
+  expect(resultPops[0].populationValues[2].name).toEqual(
+    PopulationType.MEASURE_POPULATION_OBSERVATION
+  );
+  expect(resultPops[0].populationValues[3].name).toEqual(
+    PopulationType.MEASURE_POPULATION_OBSERVATION
+  );
+
   groupPopulations[0].populationValues[2].expected = 2;
 
   const resultPops2 = triggerPopChanges(
