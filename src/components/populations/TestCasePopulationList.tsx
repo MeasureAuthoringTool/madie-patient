@@ -76,25 +76,44 @@ const TestCasePopulationList = ({
   errors,
 }: TestCasePopulationListProps) => {
   let measureObservations = [];
+  let numeratorObservations = [];
+  let denominatorObservations = [];
   let contentId = content?.toLocaleLowerCase().replace(/(\W)+/g, "-");
 
-  const measureObservationsCount = (population) => {
-    let observationCount = 0;
-    if (
-      population.name === PopulationType.MEASURE_POPULATION_OBSERVATION ||
-      population.name === PopulationType.DENOMINATOR_OBSERVATION ||
-      population.name === PopulationType.NUMERATOR_OBSERVATION
-    ) {
-      observationCount = populations.filter(
-        (res) => res.name === population.name
-      ).length;
-    }
+  const getPopulationCount = (populations, type: PopulationType): number => {
+    return populations.filter((res) => res.name === type).length;
+  };
 
+  const getObservationCount = (
+    observationCount: number,
+    observation: PopulationType,
+    observations: Array<PopulationType>
+  ) => {
     if (observationCount > 1) {
-      measureObservations.push(population.name);
-      return measureObservations.length;
+      observations.push(observation);
+      return observations.length;
     } else {
-      measureObservations = [];
+      observations = [];
+      return 0;
+    }
+  };
+
+  const measureObservationsCount = (population) => {
+    let count = 0;
+    if (population.name === PopulationType.MEASURE_POPULATION_OBSERVATION) {
+      count = getPopulationCount(populations, population.name);
+      return getObservationCount(count, population.name, measureObservations);
+    } else if (population.name === PopulationType.DENOMINATOR_OBSERVATION) {
+      count = getPopulationCount(populations, population.name);
+      return getObservationCount(
+        count,
+        population.name,
+        denominatorObservations
+      );
+    } else if (population.name === PopulationType.NUMERATOR_OBSERVATION) {
+      count = getPopulationCount(populations, population.name);
+      return getObservationCount(count, population.name, numeratorObservations);
+    } else {
       return 0;
     }
   };
