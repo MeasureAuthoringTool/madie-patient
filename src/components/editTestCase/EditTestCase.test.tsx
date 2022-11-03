@@ -1861,19 +1861,21 @@ describe("EditTestCase component", () => {
     expect(alert).toBeInTheDocument();
   });
 
-  it.skip("handles checking expected non-boolean values", async () => {
+  it("handles checking expected non-boolean values", async () => {
     mockedAxios.get.mockClear().mockImplementation((args) => {
       if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
       }
-      return Promise.resolve({});
+      return Promise.resolve({ data: { ...nonBoolTestCaseFixture } });
     });
     const measure = {
       ...multiGroupMeasureFixture,
       createdBy: MEASURE_CREATEDBY,
     };
     renderWithRouter(
-      ["/measures/623cacebe74613783378c17b/edit/test-cases/1"],
+      [
+        "/measures/623cacebe74613783378c17b/edit/test-cases/631f98927e7cb7651b971d1d",
+      ],
       "/measures/:measureId/edit/test-cases/:id",
       measure
     );
@@ -1883,6 +1885,7 @@ describe("EditTestCase component", () => {
       "test-population-initialPopulation-expected"
     );
     expect(ipInput).toBeInTheDocument();
+    userEvent.clear(ipInput);
     userEvent.type(ipInput, "BAD");
     await waitFor(() => expect(ipInput).toHaveValue("BAD"));
     await waitFor(() =>
@@ -1896,6 +1899,7 @@ describe("EditTestCase component", () => {
     userEvent.click(screen.getByTestId("details-tab"));
 
     const tcTitle = await screen.findByTestId("test-case-title");
+    userEvent.clear(tcTitle);
     userEvent.type(tcTitle, "testTitle");
     await waitFor(() => expect(tcTitle).toHaveValue("testTitle"));
 
