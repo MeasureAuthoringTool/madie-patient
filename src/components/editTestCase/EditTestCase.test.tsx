@@ -1820,17 +1820,19 @@ describe("EditTestCase component", () => {
     expect(editor).toBeInTheDocument();
   });
 
-  it.skip("handles checking expected values", async () => {
+  it("handles checking expected values", async () => {
     mockedAxios.get.mockClear().mockImplementation((args) => {
       if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
       }
-      return Promise.resolve({});
+      return Promise.resolve({ data: { ...testCaseFixture } });
     });
     const measure = { ...simpleMeasureFixture, createdBy: MEASURE_CREATEDBY };
     renderWithRouter(
-      ["/measures/623cacebe74613783378c17b/edit/test-cases"],
-      "/measures/:measureId/edit/test-cases",
+      [
+        "/measures/623cacebe74613783378c17b/edit/test-cases/623cacffe74613783378c17c",
+      ],
+      "/measures/:measureId/edit/test-cases/:id",
       measure
     );
     userEvent.click(screen.getByTestId("expectoractual-tab"));
@@ -1845,6 +1847,7 @@ describe("EditTestCase component", () => {
     userEvent.click(screen.getByTestId("details-tab"));
 
     const tcTitle = await screen.findByTestId("test-case-title");
+    userEvent.clear(tcTitle);
     userEvent.type(tcTitle, "testTitle");
     await waitFor(() => expect(tcTitle).toHaveValue("testTitle"));
 
