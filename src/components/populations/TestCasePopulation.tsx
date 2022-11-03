@@ -76,6 +76,7 @@ const TestCasePopulation = ({
             <ExpectActualInput
               id={`${population.id}-actual-cb`}
               aria-labelledby={`${population.name}-actual`}
+              name={population.name}
               expectedValue={population.actual}
               onChange={() => {}} // do nothing - should not be editable here
               populationBasis={populationBasis}
