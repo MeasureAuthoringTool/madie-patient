@@ -1820,7 +1820,7 @@ describe("EditTestCase component", () => {
     expect(editor).toBeInTheDocument();
   });
 
-  it("handles checking expected values", async () => {
+  it.skip("handles checking expected values", async () => {
     mockedAxios.get.mockClear().mockImplementation((args) => {
       if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
@@ -1858,7 +1858,7 @@ describe("EditTestCase component", () => {
     expect(alert).toBeInTheDocument();
   });
 
-  it("handles checking expected non-boolean values", async () => {
+  it.skip("handles checking expected non-boolean values", async () => {
     mockedAxios.get.mockClear().mockImplementation((args) => {
       if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
@@ -1870,8 +1870,8 @@ describe("EditTestCase component", () => {
       createdBy: MEASURE_CREATEDBY,
     };
     renderWithRouter(
-      ["/measures/623cacebe74613783378c17b/edit/test-cases"],
-      "/measures/:measureId/edit/test-cases",
+      ["/measures/623cacebe74613783378c17b/edit/test-cases/1"],
+      "/measures/:measureId/edit/test-cases/:id",
       measure
     );
     userEvent.click(screen.getByTestId("expectoractual-tab"));
