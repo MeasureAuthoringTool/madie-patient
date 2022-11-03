@@ -173,10 +173,6 @@ const EditTestCase = () => {
   const [testCase, setTestCase] = useState<TestCase>(null);
   const [editorVal, setEditorVal]: [string, Dispatch<SetStateAction<string>>] =
     useState("");
-  const [originalEditorVal, setOriginalEditorVal]: [
-    string,
-    Dispatch<SetStateAction<string>>
-  ] = useState("");
   const [validationErrors, setValidationErrors] = useState<any[]>([]);
   const [seriesState, setSeriesState] = useState<any>({
     loaded: false,
@@ -209,7 +205,7 @@ const EditTestCase = () => {
   const [valueSets] = valueSetsState;
   const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
   const { updateMeasure } = measureStore;
-
+  const load = useRef(0);
   const [canEdit, setCanEdit] = useState<boolean>(
     measure?.createdBy === userName ||
       measure?.acls?.some(
@@ -280,10 +276,10 @@ const EditTestCase = () => {
   const { updateRouteHandlerState } = routeHandlerStore;
   useEffect(() => {
     updateRouteHandlerState({
-      canTravel: !formik.dirty && editorVal === originalEditorVal,
+      canTravel: !formik.dirty && !isJsonModified(),
       pendingRoute: "",
     });
-  }, [formik.dirty, editorVal, originalEditorVal]);
+  }, [formik.dirty, editorVal, testCase?.json]);
 
   const loadTestCase = () => {
     testCaseService.current
@@ -291,7 +287,6 @@ const EditTestCase = () => {
       .then((tc: TestCase) => {
         setTestCase(_.cloneDeep(tc));
         setEditorVal(tc.json);
-        setOriginalEditorVal(tc.json);
         setCanEdit(
           measure?.createdBy === userName ||
             measure?.acls?.some(
@@ -339,26 +334,13 @@ const EditTestCase = () => {
           }));
         });
     }
-    if (id && _.isNil(testCase) && measure) {
+
+    if (id && _.isNil(testCase) && measure && load.current === 0) {
+      load.current = +1;
       loadTestCase();
       return () => {
         setTestCase(null);
-        resetForm();
       };
-    } else if (measure && measure.groups) {
-      setCanEdit(
-        measure?.createdBy === userName ||
-          measure?.acls?.some(
-            (acl) =>
-              acl.userId === userName && acl.roles.indexOf("SHARED_WITH") >= 0
-          )
-      );
-      resetForm({
-        values: {
-          ...INITIAL_VALUES,
-          groupPopulations: mapMeasureGroups(measure.groups),
-        },
-      });
     }
   }, [
     id,
@@ -407,6 +389,7 @@ const EditTestCase = () => {
       if (editorVal !== testCase.json) {
         testCase.json = editorVal;
       }
+      setValidationErrors(() => []);
       const updatedTestCase = await testCaseService.current.updateTestCase(
         testCase,
         measureId
@@ -495,11 +478,9 @@ const EditTestCase = () => {
     }
   };
 
-  const discardChanges = async () => {
-    setOriginalEditorVal("");
-    setEditorVal(testCase.json ? testCase.json : "");
+  const discardChanges = () => {
     //To DO: need to optimize it as it is calling the backend
-    await loadTestCase();
+    loadTestCase();
     setDiscardDialogOpen(false);
   };
 
