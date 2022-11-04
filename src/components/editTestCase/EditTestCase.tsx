@@ -286,7 +286,7 @@ const EditTestCase = () => {
       .getTestCase(id, measureId)
       .then((tc: TestCase) => {
         setTestCase(_.cloneDeep(tc));
-        setEditorVal(tc.json);
+        setEditorVal(tc.json ? tc.json : "");
         setCanEdit(
           measure?.createdBy === userName ||
             measure?.acls?.some(
@@ -599,7 +599,7 @@ const EditTestCase = () => {
   }
 
   function isJsonModified() {
-    return testCase
+    return testCase && !_.isNil(testCase?.json)
       ? editorVal !== testCase?.json
       : !isEmptyTestCaseJsonString(editorVal);
   }
@@ -874,13 +874,14 @@ const EditTestCase = () => {
                   variant="white"
                   onClick={() => setDiscardDialogOpen(true)}
                   data-testid="edit-test-case-discard-button"
+                  disabled={!isModified()}
                 />
                 <Button
                   tw="m-2"
                   buttonTitle="Save"
                   type="submit"
                   data-testid="edit-test-case-save-button"
-                  disabled={!isModified() || createButtonDisabled}
+                  disabled={!isModified()}
                 />
               </div>
             )}
