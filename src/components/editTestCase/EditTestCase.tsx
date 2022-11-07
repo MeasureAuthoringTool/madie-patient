@@ -584,15 +584,23 @@ const EditTestCase = () => {
 
   function isModified() {
     if (testCase) {
-      return (
-        formik.isValid &&
-        (formik.dirty ||
-          editorVal !== testCase?.json ||
-          !_.isEqual(
-            testCase?.groupPopulations,
-            formik.values.groupPopulations
-          ))
-      );
+      if (
+        _.isNil(testCase?.json) &&
+        _.isEmpty(editorVal.trim()) &&
+        !formik.dirty
+      ) {
+        return false;
+      } else {
+        return (
+          formik.isValid &&
+          (formik.dirty ||
+            editorVal !== testCase?.json ||
+            !_.isEqual(
+              _.cloneDeep(testCase?.groupPopulations),
+              _.cloneDeep(formik.values.groupPopulations)
+            ))
+        );
+      }
     } else {
       return formik.isValid && formik.dirty;
     }

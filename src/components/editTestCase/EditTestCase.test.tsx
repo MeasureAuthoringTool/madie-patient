@@ -697,6 +697,7 @@ describe("EditTestCase component", () => {
     mockedAxios.put.mockResolvedValue({
       data: {
         ...testCase,
+        json: testCaseJson,
         hapiOperationOutcome: {
           code: 200,
         },
@@ -845,6 +846,7 @@ describe("EditTestCase component", () => {
     mockedAxios.put.mockResolvedValue({
       data: {
         ...testCase,
+        json: testCaseJson,
         description: testCaseDescription,
         hapiOperationOutcome: {
           code: 200,
