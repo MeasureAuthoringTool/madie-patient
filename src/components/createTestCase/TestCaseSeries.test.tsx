@@ -211,7 +211,7 @@ describe("", () => {
     const clearButton = await screen.findByTitle("Clear");
     userEvent.click(clearButton);
     await waitFor(() => {
-      expect(handleChange).toHaveBeenCalledWith(null);
+      expect(handleChange).toHaveBeenCalledWith("");
     });
   });
 
@@ -246,7 +246,7 @@ describe("", () => {
     // logRoles(container);
     userEvent.clear(seriesAutocomplete);
     await waitFor(() => {
-      expect(handleChange).toHaveBeenCalledWith(null);
+      expect(handleChange).toHaveBeenCalledWith("");
     });
   });
 });
