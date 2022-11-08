@@ -217,6 +217,10 @@ describe("EditTestCase component", () => {
       },
       { timeout: 1500 }
     );
+    expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "Discard Changes" })
+    ).toBeDisabled();
     expect(
       screen.getByRole("button", { name: "Discard Changes" })
     ).toBeInTheDocument();
@@ -341,6 +345,10 @@ describe("EditTestCase component", () => {
 
     await testTitle("TC1", true);
 
+    expect(screen.getByRole("button", { name: "Save" })).not.toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "Discard Changes" })
+    ).not.toBeDisabled();
     const createBtn = await screen.findByRole("button", {
       name: "Save",
     });
