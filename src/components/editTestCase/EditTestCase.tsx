@@ -185,8 +185,6 @@ const EditTestCase = () => {
   const [populationGroupResults, setPopulationGroupResults] =
     useState<DetailedPopulationGroupResult[]>();
   const [calculationErrors, setCalculationErrors] = useState<AlertProps>();
-  const [createButtonDisabled, setCreateButtonDisabled] =
-    useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("measurecql");
   const [groupPopulations, setGroupPopulations] = useState<GroupPopulation[]>(
     []
@@ -274,7 +272,6 @@ const EditTestCase = () => {
   );
 
   const { updateRouteHandlerState } = routeHandlerStore;
-
   useEffect(() => {
     updateRouteHandlerState({
       canTravel: !formik.dirty && !isJsonModified(),
@@ -373,7 +370,6 @@ const EditTestCase = () => {
         testCase,
         measureId
       );
-      setCreateButtonDisabled(true);
       setEditorVal(savedTestCase.json);
 
       handleTestCaseResponse(savedTestCase, "create");
