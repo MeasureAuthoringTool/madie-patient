@@ -274,6 +274,7 @@ const EditTestCase = () => {
   );
 
   const { updateRouteHandlerState } = routeHandlerStore;
+
   useEffect(() => {
     updateRouteHandlerState({
       canTravel: !formik.dirty && !isJsonModified(),
@@ -607,7 +608,7 @@ const EditTestCase = () => {
   }
 
   function isJsonModified() {
-    return testCase && !_.isNil(testCase?.json)
+    return testCase && (!_.isNil(testCase?.json) || !_.isEmpty(editorVal))
       ? editorVal !== testCase?.json
       : !isEmptyTestCaseJsonString(editorVal);
   }
