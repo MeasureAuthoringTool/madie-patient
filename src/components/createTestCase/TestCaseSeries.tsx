@@ -34,7 +34,7 @@ const TestCaseSeries = ({
       onChange={(event, newValue) => {
         event.preventDefault();
         if (_.isNil(newValue)) {
-          onChange(null);
+          onChange("");
           return;
         }
 

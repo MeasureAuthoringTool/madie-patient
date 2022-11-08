@@ -185,8 +185,6 @@ const EditTestCase = () => {
   const [populationGroupResults, setPopulationGroupResults] =
     useState<DetailedPopulationGroupResult[]>();
   const [calculationErrors, setCalculationErrors] = useState<AlertProps>();
-  const [createButtonDisabled, setCreateButtonDisabled] =
-    useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("measurecql");
   const [groupPopulations, setGroupPopulations] = useState<GroupPopulation[]>(
     []
@@ -286,7 +284,7 @@ const EditTestCase = () => {
       .getTestCase(id, measureId)
       .then((tc: TestCase) => {
         setTestCase(_.cloneDeep(tc));
-        setEditorVal(tc.json);
+        setEditorVal(tc.json ? tc.json : "");
         setCanEdit(
           measure?.createdBy === userName ||
             measure?.acls?.some(
@@ -372,7 +370,6 @@ const EditTestCase = () => {
         testCase,
         measureId
       );
-      setCreateButtonDisabled(true);
       setEditorVal(savedTestCase.json);
 
       handleTestCaseResponse(savedTestCase, "create");
@@ -584,22 +581,30 @@ const EditTestCase = () => {
 
   function isModified() {
     if (testCase) {
-      return (
-        formik.isValid &&
-        (formik.dirty ||
-          editorVal !== testCase?.json ||
-          !_.isEqual(
-            testCase?.groupPopulations,
-            formik.values.groupPopulations
-          ))
-      );
+      if (
+        _.isNil(testCase?.json) &&
+        _.isEmpty(editorVal.trim()) &&
+        !formik.dirty
+      ) {
+        return false;
+      } else {
+        return (
+          formik.isValid &&
+          (formik.dirty ||
+            editorVal !== testCase?.json ||
+            !_.isEqual(
+              _.cloneDeep(testCase?.groupPopulations),
+              _.cloneDeep(formik.values.groupPopulations)
+            ))
+        );
+      }
     } else {
       return formik.isValid && formik.dirty;
     }
   }
 
   function isJsonModified() {
-    return testCase
+    return testCase && (!_.isNil(testCase?.json) || !_.isEmpty(editorVal))
       ? editorVal !== testCase?.json
       : !isEmptyTestCaseJsonString(editorVal);
   }
@@ -874,13 +879,14 @@ const EditTestCase = () => {
                   variant="white"
                   onClick={() => setDiscardDialogOpen(true)}
                   data-testid="edit-test-case-discard-button"
+                  disabled={!isModified()}
                 />
                 <Button
                   tw="m-2"
                   buttonTitle="Save"
                   type="submit"
                   data-testid="edit-test-case-save-button"
-                  disabled={!isModified() || createButtonDisabled}
+                  disabled={!isModified()}
                 />
               </div>
             )}
