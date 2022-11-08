@@ -7,7 +7,7 @@ import React, {
   useState,
 } from "react";
 import { MadieDiscardDialog } from "@madie/madie-design-system/dist/react/";
-import { Button, HelperText } from "@madie/madie-components";
+import { HelperText } from "@madie/madie-components";
 import { useNavigate, useParams } from "react-router-dom";
 import { useFormik } from "formik";
 import tw, { styled } from "twin.macro";
@@ -21,9 +21,7 @@ import {
   Group,
   TestCase,
   GroupPopulation,
-  DisplayGroupPopulation,
   HapiOperationOutcome,
-  Population,
   PopulationExpectedValue,
 } from "@madie/madie-models";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
@@ -39,8 +37,6 @@ import {
   triggerPopChanges,
 } from "../../util/PopulationsMap";
 import calculationService, {
-  GroupPopulationEpisodeResultMap,
-  GroupStatementResultMap,
   PopulationEpisodeResult,
 } from "../../api/CalculationService";
 import {
@@ -59,7 +55,11 @@ import CreateTestCaseNavTabs from "../createTestCase/CreateTestCaseNavTabs";
 import ExpectedActual from "../createTestCase/RightPanel/ExpectedActual/ExpectedActual";
 import "./EditTestCase.scss";
 import CalculationResults from "../createTestCase/calculationResults/CalculationResults";
-import { TextField, MadieSpinner } from "@madie/madie-design-system/dist/react";
+import {
+  Button,
+  TextField,
+  MadieSpinner,
+} from "@madie/madie-design-system/dist/react";
 
 const FormErrors = tw.div`h-6`;
 const TestCaseForm = tw.form`m-3`;
@@ -847,9 +847,7 @@ const EditTestCase = () => {
           <div tw="flex items-center">
             <div tw="w-1/2 flex justify-end items-center px-10 py-6">
               <Button
-                buttonTitle="Run Test"
                 type="button"
-                variant="secondary"
                 onClick={calculate}
                 disabled={
                   !!measure?.cqlErrors ||
@@ -865,7 +863,9 @@ const EditTestCase = () => {
                     enable run button if json modified, regardless of errors
                  */
                 data-testid="run-test-case-button"
-              />
+              >
+                Run Test
+              </Button>
             </div>
             {canEdit && (
               <div
@@ -874,20 +874,22 @@ const EditTestCase = () => {
               >
                 <Button
                   tw="m-2"
-                  buttonTitle="Discard Changes"
-                  type="button"
-                  variant="white"
+                  variant="outline"
                   onClick={() => setDiscardDialogOpen(true)}
                   data-testid="edit-test-case-discard-button"
                   disabled={!isModified()}
-                />
+                >
+                  Discard Changes
+                </Button>
                 <Button
                   tw="m-2"
-                  buttonTitle="Save"
+                  variant="cyan"
                   type="submit"
                   data-testid="edit-test-case-save-button"
                   disabled={!isModified()}
-                />
+                >
+                  Save
+                </Button>
               </div>
             )}
           </div>
