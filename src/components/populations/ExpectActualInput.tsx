@@ -13,7 +13,7 @@ const ExpectActualInput = ({
     actual: displayType === "actual",
   });
 
-  return props.populationBasis === "boolean" &&
+  return props.populationBasis?.toLowerCase() === "boolean" &&
     props.name !== "measureObservation" &&
     props.name !== "measurePopulationObservation" &&
     props.name !== "numeratorObservation" &&
