@@ -21,9 +21,7 @@ import {
   Group,
   TestCase,
   GroupPopulation,
-  DisplayGroupPopulation,
   HapiOperationOutcome,
-  Population,
   PopulationExpectedValue,
 } from "@madie/madie-models";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
@@ -39,8 +37,6 @@ import {
   triggerPopChanges,
 } from "../../util/PopulationsMap";
 import calculationService, {
-  GroupPopulationEpisodeResultMap,
-  GroupStatementResultMap,
   PopulationEpisodeResult,
 } from "../../api/CalculationService";
 import {
@@ -172,7 +168,7 @@ const EditTestCase = () => {
   const [alert, setAlert] = useState<AlertProps>(null);
   const [testCase, setTestCase] = useState<TestCase>(null);
   const [editorVal, setEditorVal]: [string, Dispatch<SetStateAction<string>>] =
-    useState("");
+    useState("Loading...");
   const [validationErrors, setValidationErrors] = useState<any[]>([]);
   const [seriesState, setSeriesState] = useState<any>({
     loaded: false,
@@ -336,9 +332,6 @@ const EditTestCase = () => {
     if (id && _.isNil(testCase) && measure && load.current === 0) {
       load.current = +1;
       loadTestCase();
-      return () => {
-        setTestCase(null);
-      };
     }
   }, [
     id,
@@ -514,12 +507,10 @@ const EditTestCase = () => {
   function updateMeasureStore(action: string, testCase: TestCase) {
     const measureCopy = Object.assign({}, measure);
     if (action === "update") {
-      // for update action, find original test from measure
-      const index = measureCopy.testCases.findIndex(
-        (tc) => tc.id === testCase.id
+      // for update action, find and remove stale test case from measure
+      measureCopy.testCases = measureCopy.testCases?.filter(
+        (tc) => tc.id !== testCase.id
       );
-      // remove stale test case
-      measureCopy.testCases.splice(index, 1);
     }
     // add updated test to measure
     if (measureCopy.testCases) {
@@ -630,7 +621,7 @@ const EditTestCase = () => {
             onChange={(val: string) => setEditorVal(val)}
             value={editorVal}
             setEditor={setEditor}
-            readOnly={!canEdit}
+            readOnly={!canEdit || _.isNil(testCase)}
           />
         </div>
         {/* pseudo divider */}

@@ -54,25 +54,30 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 // mock editor to reduce errors and warnings
 const mockEditor = { resize: jest.fn() };
-jest.mock("../editor/Editor", () => ({ setEditor, value, onChange }) => {
-  const React = require("react");
-  React.useEffect(() => {
-    if (setEditor) {
-      setEditor(mockEditor);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+jest.mock(
+  "../editor/Editor",
+  () =>
+    ({ setEditor, value, onChange, readOnly }) => {
+      const React = require("react");
+      React.useEffect(() => {
+        if (setEditor) {
+          setEditor(mockEditor);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, []);
 
-  return (
-    <input
-      data-testid="test-case-json-editor"
-      value={value}
-      onChange={(e: ChangeEvent<HTMLInputElement>) => {
-        onChange(e.target.value);
-      }}
-    />
-  );
-});
+      return (
+        <input
+          data-testid="test-case-json-editor"
+          readOnly={readOnly}
+          value={value}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => {
+            onChange(e.target.value);
+          }}
+        />
+      );
+    }
+);
 
 const serviceConfig: ServiceConfig = {
   measureService: {
@@ -270,9 +275,30 @@ describe("EditTestCase component", () => {
   });
 
   it("Displaying successful message when Id is present in the JSON while editing a test case", async () => {
+    const testCase = {
+      id: "1234",
+      description: "Test IPP",
+      series: "SeriesA",
+      createdBy: MEASURE_CREATEDBY,
+      createdAt: "",
+      lastModifiedAt: "",
+      lastModifiedBy: "null",
+      title: "TestIPP",
+      name: "TestIPP",
+      executionStatus: "false",
+      json: null,
+    } as TestCase;
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: [] });
+      }
+      return Promise.resolve({
+        data: testCase,
+      });
+    });
     renderWithRouter(
-      ["/measures/m1234/edit/test-cases"],
-      "/measures/:measureId/edit/test-cases"
+      ["/measures/m1234/edit/test-cases/1234"],
+      "/measures/:measureId/edit/test-cases/:id"
     );
 
     const testCaseDescription = "TestCase123";
@@ -282,9 +308,9 @@ describe("EditTestCase component", () => {
       id: "43",
     });
 
-    mockedAxios.post.mockResolvedValue({
+    mockedAxios.put.mockResolvedValue({
       data: {
-        id: "testID",
+        ...testCase,
         createdBy: MEASURE_CREATEDBY,
         description: testCaseDescription,
         title: testCaseTitle,
@@ -296,11 +322,12 @@ describe("EditTestCase component", () => {
     });
 
     const editor = screen.getByTestId("test-case-json-editor");
+    await waitFor(() => expect(editor).toHaveValue(""));
     userEvent.paste(editor, testCaseJson);
     expect(editor).toHaveValue(testCaseJson);
     userEvent.click(screen.getByTestId("details-tab"));
 
-    await testTitle("TC1");
+    await testTitle("TC1", true);
 
     const createBtn = await screen.findByRole("button", {
       name: "Save",
@@ -308,15 +335,51 @@ describe("EditTestCase component", () => {
     userEvent.click(createBtn);
 
     const debugOutput = await screen.findByText(
-      "Test case created successfully!"
+      "Test case updated successfully!"
     );
     expect(debugOutput).toBeInTheDocument();
   });
 
   it("Displaying successful message when Id is not present in the JSON while editing a test case", async () => {
+    const testCase = {
+      id: "1234",
+      description: "Test IPP",
+      series: "SeriesA",
+      createdBy: MEASURE_CREATEDBY,
+      createdAt: "",
+      lastModifiedAt: "",
+      lastModifiedBy: "null",
+      title: "TestIPP",
+      name: "TestIPP",
+      executionStatus: "false",
+      json: null,
+    } as TestCase;
+    mockedAxios.get.mockClear().mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: [] });
+      }
+      return Promise.resolve({
+        data: testCase,
+      });
+    });
+    const measure = {
+      id: "m1234",
+      createdBy: MEASURE_CREATEDBY,
+      testCases: [testCase],
+      groups: [
+        {
+          id: "Group1_ID",
+          scoring: "Cohort",
+          population: {
+            initialPopulation: "Pop1",
+          },
+        },
+      ],
+    } as unknown as Measure;
     renderWithRouter(
-      ["/measures/m1234/edit/test-cases"],
-      "/measures/:measureId/edit/test-cases"
+      ["/measures/m1234/edit/test-cases/1234"],
+      "/measures/:measureId/edit/test-cases/:id",
+      measure
     );
 
     const testCaseDescription = "TestCase123";
@@ -325,9 +388,9 @@ describe("EditTestCase component", () => {
       resourceType: "Bundle",
     });
 
-    mockedAxios.post.mockResolvedValue({
+    mockedAxios.put.mockResolvedValue({
       data: {
-        id: "testID",
+        ...testCase,
         createdBy: MEASURE_CREATEDBY,
         description: testCaseDescription,
         title: testCaseTitle,
@@ -339,6 +402,7 @@ describe("EditTestCase component", () => {
     });
 
     const editor = screen.getByTestId("test-case-json-editor");
+    await waitFor(() => expect(editor).toHaveValue(""));
     userEvent.click(screen.getByTestId("details-tab"));
     userEvent.paste(editor, testCaseJson);
     expect(editor).toHaveValue(testCaseJson);
@@ -355,7 +419,7 @@ describe("EditTestCase component", () => {
     userEvent.click(createBtn);
 
     const debugOutput = await screen.findByText(
-      "Test case created successfully!"
+      "Test case updated successfully!"
     );
     expect(debugOutput).toBeInTheDocument();
   });
@@ -2175,7 +2239,7 @@ describe("Measure Calculation ", () => {
     ).toHaveValue("2");
   });
 
-  it("displays warning when test case execution is aborted for invalid JSON", async () => {
+  it("displays warning when test case execution is aborted for service error on test case JSON validation", async () => {
     mockedAxios.get.mockClear().mockImplementation((args) => {
       if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
@@ -2205,12 +2269,17 @@ describe("Measure Calculation ", () => {
     const editor = (await screen.getByTestId(
       "test-case-json-editor"
     )) as HTMLInputElement;
+    await waitFor(() => expect(editor.value).not.toBe("Loading...")); // wait for load to complete as editor is read-only
     userEvent.clear(editor);
     await waitFor(() => expect(editor.value).toBe(""));
-    userEvent.paste(editor, `   `);
-    await waitFor(() => expect(editor.value).toBeTruthy());
+    userEvent.paste(editor, `{ "resourceType": "BAD", "type": "collection" }`);
+    await waitFor(() => {
+      expect(editor.value).toBeTruthy();
+      expect(editor.value.trim().length > 0).toBeTruthy();
+    });
 
     const runButton = await screen.findByRole("button", { name: "Run Test" });
+    await waitFor(() => expect(runButton).not.toBeDisabled());
     userEvent.click(runButton);
     await waitFor(async () =>
       userEvent.click(screen.getByTestId("highlighting-tab"))
@@ -2224,11 +2293,26 @@ describe("Measure Calculation ", () => {
   });
 
   it("displays error when test case execution is aborted due to errors validating test case JSON on new test case", async () => {
+    const testCase = {
+      id: "1234",
+      description: "Test IPP",
+      series: "SeriesA",
+      createdBy: MEASURE_CREATEDBY,
+      createdAt: "",
+      lastModifiedAt: "",
+      lastModifiedBy: "null",
+      title: "TestIPP",
+      name: "TestIPP",
+      executionStatus: "false",
+      json: null,
+    } as TestCase;
     mockedAxios.get.mockClear().mockImplementation((args) => {
       if (args && args.endsWith("series")) {
-        return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
+        return Promise.resolve({ data: [] });
       }
-      return Promise.resolve({});
+      return Promise.resolve({
+        data: testCase,
+      });
     });
     mockedAxios.post.mockResolvedValue({
       data: {
@@ -2249,14 +2333,15 @@ describe("Measure Calculation ", () => {
     });
     const measure = { ...simpleMeasureFixture, createdBy: MEASURE_CREATEDBY };
     renderWithRouter(
-      ["/measures/623cacebe74613783378c17b/edit/test-cases"],
-      "/measures/:measureId/edit/test-cases",
+      ["/measures/623cacebe74613783378c17b/edit/test-cases/1234"],
+      "/measures/:measureId/edit/test-cases/:id",
       measure
     );
 
     const editor = (await screen.getByTestId(
       "test-case-json-editor"
     )) as HTMLInputElement;
+    await waitFor(() => expect(editor.value).toEqual(""));
     userEvent.paste(editor, testCaseFixture.json);
     await waitFor(() => expect(editor.value).toBeTruthy());
 
@@ -2310,14 +2395,17 @@ describe("Measure Calculation ", () => {
     const editor = (await screen.getByTestId(
       "test-case-json-editor"
     )) as HTMLInputElement;
+    await waitFor(() => expect(editor.value).not.toBe("Loading...")); // wait for load to complete as editor is read-only
     userEvent.clear(editor);
     await waitFor(() => expect(editor.value).toBe(""));
-    // paste is either including the original editor.value content or
-    //  somehow the cleared editor state is reverted to its original.
-    userEvent.paste(editor, "    ");
-    await waitFor(() => expect(editor.value).toBeTruthy());
+    userEvent.paste(editor, `{ "resourceType": "BAD", "type": "collection" }`);
+    await waitFor(() => {
+      expect(editor.value).toBeTruthy();
+      expect(editor.value.trim().length > 0).toBeTruthy();
+    });
 
     const runButton = await screen.findByRole("button", { name: "Run Test" });
+    await waitFor(() => expect(runButton).not.toBeDisabled());
     await waitFor(async () => userEvent.click(runButton));
 
     userEvent.click(screen.getByTestId("highlighting-tab"));
