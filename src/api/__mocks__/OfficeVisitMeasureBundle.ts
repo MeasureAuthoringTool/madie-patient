@@ -137,6 +137,10 @@ export const officeVisitMeasureBundle: fhir4.Bundle = {
             type: "depends-on",
             url: "http://ecqi.healthit.gov/ecqms/Library/FHIRHelpers",
           },
+          {
+            type: "depends-on",
+            url: "urn:oid:2.16.840.1.113883.6.238",
+          },
         ],
         dataRequirement: [
           {
