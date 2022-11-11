@@ -73,7 +73,7 @@ export class TerminologyServiceApi {
           // TODO: release and version not supported
           const libVs = libraryResource.relatedArtifact?.reduce(
             (libVs, artifact) => {
-              if (artifact?.url) {
+              if (artifact?.url && artifact.url.includes("/ValueSet/")) {
                 const oid = this.getOidFromString(artifact?.url);
                 if (oid) {
                   libVs.push({ oid: oid });
