@@ -99,6 +99,7 @@ const TestCase = ({
         key={`test-case-row-${testCase.id}`}
         data-testid={`test-case-row-${testCase.id}`}
         style={{ borderBottom: "solid 1px #DDD !important" }}
+        className="tcl-tr"
       >
         <td style={{ width: 140 }}>{TestCaseStatus(status)}</td>
         <td data-testid={`test-case-series-${testCase.id}`}>
