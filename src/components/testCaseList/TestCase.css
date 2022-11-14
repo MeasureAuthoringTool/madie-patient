@@ -1,16 +1,16 @@
 td {
-    padding: 10px !important;
-    vertical-align: middle !important;
-    max-width: 10vw;
-    white-space: normal;
-    border-bottom: solid 1px #DDD !important;
+  padding: 10px !important;
+  vertical-align: middle !important;
+  max-width: 10vw;
+  white-space: normal;
+  border-bottom: solid 1px #ddd !important;
 }
 
 .tcl-table > tr {
-    border-bottom: solid 1px #DDD !important;
+  border-bottom: solid 1px #ddd !important;
 }
 
 .tcl-table {
-    border-collapse: collapse;
-    border-spacing: 0 1em !important;
+  border-collapse: collapse;
+  border-spacing: 0 1em !important;
 }
