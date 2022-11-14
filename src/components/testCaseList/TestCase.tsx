@@ -16,18 +16,6 @@ import * as _ from "lodash";
 
 import "./TestCase.css";
 
-export function getStatusColor(executionStatus: string) {
-  if (executionStatus === "Invalid") {
-    return "secondary";
-  } else if (executionStatus === "NA") {
-    return "default";
-  } else if (executionStatus === "pass") {
-    return "success";
-  } else {
-    return "error";
-  }
-}
-
 const TestCase = ({
   testCase,
   canEdit,
@@ -40,15 +28,6 @@ const TestCase = ({
   const theme = useTheme();
   const navigate = useNavigate();
   const status = testCase.executionStatus;
-  // only one group for now
-  const groupPops = [testCase?.groupPopulations?.[0]].filter((tc) => !!tc);
-  const executionRun = executionResult && executionResult[0] ? true : false;
-  // Test how the screen will handle multiple values for the future.
-  // if (groupPopulations.length) {
-  //   groupPopulations = groupPopulations.concat(groupPopulations)
-  //   groupPopulations = groupPopulations.concat(groupPopulations)
-  //   groupPopulations = groupPopulations.concat(groupPopulations)
-  // }
 
   const TestCaseStatus = (executionStatus: string) => {
     let content;
