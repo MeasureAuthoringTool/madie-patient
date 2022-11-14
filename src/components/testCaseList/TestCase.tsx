@@ -66,9 +66,7 @@ const TestCase = ({
     }
 
     return (
-      <Box style={{ display: "flex", alignItems: "center" }} color="error">
-        {content}
-      </Box>
+      <Box style={{ display: "flex", alignItems: "center" }}>{content}</Box>
     );
   };
 
