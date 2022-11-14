@@ -73,7 +73,6 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
         setActiveTab(v);
       }}
       sx={{
-        width: "96.5%",
         fontWeight: 450,
         height: "95px",
         minHeight: "95px",

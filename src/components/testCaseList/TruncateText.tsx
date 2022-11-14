@@ -1,17 +1,45 @@
 import React from "react";
-import Button from "@mui/material/Button";
+import ButtonUnstyled from "@mui/base/ButtonUnstyled";
+import { styled } from "@mui/system";
 import Tooltip from "@mui/material/Tooltip";
 import { truncateInput } from "../../util/Utils";
+import { useTheme } from "@mui/material";
+
+const MoreButton = styled(ButtonUnstyled)`
+  &:hover {
+    cursor: pointer;
+  }
+`;
 
 const TruncateText = ({ text, maxLength = 60, name, dataTestId }) => {
+  const theme = useTheme();
+
   if (text && text.length > maxLength) {
     const displayText = truncateInput(text, maxLength);
     return (
-      <Tooltip title={text} placement="right">
-        <Button name={name} data-testid={`${dataTestId}-button`}>
-          {displayText}...
-        </Button>
-      </Tooltip>
+      <div data-testid={`${dataTestId}-content`}>
+        {displayText}...
+        <Tooltip
+          title={text}
+          placement="right"
+          data-testid={`${dataTestId}-tooltip`}
+        >
+          <MoreButton
+            name={name}
+            data-testid={`${dataTestId}-button`}
+            sx={{
+              color: theme.palette.grey[900],
+              textDecoration: "underline",
+              textTransform: "lowercase",
+              ":hover": {
+                cursor: "pointer",
+              },
+            }}
+          >
+            more
+          </MoreButton>
+        </Tooltip>
+      </div>
     );
   } else {
     return text;

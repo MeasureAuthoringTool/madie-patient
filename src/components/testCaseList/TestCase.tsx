@@ -1,23 +1,20 @@
 import React from "react";
 import tw from "twin.macro";
 import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 
-import TableCell from "@mui/material/TableCell";
-import TableRow from "@mui/material/TableRow";
-import IconButton from "@mui/material/IconButton";
-import Collapse from "@mui/material/Collapse";
-import Chip from "@mui/material/Chip";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import CancelIcon from "@mui/icons-material/Cancel";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ErrorIcon from "@mui/icons-material/Error";
+import DoNotDisturbOnIcon from "@mui/icons-material/DoNotDisturbOn";
 import TruncateText from "./TruncateText";
 import { TestCase as TestCaseModel } from "@madie/madie-models";
 import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calculator";
-import GroupPopulations from "../populations/GroupPopulations";
-const EditButton = tw.button`text-blue-600 hover:text-blue-900`;
-const StyledCell = styled.td`
-  white-space: pre;
-`;
+import { Box, useTheme } from "@mui/material";
+import * as _ from "lodash";
+
+import "./TestCase.css";
 
 export function getStatusColor(executionStatus: string) {
   if (executionStatus === "Invalid") {
@@ -40,10 +37,9 @@ const TestCase = ({
   canEdit: boolean;
   executionResult: DetailedPopulationGroupResult[];
 }) => {
+  const theme = useTheme();
   const navigate = useNavigate();
-  const [open, setOpen] = React.useState(false);
   const status = testCase.executionStatus;
-  const statusColor = getStatusColor(testCase.executionStatus);
   // only one group for now
   const groupPops = [testCase?.groupPopulations?.[0]].filter((tc) => !!tc);
   const executionRun = executionResult && executionResult[0] ? true : false;
@@ -54,102 +50,98 @@ const TestCase = ({
   //   groupPopulations = groupPopulations.concat(groupPopulations)
   // }
 
+  const TestCaseStatus = (executionStatus: string) => {
+    let content;
+    if (executionStatus === "Invalid") {
+      content = (
+        <>
+          <ErrorIcon sx={{ color: theme.palette.secondary.main }} />
+          <span style={{ width: 10 }} />
+          Invalid
+        </>
+      );
+    } else if (executionStatus === "NA" || _.isNil(executionStatus)) {
+      content = (
+        <>
+          <DoNotDisturbOnIcon sx={{ color: theme.palette.grey[500] }} />
+          <span style={{ width: 10 }} />
+          <i>Pending</i>
+        </>
+      );
+    } else if (executionStatus === "pass") {
+      content = (
+        <>
+          <CheckCircleIcon sx={{ color: theme.palette.success.main }} />
+          <span style={{ width: 10 }} />
+          Pass
+        </>
+      );
+    } else {
+      content = (
+        <>
+          <CancelIcon sx={{ color: theme.palette.error.main }} />
+          <span style={{ width: 10 }} />
+          Fail
+        </>
+      );
+    }
+
+    return (
+      <Box style={{ display: "flex", alignItems: "center" }} color="error">
+        {content}
+      </Box>
+    );
+  };
+
   return (
     <React.Fragment key={`fragment-key-${testCase.id}`}>
       <tr
         key={`test-case-row-${testCase.id}`}
         data-testid={`test-case-row-${testCase.id}`}
+        style={{ borderBottom: "solid 1px #DDD !important" }}
       >
-        <td>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => setOpen(!open)}
-            data-testid={`open-button-${testCase.id}`}
-            key={testCase.id}
-          >
-            {open ? (
-              <FontAwesomeIcon
-                icon={faArrowUp}
-                data-testid={`arrow-up-icon-${testCase.id}`}
-              />
-            ) : (
-              <FontAwesomeIcon
-                icon={faArrowRight}
-                data-testid={`arrow-right-icon-${testCase.id}`}
-              />
-            )}
-          </IconButton>
+        <td style={{ width: 140 }}>{TestCaseStatus(status)}</td>
+        <td data-testid={`test-case-series-${testCase.id}`}>
+          <TruncateText
+            text={testCase.series}
+            maxLength={120}
+            name="title"
+            dataTestId={`test-case-series-${testCase.id}`}
+          />
         </td>
-
-        <StyledCell data-testid={`test-case-title-${testCase.id}`}>
+        <td data-testid={`test-case-title-${testCase.id}`}>
           <TruncateText
             text={testCase.title}
             maxLength={60}
-            name="title"
+            name="series"
             dataTestId={`test-case-title-${testCase.id}`}
           />
-        </StyledCell>
-        <StyledCell data-testid={`test-case-series-${testCase.id}`}>
-          <TruncateText
-            text={testCase.series}
-            maxLength={60}
-            name="series"
-            dataTestId={`test-case-series-${testCase.id}`}
-          />
-        </StyledCell>
-
-        <td>
-          <Chip label={status} color={statusColor} />
         </td>
-        {canEdit && (
-          <td>
-            <EditButton
-              onClick={() => {
-                navigate(`./${testCase.id}`);
-              }}
-              data-testid={`edit-test-case-${testCase.id}`}
-            >
-              Edit
-            </EditButton>
-          </td>
-        )}
-        {!canEdit && (
-          <td>
-            <EditButton
-              onClick={() => {
-                navigate(`./${testCase.id}`);
-              }}
-              data-testid={`view-test-case-${testCase.id}`}
-            >
-              View
-            </EditButton>
-          </td>
-        )}
-      </tr>
+        <td data-testid={`test-case-description-${testCase.id}`}>
+          <TruncateText
+            text={testCase.description}
+            maxLength={120}
+            name="description"
+            dataTestId={`test-case-description-${testCase.id}`}
+          />
+        </td>
 
-      <TableRow
-        key={`test-case-population-row-${testCase.id}`}
-        data-testid={`test-case-population-row-${testCase.id}`}
-      >
-        <TableCell
-          style={{ paddingBottom: 0, paddingTop: 0, borderBottom: "none" }}
-          colSpan={6}
-        >
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <div
-              id="test-case-population-lower-tab"
-              aria-label="population"
-              data-testid={`population-table-${testCase.id}`}
-            >
-              <GroupPopulations
-                groupPopulations={groupPops}
-                executionRun={executionRun}
-              />
+        <td style={{ width: 160 }}>
+          <button
+            className="action-button"
+            onClick={(e) => {
+              navigate(`./${testCase.id}`);
+            }}
+            tw="text-blue-600 hover:text-blue-900"
+            data-testid={`view-edit-test-case-${testCase.id}`}
+          >
+            <div className="action">View/Edit</div>
+            <div className="chevron-container">
+              <ExpandMoreIcon />
             </div>
-          </Collapse>
-        </TableCell>
-      </TableRow>
+          </button>
+        </td>
+      </tr>
     </React.Fragment>
   );
 };
