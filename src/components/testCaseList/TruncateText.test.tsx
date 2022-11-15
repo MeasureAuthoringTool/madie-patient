@@ -61,11 +61,17 @@ describe("TruncateText component", () => {
     );
 
     expect(container).toBeTruthy();
+
+    const content = await screen.findByTestId(
+      "test-case-series-testcaseid-content"
+    );
+    expect(content).toBeInTheDocument();
+    expect(content).toHaveTextContent(description.substring(0, 60));
     const button = await screen.findByTestId(
       "test-case-series-testcaseid-button"
     );
     expect(button).toBeInTheDocument();
-    expect(button).toHaveTextContent(description.substring(0, 60));
+    expect(button).toHaveTextContent("more");
 
     fireEvent.mouseMove(button);
     expect(

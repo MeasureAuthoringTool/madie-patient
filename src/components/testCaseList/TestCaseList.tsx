@@ -3,16 +3,14 @@ import tw from "twin.macro";
 import "styled-components/macro";
 import * as _ from "lodash";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
-import { TestCase } from "@madie/madie-models";
+import { Group, TestCase } from "@madie/madie-models";
 import { useParams } from "react-router-dom";
 import TestCaseComponent from "./TestCase";
 import calculationService from "../../api/CalculationService";
 import {
   CalculationOutput,
   DetailedPopulationGroupResult,
-  ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
-import { getFhirMeasurePopulationCode } from "../../util/PopulationsMap";
 import { useOktaTokens } from "@madie/madie-util";
 import useExecutionContext from "../routes/useExecutionContext";
 import CreateCodeCoverageNavTabs from "./CreateCodeCoverageNavTabs";
@@ -189,71 +187,81 @@ const TestCaseList = () => {
   };
 
   return (
-    <div tw="mx-6 my-6 shadow-lg rounded-md border border-slate bg-white">
+    <div tw="mx-6 my-6 shadow-lg rounded-md border border-slate bg-white flex flex-row">
       {!initialLoad && (
-        <div tw="flex-auto">
-          <div tw="pl-12" data-testid="code-coverage-tabs">
-            <CreateCodeCoverageNavTabs
-              activeTab={activeTab}
-              setActiveTab={setActiveTab}
-              executeAllTestCases={executeAllTestCases}
-              canEdit={canEdit}
-              measure={measure}
-              createNewTestCase={createNewTestCase}
-              executeTestCases={executeTestCases}
-              testCasePassFailStats={testCasePassFailStats}
-              coveragePercentage={coveragePercentage}
-            />
-          </div>
-          <CreateNewTestCaseDialog open={createOpen} onClose={handleClose} />
-          {error && (
-            <ErrorAlert data-testid="display-tests-error" role="alert">
-              {error}
-            </ErrorAlert>
-          )}
-
-          {activeTab === "passing" && (
-            <div tw="overflow-x-auto sm:-mx-6 lg:-mx-8">
-              <div tw="py-2 inline-block min-w-full sm:px-6 lg:px-8">
-                {!executing && (
-                  <table tw="min-w-full" data-testid="test-case-tbl">
-                    <thead>
-                      <tr>
-                        <TH scope="col" />
-                        <TH scope="col">Title</TH>
-                        <TH scope="col">Series</TH>
-                        <TH scope="col">Status</TH>
-                        <TH scope="col" />
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {testCases?.map((testCase) => {
-                        return (
-                          <TestCaseComponent
-                            testCase={testCase}
-                            key={testCase.id}
-                            canEdit={canEdit}
-                            executionResult={executionResults[testCase.id]}
-                            // we assume all results have been run here
-                          />
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                )}
-                {executing && (
-                  <div style={{ display: "flex", justifyContent: "center" }}>
-                    <MadieSpinner style={{ height: 50, width: 50 }} />
-                  </div>
-                )}
-              </div>
+        <>
+          <div tw="flex-auto p-8">
+            <div data-testid="code-coverage-tabs">
+              <CreateCodeCoverageNavTabs
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                executeAllTestCases={executeAllTestCases}
+                canEdit={canEdit}
+                measure={measure}
+                createNewTestCase={createNewTestCase}
+                executeTestCases={executeTestCases}
+                testCasePassFailStats={testCasePassFailStats}
+                coveragePercentage={coveragePercentage}
+              />
             </div>
-          )}
+            <CreateNewTestCaseDialog open={createOpen} onClose={handleClose} />
+            {error && (
+              <ErrorAlert data-testid="display-tests-error" role="alert">
+                {error}
+              </ErrorAlert>
+            )}
 
-          {activeTab === "coverage" && (
-            <CodeCoverageHighlighting coverageHTML={coverageHTML} />
-          )}
-        </div>
+            {activeTab === "passing" && (
+              <div tw="overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div tw="py-2 inline-block min-w-full sm:px-6 lg:px-8">
+                  {!executing && (
+                    <table
+                      tw="min-w-full"
+                      data-testid="test-case-tbl"
+                      className="tcl-table"
+                      style={{
+                        borderTop: "solid 1px #DDD",
+                        borderSpacing: "0 2em !important",
+                      }}
+                    >
+                      <thead tw="bg-slate">
+                        <tr>
+                          <TH scope="col">Pass / Fail</TH>
+                          <TH scope="col">Group</TH>
+                          <TH scope="col">Title</TH>
+                          <TH scope="col">Description</TH>
+                          <TH scope="col">Action</TH>
+                        </tr>
+                      </thead>
+                      <tbody className="table-body" style={{ padding: 20 }}>
+                        {testCases?.map((testCase) => {
+                          return (
+                            <TestCaseComponent
+                              testCase={testCase}
+                              key={testCase.id}
+                              canEdit={canEdit}
+                              executionResult={executionResults[testCase.id]}
+                              // we assume all results have been run here
+                            />
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  )}
+                  {executing && (
+                    <div style={{ display: "flex", justifyContent: "center" }}>
+                      <MadieSpinner style={{ height: 50, width: 50 }} />
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {activeTab === "coverage" && (
+              <CodeCoverageHighlighting coverageHTML={coverageHTML} />
+            )}
+          </div>
+        </>
       )}
       {initialLoad && (
         <div style={{ display: "flex", justifyContent: "center" }}>

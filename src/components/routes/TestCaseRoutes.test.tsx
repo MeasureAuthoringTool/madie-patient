@@ -101,7 +101,7 @@ describe("TestCaseRoutes", () => {
     expect(testCaseTitle).toBeInTheDocument();
     const testCaseSeries = await screen.findByText("IPP_Pass");
     expect(testCaseSeries).toBeInTheDocument();
-    const editBtn = screen.getByRole("button", { name: "Edit" });
+    const editBtn = screen.getByRole("button", { name: "View/Edit" });
     expect(editBtn).toBeInTheDocument();
   });
 
@@ -461,7 +461,7 @@ describe("TestCaseRoutes", () => {
     expect(testCaseTitle).toBeInTheDocument();
     const testCaseSeries = await screen.findByText("IPP_Pass");
     expect(testCaseSeries).toBeInTheDocument();
-    const editBtn = screen.getByRole("button", { name: "Edit" });
+    const editBtn = screen.getByRole("button", { name: "View/Edit" });
     expect(editBtn).toBeInTheDocument();
   });
 

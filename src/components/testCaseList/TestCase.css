@@ -1,0 +1,15 @@
+.tcl-tr > td {
+  padding: 10px;
+  max-width: 10vw;
+  white-space: normal;
+  border-bottom: solid 1px #ddd;
+}
+
+.tcl-tr {
+  border-bottom: solid 1px #ddd;
+}
+
+.tcl-table {
+  border-collapse: collapse;
+  border-spacing: 0 1em;
+}

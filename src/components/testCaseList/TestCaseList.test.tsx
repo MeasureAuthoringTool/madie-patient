@@ -5,7 +5,6 @@ import {
   render,
   screen,
   waitFor,
-  within,
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
@@ -404,22 +403,24 @@ describe("TestCaseList component", () => {
 
       const tableHeaders = table.querySelectorAll("thead th");
 
-      expect(tableHeaders[1]).toHaveTextContent("Title");
-      expect(tableHeaders[2]).toHaveTextContent("Series");
-      expect(tableHeaders[3]).toHaveTextContent("Status");
+      expect(tableHeaders[0]).toHaveTextContent("Pass / Fail");
+      expect(tableHeaders[1]).toHaveTextContent("Group");
+      expect(tableHeaders[2]).toHaveTextContent("Title");
+      expect(tableHeaders[3]).toHaveTextContent("Description");
+      expect(tableHeaders[4]).toHaveTextContent("Action");
 
       const tableRows = table.querySelectorAll("tbody tr");
 
       expect(tableRows[0]).toHaveTextContent(testCases[0].title);
       expect(tableRows[0]).toHaveTextContent(testCases[0].series);
       expect(
-        screen.getByTestId(`edit-test-case-${testCases[0].id}`)
+        screen.getByTestId(`view-edit-test-case-${testCases[0].id}`)
       ).toBeInTheDocument();
 
-      expect(tableRows[2]).toHaveTextContent(testCases[1].title);
-      expect(tableRows[2]).toHaveTextContent(testCases[1].series);
+      expect(tableRows[1]).toHaveTextContent(testCases[1].title);
+      expect(tableRows[1]).toHaveTextContent(testCases[1].series);
       expect(
-        screen.getByTestId(`edit-test-case-${testCases[1].id}`)
+        screen.getByTestId(`view-edit-test-case-${testCases[1].id}`)
       ).toBeInTheDocument();
     });
   });
@@ -464,7 +465,7 @@ describe("TestCaseList component", () => {
   it("should navigate to the Test Case details page on edit button click", async () => {
     const { getByTestId } = renderTestCaseListComponent();
     await waitFor(() => {
-      const editButton = getByTestId(`edit-test-case-${testCases[0].id}`);
+      const editButton = getByTestId(`view-edit-test-case-${testCases[0].id}`);
       fireEvent.click(editButton);
       expect(mockedUsedNavigate).toHaveBeenCalled();
     });
@@ -476,7 +477,7 @@ describe("TestCaseList component", () => {
     }));
     const { getByTestId } = renderTestCaseListComponent();
     await waitFor(() => {
-      const editButton = getByTestId(`edit-test-case-${testCases[0].id}`);
+      const editButton = getByTestId(`view-edit-test-case-${testCases[0].id}`);
       fireEvent.click(editButton);
       expect(mockedUsedNavigate).toHaveBeenCalled();
     });
@@ -486,7 +487,7 @@ describe("TestCaseList component", () => {
     measure.createdBy = "AnotherUser";
     const { getByTestId } = renderTestCaseListComponent();
     await waitFor(() => {
-      const viewButton = getByTestId(`view-test-case-${testCases[0].id}`);
+      const viewButton = getByTestId(`view-edit-test-case-${testCases[0].id}`);
       fireEvent.click(viewButton);
       expect(mockedUsedNavigate).toHaveBeenCalled();
     });
@@ -499,9 +500,9 @@ describe("TestCaseList component", () => {
     const table = await screen.findByTestId("test-case-tbl");
     const tableRows = table.querySelectorAll("tbody tr");
     await waitFor(() => {
-      expect(tableRows[0]).toHaveTextContent("NA");
-      expect(tableRows[2]).toHaveTextContent("NA");
-      expect(tableRows[4]).toHaveTextContent("Invalid");
+      expect(tableRows[0]).toHaveTextContent("Pending");
+      expect(tableRows[1]).toHaveTextContent("Pending");
+      expect(tableRows[2]).toHaveTextContent("Invalid");
     });
 
     const executeAllTestCasesButton = screen.getByRole("button", {
@@ -511,17 +512,9 @@ describe("TestCaseList component", () => {
     userEvent.click(executeAllTestCasesButton);
     await waitFor(() => {
       expect(tableRows[0]).toHaveTextContent("Pass");
-      expect(tableRows[2]).toHaveTextContent("Fail");
-      expect(tableRows[4]).toHaveTextContent("Invalid");
+      expect(tableRows[1]).toHaveTextContent("Fail");
+      expect(tableRows[2]).toHaveTextContent("Invalid");
     });
-    const table2 = screen.getByTestId("test-case-tbl");
-    const expand1Btn = await within(tableRows[0] as HTMLElement).findByRole(
-      "button",
-      { name: "expand row" }
-    );
-    userEvent.click(expand1Btn);
-    expect(await screen.findByTestId("population-table-1")).toBeInTheDocument();
-    expect(await screen.findByText("Measure Group 1")).toBeInTheDocument();
   });
 
   it("should not render execute button for user who is not the owner of the measure", () => {
@@ -589,15 +582,28 @@ describe("TestCaseList component", () => {
     const table = await screen.findByTestId("test-case-tbl");
     const tableHeaders = table.querySelectorAll("thead th");
 
-    expect(tableHeaders[1]).toHaveTextContent("Title");
-    expect(tableHeaders[2]).toHaveTextContent("Series");
-    expect(tableHeaders[3]).toHaveTextContent("Status");
+    expect(tableHeaders[0]).toHaveTextContent("Pass / Fail");
+    expect(tableHeaders[1]).toHaveTextContent("Group");
+    expect(tableHeaders[2]).toHaveTextContent("Title");
+    expect(tableHeaders[3]).toHaveTextContent("Description");
 
     const tableRows = table.querySelectorAll("tbody tr");
     expect(tableRows[0]).toHaveTextContent(testCases[0].title.substring(0, 59));
     expect(tableRows[0]).toHaveTextContent(
       testCases[0].series.substring(0, 59)
     );
+
+    const seriesButton = await screen.findByTestId(
+      `test-case-series-${testCases[0].id}-button`
+    );
+    expect(seriesButton).toBeInTheDocument();
+    fireEvent.mouseOver(seriesButton);
+    expect(
+      await screen.findByRole("button", {
+        name: testCases[0].series,
+        hidden: true,
+      })
+    ).toBeVisible();
 
     const titleButton = screen.getByTestId(
       `test-case-title-${testCases[0].id}-button`
@@ -617,18 +623,6 @@ describe("TestCaseList component", () => {
     await waitFor(() =>
       expect(screen.getByText(testCases[0].title)).toBeInTheDocument()
     );
-
-    const seriesButton = await screen.findByTestId(
-      `test-case-series-${testCases[0].id}-button`
-    );
-    expect(seriesButton).toBeInTheDocument();
-    fireEvent.mouseOver(seriesButton);
-    expect(
-      await screen.findByRole("button", {
-        name: testCases[0].series,
-        hidden: true,
-      })
-    ).toBeVisible();
   });
 
   it("should render New Test Case button and navigate to the Create New Test Case page when button clicked", async () => {
