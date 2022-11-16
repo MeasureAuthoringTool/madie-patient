@@ -101,8 +101,8 @@ describe("TestCaseRoutes", () => {
     expect(testCaseTitle).toBeInTheDocument();
     const testCaseSeries = await screen.findByText("IPP_Pass");
     expect(testCaseSeries).toBeInTheDocument();
-    const editBtn = screen.getByRole("button", { name: "View/Edit" });
-    expect(editBtn).toBeInTheDocument();
+    const selectBtn = screen.getByRole("button", { name: "Select" });
+    expect(selectBtn).toBeInTheDocument();
   });
 
   it("should allow navigation to create test case dialog from landing page ", async () => {
@@ -461,8 +461,8 @@ describe("TestCaseRoutes", () => {
     expect(testCaseTitle).toBeInTheDocument();
     const testCaseSeries = await screen.findByText("IPP_Pass");
     expect(testCaseSeries).toBeInTheDocument();
-    const editBtn = screen.getByRole("button", { name: "View/Edit" });
-    expect(editBtn).toBeInTheDocument();
+    const selectBtn = screen.getByRole("button", { name: "Select" });
+    expect(selectBtn).toBeInTheDocument();
   });
 
   it("should render 404 page", async () => {

@@ -15,8 +15,7 @@ import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calcula
 import { Box, useTheme } from "@mui/material";
 import * as _ from "lodash";
 import { MadieDeleteDialog } from "@madie/madie-design-system/dist/react";
-
-import "./TestCase.css";
+import "./TestCase.scss";
 
 const TestCase = ({
   testCase,
@@ -27,7 +26,7 @@ const TestCase = ({
   testCase: TestCaseModel;
   canEdit: boolean;
   executionResult: DetailedPopulationGroupResult[];
-  deleteTestCase
+  deleteTestCase;
 }) => {
   const theme = useTheme();
   const navigate = useNavigate();
