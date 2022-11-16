@@ -14,7 +14,7 @@ import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calcula
 import { Box, useTheme } from "@mui/material";
 import * as _ from "lodash";
 
-import "./TestCase.css";
+import "./TestCase.scss";
 
 const TestCase = ({
   testCase,

@@ -9,6 +9,7 @@ import { Bundle, ValueSet } from "fhir/r4";
 import useTerminologyServiceApi from "../../api/useTerminologyServiceApi";
 import { ExecutionContextProvider } from "./ExecutionContext";
 import useMeasureServiceApi from "../../api/useMeasureServiceApi";
+import * as _ from "lodash";
 
 const TestCaseRoutes = () => {
   const [measureBundle, setMeasureBundle] = useState<Bundle>();
@@ -16,6 +17,7 @@ const TestCaseRoutes = () => {
   const [errors, setErrors] = useState<string>();
   const [executionContextReady, setExecutionContextReady] = useState<boolean>();
   const [executing, setExecuting] = useState<boolean>();
+  const [lastMeasure, setLastMeasure] = useState<any>();
 
   const terminologyService = useRef(useTerminologyServiceApi());
   const measureService = useRef(useMeasureServiceApi());
@@ -30,6 +32,12 @@ const TestCaseRoutes = () => {
 
   useEffect(() => {
     if (measure) {
+      const compareTo = _.cloneDeep(measure);
+      compareTo.testCases = null;
+      if (measureBundle && lastMeasure && _.isEqual(lastMeasure, compareTo)) {
+        return;
+      }
+      setLastMeasure(compareTo);
       setErrors(null);
       measureService.current
         .fetchMeasureBundle(measure)
