@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import TestCaseComponent from "./TestCase";
 
@@ -37,5 +37,8 @@ describe("TestCase component", () => {
     const buttons = await screen.findAllByRole("button");
     expect(buttons).toHaveLength(1);
     expect(buttons[0]).toHaveTextContent("Select");
+    fireEvent.click(buttons[0]);
+    expect(screen.getByText("edit")).toBeInTheDocument();
+    expect(screen.getByText("delete")).toBeInTheDocument();
   });
 });

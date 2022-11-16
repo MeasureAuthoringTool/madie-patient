@@ -134,7 +134,7 @@ const TestCase = ({
               handleOpen(testCase, e);
             }}
             tw="text-blue-600 hover:text-blue-900"
-            data-testid={`view-edit-test-case-${testCase.id}`}
+            data-testid={`select-action-${testCase.id}`}
           >
             <div className="action">Select</div>
             <div className="chevron-container">
@@ -201,6 +201,7 @@ const TestCase = ({
         <div className="popover-content" data-testid="popover-content">
           <div className="btn-container">
             <button
+              data-testid={`view-edit-test-case-${testCase.id}`}
               onClick={() => {
                 navigate(`./${testCase.id}`);
                 setOptionsOpen(false);
@@ -210,6 +211,7 @@ const TestCase = ({
             </button>
             {canEdit && (
               <button
+                data-testid="delete-test-case-btn"
                 onClick={() => {
                   setDeleteDialogModalOpen(true);
                   setOptionsOpen(false);
