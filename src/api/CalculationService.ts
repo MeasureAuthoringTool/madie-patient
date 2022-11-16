@@ -385,8 +385,7 @@ export class CalculationService {
   processTestCaseResults(
     testCase: TestCase,
     measureGroups: Group[],
-    populationGroupResults: DetailedPopulationGroupResult[],
-    testAllGroups = true
+    populationGroupResults: DetailedPopulationGroupResult[]
   ): TestCase {
     if (_.isNil(testCase) || _.isNil(testCase?.groupPopulations)) {
       return testCase;
@@ -401,6 +400,12 @@ export class CalculationService {
     for (const tcGroupPopulation of updatedTestCase?.groupPopulations) {
       const groupId = tcGroupPopulation.groupId;
       const measureGroup = measureGroups?.find((group) => group.id === groupId);
+
+      // Only perform calculations for provided groups (Can be used to limit results)
+      if (_.isNil(measureGroup)) {
+        continue;
+      }
+
       const populationGroupResult: DetailedPopulationGroupResult =
         populationGroupResults?.find(
           (popGroupResult) => popGroupResult.groupId === groupId
@@ -488,11 +493,6 @@ export class CalculationService {
       });
 
       allGroupsPass = allGroupsPass && this.isGroupPass(tcGroupPopulation);
-
-      if (!testAllGroups) {
-        // TODO: remove when supporting multiple groups on list page
-        break;
-      }
     }
 
     updatedTestCase.executionStatus = allGroupsPass

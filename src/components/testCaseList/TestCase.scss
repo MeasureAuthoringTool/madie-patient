@@ -1,0 +1,42 @@
+.tcl-tr {
+    border-bottom: solid 1px #ddd;
+
+    > td {
+        padding: 10px;
+        max-width: 10vw;
+        white-space: normal;
+        vertical-align: top;
+        border-bottom: solid 1px #ddd;
+    }
+}
+
+.tcl-table {
+    border-collapse: collapse;
+    border-spacing: 0 1em;
+}
+
+.chip-draft {
+    background-color: #e1f3f8;
+}
+
+.action-button {
+    font-family: Rubik, sans-serif;
+    font-weight: 400;
+    color: #000;
+    font-size: 14px;
+    display: flex;
+    flex-direction: row;
+    border: solid 1px #808080;
+    border-radius: 4px;
+    height: 39px;
+
+    .action {
+        padding: 7px 21px;
+        border-right: solid 1px #c4c4c4;
+    }
+
+    .chevron-container {
+        display: flex;
+        align-self: center;
+    }
+}

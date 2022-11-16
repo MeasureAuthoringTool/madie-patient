@@ -17,8 +17,9 @@ import CreateCodeCoverageNavTabs from "./CreateCodeCoverageNavTabs";
 import CodeCoverageHighlighting from "./CodeCoverageHighlighting";
 import CreateNewTestCaseDialog from "../createTestCase/CreateNewTestCaseDialog";
 import { MadieSpinner } from "@madie/madie-design-system/dist/react";
+import TestCaseListSideBarNav from "./TestCaseListSideBarNav";
 
-const TH = tw.th`p-3 border-b text-left text-sm font-bold uppercase`;
+const TH = tw.th`p-3 border-b text-left text-sm font-bold capitalize`;
 const ErrorAlert = tw.div`bg-red-100 text-red-700 rounded-lg m-1 p-3`;
 
 export interface TestCasesPassingDetailsProps {
@@ -39,6 +40,8 @@ const TestCaseList = () => {
   const userName = getUserName();
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("passing");
+  const [calculationOutput, setCalculationOutput] =
+    useState<CalculationOutput<any>>();
   const [executeAllTestCases, setExecuteAllTestCases] =
     useState<boolean>(false);
   const [coverageHTML, setCoverageHTML] = useState<string>("");
@@ -60,8 +63,20 @@ const TestCaseList = () => {
   const [measure] = measureState;
   const [measureBundle] = bundleState;
   const [valueSets] = valueSetsState;
+  const [selectedPopCriteria, setSelectedPopCriteria] = useState<Group>();
 
   const [createOpen, setCreateOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (
+      !_.isNil(measure?.groups) &&
+      measure.groups.length > 0 &&
+      (_.isNil(selectedPopCriteria) ||
+        _.isNil(measure.groups?.find((g) => g.id === selectedPopCriteria.id)))
+    ) {
+      setSelectedPopCriteria(measure.groups[0]);
+    }
+  }, [measure]);
 
   useEffect(() => {
     setCanEdit(
@@ -108,6 +123,52 @@ const TestCaseList = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const validTestCases = testCases?.filter((tc) => tc.validResource);
+    if (validTestCases && calculationOutput?.results) {
+      const regex = /<h2> Clause Coverage: [0-9]*\.[0-9]+%<\/h2>/i;
+      const executionResults = calculationOutput.results,
+        executionHTML = calculationOutput.coverageHTML?.replace(regex, "");
+      setCoverageHTML(executionHTML);
+      const nextExecutionResults = {};
+      validTestCases.forEach((testCase, i) => {
+        const detailedResults = executionResults.find(
+          (result) => result.patientId === testCase.id
+        )?.detailedResults;
+        nextExecutionResults[testCase.id] = detailedResults;
+
+        const processedTC = calculationService().processTestCaseResults(
+          testCase,
+          [selectedPopCriteria],
+          detailedResults as DetailedPopulationGroupResult[]
+        );
+        testCase.groupPopulations = processedTC.groupPopulations;
+        testCase.executionStatus = processedTC.executionStatus;
+      });
+      setExecuteAllTestCases(true);
+      const { passPercentage, passFailRatio } =
+        calculation.current.getPassingPercentageForTestCases(testCases);
+      setTestCasePassFailStats({
+        passPercentage: passPercentage,
+        passFailRatio: passFailRatio,
+      });
+      setTestCases([...testCases]);
+      setExecutionResults(nextExecutionResults);
+      // execution results for all groups for all test cases
+      const populationGroupResults: DetailedPopulationGroupResult[] =
+        Object.values(
+          nextExecutionResults
+        ).flat() as DetailedPopulationGroupResult[];
+
+      const coveragePercentage =
+        calculation.current.getCoveragePercentageForGroup(
+          selectedPopCriteria.id,
+          populationGroupResults
+        );
+      setCoveragePercentage(coveragePercentage);
+    }
+  }, [calculationOutput, selectedPopCriteria]);
+
   const createNewTestCase = () => {
     setCreateOpen(true);
     setExecuteAllTestCases(false);
@@ -136,47 +197,7 @@ const TestCaseList = () => {
             measureBundle,
             valueSets
           );
-        const regex = /<h2> Clause Coverage: [0-9]*\.[0-9]+%<\/h2>/i;
-        const executionResults = calculationOutput.results,
-          executionHTML = calculationOutput.coverageHTML.replace(regex, "");
-        setCoverageHTML(executionHTML);
-        const nextExecutionResults = {};
-        validTestCases.forEach((testCase, i) => {
-          const detailedResults = executionResults.find(
-            (result) => result.patientId === testCase.id
-          )?.detailedResults;
-          nextExecutionResults[testCase.id] = detailedResults;
-
-          const processedTC = calculationService().processTestCaseResults(
-            testCase,
-            measure.groups,
-            detailedResults as DetailedPopulationGroupResult[],
-            false
-          );
-          testCase.groupPopulations = processedTC.groupPopulations;
-          testCase.executionStatus = processedTC.executionStatus;
-        });
-        setExecuteAllTestCases(true);
-        const { passPercentage, passFailRatio } =
-          calculation.current.getPassingPercentageForTestCases(testCases);
-        setTestCasePassFailStats({
-          passPercentage: passPercentage,
-          passFailRatio: passFailRatio,
-        });
-        setTestCases([...testCases]);
-        setExecutionResults(nextExecutionResults);
-        // execution results for all groups for all test cases
-        const populationGroupResults: DetailedPopulationGroupResult[] =
-          Object.values(
-            nextExecutionResults
-          ).flat() as DetailedPopulationGroupResult[];
-
-        const coveragePercentage =
-          calculation.current.getCoveragePercentageForGroup(
-            measure.groups[0].id,
-            populationGroupResults
-          );
-        setCoveragePercentage(coveragePercentage);
+        setCalculationOutput(calculationOutput);
       } catch (error) {
         setError(error.message);
       }
@@ -187,10 +208,17 @@ const TestCaseList = () => {
   };
 
   return (
-    <div tw="mx-6 my-6 shadow-lg rounded-md border border-slate bg-white flex flex-row">
+    <div tw="grid lg:grid-cols-6 gap-4 mx-8 my-6 shadow-lg rounded-md border border-slate bg-white">
       {!initialLoad && (
         <>
-          <div tw="flex-auto p-8">
+          <TestCaseListSideBarNav
+            allPopulationCriteria={measure?.groups}
+            selectedPopulationCriteria={selectedPopCriteria}
+            onChange={(populationCriteria) => {
+              setSelectedPopCriteria(populationCriteria);
+            }}
+          />
+          <div tw="lg:col-span-5 pl-2 pr-2">
             <div data-testid="code-coverage-tabs">
               <CreateCodeCoverageNavTabs
                 activeTab={activeTab}
