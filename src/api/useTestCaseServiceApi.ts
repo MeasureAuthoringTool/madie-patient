@@ -103,6 +103,23 @@ export class TestCaseServiceApi {
     }
   }
 
+  async deleteTestCaseByTestCaseId(measureId: string, testCaseId: string) {
+    try {
+      const response = await axios.delete(
+        `${this.baseUrl}/measures/${measureId}/test-cases/${testCaseId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
+        }
+      );
+      return response.data;
+    } catch {
+      const message = `Unable to delete test case`;
+      throw new Error(message);
+    }
+  }
+
   async validateTestCaseBundle(bundle: any) {
     try {
       const response = await axios.post<HapiOperationOutcome>(
