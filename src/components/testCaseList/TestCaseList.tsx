@@ -174,6 +174,18 @@ const TestCaseList = () => {
     setExecuteAllTestCases(false);
   };
 
+  const deleteTestCase = (testCaseId) => {
+    try {
+      testCaseService.current
+        .deleteTestCaseByTestCaseId(measureId, testCaseId)
+        .then(() => {
+          retrieveTestCases();
+        });
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   const handleClose = () => {
     setCreateOpen(false);
   };
@@ -269,6 +281,7 @@ const TestCaseList = () => {
                               key={testCase.id}
                               canEdit={canEdit}
                               executionResult={executionResults[testCase.id]}
+                              deleteTestCase={deleteTestCase}
                               // we assume all results have been run here
                             />
                           );

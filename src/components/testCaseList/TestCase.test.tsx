@@ -36,6 +36,6 @@ describe("TestCase component", () => {
 
     const buttons = await screen.findAllByRole("button");
     expect(buttons).toHaveLength(1);
-    expect(buttons[0]).toHaveTextContent("View/Edit");
+    expect(buttons[0]).toHaveTextContent("Select");
   });
 });
