@@ -114,7 +114,7 @@ export class TestCaseServiceApi {
         }
       );
       return response.data;
-    } catch {
+    } catch (err) {
       const message = `Unable to delete test case`;
       throw new Error(message);
     }

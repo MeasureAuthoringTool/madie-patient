@@ -175,15 +175,14 @@ const TestCaseList = () => {
   };
 
   const deleteTestCase = (testCaseId) => {
-    try {
-      testCaseService.current
-        .deleteTestCaseByTestCaseId(measureId, testCaseId)
-        .then(() => {
-          retrieveTestCases();
-        });
-    } catch (err) {
-      setError(err.message);
-    }
+    testCaseService.current
+      .deleteTestCaseByTestCaseId(measureId, testCaseId)
+      .then(() => {
+        retrieveTestCases();
+      })
+      .catch((err) => {
+        setError(err.message);
+      });
   };
 
   const handleClose = () => {
