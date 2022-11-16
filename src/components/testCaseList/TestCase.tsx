@@ -202,18 +202,15 @@ const TestCase = ({
       >
         <div className="popover-content" data-testid="popover-content">
           <div className="btn-container">
-            {
               <button
                 onClick={() => {
                   navigate(`./${testCase.id}`);
                   setOptionsOpen(false);
                 }}
               >
-                edit
+                {canEdit?"edit":"view"}
               </button>
-            }
-            {
-              <button
+              {canEdit && <button
                 onClick={() => {
                   setDeleteDialogModalOpen(true);
                   setOptionsOpen(false);
