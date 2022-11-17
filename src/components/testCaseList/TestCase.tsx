@@ -1,33 +1,56 @@
-import React from "react";
+import React, { useState } from "react";
 import tw from "twin.macro";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CancelIcon from "@mui/icons-material/Cancel";
+import Popover from "@mui/material/Popover";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
 import DoNotDisturbOnIcon from "@mui/icons-material/DoNotDisturbOn";
 import TruncateText from "./TruncateText";
 import { TestCase as TestCaseModel } from "@madie/madie-models";
+import { MadieDeleteDialog } from "@madie/madie-design-system/dist/react";
 import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calculator";
 import { Box, useTheme } from "@mui/material";
 import * as _ from "lodash";
-
 import "./TestCase.scss";
 
 const TestCase = ({
   testCase,
   canEdit,
   executionResult,
+  deleteTestCase,
 }: {
   testCase: TestCaseModel;
   canEdit: boolean;
   executionResult: DetailedPopulationGroupResult[];
+  deleteTestCase;
 }) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const status = testCase.executionStatus;
+  const [deleteDialogModalOpen, setDeleteDialogModalOpen] =
+    useState<boolean>(false);
+
+  // Popover utilities
+  const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedTestCase, setSelectedTestCase] = useState<TestCaseModel>(null);
+  const handleOpen = (
+    selected: TestCaseModel,
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    setSelectedTestCase(selected);
+    setAnchorEl(event.currentTarget);
+    setOptionsOpen(true);
+  };
+  const handleClose = () => {
+    setOptionsOpen(false);
+    setSelectedTestCase(null);
+    setAnchorEl(null);
+  };
 
   const TestCaseStatus = (executionStatus: string) => {
     let content;
@@ -108,18 +131,110 @@ const TestCase = ({
           <button
             className="action-button"
             onClick={(e) => {
-              navigate(`./${testCase.id}`);
+              handleOpen(testCase, e);
             }}
             tw="text-blue-600 hover:text-blue-900"
-            data-testid={`view-edit-test-case-${testCase.id}`}
+            data-testid={`select-action-${testCase.id}`}
           >
-            <div className="action">View/Edit</div>
+            <div className="action">Select</div>
             <div className="chevron-container">
               <ExpandMoreIcon />
             </div>
           </button>
         </td>
       </tr>
+
+      <Popover
+        open={optionsOpen}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+        sx={{
+          ".MuiPopover-paper": {
+            boxShadow: "none",
+            overflow: "visible",
+            ".popover-content": {
+              border: "solid 1px #979797",
+              position: "relative",
+              marginTop: "16px",
+              marginLeft: "-70px",
+              borderRadius: "6px",
+              background: "#F7F7F7",
+              width: "115px",
+              "&::before": {
+                borderWidth: "thin",
+                position: "absolute",
+                top: "-8px",
+                left: "calc(50% - 8px)",
+                height: "16px",
+                width: "16px",
+                background: "#F7F7F7",
+                borderColor: "#979797 transparent transparent #979797",
+                content: '""',
+                transform: "rotate(45deg)",
+              },
+              ".btn-container": {
+                display: "flex",
+                flexDirection: "column",
+                padding: "10px 0",
+                button: {
+                  zIndex: 2,
+                  fontSize: 14,
+                  padding: "0px 12px",
+                  textAlign: "left",
+                  "&:hover": {
+                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                  },
+                },
+              },
+            },
+          },
+        }}
+      >
+        <div className="popover-content" data-testid="popover-content">
+          <div className="btn-container">
+            <button
+              data-testid={`view-edit-test-case-${testCase.id}`}
+              onClick={() => {
+                navigate(`./${testCase.id}`);
+                setOptionsOpen(false);
+              }}
+            >
+              {canEdit ? "edit" : "view"}
+            </button>
+            {canEdit && (
+              <button
+                data-testid="delete-test-case-btn"
+                onClick={() => {
+                  setDeleteDialogModalOpen(true);
+                  setOptionsOpen(false);
+                }}
+              >
+                delete
+              </button>
+            )}
+          </div>
+        </div>
+      </Popover>
+
+      <MadieDeleteDialog
+        open={deleteDialogModalOpen}
+        onContinue={() => {
+          deleteTestCase(selectedTestCase.id);
+        }}
+        onClose={() => {
+          setDeleteDialogModalOpen(false);
+        }}
+        dialogTitle={`Delete Test Case`}
+        name={selectedTestCase?.title}
+      />
     </React.Fragment>
   );
 };
