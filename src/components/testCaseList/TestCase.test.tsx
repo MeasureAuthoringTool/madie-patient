@@ -41,4 +41,29 @@ describe("TestCase component", () => {
     expect(screen.getByText("edit")).toBeInTheDocument();
     expect(screen.getByText("delete")).toBeInTheDocument();
   });
+
+  it("should render test casee view for now owners and no delete option", async () => {
+    const table = document.createElement("table");
+    render(
+      <tbody>
+        <MemoryRouter>
+          <TestCaseComponent testCase={testCase} canEdit={false} />
+        </MemoryRouter>
+      </tbody>,
+      { container: document.body.appendChild(table) }
+    );
+
+    const rows = await screen.findByTestId(`test-case-row-${testCase.id}`);
+    const columns = rows.querySelectorAll("td");
+    expect(columns[0]).toHaveTextContent("Pass");
+    expect(columns[1]).toHaveTextContent(testCase.series);
+    expect(columns[2]).toHaveTextContent(testCase.title);
+    expect(columns[3]).toHaveTextContent(testCase.description);
+
+    const buttons = await screen.findAllByRole("button");
+    expect(buttons).toHaveLength(1);
+    expect(buttons[0]).toHaveTextContent("Select");
+    fireEvent.click(buttons[0]);
+    expect(screen.getByText("view")).toBeInTheDocument();
+  });
 });
