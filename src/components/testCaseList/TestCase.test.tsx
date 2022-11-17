@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import TestCaseComponent from "./TestCase";
 
@@ -16,7 +16,7 @@ describe("TestCase component", () => {
     executionStatus: "pass",
   };
 
-  it("should render test case population table not opened", async () => {
+  it("should render test case population table and show available actions for owners and shared owners", async () => {
     const table = document.createElement("table");
     render(
       <tbody>
@@ -40,6 +40,19 @@ describe("TestCase component", () => {
     fireEvent.click(buttons[0]);
     expect(screen.getByText("edit")).toBeInTheDocument();
     expect(screen.getByText("delete")).toBeInTheDocument();
+
+    const deleteButton = screen.getByText("delete");
+    fireEvent.click(deleteButton);
+
+    expect(screen.getByText("Delete Test Case")).toBeInTheDocument();
+    expect(screen.getByText("Cancel")).toBeInTheDocument();
+    expect(screen.getByText("Yes, Delete")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("Cancel"));
+    await waitFor(() => {
+      const submitButton = screen.queryByText("Yes, Delete");
+      expect(submitButton).not.toBeInTheDocument();
+    });
   });
 
   it("should render test casee view for now owners and no delete option", async () => {

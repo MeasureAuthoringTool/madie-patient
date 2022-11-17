@@ -480,16 +480,22 @@ describe("TestCaseList component", () => {
       const selectButton = getByTestId(`select-action-${testCases[0].id}`);
       expect(selectButton).toBeInTheDocument();
       fireEvent.click(selectButton);
-      const deleteButton = getByTestId(`delete-test-case-btn`);
-      fireEvent.click(deleteButton);
+    });
+    const deleteButton = getByTestId(`delete-test-case-btn`);
+    fireEvent.click(deleteButton);
 
-      expect(screen.getByTestId("delete-dialog")).toBeInTheDocument();
-      expect(
-        screen.getByTestId("delete-dialog-continue-button")
-      ).toBeInTheDocument();
-      expect(
-        screen.getByTestId("delete-dialog-cancel-button")
-      ).toBeInTheDocument();
+    expect(screen.getByTestId("delete-dialog")).toBeInTheDocument();
+    expect(
+      screen.getByTestId("delete-dialog-continue-button")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId("delete-dialog-cancel-button")
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId("delete-dialog-cancel-button"));
+    await waitFor(() => {
+      const submitButton = screen.queryByText("Yes, Delete");
+      expect(submitButton).not.toBeInTheDocument();
     });
   });
 
