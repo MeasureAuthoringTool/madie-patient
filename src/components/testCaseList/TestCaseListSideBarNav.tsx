@@ -29,20 +29,24 @@ const TestCaseListSideBarNav = ({
 }: TestCaseListSideBarNavProps) => {
   return (
     <OuterWrapper>
-      <Nav>
+      <Nav data-testid="test-case-pop-criteria-nav">
         {allPopulationCriteria && allPopulationCriteria.length > 0 ? (
           allPopulationCriteria.map((populationCriteria, idx) => {
             if (populationCriteria.id === selectedPopulationCriteria?.id) {
               return (
-                <ActiveNavLink to={""}>{`Population Criteria ${
-                  idx + 1
-                }`}</ActiveNavLink>
+                <ActiveNavLink
+                  key={populationCriteria.id}
+                  to={""}
+                  data-testid={`pop-criteria-nav-link-${populationCriteria.id}`}
+                >{`Population Criteria ${idx + 1}`}</ActiveNavLink>
               );
             }
 
             return (
               <InactiveNavLink
+                key={populationCriteria.id}
                 to={""}
+                data-testid={`pop-criteria-nav-link-${populationCriteria.id}`}
                 onClick={(e) => {
                   e.preventDefault();
                   onChange(populationCriteria);

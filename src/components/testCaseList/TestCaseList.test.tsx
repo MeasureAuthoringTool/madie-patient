@@ -61,52 +61,54 @@ jest.mock("react-router-dom", () => ({
 }));
 
 // output from calculationService
-const executionResults = [
-  {
-    patientId: "1",
-    detailedResults: [
-      {
-        groupId: "population-group-1",
-        populationResults: [
-          {
-            populationType: "initial-population",
-            result: true,
-          },
-          {
-            populationType: "denominator",
-            result: false,
-          },
-          {
-            populationType: "numerator",
-            result: true,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    patientId: "2",
-    detailedResults: [
-      {
-        groupId: "population-group-1",
-        populationResults: [
-          {
-            populationType: "initial-population",
-            result: false,
-          },
-          {
-            populationType: "denominator",
-            result: false,
-          },
-          {
-            populationType: "numerator",
-            result: false,
-          },
-        ],
-      },
-    ],
-  },
-];
+const executionResults = {
+  results: [
+    {
+      patientId: "1",
+      detailedResults: [
+        {
+          groupId: "population-group-1",
+          populationResults: [
+            {
+              populationType: "initial-population",
+              result: true,
+            },
+            {
+              populationType: "denominator",
+              result: false,
+            },
+            {
+              populationType: "numerator",
+              result: true,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      patientId: "2",
+      detailedResults: [
+        {
+          groupId: "population-group-1",
+          populationResults: [
+            {
+              populationType: "initial-population",
+              result: false,
+            },
+            {
+              populationType: "denominator",
+              result: false,
+            },
+            {
+              populationType: "numerator",
+              result: false,
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
 
 // mock data for list of testCases retrieved from testCaseService
 const testCases = [
@@ -223,6 +225,19 @@ const failingTestCaseResults = [
           },
         ] as PopulationExpectedValue[],
       },
+      {
+        groupId: "2",
+        scoring: MeasureScoring.COHORT,
+        populationBasis: "boolean",
+        populationValues: [
+          {
+            id: "id-1",
+            name: PopulationType.INITIAL_POPULATION,
+            expected: true,
+            actual: true,
+          },
+        ] as PopulationExpectedValue[],
+      },
     ] as GroupPopulation[],
   },
   {
@@ -254,6 +269,19 @@ const failingTestCaseResults = [
           },
         ] as PopulationExpectedValue[],
       },
+      {
+        groupId: "2",
+        scoring: MeasureScoring.COHORT,
+        populationBasis: "boolean",
+        populationValues: [
+          {
+            id: "id-1",
+            name: PopulationType.INITIAL_POPULATION,
+            expected: true,
+            actual: true,
+          },
+        ] as PopulationExpectedValue[],
+      },
     ] as GroupPopulation[],
   },
   {
@@ -281,6 +309,19 @@ const failingTestCaseResults = [
           },
         ] as PopulationExpectedValue[],
       },
+      {
+        groupId: "2",
+        scoring: MeasureScoring.COHORT,
+        populationBasis: "boolean",
+        populationValues: [
+          {
+            id: "id-1",
+            name: PopulationType.INITIAL_POPULATION,
+            expected: true,
+            actual: true,
+          },
+        ] as PopulationExpectedValue[],
+      },
     ] as GroupPopulation[],
   },
 ] as TestCase[];
@@ -290,13 +331,22 @@ jest.mock("../../api/CalculationService");
 const calculationServiceMock =
   calculationService as jest.Mock<CalculationService>;
 
+const mockProcessTestCaseResults = jest
+  .fn()
+  .mockImplementation((testCase, groups, results) => {
+    return failingTestCaseResults.find((tc) => tc.id === testCase.id);
+  });
+const mockGetPassingPercentageForTestCases = jest
+  .fn()
+  .mockReturnValue({ passPercentage: 50, passFailRatio: "1/2" });
+
+const mockGetCoveragePercentageForGroup = jest.fn().mockReturnValue(75);
+
 const calculationServiceMockResolved = {
   calculateTestCases: jest.fn().mockResolvedValue(executionResults),
-  processTestCaseResults: jest
-    .fn()
-    .mockImplementation((testCase, groups, results) => {
-      return failingTestCaseResults.find((tc) => tc.id === testCase.id);
-    }),
+  processTestCaseResults: mockProcessTestCaseResults,
+  getPassingPercentageForTestCases: mockGetPassingPercentageForTestCases,
+  getCoveragePercentageForGroup: mockGetCoveragePercentageForGroup,
 } as unknown as CalculationService;
 
 // mocking testCaseService
@@ -703,5 +753,130 @@ describe("TestCaseList component", () => {
     expect(
       screen.getByRole("button", { name: "Execute Test Cases" })
     ).toBeDisabled();
+  });
+
+  it("defaults pop criteria nav link to first pop criteria on load", async () => {
+    measure.cqlErrors = false;
+    measure.groups = [
+      ...measure.groups,
+      {
+        id: "2",
+        scoring: MeasureScoring.COHORT,
+        populationBasis: "boolean",
+        populations: [
+          {
+            id: "id-1",
+            name: PopulationType.INITIAL_POPULATION,
+            definition: "ipp",
+          },
+        ],
+        measureGroupTypes: [],
+      },
+    ];
+    renderTestCaseListComponent();
+
+    // wait for pop criteria to load
+    await waitFor(() => {
+      expect(screen.getByText("Population Criteria 1")).toBeInTheDocument();
+      expect(screen.getByText("Population Criteria 2")).toBeInTheDocument();
+    });
+
+    // wait for test cases to load
+    await waitFor(() => {
+      expect(screen.getAllByText("Pending").length).toEqual(2);
+    });
+
+    // wait for execution context to be ready
+    const executeButton = screen.getByRole("button", {
+      name: "Execute Test Cases",
+    });
+    await waitFor(() => {
+      expect(executeButton).not.toBeDisabled();
+    });
+
+    userEvent.click(executeButton);
+    await waitFor(() => expect(screen.getByText("75%")).toBeInTheDocument());
+
+    const table = await screen.findByTestId("test-case-tbl");
+    const tableRows = table.querySelectorAll("tbody tr");
+    await waitFor(() => {
+      expect(tableRows[0]).toHaveTextContent("Pass");
+      expect(tableRows[1]).toHaveTextContent("Fail");
+      expect(tableRows[2]).toHaveTextContent("Invalid");
+    });
+  });
+
+  it("updates all results when pop criteria tab is changed", async () => {
+    measure.cqlErrors = false;
+    measure.groups = [
+      ...measure.groups,
+      {
+        id: "2",
+        scoring: MeasureScoring.COHORT,
+        populationBasis: "boolean",
+        populations: [
+          {
+            id: "id-1",
+            name: PopulationType.INITIAL_POPULATION,
+            definition: "ipp",
+          },
+        ],
+        measureGroupTypes: [],
+      },
+    ];
+    renderTestCaseListComponent();
+
+    // wait for pop criteria to load
+    await waitFor(() => {
+      expect(screen.getByText("Population Criteria 1")).toBeInTheDocument();
+      expect(screen.getAllByText("Pending").length).toEqual(2);
+    });
+
+    // wait for execution context to be ready
+    const executeButton = screen.getByRole("button", {
+      name: "Execute Test Cases",
+    });
+
+    await waitFor(() => expect(executeButton).not.toBeDisabled());
+
+    userEvent.click(executeButton);
+    await waitFor(() => expect(screen.getByText("75%")).toBeInTheDocument());
+
+    const table = await screen.findByTestId("test-case-tbl");
+    const tableRows = table.querySelectorAll("tbody tr");
+    await waitFor(() => {
+      expect(tableRows[0]).toHaveTextContent("Pass");
+      expect(tableRows[1]).toHaveTextContent("Fail");
+      expect(tableRows[2]).toHaveTextContent("Invalid");
+    });
+
+    mockProcessTestCaseResults
+      .mockClear()
+      .mockImplementation((testCase, groups, results) => {
+        return {
+          ...failingTestCaseResults.find((tc) => tc.id === testCase.id),
+          executionStatus: "pass",
+        };
+      });
+
+    mockGetPassingPercentageForTestCases
+      .mockClear()
+      .mockReturnValue({ passPercentage: 66, passFailRatio: "2/3" });
+    mockGetCoveragePercentageForGroup.mockClear().mockReturnValue(100);
+
+    const popCriteria2 = screen.getByText("Population Criteria 2");
+    expect(popCriteria2).toBeInTheDocument();
+    userEvent.click(popCriteria2);
+
+    const table2 = await screen.findByTestId("test-case-tbl");
+    const tableRows2 = table2.querySelectorAll("tbody tr");
+    await waitFor(() => {
+      expect(tableRows2[0]).toHaveTextContent("Pass");
+      expect(tableRows2[1]).toHaveTextContent("Pass");
+      expect(tableRows2[2]).toHaveTextContent("Invalid");
+    });
+
+    expect(screen.getByText("Passing (2/3)")).toBeInTheDocument();
+    expect(screen.getByText("100%")).toBeInTheDocument();
   });
 });
