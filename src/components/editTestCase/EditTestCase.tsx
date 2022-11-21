@@ -632,7 +632,9 @@ const EditTestCase = () => {
 
   const hasErrorSeverity = (validationErrors) => {
     return (
-      validationErrors.filter((res) => res.severity === "error").length > 0
+      validationErrors.filter(
+        (validationError) => validationError.severity === "error"
+      ).length > 0
     );
   };
 
