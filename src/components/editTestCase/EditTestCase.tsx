@@ -102,9 +102,15 @@ const ValidationAlertCard = styled.p<AlertProps>(({ status = "default" }) => [
   styles[status],
 ]);
 
-const StyledIcon = styled(FontAwesomeIcon)(({ errors }: { errors: number }) => [
-  errors > 0 ? tw`text-red-700` : "",
-]);
+const StyledIcon = styled(FontAwesomeIcon)(
+  ({ errorSeverity }: { errorSeverity: string }) => [
+    errorSeverity !== "default"
+      ? errorSeverity === "error"
+        ? tw`text-red-700`
+        : tw`text-yellow-700`
+      : "",
+  ]
+);
 
 const testCaseSeriesStyles = {
   border: "1px solid #DDDDDD",
@@ -526,11 +532,20 @@ const EditTestCase = () => {
     updateMeasure(measureCopy);
   }
 
+  function isHapiOutcomeIssueCodeInformational(outcome: HapiOperationOutcome) {
+    return (
+      outcome?.outcomeResponse?.issue.filter(
+        (issue) => issue.code !== "informational"
+      ).length <= 0
+    );
+  }
+
   function hasValidHapiOutcome(testCase: TestCase) {
     return (
-      _.isNil(testCase.hapiOperationOutcome) ||
-      testCase.hapiOperationOutcome.code === 200 ||
-      testCase.hapiOperationOutcome.code === 201
+      (_.isNil(testCase.hapiOperationOutcome) ||
+        testCase.hapiOperationOutcome.code === 200 ||
+        testCase.hapiOperationOutcome.code === 201) &&
+      isHapiOutcomeIssueCodeInformational(testCase?.hapiOperationOutcome)
     );
   }
 
@@ -538,12 +553,16 @@ const EditTestCase = () => {
     if (
       _.isNil(outcome) ||
       (outcome.successful !== false &&
-        (outcome.code === 200 || outcome.code === 201))
+        (outcome.code === 200 || outcome.code === 201) &&
+        isHapiOutcomeIssueCodeInformational(outcome))
     ) {
       setValidationErrors(() => []);
       return [];
     }
-    if (outcome.outcomeResponse?.issue?.length > 0) {
+    if (
+      outcome.outcomeResponse?.issue?.length > 0 &&
+      !isHapiOutcomeIssueCodeInformational(outcome)
+    ) {
       const ves = outcome.outcomeResponse.issue.map((issue, index) => ({
         ...issue,
         key: index,
@@ -610,6 +629,27 @@ const EditTestCase = () => {
       editor?.resize(true);
     }, 500);
   }
+
+  const hasErrorSeverity = (validationErrors) => {
+    return (
+      validationErrors.filter(
+        (validationError) => validationError.severity === "error"
+      ).length > 0
+    );
+  };
+
+  const severityOfValidationErrors = (validationErrors) => {
+    const nonInformationalErrors = validationErrors?.filter(
+      (validationError) => validationError.severity !== "informational"
+    ).length;
+    if (nonInformationalErrors > 0) {
+      if (hasErrorSeverity(validationErrors)) {
+        return "error";
+      }
+      return "warning";
+    }
+    return "default";
+  };
 
   return (
     <TestCaseForm
@@ -790,7 +830,7 @@ const EditTestCase = () => {
             >
               <StyledIcon
                 icon={faExclamationCircle}
-                errors={validationErrors.length}
+                errorSeverity={severityOfValidationErrors(validationErrors)}
               />
               Validation Errors
             </button>
@@ -831,7 +871,7 @@ const EditTestCase = () => {
             >
               <StyledIcon
                 icon={faExclamationCircle}
-                errors={validationErrors.length}
+                errorSeverity={severityOfValidationErrors(validationErrors)}
               />
               Validation Errors
             </ValidationErrorsButton>
@@ -848,7 +888,7 @@ const EditTestCase = () => {
                   !!measure?.cqlErrors ||
                   _.isNil(measure?.groups) ||
                   measure?.groups.length === 0 ||
-                  (!isJsonModified() && validationErrors?.length > 0) ||
+                  (!isJsonModified() && hasErrorSeverity(validationErrors)) ||
                   isEmptyTestCaseJsonString(editorVal) ||
                   !executionContextReady ||
                   executing
