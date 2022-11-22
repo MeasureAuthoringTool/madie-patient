@@ -118,6 +118,24 @@ jest.mock("@madie/madie-util", () => ({
   },
 }));
 
+const hapiOperationSuccessOutcome = {
+  code: 200,
+  message: null,
+  successful: true,
+  outcomeResponse: {
+    resourceType: "OperationOutcome",
+    text: undefined,
+    issue: [
+      {
+        severity: "information",
+        code: "informational",
+        diagnostics: "No issues detected during validation",
+        location: undefined,
+      },
+    ],
+  },
+};
+
 const defaultMeasure = {
   id: "m1234",
   measureScoring: MeasureScoring.COHORT,
@@ -247,9 +265,7 @@ describe("EditTestCase component", () => {
         createdBy: MEASURE_CREATEDBY,
         description: testCaseDescription,
         title: testCaseTitle,
-        hapiOperationOutcome: {
-          code: 200,
-        },
+        hapiOperationOutcome: hapiOperationSuccessOutcome,
       },
     });
 
@@ -315,9 +331,7 @@ describe("EditTestCase component", () => {
         description: testCaseDescription,
         title: testCaseTitle,
         json: testCaseJson,
-        hapiOperationOutcome: {
-          code: 200,
-        },
+        hapiOperationOutcome: hapiOperationSuccessOutcome,
       },
     });
 
@@ -395,9 +409,7 @@ describe("EditTestCase component", () => {
         description: testCaseDescription,
         title: testCaseTitle,
         json: testCaseJson,
-        hapiOperationOutcome: {
-          code: 200,
-        },
+        hapiOperationOutcome: hapiOperationSuccessOutcome,
       },
     });
 
@@ -554,9 +566,7 @@ describe("EditTestCase component", () => {
       data: {
         ...testCase,
         description: testCaseDescription,
-        hapiOperationOutcome: {
-          code: 200,
-        },
+        hapiOperationOutcome: hapiOperationSuccessOutcome,
       },
     });
 
@@ -770,9 +780,7 @@ describe("EditTestCase component", () => {
       data: {
         ...testCase,
         json: testCaseJson,
-        hapiOperationOutcome: {
-          code: 200,
-        },
+        hapiOperationOutcome: hapiOperationSuccessOutcome,
       },
     });
 
@@ -920,9 +928,7 @@ describe("EditTestCase component", () => {
         ...testCase,
         json: testCaseJson,
         description: testCaseDescription,
-        hapiOperationOutcome: {
-          code: 200,
-        },
+        hapiOperationOutcome: hapiOperationSuccessOutcome,
       },
     });
 
@@ -1214,9 +1220,7 @@ describe("EditTestCase component", () => {
         createdBy: MEASURE_CREATEDBY,
         description: testCaseDescription,
         title: testCaseTitle,
-        hapiOperationOutcome: {
-          code: 201,
-        },
+        hapiOperationOutcome: hapiOperationSuccessOutcome,
       },
     });
 
@@ -1322,9 +1326,7 @@ describe("EditTestCase component", () => {
         createdBy: MEASURE_CREATEDBY,
         description: testCaseDescription,
         title: testCaseTitle,
-        hapiOperationOutcome: {
-          code: 201,
-        },
+        hapiOperationOutcome: hapiOperationSuccessOutcome,
       },
     });
 
@@ -1355,9 +1357,7 @@ describe("EditTestCase component", () => {
         createdBy: MEASURE_CREATEDBY,
         description: testCaseDescription,
         series: testCaseSeries,
-        hapiOperationOutcome: {
-          code: 201,
-        },
+        hapiOperationOutcome: hapiOperationSuccessOutcome,
       },
     });
 
