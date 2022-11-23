@@ -535,7 +535,7 @@ const EditTestCase = () => {
   function isHapiOutcomeIssueCodeInformational(outcome: HapiOperationOutcome) {
     return (
       outcome?.outcomeResponse?.issue.filter(
-        (issue) => issue.code !== "informational"
+        (issue) => /^information/.exec(issue.severity) === null
       ).length <= 0
     );
   }
