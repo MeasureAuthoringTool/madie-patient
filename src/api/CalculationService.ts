@@ -387,8 +387,10 @@ export class CalculationService {
     measureGroups: Group[],
     populationGroupResults: DetailedPopulationGroupResult[]
   ): TestCase {
-    if (_.isNil(testCase) || _.isNil(testCase?.groupPopulations)) {
+    if (_.isNil(testCase)) {
       return testCase;
+    } else if (_.isNil(testCase?.groupPopulations)) {
+      return { ...testCase, executionStatus: "NA" };
     }
 
     const updatedTestCase = _.cloneDeep(testCase);
@@ -396,6 +398,7 @@ export class CalculationService {
     const episodeResults: GroupPopulationEpisodeResultMap =
       this.processEpisodeResultsForGroups(populationGroupResults);
     let allGroupsPass = true;
+    let executedGroups = [];
 
     for (const tcGroupPopulation of updatedTestCase?.groupPopulations) {
       const groupId = tcGroupPopulation.groupId;
@@ -493,11 +496,16 @@ export class CalculationService {
       });
 
       allGroupsPass = allGroupsPass && this.isGroupPass(tcGroupPopulation);
+      executedGroups.push(groupId);
     }
 
-    updatedTestCase.executionStatus = allGroupsPass
-      ? ExecutionStatusType.PASS
-      : ExecutionStatusType.FAIL;
+    if (executedGroups.length > 0) {
+      updatedTestCase.executionStatus = allGroupsPass
+        ? ExecutionStatusType.PASS
+        : ExecutionStatusType.FAIL;
+    } else {
+      updatedTestCase.executionStatus = ExecutionStatusType.NA;
+    }
 
     return updatedTestCase;
   }
