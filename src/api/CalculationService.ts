@@ -389,7 +389,10 @@ export class CalculationService {
   ): TestCase {
     if (_.isNil(testCase)) {
       return testCase;
-    } else if (_.isNil(testCase?.groupPopulations)) {
+    } else if (
+      _.isNil(testCase?.groupPopulations) ||
+      testCase.groupPopulations.length === 0
+    ) {
       return { ...testCase, executionStatus: "NA" };
     }
 
