@@ -433,7 +433,7 @@ const EditTestCase = () => {
             JSON.parse(editorVal)
           );
         const errors = handleHapiOutcome(validationResult);
-        if (!_.isNil(errors) && errors.length > 0) {
+        if (!_.isNil(errors) && errors.length > 0 && hasErrorSeverity(errors)) {
           setCalculationErrors({
             status: "warning",
             message:
@@ -463,7 +463,11 @@ const EditTestCase = () => {
         );
 
       const executionResults = calculationOutput.results;
-
+      const validationResult =
+        await testCaseService.current.validateTestCaseBundle(
+          JSON.parse(editorVal)
+        );
+      handleHapiOutcome(validationResult);
       setCalculationErrors(undefined);
       setPopulationGroupResults(
         executionResults[0].detailedResults as DetailedPopulationGroupResult[]
