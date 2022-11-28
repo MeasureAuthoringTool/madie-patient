@@ -493,6 +493,8 @@ const EditTestCase = () => {
     action: "create" | "update"
   ) {
     if (testCase && testCase.id) {
+      const validationErrors =
+        testCase?.hapiOperationOutcome?.outcomeResponse?.issue;
       if (hasValidHapiOutcome(testCase)) {
         setAlert({
           status: "success",
@@ -501,9 +503,9 @@ const EditTestCase = () => {
       } else {
         setAlert({
           status: "warning",
-          message: `An error occurred with the Test Case JSON while ${
-            action === "create" ? "creating" : "updating"
-          } the test case`,
+          message: `Test case updated successfully with ${severityOfValidationErrors(
+            validationErrors
+          )}s in JSON`,
         });
         handleHapiOutcome(testCase.hapiOperationOutcome);
       }
@@ -643,14 +645,22 @@ const EditTestCase = () => {
   };
 
   const severityOfValidationErrors = (validationErrors) => {
+    const errorsWithNoSeverity = validationErrors?.filter(
+      (validationError) => !validationError.hasOwnProperty("severity")
+    ).length;
+
     const nonInformationalErrors = validationErrors?.filter(
-      (validationError) => validationError.severity !== "informational"
+      (validationError) =>
+        /^information/.exec(validationError.severity) === null
     ).length;
     if (nonInformationalErrors > 0) {
-      if (hasErrorSeverity(validationErrors)) {
+      if (hasErrorSeverity(validationErrors) || errorsWithNoSeverity > 0) {
         return "error";
       }
       return "warning";
+    }
+    if (_.isNil(nonInformationalErrors)) {
+      return "error";
     }
     return "default";
   };
@@ -844,16 +854,20 @@ const EditTestCase = () => {
               data-testid="json-validation-errors-list"
             >
               {validationErrors && validationErrors.length > 0 ? (
-                validationErrors.map((error) => {
-                  return (
-                    <ValidationAlertCard
-                      key={error.key}
-                      status={error.severity}
-                    >
-                      {error.diagnostics}
-                    </ValidationAlertCard>
-                  );
-                })
+                validationErrors
+                  .filter(
+                    (error) => /^information/.exec(error?.severity) === null
+                  )
+                  .map((error) => {
+                    return (
+                      <ValidationAlertCard
+                        key={error.key}
+                        status={error.severity ? error.severity : "error"}
+                      >
+                        {error.diagnostics}
+                      </ValidationAlertCard>
+                    );
+                  })
               ) : (
                 <span>Nothing to see here!</span>
               )}
