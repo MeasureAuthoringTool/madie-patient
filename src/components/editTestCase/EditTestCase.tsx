@@ -645,7 +645,7 @@ const EditTestCase = () => {
   };
 
   const severityOfValidationErrors = (validationErrors) => {
-    const hasSeverityProperty = validationErrors?.filter(
+    const errorsWithNoSeverityProperty = validationErrors?.filter(
       (validationError) => !validationError.hasOwnProperty("severity")
     ).length;
     const nonInformationalErrors = validationErrors?.filter(
@@ -653,7 +653,10 @@ const EditTestCase = () => {
         /^information/.exec(validationError.severity) === null
     ).length;
     if (nonInformationalErrors > 0) {
-      if (hasErrorSeverity(validationErrors) || hasSeverityProperty > 0) {
+      if (
+        hasErrorSeverity(validationErrors) ||
+        errorsWithNoSeverityProperty > 0
+      ) {
         return "error";
       }
       return "warning";
