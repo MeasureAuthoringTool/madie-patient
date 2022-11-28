@@ -501,17 +501,12 @@ const EditTestCase = () => {
           message: `Test case ${action}d successfully!`,
         });
       } else {
-        if (severityOfValidationErrors(validationErrors) === "warning") {
-          setAlert({
-            status: "warning",
-            message: `Test case updated successfully with warnings in JSON`,
-          });
-        } else {
-          setAlert({
-            status: "warning",
-            message: `Test case updated successfully with errors in JSON`,
-          });
-        }
+        setAlert({
+          status: "warning",
+          message: `Test case updated successfully with ${severityOfValidationErrors(
+            validationErrors
+          )}s in JSON`,
+        });
         handleHapiOutcome(testCase.hapiOperationOutcome);
       }
       updateMeasureStore(action, testCase);
@@ -653,7 +648,6 @@ const EditTestCase = () => {
     const hasSeverityProperty = validationErrors?.filter(
       (validationError) => !validationError.hasOwnProperty("severity")
     ).length;
-
     const nonInformationalErrors = validationErrors?.filter(
       (validationError) =>
         /^information/.exec(validationError.severity) === null
@@ -663,6 +657,9 @@ const EditTestCase = () => {
         return "error";
       }
       return "warning";
+    }
+    if (_.isNil(nonInformationalErrors)) {
+      return "error";
     }
     return "default";
   };
