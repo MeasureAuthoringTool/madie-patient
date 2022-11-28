@@ -493,18 +493,25 @@ const EditTestCase = () => {
     action: "create" | "update"
   ) {
     if (testCase && testCase.id) {
+      const validationErrors =
+        testCase?.hapiOperationOutcome?.outcomeResponse?.issue;
       if (hasValidHapiOutcome(testCase)) {
         setAlert({
           status: "success",
           message: `Test case ${action}d successfully!`,
         });
       } else {
-        setAlert({
-          status: "warning",
-          message: `An error occurred with the Test Case JSON while ${
-            action === "create" ? "creating" : "updating"
-          } the test case`,
-        });
+        if (severityOfValidationErrors(validationErrors) === "warning") {
+          setAlert({
+            status: "warning",
+            message: `Test case updated successfully with warnings in JSON`,
+          });
+        } else {
+          setAlert({
+            status: "warning",
+            message: `Test case updated successfully with errors in JSON`,
+          });
+        }
         handleHapiOutcome(testCase.hapiOperationOutcome);
       }
       updateMeasureStore(action, testCase);
@@ -643,11 +650,16 @@ const EditTestCase = () => {
   };
 
   const severityOfValidationErrors = (validationErrors) => {
+    const hasSeverityProperty = validationErrors?.filter(
+      (validationError) => !validationError.hasOwnProperty("severity")
+    ).length;
+
     const nonInformationalErrors = validationErrors?.filter(
-      (validationError) => validationError.severity !== "informational"
+      (validationError) =>
+        /^information/.exec(validationError.severity) === null
     ).length;
     if (nonInformationalErrors > 0) {
-      if (hasErrorSeverity(validationErrors)) {
+      if (hasErrorSeverity(validationErrors) || hasSeverityProperty > 0) {
         return "error";
       }
       return "warning";
@@ -844,16 +856,20 @@ const EditTestCase = () => {
               data-testid="json-validation-errors-list"
             >
               {validationErrors && validationErrors.length > 0 ? (
-                validationErrors.map((error) => {
-                  return (
-                    <ValidationAlertCard
-                      key={error.key}
-                      status={error.severity}
-                    >
-                      {error.diagnostics}
-                    </ValidationAlertCard>
-                  );
-                })
+                validationErrors
+                  .filter(
+                    (error) => /^information/.exec(error?.severity) === null
+                  )
+                  .map((error) => {
+                    return (
+                      <ValidationAlertCard
+                        key={error.key}
+                        status={error.severity ? error.severity : "error"}
+                      >
+                        {error.diagnostics}
+                      </ValidationAlertCard>
+                    );
+                  })
               ) : (
                 <span>Nothing to see here!</span>
               )}
