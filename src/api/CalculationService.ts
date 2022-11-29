@@ -18,7 +18,10 @@ import { Bundle, ValueSet } from "fhir/r4";
 import * as _ from "lodash";
 
 import { PopulationType as FqmPopulationType } from "fqm-execution/build/types/Enums";
-import { FHIR_POPULATION_CODES } from "../util/PopulationsMap";
+import {
+  FHIR_POPULATION_CODES,
+  getPopulationTypesForScoring,
+} from "../util/PopulationsMap";
 import { isTestCasePopulationObservation } from "../util/Utils";
 import { GroupPopulation } from "@madie/madie-models/dist/TestCase";
 
@@ -192,6 +195,7 @@ export class CalculationService {
 
     return testCaseResultMap;
   }
+
   buildGroupResultsMap(groupResults: DetailedPopulationGroupResult[]) {
     const outputGroupResultsMap: GroupStatementResultMap = {};
     groupResults?.forEach((groupResult) => {
@@ -276,6 +280,35 @@ export class CalculationService {
     if (clause.raw && clause.raw.name && clause.raw.name === "ValueSet")
       return true;
     return clause.final === "NA";
+  }
+
+  mapMeasureGroup(group: Group): GroupPopulation {
+    const calculateEpisodes = "boolean" === _.lowerCase(group.populationBasis);
+    return {
+      groupId: group.id,
+      scoring: group.scoring,
+      populationBasis: group.populationBasis,
+      stratificationValues: group.stratifications?.map(
+        (stratification, index) => ({
+          name: `Strata-${index + 1} ${_.startCase(
+            stratification.association
+          )}`,
+          expected: calculateEpisodes ? false : null,
+          actual: calculateEpisodes ? false : null,
+          id: stratification.id,
+          criteriaReference: "",
+        })
+      ),
+      populationValues: getPopulationTypesForScoring(group)?.map(
+        (population: PopulationExpectedValue) => ({
+          name: population.name,
+          expected: calculateEpisodes ? false : null,
+          actual: calculateEpisodes ? false : null,
+          id: population.id,
+          criteriaReference: population.criteriaReference,
+        })
+      ),
+    };
   }
 
   isValuePass(actual: any, expected: any, patientBased: boolean) {
@@ -389,11 +422,6 @@ export class CalculationService {
   ): TestCase {
     if (_.isNil(testCase)) {
       return testCase;
-    } else if (
-      _.isNil(testCase?.groupPopulations) ||
-      testCase.groupPopulations.length === 0
-    ) {
-      return { ...testCase, executionStatus: "NA" };
     }
 
     const updatedTestCase = _.cloneDeep(testCase);
@@ -402,14 +430,20 @@ export class CalculationService {
       this.processEpisodeResultsForGroups(populationGroupResults);
     let allGroupsPass = true;
     let executedGroups = [];
+    if (_.isNil(testCase?.groupPopulations)) {
+      updatedTestCase.groupPopulations = [];
+    }
 
-    for (const tcGroupPopulation of updatedTestCase?.groupPopulations) {
-      const groupId = tcGroupPopulation.groupId;
-      const measureGroup = measureGroups?.find((group) => group.id === groupId);
-
-      // Only perform calculations for provided groups (Can be used to limit results)
-      if (_.isNil(measureGroup)) {
-        continue;
+    // Only perform calculations for provided groups (Can be used to limit results)
+    for (const measureGroup of measureGroups) {
+      const groupId = measureGroup.id;
+      let tcGroupPopulation = updatedTestCase.groupPopulations.find(
+        (gp) => gp?.groupId === groupId
+      );
+      // const measureGroup = measureGroups?.find((group) => group.id === groupId);
+      if (_.isNil(tcGroupPopulation)) {
+        tcGroupPopulation = this.mapMeasureGroup(measureGroup);
+        updatedTestCase.groupPopulations.push(tcGroupPopulation);
       }
 
       const populationGroupResult: DetailedPopulationGroupResult =
@@ -421,7 +455,7 @@ export class CalculationService {
 
       const tcPopTypeCount = {};
       const patientBased =
-        "boolean" === _.lowerCase(tcGroupPopulation.populationBasis);
+        "boolean" === _.lowerCase(measureGroup.populationBasis);
 
       tcGroupPopulation?.populationValues.forEach((tcPopVal, idx) => {
         // Set the actual population value for measure observations

@@ -1214,7 +1214,7 @@ describe("CalculationService Tests", () => {
       expect(output).toEqual(undefined);
     });
 
-    it("should return NA executionStatus if groupPopulations are null", () => {
+    it("should return Pass executionStatus if groupPopulations are null but actual result is false", () => {
       const testCase: TestCase = {
         id: "TC1",
         name: "TestCase1",
@@ -1257,7 +1257,7 @@ describe("CalculationService Tests", () => {
             {
               populationType: FqmPopulationType.IPP,
               criteriaExpression: "boolIpp",
-              result: true,
+              result: false,
             },
           ],
         },
@@ -1269,10 +1269,10 @@ describe("CalculationService Tests", () => {
         popGroupResults
       );
       expect(output).toBeTruthy();
-      expect(output.executionStatus).toEqual(ExecutionStatusType.NA);
+      expect(output.executionStatus).toEqual(ExecutionStatusType.PASS);
     });
 
-    it("should return NA executionStatus if groupPopulations are empty", () => {
+    it("should return Fail executionStatus if groupPopulations are empty and actual result is true", () => {
       const testCase: TestCase = {
         id: "TC1",
         name: "TestCase1",
@@ -1327,10 +1327,10 @@ describe("CalculationService Tests", () => {
         popGroupResults
       );
       expect(output).toBeTruthy();
-      expect(output.executionStatus).toEqual(ExecutionStatusType.NA);
+      expect(output.executionStatus).toEqual(ExecutionStatusType.FAIL);
     });
 
-    it("should return NA executionStatus if no matching groups are found", () => {
+    it("should return Fail executionStatus for provided measure groups if no matching groups are found", () => {
       const testCase: TestCase = {
         id: "TC1",
         name: "TestCase1",
@@ -1411,7 +1411,7 @@ describe("CalculationService Tests", () => {
         popGroupResults
       );
       expect(output).toBeTruthy();
-      expect(output.executionStatus).toEqual(ExecutionStatusType.NA);
+      expect(output.executionStatus).toEqual(ExecutionStatusType.FAIL);
     });
 
     it("should return test case results for Cohort, boolean popBasis and pass executionStatus", () => {

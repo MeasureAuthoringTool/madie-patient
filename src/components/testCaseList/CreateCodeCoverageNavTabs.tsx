@@ -136,7 +136,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
                 onClick={executeTestCases}
                 data-testid="execute-test-cases-button"
               >
-                Execute Test Cases
+                Run Test Cases
               </Button>
               {executing && (
                 <CircularProgress

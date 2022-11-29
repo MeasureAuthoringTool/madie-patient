@@ -903,7 +903,7 @@ const EditTestCase = () => {
                  */
                 data-testid="run-test-case-button"
               >
-                Run Test
+                Run Test Case
               </Button>
             </div>
             {canEdit && (
