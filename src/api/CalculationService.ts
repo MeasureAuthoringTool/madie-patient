@@ -429,7 +429,6 @@ export class CalculationService {
     const episodeResults: GroupPopulationEpisodeResultMap =
       this.processEpisodeResultsForGroups(populationGroupResults);
     let allGroupsPass = true;
-    let executedGroups = [];
     if (_.isNil(testCase?.groupPopulations)) {
       updatedTestCase.groupPopulations = [];
     }
@@ -533,16 +532,11 @@ export class CalculationService {
       });
 
       allGroupsPass = allGroupsPass && this.isGroupPass(tcGroupPopulation);
-      executedGroups.push(groupId);
     }
 
-    if (executedGroups.length > 0) {
-      updatedTestCase.executionStatus = allGroupsPass
-        ? ExecutionStatusType.PASS
-        : ExecutionStatusType.FAIL;
-    } else {
-      updatedTestCase.executionStatus = ExecutionStatusType.NA;
-    }
+    updatedTestCase.executionStatus = allGroupsPass
+      ? ExecutionStatusType.PASS
+      : ExecutionStatusType.FAIL;
 
     return updatedTestCase;
   }
