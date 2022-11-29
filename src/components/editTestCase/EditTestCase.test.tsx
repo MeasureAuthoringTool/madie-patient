@@ -1429,7 +1429,7 @@ describe("EditTestCase component", () => {
     userEvent.click(createBtn);
 
     const debugOutput = await screen.findByText(
-      "An error occurred with the Test Case JSON while creating the test case"
+      "Test case updated successfully with errors in JSON"
     );
     expect(debugOutput).toBeInTheDocument();
 
@@ -1528,7 +1528,7 @@ describe("EditTestCase component", () => {
     userEvent.click(updateBtn);
 
     const debugOutput = await screen.findByText(
-      "An error occurred with the Test Case JSON while updating the test case"
+      "Test case updated successfully with errors in JSON"
     );
     expect(debugOutput).toBeInTheDocument();
 
@@ -1628,7 +1628,7 @@ describe("EditTestCase component", () => {
     userEvent.click(updateBtn);
 
     const debugOutput = await screen.findByText(
-      "An error occurred with the Test Case JSON while updating the test case"
+      "Test case updated successfully with errors in JSON"
     );
     expect(debugOutput).toBeInTheDocument();
 
