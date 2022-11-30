@@ -1132,6 +1132,288 @@ describe("CalculationService Tests", () => {
   });
 
   describe("CalculationService.processTestCaseResults", () => {
+    it("should return null for null testCase", () => {
+      const groups: Group[] = [
+        {
+          id: "groupID",
+          scoring: MeasureScoring.COHORT,
+          populationBasis: "boolean",
+          populations: [
+            {
+              id: "pop1ID",
+              name: PopulationType.INITIAL_POPULATION,
+              definition: "boolIpp",
+            },
+          ],
+          stratifications: [],
+          measureObservations: [],
+          measureGroupTypes: [MeasureGroupTypes.OUTCOME],
+        },
+      ];
+
+      const popGroupResults: DetailedPopulationGroupResult[] = [
+        {
+          groupId: "groupID",
+          statementResults: [], //only needed for strats currently
+          populationResults: [
+            {
+              populationType: FqmPopulationType.IPP,
+              criteriaExpression: "boolIpp",
+              result: true,
+            },
+          ],
+        },
+      ];
+
+      const output = calculationService.processTestCaseResults(
+        null,
+        groups,
+        popGroupResults
+      );
+      expect(output).toEqual(null);
+    });
+
+    it("should return undefined for undefined testCase", () => {
+      const groups: Group[] = [
+        {
+          id: "groupID",
+          scoring: MeasureScoring.COHORT,
+          populationBasis: "boolean",
+          populations: [
+            {
+              id: "pop1ID",
+              name: PopulationType.INITIAL_POPULATION,
+              definition: "boolIpp",
+            },
+          ],
+          stratifications: [],
+          measureObservations: [],
+          measureGroupTypes: [MeasureGroupTypes.OUTCOME],
+        },
+      ];
+
+      const popGroupResults: DetailedPopulationGroupResult[] = [
+        {
+          groupId: "groupID",
+          statementResults: [], //only needed for strats currently
+          populationResults: [
+            {
+              populationType: FqmPopulationType.IPP,
+              criteriaExpression: "boolIpp",
+              result: true,
+            },
+          ],
+        },
+      ];
+
+      const output = calculationService.processTestCaseResults(
+        undefined,
+        groups,
+        popGroupResults
+      );
+      expect(output).toEqual(undefined);
+    });
+
+    it("should return Pass executionStatus if groupPopulations are null but actual result is false", () => {
+      const testCase: TestCase = {
+        id: "TC1",
+        name: "TestCase1",
+        title: "TestCase1",
+        description: "first",
+        validResource: true,
+        groupPopulations: null,
+        createdAt: "",
+        createdBy: "",
+        lastModifiedAt: "",
+        lastModifiedBy: "",
+        executionStatus: "NA",
+        series: undefined,
+        hapiOperationOutcome: undefined,
+      };
+
+      const groups: Group[] = [
+        {
+          id: "groupID",
+          scoring: MeasureScoring.COHORT,
+          populationBasis: "boolean",
+          populations: [
+            {
+              id: "pop1ID",
+              name: PopulationType.INITIAL_POPULATION,
+              definition: "boolIpp",
+            },
+          ],
+          stratifications: [],
+          measureObservations: [],
+          measureGroupTypes: [MeasureGroupTypes.OUTCOME],
+        },
+      ];
+
+      const popGroupResults: DetailedPopulationGroupResult[] = [
+        {
+          groupId: "groupID",
+          statementResults: [], //only needed for strats currently
+          populationResults: [
+            {
+              populationType: FqmPopulationType.IPP,
+              criteriaExpression: "boolIpp",
+              result: false,
+            },
+          ],
+        },
+      ];
+
+      const output = calculationService.processTestCaseResults(
+        testCase,
+        groups,
+        popGroupResults
+      );
+      expect(output).toBeTruthy();
+      expect(output.executionStatus).toEqual(ExecutionStatusType.PASS);
+    });
+
+    it("should return Fail executionStatus if groupPopulations are empty and actual result is true", () => {
+      const testCase: TestCase = {
+        id: "TC1",
+        name: "TestCase1",
+        title: "TestCase1",
+        description: "first",
+        validResource: true,
+        groupPopulations: [],
+        createdAt: "",
+        createdBy: "",
+        lastModifiedAt: "",
+        lastModifiedBy: "",
+        executionStatus: "NA",
+        series: undefined,
+        hapiOperationOutcome: undefined,
+      };
+
+      const groups: Group[] = [
+        {
+          id: "groupID",
+          scoring: MeasureScoring.COHORT,
+          populationBasis: "boolean",
+          populations: [
+            {
+              id: "pop1ID",
+              name: PopulationType.INITIAL_POPULATION,
+              definition: "boolIpp",
+            },
+          ],
+          stratifications: [],
+          measureObservations: [],
+          measureGroupTypes: [MeasureGroupTypes.OUTCOME],
+        },
+      ];
+
+      const popGroupResults: DetailedPopulationGroupResult[] = [
+        {
+          groupId: "groupID",
+          statementResults: [], //only needed for strats currently
+          populationResults: [
+            {
+              populationType: FqmPopulationType.IPP,
+              criteriaExpression: "boolIpp",
+              result: true,
+            },
+          ],
+        },
+      ];
+
+      const output = calculationService.processTestCaseResults(
+        testCase,
+        groups,
+        popGroupResults
+      );
+      expect(output).toBeTruthy();
+      expect(output.executionStatus).toEqual(ExecutionStatusType.FAIL);
+    });
+
+    it("should return Fail executionStatus for provided measure groups if no matching groups are found", () => {
+      const testCase: TestCase = {
+        id: "TC1",
+        name: "TestCase1",
+        title: "TestCase1",
+        description: "first",
+        validResource: true,
+        groupPopulations: [
+          {
+            groupId: "groupID",
+            scoring: MeasureScoring.COHORT,
+            populationBasis: "boolean",
+            populationValues: [
+              {
+                id: "pop1ID",
+                name: PopulationType.INITIAL_POPULATION,
+                criteriaReference: "boolIpp",
+                expected: true,
+              },
+            ],
+            stratificationValues: [],
+          },
+        ],
+        createdAt: "",
+        createdBy: "",
+        lastModifiedAt: "",
+        lastModifiedBy: "",
+        executionStatus: "NA",
+        series: undefined,
+        hapiOperationOutcome: undefined,
+      };
+
+      const groups: Group[] = [
+        {
+          id: "groupID999",
+          scoring: MeasureScoring.COHORT,
+          populationBasis: "boolean",
+          populations: [
+            {
+              id: "pop1ID",
+              name: PopulationType.INITIAL_POPULATION,
+              definition: "boolIpp",
+            },
+          ],
+          stratifications: [],
+          measureObservations: [],
+          measureGroupTypes: [MeasureGroupTypes.OUTCOME],
+        },
+      ];
+
+      const popGroupResults: DetailedPopulationGroupResult[] = [
+        {
+          groupId: "groupID",
+          statementResults: [], //only needed for strats currently
+          populationResults: [
+            {
+              populationType: FqmPopulationType.IPP,
+              criteriaExpression: "boolIpp",
+              result: true,
+            },
+          ],
+        },
+        {
+          groupId: "groupID999",
+          statementResults: [], //only needed for strats currently
+          populationResults: [
+            {
+              populationType: FqmPopulationType.IPP,
+              criteriaExpression: "boolIpp",
+              result: true,
+            },
+          ],
+        },
+      ];
+
+      const output = calculationService.processTestCaseResults(
+        testCase,
+        groups,
+        popGroupResults
+      );
+      expect(output).toBeTruthy();
+      expect(output.executionStatus).toEqual(ExecutionStatusType.FAIL);
+    });
+
     it("should return test case results for Cohort, boolean popBasis and pass executionStatus", () => {
       const popGroupResults: DetailedPopulationGroupResult[] = [
         {

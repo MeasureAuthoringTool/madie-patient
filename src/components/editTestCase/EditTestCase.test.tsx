@@ -1429,7 +1429,7 @@ describe("EditTestCase component", () => {
     userEvent.click(createBtn);
 
     const debugOutput = await screen.findByText(
-      "An error occurred with the Test Case JSON while creating the test case"
+      "Test case updated successfully with errors in JSON"
     );
     expect(debugOutput).toBeInTheDocument();
 
@@ -1528,7 +1528,7 @@ describe("EditTestCase component", () => {
     userEvent.click(updateBtn);
 
     const debugOutput = await screen.findByText(
-      "An error occurred with the Test Case JSON while updating the test case"
+      "Test case updated successfully with errors in JSON"
     );
     expect(debugOutput).toBeInTheDocument();
 
@@ -1628,7 +1628,7 @@ describe("EditTestCase component", () => {
     userEvent.click(updateBtn);
 
     const debugOutput = await screen.findByText(
-      "An error occurred with the Test Case JSON while updating the test case"
+      "Test case updated successfully with errors in JSON"
     );
     expect(debugOutput).toBeInTheDocument();
 
@@ -1819,7 +1819,7 @@ describe("EditTestCase component", () => {
     await waitFor(() => {
       expect(
         screen.getByRole("button", {
-          name: "Run Test",
+          name: "Run Test Case",
         })
       ).toBeDisabled();
     });
@@ -2107,7 +2107,7 @@ describe("Measure Calculation ", () => {
     // this is to make form dirty so that run test button is enabled
     const tcTitle = await screen.findByTestId("test-case-title");
     userEvent.type(tcTitle, "testTitle");
-    const runTestButton = screen.getByRole("button", { name: "Run Test" });
+    const runTestButton = screen.getByRole("button", { name: "Run Test Case" });
     expect(runTestButton).not.toBeDisabled();
     userEvent.click(runTestButton);
 
@@ -2161,7 +2161,9 @@ describe("Measure Calculation ", () => {
     userEvent.click(screen.getByTestId("expectoractual-tab"));
 
     await waitFor(async () => {
-      userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
+      userEvent.click(
+        await screen.findByRole("button", { name: "Run Test Case" })
+      );
     });
     userEvent.click(screen.getByTestId("highlighting-tab"));
     expect(
@@ -2223,7 +2225,9 @@ describe("Measure Calculation ", () => {
     userEvent.click(screen.getByTestId("expectoractual-tab"));
 
     await waitFor(async () => {
-      userEvent.click(await screen.findByRole("button", { name: "Run Test" }));
+      userEvent.click(
+        await screen.findByRole("button", { name: "Run Test Case" })
+      );
     });
     userEvent.click(screen.getByTestId("highlighting-tab"));
     expect(
@@ -2278,7 +2282,9 @@ describe("Measure Calculation ", () => {
       expect(editor.value.trim().length > 0).toBeTruthy();
     });
 
-    const runButton = await screen.findByRole("button", { name: "Run Test" });
+    const runButton = await screen.findByRole("button", {
+      name: "Run Test Case",
+    });
     await waitFor(() => expect(runButton).not.toBeDisabled());
     userEvent.click(runButton);
     await waitFor(async () =>
@@ -2345,7 +2351,9 @@ describe("Measure Calculation ", () => {
     userEvent.paste(editor, testCaseFixture.json);
     await waitFor(() => expect(editor.value).toBeTruthy());
 
-    const runButton = await screen.findByRole("button", { name: "Run Test" });
+    const runButton = await screen.findByRole("button", {
+      name: "Run Test Case",
+    });
     userEvent.click(runButton);
     await waitFor(async () =>
       userEvent.click(screen.getByTestId("highlighting-tab"))
@@ -2404,7 +2412,9 @@ describe("Measure Calculation ", () => {
       expect(editor.value.trim().length > 0).toBeTruthy();
     });
 
-    const runButton = await screen.findByRole("button", { name: "Run Test" });
+    const runButton = await screen.findByRole("button", {
+      name: "Run Test Case",
+    });
     await waitFor(() => expect(runButton).not.toBeDisabled());
     await waitFor(async () => userEvent.click(runButton));
 
@@ -2449,7 +2459,9 @@ describe("Measure Calculation ", () => {
       "/measures/:measureId/edit/test-cases/:id",
       measure
     );
-    const runButton = await screen.findByRole("button", { name: "Run Test" });
+    const runButton = await screen.findByRole("button", {
+      name: "Run Test Case",
+    });
     expect(runButton).toBeDisabled();
   });
 });

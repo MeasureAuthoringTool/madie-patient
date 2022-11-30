@@ -22,6 +22,12 @@ import TestCaseListSideBarNav from "./TestCaseListSideBarNav";
 const TH = tw.th`p-3 border-b text-left text-sm font-bold capitalize`;
 const ErrorAlert = tw.div`bg-red-100 text-red-700 rounded-lg m-1 p-3`;
 
+export const coverageHeaderRegex =
+  /<h2> Clause Coverage: ((\d*\.\d+)|NaN)%<\/h2>/i;
+export const removeHtmlCoverageHeader = (coverageHtml: string) => {
+  return coverageHtml?.replace(coverageHeaderRegex, "");
+};
+
 export interface TestCasesPassingDetailsProps {
   passPercentage: number;
   passFailRatio: string;
@@ -126,10 +132,8 @@ const TestCaseList = () => {
   useEffect(() => {
     const validTestCases = testCases?.filter((tc) => tc.validResource);
     if (validTestCases && calculationOutput?.results) {
-      const regex = /<h2> Clause Coverage: [0-9]*\.[0-9]+%<\/h2>/i;
-      const executionResults = calculationOutput.results,
-        executionHTML = calculationOutput.coverageHTML?.replace(regex, "");
-      setCoverageHTML(executionHTML);
+      const executionResults = calculationOutput.results;
+      setCoverageHTML(removeHtmlCoverageHeader(calculationOutput.coverageHTML));
       const nextExecutionResults = {};
       validTestCases.forEach((testCase, i) => {
         const detailedResults = executionResults.find(
@@ -265,7 +269,7 @@ const TestCaseList = () => {
                     >
                       <thead tw="bg-slate">
                         <tr>
-                          <TH scope="col">Pass / Fail</TH>
+                          <TH scope="col">Status</TH>
                           <TH scope="col">Group</TH>
                           <TH scope="col">Title</TH>
                           <TH scope="col">Description</TH>
