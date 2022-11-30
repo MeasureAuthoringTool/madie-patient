@@ -1871,7 +1871,7 @@ describe("EditTestCase component", () => {
       () => {
         expect(screen.getByTestId("test-case-title")).toBeDisabled();
         expect(screen.getByTestId("test-case-description")).toBeDisabled();
-        expect(screen.getByLabelText("Test Case Series")).toBeDisabled();
+        expect(screen.getByLabelText("Group")).toBeDisabled();
         expect(
           screen.queryByRole("button", { name: "Save" })
         ).not.toBeInTheDocument();
