@@ -67,7 +67,7 @@ const TestCase = ({
         <>
           <DoNotDisturbOnIcon sx={{ color: theme.palette.grey[500] }} />
           <span style={{ width: 10 }} />
-          <i>Pending</i>
+          <i>N/A</i>
         </>
       );
     } else if (executionStatus === "pass") {

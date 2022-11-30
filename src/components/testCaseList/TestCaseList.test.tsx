@@ -446,6 +446,7 @@ describe("TestCaseList component", () => {
       </MemoryRouter>
     );
   }
+
   it("should render list of test cases", async () => {
     renderTestCaseListComponent();
     await waitFor(() => {
@@ -453,7 +454,7 @@ describe("TestCaseList component", () => {
 
       const tableHeaders = table.querySelectorAll("thead th");
 
-      expect(tableHeaders[0]).toHaveTextContent("Pass / Fail");
+      expect(tableHeaders[0]).toHaveTextContent("Status");
       expect(tableHeaders[1]).toHaveTextContent("Group");
       expect(tableHeaders[2]).toHaveTextContent("Title");
       expect(tableHeaders[3]).toHaveTextContent("Description");
@@ -584,13 +585,13 @@ describe("TestCaseList component", () => {
     const table = await screen.findByTestId("test-case-tbl");
     const tableRows = table.querySelectorAll("tbody tr");
     await waitFor(() => {
-      expect(tableRows[0]).toHaveTextContent("Pending");
-      expect(tableRows[1]).toHaveTextContent("Pending");
+      expect(tableRows[0]).toHaveTextContent("N/A");
+      expect(tableRows[1]).toHaveTextContent("N/A");
       expect(tableRows[2]).toHaveTextContent("Invalid");
     });
 
     const executeAllTestCasesButton = screen.getByRole("button", {
-      name: "Execute Test Cases",
+      name: "Run Test Cases",
     });
 
     userEvent.click(executeAllTestCasesButton);
@@ -666,7 +667,7 @@ describe("TestCaseList component", () => {
     const table = await screen.findByTestId("test-case-tbl");
     const tableHeaders = table.querySelectorAll("thead th");
 
-    expect(tableHeaders[0]).toHaveTextContent("Pass / Fail");
+    expect(tableHeaders[0]).toHaveTextContent("Status");
     expect(tableHeaders[1]).toHaveTextContent("Group");
     expect(tableHeaders[2]).toHaveTextContent("Title");
     expect(tableHeaders[3]).toHaveTextContent("Description");
@@ -751,7 +752,7 @@ describe("TestCaseList component", () => {
 
     expect(await screen.findByText("WhenAllGood")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Execute Test Cases" })
+      screen.getByRole("button", { name: "Run Test Cases" })
     ).toBeDisabled();
   });
 
@@ -783,12 +784,12 @@ describe("TestCaseList component", () => {
 
     // wait for test cases to load
     await waitFor(() => {
-      expect(screen.getAllByText("Pending").length).toEqual(2);
+      expect(screen.getAllByText("N/A").length).toEqual(2);
     });
 
     // wait for execution context to be ready
     const executeButton = screen.getByRole("button", {
-      name: "Execute Test Cases",
+      name: "Run Test Cases",
     });
     await waitFor(() => {
       expect(executeButton).not.toBeDisabled();
@@ -829,12 +830,12 @@ describe("TestCaseList component", () => {
     // wait for pop criteria to load
     await waitFor(() => {
       expect(screen.getByText("Population Criteria 1")).toBeInTheDocument();
-      expect(screen.getAllByText("Pending").length).toEqual(2);
+      expect(screen.getAllByText("N/A").length).toEqual(2);
     });
 
     // wait for execution context to be ready
     const executeButton = screen.getByRole("button", {
-      name: "Execute Test Cases",
+      name: "Run Test Cases",
     });
 
     await waitFor(() => expect(executeButton).not.toBeDisabled());

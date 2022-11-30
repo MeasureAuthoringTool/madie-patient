@@ -269,7 +269,7 @@ const TestCaseList = () => {
                     >
                       <thead tw="bg-slate">
                         <tr>
-                          <TH scope="col">Pass / Fail</TH>
+                          <TH scope="col">Status</TH>
                           <TH scope="col">Group</TH>
                           <TH scope="col">Title</TH>
                           <TH scope="col">Description</TH>
