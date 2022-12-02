@@ -60,6 +60,7 @@ import {
   TextField,
   MadieSpinner,
 } from "@madie/madie-design-system/dist/react";
+import TextArea from "../createTestCase/TextArea";
 
 const FormErrors = tw.div`h-6`;
 const TestCaseForm = tw.form`m-3`;
@@ -774,7 +775,7 @@ const EditTestCase = () => {
                   placeholder="Test Case Title"
                   required
                   disabled={!canEdit}
-                  label="Test Case Title"
+                  label="Title"
                   id="test-case-title"
                   inputProps={{
                     "data-testid": "test-case-title",
@@ -787,30 +788,44 @@ const EditTestCase = () => {
                 />
 
                 <div tw="mt-4">
-                  <label htmlFor="test-case-description" tw="text-gray-980">
-                    Test Case Description
-                  </label>
-                  <textarea
-                    tw="min-w-full
-                        resize
-                        h-24
-                        rounded-md
-                        sm:text-sm"
+                  <TextArea
                     placeholder="Test Case Description"
                     id="test-case-description"
-                    data-testid="test-case-description"
-                    aria-describedby="description-helper-text"
+                    data-testid="edit-test-case-description"
                     disabled={!canEdit}
                     {...formik.getFieldProps("description")}
+                    label="Description"
+                    required={false}
+                    inputProps={{
+                      "data-testid": "test-case-description",
+                      "aria-describedby": "description-helper-text",
+                    }}
+                    onChange={formik.handleChange}
+                    value={formik.values.description}
+                    error={
+                      formik.touched.description &&
+                      Boolean(formik.errors.description)
+                    }
+                    helperText={formikErrorHandler("description", true)}
                   />
-                  <FormErrors>
-                    {formikErrorHandler("description", true)}
-                  </FormErrors>
                 </div>
 
-                <div tw="-mt-5">
-                  <label htmlFor="test-case-series" tw="text-gray-980">
-                    Test Case Series
+                <div
+                  tw="-mt-5"
+                  style={{
+                    marginTop: 10,
+                  }}
+                >
+                  <label
+                    htmlFor="test-case-series"
+                    tw="text-gray-980"
+                    style={{
+                      fontFamily: "Rubik",
+                      fontSize: "14px",
+                      textTransform: "capitalize",
+                    }}
+                  >
+                    Group
                   </label>
                   <TestCaseSeries
                     disabled={!canEdit}
