@@ -18,9 +18,9 @@ import CodeCoverageHighlighting from "./CodeCoverageHighlighting";
 import CreateNewTestCaseDialog from "../createTestCase/CreateNewTestCaseDialog";
 import { MadieSpinner } from "@madie/madie-design-system/dist/react";
 import TestCaseListSideBarNav from "./TestCaseListSideBarNav";
+import StatusHandler from "../statusHandler/StatusHandler";
 
 const TH = tw.th`p-3 border-b text-left text-sm font-bold capitalize`;
-const ErrorAlert = tw.div`bg-red-100 text-red-700 rounded-lg m-1 p-3`;
 
 export const coverageHeaderRegex =
   /<h2> Clause Coverage: ((\d*\.\d+)|NaN)%<\/h2>/i;
@@ -249,9 +249,11 @@ const TestCaseList = () => {
             </div>
             <CreateNewTestCaseDialog open={createOpen} onClose={handleClose} />
             {error && (
-              <ErrorAlert data-testid="display-tests-error" role="alert">
-                {error}
-              </ErrorAlert>
+              <StatusHandler
+                error={true}
+                errorMessage={error}
+                testDataId="display-tests-error"
+              ></StatusHandler>
             )}
 
             {activeTab === "passing" && (
