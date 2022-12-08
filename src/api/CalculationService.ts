@@ -420,8 +420,8 @@ export class CalculationService {
         "boolean" === _.lowerCase(measureGroup.populationBasis);
 
       const processedResults = patientBased
-        ? this.buildPatientResults(populationGroupResult.populationResults)
-        : this.buildEpisodeResults(populationGroupResult.episodeResults);
+        ? this.buildPatientResults(populationGroupResult?.populationResults)
+        : this.buildEpisodeResults(populationGroupResult?.episodeResults);
 
       tcGroupPopulation?.populationValues.forEach((tcPopVal, idx) => {
         // Set the actual population value for measure observations
@@ -457,12 +457,6 @@ export class CalculationService {
           const result =
             processedResults?.populations[measureGroupPopulation.id]?.result;
           tcPopVal.actual = _.isNil(result) && !patientBased ? 0 : result;
-
-          if (tcPopTypeCount[tcPopVal.name]) {
-            tcPopTypeCount[tcPopVal.name] = tcPopTypeCount[tcPopVal.name] + 1;
-          } else {
-            tcPopTypeCount[tcPopVal.name] = 1;
-          }
         }
       });
 

@@ -1185,9 +1185,30 @@ describe("CalculationService Tests", () => {
       expect(popVals[2].actual).toEqual(1);
     });
 
-    // it("should return test case results for continuous variable, Encounter popBasis", () => {
-    //
-    // });
+    it("should return test case results for continuous variable, Encounter popBasis", () => {
+      const output = calculationService.processTestCaseResults(
+        ContinuousVariable_Encounter_Pass.testCase,
+        ContinuousVariable_Encounter_Pass.measureGroups,
+        ContinuousVariable_Encounter_Pass.populationGroupResults
+      );
+      expect(output).toBeTruthy();
+      expect(output.executionStatus).toEqual(ExecutionStatusType.PASS);
+      expect(output.groupPopulations.length).toEqual(1);
+      const popVals = output.groupPopulations[0].populationValues;
+      expect(popVals.length).toEqual(4);
+      expect(popVals[0].name).toEqual(PopulationType.INITIAL_POPULATION);
+      expect(popVals[0].actual).toEqual(2);
+      expect(popVals[1].name).toEqual(PopulationType.MEASURE_POPULATION);
+      expect(popVals[1].actual).toEqual(2);
+      expect(popVals[2].name).toEqual(
+        PopulationType.MEASURE_POPULATION_OBSERVATION
+      );
+      expect(popVals[2].actual).toEqual(5);
+      expect(popVals[3].name).toEqual(
+        PopulationType.MEASURE_POPULATION_OBSERVATION
+      );
+      expect(popVals[3].actual).toEqual(1);
+    });
   });
 
   describe("CalculationService.buildPatientResults", () => {
