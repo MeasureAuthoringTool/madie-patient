@@ -4,7 +4,6 @@ import {
   DetailedPopulationGroupResult,
   EpisodeResults,
   ExecutionResult,
-  PopulationGroupResult,
   PopulationResult,
 } from "fqm-execution/build/types/Calculator";
 import {
