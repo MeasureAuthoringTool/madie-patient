@@ -2497,6 +2497,859 @@ export const ContinuousVariable_Encounter_Pass: TestCaseProcessingScenario = {
   ],
 };
 
+export const ContinuousVariable_Encounter_Fail: TestCaseProcessingScenario = {
+  measureGroups: [
+    {
+      id: "638e14401b05491a43ce8a18",
+      scoring: "Continuous Variable",
+      populations: [
+        {
+          id: "77b6063f-f7c8-45db-8d84-1f0d8e7993b5",
+          name: PopulationType.INITIAL_POPULATION,
+          definition: "ipp",
+          associationType: null,
+          description: null,
+        },
+        {
+          id: "797c4d66-cfd3-4ced-a482-1d55d5cad85c",
+          name: PopulationType.MEASURE_POPULATION,
+          definition: "mPop",
+          associationType: null,
+          description: null,
+        },
+        {
+          id: "5edeebba-b888-4d92-a8b2-8568d78ceb86",
+          name: PopulationType.MEASURE_POPULATION_EXCLUSION,
+          definition: "",
+          associationType: null,
+          description: null,
+        },
+      ],
+      measureObservations: [
+        {
+          id: "ff17cb94-c66e-4f70-a66d-52ace013d054",
+          definition: "daysObs",
+          criteriaReference: "797c4d66-cfd3-4ced-a482-1d55d5cad85c",
+          aggregateMethod: AggregateFunctionType.COUNT,
+        },
+      ],
+      groupDescription: "",
+      improvementNotation: "",
+      rateAggregation: "",
+      measureGroupTypes: [MeasureGroupTypes.OUTCOME],
+      scoringUnit: "",
+      stratifications: [],
+      populationBasis: "Encounter",
+    },
+  ],
+  testCase: {
+    id: "638a0dbf1b05491a43ce8a17",
+    name: null,
+    title: "TC1",
+    series: "",
+    description: "",
+    createdAt: "2022-12-02T14:37:51.907Z",
+    createdBy: "tester",
+    lastModifiedAt: "2022-12-05T15:54:53.961772019Z",
+    lastModifiedBy: "tester",
+    validResource: true,
+    executionStatus: null,
+    json: '{\n  "resourceType": "Bundle",\n  "id": "2106",\n  "meta": {\n    "versionId": "1",\n    "lastUpdated": "2022-09-06T20:47:21.183+00:00"\n  },\n  "type": "collection",\n  "entry": [ {\n    "fullUrl": "http://local/Encounter/2",\n    "resource": { \n      "id": "2", \n      "resourceType": "Encounter",\n      "meta": {\n        "versionId": "1",\n        "lastUpdated": "2021-10-13T03:34:10.160+00:00",\n        "source": "#nEcAkGd8PRwPP5fA"\n      },\n      "text": {\n        "status": "generated",\n        "div": "<div xmlns=\\"http://www.w3.org/1999/xhtml\\">Sep 9th 2021 for Asthma<a name=\\"mm\\"/></div>"\n      },\n      "class": {\n        "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",\n        "code": "IMP",\n        "display": "inpatient encounter"\n      },\n      "status": "planned",\n      "type": [ {\n        "text": "OutPatient"\n      } ],\n      "subject": {\n        "reference": "Patient/1"\n      },\n      "participant": [ {\n        "individual": {\n          "reference": "Practitioner/30164",\n          "display": "Dr John Doe"\n        }\n      } ],\n      "period": {\n        "start": "2023-08-10T03:34:10.054Z",\n        "end": "2023-08-15T03:34:10.054Z"\n      }\n    }\n  }, {\n    "fullUrl": "http://local/Encounter/3",\n    "resource": {\n      "id": "3",\n      "resourceType": "Encounter",\n      "meta": {\n        "versionId": "1",\n        "lastUpdated": "2021-10-13T03:34:10.160+00:00",\n        "source": "#nEcAkGd8PRwPP5fA"\n      },\n      "text": { \n        "status": "generated",\n        "div": "<div xmlns=\\"http://www.w3.org/1999/xhtml\\">Sep 9th 2021 for Asthma<a name=\\"mm\\"/></div>"\n      },\n      "class": {\n        "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",\n        "code": "IMP",\n        "display": "inpatient encounter"\n      },\n      "status": "planned",\n      "type": [ {\n        "text": "OutPatient"\n      } ],\n      "subject": {\n        "reference": "Patient/1"\n      },\n      "participant": [ {\n        "individual": {\n          "reference": "Practitioner/30164",\n          "display": "Dr John Doe"\n        }\n      } ],\n      "period": {\n        "start": "2023-09-12T03:34:10.054Z",\n        "end": "2023-09-13T09:34:10.054Z"\n      }\n    }\n  }, {\n    "fullUrl": "http://local/Patient/1",\n    "resource": {\n      "id": "1",\n      "resourceType": "Patient",\n      "text": {\n        "status": "generated",\n        "div": "<div xmlns=\\"http://www.w3.org/1999/xhtml\\">Lizzy Health</div>"\n      },\n      "meta": {\n        "profile": "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-patient"\n      },\n      "identifier": [ {\n        "system": "http://clinfhir.com/fhir/NamingSystem/identifier",\n        "value": "20181011LizzyHealth"\n      } ],\n      "name": [ {\n        "use": "official",\n        "text": "Lizzy Health",\n        "family": "Health",\n        "given": [ "Lizzy" ]\n      } ],\n      "gender": "female",\n      "birthDate": "2000-10-11"\n    }\n  } ]\n\n}\n',
+    hapiOperationOutcome: {
+      code: 200,
+      message: null,
+      successful: true,
+      outcomeResponse: {
+        resourceType: "OperationOutcome",
+        issue: [],
+        text: null,
+      },
+    },
+    groupPopulations: [
+      {
+        groupId: "638e14401b05491a43ce8a18",
+        scoring: "Continuous Variable",
+        populationBasis: "Encounter",
+        populationValues: [
+          {
+            id: "77b6063f-f7c8-45db-8d84-1f0d8e7993b5",
+            criteriaReference: null,
+            name: "initialPopulation",
+            expected: 3,
+          },
+          {
+            id: "797c4d66-cfd3-4ced-a482-1d55d5cad85c",
+            criteriaReference: null,
+            name: "measurePopulation",
+            expected: 3,
+          },
+          {
+            id: "measurePopulationObservation0",
+            criteriaReference: "797c4d66-cfd3-4ced-a482-1d55d5cad85c",
+            name: "measurePopulationObservation",
+            expected: 5,
+          },
+          {
+            id: "measurePopulationObservation1",
+            criteriaReference: "797c4d66-cfd3-4ced-a482-1d55d5cad85c",
+            name: "measurePopulationObservation",
+            expected: 1,
+          },
+          {
+            id: "measurePopulationObservation2",
+            criteriaReference: "797c4d66-cfd3-4ced-a482-1d55d5cad85c",
+            name: "measurePopulationObservation",
+            expected: 18,
+          },
+        ],
+        stratificationValues: [],
+      },
+    ],
+  },
+  populationGroupResults: [
+    {
+      groupId: "638e14401b05491a43ce8a18",
+      episodeResults: [
+        {
+          episodeId: "2",
+          populationResults: [
+            {
+              populationType: FqmPopulationType.IPP,
+              criteriaExpression: "ipp",
+              result: true,
+              populationId: "77b6063f-f7c8-45db-8d84-1f0d8e7993b5",
+            },
+            {
+              populationType: FqmPopulationType.MSRPOPL,
+              criteriaExpression: "mPop",
+              result: true,
+              populationId: "797c4d66-cfd3-4ced-a482-1d55d5cad85c",
+            },
+            {
+              populationType: FqmPopulationType.MSRPOPLEX,
+              result: false,
+              populationId: "5edeebba-b888-4d92-a8b2-8568d78ceb86",
+            },
+            {
+              populationType: FqmPopulationType.OBSERV,
+              criteriaExpression: "daysObs",
+              result: true,
+              populationId: "ff17cb94-c66e-4f70-a66d-52ace013d054",
+              criteriaReferenceId: "797c4d66-cfd3-4ced-a482-1d55d5cad85c",
+              observations: [5],
+            },
+          ],
+        },
+        {
+          episodeId: "3",
+          populationResults: [
+            {
+              populationType: FqmPopulationType.IPP,
+              criteriaExpression: "ipp",
+              result: true,
+              populationId: "77b6063f-f7c8-45db-8d84-1f0d8e7993b5",
+            },
+            {
+              populationType: FqmPopulationType.MSRPOPL,
+              criteriaExpression: "mPop",
+              result: true,
+              populationId: "797c4d66-cfd3-4ced-a482-1d55d5cad85c",
+            },
+            {
+              populationType: FqmPopulationType.MSRPOPLEX,
+              result: false,
+              populationId: "5edeebba-b888-4d92-a8b2-8568d78ceb86",
+            },
+            {
+              populationType: FqmPopulationType.OBSERV,
+              criteriaExpression: "daysObs",
+              result: true,
+              populationId: "ff17cb94-c66e-4f70-a66d-52ace013d054",
+              criteriaReferenceId: "797c4d66-cfd3-4ced-a482-1d55d5cad85c",
+              observations: [1],
+            },
+          ],
+        },
+      ],
+      statementResults: [
+        {
+          libraryName: "CVB1",
+          statementName: "Patient",
+          final: "NA",
+          relevance: "NA",
+          pretty: "NA",
+        },
+        {
+          libraryName: "CVB1",
+          statementName: "ipp",
+          localId: "14",
+          final: "TRUE",
+          relevance: "TRUE",
+          raw: [
+            {
+              status: {
+                value: "planned",
+              },
+              class: {
+                system: {
+                  value: "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+                },
+                code: {
+                  value: "IMP",
+                },
+                display: {
+                  value: "inpatient encounter",
+                },
+              },
+              type: [
+                {
+                  text: {
+                    value: "OutPatient",
+                  },
+                },
+              ],
+              subject: {
+                reference: {
+                  value: "Patient/1",
+                },
+              },
+              participant: [
+                {
+                  individual: {
+                    reference: {
+                      value: "Practitioner/30164",
+                    },
+                    display: {
+                      value: "Dr John Doe",
+                    },
+                  },
+                },
+              ],
+              period: {
+                start: {
+                  value: "2023-08-10T03:34:10.054+00:00",
+                },
+                end: {
+                  value: "2023-08-15T03:34:10.054+00:00",
+                },
+              },
+              text: {
+                status: {
+                  value: "generated",
+                },
+                div: {
+                  value:
+                    '<div xmlns="http://www.w3.org/1999/xhtml">Sep 9th 2021 for Asthma<a name="mm"/></div>',
+                },
+              },
+              id: {
+                value: "2",
+              },
+              meta: {
+                versionId: {
+                  value: "1",
+                },
+                lastUpdated: {
+                  value: "2021-10-13T03:34:10.160+00:00",
+                },
+                source: {
+                  value: "#nEcAkGd8PRwPP5fA",
+                },
+              },
+            },
+            {
+              status: {
+                value: "planned",
+              },
+              class: {
+                system: {
+                  value: "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+                },
+                code: {
+                  value: "IMP",
+                },
+                display: {
+                  value: "inpatient encounter",
+                },
+              },
+              type: [
+                {
+                  text: {
+                    value: "OutPatient",
+                  },
+                },
+              ],
+              subject: {
+                reference: {
+                  value: "Patient/1",
+                },
+              },
+              participant: [
+                {
+                  individual: {
+                    reference: {
+                      value: "Practitioner/30164",
+                    },
+                    display: {
+                      value: "Dr John Doe",
+                    },
+                  },
+                },
+              ],
+              period: {
+                start: {
+                  value: "2023-09-12T03:34:10.054+00:00",
+                },
+                end: {
+                  value: "2023-09-13T09:34:10.054+00:00",
+                },
+              },
+              text: {
+                status: {
+                  value: "generated",
+                },
+                div: {
+                  value:
+                    '<div xmlns="http://www.w3.org/1999/xhtml">Sep 9th 2021 for Asthma<a name="mm"/></div>',
+                },
+              },
+              id: {
+                value: "3",
+              },
+              meta: {
+                versionId: {
+                  value: "1",
+                },
+                lastUpdated: {
+                  value: "2021-10-13T03:34:10.160+00:00",
+                },
+                source: {
+                  value: "#nEcAkGd8PRwPP5fA",
+                },
+              },
+            },
+          ],
+          pretty:
+            '[{\n  account: null,\n  appointment: null,\n  basedOn: null,\n  class: {\n    code: {\n      extension: null,\n      id: null,\n      value: "IMP"\n    },\n    display: {\n      extension: null,\n      id: null,\n      value: "inpatient encounter"\n    },\n    extension: null,\n    id: null,\n    system: {\n      extension: null,\n      id: null,\n      value: "http://terminology.hl7.org/CodeSystem/v3-ActCode"\n    },\n    userSelected: null,\n    version: null\n  },\n  classHistory: null,\n  contained: null,\n  diagnosis: null,\n  episodeOfCare: null,\n  extension: null,\n  hospitalization: null,\n  id: {\n    extension: null,\n    id: null,\n    value: "2"\n  },\n  identifier: null,\n  implicitRules: null,\n  language: null,\n  length: null,\n  location: null,\n  meta: {\n    extension: null,\n    id: null,\n    lastUpdated: {\n      extension: null,\n      id: null,\n      value: 10/13/2021 3:34 AM\n    },\n    profile: null,\n    security: null,\n    source: {\n      extension: null,\n      id: null,\n      value: "#nEcAkGd8PRwPP5fA"\n    },\n    tag: null,\n    versionId: {\n      extension: null,\n      id: null,\n      value: "1"\n    }\n  },\n  modifierExtension: null,\n  partOf: null,\n  participant: [{\n    extension: null,\n    id: null,\n    individual: {\n      display: {\n        extension: null,\n        id: null,\n        value: "Dr John Doe"\n      },\n      extension: null,\n      id: null,\n      identifier: null,\n      reference: {\n        extension: null,\n        id: null,\n        value: "Practitioner/30164"\n      },\n      type: null\n    },\n    modifierExtension: null,\n    period: null,\n    type: null\n  }],\n  period: {\n    end: {\n      extension: null,\n      id: null,\n      value: 08/15/2023 3:34 AM\n    },\n    extension: null,\n    id: null,\n    start: {\n      extension: null,\n      id: null,\n      value: 08/10/2023 3:34 AM\n    }\n  },\n  priority: null,\n  reasonCode: null,\n  reasonReference: null,\n  serviceProvider: null,\n  serviceType: null,\n  status: {\n    extension: null,\n    id: null,\n    value: "planned"\n  },\n  statusHistory: null,\n  subject: {\n    display: null,\n    extension: null,\n    id: null,\n    identifier: null,\n    reference: {\n      extension: null,\n      id: null,\n      value: "Patient/1"\n    },\n    type: null\n  },\n  text: {\n    div: {\n      extension: null,\n      id: null,\n      value: "<div xmlns="http://www.w3.org/1999/xhtml">Sep 9th 2021 for Asthma<a name="mm"/></div>"\n    },\n    extension: null,\n    id: null,\n    status: {\n      extension: null,\n      id: null,\n      value: "generated"\n    }\n  },\n  type: [{\n    coding: null,\n    extension: null,\n    id: null,\n    text: {\n      extension: null,\n      id: null,\n      value: "OutPatient"\n    }\n  }]\n},\n{\n  account: null,\n  appointment: null,\n  basedOn: null,\n  class: {\n    code: {\n      extension: null,\n      id: null,\n      value: "IMP"\n    },\n    display: {\n      extension: null,\n      id: null,\n      value: "inpatient encounter"\n    },\n    extension: null,\n    id: null,\n    system: {\n      extension: null,\n      id: null,\n      value: "http://terminology.hl7.org/CodeSystem/v3-ActCode"\n    },\n    userSelected: null,\n    version: null\n  },\n  classHistory: null,\n  contained: null,\n  diagnosis: null,\n  episodeOfCare: null,\n  extension: null,\n  hospitalization: null,\n  id: {\n    extension: null,\n    id: null,\n    value: "3"\n  },\n  identifier: null,\n  implicitRules: null,\n  language: null,\n  length: null,\n  location: null,\n  meta: {\n    extension: null,\n    id: null,\n    lastUpdated: {\n      extension: null,\n      id: null,\n      value: 10/13/2021 3:34 AM\n    },\n    profile: null,\n    security: null,\n    source: {\n      extension: null,\n      id: null,\n      value: "#nEcAkGd8PRwPP5fA"\n    },\n    tag: null,\n    versionId: {\n      extension: null,\n      id: null,\n      value: "1"\n    }\n  },\n  modifierExtension: null,\n  partOf: null,\n  participant: [{\n    extension: null,\n    id: null,\n    individual: {\n      display: {\n        extension: null,\n        id: null,\n        value: "Dr John Doe"\n      },\n      extension: null,\n      id: null,\n      identifier: null,\n      reference: {\n        extension: null,\n        id: null,\n        value: "Practitioner/30164"\n      },\n      type: null\n    },\n    modifierExtension: null,\n    period: null,\n    type: null\n  }],\n  period: {\n    end: {\n      extension: null,\n      id: null,\n      value: 09/13/2023 9:34 AM\n    },\n    extension: null,\n    id: null,\n    start: {\n      extension: null,\n      id: null,\n      value: 09/12/2023 3:34 AM\n    }\n  },\n  priority: null,\n  reasonCode: null,\n  reasonReference: null,\n  serviceProvider: null,\n  serviceType: null,\n  status: {\n    extension: null,\n    id: null,\n    value: "planned"\n  },\n  statusHistory: null,\n  subject: {\n    display: null,\n    extension: null,\n    id: null,\n    identifier: null,\n    reference: {\n      extension: null,\n      id: null,\n      value: "Patient/1"\n    },\n    type: null\n  },\n  text: {\n    div: {\n      extension: null,\n      id: null,\n      value: "<div xmlns="http://www.w3.org/1999/xhtml">Sep 9th 2021 for Asthma<a name="mm"/></div>"\n    },\n    extension: null,\n    id: null,\n    status: {\n      extension: null,\n      id: null,\n      value: "generated"\n    }\n  },\n  type: [{\n    coding: null,\n    extension: null,\n    id: null,\n    text: {\n      extension: null,\n      id: null,\n      value: "OutPatient"\n    }\n  }]\n}]',
+        },
+        {
+          libraryName: "CVB1",
+          statementName: "ipp2",
+          localId: "28",
+          final: "NA",
+          relevance: "NA",
+          raw: [],
+          pretty: "NA",
+        },
+        {
+          libraryName: "CVB1",
+          statementName: "ex",
+          localId: "42",
+          final: "NA",
+          relevance: "NA",
+          raw: [],
+          pretty: "NA",
+        },
+        {
+          libraryName: "CVB1",
+          statementName: "denom",
+          localId: "44",
+          final: "NA",
+          relevance: "NA",
+          raw: [
+            {
+              status: {
+                value: "planned",
+              },
+              class: {
+                system: {
+                  value: "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+                },
+                code: {
+                  value: "IMP",
+                },
+                display: {
+                  value: "inpatient encounter",
+                },
+              },
+              type: [
+                {
+                  text: {
+                    value: "OutPatient",
+                  },
+                },
+              ],
+              subject: {
+                reference: {
+                  value: "Patient/1",
+                },
+              },
+              participant: [
+                {
+                  individual: {
+                    reference: {
+                      value: "Practitioner/30164",
+                    },
+                    display: {
+                      value: "Dr John Doe",
+                    },
+                  },
+                },
+              ],
+              period: {
+                start: {
+                  value: "2023-08-10T03:34:10.054+00:00",
+                },
+                end: {
+                  value: "2023-08-15T03:34:10.054+00:00",
+                },
+              },
+              text: {
+                status: {
+                  value: "generated",
+                },
+                div: {
+                  value:
+                    '<div xmlns="http://www.w3.org/1999/xhtml">Sep 9th 2021 for Asthma<a name="mm"/></div>',
+                },
+              },
+              id: {
+                value: "2",
+              },
+              meta: {
+                versionId: {
+                  value: "1",
+                },
+                lastUpdated: {
+                  value: "2021-10-13T03:34:10.160+00:00",
+                },
+                source: {
+                  value: "#nEcAkGd8PRwPP5fA",
+                },
+              },
+            },
+            {
+              status: {
+                value: "planned",
+              },
+              class: {
+                system: {
+                  value: "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+                },
+                code: {
+                  value: "IMP",
+                },
+                display: {
+                  value: "inpatient encounter",
+                },
+              },
+              type: [
+                {
+                  text: {
+                    value: "OutPatient",
+                  },
+                },
+              ],
+              subject: {
+                reference: {
+                  value: "Patient/1",
+                },
+              },
+              participant: [
+                {
+                  individual: {
+                    reference: {
+                      value: "Practitioner/30164",
+                    },
+                    display: {
+                      value: "Dr John Doe",
+                    },
+                  },
+                },
+              ],
+              period: {
+                start: {
+                  value: "2023-09-12T03:34:10.054+00:00",
+                },
+                end: {
+                  value: "2023-09-13T09:34:10.054+00:00",
+                },
+              },
+              text: {
+                status: {
+                  value: "generated",
+                },
+                div: {
+                  value:
+                    '<div xmlns="http://www.w3.org/1999/xhtml">Sep 9th 2021 for Asthma<a name="mm"/></div>',
+                },
+              },
+              id: {
+                value: "3",
+              },
+              meta: {
+                versionId: {
+                  value: "1",
+                },
+                lastUpdated: {
+                  value: "2021-10-13T03:34:10.160+00:00",
+                },
+                source: {
+                  value: "#nEcAkGd8PRwPP5fA",
+                },
+              },
+            },
+          ],
+          pretty: "NA",
+        },
+        {
+          libraryName: "CVB1",
+          statementName: "num",
+          localId: "46",
+          final: "NA",
+          relevance: "NA",
+          raw: [],
+          pretty: "NA",
+        },
+        {
+          libraryName: "CVB1",
+          statementName: "mPop",
+          localId: "60",
+          final: "TRUE",
+          relevance: "TRUE",
+          raw: [
+            {
+              status: {
+                value: "planned",
+              },
+              class: {
+                system: {
+                  value: "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+                },
+                code: {
+                  value: "IMP",
+                },
+                display: {
+                  value: "inpatient encounter",
+                },
+              },
+              type: [
+                {
+                  text: {
+                    value: "OutPatient",
+                  },
+                },
+              ],
+              subject: {
+                reference: {
+                  value: "Patient/1",
+                },
+              },
+              participant: [
+                {
+                  individual: {
+                    reference: {
+                      value: "Practitioner/30164",
+                    },
+                    display: {
+                      value: "Dr John Doe",
+                    },
+                  },
+                },
+              ],
+              period: {
+                start: {
+                  value: "2023-08-10T03:34:10.054+00:00",
+                },
+                end: {
+                  value: "2023-08-15T03:34:10.054+00:00",
+                },
+              },
+              text: {
+                status: {
+                  value: "generated",
+                },
+                div: {
+                  value:
+                    '<div xmlns="http://www.w3.org/1999/xhtml">Sep 9th 2021 for Asthma<a name="mm"/></div>',
+                },
+              },
+              id: {
+                value: "2",
+              },
+              meta: {
+                versionId: {
+                  value: "1",
+                },
+                lastUpdated: {
+                  value: "2021-10-13T03:34:10.160+00:00",
+                },
+                source: {
+                  value: "#nEcAkGd8PRwPP5fA",
+                },
+              },
+            },
+            {
+              status: {
+                value: "planned",
+              },
+              class: {
+                system: {
+                  value: "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+                },
+                code: {
+                  value: "IMP",
+                },
+                display: {
+                  value: "inpatient encounter",
+                },
+              },
+              type: [
+                {
+                  text: {
+                    value: "OutPatient",
+                  },
+                },
+              ],
+              subject: {
+                reference: {
+                  value: "Patient/1",
+                },
+              },
+              participant: [
+                {
+                  individual: {
+                    reference: {
+                      value: "Practitioner/30164",
+                    },
+                    display: {
+                      value: "Dr John Doe",
+                    },
+                  },
+                },
+              ],
+              period: {
+                start: {
+                  value: "2023-09-12T03:34:10.054+00:00",
+                },
+                end: {
+                  value: "2023-09-13T09:34:10.054+00:00",
+                },
+              },
+              text: {
+                status: {
+                  value: "generated",
+                },
+                div: {
+                  value:
+                    '<div xmlns="http://www.w3.org/1999/xhtml">Sep 9th 2021 for Asthma<a name="mm"/></div>',
+                },
+              },
+              id: {
+                value: "3",
+              },
+              meta: {
+                versionId: {
+                  value: "1",
+                },
+                lastUpdated: {
+                  value: "2021-10-13T03:34:10.160+00:00",
+                },
+                source: {
+                  value: "#nEcAkGd8PRwPP5fA",
+                },
+              },
+            },
+          ],
+          pretty:
+            '[{\n  account: null,\n  appointment: null,\n  basedOn: null,\n  class: {\n    code: {\n      extension: null,\n      id: null,\n      value: "IMP"\n    },\n    display: {\n      extension: null,\n      id: null,\n      value: "inpatient encounter"\n    },\n    extension: null,\n    id: null,\n    system: {\n      extension: null,\n      id: null,\n      value: "http://terminology.hl7.org/CodeSystem/v3-ActCode"\n    },\n    userSelected: null,\n    version: null\n  },\n  classHistory: null,\n  contained: null,\n  diagnosis: null,\n  episodeOfCare: null,\n  extension: null,\n  hospitalization: null,\n  id: {\n    extension: null,\n    id: null,\n    value: "2"\n  },\n  identifier: null,\n  implicitRules: null,\n  language: null,\n  length: null,\n  location: null,\n  meta: {\n    extension: null,\n    id: null,\n    lastUpdated: {\n      extension: null,\n      id: null,\n      value: 10/13/2021 3:34 AM\n    },\n    profile: null,\n    security: null,\n    source: {\n      extension: null,\n      id: null,\n      value: "#nEcAkGd8PRwPP5fA"\n    },\n    tag: null,\n    versionId: {\n      extension: null,\n      id: null,\n      value: "1"\n    }\n  },\n  modifierExtension: null,\n  partOf: null,\n  participant: [{\n    extension: null,\n    id: null,\n    individual: {\n      display: {\n        extension: null,\n        id: null,\n        value: "Dr John Doe"\n      },\n      extension: null,\n      id: null,\n      identifier: null,\n      reference: {\n        extension: null,\n        id: null,\n        value: "Practitioner/30164"\n      },\n      type: null\n    },\n    modifierExtension: null,\n    period: null,\n    type: null\n  }],\n  period: {\n    end: {\n      extension: null,\n      id: null,\n      value: 08/15/2023 3:34 AM\n    },\n    extension: null,\n    id: null,\n    start: {\n      extension: null,\n      id: null,\n      value: 08/10/2023 3:34 AM\n    }\n  },\n  priority: null,\n  reasonCode: null,\n  reasonReference: null,\n  serviceProvider: null,\n  serviceType: null,\n  status: {\n    extension: null,\n    id: null,\n    value: "planned"\n  },\n  statusHistory: null,\n  subject: {\n    display: null,\n    extension: null,\n    id: null,\n    identifier: null,\n    reference: {\n      extension: null,\n      id: null,\n      value: "Patient/1"\n    },\n    type: null\n  },\n  text: {\n    div: {\n      extension: null,\n      id: null,\n      value: "<div xmlns="http://www.w3.org/1999/xhtml">Sep 9th 2021 for Asthma<a name="mm"/></div>"\n    },\n    extension: null,\n    id: null,\n    status: {\n      extension: null,\n      id: null,\n      value: "generated"\n    }\n  },\n  type: [{\n    coding: null,\n    extension: null,\n    id: null,\n    text: {\n      extension: null,\n      id: null,\n      value: "OutPatient"\n    }\n  }]\n},\n{\n  account: null,\n  appointment: null,\n  basedOn: null,\n  class: {\n    code: {\n      extension: null,\n      id: null,\n      value: "IMP"\n    },\n    display: {\n      extension: null,\n      id: null,\n      value: "inpatient encounter"\n    },\n    extension: null,\n    id: null,\n    system: {\n      extension: null,\n      id: null,\n      value: "http://terminology.hl7.org/CodeSystem/v3-ActCode"\n    },\n    userSelected: null,\n    version: null\n  },\n  classHistory: null,\n  contained: null,\n  diagnosis: null,\n  episodeOfCare: null,\n  extension: null,\n  hospitalization: null,\n  id: {\n    extension: null,\n    id: null,\n    value: "3"\n  },\n  identifier: null,\n  implicitRules: null,\n  language: null,\n  length: null,\n  location: null,\n  meta: {\n    extension: null,\n    id: null,\n    lastUpdated: {\n      extension: null,\n      id: null,\n      value: 10/13/2021 3:34 AM\n    },\n    profile: null,\n    security: null,\n    source: {\n      extension: null,\n      id: null,\n      value: "#nEcAkGd8PRwPP5fA"\n    },\n    tag: null,\n    versionId: {\n      extension: null,\n      id: null,\n      value: "1"\n    }\n  },\n  modifierExtension: null,\n  partOf: null,\n  participant: [{\n    extension: null,\n    id: null,\n    individual: {\n      display: {\n        extension: null,\n        id: null,\n        value: "Dr John Doe"\n      },\n      extension: null,\n      id: null,\n      identifier: null,\n      reference: {\n        extension: null,\n        id: null,\n        value: "Practitioner/30164"\n      },\n      type: null\n    },\n    modifierExtension: null,\n    period: null,\n    type: null\n  }],\n  period: {\n    end: {\n      extension: null,\n      id: null,\n      value: 09/13/2023 9:34 AM\n    },\n    extension: null,\n    id: null,\n    start: {\n      extension: null,\n      id: null,\n      value: 09/12/2023 3:34 AM\n    }\n  },\n  priority: null,\n  reasonCode: null,\n  reasonReference: null,\n  serviceProvider: null,\n  serviceType: null,\n  status: {\n    extension: null,\n    id: null,\n    value: "planned"\n  },\n  statusHistory: null,\n  subject: {\n    display: null,\n    extension: null,\n    id: null,\n    identifier: null,\n    reference: {\n      extension: null,\n      id: null,\n      value: "Patient/1"\n    },\n    type: null\n  },\n  text: {\n    div: {\n      extension: null,\n      id: null,\n      value: "<div xmlns="http://www.w3.org/1999/xhtml">Sep 9th 2021 for Asthma<a name="mm"/></div>"\n    },\n    extension: null,\n    id: null,\n    status: {\n      extension: null,\n      id: null,\n      value: "generated"\n    }\n  },\n  type: [{\n    coding: null,\n    extension: null,\n    id: null,\n    text: {\n      extension: null,\n      id: null,\n      value: "OutPatient"\n    }\n  }]\n}]',
+        },
+        {
+          libraryName: "CVB1",
+          statementName: "boolIpp",
+          localId: "70",
+          final: "NA",
+          relevance: "NA",
+          raw: true,
+          pretty: "NA",
+        },
+        {
+          libraryName: "CVB1",
+          statementName: "boolIpp2",
+          localId: "85",
+          final: "NA",
+          relevance: "NA",
+          raw: false,
+          pretty: "NA",
+        },
+        {
+          libraryName: "CVB1",
+          statementName: "boolMPop",
+          localId: "100",
+          final: "NA",
+          relevance: "NA",
+          raw: true,
+          pretty: "NA",
+        },
+        {
+          libraryName: "CVB1",
+          statementName: "boolDenom",
+          localId: "102",
+          final: "NA",
+          relevance: "NA",
+          raw: false,
+          pretty: "NA",
+        },
+        {
+          libraryName: "CVB1",
+          statementName: "boolNum",
+          localId: "104",
+          final: "NA",
+          relevance: "NA",
+          raw: false,
+          pretty: "NA",
+        },
+        {
+          libraryName: "CVB1",
+          statementName: "boolIppZ",
+          localId: "109",
+          final: "NA",
+          relevance: "NA",
+          raw: true,
+          pretty: "NA",
+        },
+        {
+          libraryName: "CVB1",
+          statementName: "boolDenomZ",
+          localId: "125",
+          final: "NA",
+          relevance: "NA",
+          raw: true,
+          pretty: "NA",
+        },
+        {
+          libraryName: "CVB1",
+          statementName: "boolNumZ",
+          localId: "134",
+          final: "NA",
+          relevance: "NA",
+          raw: false,
+          pretty: "NA",
+        },
+        {
+          libraryName: "CVB1",
+          statementName: "fun",
+          localId: "137",
+          final: "NA",
+          relevance: "NA",
+          pretty: "NA",
+        },
+        {
+          libraryName: "CVB1",
+          statementName: "boolFunc",
+          localId: "139",
+          final: "NA",
+          relevance: "NA",
+          pretty: "NA",
+        },
+        {
+          libraryName: "CVB1",
+          statementName: "boolFunc2",
+          localId: "141",
+          final: "NA",
+          relevance: "NA",
+          pretty: "NA",
+        },
+        {
+          libraryName: "CVB1",
+          statementName: "daysObs",
+          localId: "146",
+          final: "FALSE",
+          relevance: "TRUE",
+          pretty: "FUNCTION",
+        },
+        {
+          libraryName: "CVB1",
+          statementName: "hoursObs",
+          localId: "151",
+          final: "NA",
+          relevance: "NA",
+          pretty: "NA",
+        },
+        {
+          libraryName: "CVB1",
+          statementName: "obs_func_boolFunc",
+          final: "NA",
+          relevance: "NA",
+          pretty: "NA",
+        },
+        {
+          libraryName: "CVB1",
+          statementName: "obs_func_daysObs_mPop",
+          final: "NA",
+          relevance: "NA",
+          pretty: "NA",
+        },
+      ] as unknown as StatementResult[],
+      populationResults: [
+        {
+          populationType: FqmPopulationType.IPP,
+          criteriaExpression: "ipp",
+          result: true,
+          populationId: "77b6063f-f7c8-45db-8d84-1f0d8e7993b5",
+        },
+        {
+          populationType: FqmPopulationType.MSRPOPL,
+          criteriaExpression: "mPop",
+          result: true,
+          populationId: "797c4d66-cfd3-4ced-a482-1d55d5cad85c",
+        },
+        {
+          populationType: FqmPopulationType.MSRPOPLEX,
+          result: false,
+          populationId: "5edeebba-b888-4d92-a8b2-8568d78ceb86",
+        },
+        {
+          populationType: FqmPopulationType.OBSERV,
+          criteriaExpression: "daysObs",
+          result: true,
+          populationId: "ff17cb94-c66e-4f70-a66d-52ace013d054",
+          criteriaReferenceId: "797c4d66-cfd3-4ced-a482-1d55d5cad85c",
+          observations: [5, 1],
+        },
+      ],
+      populationRelevance: [
+        {
+          populationType: FqmPopulationType.IPP,
+          criteriaExpression: "ipp",
+          result: true,
+          populationId: "77b6063f-f7c8-45db-8d84-1f0d8e7993b5",
+        },
+        {
+          populationType: FqmPopulationType.MSRPOPL,
+          criteriaExpression: "mPop",
+          result: true,
+          populationId: "797c4d66-cfd3-4ced-a482-1d55d5cad85c",
+        },
+        {
+          populationType: FqmPopulationType.MSRPOPLEX,
+          result: true,
+          populationId: "5edeebba-b888-4d92-a8b2-8568d78ceb86",
+        },
+        {
+          populationType: FqmPopulationType.OBSERV,
+          criteriaExpression: "daysObs",
+          result: true,
+          populationId: "ff17cb94-c66e-4f70-a66d-52ace013d054",
+          criteriaReferenceId: "797c4d66-cfd3-4ced-a482-1d55d5cad85c",
+        },
+      ],
+      clauseResults: [],
+      html: "",
+    },
+  ],
+};
+
 export const Ratio_Boolean_SingleIP_DenObs_NumObs_Pass: TestCaseProcessingScenario =
   {
     measureGroups: [

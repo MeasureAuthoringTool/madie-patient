@@ -286,18 +286,11 @@ export class CalculationService {
           populationResult.observations
         ) {
           const id = populationResult.criteriaReferenceId;
-          if (results.observations[id]) {
-            results.observations[id].observations = _.concat(
-              results.observations[id].observations,
-              populationResult.observations
-            );
-          } else {
-            results.observations[id] = {
-              ...populationResult,
-              result: true,
-              observations: _.cloneDeep(populationResult.observations),
-            };
-          }
+          results.observations[id] = {
+            ...populationResult,
+            result: true,
+            observations: [...populationResult.observations],
+          };
         } else if (
           populationResult.populationType !== FqmPopulationType.OBSERV
         ) {
