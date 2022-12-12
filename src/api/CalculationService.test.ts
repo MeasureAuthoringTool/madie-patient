@@ -1,15 +1,25 @@
-import { CalculationService, ExecutionStatusType } from "./CalculationService";
+import {
+  CalculationService,
+  ExecutionStatusType,
+  PopulationEpisodeResult,
+} from "./CalculationService";
 import { officeVisitMeasure } from "./__mocks__/OfficeVisitMeasure";
 import { officeVisitValueSet } from "./__mocks__/OfficeVisitValueSet";
 import { officeVisitMeasureBundle } from "./__mocks__/OfficeVisitMeasureBundle";
 import { testCaseOfficeVisit } from "./__mocks__/TestCaseOfficeVisit";
 import { groupResults } from "./__mocks__/GroupExecutionResults";
+import {
+  ContinuousVariable_Encounter_Fail,
+  ContinuousVariable_Encounter_Pass,
+  ContinuousVariableBoolean,
+  Ratio_Boolean_SingleIP_DenObs_NumObs_Pass,
+  Ratio_Encounter_SingleIP_DenObs_NumObs_Pass,
+} from "./__mocks__/TestCaseProcessingScenarios";
 
 import {
   DetailedPopulationGroupResult,
   EpisodeResults,
   ExecutionResult,
-  CalculationOutput,
 } from "fqm-execution/build/types/Calculator";
 import {
   FinalResult,
@@ -285,167 +295,6 @@ describe("CalculationService Tests", () => {
     expect(output["P111"]["group1"]["denomDef"]).toBeFalsy();
   });
 
-  it("aggregates episode results for initial-population", () => {
-    const executionResults: ExecutionResult<DetailedPopulationGroupResult>[] = [
-      {
-        patientId: "P111",
-        detailedResults: [
-          {
-            groupId: "group1",
-            statementResults: [],
-            episodeResults: [
-              {
-                episodeId: "1",
-                populationResults: [
-                  {
-                    populationType: FqmPopulationType.IPP,
-                    criteriaExpression: "ipp",
-                    result: true,
-                  },
-                ],
-              },
-              {
-                episodeId: "2",
-                populationResults: [
-                  {
-                    populationType: FqmPopulationType.IPP,
-                    criteriaExpression: "ipp",
-                    result: true,
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-    ];
-
-    const output = calculationService.processEpisodeResults(executionResults);
-    expect(output).toBeTruthy();
-    expect(output).toEqual({
-      P111: {
-        group1: [
-          {
-            populationType: FqmPopulationType.IPP,
-            define: "ipp",
-            value: 2,
-          },
-        ],
-      },
-    });
-  });
-
-  it("handles undefined episode results", () => {
-    const executionResults = undefined;
-
-    const output = calculationService.processEpisodeResults(executionResults);
-    expect(output).toBeTruthy();
-    expect(output).toEqual({});
-  });
-
-  it("handles null episode results", () => {
-    const executionResults = null;
-
-    const output = calculationService.processEpisodeResults(executionResults);
-    expect(output).toBeTruthy();
-    expect(output).toEqual({});
-  });
-
-  it("aggregates episode results for multiple pops, multiple IPs", () => {
-    const executionResults: ExecutionResult<DetailedPopulationGroupResult>[] = [
-      {
-        patientId: "P111",
-        detailedResults: [
-          {
-            groupId: "group1",
-            statementResults: [],
-            episodeResults: [
-              {
-                episodeId: "1",
-                populationResults: [
-                  {
-                    populationType: FqmPopulationType.IPP,
-                    criteriaExpression: "ipp",
-                    result: true,
-                  },
-                  {
-                    populationType: FqmPopulationType.IPP,
-                    criteriaExpression: "ipp2",
-                    result: false,
-                  },
-                  {
-                    populationType: FqmPopulationType.DENOM,
-                    criteriaExpression: "den",
-                    result: false,
-                  },
-                  {
-                    populationType: FqmPopulationType.NUMER,
-                    criteriaExpression: "num",
-                    result: true,
-                  },
-                ],
-              },
-              {
-                episodeId: "2",
-                populationResults: [
-                  {
-                    populationType: FqmPopulationType.IPP,
-                    criteriaExpression: "ipp",
-                    result: true,
-                  },
-                  {
-                    populationType: FqmPopulationType.IPP,
-                    criteriaExpression: "ipp2",
-                    result: true,
-                  },
-                  {
-                    populationType: FqmPopulationType.DENOM,
-                    criteriaExpression: "den",
-                    result: true,
-                  },
-                  {
-                    populationType: FqmPopulationType.NUMER,
-                    criteriaExpression: "num",
-                    result: true,
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-    ];
-
-    const output = calculationService.processEpisodeResults(executionResults);
-    expect(output).toBeTruthy();
-    expect(output).toEqual({
-      P111: {
-        group1: [
-          {
-            populationType: FqmPopulationType.IPP,
-            define: "ipp",
-            value: 2,
-          },
-          {
-            populationType: FqmPopulationType.IPP,
-            define: "ipp2",
-            value: 1,
-          },
-          {
-            populationType: FqmPopulationType.DENOM,
-            define: "den",
-            value: 1,
-          },
-          {
-            populationType: FqmPopulationType.NUMER,
-            define: "num",
-            value: 2,
-          },
-        ],
-      },
-    });
-  });
-
   it("calculates overall coverage for a selected group when coverage info not available", () => {
     // No groups provided
     let overallCoverage = calculationService.getCoveragePercentageForGroup(
@@ -534,157 +383,6 @@ describe("CalculationService Tests", () => {
     it("should pass blank and zero", () => {
       const output = calculationService.isValuePass(false, undefined, true);
       expect(output).toBeTruthy();
-    });
-  });
-
-  describe("CalculationService.findPatientActualResult", () => {
-    it("should return first result for matching population", () => {
-      const popGroupResult: DetailedPopulationGroupResult = {
-        groupId: "group1ID",
-        statementResults: [],
-        populationResults: [
-          {
-            populationType: FqmPopulationType.IPP,
-            criteriaExpression: "ipp1",
-            result: true,
-          },
-          {
-            populationType: FqmPopulationType.IPP,
-            criteriaExpression: "ipp2",
-            result: false,
-          },
-          {
-            populationType: FqmPopulationType.DENOM,
-            criteriaExpression: "den",
-            result: true,
-          },
-          {
-            populationType: FqmPopulationType.NUMER,
-            criteriaExpression: "num",
-            result: false,
-          },
-        ],
-      };
-      const output = calculationService.findPatientActualResult(
-        popGroupResult,
-        PopulationType.INITIAL_POPULATION,
-        0
-      );
-      expect(output).toBeTruthy();
-      expect(output.populationType).toEqual(FqmPopulationType.IPP);
-      expect(output.result).toEqual(true);
-    });
-
-    it("should return first result for matching population with no popCount", () => {
-      const popGroupResult: DetailedPopulationGroupResult = {
-        groupId: "group1ID",
-        statementResults: [],
-        populationResults: [
-          {
-            populationType: FqmPopulationType.IPP,
-            criteriaExpression: "ipp1",
-            result: true,
-          },
-          {
-            populationType: FqmPopulationType.IPP,
-            criteriaExpression: "ipp2",
-            result: false,
-          },
-          {
-            populationType: FqmPopulationType.DENOM,
-            criteriaExpression: "den",
-            result: true,
-          },
-          {
-            populationType: FqmPopulationType.NUMER,
-            criteriaExpression: "num",
-            result: false,
-          },
-        ],
-      };
-      const output = calculationService.findPatientActualResult(
-        popGroupResult,
-        PopulationType.INITIAL_POPULATION,
-        undefined
-      );
-      expect(output).toBeTruthy();
-      expect(output.populationType).toEqual(FqmPopulationType.IPP);
-      expect(output.result).toEqual(true);
-    });
-
-    it("should return result for second matching population", () => {
-      const popGroupResult: DetailedPopulationGroupResult = {
-        groupId: "group1ID",
-        statementResults: [],
-        populationResults: [
-          {
-            populationType: FqmPopulationType.IPP,
-            criteriaExpression: "ipp1",
-            result: true,
-          },
-          {
-            populationType: FqmPopulationType.IPP,
-            criteriaExpression: "ipp2",
-            result: false,
-          },
-          {
-            populationType: FqmPopulationType.DENOM,
-            criteriaExpression: "den",
-            result: true,
-          },
-          {
-            populationType: FqmPopulationType.NUMER,
-            criteriaExpression: "num",
-            result: false,
-          },
-        ],
-      };
-      const output = calculationService.findPatientActualResult(
-        popGroupResult,
-        PopulationType.INITIAL_POPULATION,
-        1
-      );
-      expect(output).toBeTruthy();
-      expect(output.populationType).toEqual(FqmPopulationType.IPP);
-      expect(output.result).toEqual(false);
-    });
-
-    it("should return result for second matching population", () => {
-      const popGroupResult: DetailedPopulationGroupResult = {
-        groupId: "group1ID",
-        statementResults: [],
-        populationResults: [
-          {
-            populationType: FqmPopulationType.IPP,
-            criteriaExpression: "ipp1",
-            result: true,
-          },
-          {
-            populationType: FqmPopulationType.IPP,
-            criteriaExpression: "ipp2",
-            result: false,
-          },
-          {
-            populationType: FqmPopulationType.DENOM,
-            criteriaExpression: "den",
-            result: true,
-          },
-          {
-            populationType: FqmPopulationType.NUMER,
-            criteriaExpression: "num",
-            result: false,
-          },
-        ],
-      };
-      const output = calculationService.findPatientActualResult(
-        popGroupResult,
-        PopulationType.DENOMINATOR,
-        0
-      );
-      expect(output).toBeTruthy();
-      expect(output.populationType).toEqual(FqmPopulationType.DENOM);
-      expect(output.criteriaExpression).toEqual("den");
-      expect(output.result).toEqual(true);
     });
   });
 
@@ -878,256 +576,208 @@ describe("CalculationService Tests", () => {
     });
   });
 
-  describe("CalculationService.findEpisodeObservationResult", () => {
-    it("should return first denominator observation", () => {
-      // This represents which of how many of this type of observation are present
-      // e.g. this is the first of the DENOMINATOR_OBSERVATIONs present
-      const observationTypeCount = 0;
-      const episodeResults: EpisodeResults[] = [
-        {
-          episodeId: "1",
-          populationResults: [
-            {
-              populationType: FqmPopulationType.IPP,
-              criteriaExpression: "ipp",
-              result: true,
-            },
-            {
-              populationType: FqmPopulationType.DENOM,
-              criteriaExpression: "den",
-              result: true,
-            },
-            {
-              populationType: FqmPopulationType.NUMER,
-              criteriaExpression: "num",
-              result: true,
-            },
-            {
-              populationType: FqmPopulationType.OBSERV,
-              criteriaExpression: "denomFunc",
-              result: true,
-              observations: [4],
-            },
-            {
-              populationType: FqmPopulationType.IPP,
-              criteriaExpression: "numerFunc",
-              result: true,
-              observations: [18],
-            },
-          ],
-        },
-      ];
-      const observationCriteriaExpression = "denomFunc";
-
-      const output = calculationService.findEpisodeObservationResult(
-        episodeResults,
-        observationTypeCount,
-        observationCriteriaExpression,
-        PopulationType.DENOMINATOR_OBSERVATION
-      );
-
-      expect(output).toEqual(4);
+  describe("CalculationService.buildPatientResults", () => {
+    it("should return truthy output for null input", () => {
+      const output = calculationService.buildPatientResults(null);
+      expect(output).toBeTruthy();
+      expect(output?.populations).toBeTruthy();
+      expect(Object.keys(output.populations)).toEqual([]);
+      expect(output?.observations).toBeTruthy();
+      expect(Object.keys(output.observations)).toEqual([]);
     });
 
-    it("should return numerator observation when Denon and Numer obs using different functions", () => {
-      // This represents which of how many of this type of observation are present
-      // e.g. this is the first of the DENOMINATOR_OBSERVATIONs present
-      const observationTypeCount = 0;
-      const episodeResults: EpisodeResults[] = [
-        {
-          episodeId: "1",
-          populationResults: [
-            {
-              populationType: FqmPopulationType.IPP,
-              criteriaExpression: "ipp",
-              result: true,
-            },
-            {
-              populationType: FqmPopulationType.DENOM,
-              criteriaExpression: "den",
-              result: true,
-            },
-            {
-              populationType: FqmPopulationType.NUMER,
-              criteriaExpression: "num",
-              result: true,
-            },
-            {
-              populationType: FqmPopulationType.OBSERV,
-              criteriaExpression: "denomFunc",
-              result: true,
-              observations: [4],
-            },
-            {
-              populationType: FqmPopulationType.OBSERV,
-              criteriaExpression: "numerFunc",
-              result: true,
-              observations: [18],
-            },
-          ],
-        },
-      ];
-      const observationCriteriaExpression = "numerFunc";
-
-      const output = calculationService.findEpisodeObservationResult(
-        episodeResults,
-        observationTypeCount,
-        observationCriteriaExpression,
-        PopulationType.NUMERATOR_OBSERVATION
-      );
-
-      expect(output).toEqual(18);
+    it("should return truthy output for undefined input", () => {
+      const output = calculationService.buildPatientResults(undefined);
+      expect(output).toBeTruthy();
+      expect(output?.populations).toBeTruthy();
+      expect(Object.keys(output.populations)).toEqual([]);
+      expect(output?.observations).toBeTruthy();
+      expect(Object.keys(output.observations)).toEqual([]);
     });
 
-    it("should return numerator observation when Denon and Numer obs using same functions", () => {
-      // TODO: update this is fqm-execution stops putting Numer observation in denom observation output
-      // This represents which of how many of this type of observation are present
-      // e.g. this is the first of the DENOMINATOR_OBSERVATIONs present
-      const observationTypeCount = 0;
-      const episodeResults: EpisodeResults[] = [
-        {
-          episodeId: "1",
-          populationResults: [
-            {
-              populationType: FqmPopulationType.IPP,
-              criteriaExpression: "ipp",
-              result: true,
-            },
-            {
-              populationType: FqmPopulationType.DENOM,
-              criteriaExpression: "den",
-              result: true,
-            },
-            {
-              populationType: FqmPopulationType.NUMER,
-              criteriaExpression: "num",
-              result: true,
-            },
-            {
-              populationType: FqmPopulationType.OBSERV,
-              criteriaExpression: "observationFunc",
-              result: true,
-              // fqm-execution currently just sticks observation result in first matching population
-              observations: [4, 18],
-            },
-            {
-              populationType: FqmPopulationType.OBSERV,
-              criteriaExpression: "observationFunc",
-              result: false,
-            },
-          ],
-        },
-      ];
-      const observationCriteriaExpression = "observationFunc";
-
-      const output = calculationService.findEpisodeObservationResult(
-        episodeResults,
-        observationTypeCount,
-        observationCriteriaExpression,
-        PopulationType.NUMERATOR_OBSERVATION
-      );
-
-      expect(output).toEqual(18);
+    it("should return truthy output for empty input", () => {
+      const output = calculationService.buildPatientResults([]);
+      expect(output).toBeTruthy();
+      expect(output?.populations).toBeTruthy();
+      expect(Object.keys(output.populations)).toEqual([]);
+      expect(output?.observations).toBeTruthy();
+      expect(Object.keys(output.observations)).toEqual([]);
     });
 
-    it("should return numerator observation when Denon and Numer obs using same functions and numer fails", () => {
-      // TODO: update this is fqm-execution stops putting Numer observation in denom observation output
-      // This represents which of how many of this type of observation are present
-      // e.g. this is the first of the DENOMINATOR_OBSERVATIONs present
-      const observationTypeCount = 0;
-      const episodeResults: EpisodeResults[] = [
-        {
-          episodeId: "1",
-          populationResults: [
-            {
-              populationType: FqmPopulationType.IPP,
-              criteriaExpression: "ipp",
-              result: true,
-            },
-            {
-              populationType: FqmPopulationType.DENOM,
-              criteriaExpression: "den",
-              result: true,
-            },
-            {
-              populationType: FqmPopulationType.NUMER,
-              criteriaExpression: "num",
-              result: false,
-            },
-            {
-              populationType: FqmPopulationType.OBSERV,
-              criteriaExpression: "observationFunc",
-              result: true,
-              observations: [4],
-            },
-            {
-              populationType: FqmPopulationType.OBSERV,
-              criteriaExpression: "observationFunc",
-              result: false,
-            },
-          ],
+    it("should return correct patient results for CV", () => {
+      const populationResults =
+        ContinuousVariableBoolean.populationGroupResults[0].populationResults;
+      const output = calculationService.buildPatientResults(populationResults);
+      expect(output).toBeTruthy();
+      const expected = {
+        populations: {
+          "79a67327-8a94-4ae0-a75b-b67c7d28a241": {
+            populationType: FqmPopulationType.IPP,
+            criteriaExpression: "boolIpp",
+            result: true,
+            populationId: "79a67327-8a94-4ae0-a75b-b67c7d28a241",
+          },
+          "79349c30-791c-41c7-9463-81872a0dbed1": {
+            populationType: FqmPopulationType.MSRPOPL,
+            criteriaExpression: "boolDenom",
+            result: true,
+            populationId: "79349c30-791c-41c7-9463-81872a0dbed1",
+          },
         },
-      ];
-      const observationCriteriaExpression = "observationFunc";
-
-      const output = calculationService.findEpisodeObservationResult(
-        episodeResults,
-        observationTypeCount,
-        observationCriteriaExpression,
-        PopulationType.NUMERATOR_OBSERVATION
-      );
-
-      expect(output).toEqual(null);
+        observations: {
+          "79349c30-791c-41c7-9463-81872a0dbed1": {
+            populationType: FqmPopulationType.OBSERV,
+            criteriaExpression: "boolFunc",
+            result: true,
+            populationId: "7e20f14a-3659-4a87-9692-5ec35391e8f6",
+            criteriaReferenceId: "79349c30-791c-41c7-9463-81872a0dbed1",
+            observations: [1],
+          },
+        },
+      };
+      expect(output).toEqual(expected);
     });
 
-    it("should return missing observation for observation count greater than number of episodes", () => {
-      // This represents which of how many of this type of observation are present
-      // e.g. this is the first of the DENOMINATOR_OBSERVATIONs present
-      const observationTypeCount = 1;
-      const episodeResults: EpisodeResults[] = [
-        {
-          episodeId: "1",
-          populationResults: [
-            {
-              populationType: FqmPopulationType.IPP,
-              criteriaExpression: "ipp",
-              result: true,
-            },
-            {
-              populationType: FqmPopulationType.DENOM,
-              criteriaExpression: "den",
-              result: true,
-            },
-            {
-              populationType: FqmPopulationType.NUMER,
-              criteriaExpression: "num",
-              result: true,
-            },
-            {
-              populationType: FqmPopulationType.OBSERV,
-              criteriaExpression: "denomFunc",
-              result: true,
-              observations: [4],
-            },
-            {
-              populationType: FqmPopulationType.IPP,
-              criteriaExpression: "numerFunc",
-              result: true,
-              observations: [18],
-            },
-          ],
+    it("should return correct patient results for Ratio with Observations", () => {
+      const populationResults =
+        Ratio_Boolean_SingleIP_DenObs_NumObs_Pass.populationGroupResults[0]
+          .populationResults;
+      const output = calculationService.buildPatientResults(populationResults);
+      expect(output).toBeTruthy();
+      const expected = {
+        populations: {
+          "3c710d76-d5d2-4dc0-a3fb-28fdac1055d0": {
+            populationType: FqmPopulationType.IPP,
+            criteriaExpression: "boolIpp",
+            result: true,
+            populationId: "3c710d76-d5d2-4dc0-a3fb-28fdac1055d0",
+          },
+          "760758ae-009f-49b2-b7a3-c9997ac3931d": {
+            populationType: FqmPopulationType.DENOM,
+            criteriaExpression: "boolDenom",
+            result: true,
+            populationId: "760758ae-009f-49b2-b7a3-c9997ac3931d",
+          },
+          "77e217d6-03dd-41ca-a1c3-f679933f9dd7": {
+            populationType: FqmPopulationType.NUMER,
+            criteriaExpression: "boolNum",
+            result: true,
+            populationId: "77e217d6-03dd-41ca-a1c3-f679933f9dd7",
+          },
         },
-      ];
-      const observationCriteriaExpression = "denomFunc";
+        observations: {
+          "77e217d6-03dd-41ca-a1c3-f679933f9dd7": {
+            populationType: FqmPopulationType.OBSERV,
+            criteriaExpression: "boolFunc2",
+            result: true,
+            populationId: "536dbb4e-9032-414c-b7e7-048f5c8fb4ab",
+            criteriaReferenceId: "77e217d6-03dd-41ca-a1c3-f679933f9dd7",
+            observations: [14],
+          },
+          "760758ae-009f-49b2-b7a3-c9997ac3931d": {
+            populationType: FqmPopulationType.OBSERV,
+            criteriaExpression: "boolFunc",
+            result: true,
+            populationId: "7cfae29e-e9cc-4958-89de-a9dde443186f",
+            criteriaReferenceId: "760758ae-009f-49b2-b7a3-c9997ac3931d",
+            observations: [1],
+          },
+        },
+      };
+      expect(output).toEqual(expected);
+    });
+  });
 
-      const output = calculationService.findEpisodeObservationResult(
-        episodeResults,
-        observationTypeCount,
-        observationCriteriaExpression,
-        PopulationType.DENOMINATOR_OBSERVATION
-      );
+  describe("CalculationService.buildEpisodeResults", () => {
+    it("should return correct episode results for Ratio Encounter Single IP with both DEN and NUM obs", () => {
+      const episodeResults =
+        Ratio_Encounter_SingleIP_DenObs_NumObs_Pass.populationGroupResults[0]
+          .episodeResults;
+      const output = calculationService.buildEpisodeResults(episodeResults);
+      expect(output).toBeTruthy();
+      const expected = {
+        populations: {
+          "8d8b74ce-a843-4039-ad94-acad42cac257": {
+            populationType: FqmPopulationType.IPP,
+            criteriaExpression: "ipp",
+            result: 2,
+            populationId: "8d8b74ce-a843-4039-ad94-acad42cac257",
+          },
+          "abce9253-30f1-438c-b370-30a264791b21": {
+            populationType: FqmPopulationType.DENOM,
+            criteriaExpression: "denom",
+            result: 2,
+            populationId: "abce9253-30f1-438c-b370-30a264791b21",
+          },
+          "e1542f9f-7c5b-40ea-9feb-2d920d343f39": {
+            populationType: FqmPopulationType.DENEX,
+            result: 0,
+            populationId: "e1542f9f-7c5b-40ea-9feb-2d920d343f39",
+          },
+          "51122f75-851f-428c-938c-1d512da1fe7f": {
+            populationType: FqmPopulationType.NUMER,
+            criteriaExpression: "num",
+            result: 1,
+            populationId: "51122f75-851f-428c-938c-1d512da1fe7f",
+          },
+          "2cf3f052-9ba0-450d-a80e-1a823de962f8": {
+            populationType: FqmPopulationType.NUMEX,
+            result: 0,
+            populationId: "2cf3f052-9ba0-450d-a80e-1a823de962f8",
+          },
+        },
+        observations: {
+          "abce9253-30f1-438c-b370-30a264791b21": {
+            populationType: FqmPopulationType.OBSERV,
+            criteriaExpression: "daysObs",
+            result: true,
+            populationId: "c6a2203f-ab34-4f0f-899d-a73467440bbd",
+            criteriaReferenceId: "abce9253-30f1-438c-b370-30a264791b21",
+            observations: [1, 1],
+          },
+        },
+      };
+      expect(output).toEqual(expected);
+    });
 
-      expect(output).toEqual(null);
+    it("should return correct episode results for CV Encounter", () => {
+      const episodeResults =
+        ContinuousVariable_Encounter_Pass.populationGroupResults[0]
+          .episodeResults;
+      const output = calculationService.buildEpisodeResults(episodeResults);
+      expect(output).toBeTruthy();
+      const expected = {
+        populations: {
+          "77b6063f-f7c8-45db-8d84-1f0d8e7993b5": {
+            populationType: FqmPopulationType.IPP,
+            criteriaExpression: "ipp",
+            result: 2,
+            populationId: "77b6063f-f7c8-45db-8d84-1f0d8e7993b5",
+          },
+          "797c4d66-cfd3-4ced-a482-1d55d5cad85c": {
+            populationType: FqmPopulationType.MSRPOPL,
+            criteriaExpression: "mPop",
+            result: 2,
+            populationId: "797c4d66-cfd3-4ced-a482-1d55d5cad85c",
+          },
+          "5edeebba-b888-4d92-a8b2-8568d78ceb86": {
+            populationType: FqmPopulationType.MSRPOPLEX,
+            result: 0,
+            populationId: "5edeebba-b888-4d92-a8b2-8568d78ceb86",
+          },
+        },
+        observations: {
+          "797c4d66-cfd3-4ced-a482-1d55d5cad85c": {
+            populationType: FqmPopulationType.OBSERV,
+            criteriaExpression: "daysObs",
+            result: true,
+            populationId: "ff17cb94-c66e-4f70-a66d-52ace013d054",
+            criteriaReferenceId: "797c4d66-cfd3-4ced-a482-1d55d5cad85c",
+            observations: [5, 1],
+          },
+        },
+      };
+      expect(output).toEqual(expected);
     });
   });
 
@@ -1313,6 +963,7 @@ describe("CalculationService Tests", () => {
           statementResults: [], //only needed for strats currently
           populationResults: [
             {
+              populationId: "pop1ID",
               populationType: FqmPopulationType.IPP,
               criteriaExpression: "boolIpp",
               result: true,
@@ -1330,7 +981,7 @@ describe("CalculationService Tests", () => {
       expect(output.executionStatus).toEqual(ExecutionStatusType.FAIL);
     });
 
-    it("should return Fail executionStatus for provided measure groups if no matching groups are found", () => {
+    it("should return Fail executionStatus for provided measure groups when no matching groups are found and actual result is true", () => {
       const testCase: TestCase = {
         id: "TC1",
         name: "TestCase1",
@@ -1386,6 +1037,7 @@ describe("CalculationService Tests", () => {
           statementResults: [], //only needed for strats currently
           populationResults: [
             {
+              populationId: "popXID",
               populationType: FqmPopulationType.IPP,
               criteriaExpression: "boolIpp",
               result: true,
@@ -1397,6 +1049,7 @@ describe("CalculationService Tests", () => {
           statementResults: [], //only needed for strats currently
           populationResults: [
             {
+              populationId: "pop1ID",
               populationType: FqmPopulationType.IPP,
               criteriaExpression: "boolIpp",
               result: true,
@@ -1421,6 +1074,7 @@ describe("CalculationService Tests", () => {
           statementResults: [], //only needed for strats currently
           populationResults: [
             {
+              populationId: "pop1ID",
               populationType: FqmPopulationType.IPP,
               criteriaExpression: "boolIpp",
               result: true,
@@ -1594,6 +1248,7 @@ describe("CalculationService Tests", () => {
           ],
           populationResults: [
             {
+              populationId: "pop1",
               populationType: FqmPopulationType.IPP,
               criteriaExpression: "boolIpp",
               result: true,
@@ -1690,6 +1345,105 @@ describe("CalculationService Tests", () => {
       expect(group1StratVals.length).toEqual(2);
       expect(group1StratVals[0].actual).toEqual(true);
       expect(group1StratVals[1].actual).toEqual(false);
+    });
+
+    it("should return test case results for continuous variable, boolean popBasis", () => {
+      const output = calculationService.processTestCaseResults(
+        ContinuousVariableBoolean.testCase,
+        ContinuousVariableBoolean.measureGroups,
+        ContinuousVariableBoolean.populationGroupResults
+      );
+      expect(output).toBeTruthy();
+      expect(output.executionStatus).toEqual(ExecutionStatusType.PASS);
+      expect(output.groupPopulations.length).toEqual(1);
+      const popVals = output.groupPopulations[0].populationValues;
+      expect(popVals).toBeTruthy();
+      expect(popVals.length).toEqual(3);
+      expect(popVals[0].name).toEqual(PopulationType.INITIAL_POPULATION);
+      expect(popVals[0].actual).toEqual(true);
+      expect(popVals[1].name).toEqual(PopulationType.MEASURE_POPULATION);
+      expect(popVals[1].actual).toEqual(true);
+      expect(popVals[2].name).toEqual(
+        PopulationType.MEASURE_POPULATION_OBSERVATION
+      );
+      expect(popVals[2].actual).toEqual(1);
+    });
+
+    it("should return test case results for continuous variable, boolean popBasis", () => {
+      const output = calculationService.processTestCaseResults(
+        ContinuousVariableBoolean.testCase,
+        ContinuousVariableBoolean.measureGroups,
+        ContinuousVariableBoolean.populationGroupResults
+      );
+      expect(output).toBeTruthy();
+      expect(output.executionStatus).toEqual(ExecutionStatusType.PASS);
+      expect(output.groupPopulations.length).toEqual(1);
+      const popVals = output.groupPopulations[0].populationValues;
+      expect(popVals).toBeTruthy();
+      expect(popVals.length).toEqual(3);
+      expect(popVals[0].name).toEqual(PopulationType.INITIAL_POPULATION);
+      expect(popVals[0].actual).toEqual(true);
+      expect(popVals[1].name).toEqual(PopulationType.MEASURE_POPULATION);
+      expect(popVals[1].actual).toEqual(true);
+      expect(popVals[2].name).toEqual(
+        PopulationType.MEASURE_POPULATION_OBSERVATION
+      );
+      expect(popVals[2].actual).toEqual(1);
+    });
+
+    it("should return test case results for continuous variable, Encounter popBasis", () => {
+      const output = calculationService.processTestCaseResults(
+        ContinuousVariable_Encounter_Pass.testCase,
+        ContinuousVariable_Encounter_Pass.measureGroups,
+        ContinuousVariable_Encounter_Pass.populationGroupResults
+      );
+      expect(output).toBeTruthy();
+      expect(output.executionStatus).toEqual(ExecutionStatusType.PASS);
+      expect(output.groupPopulations.length).toEqual(1);
+      const popVals = output.groupPopulations[0].populationValues;
+      expect(popVals.length).toEqual(4);
+      expect(popVals[0].name).toEqual(PopulationType.INITIAL_POPULATION);
+      expect(popVals[0].actual).toEqual(2);
+      expect(popVals[1].name).toEqual(PopulationType.MEASURE_POPULATION);
+      expect(popVals[1].actual).toEqual(2);
+      expect(popVals[2].name).toEqual(
+        PopulationType.MEASURE_POPULATION_OBSERVATION
+      );
+      expect(popVals[2].actual).toEqual(5);
+      expect(popVals[3].name).toEqual(
+        PopulationType.MEASURE_POPULATION_OBSERVATION
+      );
+      expect(popVals[3].actual).toEqual(1);
+    });
+
+    it("should return test case fail results for continuous variable, Encounter popBasis", () => {
+      // Todo: fill this in with ContinuousVariable_Encounter_Fail
+      const output = calculationService.processTestCaseResults(
+        ContinuousVariable_Encounter_Fail.testCase,
+        ContinuousVariable_Encounter_Fail.measureGroups,
+        ContinuousVariable_Encounter_Fail.populationGroupResults
+      );
+      expect(output).toBeTruthy();
+      expect(output.executionStatus).toEqual(ExecutionStatusType.FAIL);
+      expect(output.groupPopulations.length).toEqual(1);
+      const popVals = output.groupPopulations[0].populationValues;
+      expect(popVals.length).toEqual(5);
+      expect(popVals[0].name).toEqual(PopulationType.INITIAL_POPULATION);
+      expect(popVals[0].actual).toEqual(2);
+      expect(popVals[1].name).toEqual(PopulationType.MEASURE_POPULATION);
+      expect(popVals[1].actual).toEqual(2);
+      expect(popVals[2].name).toEqual(
+        PopulationType.MEASURE_POPULATION_OBSERVATION
+      );
+      expect(popVals[2].actual).toEqual(5);
+      expect(popVals[3].name).toEqual(
+        PopulationType.MEASURE_POPULATION_OBSERVATION
+      );
+      expect(popVals[3].actual).toEqual(1);
+      expect(popVals[4].name).toEqual(
+        PopulationType.MEASURE_POPULATION_OBSERVATION
+      );
+      expect(popVals[4].actual).toEqual(null);
     });
   });
 });
