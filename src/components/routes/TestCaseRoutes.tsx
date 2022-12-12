@@ -87,7 +87,7 @@ const TestCaseRoutes = () => {
       )}
       <Routes>
         <Route path="/measures/:measureId/edit/test-cases">
-          <Route index element={<TestCaseLanding />} />
+          <Route index element={<TestCaseLanding setError={setErrors} />} />
           <Route path="edit" element={<EditTestCase />} />
           <Route path=":id" element={<EditTestCase />} />
         </Route>

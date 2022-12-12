@@ -18,7 +18,6 @@ import CodeCoverageHighlighting from "./CodeCoverageHighlighting";
 import CreateNewTestCaseDialog from "../createTestCase/CreateNewTestCaseDialog";
 import { MadieSpinner } from "@madie/madie-design-system/dist/react";
 import TestCaseListSideBarNav from "./TestCaseListSideBarNav";
-import StatusHandler from "../statusHandler/StatusHandler";
 
 const TH = tw.th`p-3 border-b text-left text-sm font-bold capitalize`;
 
@@ -33,12 +32,16 @@ export interface TestCasesPassingDetailsProps {
   passFailRatio: string;
 }
 
-const TestCaseList = () => {
+export interface TestCaseListProps {
+  setError: (value: string) => void;
+}
+
+const TestCaseList = (props: TestCaseListProps) => {
   const [testCases, setTestCases] = useState<TestCase[]>(null);
   const [executionResults, setExecutionResults] = useState<{
     [key: string]: DetailedPopulationGroupResult[];
   }>({});
-  const [error, setError] = useState("");
+  const { setError } = props;
   const { measureId } = useParams<{ measureId: string }>();
   const testCaseService = useRef(useTestCaseServiceApi());
   const calculation = useRef(calculationService());
@@ -248,13 +251,6 @@ const TestCaseList = () => {
               />
             </div>
             <CreateNewTestCaseDialog open={createOpen} onClose={handleClose} />
-            {error && (
-              <StatusHandler
-                error={true}
-                errorMessage={error}
-                testDataId="display-tests-error"
-              ></StatusHandler>
-            )}
 
             {activeTab === "passing" && (
               <div tw="overflow-x-auto sm:-mx-6 lg:-mx-8">
