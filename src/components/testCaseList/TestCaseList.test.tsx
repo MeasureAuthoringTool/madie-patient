@@ -477,21 +477,6 @@ describe("TestCaseList component", () => {
     });
   });
 
-  it("should render coverage tabs", async () => {
-    renderTestCaseListComponent();
-    expect(await screen.findByTestId("code-coverage-tabs")).toBeInTheDocument();
-    expect(screen.getByTestId("passing-tab")).toBeInTheDocument();
-    expect(screen.getByTestId("coverage-tab")).toBeInTheDocument();
-
-    userEvent.click(screen.getByTestId("coverage-tab"));
-    expect(
-      screen.getByTestId("code-coverage-highlighting")
-    ).toBeInTheDocument();
-
-    userEvent.click(screen.getByTestId("passing-tab"));
-    expect(screen.getByTestId("test-case-tbl")).toBeInTheDocument();
-  });
-
   it("should not display error message when fetch test cases fails", async () => {
     const error = {
       message: "Unable to retrieve test cases, please try later.",
