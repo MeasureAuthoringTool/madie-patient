@@ -601,6 +601,13 @@ describe("TestCaseList component", () => {
       expect(tableRows[1]).toHaveTextContent("Fail");
       expect(tableRows[2]).toHaveTextContent("Invalid");
     });
+
+    userEvent.click(screen.getByTestId("coverage-tab"));
+    expect(
+      screen.getByTestId("code-coverage-highlighting")
+    ).toBeInTheDocument();
+    userEvent.click(screen.getByTestId("passing-tab"));
+    expect(screen.getByTestId("test-case-tbl")).toBeInTheDocument();
   });
 
   it("should not render execute button for user who is not the owner of the measure", () => {
@@ -729,11 +736,6 @@ describe("TestCaseList component", () => {
 
     const coverageTab = await screen.findByTestId("coverage-tab");
     expect(coverageTab).toBeInTheDocument();
-    userEvent.click(screen.getByTestId("coverage-tab"));
-    const codeCoverageHighlighting = await screen.findByTestId(
-      "code-coverage-highlighting"
-    );
-    expect(codeCoverageHighlighting).toBeInTheDocument();
   });
 
   it("should not render New Test Case button for user who is not the owner of the measure", () => {
@@ -884,8 +886,9 @@ describe("TestCaseList component", () => {
 
 describe("removeHtmlCoverageHeader", () => {
   it("should remove header with numeric percentage", () => {
-    const htmlCoverage = removeHtmlCoverageHeader(`
-      <div><h2> Clause Coverage: 50.0%</h2><pre style="tab-size: 2; border-bottom-width: 4px; line-height: 1.4">
+    const coverage: Record<string, string> = {
+      a345sda45: `
+      <div><h2> a345sda45 Clause Coverage: 50.0%</h2><pre style="tab-size: 2; border-bottom-width: 4px; line-height: 1.4">
         <code>
         <span data-ref-id="55" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>define &quot;boolIpp&quot;:
         </span><span data-ref-id="54" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span><span data-ref-id="48" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="47" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="47" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>[&quot;Encounter&quot;]</span></span></span><span> E</span></span></span><span> </span><span data-ref-id="53" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>where </span><span data-ref-id="53" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="51" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="50" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="49" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>E</span></span><span>.</span><span data-ref-id="50" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>period</span></span></span><span>.</span><span data-ref-id="51" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>start</span></span></span><span data-ref-id="53" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"> during </span><span data-ref-id="52" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>&quot;Measurement Period&quot;</span></span></span></span></span></span></code>
@@ -894,8 +897,10 @@ describe("removeHtmlCoverageHeader", () => {
         <span data-ref-id="1719" style=""><span>define function ToDateTime(value </span><span data-ref-id="1716" style=""><span>dateTime</span></span><span>): </span><span data-ref-id="1718" style=""><span data-ref-id="1718" style=""><span data-ref-id="1717" style=""><span>value</span></span><span>.</span><span data-ref-id="1718" style=""><span>value</span></span></span></span></span></code>
         </pre>
        </div>
-    `);
-    expect(htmlCoverage).toEqual(`
+      `,
+    };
+    const htmlCoverage = removeHtmlCoverageHeader(coverage);
+    expect(htmlCoverage["a345sda45"]).toEqual(`
       <div><pre style="tab-size: 2; border-bottom-width: 4px; line-height: 1.4">
         <code>
         <span data-ref-id="55" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>define &quot;boolIpp&quot;:
@@ -905,18 +910,19 @@ describe("removeHtmlCoverageHeader", () => {
         <span data-ref-id="1719" style=""><span>define function ToDateTime(value </span><span data-ref-id="1716" style=""><span>dateTime</span></span><span>): </span><span data-ref-id="1718" style=""><span data-ref-id="1718" style=""><span data-ref-id="1717" style=""><span>value</span></span><span>.</span><span data-ref-id="1718" style=""><span>value</span></span></span></span></span></code>
         </pre>
        </div>
-    `);
+      `);
   });
 
   it("should remove header with NaN percentage", () => {
-    const htmlCoverage = removeHtmlCoverageHeader(
-      `<div><h2> Clause Coverage: NaN%</h2></div>`
-    );
-    expect(htmlCoverage).toEqual(`<div></div>`);
+    const htmlCoverage = removeHtmlCoverageHeader({
+      ab4c23fd5f: `<div><h2> ab4c23fd5f Clause Coverage: NaN%</h2></div>`,
+    });
+    expect(htmlCoverage["ab4c23fd5f"]).toEqual(`<div></div>`);
   });
 
   it("should leave regular HTML alone", () => {
-    const htmlCoverage = removeHtmlCoverageHeader(`
+    const htmlCoverage = removeHtmlCoverageHeader({
+      ab4c23fd5f: `
       <div><h2>Different Header</h2><pre style="tab-size: 2; border-bottom-width: 4px; line-height: 1.4">
         <code>
         <span data-ref-id="55" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>define &quot;boolIpp&quot;:
@@ -926,8 +932,9 @@ describe("removeHtmlCoverageHeader", () => {
         <span data-ref-id="1719" style=""><span>define function ToDateTime(value </span><span data-ref-id="1716" style=""><span>dateTime</span></span><span>): </span><span data-ref-id="1718" style=""><span data-ref-id="1718" style=""><span data-ref-id="1717" style=""><span>value</span></span><span>.</span><span data-ref-id="1718" style=""><span>value</span></span></span></span></span></code>
         </pre>
        </div>
-    `);
-    expect(htmlCoverage).toEqual(`
+    `,
+    });
+    expect(htmlCoverage["ab4c23fd5f"]).toEqual(`
       <div><h2>Different Header</h2><pre style="tab-size: 2; border-bottom-width: 4px; line-height: 1.4">
         <code>
         <span data-ref-id="55" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>define &quot;boolIpp&quot;:

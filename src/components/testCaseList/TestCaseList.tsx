@@ -22,9 +22,19 @@ import TestCaseListSideBarNav from "./TestCaseListSideBarNav";
 const TH = tw.th`p-3 border-b text-left text-sm font-bold capitalize`;
 
 export const coverageHeaderRegex =
-  /<h2> Clause Coverage: ((\d*\.\d+)|NaN)%<\/h2>/i;
-export const removeHtmlCoverageHeader = (coverageHtml: string) => {
-  return coverageHtml?.replace(coverageHeaderRegex, "");
+  /<h2> (.*) Clause Coverage: ((\d*\.\d+)|NaN)%<\/h2>/i;
+
+export const removeHtmlCoverageHeader = (
+  coverageHtml: Record<string, string>
+): Record<string, string> => {
+  const groupCoverage: Record<string, string> = {};
+  for (const groupId in coverageHtml) {
+    groupCoverage[groupId] = coverageHtml[groupId]?.replace(
+      coverageHeaderRegex,
+      ""
+    );
+  }
+  return groupCoverage;
 };
 
 export interface TestCasesPassingDetailsProps {
@@ -53,7 +63,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     useState<CalculationOutput<any>>();
   const [executeAllTestCases, setExecuteAllTestCases] =
     useState<boolean>(false);
-  const [coverageHTML, setCoverageHTML] = useState<string>("");
+  const [coverageHTML, setCoverageHTML] = useState<Record<string, string>>();
   const [coveragePercentage, setCoveragePercentage] = useState<number>(0);
   const [testCasePassFailStats, setTestCasePassFailStats] =
     useState<TestCasesPassingDetailsProps>({
@@ -61,14 +71,8 @@ const TestCaseList = (props: TestCaseListProps) => {
       passFailRatio: "",
     });
   const [initialLoad, setInitialLoad] = useState<boolean>(true);
-  const {
-    measureState,
-    bundleState,
-    valueSetsState,
-    executionContextReady,
-    executing,
-    setExecuting,
-  } = useExecutionContext();
+  const { measureState, bundleState, valueSetsState, executing, setExecuting } =
+    useExecutionContext();
   const [measure] = measureState;
   const [measureBundle] = bundleState;
   const [valueSets] = valueSetsState;
@@ -136,7 +140,9 @@ const TestCaseList = (props: TestCaseListProps) => {
     const validTestCases = testCases?.filter((tc) => tc.validResource);
     if (validTestCases && calculationOutput?.results) {
       const executionResults = calculationOutput.results;
-      setCoverageHTML(removeHtmlCoverageHeader(calculationOutput.coverageHTML));
+      setCoverageHTML(
+        removeHtmlCoverageHeader(calculationOutput["groupClauseCoverageHTML"])
+      );
       const nextExecutionResults = {};
       validTestCases.forEach((testCase, i) => {
         const detailedResults = executionResults.find(
@@ -299,8 +305,10 @@ const TestCaseList = (props: TestCaseListProps) => {
               </div>
             )}
 
-            {activeTab === "coverage" && (
-              <CodeCoverageHighlighting coverageHTML={coverageHTML} />
+            {activeTab === "coverage" && coverageHTML && (
+              <CodeCoverageHighlighting
+                coverageHTML={coverageHTML[selectedPopCriteria.id]}
+              />
             )}
           </div>
         </>
