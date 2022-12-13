@@ -6,6 +6,7 @@ import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
 import { Measure, MeasureScoring } from "@madie/madie-models";
 import { Bundle, ValueSet } from "fhir/r4";
 import { ExecutionContextProvider } from "../routes/ExecutionContext";
+import { checkUserCanEdit } from "@madie/madie-util";
 
 const serviceConfig: ServiceConfig = {
   measureService: {
@@ -39,7 +40,9 @@ jest.mock("@madie/madie-util", () => ({
   useDocumentTitle: jest.fn(),
   useOktaTokens: () => ({
     getAccessToken: () => "test.jwt",
-    getUserName: () => MEASURE_CREATEDBY,
+  }),
+  checkUserCanEdit: jest.fn(() => {
+    return true;
   }),
 }));
 
@@ -84,6 +87,9 @@ describe("TestCaseLanding component", () => {
   });
 
   it("should render the landing component without create new test case button if user is not the owner of the measure", async () => {
+    (checkUserCanEdit as jest.Mock).mockImplementationOnce(() => {
+      return false;
+    });
     const readOnlyMeasure = { ...measure, createdBy: "not me" };
     renderTestCaseLandingComponent(readOnlyMeasure);
     const newTestCase = await screen.queryByRole("button", {

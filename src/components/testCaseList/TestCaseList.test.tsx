@@ -32,7 +32,6 @@ import {
   getExampleValueSet,
 } from "../../util/CalculationTestHelpers";
 import { ExecutionContextProvider } from "../routes/ExecutionContext";
-import { useOktaTokens } from "@madie/madie-util";
 
 const serviceConfig: ServiceConfig = {
   testCaseService: {
@@ -48,10 +47,9 @@ const serviceConfig: ServiceConfig = {
 
 const MEASURE_CREATEDBY = "testuser";
 jest.mock("@madie/madie-util", () => ({
-  useOktaTokens: jest.fn(() => ({
-    getUserName: jest.fn(() => MEASURE_CREATEDBY), //#nosec
-    getAccessToken: () => "test.jwt",
-  })),
+  checkUserCanEdit: jest.fn(() => {
+    return true;
+  }),
 }));
 
 const mockedUsedNavigate = jest.fn();
@@ -536,9 +534,6 @@ describe("TestCaseList component", () => {
   });
 
   it("should navigate to the Test Case details page on edit button click for shared user", async () => {
-    useOktaTokens.mockImplementationOnce(() => ({
-      getUserName: () => "othertestuser@example.com", //#nosec
-    }));
     const { getByTestId } = renderTestCaseListComponent();
     await waitFor(() => {
       const selectButton = getByTestId(`select-action-${testCases[0].id}`);
