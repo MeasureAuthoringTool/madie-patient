@@ -286,13 +286,6 @@ const EditTestCase = () => {
       .then((tc: TestCase) => {
         setTestCase(_.cloneDeep(tc));
         setEditorVal(tc.json ? tc.json : "");
-        // setCanEdit(
-        //   measure?.createdBy === userName ||
-        //     measure?.acls?.some(
-        //       (acl) =>
-        //         acl.userId === userName && acl.roles.indexOf("SHARED_WITH") >= 0
-        //     )
-        // );
         setCanEdit(canEdit);
         const nextTc = _.cloneDeep(tc);
         if (measure && measure.groups) {
