@@ -11,7 +11,7 @@ import {
   CalculationOutput,
   DetailedPopulationGroupResult,
 } from "fqm-execution/build/types/Calculator";
-import { useOktaTokens } from "@madie/madie-util";
+import { checkUserCanEdit } from "@madie/madie-util";
 import useExecutionContext from "../routes/useExecutionContext";
 import CreateCodeCoverageNavTabs from "./CreateCodeCoverageNavTabs";
 import CodeCoverageHighlighting from "./CodeCoverageHighlighting";
@@ -52,8 +52,6 @@ const TestCaseList = () => {
   const { measureId } = useParams<{ measureId: string }>();
   const testCaseService = useRef(useTestCaseServiceApi());
   const calculation = useRef(calculationService());
-  const { getUserName } = useOktaTokens();
-  const userName = getUserName();
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("passing");
   const [calculationOutput, setCalculationOutput] =
@@ -89,14 +87,8 @@ const TestCaseList = () => {
   }, [measure]);
 
   useEffect(() => {
-    setCanEdit(
-      measure?.createdBy === userName ||
-        measure?.acls?.some(
-          (acl) =>
-            acl.userId === userName && acl.roles.indexOf("SHARED_WITH") >= 0
-        )
-    );
-  }, [measure, userName]);
+    setCanEdit(checkUserCanEdit(measure?.createdBy, measure?.acls));
+  }, [measure]);
 
   const retrieveTestCases = useCallback(() => {
     testCaseService.current

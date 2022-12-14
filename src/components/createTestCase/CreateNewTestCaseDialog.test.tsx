@@ -14,7 +14,6 @@ const MEASURE_CREATEDBY = "testuser";
 jest.mock("@madie/madie-util", () => ({
   useOktaTokens: () => ({
     getAccessToken: () => "test.jwt",
-    getUserName: jest.fn(() => MEASURE_CREATEDBY), //#nosec
   }),
   measureStore: {
     updateMeasure: jest.fn((measure) => measure),

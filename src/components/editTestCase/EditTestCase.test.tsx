@@ -43,7 +43,7 @@ import { ExecutionContextProvider } from "../routes/ExecutionContext";
 import { multiGroupMeasureFixture } from "../createTestCase/__mocks__/multiGroupMeasureFixture";
 import { nonBoolTestCaseFixture } from "../createTestCase/__mocks__/nonBoolTestCaseFixture";
 import { TestCaseValidator } from "../../validators/TestCaseValidator";
-import { useOktaTokens } from "@madie/madie-util";
+import { useOktaTokens, checkUserCanEdit } from "@madie/madie-util";
 import { PopulationType as FqmPopulationType } from "fqm-execution/build/types/Enums";
 
 //temporary solution (after jest updated to version 27) for error: thrown: "Exceeded timeout of 5000 ms for a test.
@@ -105,9 +105,11 @@ jest.mock("@madie/madie-util", () => ({
     unsubscribe: () => null,
   },
   useOktaTokens: jest.fn(() => ({
-    getUserName: jest.fn(() => MEASURE_CREATEDBY), //#nosec
     getAccessToken: () => "test.jwt",
   })),
+  checkUserCanEdit: jest.fn(() => {
+    return true;
+  }),
   routeHandlerStore: {
     subscribe: (set) => {
       return { unsubscribe: () => null };
@@ -1850,6 +1852,9 @@ describe("EditTestCase component", () => {
   });
 
   it("should disable text input and no create or update button if measure is not shared with user", async () => {
+    (checkUserCanEdit as jest.Mock).mockImplementationOnce(() => {
+      return false;
+    });
     mockedAxios.get.mockImplementation((args) => {
       if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["SeriesA"] });
@@ -1886,9 +1891,6 @@ describe("EditTestCase component", () => {
   });
 
   it("should render text input and update button if measure is shared with the user", async () => {
-    useOktaTokens.mockImplementationOnce(() => ({
-      getUserName: () => "othertestuser@example.com", //#nosec
-    }));
     mockedAxios.get.mockImplementation((args) => {
       if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["SeriesA"] });
