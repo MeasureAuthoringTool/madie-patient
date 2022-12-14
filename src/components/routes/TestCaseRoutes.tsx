@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Route, Routes } from "react-router-dom";
-import { Alert } from "@mui/material";
 import TestCaseLanding from "../testCaseLanding/TestCaseLanding";
 import EditTestCase from "../editTestCase/EditTestCase";
 import NotFound from "../notfound/NotFound";
@@ -10,6 +9,7 @@ import useTerminologyServiceApi from "../../api/useTerminologyServiceApi";
 import { ExecutionContextProvider } from "./ExecutionContext";
 import useMeasureServiceApi from "../../api/useMeasureServiceApi";
 import * as _ from "lodash";
+import StatusHandler from "../statusHandler/StatusHandler";
 
 const TestCaseRoutes = () => {
   const [measureBundle, setMeasureBundle] = useState<Bundle>();
@@ -79,13 +79,15 @@ const TestCaseRoutes = () => {
       }}
     >
       {errors && (
-        <Alert data-testid="execution_context_loading_errors" severity="error">
-          {errors}
-        </Alert>
+        <StatusHandler
+          error={true}
+          errorMessage={errors}
+          testDataId="execution_context_loading_errors"
+        ></StatusHandler>
       )}
       <Routes>
         <Route path="/measures/:measureId/edit/test-cases">
-          <Route index element={<TestCaseLanding />} />
+          <Route index element={<TestCaseLanding setError={setErrors} />} />
           <Route path="edit" element={<EditTestCase />} />
           <Route path=":id" element={<EditTestCase />} />
         </Route>

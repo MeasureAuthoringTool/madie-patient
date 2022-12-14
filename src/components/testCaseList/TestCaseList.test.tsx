@@ -406,6 +406,7 @@ const valueSets = [getExampleValueSet()];
 const setMeasure = jest.fn();
 const setMeasureBundle = jest.fn();
 const setValueSets = jest.fn();
+const setError = jest.fn();
 
 describe("TestCaseList component", () => {
   beforeEach(() => {
@@ -438,7 +439,7 @@ describe("TestCaseList component", () => {
               setExecuting: jest.fn(),
             }}
           >
-            <TestCaseList />
+            <TestCaseList setError={setError} />
           </ExecutionContextProvider>
         </ApiContextProvider>
       </MemoryRouter>
@@ -474,7 +475,7 @@ describe("TestCaseList component", () => {
     });
   });
 
-  it("should display error message when fetch test cases fails", async () => {
+  it("should not display error message when fetch test cases fails", async () => {
     const error = {
       message: "Unable to retrieve test cases, please try later.",
     };
@@ -491,9 +492,9 @@ describe("TestCaseList component", () => {
     });
 
     renderTestCaseListComponent();
-    expect(await screen.findByTestId("display-tests-error")).toHaveTextContent(
-      "Unable to retrieve test cases, please try later."
-    );
+    expect(
+      await screen.queryByTestId("display-tests-error")
+    ).not.toBeInTheDocument();
   });
 
   it("should navigate to the Test Case details page on edit button click", async () => {
@@ -598,7 +599,7 @@ describe("TestCaseList component", () => {
     expect(executeAllTestCasesButton).not.toBeInTheDocument();
   });
 
-  it("should display error message when test cases calculation fails", async () => {
+  it("should not display error message when test cases calculation fails", async () => {
     measure.createdBy = MEASURE_CREATEDBY;
     const error = {
       message: "Unable to calculate test case.",
@@ -619,10 +620,9 @@ describe("TestCaseList component", () => {
         "execute-test-cases-button"
       );
       fireEvent.click(executeAllTestCasesButton);
-      const errorMessage = getByTestId("display-tests-error");
-      await expect(errorMessage).toHaveTextContent(
-        "Unable to calculate test case."
-      );
+
+      const errorMessage = screen.queryByTestId("display-tests-error");
+      await expect(errorMessage).not.toBeInTheDocument();
     });
   });
 

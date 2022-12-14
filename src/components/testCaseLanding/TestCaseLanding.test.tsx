@@ -35,6 +35,7 @@ const setMeasure = jest.fn();
 const setMeasureBundle = jest.fn();
 const setValueSets = jest.fn();
 const setExecuting = jest.fn();
+const setError = jest.fn();
 
 jest.mock("@madie/madie-util", () => ({
   useDocumentTitle: jest.fn(),
@@ -68,7 +69,7 @@ describe("TestCaseLanding component", () => {
             <Routes>
               <Route
                 path="/measures/:measureId/edit/test-cases"
-                element={<TestCaseLanding />}
+                element={<TestCaseLanding setError={setError} />}
               />
             </Routes>
           </ExecutionContextProvider>
