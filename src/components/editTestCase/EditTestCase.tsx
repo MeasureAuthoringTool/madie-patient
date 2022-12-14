@@ -286,7 +286,6 @@ const EditTestCase = () => {
       .then((tc: TestCase) => {
         setTestCase(_.cloneDeep(tc));
         setEditorVal(tc.json ? tc.json : "");
-        setCanEdit(canEdit);
         const nextTc = _.cloneDeep(tc);
         if (measure && measure.groups) {
           nextTc.groupPopulations = measure.groups.map((group) => {
