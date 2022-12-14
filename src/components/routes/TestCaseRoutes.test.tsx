@@ -60,6 +60,9 @@ jest.mock("@madie/madie-util", () => ({
     getAccessToken: () => "test.jwt",
     getUserName: () => MEASURE_CREATEDBY,
   }),
+  checkUserCanEdit: jest.fn(() => {
+    return true;
+  }),
   routeHandlerStore: {
     subscribe: (set) => {
       return { unsubscribe: () => null };
