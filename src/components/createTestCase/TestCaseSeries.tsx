@@ -45,14 +45,27 @@ const TestCaseSeries = ({
         _.isNil(existingOption) ? onChange(v) : onChange(existingOption);
       }}
       sx={sx}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          inputProps={{ ...params.inputProps, maxLength: 250 }}
-          data-testid="test-case-series"
-          placeholder="Start typing or select"
-        />
-      )}
+      renderInput={(params) => {
+        const { inputProps } = params;
+        inputProps["maxLength"] = 250;
+        return (
+          <TextField
+            sx={{
+              "& .MuiInputBase-input": {
+                opacity: 1,
+                color: "#333",
+                "&::placeholder": {
+                  opacity: 1,
+                  color: "#717171",
+                },
+              },
+            }}
+            {...params}
+            data-testid="test-case-series"
+            placeholder="Start typing or select"
+          />
+        );
+      }}
       options={cleanedOptions}
       filterOptions={(options, params) => {
         const filtered = filter(options, params);
