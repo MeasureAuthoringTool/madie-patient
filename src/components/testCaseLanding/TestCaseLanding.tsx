@@ -9,7 +9,7 @@ const TestCaseLanding = (props: TestCaseListProps) => {
   return (
     <div tw="m-2">
       <section>
-        <TestCaseList setError={props.setError} />
+        <TestCaseList errors={props.errors} setErrors={props.setErrors} />
       </section>
     </div>
   );
