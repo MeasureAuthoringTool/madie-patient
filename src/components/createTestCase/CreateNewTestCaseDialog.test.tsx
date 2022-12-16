@@ -176,7 +176,13 @@ describe("Create New Test Case Dialog", () => {
             "An error occurred while creating the test case: Unable to create new test case"
           )
         ).toBeTruthy();
-        expect(screen.findByTestId("close-error-button")).toBeTruthy();
+        const closeErrorButton = screen.findByTestId("close-error-button");
+        expect(closeErrorButton).toBeTruthy();
+      });
+      const closeErrorButton = await getByTestId("close-error-button");
+      fireEvent.click(closeErrorButton);
+      await waitFor(() => {
+        expect(queryByTestId("server-error-alerts")).not.toBeVisible();
       });
     });
   });
