@@ -45,6 +45,10 @@ const Editor = ({
     setCommandEnabled(editor, "indent", true);
     setCommandEnabled(editor, "outdent", true);
   });
+  aceRef?.current?.editor?.on("blur", function () {
+    setCommandEnabled(editor, "indent", true);
+    setCommandEnabled(editor, "outdent", true);
+  });
 
   aceRef?.current?.editor?.commands.addCommand({
     name: "escape",
