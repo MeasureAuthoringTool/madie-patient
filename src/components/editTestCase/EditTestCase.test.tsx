@@ -464,7 +464,7 @@ describe("EditTestCase component", () => {
     const createBtn = screen.getByRole("button", { name: "Save" });
     userEvent.click(createBtn);
 
-    const alert = await screen.findByRole("alert");
+    const alert = await screen.findByTestId("create-test-case-alert");
     expect(alert).toBeInTheDocument();
     expect(alert).toHaveTextContent(
       "An error occurred while creating the test case."
@@ -498,7 +498,7 @@ describe("EditTestCase component", () => {
     const createBtn = screen.getByRole("button", { name: "Save" });
     userEvent.click(createBtn);
 
-    const alert = await screen.findByRole("alert");
+    const alert = await screen.findByTestId("create-test-case-alert");
     expect(alert).toBeInTheDocument();
     expect(alert).toHaveTextContent(
       "An error occurred - create did not return the expected successful result."
@@ -666,13 +666,13 @@ describe("EditTestCase component", () => {
     const createBtn = screen.getByRole("button", { name: "Save" });
     userEvent.click(createBtn);
 
-    const alert = await screen.findByRole("alert");
+    const alert = await screen.findByTestId("create-test-case-alert");
     expect(alert).toHaveTextContent(
       "An error occurred while creating the test case."
     );
 
-    const closeAlertBtn = screen.getByRole("button", { name: "Close Alert" });
-    userEvent.click(closeAlertBtn);
+    const closeAlertBtn = screen.findByTestId("close-create-test-case-alert");
+    userEvent.click(await closeAlertBtn);
 
     const dismissedAlert = await screen.queryByRole("alert");
     expect(dismissedAlert).not.toBeInTheDocument();
@@ -1382,7 +1382,7 @@ describe("EditTestCase component", () => {
     expect(debugOutput).toBeInTheDocument();
   }, 15000);
 
-  it("should display HAPI validation errors after updating test case", async () => {
+  it("should display HAPI validation errors after creating test case", async () => {
     jest.useFakeTimers("modern");
     renderWithRouter(
       ["/measures/m1234/edit/test-cases"],
@@ -1431,7 +1431,7 @@ describe("EditTestCase component", () => {
     userEvent.click(createBtn);
 
     const debugOutput = await screen.findByText(
-      "Test case updated successfully with errors in JSON"
+      "Changes created successfully but the following error(s) were found"
     );
     expect(debugOutput).toBeInTheDocument();
 
@@ -1530,7 +1530,7 @@ describe("EditTestCase component", () => {
     userEvent.click(updateBtn);
 
     const debugOutput = await screen.findByText(
-      "Test case updated successfully with errors in JSON"
+      "Changes updated successfully but the following error(s) were found"
     );
     expect(debugOutput).toBeInTheDocument();
 
@@ -1605,6 +1605,12 @@ describe("EditTestCase component", () => {
         outcomeResponse: {
           resourceType: "OperationOutcome",
           text: "Bad things happened",
+          issue: [
+            {
+              severity: "error",
+              diagnostics: "Bad things happened",
+            },
+          ],
         },
       },
     };
@@ -1630,7 +1636,7 @@ describe("EditTestCase component", () => {
     userEvent.click(updateBtn);
 
     const debugOutput = await screen.findByText(
-      "Test case updated successfully with errors in JSON"
+      "Changes updated successfully but the following error(s) were found"
     );
     expect(debugOutput).toBeInTheDocument();
 
@@ -1963,7 +1969,7 @@ describe("EditTestCase component", () => {
     await waitFor(() => expect(saveButton).not.toBeDisabled());
     userEvent.click(saveButton);
 
-    const alert = await screen.findByRole("alert");
+    const alert = await screen.findByTestId("create-test-case-alert");
     expect(alert).toBeInTheDocument();
   });
 
@@ -2293,7 +2299,7 @@ describe("Measure Calculation ", () => {
       userEvent.click(screen.getByTestId("highlighting-tab"))
     );
 
-    const alert = await screen.findByRole("alert");
+    const alert = await screen.findByTestId("calculation-error-alert");
     expect(alert).toBeInTheDocument();
     expect(alert).toHaveTextContent(
       "Test case execution was aborted because JSON could not be validated. If this error persists, please contact the help desk."
@@ -2360,7 +2366,7 @@ describe("Measure Calculation ", () => {
     await waitFor(async () =>
       userEvent.click(screen.getByTestId("highlighting-tab"))
     );
-    const alert = await screen.findByRole("alert");
+    const alert = await screen.findByTestId("calculation-error-alert");
     expect(alert).toBeInTheDocument();
     expect(alert).toHaveTextContent(
       "Test case execution was aborted due to errors with the test case JSON."
@@ -2421,7 +2427,7 @@ describe("Measure Calculation ", () => {
     await waitFor(async () => userEvent.click(runButton));
 
     userEvent.click(screen.getByTestId("highlighting-tab"));
-    const alert = await screen.findByRole("alert");
+    const alert = await screen.findByTestId("calculation-error-alert");
     expect(alert).toBeInTheDocument();
     expect(alert).toHaveTextContent(
       "Test case execution was aborted due to errors with the test case JSON."

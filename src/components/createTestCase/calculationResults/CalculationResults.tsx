@@ -3,10 +3,10 @@ import parse from "html-react-parser";
 import "twin.macro";
 import "styled-components/macro";
 import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calculator";
-import { Alert } from "@madie/madie-design-system/dist/react";
+import { MadieAlert } from "@madie/madie-design-system/dist/react";
 
 type ErrorProps = {
-  status?: "success" | "warning" | "error";
+  status?: "success" | "warning" | "error" | "info";
   message?: string;
 };
 
@@ -39,16 +39,23 @@ const CalculationResults = ({
   return (
     <div tw="p-5">
       {!calculationResults && !calculationErrors && (
-        <Alert
-          data-testid="calculation-info-alert"
-          description="To see the logic highlights, click 'Run Test'"
+        <MadieAlert
+          type="info"
+          content="To see the logic highlights, click 'Run Test'"
+          canClose={false}
+          alertProps={{
+            "data-testid": "calculation-info-alert",
+          }}
         />
       )}
       {calculationErrors && (
-        <Alert
-          variant={calculationErrors.status}
-          data-testid="calculation-error-alert"
-          description={calculationErrors.message}
+        <MadieAlert
+          type={calculationErrors.status}
+          content={calculationErrors.message}
+          canClose={false}
+          alertProps={{
+            "data-testid": "calculation-error-alert",
+          }}
         />
       )}
       {coverageHtmls && (
