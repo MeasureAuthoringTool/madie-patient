@@ -516,7 +516,7 @@ describe("TestCaseList component", () => {
       expect(selectButton).toBeInTheDocument();
       fireEvent.click(selectButton);
     });
-    const deleteButton = getByTestId(`delete-test-case-btn`);
+    const deleteButton = getByTestId(`delete-test-case-btn-${testCases[0].id}`);
     fireEvent.click(deleteButton);
 
     expect(screen.getByTestId("delete-dialog")).toBeInTheDocument();

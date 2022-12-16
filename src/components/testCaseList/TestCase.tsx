@@ -201,6 +201,8 @@ const TestCase = ({
         <div className="popover-content" data-testid="popover-content">
           <div className="btn-container">
             <button
+              id={`view-edit-test-case-${testCase.id}`}
+              aria-label={`view-edit-test-case-${testCase.id}`}
               data-testid={`view-edit-test-case-${testCase.id}`}
               onClick={() => {
                 navigate(`./${testCase.id}`);
@@ -211,7 +213,9 @@ const TestCase = ({
             </button>
             {canEdit && (
               <button
-                data-testid="delete-test-case-btn"
+                id={`delete-test-case-btn-${testCase.id}`}
+                aria-label={`delete-test-case-btn-${testCase.id}`}
+                data-testid={`delete-test-case-btn-${testCase.id}`}
                 onClick={() => {
                   setDeleteDialogModalOpen(true);
                   setOptionsOpen(false);
