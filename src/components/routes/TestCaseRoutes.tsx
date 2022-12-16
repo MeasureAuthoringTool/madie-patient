@@ -79,11 +79,13 @@ const TestCaseRoutes = () => {
       }}
     >
       {errors && (
-        <StatusHandler
-          error={true}
-          errorMessage={errors}
-          testDataId="execution_context_loading_errors"
-        ></StatusHandler>
+        <div className="alert-container">
+          <StatusHandler
+            error={true}
+            errorMessage={errors}
+            testDataId="execution_context_loading_errors"
+          ></StatusHandler>
+        </div>
       )}
       <Routes>
         <Route path="/measures/:measureId/edit/test-cases">
