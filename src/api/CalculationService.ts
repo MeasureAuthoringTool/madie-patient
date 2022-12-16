@@ -4,7 +4,7 @@ import {
   DetailedPopulationGroupResult,
   EpisodeResults,
   ExecutionResult,
-  PopulationGroupResult,
+  PopulationResult,
 } from "fqm-execution/build/types/Calculator";
 import {
   Group,
@@ -53,9 +53,15 @@ export interface GroupPopulationEpisodeResultMap {
 }
 
 export interface PopulationEpisodeResult {
+  id?: string;
   populationType: FqmPopulationType;
   define: string;
   value: number;
+}
+
+export interface ProcessedResultType {
+  populations: any;
+  observations: any;
 }
 
 // TODO consider converting into a context.
@@ -124,60 +130,6 @@ export class CalculationService {
       console.error("An error occurred in FQM-Execution", err);
       throw err;
     }
-  }
-
-  processEpisodeResults(
-    executionResults: ExecutionResult<DetailedPopulationGroupResult>[]
-  ): TestCaseGroupEpisodeResult {
-    const testCaseResultMap: TestCaseGroupEpisodeResult = {};
-    if (executionResults) {
-      for (const tc of executionResults) {
-        const testCaseId: string = tc?.patientId;
-        const groupResults: DetailedPopulationGroupResult[] =
-          tc?.detailedResults || [];
-        testCaseResultMap[testCaseId] =
-          this.processEpisodeResultsForGroups(groupResults);
-      }
-    }
-    return testCaseResultMap;
-  }
-
-  processEpisodeResultsForGroups(
-    groupResults: DetailedPopulationGroupResult[]
-  ): GroupPopulationEpisodeResultMap {
-    const outputGroupResultsMap: GroupPopulationEpisodeResultMap = {};
-    groupResults?.forEach((groupResult) => {
-      const groupId = groupResult?.groupId;
-      let groupPopResults: PopulationEpisodeResult[] = [];
-      if (groupResult.episodeResults) {
-        for (const episodeResult of groupResult.episodeResults) {
-          groupPopResults = this.mergeResults(episodeResult, groupPopResults);
-        }
-      }
-      outputGroupResultsMap[groupId] = groupPopResults;
-    });
-    return outputGroupResultsMap;
-  }
-
-  mergeResults(
-    episodeResult: EpisodeResults,
-    groupPopResults: PopulationEpisodeResult[]
-  ): PopulationEpisodeResult[] {
-    // TODO: if/when fqm-execution returns IDs for populations, replace
-    // position/index based logic with ID lookup
-    if (!groupPopResults || groupPopResults.length === 0) {
-      groupPopResults =
-        episodeResult?.populationResults?.map((pr) => ({
-          populationType: pr.populationType,
-          define: pr.criteriaExpression,
-          value: pr?.result ? 1 : 0,
-        })) || [];
-    } else {
-      episodeResult?.populationResults?.forEach((pr, i) => {
-        groupPopResults[i].value += pr.result ? 1 : 0;
-      });
-    }
-    return groupPopResults;
   }
 
   processRawResults(
@@ -321,74 +273,82 @@ export class CalculationService {
     }
   }
 
-  findEpisodeObservationResult(
-    episodeResults: EpisodeResults[],
-    index: number,
-    criteriaExpression: string,
-    populationType: PopulationType | string
-  ) {
-    // TODO: when multiple IPs are supported by fqm-execution this logic may need to be refactored
-    let observationCount = 0;
-    if (_.isNil(episodeResults)) {
-      return null;
-    }
-    for (const episodeResult of episodeResults) {
-      // Get all observation populations that match our criteria expression (observation function)
-      const observationPopulations = episodeResult.populationResults.filter(
-        (popResult) =>
-          popResult.populationType === FqmPopulationType.OBSERV &&
-          popResult.criteriaExpression === criteriaExpression
-      );
-      /**
-       * For Ratio single IP, if both observations use the same function, both results will be in the
-       * first observation population's observation results.
-       * Numerator observation only appears if Numer is true and Numex is false
-       * For single IP, Numer is dependent on Denom and Denex.
-       * Only count this episode if it has passing, matching observation
-       * fqm-execution puts results into the first observation that matches criteria expression (which might be a bug?)
-       */
-      const observationPopulation = observationPopulations?.[0];
-      if (observationPopulation && observationPopulation.result) {
+  buildPatientResults(populationResults: PopulationResult[]) {
+    const results: ProcessedResultType = {
+      populations: {},
+      observations: {},
+    };
+    if (!_.isNil(populationResults) && populationResults.length > 0) {
+      for (const populationResult of populationResults) {
         if (
-          populationType === PopulationType.DENOMINATOR_OBSERVATION ||
-          populationType === "denominatorObservation" ||
-          populationType === PopulationType.MEASURE_POPULATION_OBSERVATION ||
-          populationType === "measurePopulationObservation"
+          populationResult.populationType === FqmPopulationType.OBSERV &&
+          populationResult.observations
         ) {
-          if (index === observationCount) {
-            return observationPopulation?.observations?.[0];
-          }
-          observationCount++;
+          const id = populationResult.criteriaReferenceId;
+          results.observations[id] = {
+            ...populationResult,
+            result: true,
+            observations: [...populationResult.observations],
+          };
         } else if (
-          populationType === PopulationType.NUMERATOR_OBSERVATION ||
-          populationType === "numeratorObservation"
+          populationResult.populationType !== FqmPopulationType.OBSERV
         ) {
-          const isNumer = !!episodeResult.populationResults.find(
-            (pop) =>
-              pop.populationType === FqmPopulationType.NUMER && pop.result
-          );
-          const isNumerEx = !!episodeResult.populationResults.find(
-            (pop) =>
-              pop.populationType === FqmPopulationType.NUMEX && pop.result
-          );
-          if (observationPopulations.length === 1) {
-            // only one observation that matches, so return that result
-            if (index === observationCount) {
-              return observationPopulation?.observations?.[0];
+          results.populations[populationResult.populationId] = {
+            ...populationResult,
+          };
+        }
+      }
+    }
+    return results;
+  }
+
+  buildEpisodeResults(episodeResults: EpisodeResults[]): ProcessedResultType {
+    const results: ProcessedResultType = {
+      populations: {},
+      observations: {},
+    };
+    if (!_.isNil(episodeResults)) {
+      for (const episodeResult of episodeResults) {
+        if (
+          episodeResult.populationResults &&
+          episodeResult.populationResults.length > 0
+        ) {
+          for (const populationResult of episodeResult.populationResults) {
+            if (
+              populationResult.populationType === FqmPopulationType.OBSERV &&
+              populationResult.observations
+            ) {
+              const id = populationResult.criteriaReferenceId;
+              if (results.observations[id]) {
+                results.observations[id].observations = _.concat(
+                  results.observations[id].observations,
+                  populationResult.observations
+                );
+              } else {
+                results.observations[id] = {
+                  ...populationResult,
+                  result: true,
+                  observations: _.cloneDeep(populationResult.observations),
+                };
+              }
+            } else if (
+              populationResult.populationType !== FqmPopulationType.OBSERV
+            ) {
+              const id = populationResult.populationId;
+              if (results.populations[id] && populationResult.result) {
+                results.populations[id].result += 1;
+              } else if (_.isNil(results.populations[id])) {
+                results.populations[id] = {
+                  ...populationResult,
+                  result: populationResult.result ? 1 : 0,
+                };
+              }
             }
-            observationCount++;
-          } else if (
-            isNumer &&
-            !isNumerEx &&
-            observationPopulation?.observations?.length > 1
-          ) {
-            // This logic is for Ratio, single IP, where NUMER is dependent on DENOM
-            return observationPopulation?.observations?.[1];
           }
         }
       }
     }
-    return null;
+    return results;
   }
 
   isGroupPass(groupPopulation: GroupPopulation) {
@@ -426,8 +386,6 @@ export class CalculationService {
 
     const updatedTestCase = _.cloneDeep(testCase);
     const groupResultsMap = this.buildGroupResultsMap(populationGroupResults);
-    const episodeResults: GroupPopulationEpisodeResultMap =
-      this.processEpisodeResultsForGroups(populationGroupResults);
     let allGroupsPass = true;
     if (_.isNil(testCase?.groupPopulations)) {
       updatedTestCase.groupPopulations = [];
@@ -439,7 +397,6 @@ export class CalculationService {
       let tcGroupPopulation = updatedTestCase.groupPopulations.find(
         (gp) => gp?.groupId === groupId
       );
-      // const measureGroup = measureGroups?.find((group) => group.id === groupId);
       if (_.isNil(tcGroupPopulation)) {
         tcGroupPopulation = this.mapMeasureGroup(measureGroup);
         updatedTestCase.groupPopulations.push(tcGroupPopulation);
@@ -449,46 +406,35 @@ export class CalculationService {
         populationGroupResults?.find(
           (popGroupResult) => popGroupResult.groupId === groupId
         );
-      const groupEpisodeResult: PopulationEpisodeResult[] =
-        episodeResults[groupId];
 
       const tcPopTypeCount = {};
       const patientBased =
         "boolean" === _.lowerCase(measureGroup.populationBasis);
 
+      const processedResults = patientBased
+        ? this.buildPatientResults(populationGroupResult?.populationResults)
+        : this.buildEpisodeResults(populationGroupResult?.episodeResults);
+
       tcGroupPopulation?.populationValues.forEach((tcPopVal, idx) => {
         // Set the actual population value for measure observations
         if (isTestCasePopulationObservation(tcPopVal)) {
           if (patientBased) {
-            const obsResult = this.findPatientActualResult(
-              populationGroupResult,
-              PopulationType.MEASURE_OBSERVATION,
-              tcPopTypeCount[PopulationType.MEASURE_OBSERVATION]
-            );
-            tcPopVal.actual = obsResult?.observations?.[0] ?? 0;
-
-            if (tcPopTypeCount[PopulationType.MEASURE_OBSERVATION]) {
-              tcPopTypeCount[PopulationType.MEASURE_OBSERVATION] =
-                tcPopTypeCount[PopulationType.MEASURE_OBSERVATION] + 1;
-            } else {
-              tcPopTypeCount[PopulationType.MEASURE_OBSERVATION] = 1;
-            }
+            tcPopVal.actual =
+              processedResults.observations[
+                tcPopVal.criteriaReference
+              ]?.observations?.[0];
           } else {
-            const criteriaExpression = measureGroup?.measureObservations?.find(
-              (mobs) => mobs.criteriaReference === tcPopVal.criteriaReference
-            )?.definition;
-            // Observation results are on each episode (resource) that matched
-            // For CV there should be only one observation per episode
-            // For Ratio there could be 0-2 (max of one denom and one numer)
-            // Denom observ and CV observ will always be first observation on episode
-            // If denom observ exists, numer observ is second. If no denom observ, numer is first (and only)
             let currentTCObserv = tcPopTypeCount[tcPopVal.name] ?? 0;
-            tcPopVal.actual = this.findEpisodeObservationResult(
-              populationGroupResult?.episodeResults,
-              currentTCObserv,
-              criteriaExpression,
-              tcPopVal.name
-            );
+            const allObsResults =
+              processedResults?.observations[tcPopVal.criteriaReference];
+            if (
+              allObsResults &&
+              currentTCObserv < allObsResults.observations?.length
+            ) {
+              tcPopVal.actual = allObsResults.observations?.[currentTCObserv];
+            } else {
+              tcPopVal.actual = null;
+            }
 
             if (tcPopTypeCount[tcPopVal.name]) {
               tcPopTypeCount[tcPopVal.name] = tcPopTypeCount[tcPopVal.name] + 1;
@@ -500,25 +446,9 @@ export class CalculationService {
           // find result
           const measureGroupPopulation: Population =
             this.findMeasureGroupPopulation(measureGroup, tcPopVal);
-          if (patientBased) {
-            tcPopVal.actual = this.findPatientActualResult(
-              populationGroupResult,
-              tcPopVal.name as PopulationType,
-              tcPopTypeCount[tcPopVal.name]
-            )?.result;
-          } else {
-            tcPopVal.actual = this.findEpisodeActualValue(
-              groupEpisodeResult,
-              tcPopVal,
-              measureGroupPopulation?.definition
-            );
-          }
-
-          if (tcPopTypeCount[tcPopVal.name]) {
-            tcPopTypeCount[tcPopVal.name] = tcPopTypeCount[tcPopVal.name] + 1;
-          } else {
-            tcPopTypeCount[tcPopVal.name] = 1;
-          }
+          const result =
+            processedResults?.populations[measureGroupPopulation.id]?.result;
+          tcPopVal.actual = _.isNil(result) && !patientBased ? 0 : result;
         }
       });
 
@@ -552,43 +482,6 @@ export class CalculationService {
         (_.isNil(populationValue.id) &&
           populationValue.name === population.name)
     );
-  }
-
-  /**
-   * Find the patient-based actual result first by population type, then by index
-   * @param populationGroupResult
-   * @param popTypeCount
-   */
-  findPatientActualResult(
-    populationGroupResult: PopulationGroupResult,
-    tcPopulationType: PopulationType,
-    popTypeCount: number
-  ) {
-    let resultPopTypeCount = 0;
-    const tcPopTypeCount = popTypeCount ?? 0;
-    return populationGroupResult?.populationResults?.find((popResult) => {
-      const resultPopCode: PopulationType =
-        FHIR_POPULATION_CODES[popResult.populationType];
-      if (resultPopCode === tcPopulationType) {
-        if (resultPopTypeCount === tcPopTypeCount) {
-          return true;
-        }
-        resultPopTypeCount++;
-      }
-    });
-  }
-
-  findEpisodeActualValue(
-    populationEpisodeResults: PopulationEpisodeResult[],
-    populationValue: PopulationExpectedValue,
-    populationDefinition: string
-  ): number {
-    const groupEpisodeResult = populationEpisodeResults?.find(
-      (popEpResult) =>
-        FHIR_POPULATION_CODES[popEpResult.populationType] ===
-          populationValue.name && populationDefinition === popEpResult.define
-    );
-    return _.isNil(groupEpisodeResult) ? 0 : groupEpisodeResult.value;
   }
 }
 

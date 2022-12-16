@@ -14,7 +14,6 @@ const MEASURE_CREATEDBY = "testuser";
 jest.mock("@madie/madie-util", () => ({
   useOktaTokens: () => ({
     getAccessToken: () => "test.jwt",
-    getUserName: jest.fn(() => MEASURE_CREATEDBY), //#nosec
   }),
   measureStore: {
     updateMeasure: jest.fn((measure) => measure),
@@ -126,9 +125,8 @@ describe("Create New Test Case Dialog", () => {
       const saveButton = await getByTestId("create-test-case-save-button");
       expect(saveButton).not.toBeDisabled();
       fireEvent.click(saveButton);
-
       await waitFor(() => {
-        expect(queryByTestId("server-error-alerts")).not.toBeInTheDocument();
+        expect(queryByTestId("server-error-alerts")).not.toBeVisible();
       });
     });
   }, 10000);
@@ -178,7 +176,13 @@ describe("Create New Test Case Dialog", () => {
             "An error occurred while creating the test case: Unable to create new test case"
           )
         ).toBeTruthy();
-        expect(screen.findByTestId("close-error-button")).toBeTruthy();
+        const closeErrorButton = screen.findByTestId("close-error-button");
+        expect(closeErrorButton).toBeTruthy();
+      });
+      const closeErrorButton = await getByTestId("close-error-button");
+      fireEvent.click(closeErrorButton);
+      await waitFor(() => {
+        expect(queryByTestId("server-error-alerts")).not.toBeVisible();
       });
     });
   });

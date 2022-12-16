@@ -60,6 +60,9 @@ jest.mock("@madie/madie-util", () => ({
     getAccessToken: () => "test.jwt",
     getUserName: () => MEASURE_CREATEDBY,
   }),
+  checkUserCanEdit: jest.fn(() => {
+    return true;
+  }),
   routeHandlerStore: {
     subscribe: (set) => {
       return { unsubscribe: () => null };
@@ -476,5 +479,46 @@ describe("TestCaseRoutes", () => {
 
     expect(getByTestId("404-page")).toBeInTheDocument();
     expect(getByTestId("404-page-link")).toBeInTheDocument();
+  });
+
+  it("should display error message when fetch test cases fails", async () => {
+    mockedAxios.get.mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["SeriesA"] });
+      } else if (
+        args &&
+        args.startsWith(serviceConfig.measureService.baseUrl)
+      ) {
+        return Promise.resolve({
+          data: {
+            id: "m1234",
+            createdBy: MEASURE_CREATEDBY,
+            measureScoring: MeasureScoring.COHORT,
+            measurementPeriodStart: "2023-01-01",
+            measurementPeriodEnd: "2023-12-31",
+          },
+        });
+      } else if (args && args.endsWith("test-cases")) {
+        return Promise.reject({
+          error: {
+            message: "Unable to retrieve test cases, please try later",
+          },
+        });
+      }
+      return Promise.resolve({ data: null });
+    });
+
+    const { getByTestId } = render(
+      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases"]}>
+        <ApiContextProvider value={serviceConfig}>
+          <TestCaseRoutes />
+        </ApiContextProvider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      const error = getByTestId("execution_context_loading_errors");
+      expect(error).toBeInTheDocument();
+    });
   });
 });

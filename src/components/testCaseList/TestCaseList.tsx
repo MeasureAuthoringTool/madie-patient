@@ -11,7 +11,7 @@ import {
   CalculationOutput,
   DetailedPopulationGroupResult,
 } from "fqm-execution/build/types/Calculator";
-import { useOktaTokens } from "@madie/madie-util";
+import { checkUserCanEdit } from "@madie/madie-util";
 import useExecutionContext from "../routes/useExecutionContext";
 import CreateCodeCoverageNavTabs from "./CreateCodeCoverageNavTabs";
 import CodeCoverageHighlighting from "./CodeCoverageHighlighting";
@@ -20,12 +20,21 @@ import { MadieSpinner } from "@madie/madie-design-system/dist/react";
 import TestCaseListSideBarNav from "./TestCaseListSideBarNav";
 
 const TH = tw.th`p-3 border-b text-left text-sm font-bold capitalize`;
-const ErrorAlert = tw.div`bg-red-100 text-red-700 rounded-lg m-1 p-3`;
 
 export const coverageHeaderRegex =
-  /<h2> Clause Coverage: ((\d*\.\d+)|NaN)%<\/h2>/i;
-export const removeHtmlCoverageHeader = (coverageHtml: string) => {
-  return coverageHtml?.replace(coverageHeaderRegex, "");
+  /<h2> (.*) Clause Coverage: ((\d*\.\d+)|NaN)%<\/h2>/i;
+
+export const removeHtmlCoverageHeader = (
+  coverageHtml: Record<string, string>
+): Record<string, string> => {
+  const groupCoverage: Record<string, string> = {};
+  for (const groupId in coverageHtml) {
+    groupCoverage[groupId] = coverageHtml[groupId]?.replace(
+      coverageHeaderRegex,
+      ""
+    );
+  }
+  return groupCoverage;
 };
 
 export interface TestCasesPassingDetailsProps {
@@ -33,24 +42,26 @@ export interface TestCasesPassingDetailsProps {
   passFailRatio: string;
 }
 
-const TestCaseList = () => {
+export interface TestCaseListProps {
+  setError: (value: string) => void;
+}
+
+const TestCaseList = (props: TestCaseListProps) => {
   const [testCases, setTestCases] = useState<TestCase[]>(null);
   const [executionResults, setExecutionResults] = useState<{
     [key: string]: DetailedPopulationGroupResult[];
   }>({});
-  const [error, setError] = useState("");
+  const { setError } = props;
   const { measureId } = useParams<{ measureId: string }>();
   const testCaseService = useRef(useTestCaseServiceApi());
   const calculation = useRef(calculationService());
-  const { getUserName } = useOktaTokens();
-  const userName = getUserName();
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("passing");
   const [calculationOutput, setCalculationOutput] =
     useState<CalculationOutput<any>>();
   const [executeAllTestCases, setExecuteAllTestCases] =
     useState<boolean>(false);
-  const [coverageHTML, setCoverageHTML] = useState<string>("");
+  const [coverageHTML, setCoverageHTML] = useState<Record<string, string>>();
   const [coveragePercentage, setCoveragePercentage] = useState<number>(0);
   const [testCasePassFailStats, setTestCasePassFailStats] =
     useState<TestCasesPassingDetailsProps>({
@@ -58,14 +69,8 @@ const TestCaseList = () => {
       passFailRatio: "",
     });
   const [initialLoad, setInitialLoad] = useState<boolean>(true);
-  const {
-    measureState,
-    bundleState,
-    valueSetsState,
-    executionContextReady,
-    executing,
-    setExecuting,
-  } = useExecutionContext();
+  const { measureState, bundleState, valueSetsState, executing, setExecuting } =
+    useExecutionContext();
   const [measure] = measureState;
   const [measureBundle] = bundleState;
   const [valueSets] = valueSetsState;
@@ -85,14 +90,8 @@ const TestCaseList = () => {
   }, [measure]);
 
   useEffect(() => {
-    setCanEdit(
-      measure?.createdBy === userName ||
-        measure?.acls?.some(
-          (acl) =>
-            acl.userId === userName && acl.roles.indexOf("SHARED_WITH") >= 0
-        )
-    );
-  }, [measure, userName]);
+    setCanEdit(checkUserCanEdit(measure?.createdBy, measure?.acls));
+  }, [measure]);
 
   const retrieveTestCases = useCallback(() => {
     testCaseService.current
@@ -133,7 +132,9 @@ const TestCaseList = () => {
     const validTestCases = testCases?.filter((tc) => tc.validResource);
     if (validTestCases && calculationOutput?.results) {
       const executionResults = calculationOutput.results;
-      setCoverageHTML(removeHtmlCoverageHeader(calculationOutput.coverageHTML));
+      setCoverageHTML(
+        removeHtmlCoverageHeader(calculationOutput["groupClauseCoverageHTML"])
+      );
       const nextExecutionResults = {};
       validTestCases.forEach((testCase, i) => {
         const detailedResults = executionResults.find(
@@ -248,11 +249,6 @@ const TestCaseList = () => {
               />
             </div>
             <CreateNewTestCaseDialog open={createOpen} onClose={handleClose} />
-            {error && (
-              <ErrorAlert data-testid="display-tests-error" role="alert">
-                {error}
-              </ErrorAlert>
-            )}
 
             {activeTab === "passing" && (
               <div tw="overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -301,8 +297,10 @@ const TestCaseList = () => {
               </div>
             )}
 
-            {activeTab === "coverage" && (
-              <CodeCoverageHighlighting coverageHTML={coverageHTML} />
+            {activeTab === "coverage" && coverageHTML && (
+              <CodeCoverageHighlighting
+                coverageHTML={coverageHTML[selectedPopCriteria.id]}
+              />
             )}
           </div>
         </>
