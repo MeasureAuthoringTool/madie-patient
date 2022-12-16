@@ -125,9 +125,8 @@ describe("Create New Test Case Dialog", () => {
       const saveButton = await getByTestId("create-test-case-save-button");
       expect(saveButton).not.toBeDisabled();
       fireEvent.click(saveButton);
-
       await waitFor(() => {
-        expect(queryByTestId("server-error-alerts")).not.toBeInTheDocument();
+        expect(queryByTestId("server-error-alerts")).not.toBeVisible();
       });
     });
   }, 10000);
