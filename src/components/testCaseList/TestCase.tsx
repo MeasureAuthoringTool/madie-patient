@@ -100,12 +100,10 @@ const TestCase = ({
         data-testid={`test-case-row-${testCase.id}`}
         style={{ borderBottom: "solid 1px #DDD !important" }}
         className="tcl-tr"
-        role="row"
       >
         <td
           style={{ width: 140 }}
           aria-label={`${testCase.id}-status-${testCase.executionStatus}`}
-          role="gridcell"
         >
           {TestCaseStatus(status)}
         </td>
