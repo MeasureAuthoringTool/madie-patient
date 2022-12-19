@@ -43,7 +43,8 @@ export interface TestCasesPassingDetailsProps {
 }
 
 export interface TestCaseListProps {
-  setError: (value: string) => void;
+  errors: Array<string>;
+  setErrors: (value: Array<string>) => void;
 }
 
 const TestCaseList = (props: TestCaseListProps) => {
@@ -51,7 +52,10 @@ const TestCaseList = (props: TestCaseListProps) => {
   const [executionResults, setExecutionResults] = useState<{
     [key: string]: DetailedPopulationGroupResult[];
   }>({});
-  const { setError } = props;
+  const { errors, setErrors } = props;
+  if (!errors) {
+    setErrors([]);
+  }
   const { measureId } = useParams<{ measureId: string }>();
   const testCaseService = useRef(useTestCaseServiceApi());
   const calculation = useRef(calculationService());
@@ -103,7 +107,7 @@ const TestCaseList = (props: TestCaseListProps) => {
         setTestCases(testCaseList);
       })
       .catch((err) => {
-        setError(err.message);
+        setErrors([...errors, err.message]);
       })
       .finally(() => {
         setInitialLoad(false);
@@ -186,7 +190,10 @@ const TestCaseList = (props: TestCaseListProps) => {
         retrieveTestCases();
       })
       .catch((err) => {
-        setError(err.message);
+        console.error(
+          "deleteTestCaseByTestCaseId: err.message = " + err.message
+        );
+        setErrors([...errors, err.message]);
       });
   };
 
@@ -196,9 +203,13 @@ const TestCaseList = (props: TestCaseListProps) => {
 
   const executeTestCases = async () => {
     if (measure && measure.cqlErrors) {
-      setError(
-        "Cannot execute test cases while errors exist in the measure CQL!"
+      console.error(
+        "executeTestCases: Cannot execute test cases while errors exist in the measure CQL! "
       );
+      setErrors([
+        ...errors,
+        "Cannot execute test cases while errors exist in the measure CQL!",
+      ]);
       return null;
     }
     const validTestCases = testCases?.filter((tc) => tc.validResource);
@@ -215,11 +226,16 @@ const TestCaseList = (props: TestCaseListProps) => {
           );
         setCalculationOutput(calculationOutput);
       } catch (error) {
-        setError(error.message);
+        console.error("calculateTestCases: error.message = " + error.message);
+        setErrors([...errors, error.message]);
       }
       setExecuting(false);
     } else if (_.isNil(validTestCases) || _.isEmpty(validTestCases)) {
-      setError("No valid test cases to execute!");
+      console.error("calculateTestCases: No valid test cases to execute");
+      setErrors([
+        ...errors,
+        "calculateTestCases: No valid test cases to execute",
+      ]);
     }
   };
 

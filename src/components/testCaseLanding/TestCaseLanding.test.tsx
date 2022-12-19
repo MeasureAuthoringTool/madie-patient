@@ -69,7 +69,7 @@ describe("TestCaseLanding component", () => {
             <Routes>
               <Route
                 path="/measures/:measureId/edit/test-cases"
-                element={<TestCaseLanding setError={setError} />}
+                element={<TestCaseLanding errors={[]} setErrors={setError} />}
               />
             </Routes>
           </ExecutionContextProvider>
