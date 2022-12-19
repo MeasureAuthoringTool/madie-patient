@@ -7,7 +7,7 @@ import { useDocumentTitle } from "@madie/madie-util";
 const TestCaseLanding = (props: TestCaseListProps) => {
   useDocumentTitle("MADiE Edit Measure Test Cases");
   return (
-    <div tw="m-2">
+    <div>
       <section>
         <TestCaseList errors={props.errors} setErrors={props.setErrors} />
       </section>

@@ -1,7 +1,8 @@
+.alert-container {
+  margin-right: 2rem;
+  margin-left: 2rem;
+}
 .madie-alert {
-  margin-bottom: 10px;
-  margin-left: 40px;
-  margin-right: 40px;
   > #content {
     max-height: 125px;
     overflow: auto;
