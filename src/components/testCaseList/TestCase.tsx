@@ -100,22 +100,31 @@ const TestCase = ({
         data-testid={`test-case-row-${testCase.id}`}
         style={{ borderBottom: "solid 1px #DDD !important" }}
         className="tcl-tr"
+        role="row"
       >
-        <td style={{ width: 140 }}>{TestCaseStatus(status)}</td>
+        <td
+          style={{ width: 140 }}
+          aria-label={`${testCase.id}-status-${testCase.executionStatus}`}
+          role="gridcell"
+        >
+          {TestCaseStatus(status)}
+        </td>
         <td data-testid={`test-case-series-${testCase.id}`}>
           <TruncateText
             text={testCase.series}
             maxLength={120}
-            name="title"
+            name="series"
             dataTestId={`test-case-series-${testCase.id}`}
+            aria-label={`${testCase.id}-series-${testCase.series}`}
           />
         </td>
         <td data-testid={`test-case-title-${testCase.id}`}>
           <TruncateText
             text={testCase.title}
             maxLength={60}
-            name="series"
+            name="title"
             dataTestId={`test-case-title-${testCase.id}`}
+            aria-label={`${testCase.id}-title-${testCase.title}`}
           />
         </td>
         <td data-testid={`test-case-description-${testCase.id}`}>
@@ -124,6 +133,7 @@ const TestCase = ({
             maxLength={120}
             name="description"
             dataTestId={`test-case-description-${testCase.id}`}
+            aria-label={`${testCase.id}-description-${testCase.description}`}
           />
         </td>
 
