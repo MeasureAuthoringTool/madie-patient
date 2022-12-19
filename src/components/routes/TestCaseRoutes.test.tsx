@@ -429,7 +429,7 @@ describe("TestCaseRoutes", () => {
           "An error occurred while creating the test case: Unable to create new test case"
         )
       ).toBeTruthy();
-      expect(screen.findByTestId("ClearIcon")).toBeTruthy();
+      expect(screen.getByTestId("close-error-button")).toBeTruthy();
     });
   });
 

@@ -439,7 +439,7 @@ describe("TestCaseList component", () => {
               setExecuting: jest.fn(),
             }}
           >
-            <TestCaseList setError={setError} />
+            <TestCaseList errors={[]} setErrors={setError} />
           </ExecutionContextProvider>
         </ApiContextProvider>
       </MemoryRouter>
