@@ -90,7 +90,13 @@ const TestCase = ({
     }
 
     return (
-      <Box style={{ display: "flex", alignItems: "center" }}>{content}</Box>
+      <Box
+        aria-label={executionStatus || "fail"}
+        aria-live="polite"
+        style={{ display: "flex", alignItems: "center" }}
+      >
+        {content}
+      </Box>
     );
   };
 
@@ -135,7 +141,7 @@ const TestCase = ({
               handleOpen(testCase, e);
             }}
             tw="text-blue-600 hover:text-blue-900"
-            data-testid={`select-action-${testCase.id}`}
+            data-testid={`select-action-${testCase.title}`}
             aria-label={`select-action-${testCase.title}`}
           >
             <div className="action">Select</div>
@@ -205,7 +211,7 @@ const TestCase = ({
             <button
               id={`view-edit-test-case-${testCase.id}`}
               aria-label={`${viewOrEdit}-test-case-${testCase.title}`}
-              data-testid={`view-edit-test-case-${testCase.id}`}
+              data-testid={`view-edit-test-case-${testCase.title}`}
               onClick={() => {
                 navigate(`./${testCase.id}`);
                 setOptionsOpen(false);
@@ -217,7 +223,7 @@ const TestCase = ({
               <button
                 id={`delete-test-case-btn-${testCase.id}`}
                 aria-label={`delete-test-case-${testCase.title}`}
-                data-testid={`delete-test-case-btn-${testCase.id}`}
+                data-testid={`delete-test-case-btn-${testCase.title}`}
                 onClick={() => {
                   setDeleteDialogModalOpen(true);
                   setOptionsOpen(false);
