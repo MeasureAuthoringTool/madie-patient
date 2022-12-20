@@ -5,22 +5,23 @@ import "./StatusHandler.scss";
 const StatusHandler = ({ error, errorMessages, testDataId }) => {
   {
     if (error && errorMessages) {
-      //if (errorMessages) {
-      if (errorMessages.length === 1) {
+      const withoutDuplicates = [...new Set(errorMessages)];
+
+      if (withoutDuplicates.length === 1) {
         return (
           <MadieAlert
             data-testid="generic-error-text-header"
             type="error"
             content={
               <h3 aria-live="polite" role="alert" data-testid={testDataId}>
-                {errorMessages}
+                {withoutDuplicates}
               </h3>
             }
             canClose={false}
           />
         );
-      } else if (errorMessages.length > 1) {
-        const mappedMessages = errorMessages.map(
+      } else if (withoutDuplicates.length > 1) {
+        const mappedMessages = withoutDuplicates.map(
           (em: string, index: number) => <ol key={index}>{em}</ol>
         );
         return (
@@ -28,7 +29,7 @@ const StatusHandler = ({ error, errorMessages, testDataId }) => {
             type="error"
             content={
               <div aria-live="polite" role="alert" data-testid={testDataId}>
-                <h3>{errorMessages.length} errors were found</h3>
+                <h3>{withoutDuplicates.length} errors were found</h3>
                 <ul data-testid="generic-fail-text-list">{mappedMessages}</ul>
               </div>
             }
