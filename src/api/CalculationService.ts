@@ -358,9 +358,14 @@ export class CalculationService {
       const patientBased =
         "boolean" === _.lowerCase(groupPopulation.populationBasis);
       groupPopulation.populationValues?.every((popVal) => {
+        const isObs = isTestCasePopulationObservation(popVal);
         groupPass =
           groupPass &&
-          this.isValuePass(popVal.actual, popVal.expected, patientBased);
+          this.isValuePass(
+            popVal.actual,
+            popVal.expected,
+            isObs ? false : patientBased
+          );
         return groupPass;
       });
 
