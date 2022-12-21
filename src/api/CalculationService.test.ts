@@ -574,6 +574,54 @@ describe("CalculationService Tests", () => {
       const output = calculationService.isGroupPass(groupPop);
       expect(output).toEqual(false);
     });
+
+    it("should fail group with incorrect measure observations for Ratio", () => {
+      const groupPop: GroupPopulation = {
+        groupId: "group1ID",
+        scoring: MeasureScoring.RATIO,
+        populationBasis: "boolean",
+        populationValues: [
+          {
+            id: "1",
+            expected: true,
+            actual: true,
+            criteriaReference: "ipp",
+            name: PopulationType.INITIAL_POPULATION,
+          },
+          {
+            id: "2",
+            expected: true,
+            actual: true,
+            criteriaReference: "den",
+            name: PopulationType.DENOMINATOR,
+          },
+          {
+            id: "3",
+            expected: "33" as any,
+            actual: 44,
+            criteriaReference: "denObs",
+            name: PopulationType.DENOMINATOR_OBSERVATION,
+          },
+          {
+            id: "4",
+            expected: true,
+            actual: true,
+            criteriaReference: "num",
+            name: PopulationType.NUMERATOR,
+          },
+          {
+            id: "5",
+            expected: true,
+            actual: "true" as any,
+            criteriaReference: "num",
+            name: PopulationType.NUMERATOR_OBSERVATION,
+          },
+        ],
+        stratificationValues: [],
+      };
+      const output = calculationService.isGroupPass(groupPop);
+      expect(output).toEqual(false);
+    });
   });
 
   describe("CalculationService.buildPatientResults", () => {
