@@ -104,7 +104,7 @@ describe("TestCaseRoutes", () => {
     expect(testCaseTitle).toBeInTheDocument();
     const testCaseSeries = await screen.findByText("IPP_Pass");
     expect(testCaseSeries).toBeInTheDocument();
-    const editBtn = screen.getByRole("button", { name: "Select" });
+    const editBtn = screen.getByRole("button", { name: "select-action-TC1" });
     expect(editBtn).toBeInTheDocument();
   });
 
@@ -429,7 +429,7 @@ describe("TestCaseRoutes", () => {
           "An error occurred while creating the test case: Unable to create new test case"
         )
       ).toBeTruthy();
-      expect(screen.findByTestId("close-error-button")).toBeTruthy();
+      expect(screen.getByTestId("close-error-button")).toBeTruthy();
     });
   });
 
@@ -464,7 +464,7 @@ describe("TestCaseRoutes", () => {
     expect(testCaseTitle).toBeInTheDocument();
     const testCaseSeries = await screen.findByText("IPP_Pass");
     expect(testCaseSeries).toBeInTheDocument();
-    const editBtn = screen.getByRole("button", { name: "Select" });
+    const editBtn = screen.getByRole("button", { name: "select-action-TC1" });
     expect(editBtn).toBeInTheDocument();
   });
 

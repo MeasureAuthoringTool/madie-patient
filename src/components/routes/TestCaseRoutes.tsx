@@ -14,7 +14,7 @@ import StatusHandler from "../statusHandler/StatusHandler";
 const TestCaseRoutes = () => {
   const [measureBundle, setMeasureBundle] = useState<Bundle>();
   const [valueSets, setValueSets] = useState<ValueSet[]>();
-  const [errors, setErrors] = useState<string>();
+  const [errors, setErrors] = useState<Array<string>>([]);
   const [executionContextReady, setExecutionContextReady] = useState<boolean>();
   const [executing, setExecuting] = useState<boolean>();
   const [lastMeasure, setLastMeasure] = useState<any>();
@@ -45,7 +45,8 @@ const TestCaseRoutes = () => {
           setMeasureBundle(bundle);
         })
         .catch((err) => {
-          setErrors(err.message);
+          errors.push(err.message);
+          setErrors(errors);
         });
     }
   }, [measure]);
@@ -58,7 +59,8 @@ const TestCaseRoutes = () => {
           setValueSets(vs);
         })
         .catch((err) => {
-          setErrors(err.message);
+          errors.push(err.message);
+          setErrors(errors);
         });
     }
   }, [measureBundle]);
@@ -78,18 +80,19 @@ const TestCaseRoutes = () => {
         setExecuting,
       }}
     >
-      {errors && (
-        <div className="alert-container">
-          <StatusHandler
-            error={true}
-            errorMessage={errors}
-            testDataId="execution_context_loading_errors"
-          ></StatusHandler>
-        </div>
+      {errors && errors.length > 0 && (
+        <StatusHandler
+          error={true}
+          errorMessages={errors}
+          testDataId="execution_context_loading_errors"
+        ></StatusHandler>
       )}
       <Routes>
         <Route path="/measures/:measureId/edit/test-cases">
-          <Route index element={<TestCaseLanding setError={setErrors} />} />
+          <Route
+            index
+            element={<TestCaseLanding errors={errors} setErrors={setErrors} />}
+          />
           <Route path="edit" element={<EditTestCase />} />
           <Route path=":id" element={<EditTestCase />} />
         </Route>

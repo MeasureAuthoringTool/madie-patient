@@ -28,6 +28,7 @@ const TestCase = ({
   executionResult: DetailedPopulationGroupResult[];
   deleteTestCase;
 }) => {
+  const viewOrEdit = canEdit ? "edit" : "view";
   const theme = useTheme();
   const navigate = useNavigate();
   const status = testCase.executionStatus;
@@ -89,7 +90,13 @@ const TestCase = ({
     }
 
     return (
-      <Box style={{ display: "flex", alignItems: "center" }}>{content}</Box>
+      <Box
+        aria-label={executionStatus || "fail"}
+        aria-live="polite"
+        style={{ display: "flex", alignItems: "center" }}
+      >
+        {content}
+      </Box>
     );
   };
 
@@ -106,7 +113,7 @@ const TestCase = ({
           <TruncateText
             text={testCase.series}
             maxLength={120}
-            name="title"
+            name="series"
             dataTestId={`test-case-series-${testCase.id}`}
           />
         </td>
@@ -114,7 +121,7 @@ const TestCase = ({
           <TruncateText
             text={testCase.title}
             maxLength={60}
-            name="series"
+            name="title"
             dataTestId={`test-case-title-${testCase.id}`}
           />
         </td>
@@ -134,7 +141,8 @@ const TestCase = ({
               handleOpen(testCase, e);
             }}
             tw="text-blue-600 hover:text-blue-900"
-            data-testid={`select-action-${testCase.id}`}
+            data-testid={`select-action-${testCase.title}`}
+            aria-label={`select-action-${testCase.title}`}
           >
             <div className="action">Select</div>
             <div className="chevron-container">
@@ -201,17 +209,21 @@ const TestCase = ({
         <div className="popover-content" data-testid="popover-content">
           <div className="btn-container">
             <button
-              data-testid={`view-edit-test-case-${testCase.id}`}
+              id={`view-edit-test-case-${testCase.id}`}
+              aria-label={`${viewOrEdit}-test-case-${testCase.title}`}
+              data-testid={`view-edit-test-case-${testCase.title}`}
               onClick={() => {
                 navigate(`./${testCase.id}`);
                 setOptionsOpen(false);
               }}
             >
-              {canEdit ? "edit" : "view"}
+              {viewOrEdit}
             </button>
             {canEdit && (
               <button
-                data-testid="delete-test-case-btn"
+                id={`delete-test-case-btn-${testCase.id}`}
+                aria-label={`delete-test-case-${testCase.title}`}
+                data-testid={`delete-test-case-btn-${testCase.title}`}
                 onClick={() => {
                   setDeleteDialogModalOpen(true);
                   setOptionsOpen(false);
