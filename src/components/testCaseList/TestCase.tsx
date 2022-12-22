@@ -141,7 +141,7 @@ const TestCase = ({
               handleOpen(testCase, e);
             }}
             tw="text-blue-600 hover:text-blue-900"
-            data-testid={`select-action-${testCase.title}`}
+            data-testid={`select-action-${testCase.id}`}
             aria-label={`select-action-${testCase.title}`}
           >
             <div className="action">Select</div>
@@ -211,7 +211,7 @@ const TestCase = ({
             <button
               id={`view-edit-test-case-${testCase.id}`}
               aria-label={`${viewOrEdit}-test-case-${testCase.title}`}
-              data-testid={`view-edit-test-case-${testCase.title}`}
+              data-testid={`view-edit-test-case-${testCase.id}`}
               onClick={() => {
                 navigate(`./${testCase.id}`);
                 setOptionsOpen(false);
@@ -223,7 +223,7 @@ const TestCase = ({
               <button
                 id={`delete-test-case-btn-${testCase.id}`}
                 aria-label={`delete-test-case-${testCase.title}`}
-                data-testid={`delete-test-case-btn-${testCase.title}`}
+                data-testid={`delete-test-case-btn-${testCase.id}`}
                 onClick={() => {
                   setDeleteDialogModalOpen(true);
                   setOptionsOpen(false);

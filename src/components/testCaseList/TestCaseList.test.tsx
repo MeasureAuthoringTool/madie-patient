@@ -464,13 +464,13 @@ describe("TestCaseList component", () => {
       expect(tableRows[0]).toHaveTextContent(testCases[0].title);
       expect(tableRows[0]).toHaveTextContent(testCases[0].series);
       expect(
-        screen.getByTestId(`select-action-${testCases[0].title}`)
+        screen.getByTestId(`select-action-${testCases[0].id}`)
       ).toBeInTheDocument();
 
       expect(tableRows[1]).toHaveTextContent(testCases[1].title);
       expect(tableRows[1]).toHaveTextContent(testCases[1].series);
       expect(
-        screen.getByTestId(`select-action-${testCases[1].title}`)
+        screen.getByTestId(`select-action-${testCases[1].id}`)
       ).toBeInTheDocument();
     });
   });
@@ -500,12 +500,10 @@ describe("TestCaseList component", () => {
   it("should navigate to the Test Case details page on edit button click", async () => {
     const { getByTestId } = renderTestCaseListComponent();
     await waitFor(() => {
-      const selectButton = getByTestId(`select-action-${testCases[0].title}`);
+      const selectButton = getByTestId(`select-action-${testCases[0].id}`);
       expect(selectButton).toBeInTheDocument();
       fireEvent.click(selectButton);
-      const editButton = getByTestId(
-        `view-edit-test-case-${testCases[0].title}`
-      );
+      const editButton = getByTestId(`view-edit-test-case-${testCases[0].id}`);
       fireEvent.click(editButton);
       expect(mockedUsedNavigate).toHaveBeenCalled();
     });
@@ -514,13 +512,11 @@ describe("TestCaseList component", () => {
   it("should render delete dialogue on Test Case list page when delete button is clicked", async () => {
     const { getByTestId } = renderTestCaseListComponent();
     await waitFor(() => {
-      const selectButton = getByTestId(`select-action-${testCases[0].title}`);
+      const selectButton = getByTestId(`select-action-${testCases[0].id}`);
       expect(selectButton).toBeInTheDocument();
       fireEvent.click(selectButton);
     });
-    const deleteButton = getByTestId(
-      `delete-test-case-btn-${testCases[0].title}`
-    );
+    const deleteButton = getByTestId(`delete-test-case-btn-${testCases[0].id}`);
     fireEvent.click(deleteButton);
 
     expect(screen.getByTestId("delete-dialog")).toBeInTheDocument();
@@ -541,12 +537,10 @@ describe("TestCaseList component", () => {
   it("should navigate to the Test Case details page on edit button click for shared user", async () => {
     const { getByTestId } = renderTestCaseListComponent();
     await waitFor(() => {
-      const selectButton = getByTestId(`select-action-${testCases[0].title}`);
+      const selectButton = getByTestId(`select-action-${testCases[0].id}`);
       expect(selectButton).toBeInTheDocument();
       fireEvent.click(selectButton);
-      const editButton = getByTestId(
-        `view-edit-test-case-${testCases[0].title}`
-      );
+      const editButton = getByTestId(`view-edit-test-case-${testCases[0].id}`);
       fireEvent.click(editButton);
       expect(mockedUsedNavigate).toHaveBeenCalled();
     });
@@ -556,12 +550,10 @@ describe("TestCaseList component", () => {
     measure.createdBy = "AnotherUser";
     const { getByTestId } = renderTestCaseListComponent();
     await waitFor(() => {
-      const selectButton = getByTestId(`select-action-${testCases[0].title}`);
+      const selectButton = getByTestId(`select-action-${testCases[0].id}`);
       expect(selectButton).toBeInTheDocument();
       fireEvent.click(selectButton);
-      const viewButton = getByTestId(
-        `view-edit-test-case-${testCases[0].title}`
-      );
+      const viewButton = getByTestId(`view-edit-test-case-${testCases[0].id}`);
       fireEvent.click(viewButton);
       expect(mockedUsedNavigate).toHaveBeenCalled();
     });
