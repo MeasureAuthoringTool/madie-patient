@@ -50,7 +50,7 @@ const TestCaseRoutes = () => {
         );
       }
       setErrors(errors);
-      if (!errors) {
+      if (!!errors) {
         measureService.current
           .fetchMeasureBundle(measure)
           .then((bundle: Bundle) => {
