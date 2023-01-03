@@ -40,17 +40,18 @@ const TestCaseRoutes = () => {
       setLastMeasure(compareTo);
       setErrors(null);
       if (measure.cqlErrors || !measure.elmJson) {
-        errors.push(
-          "An error exists with the measure CQL, please review the CQL Editor tab."
-        );
+        setErrors([
+          ...errors,
+          "An error exists with the measure CQL, please review the CQL Editor tab.",
+        ]);
       }
       if (!measure.groups) {
-        errors.push(
-          "There are no groups associated with this measure. Please review the Groups tab."
-        );
+        setErrors([
+          ...errors,
+          "There are no groups associated with this measure. Please review the Groups tab.",
+        ]);
       }
-      setErrors(errors);
-      if (!!errors) {
+      if (!errors?.length) {
         measureService.current
           .fetchMeasureBundle(measure)
           .then((bundle: Bundle) => {
