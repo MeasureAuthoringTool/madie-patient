@@ -48,7 +48,7 @@ const TestCaseRoutes = () => {
       if (!measure.groups) {
         setErrors([
           ...errors,
-          "There are no groups associated with this measure. Please review the Groups tab.",
+          "No Population Criteria is associated with this measure. Please review the Population Criteria tab.",
         ]);
       }
       if (!errors?.length) {
