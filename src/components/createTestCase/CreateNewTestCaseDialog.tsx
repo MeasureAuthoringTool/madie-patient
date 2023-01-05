@@ -62,7 +62,7 @@ const testCaseSeriesStyles = {
 const CreateNewTestCaseDialog = ({ open, onClose }) => {
   const [toast, setToast] = useState<Toast>({
     toastOpen: false,
-    toastType: null,
+    toastType: "danger",
     toastMessage: "",
   });
   const { toastOpen, toastType, toastMessage } = toast;
@@ -119,7 +119,7 @@ const CreateNewTestCaseDialog = ({ open, onClose }) => {
   const handleSubmit = async (testCase: TestCase) => {
     setToast({
       toastOpen: false,
-      toastType: "",
+      toastType: "danger",
       toastMessage: "",
     });
     testCase.title = sanitizeUserInput(testCase.title);
@@ -151,7 +151,7 @@ const CreateNewTestCaseDialog = ({ open, onClose }) => {
       formik.resetForm();
       setToast({
         toastOpen: false,
-        toastType: "",
+        toastType: "danger",
         toastMessage: "",
       });
 
@@ -180,13 +180,12 @@ const CreateNewTestCaseDialog = ({ open, onClose }) => {
         form
         title="Create Test Case"
         dialogProps={{
-          open,
           onClose,
+          open,
           onSubmit: formik.handleSubmit,
         }}
         cancelButtonProps={{
           variant: "secondary",
-          onClick: onClose,
           cancelText: "Cancel",
           "data-testid": "create-test-case-cancel-button",
         }}
@@ -212,9 +211,12 @@ const CreateNewTestCaseDialog = ({ open, onClose }) => {
             onClose={() => {
               setToast({
                 toastOpen: false,
-                toastType: null,
+                toastType: "danger",
                 toastMessage: "",
               });
+            }}
+            closeButtonProps={{
+              "data-testid": "close-error-button",
             }}
             autoHideDuration={6000}
           />

@@ -50,8 +50,11 @@ const TextArea = ({
             fontSize: 14,
             borderRadius: "3px",
             padding: "9px 14px",
+            opacity: 1,
+            color: "#333",
             "&::placeholder": {
-              opacity: 0.6,
+              opacity: 1,
+              color: "#717171",
             },
           },
         }}

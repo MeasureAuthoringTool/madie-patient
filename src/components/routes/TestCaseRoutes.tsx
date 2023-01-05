@@ -14,7 +14,7 @@ import StatusHandler from "../statusHandler/StatusHandler";
 const TestCaseRoutes = () => {
   const [measureBundle, setMeasureBundle] = useState<Bundle>();
   const [valueSets, setValueSets] = useState<ValueSet[]>();
-  const [errors, setErrors] = useState<string>();
+  const [errors, setErrors] = useState<Array<string>>([]);
   const [executionContextReady, setExecutionContextReady] = useState<boolean>();
   const [executing, setExecuting] = useState<boolean>();
   const [lastMeasure, setLastMeasure] = useState<any>();
@@ -39,14 +39,29 @@ const TestCaseRoutes = () => {
       }
       setLastMeasure(compareTo);
       setErrors(null);
-      measureService.current
-        .fetchMeasureBundle(measure)
-        .then((bundle: Bundle) => {
-          setMeasureBundle(bundle);
-        })
-        .catch((err) => {
-          setErrors(err.message);
-        });
+      if (measure.cqlErrors || !measure.elmJson) {
+        setErrors([
+          ...errors,
+          "An error exists with the measure CQL, please review the CQL Editor tab.",
+        ]);
+      }
+      if (!measure.groups) {
+        setErrors([
+          ...errors,
+          "No Population Criteria is associated with this measure. Please review the Population Criteria tab.",
+        ]);
+      }
+      if (!errors?.length) {
+        measureService.current
+          .fetchMeasureBundle(measure)
+          .then((bundle: Bundle) => {
+            setMeasureBundle(bundle);
+          })
+          .catch((err) => {
+            errors.push(err.message);
+            setErrors(errors);
+          });
+      }
     }
   }, [measure]);
 
@@ -58,7 +73,8 @@ const TestCaseRoutes = () => {
           setValueSets(vs);
         })
         .catch((err) => {
-          setErrors(err.message);
+          errors.push(err.message);
+          setErrors(errors);
         });
     }
   }, [measureBundle]);
@@ -78,16 +94,19 @@ const TestCaseRoutes = () => {
         setExecuting,
       }}
     >
-      {errors && (
+      {errors && errors.length > 0 && (
         <StatusHandler
           error={true}
-          errorMessage={errors}
+          errorMessages={errors}
           testDataId="execution_context_loading_errors"
         ></StatusHandler>
       )}
       <Routes>
         <Route path="/measures/:measureId/edit/test-cases">
-          <Route index element={<TestCaseLanding setError={setErrors} />} />
+          <Route
+            index
+            element={<TestCaseLanding errors={errors} setErrors={setErrors} />}
+          />
           <Route path="edit" element={<EditTestCase />} />
           <Route path=":id" element={<EditTestCase />} />
         </Route>

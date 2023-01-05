@@ -212,6 +212,9 @@ const testTitle = async (title: string, clear = false) => {
 
 describe("EditTestCase component", () => {
   beforeEach(() => {
+    (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => {
+      return true;
+    });
     mockedAxios.get.mockImplementation((args) => {
       if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["SeriesA"] });
@@ -1858,7 +1861,7 @@ describe("EditTestCase component", () => {
   });
 
   it("should disable text input and no create or update button if measure is not shared with user", async () => {
-    (checkUserCanEdit as jest.Mock).mockImplementationOnce(() => {
+    (checkUserCanEdit as jest.Mock).mockImplementation(() => {
       return false;
     });
     mockedAxios.get.mockImplementation((args) => {
@@ -1880,12 +1883,12 @@ describe("EditTestCase component", () => {
     userEvent.click(screen.getByTestId("details-tab"));
     await waitFor(
       () => {
-        expect(screen.getByTestId("test-case-title")).toBeDisabled();
-        expect(screen.getByTestId("test-case-description")).toBeDisabled();
-        expect(screen.getByLabelText("Group")).toBeDisabled();
         expect(
           screen.queryByRole("button", { name: "Save" })
         ).not.toBeInTheDocument();
+        expect(screen.getByTestId("test-case-title")).toBeDisabled();
+        expect(screen.getByTestId("test-case-description")).toBeDisabled();
+        expect(screen.getByLabelText("Group")).toBeDisabled();
       },
       { timeout: 1500 }
     );

@@ -29,7 +29,7 @@ export const isTestCasePopulationObservation = (
     population.name === "measureObservation" ||
     population.name === PopulationType.MEASURE_OBSERVATION ||
     population.name === "measurePopulationObservation" ||
-    // population.name === PopulationType.MEASURE_POPULATION_OBSERVATION ||
+    population.name === PopulationType.MEASURE_POPULATION_OBSERVATION ||
     population.name === "numeratorObservation" ||
     population.name === PopulationType.NUMERATOR_OBSERVATION ||
     population.name === "denominatorObservation" ||

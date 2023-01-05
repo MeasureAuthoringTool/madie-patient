@@ -9,18 +9,6 @@ import { Bundle } from "fhir/r4";
 export class MeasureServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
   async fetchMeasureBundle(measure: Measure): Promise<Bundle> {
-    if (measure.cqlErrors || !measure.elmJson) {
-      throw new Error(
-        "An error exists with the measure CQL, please review the CQL Editor tab."
-      );
-    }
-
-    if (!measure.groups) {
-      throw new Error(
-        "There are no groups associated with this measure. Please review the Groups tab."
-      );
-    }
-
     try {
       const response = await axios.get(
         `${this.baseUrl}/measures/${measure.id}/bundles`,
