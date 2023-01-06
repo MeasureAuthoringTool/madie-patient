@@ -294,7 +294,7 @@ describe("TestCaseRoutes", () => {
             },
           ],
         });
-      } else if (args?.endsWith("/bundles")) {
+      } else if (args?.endsWith("/bundle")) {
         return Promise.resolve({ data: measureBundle });
       } else if (args?.endsWith("/value-sets/searches")) {
         return Promise.resolve({ data: [valueSets] });
@@ -377,7 +377,7 @@ describe("TestCaseRoutes", () => {
             },
           ],
         });
-      } else if (args?.endsWith("/bundles")) {
+      } else if (args?.endsWith("/bundle")) {
         return Promise.resolve({ data: measureBundle });
       } else if (args?.endsWith("/value-sets/searches")) {
         return Promise.resolve({ data: [valueSets] });
@@ -451,7 +451,7 @@ describe("TestCaseRoutes", () => {
 
   it("Fetch measure bundle on Routes load", async () => {
     mockedAxios.get.mockImplementation((args) => {
-      if (args?.endsWith("/bundles")) {
+      if (args?.endsWith("/bundle")) {
         return Promise.resolve({ data: measureBundle });
       } else if (args?.endsWith("/value-sets/searches")) {
         return Promise.resolve({ data: [valueSets] });
@@ -484,7 +484,7 @@ describe("TestCaseRoutes", () => {
     });
     expect(mockedAxios.get).toHaveBeenCalled();
     expect(mockedAxios.get).toHaveBeenCalledWith(
-      "measure.url/measures/m1234/bundles",
+      "measure.url/measures/m1234/bundle",
       { headers: { Authorization: "Bearer test.jwt" } }
     );
   });
