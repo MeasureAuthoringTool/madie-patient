@@ -118,7 +118,13 @@ describe("TestCasePopulationPopulation component", () => {
     const testCasePopulations = [
       {
         id: "1",
-        name: PopulationType.INITIAL_POPULATION,
+        name: PopulationType.INITIAL_POPULATION + " " + 1,
+        expected: 2,
+        actual: 2,
+      },
+      {
+        id: "9",
+        name: PopulationType.INITIAL_POPULATION + " " + 2,
         expected: 2,
         actual: 2,
       },
@@ -176,13 +182,14 @@ describe("TestCasePopulationPopulation component", () => {
     const table = screen.getByTestId("test-case-population-list-tbl");
 
     const tableRows = table.querySelectorAll("tbody tr");
-    expect(tableRows[0]).toHaveTextContent("Initial Population");
-    expect(tableRows[1]).toHaveTextContent("Denominator");
-    expect(tableRows[2]).toHaveTextContent("Denominator Observation 1");
-    expect(tableRows[3]).toHaveTextContent("Denominator Observation 2");
-    expect(tableRows[4]).toHaveTextContent("Numerator");
-    expect(tableRows[5]).toHaveTextContent("Numerator Observation 1");
-    expect(tableRows[6]).toHaveTextContent("Numerator Observation 2");
+    expect(tableRows[0]).toHaveTextContent("Initial Population 1");
+    expect(tableRows[1]).toHaveTextContent("Initial Population 2");
+    expect(tableRows[2]).toHaveTextContent("Denominator");
+    expect(tableRows[3]).toHaveTextContent("Denominator Observation 1");
+    expect(tableRows[4]).toHaveTextContent("Denominator Observation 2");
+    expect(tableRows[5]).toHaveTextContent("Numerator");
+    expect(tableRows[6]).toHaveTextContent("Numerator Observation 1");
+    expect(tableRows[7]).toHaveTextContent("Numerator Observation 2");
   });
 
   it("should render CV observations", async () => {
