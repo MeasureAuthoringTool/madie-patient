@@ -11,7 +11,7 @@ export class MeasureServiceApi {
   async fetchMeasureBundle(measure: Measure): Promise<Bundle> {
     try {
       const response = await axios.get(
-        `${this.baseUrl}/measures/${measure.id}/bundles`,
+        `${this.baseUrl}/measures/${measure.id}/bundle`,
         {
           headers: {
             Authorization: `Bearer ${this.getAccessToken()}`,

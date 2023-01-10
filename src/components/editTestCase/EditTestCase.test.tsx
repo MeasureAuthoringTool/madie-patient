@@ -2092,7 +2092,7 @@ describe("Measure Calculation ", () => {
       json: '{ "resourceType": "Bundle", "type": "collection", "entry": [] }',
     } as TestCase;
     mockedAxios.get.mockClear().mockImplementation((args) => {
-      if (args && args.endsWith("/bundles")) {
+      if (args && args.endsWith("/bundle")) {
         return Promise.resolve({
           data: buildMeasureBundle(simpleMeasureFixture),
         });
