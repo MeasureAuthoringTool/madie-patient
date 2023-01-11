@@ -12,6 +12,7 @@ export interface TestCasePopulationProps {
   disableExpected?: boolean;
   onChange: (population: DisplayPopulationValue) => void;
   measureObservationsCount: number;
+  initialPopulationCount: number;
   error: any;
 }
 
@@ -22,9 +23,16 @@ const TestCasePopulation = ({
   disableExpected = false,
   onChange,
   measureObservationsCount,
+  initialPopulationCount,
   error,
 }: TestCasePopulationProps) => {
   const populationNameTemplate = (prop) => {
+    if (prop === PopulationType.INITIAL_POPULATION) {
+      return (
+        _.startCase(PopulationType.INITIAL_POPULATION) +
+        (initialPopulationCount > 0 ? " " + initialPopulationCount : "")
+      );
+    }
     if (prop === PopulationType.MEASURE_POPULATION_OBSERVATION) {
       return (
         _.startCase(PopulationType.MEASURE_OBSERVATION) +
