@@ -5,7 +5,7 @@ import TestCaseRoutes from "./TestCaseRoutes";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
-import { MeasureScoring } from "@madie/madie-models";
+import { MeasureScoring, PopulationType } from "@madie/madie-models";
 import { getExampleValueSet } from "../../util/CalculationTestHelpers";
 import { Bundle } from "fhir/r4";
 import { act } from "react-dom/test-utils";
@@ -31,7 +31,7 @@ const serviceConfig: ServiceConfig = {
 const MEASURE_CREATEDBY = "testuser";
 const measureBundle = {} as Bundle;
 const valueSets = [getExampleValueSet()];
-const measure = {
+const mockMeasure = {
   id: "m1234",
   model: "QI-Core v4.1.1",
   cqlLibraryName: "CM527Library",
@@ -40,7 +40,23 @@ const measure = {
   active: true,
   cqlErrors: false,
   elmJson: "Fak3",
-  groups: [],
+  groups: [
+    {
+      id: null,
+      scoring: "Cohort",
+      populations: [
+        {
+          id: "id-1",
+          name: PopulationType.INITIAL_POPULATION,
+          definition: "Initial Population",
+        },
+      ],
+      groupDescription: "",
+      measureGroupTypes: [],
+      populationBasis: "boolean",
+      scoringUnit: "",
+    },
+  ],
   createdBy: MEASURE_CREATEDBY,
 };
 
@@ -51,7 +67,7 @@ jest.mock("@madie/madie-util", () => ({
     state: null,
     initialState: null,
     subscribe: (set) => {
-      set(measure);
+      set(mockMeasure);
       return { unsubscribe: () => null };
     },
     unsubscribe: () => null,
@@ -278,7 +294,7 @@ describe("TestCaseRoutes", () => {
             },
           ],
         });
-      } else if (args?.endsWith("/bundles")) {
+      } else if (args?.endsWith("/bundle")) {
         return Promise.resolve({ data: measureBundle });
       } else if (args?.endsWith("/value-sets/searches")) {
         return Promise.resolve({ data: [valueSets] });
@@ -361,7 +377,7 @@ describe("TestCaseRoutes", () => {
             },
           ],
         });
-      } else if (args?.endsWith("/bundles")) {
+      } else if (args?.endsWith("/bundle")) {
         return Promise.resolve({ data: measureBundle });
       } else if (args?.endsWith("/value-sets/searches")) {
         return Promise.resolve({ data: [valueSets] });
@@ -435,7 +451,7 @@ describe("TestCaseRoutes", () => {
 
   it("Fetch measure bundle on Routes load", async () => {
     mockedAxios.get.mockImplementation((args) => {
-      if (args?.endsWith("/bundles")) {
+      if (args?.endsWith("/bundle")) {
         return Promise.resolve({ data: measureBundle });
       } else if (args?.endsWith("/value-sets/searches")) {
         return Promise.resolve({ data: [valueSets] });
@@ -460,12 +476,17 @@ describe("TestCaseRoutes", () => {
       </MemoryRouter>
     );
 
-    const testCaseTitle = await screen.findByText("TC1");
-    expect(testCaseTitle).toBeInTheDocument();
-    const testCaseSeries = await screen.findByText("IPP_Pass");
-    expect(testCaseSeries).toBeInTheDocument();
-    const editBtn = screen.getByRole("button", { name: "select-action-TC1" });
-    expect(editBtn).toBeInTheDocument();
+    const runAllTestsButton = await screen.findByRole("button", {
+      name: "Run Test Cases",
+    });
+    await waitFor(() => {
+      expect(runAllTestsButton).toBeEnabled();
+    });
+    expect(mockedAxios.get).toHaveBeenCalled();
+    expect(mockedAxios.get).toHaveBeenCalledWith(
+      "measure.url/measures/m1234/bundle",
+      { headers: { Authorization: "Bearer test.jwt" } }
+    );
   });
 
   it("should render 404 page", async () => {
