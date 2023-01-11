@@ -146,7 +146,6 @@ const TestCasePopulationList = ({
           return initialPopulations.length;
         }
       }
-      return 0;
     }
     return 0;
   };
