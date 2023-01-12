@@ -1206,7 +1206,9 @@ describe("EditTestCase component", () => {
     const createBtn = screen.getByRole("button", { name: "Save" });
     await waitFor(() => {
       expect(createBtn).toBeDisabled;
-      expect(screen.getByTestId("description-helper-text")).toHaveTextContent(
+      expect(
+        screen.getByTestId("test-case-description-helper-text")
+      ).toHaveTextContent(
         "Test Case Description cannot be more than 250 characters."
       );
     });

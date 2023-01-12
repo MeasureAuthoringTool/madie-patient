@@ -6,7 +6,7 @@ import {
 } from "@madie/madie-models";
 
 export const officeVisitMeasure: Measure = {
-  version: 0,
+  version: "0",
   versionId: "",
   id: "626be3ca0ca8110d3b22404a",
   active: true,
@@ -58,6 +58,5 @@ export const officeVisitMeasure: Measure = {
   measurementPeriodEnd: new Date("2023-12-21"),
   measurementPeriodStart: new Date("2022-01-01"),
   model: Model.QICORE,
-  revisionNumber: null,
   state: null,
 };

@@ -595,16 +595,9 @@ const EditTestCase = (props: EditTestCaseProps) => {
     }
   }
 
-  function formikErrorHandler(name: string, isError: boolean) {
+  function formikErrorHandler(name: string) {
     if (formik.touched[name] && formik.errors[name]) {
-      return (
-        <HelperText
-          id={`${name}-helper-text`}
-          data-testid={`${name}-helper-text`}
-          text={formik.errors[name]?.toString()}
-          isError={isError}
-        />
-      );
+      return `${formik.errors[name]}`;
     }
   }
 
@@ -781,12 +774,11 @@ const EditTestCase = (props: EditTestCaseProps) => {
                     "data-testid": "test-case-title",
                     "aria-describedby": "title-helper-text",
                   }}
-                  helperText={formikErrorHandler("title", true)}
+                  helperText={formikErrorHandler("title")}
                   size="small"
                   error={formik.touched.title && Boolean(formik.errors.title)}
                   {...formik.getFieldProps("title")}
                 />
-
                 <div tw="mt-4">
                   <TextArea
                     placeholder="Test Case Description"
@@ -806,7 +798,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
                       formik.touched.description &&
                       Boolean(formik.errors.description)
                     }
-                    helperText={formikErrorHandler("description", true)}
+                    helperText={formikErrorHandler("description")}
                   />
                 </div>
 
