@@ -6,7 +6,7 @@ import {
 } from "@madie/madie-models";
 
 export const officeVisitMeasure: Measure = {
-  version: 0,
+  version: "0",
   versionId: "",
   id: "626be3ca0ca8110d3b22404a",
   active: true,
