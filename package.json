@@ -119,7 +119,7 @@
     "single-spa-react": "^4.2.0"
   },
   "overrides": {
-    "loader-utils@<2.0.3": "2.0.3"
+    "loader-utils@<2.0.3": "2.0.4"
   },
   "types": "dist/madie-madie-patient.d.ts",
   "browserslist": [
