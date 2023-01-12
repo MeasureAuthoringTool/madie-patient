@@ -58,6 +58,5 @@ export const officeVisitMeasure: Measure = {
   measurementPeriodEnd: new Date("2023-12-21"),
   measurementPeriodStart: new Date("2022-01-01"),
   model: Model.QICORE,
-  revisionNumber: null,
   state: null,
 };
