@@ -12,7 +12,6 @@ export const simpleMeasureFixture: Measure = {
   measureHumanReadableId: null,
   measureSetId: null,
   version: null,
-  revisionNumber: null,
   state: null,
   cqlLibraryName: "SimpleFhirMeasure",
   ecqmTitle: "ecqmTitle",

@@ -8,7 +8,7 @@ import {
   Toast,
 } from "@madie/madie-design-system/dist/react";
 import { Box } from "@mui/system";
-import { FormHelperText, InputLabel } from "@mui/material";
+import { InputLabel } from "@mui/material";
 import { useFormik } from "formik";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import * as _ from "lodash";
@@ -162,15 +162,9 @@ const CreateNewTestCaseDialog = ({ open, onClose }) => {
     }
   }
 
-  function formikErrorHandler(name: string, isError: boolean) {
+  function formikErrorHandler(name: string) {
     if (formik.touched[name] && formik.errors[name]) {
-      return (
-        <FormHelperText
-          data-testid={`${name}-helper-text`}
-          children={formik.errors[name]}
-          error={isError}
-        />
-      );
+      return `${formik.errors[name]}`;
     }
   }
 
@@ -231,7 +225,7 @@ const CreateNewTestCaseDialog = ({ open, onClose }) => {
                 "aria-describedby": "create-test-case-title-helper-text",
                 required: true,
               }}
-              helperText={formikErrorHandler("title", true)}
+              helperText={formikErrorHandler("title")}
               data-testid="create-test-case-title"
               size="small"
               error={formik.touched.title && Boolean(formik.errors.title)}
@@ -256,7 +250,7 @@ const CreateNewTestCaseDialog = ({ open, onClose }) => {
               error={
                 formik.touched.description && Boolean(formik.errors.description)
               }
-              helperText={formikErrorHandler("description", true)}
+              helperText={formikErrorHandler("description")}
             />
           </Box>
 
