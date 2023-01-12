@@ -78,6 +78,7 @@ const TestCasePopulationList = ({
   let measureObservations = [];
   let numeratorObservations = [];
   let denominatorObservations = [];
+  let initialPopulations = [];
   let contentId = content?.toLocaleLowerCase().replace(/(\W)+/g, "-");
 
   const getPopulationCount = (populations, type: PopulationType): number => {
@@ -133,6 +134,22 @@ const TestCasePopulationList = ({
       onChange(newPopulations, type, population);
     }
   };
+
+  const getIppCount = (population: DisplayPopulationValue) => {
+    if (scoring === "Ratio") {
+      const initialPopulationsCount = populations.filter(
+        (pop) => pop.name === "initialPopulation"
+      ).length;
+      if (initialPopulationsCount > 1) {
+        if (population.name === "initialPopulation") {
+          initialPopulations.push(population.name);
+          return initialPopulations.length;
+        }
+      }
+    }
+    return 0;
+  };
+
   // we need to do an all check here for pass / no pass
   const view = determineGroupResult(populationBasis, populations, executionRun);
 
@@ -193,6 +210,7 @@ const TestCasePopulationList = ({
                   ? measureObservationsCount(population)
                   : 0
               }
+              initialPopulationCount={getIppCount(population)}
               error={errors?.populationValues?.[j]}
             />
           ))}
