@@ -167,6 +167,7 @@ const valueSets = [getExampleValueSet()];
 const setMeasure = jest.fn();
 const setMeasureBundle = jest.fn();
 const setValueSets = jest.fn();
+const setError = jest.fn();
 
 const renderWithRouter = (
   initialEntries = [],
@@ -187,7 +188,10 @@ const renderWithRouter = (
           }}
         >
           <Routes>
-            <Route path={routePath} element={<EditTestCase />} />
+            <Route
+              path={routePath}
+              element={<EditTestCase errors={[]} setErrors={setError} />}
+            />
           </Routes>
         </ExecutionContextProvider>
       </ApiContextProvider>

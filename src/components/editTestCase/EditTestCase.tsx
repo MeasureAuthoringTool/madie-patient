@@ -164,7 +164,12 @@ const INITIAL_VALUES = {
   groupPopulations: [],
 } as TestCase;
 
-const EditTestCase = () => {
+export interface EditTestCaseProps {
+  errors: Array<string>;
+  setErrors: (value: Array<string>) => void;
+}
+
+const EditTestCase = (props: EditTestCaseProps) => {
   useDocumentTitle("MADiE Edit Measure Edit Test Case");
   const navigate = useNavigate();
   const { id, measureId } = useParams<
@@ -174,6 +179,10 @@ const EditTestCase = () => {
   const testCaseService = useRef(useTestCaseServiceApi());
   const calculation = useRef(calculationService());
   const [alert, setAlert] = useState<AlertProps>(null);
+  const { errors, setErrors } = props;
+  if (!errors) {
+    setErrors([]);
+  }
   const [testCase, setTestCase] = useState<TestCase>(null);
   const [editorVal, setEditorVal]: [string, Dispatch<SetStateAction<string>>] =
     useState("Loading...");
@@ -319,6 +328,7 @@ const EditTestCase = () => {
             status: "error",
             message: error.message,
           }));
+          setErrors([...errors, error.message]);
         });
     }
 
@@ -364,6 +374,7 @@ const EditTestCase = () => {
         status: "error",
         message: "An error occurred while creating the test case.",
       }));
+      setErrors([...errors, alert.message]);
     }
   };
 
@@ -390,6 +401,7 @@ const EditTestCase = () => {
         status: "error",
         message: "An error occurred while updating the test case.",
       }));
+      setErrors([...errors, "An error occurred while updating the test case."]);
     }
   };
 
@@ -460,6 +472,7 @@ const EditTestCase = () => {
         status: "error",
         message: error.message,
       });
+      setErrors([...errors, error.message]);
     } finally {
       setExecuting(false);
     }
@@ -484,7 +497,7 @@ const EditTestCase = () => {
           message: `Test case ${action}d successfully!`,
         });
       } else {
-        const errors = validationErrors.map((error) => (
+        const valErrors = validationErrors.map((error) => (
           <li>{error.diagnostics}</li>
         ));
         setAlert({
@@ -495,7 +508,7 @@ const EditTestCase = () => {
                 Changes {action}d successfully but the following{" "}
                 {severityOfValidationErrors(validationErrors)}(s) were found
               </h3>
-              <ul>{errors}</ul>
+              <ul>{valErrors}</ul>
             </div>
           ),
         });
@@ -507,6 +520,10 @@ const EditTestCase = () => {
         status: "error",
         message: `An error occurred - ${action} did not return the expected successful result.`,
       }));
+      setErrors([
+        ...errors,
+        `An error occurred - ${action} did not return the expected successful result.`,
+      ]);
     }
   }
 
