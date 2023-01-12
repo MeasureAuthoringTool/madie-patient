@@ -374,7 +374,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
         status: "error",
         message: "An error occurred while creating the test case.",
       }));
-      setErrors([...errors, alert.message]);
+      setErrors([...errors, "An error occurred while creating the test case."]);
     }
   };
 
