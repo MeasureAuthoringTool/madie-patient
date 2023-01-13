@@ -58,6 +58,7 @@ import CalculationResults from "../createTestCase/calculationResults/Calculation
 import {
   Button,
   TextField,
+  MadieAlert,
   MadieSpinner,
 } from "@madie/madie-design-system/dist/react";
 import TextArea from "../createTestCase/TextArea";
@@ -78,8 +79,8 @@ const ValidationErrorsButton = tw.button`
 `;
 
 interface AlertProps {
-  status?: "success" | "warning" | "error" | null;
-  message?: string;
+  status?: "success" | "warning" | "error" | "info" | null;
+  message?: any;
 }
 
 interface navigationParams {
@@ -93,10 +94,6 @@ const styles = {
   error: tw`bg-red-100 text-red-700`,
   default: tw`bg-blue-100 text-blue-700`,
 };
-const Alert = styled.div<AlertProps>(({ status = "default" }) => [
-  styles[status],
-  tw`rounded-lg p-2 m-2 text-base inline-flex items-center w-11/12`,
-]);
 
 const ValidationAlertCard = styled.p<AlertProps>(({ status = "default" }) => [
   tw`text-xs bg-white p-3 rounded-xl mx-3 my-1 break-words`,
@@ -167,7 +164,12 @@ const INITIAL_VALUES = {
   groupPopulations: [],
 } as TestCase;
 
-const EditTestCase = () => {
+export interface EditTestCaseProps {
+  errors: Array<string>;
+  setErrors: (value: Array<string>) => void;
+}
+
+const EditTestCase = (props: EditTestCaseProps) => {
   useDocumentTitle("MADiE Edit Measure Edit Test Case");
   const navigate = useNavigate();
   const { id, measureId } = useParams<
@@ -177,6 +179,10 @@ const EditTestCase = () => {
   const testCaseService = useRef(useTestCaseServiceApi());
   const calculation = useRef(calculationService());
   const [alert, setAlert] = useState<AlertProps>(null);
+  const { errors, setErrors } = props;
+  if (!errors) {
+    setErrors([]);
+  }
   const [testCase, setTestCase] = useState<TestCase>(null);
   const [editorVal, setEditorVal]: [string, Dispatch<SetStateAction<string>>] =
     useState("Loading...");
@@ -322,6 +328,7 @@ const EditTestCase = () => {
             status: "error",
             message: error.message,
           }));
+          setErrors([...errors, error.message]);
         });
     }
 
@@ -367,6 +374,7 @@ const EditTestCase = () => {
         status: "error",
         message: "An error occurred while creating the test case.",
       }));
+      setErrors([...errors, "An error occurred while creating the test case."]);
     }
   };
 
@@ -393,6 +401,7 @@ const EditTestCase = () => {
         status: "error",
         message: "An error occurred while updating the test case.",
       }));
+      setErrors([...errors, "An error occurred while updating the test case."]);
     }
   };
 
@@ -463,6 +472,7 @@ const EditTestCase = () => {
         status: "error",
         message: error.message,
       });
+      setErrors([...errors, error.message]);
     } finally {
       setExecuting(false);
     }
@@ -487,11 +497,20 @@ const EditTestCase = () => {
           message: `Test case ${action}d successfully!`,
         });
       } else {
+        const valErrors = validationErrors.map((error) => (
+          <li>{error.diagnostics}</li>
+        ));
         setAlert({
-          status: "warning",
-          message: `Test case updated successfully with ${severityOfValidationErrors(
-            validationErrors
-          )}s in JSON`,
+          status: `${severityOfValidationErrors(validationErrors)}`,
+          message: (
+            <div>
+              <h3>
+                Changes {action}d successfully but the following{" "}
+                {severityOfValidationErrors(validationErrors)}(s) were found
+              </h3>
+              <ul>{valErrors}</ul>
+            </div>
+          ),
         });
         handleHapiOutcome(testCase.hapiOperationOutcome);
       }
@@ -501,6 +520,10 @@ const EditTestCase = () => {
         status: "error",
         message: `An error occurred - ${action} did not return the expected successful result.`,
       }));
+      setErrors([
+        ...errors,
+        `An error occurred - ${action} did not return the expected successful result.`,
+      ]);
     }
   }
 
@@ -640,7 +663,7 @@ const EditTestCase = () => {
     if (_.isNil(nonInformationalErrors)) {
       return "error";
     }
-    return "default";
+    return "info";
   };
 
   return (
@@ -648,7 +671,7 @@ const EditTestCase = () => {
       data-testid="create-test-case-form"
       onSubmit={formik.handleSubmit}
     >
-      <div tw="flex flex-wrap shadow-lg mx-8 my-6 rounded-md border border-slate bg-white">
+      <div tw="flex flex-wrap shadow-lg mx-5 my-6 rounded-md border border-slate bg-white">
         <div
           tw="flex-none sm:w-full md:w-6/12 lg:w-6/12"
           style={{ marginTop: 44 }}
@@ -726,24 +749,16 @@ const EditTestCase = () => {
           {activeTab === "details" && (
             <>
               {alert && (
-                <Alert
-                  status={alert.status}
-                  role="alert"
-                  aria-label="Create Alert"
-                  data-testid="create-test-case-alert"
-                >
-                  {alert.message}
-                  <button
-                    data-testid="close-create-test-case-alert"
-                    type="button"
-                    tw="box-content h-4 p-1 ml-3 mb-1.5"
-                    data-bs-dismiss="alert"
-                    aria-label="Close Alert"
-                    onClick={() => setAlert(null)}
-                  >
-                    <FontAwesomeIcon icon={faTimes} />
-                  </button>
-                </Alert>
+                <MadieAlert
+                  type={alert.status}
+                  content={alert.message}
+                  alertProps={{
+                    "data-testid": "create-test-case-alert",
+                  }}
+                  closeButtonProps={{
+                    "data-testid": "close-create-test-case-alert",
+                  }}
+                />
               )}
               {/* TODO Replace with re-usable form component
                label, input, and error => single input control component */}

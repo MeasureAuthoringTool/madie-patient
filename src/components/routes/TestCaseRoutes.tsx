@@ -107,8 +107,14 @@ const TestCaseRoutes = () => {
             index
             element={<TestCaseLanding errors={errors} setErrors={setErrors} />}
           />
-          <Route path="edit" element={<EditTestCase />} />
-          <Route path=":id" element={<EditTestCase />} />
+          <Route
+            path="edit"
+            element={<EditTestCase errors={errors} setErrors={setErrors} />}
+          />
+          <Route
+            path=":id"
+            element={<EditTestCase errors={errors} setErrors={setErrors} />}
+          />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
