@@ -79,6 +79,9 @@ jest.mock(
     }
 );
 
+//value needs to come from Util(feature flag)
+const testCaseAlertToast = false;
+
 const serviceConfig: ServiceConfig = {
   measureService: {
     baseUrl: "measure.url",
@@ -1440,7 +1443,9 @@ describe("EditTestCase component", () => {
     userEvent.click(createBtn);
 
     const debugOutput = await screen.findByText(
-      "Changes created successfully but the following error(s) were found"
+      testCaseAlertToast
+        ? "Changes created successfully but the following error(s) were found"
+        : "Test case updated successfully with errors in JSON"
     );
     expect(debugOutput).toBeInTheDocument();
 
@@ -1539,7 +1544,9 @@ describe("EditTestCase component", () => {
     userEvent.click(updateBtn);
 
     const debugOutput = await screen.findByText(
-      "Changes updated successfully but the following error(s) were found"
+      testCaseAlertToast
+        ? "Changes updated successfully but the following error(s) were found"
+        : "Test case updated successfully with errors in JSON"
     );
     expect(debugOutput).toBeInTheDocument();
 
@@ -1645,7 +1652,9 @@ describe("EditTestCase component", () => {
     userEvent.click(updateBtn);
 
     const debugOutput = await screen.findByText(
-      "Changes updated successfully but the following error(s) were found"
+      testCaseAlertToast
+        ? "Changes updated successfully but the following error(s) were found"
+        : "Test case updated successfully with errors in JSON"
     );
     expect(debugOutput).toBeInTheDocument();
 
