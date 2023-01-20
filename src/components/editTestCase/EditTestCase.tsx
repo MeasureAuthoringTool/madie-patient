@@ -96,6 +96,11 @@ const styles = {
   default: tw`bg-blue-100 text-blue-700`,
 };
 
+const Alert = styled.div<AlertProps>(({ status = "default" }) => [
+  styles[status],
+  tw`rounded-lg p-2 m-2 text-base inline-flex items-center w-11/12`,
+]);
+
 const ValidationAlertCard = styled.p<AlertProps>(({ status = "default" }) => [
   tw`text-xs bg-white p-3 rounded-xl mx-3 my-1 break-words`,
   styles[status],
@@ -224,6 +229,9 @@ const EditTestCase = (props: EditTestCaseProps) => {
     onSubmit: async (values: TestCase) => await handleSubmit(values),
   });
   const { resetForm } = formik;
+
+  //needs to be added to feature flag config once the feature flags are moved to Util
+  const testCaseAlertToast = false;
 
   useEffect(() => {
     if (_.isNil(populationGroupResults) || _.isEmpty(populationGroupResults)) {
@@ -503,7 +511,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
         ));
         setAlert({
           status: `${severityOfValidationErrors(validationErrors)}`,
-          message: (
+          message: testCaseAlertToast ? (
             <div>
               <h3>
                 Changes {action}d successfully but the following{" "}
@@ -511,6 +519,10 @@ const EditTestCase = (props: EditTestCaseProps) => {
               </h3>
               <ul>{valErrors}</ul>
             </div>
+          ) : (
+            `Test case updated successfully with ${severityOfValidationErrors(
+              validationErrors
+            )}s in JSON`
           ),
         });
         handleHapiOutcome(testCase.hapiOperationOutcome);
@@ -749,18 +761,39 @@ const EditTestCase = (props: EditTestCaseProps) => {
 
           {activeTab === "details" && (
             <>
-              {alert && (
-                <MadieAlert
-                  type={alert.status}
-                  content={alert.message}
-                  alertProps={{
-                    "data-testid": "create-test-case-alert",
-                  }}
-                  closeButtonProps={{
-                    "data-testid": "close-create-test-case-alert",
-                  }}
-                />
-              )}
+              {alert &&
+                (testCaseAlertToast ? (
+                  <MadieAlert
+                    type={alert?.status}
+                    content={alert?.message}
+                    alertProps={{
+                      "data-testid": "create-test-case-alert",
+                    }}
+                    closeButtonProps={{
+                      "data-testid": "close-create-test-case-alert",
+                    }}
+                  />
+                ) : (
+                  <Alert
+                    status={alert?.status}
+                    role="alert"
+                    aria-label="Create Alert"
+                    data-testid="create-test-case-alert"
+                  >
+                    {alert?.message}
+                    <button
+                      data-testid="close-create-test-case-alert"
+                      type="button"
+                      tw="box-content h-4 p-1 ml-3 mb-1.5"
+                      data-bs-dismiss="alert"
+                      aria-label="Close Alert"
+                      onClick={() => setAlert(null)}
+                    >
+                      <FontAwesomeIcon icon={faTimes} />
+                    </button>
+                  </Alert>
+                ))}
+
               {/* TODO Replace with re-usable form component
                label, input, and error => single input control component */}
 
