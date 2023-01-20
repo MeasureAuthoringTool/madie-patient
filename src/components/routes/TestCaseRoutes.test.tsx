@@ -4,7 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 import TestCaseRoutes from "./TestCaseRoutes";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
-import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
+import { ServiceConfig } from "@madie/madie-util";
 import { MeasureScoring, PopulationType } from "@madie/madie-models";
 import { getExampleValueSet } from "../../util/CalculationTestHelpers";
 import { Bundle } from "fhir/r4";
@@ -16,17 +16,25 @@ jest.mock("../editor/Editor", () => () => <div>editor contents</div>);
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
-const serviceConfig: ServiceConfig = {
-  measureService: {
-    baseUrl: "measure.url",
-  },
-  testCaseService: {
-    baseUrl: "base.url",
-  },
-  terminologyService: {
-    baseUrl: "something.com",
-  },
-};
+// const serviceConfig: ServiceConfig = {
+//   measureService: {
+//     baseUrl: "measure.url",
+//   },
+//   testCaseService: {
+//     baseUrl: "base.url",
+//   },
+//   terminologyService: {
+//     baseUrl: "http.com",
+//   },
+//   elmTranslationService:{
+//     baseUrl:"http.com"
+//   },
+//   features:{
+//     export: true,
+//     measureVersioning: true,
+//     applyDefaults: true,
+//   }
+// };
 
 const MEASURE_CREATEDBY = "testuser";
 const measureBundle = {} as Bundle;
@@ -88,7 +96,7 @@ jest.mock("@madie/madie-util", () => ({
     initialState: { canTravel: false, pendingPath: "" },
   },
 }));
-
+const {ApiContextProvider} = jest.requireActual('@madie/madie-util');
 describe("TestCaseRoutes", () => {
   afterEach(() => {
     jest.clearAllMocks();

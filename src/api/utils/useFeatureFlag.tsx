@@ -1,6 +1,5 @@
 import React from "react";
-import { ServiceConfig } from "../api/ServiceContext";
-import useServiceConfig from "../api/useServiceConfig";
+import { ServiceConfig, useServiceConfig } from "@madie/madie-util";
 
 /**
  * Get the current state of the target feature flag.

@@ -48,6 +48,7 @@ import {
   routeHandlerStore,
   useDocumentTitle,
   checkUserCanEdit,
+  useFeatureFlag,
 } from "@madie/madie-util";
 import useExecutionContext from "../routes/useExecutionContext";
 import { MadieEditor } from "@madie/madie-editor";
@@ -904,9 +905,13 @@ const EditTestCase = (props: EditTestCaseProps) => {
 
         <div tw="h-24 bg-gray-75 w-full sticky bottom-0 left-0 z-10">
           <div tw="flex items-center">
-            <div tw="w-1/2 flex justify-start items-start px-10 py-6">
-              <Button disabled={!canEdit}>Import</Button>
-            </div>
+            {useFeatureFlag("applyDefaults") ? (
+              <div tw="justify-start items-start px-4">
+                <Button disabled={!canEdit}>Import</Button>
+              </div>
+            ) : (
+              ""
+            )}
             <div tw="w-1/2 flex justify-end items-center px-10 py-6">
               <Button
                 type="button"

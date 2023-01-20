@@ -12,6 +12,14 @@ module.exports = {
     "@madie/madie-components":
       "<rootDir>/node_modules/@madie/madie-components/src/madie-madie-components.tsx",
   },
+  "modulePaths": [
+    "<rootDir>",
+    "src"
+  ],
+  "moduleDirectories": [
+    "node_modules",
+    "src"
+  ],
   setupFilesAfterEnv: ["@testing-library/jest-dom"],
   globals: {
     "ts-jest": {

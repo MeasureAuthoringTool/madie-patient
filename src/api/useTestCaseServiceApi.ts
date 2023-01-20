@@ -1,8 +1,10 @@
 import axios from "axios";
-import useServiceConfig from "./useServiceConfig";
-import { ServiceConfig } from "./ServiceContext";
 import { HapiOperationOutcome, TestCase } from "@madie/madie-models";
-import { useOktaTokens } from "@madie/madie-util";
+import {
+  useOktaTokens,
+  ServiceConfig,
+  useServiceConfig,
+} from "@madie/madie-util";
 
 export class TestCaseServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}

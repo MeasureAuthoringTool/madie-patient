@@ -14,7 +14,7 @@ import EditTestCase, {
 } from "./EditTestCase";
 import userEvent from "@testing-library/user-event";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
+// import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
 import {
   HapiOperationOutcome,
   Measure,
@@ -43,7 +43,7 @@ import { ExecutionContextProvider } from "../routes/ExecutionContext";
 import { multiGroupMeasureFixture } from "../createTestCase/__mocks__/multiGroupMeasureFixture";
 import { nonBoolTestCaseFixture } from "../createTestCase/__mocks__/nonBoolTestCaseFixture";
 import { TestCaseValidator } from "../../validators/TestCaseValidator";
-import { useOktaTokens, checkUserCanEdit } from "@madie/madie-util";
+import { useOktaTokens, checkUserCanEdit, ServiceConfig } from "@madie/madie-util"
 import { PopulationType as FqmPopulationType } from "fqm-execution/build/types/Enums";
 
 //temporary solution (after jest updated to version 27) for error: thrown: "Exceeded timeout of 5000 ms for a test.
@@ -119,7 +119,7 @@ jest.mock("@madie/madie-util", () => ({
     initialState: { canTravel: false, pendingPath: "" },
   },
 }));
-
+const {ApiContextProvider} = jest.requireActual('@madie/madie-util');
 const hapiOperationSuccessOutcome = {
   code: 200,
   message: null,

@@ -1,5 +1,6 @@
-declare module "@madie/madie-util" {
+ declare module "@madie/madie-util" {
   import { LifeCycleFn } from "single-spa";
+  import { Consumer, Provider } from "react";
   import { Measure, Acl } from "@madie/madie-models/dist/Measure";
 
   export interface OktaConfig {
@@ -18,6 +19,14 @@ declare module "@madie/madie-util" {
     };
     terminologyService: {
       baseUrl: string;
+    };
+    testCaseService: {
+      baseUrl: string;
+    };
+    features: {
+      export: boolean;
+      measureVersioning: boolean;
+      applyDefaults: boolean;
     };
   }
 
@@ -45,6 +54,10 @@ declare module "@madie/madie-util" {
   };
 
   export function getServiceConfig(): Promise<ServiceConfig>;
+  export function useServiceConfig(): ServiceConfig;
+  export const ApiContextConsumer: Consumer<ServiceConfig>;
+  export const ApiContextProvider: Provider<ServiceConfig>;
+  export function useFeatureFlag(feature: string): boolean;
 
   export function useKeyPress(targetKey: any): boolean;
   export const useOktaTokens: (storageKey?: string) => {
@@ -54,6 +67,7 @@ declare module "@madie/madie-util" {
     getIdToken: () => any;
     getIdTokenObj: () => any;
   };
+  export const cool = "Hello";
   export function useOnClickOutside(ref: any, handler: any): void;
 
   export function checkUserCanEdit(

@@ -7,7 +7,7 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
+import { ServiceConfig, ApiContextProvider, cool } from "@madie/madie-util";
 import TestCaseList, { removeHtmlCoverageHeader } from "./TestCaseList";
 import calculationService, {
   CalculationService,
@@ -34,15 +34,23 @@ import {
 import { ExecutionContextProvider } from "../routes/ExecutionContext";
 
 const serviceConfig: ServiceConfig = {
-  testCaseService: {
-    baseUrl: "base.url",
-  },
   measureService: {
+    baseUrl: "measure.url",
+  },
+  testCaseService: {
     baseUrl: "base.url",
   },
   terminologyService: {
     baseUrl: "http.com",
   },
+  elmTranslationService:{
+    baseUrl:"http.com"
+  },
+  features:{
+    export: true,
+    measureVersioning: true,
+    applyDefaults: true,
+  }
 };
 
 const MEASURE_CREATEDBY = "testuser";
@@ -51,7 +59,7 @@ jest.mock("@madie/madie-util", () => ({
     return true;
   }),
 }));
-
+//const {ApiContextProvider} = jest.requireActual('@madie/madie-util');
 const mockedUsedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
   ...(jest.requireActual("react-router-dom") as any),
@@ -428,7 +436,9 @@ describe("TestCaseList component", () => {
   function renderTestCaseListComponent() {
     return render(
       <MemoryRouter>
+        {console.log("ASDFG    "+cool)}
         <ApiContextProvider value={serviceConfig}>
+          
           <ExecutionContextProvider
             value={{
               measureState: [measure, setMeasure],

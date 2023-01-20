@@ -2,11 +2,10 @@ import * as React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import TestCaseLanding from "./TestCaseLanding";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
-import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
+import { ApiContextProvider, ServiceConfig, checkUserCanEdit } from "@madie/madie-util";
 import { Measure, MeasureScoring } from "@madie/madie-models";
 import { Bundle, ValueSet } from "fhir/r4";
 import { ExecutionContextProvider } from "../routes/ExecutionContext";
-import { checkUserCanEdit } from "@madie/madie-util";
 
 const serviceConfig: ServiceConfig = {
   measureService: {
@@ -18,6 +17,14 @@ const serviceConfig: ServiceConfig = {
   terminologyService: {
     baseUrl: "http.com",
   },
+  elmTranslationService:{
+    baseUrl:"http.com"
+  },
+  features:{
+    export: true,
+    measureVersioning: true,
+    applyDefaults: true,
+  }
 };
 
 const MEASURE_CREATEDBY = "testuser";

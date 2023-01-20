@@ -1,9 +1,7 @@
 import React from "react";
 import axios from "axios";
-import useServiceConfig from "./useServiceConfig";
-import { ServiceConfig } from "./ServiceContext";
+import { ServiceConfig, useServiceConfig, useOktaTokens } from "@madie/madie-util";
 import { Measure } from "@madie/madie-models";
-import { useOktaTokens } from "@madie/madie-util";
 import { Bundle } from "fhir/r4";
 
 export class MeasureServiceApi {
