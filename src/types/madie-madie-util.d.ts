@@ -1,4 +1,4 @@
- declare module "@madie/madie-util" {
+declare module "@madie/madie-util" {
   import { LifeCycleFn } from "single-spa";
   import { Consumer, Provider } from "react";
   import { Measure, Acl } from "@madie/madie-models/dist/Measure";
@@ -67,7 +67,6 @@
     getIdToken: () => any;
     getIdTokenObj: () => any;
   };
-  export const cool = "Hello";
   export function useOnClickOutside(ref: any, handler: any): void;
 
   export function checkUserCanEdit(

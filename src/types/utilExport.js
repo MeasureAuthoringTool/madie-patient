@@ -1,1 +1,1 @@
-export * from "./madie-madie-util.d"
+export * from "./madie-madie-util.d";

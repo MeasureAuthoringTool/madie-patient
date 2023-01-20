@@ -25,7 +25,7 @@ jest.mock("@madie/madie-util", () => ({
     },
     unsubscribe: () => null,
   },
-  useServiceConfig:()=>({
+  useServiceConfig: () => ({
     measureService: {
       baseUrl: "measure.url",
     },
@@ -35,15 +35,15 @@ jest.mock("@madie/madie-util", () => ({
     terminologyService: {
       baseUrl: "http.com",
     },
-    elmTranslationService:{
-      baseUrl:"http.com"
+    elmTranslationService: {
+      baseUrl: "http.com",
     },
-    features:{
+    features: {
       export: true,
       measureVersioning: true,
       applyDefaults: true,
-    }
-  })
+    },
+  }),
 }));
 
 const formikInfo = {

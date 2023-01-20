@@ -7,7 +7,7 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { ServiceConfig, ApiContextProvider, cool } from "@madie/madie-util";
+import { ServiceConfig, ApiContextProvider } from "@madie/madie-util";
 import TestCaseList, { removeHtmlCoverageHeader } from "./TestCaseList";
 import calculationService, {
   CalculationService,
@@ -43,14 +43,14 @@ const serviceConfig: ServiceConfig = {
   terminologyService: {
     baseUrl: "http.com",
   },
-  elmTranslationService:{
-    baseUrl:"http.com"
+  elmTranslationService: {
+    baseUrl: "http.com",
   },
-  features:{
+  features: {
     export: true,
     measureVersioning: true,
     applyDefaults: true,
-  }
+  },
 };
 
 const MEASURE_CREATEDBY = "testuser";
@@ -436,9 +436,7 @@ describe("TestCaseList component", () => {
   function renderTestCaseListComponent() {
     return render(
       <MemoryRouter>
-        {console.log("ASDFG    "+cool)}
         <ApiContextProvider value={serviceConfig}>
-          
           <ExecutionContextProvider
             value={{
               measureState: [measure, setMeasure],
