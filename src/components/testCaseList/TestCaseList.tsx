@@ -95,6 +95,7 @@ const TestCaseList = (props: TestCaseListProps) => {
 
   useEffect(() => {
     setCanEdit(checkUserCanEdit(measure?.createdBy, measure?.acls));
+    setErrors([]);
   }, [measure]);
 
   const retrieveTestCases = useCallback(() => {
