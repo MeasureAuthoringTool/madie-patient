@@ -220,7 +220,11 @@ const EditTestCase = (props: EditTestCaseProps) => {
   const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
   const { updateMeasure } = measureStore;
   const load = useRef(0);
-  const canEdit = checkUserCanEdit(measure?.createdBy, measure?.acls);
+  const canEdit = checkUserCanEdit(
+    measure?.createdBy,
+    measure?.acls,
+    measure?.version
+  );
 
   const formik = useFormik({
     initialValues: { ...INITIAL_VALUES },

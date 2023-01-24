@@ -94,7 +94,9 @@ const TestCaseList = (props: TestCaseListProps) => {
   }, [measure]);
 
   useEffect(() => {
-    setCanEdit(checkUserCanEdit(measure?.createdBy, measure?.acls));
+    setCanEdit(
+      checkUserCanEdit(measure?.createdBy, measure?.acls, measure?.version)
+    );
     setErrors([]);
   }, [measure]);
 
