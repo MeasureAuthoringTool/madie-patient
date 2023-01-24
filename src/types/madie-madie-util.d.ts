@@ -9,6 +9,13 @@ declare module "@madie/madie-util" {
     redirectUri: string;
   }
 
+  interface FeatureFlags {
+    export: boolean;
+    measureVersioning: boolean;
+    populationCriteriaTabs: boolean;
+    applyDefaults: boolean;
+  }
+
   export interface ServiceConfig {
     measureService: {
       baseUrl: string;
@@ -44,6 +51,7 @@ declare module "@madie/madie-util" {
     state: RouteHandlerState;
   };
 
+  export function useFeatureFlags(): FeatureFlags;
   export function getServiceConfig(): Promise<ServiceConfig>;
 
   export function useKeyPress(targetKey: any): boolean;

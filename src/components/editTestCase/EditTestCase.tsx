@@ -7,7 +7,6 @@ import React, {
   useState,
 } from "react";
 import { MadieDiscardDialog } from "@madie/madie-design-system/dist/react/";
-import { HelperText } from "@madie/madie-components";
 import { useNavigate, useParams } from "react-router-dom";
 import { useFormik } from "formik";
 import tw, { styled } from "twin.macro";
@@ -48,6 +47,7 @@ import {
   routeHandlerStore,
   useDocumentTitle,
   checkUserCanEdit,
+  useFeatureFlags,
 } from "@madie/madie-util";
 import useExecutionContext from "../routes/useExecutionContext";
 import { MadieEditor } from "@madie/madie-editor";
@@ -63,7 +63,6 @@ import {
 } from "@madie/madie-design-system/dist/react";
 import TextArea from "../createTestCase/TextArea";
 
-const FormErrors = tw.div`h-6`;
 const TestCaseForm = tw.form`m-3`;
 
 const ValidationErrorsButton = tw.button`
@@ -221,6 +220,11 @@ const EditTestCase = (props: EditTestCaseProps) => {
   const { updateMeasure } = measureStore;
   const load = useRef(0);
   const canEdit = checkUserCanEdit(measure?.createdBy, measure?.acls);
+
+  const featureFlags = useFeatureFlags();
+  // TODO remove default
+  // eslint-disable-next-line no-console
+  console.log(featureFlags?.applyDefaults);
 
   const formik = useFormik({
     initialValues: { ...INITIAL_VALUES },
