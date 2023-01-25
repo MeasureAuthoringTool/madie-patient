@@ -47,9 +47,7 @@ const serviceConfig: ServiceConfig = {
 
 const MEASURE_CREATEDBY = "testuser";
 jest.mock("@madie/madie-util", () => ({
-  checkUserCanEdit: jest.fn(() => {
-    return true;
-  }),
+  checkUserCanEdit: jest.fn().mockImplementation(() => true),
 }));
 
 const mockedUsedNavigate = jest.fn();
