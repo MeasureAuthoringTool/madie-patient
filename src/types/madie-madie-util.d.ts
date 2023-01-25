@@ -8,7 +8,6 @@ declare module "@madie/madie-util" {
     clientId: string;
     redirectUri: string;
   }
-
   interface FeatureFlags {
     export: boolean;
     measureVersioning: boolean;

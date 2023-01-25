@@ -102,6 +102,7 @@ const MEASURE_CREATEDBY = "testuser";
 jest.mock("@madie/madie-util", () => {
   return {
     useDocumentTitle: jest.fn(),
+    useFeatureFlags: jest.fn(),
     measureStore: {
       updateMeasure: jest.fn((measure) => measure),
       state: null,
@@ -126,7 +127,6 @@ jest.mock("@madie/madie-util", () => {
       state: { canTravel: false, pendingPath: "" },
       initialState: { canTravel: false, pendingPath: "" },
     },
-    useFeatureFlags: jest.fn(),
   };
 });
 
