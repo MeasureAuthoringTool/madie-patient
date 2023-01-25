@@ -43,7 +43,11 @@ import { ExecutionContextProvider } from "../routes/ExecutionContext";
 import { multiGroupMeasureFixture } from "../createTestCase/__mocks__/multiGroupMeasureFixture";
 import { nonBoolTestCaseFixture } from "../createTestCase/__mocks__/nonBoolTestCaseFixture";
 import { TestCaseValidator } from "../../validators/TestCaseValidator";
-import { useOktaTokens, checkUserCanEdit } from "@madie/madie-util";
+import {
+  useOktaTokens,
+  checkUserCanEdit,
+  useFeatureFlags,
+} from "@madie/madie-util";
 import { PopulationType as FqmPopulationType } from "fqm-execution/build/types/Enums";
 
 //temporary solution (after jest updated to version 27) for error: thrown: "Exceeded timeout of 5000 ms for a test.
@@ -95,33 +99,36 @@ const serviceConfig: ServiceConfig = {
 };
 const MEASURE_CREATEDBY = "testuser";
 
-jest.mock("@madie/madie-util", () => ({
-  useDocumentTitle: jest.fn(),
-  measureStore: {
-    updateMeasure: jest.fn((measure) => measure),
-    state: null,
-    initialState: null,
-    subscribe: (set) => {
-      set({} as Measure);
-      return { unsubscribe: () => null };
+jest.mock("@madie/madie-util", () => {
+  return {
+    useDocumentTitle: jest.fn(),
+    measureStore: {
+      updateMeasure: jest.fn((measure) => measure),
+      state: null,
+      initialState: null,
+      subscribe: (set) => {
+        set({} as Measure);
+        return { unsubscribe: () => null };
+      },
+      unsubscribe: () => null,
     },
-    unsubscribe: () => null,
-  },
-  useOktaTokens: jest.fn(() => ({
-    getAccessToken: () => "test.jwt",
-  })),
-  checkUserCanEdit: jest.fn(() => {
-    return true;
-  }),
-  routeHandlerStore: {
-    subscribe: (set) => {
-      return { unsubscribe: () => null };
+    useOktaTokens: jest.fn(() => ({
+      getAccessToken: () => "test.jwt",
+    })),
+    checkUserCanEdit: jest.fn(() => {
+      return true;
+    }),
+    routeHandlerStore: {
+      subscribe: (set) => {
+        return { unsubscribe: () => null };
+      },
+      updateRouteHandlerState: () => null,
+      state: { canTravel: false, pendingPath: "" },
+      initialState: { canTravel: false, pendingPath: "" },
     },
-    updateRouteHandlerState: () => null,
-    state: { canTravel: false, pendingPath: "" },
-    initialState: { canTravel: false, pendingPath: "" },
-  },
-}));
+    useFeatureFlags: jest.fn(),
+  };
+});
 
 const hapiOperationSuccessOutcome = {
   code: 200,

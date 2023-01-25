@@ -222,10 +222,6 @@ const EditTestCase = (props: EditTestCaseProps) => {
   const canEdit = checkUserCanEdit(measure?.createdBy, measure?.acls);
 
   const featureFlags = useFeatureFlags();
-  // TODO remove console statements
-  // eslint-disable-next-line no-console
-  console.log("featureFlags?.applyDefaults");
-  console.log(featureFlags?.applyDefaults);
 
   const formik = useFormik({
     initialValues: { ...INITIAL_VALUES },

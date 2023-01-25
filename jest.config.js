@@ -11,6 +11,8 @@ module.exports = {
     "\\.(css|scss)$": "identity-obj-proxy",
     "@madie/madie-components":
       "<rootDir>/node_modules/@madie/madie-components/src/madie-madie-components.tsx",
+    "@madie/madie-util":
+      "<rootDir>/src/types/madie-madie-util.d.ts"
   },
   setupFilesAfterEnv: ["@testing-library/jest-dom"],
   globals: {
