@@ -223,7 +223,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
   const canEdit = checkUserCanEdit(
     measure?.createdBy,
     measure?.acls,
-    measure?.version
+    measure?.measureMetaData?.draft
   );
 
   const formik = useFormik({

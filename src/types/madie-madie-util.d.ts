@@ -59,7 +59,7 @@ declare module "@madie/madie-util" {
   export function checkUserCanEdit(
     createdBy: string,
     acls: Array<Acl>,
-    version?: string
+    draft?: boolean
   ): boolean;
 
   export class TerminologyServiceApi {
