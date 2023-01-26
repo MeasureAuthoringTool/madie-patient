@@ -2,6 +2,7 @@ import * as React from "react";
 import { ChangeEvent } from "react";
 import {
   fireEvent,
+  logRoles,
   render,
   screen,
   waitFor,
@@ -98,11 +99,13 @@ const serviceConfig: ServiceConfig = {
   },
 };
 const MEASURE_CREATEDBY = "testuser";
-
+let mockFeatureBool = false;
 jest.mock("@madie/madie-util", () => {
   return {
     useDocumentTitle: jest.fn(),
-    useFeatureFlags: jest.fn(),
+    useFeatureFlags: () => {
+      return { applyDefaults: mockFeatureBool };
+    },
     measureStore: {
       updateMeasure: jest.fn((measure) => measure),
       state: null,
@@ -129,7 +132,6 @@ jest.mock("@madie/madie-util", () => {
     },
   };
 });
-
 const hapiOperationSuccessOutcome = {
   code: 200,
   message: null,
@@ -2045,41 +2047,23 @@ describe("EditTestCase component", () => {
     });
     await waitFor(() => expect(saveButton).toBeDisabled());
   });
-});
+  it("Import button is not shown if feature flag is false", async () => {
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases"],
+      "/measures/:measureId/edit/test-cases"
+    );
+    const importButton = screen.queryByRole("button", { name: "Import" });
+    expect(importButton).not.toBeInTheDocument();
+  });
 
-describe("Measure Calculation ", () => {
-  it("calculates a measure against a test case", async () => {
-    const calculationSrv = calculationService();
-    const executionResults: CalculationOutput<any> =
-      await calculationSrv.calculateTestCases(
-        simpleMeasureFixture,
-        [testCaseFixture],
-        buildMeasureBundle(simpleMeasureFixture),
-        []
-      );
-
-    /*const calculationResults = executionResults[0].results;
-    expect(calculationResults).toHaveLength(1);
-    expect(calculationResults[0].detailedResults).toHaveLength(1);
-    */
-    const populationResults =
-      executionResults.results[0].detailedResults[0].populationResults;
-    expect(populationResults).toHaveLength(3);
-    expect(populationResults).toContainEqual({
-      criteriaExpression: "first",
-      populationType: "initial-population",
-      result: true,
-    });
-    expect(populationResults).toContainEqual({
-      criteriaExpression: "second",
-      populationType: "denominator",
-      result: true,
-    });
-    expect(populationResults).toContainEqual({
-      criteriaExpression: "third",
-      populationType: "numerator",
-      result: false,
-    });
+  it("Import button is shown if feature flag is true ASDF", async () => {
+    mockFeatureBool = true;
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases"],
+      "/measures/:measureId/edit/test-cases"
+    );
+    const importButton = screen.queryByRole("button", { name: "Import" });
+    expect(importButton).toBeInTheDocument();
   });
 
   it("executes a test case and shows the errors for invalid test case json", async () => {

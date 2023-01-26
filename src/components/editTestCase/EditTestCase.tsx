@@ -226,7 +226,6 @@ const EditTestCase = (props: EditTestCaseProps) => {
   );
 
   const featureFlags = useFeatureFlags();
-
   const formik = useFormik({
     initialValues: { ...INITIAL_VALUES },
     validationSchema: TestCaseValidator,
@@ -943,8 +942,8 @@ const EditTestCase = (props: EditTestCaseProps) => {
         <div tw="h-24 bg-gray-75 w-full sticky bottom-0 left-0 z-10">
           <div tw="flex items-center">
             <div tw="w-1/4  px-4 py-6">
-              {featureFlags && featureFlags.applyDefaults && (
-                <Button type="button" disabled={!canEdit}>
+              {featureFlags && featureFlags.applyDefaults && canEdit && (
+                <Button type="button" data-testid="import-test-case-button">
                   Import
                 </Button>
               )}
