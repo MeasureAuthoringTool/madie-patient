@@ -1,4 +1,3 @@
-
 import * as _ from "lodash";
 
 export const addValues = (testCase: any): any => {
@@ -7,26 +6,20 @@ export const addValues = (testCase: any): any => {
   //.map to return an array of just
   const nonCoverage: Array<any> = resultJson.entry.filter((entry) => {
     if (entry.resource?.resourceType !== "Coverage") {
-
       return true;
     }
   });
 
-
   let coverage: Array<any> = [];
   const foundCoverage: Array<any> = testCase.entry?.filter((entry) => {
     if (entry.resource?.resourceType === "Coverage") {
-
       entry.resource.status = "active";
       return entry;
     }
   });
 
-
-
   if (foundCoverage) {
     coverage = [...coverage, ...foundCoverage];
-
   } else {
     //TODO  This isn't sufficient.  The Added Coverage needs a Payor with an Organization.. can modify this when we address the additional stories
     const defaultCoverage: any = JSON.parse(
