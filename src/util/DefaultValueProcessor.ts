@@ -1,22 +1,32 @@
+
+import * as _ from "lodash";
+
 export const addValues = (testCase: any): any => {
   //create a clone of testCase
-  const resultJson: any = testCase;
+  const resultJson: any = _.clone(testCase);
   //.map to return an array of just
-  const nonCoverage: Array<any> = testCase.entry.filter((entry) => {
-    if (entry.resource.resourceType != "Coverage") {
+  const nonCoverage: Array<any> = resultJson.entry.filter((entry) => {
+    if (entry.resource?.resourceType !== "Coverage") {
+
       return true;
     }
   });
 
-  const coverage: Array<any> = [];
-  const foundCoverage: any = testCase.entry.find((entry) => {
-    if (entry.resource.resourceType == "Coverage") {
+
+  let coverage: Array<any> = [];
+  const foundCoverage: Array<any> = testCase.entry?.filter((entry) => {
+    if (entry.resource?.resourceType === "Coverage") {
+
       entry.resource.status = "active";
       return entry;
     }
   });
-  if (typeof foundCoverage !== "undefined") {
-    coverage.push(foundCoverage);
+
+
+
+  if (foundCoverage) {
+    coverage = [...coverage, ...foundCoverage];
+
   } else {
     //TODO  This isn't sufficient.  The Added Coverage needs a Payor with an Organization.. can modify this when we address the additional stories
     const defaultCoverage: any = JSON.parse(
@@ -25,15 +35,6 @@ export const addValues = (testCase: any): any => {
     coverage.push(defaultCoverage);
   }
 
-  // [E1, E2, E3]
-
-  // entries = [E1, E2, E3, C]
-
-  // testCase.entry = entries ;
-  // resultJson = {...testCase, entries};
-  // resultJson = [resourceType, meta, entry]]
-
-  // entry[]
   const entries = nonCoverage.concat(coverage);
 
   resultJson.entry = entries;
