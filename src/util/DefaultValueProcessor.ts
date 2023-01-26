@@ -18,7 +18,7 @@ export const addValues = (testCase: any): any => {
     }
   });
 
-  if (foundCoverage) {
+  if (foundCoverage && foundCoverage.length > 0) {
     coverage = [...coverage, ...foundCoverage];
   } else {
     //TODO  This isn't sufficient.  The Added Coverage needs a Payor with an Organization.. can modify this when we address the additional stories

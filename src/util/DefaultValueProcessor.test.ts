@@ -34,7 +34,7 @@ describe("Modify JSON to add Default Values", () => {
   });
 
   it("should add Coverage Resource in the TestCase if one doesn't exist", () => {
-    const nonCoverageJson = require("../mockdata/testcase_with_Coverage.json");
+    const nonCoverageJson = require("../mockdata/testcase_wo_coverage.json");
     const resultJson: any = addValues(nonCoverageJson);
     expect(resultJson).toBeDefined();
     let results = resultJson?.entry.filter((entry) => {
