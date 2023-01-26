@@ -90,13 +90,7 @@ const TestCase = ({
     }
 
     return (
-      <Box
-        aria-label={executionStatus || "fail"}
-        aria-live="polite"
-        style={{ display: "flex", alignItems: "center" }}
-      >
-        {content}
-      </Box>
+      <Box style={{ display: "flex", alignItems: "center" }}>{content}</Box>
     );
   };
 
