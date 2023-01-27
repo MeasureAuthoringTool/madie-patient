@@ -5,8 +5,8 @@ export interface ScanValidationDto {
 }
 
 export interface ObjectError {
-  codes: string[];
+  codes?: string[];
   defaultMessage: string;
-  objectName: string;
-  code: string;
+  objectName?: string;
+  code?: string;
 }

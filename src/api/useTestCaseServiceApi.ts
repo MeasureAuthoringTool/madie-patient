@@ -3,6 +3,7 @@ import useServiceConfig from "./useServiceConfig";
 import { ServiceConfig } from "./ServiceContext";
 import { HapiOperationOutcome, TestCase } from "@madie/madie-models";
 import { useOktaTokens } from "@madie/madie-util";
+import { ScanValidationDto } from "./models/ScanValidationDto";
 
 export class TestCaseServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
@@ -138,7 +139,7 @@ export class TestCaseServiceApi {
     }
   }
 
-  async importTestCases(
+  async createTestCases(
     measureId: string,
     testCases: TestCase[]
   ): Promise<TestCase[]> {
@@ -154,17 +155,15 @@ export class TestCaseServiceApi {
       );
       return response.data;
     } catch (err) {
-      console.error("error: ", err);
-      const message = `Unable to create new test case`;
-      throw new Error(message);
+      throw new Error(`Unable to create new test cases`);
     }
   }
 
-  async scanImportFile(file: any): Promise<any> {
+  async scanImportFile(file: any): Promise<ScanValidationDto> {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const response = await axios.post<any>(
+      const response = await axios.post<ScanValidationDto>(
         `${this.baseUrl}/validations/files`,
         formData,
         {
@@ -176,8 +175,9 @@ export class TestCaseServiceApi {
       );
       return response.data;
     } catch (err) {
-      const message = "Unable to scan the import file. Please try again later.";
-      throw new Error(message);
+      throw new Error(
+        "Unable to scan the import file. Please try again later."
+      );
     }
   }
 }
