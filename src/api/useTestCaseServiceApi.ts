@@ -5,8 +5,7 @@ import { HapiOperationOutcome, TestCase } from "@madie/madie-models";
 import { useOktaTokens } from "@madie/madie-util";
 
 export class TestCaseServiceApi {
-  constructor(private baseUrl: string, private getAccessToken: () => string) {
-  }
+  constructor(private baseUrl: string, private getAccessToken: () => string) {}
 
   async createTestCase(testCase: TestCase, measureId: string) {
     try {
@@ -15,8 +14,8 @@ export class TestCaseServiceApi {
         testCase,
         {
           headers: {
-            Authorization: `Bearer ${this.getAccessToken()}`
-          }
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
         }
       );
       return response.data;
@@ -32,8 +31,8 @@ export class TestCaseServiceApi {
         `${this.baseUrl}/measures/${measureId}/test-cases`,
         {
           headers: {
-            Authorization: `Bearer ${this.getAccessToken()}`
-          }
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
         }
       );
       return response.data || [];
@@ -49,8 +48,8 @@ export class TestCaseServiceApi {
         `${this.baseUrl}/measures/${measureId}/test-cases/${testCaseId}`,
         {
           headers: {
-            Authorization: `Bearer ${this.getAccessToken()}`
-          }
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
         }
       );
       return response.data;
@@ -66,8 +65,8 @@ export class TestCaseServiceApi {
         `${this.baseUrl}/measures/${measureId}/test-cases/series`,
         {
           headers: {
-            Authorization: `Bearer ${this.getAccessToken()}`
-          }
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
         }
       );
       return response.data;
@@ -93,8 +92,8 @@ export class TestCaseServiceApi {
         testCase,
         {
           headers: {
-            Authorization: `Bearer ${this.getAccessToken()}`
-          }
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
         }
       );
       return response.data;
@@ -110,8 +109,8 @@ export class TestCaseServiceApi {
         `${this.baseUrl}/measures/${measureId}/test-cases/${testCaseId}`,
         {
           headers: {
-            Authorization: `Bearer ${this.getAccessToken()}`
-          }
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
         }
       );
       return response.data;
@@ -128,8 +127,8 @@ export class TestCaseServiceApi {
         bundle,
         {
           headers: {
-            Authorization: `Bearer ${this.getAccessToken()}`
-          }
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
         }
       );
       return response.data;
@@ -149,8 +148,8 @@ export class TestCaseServiceApi {
         testCases,
         {
           headers: {
-            Authorization: `Bearer ${this.getAccessToken()}`
-          }
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
         }
       );
       return response.data;
@@ -171,8 +170,8 @@ export class TestCaseServiceApi {
         {
           headers: {
             Authorization: `Bearer ${this.getAccessToken()}`,
-            "Content-Type": "multipart/form-data"
-          }
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
       return response.data;
