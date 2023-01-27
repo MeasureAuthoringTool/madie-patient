@@ -5,7 +5,8 @@ import { HapiOperationOutcome, TestCase } from "@madie/madie-models";
 import { useOktaTokens } from "@madie/madie-util";
 
 export class TestCaseServiceApi {
-  constructor(private baseUrl: string, private getAccessToken: () => string) {}
+  constructor(private baseUrl: string, private getAccessToken: () => string) {
+  }
 
   async createTestCase(testCase: TestCase, measureId: string) {
     try {
@@ -14,8 +15,8 @@ export class TestCaseServiceApi {
         testCase,
         {
           headers: {
-            Authorization: `Bearer ${this.getAccessToken()}`,
-          },
+            Authorization: `Bearer ${this.getAccessToken()}`
+          }
         }
       );
       return response.data;
@@ -31,8 +32,8 @@ export class TestCaseServiceApi {
         `${this.baseUrl}/measures/${measureId}/test-cases`,
         {
           headers: {
-            Authorization: `Bearer ${this.getAccessToken()}`,
-          },
+            Authorization: `Bearer ${this.getAccessToken()}`
+          }
         }
       );
       return response.data || [];
@@ -48,8 +49,8 @@ export class TestCaseServiceApi {
         `${this.baseUrl}/measures/${measureId}/test-cases/${testCaseId}`,
         {
           headers: {
-            Authorization: `Bearer ${this.getAccessToken()}`,
-          },
+            Authorization: `Bearer ${this.getAccessToken()}`
+          }
         }
       );
       return response.data;
@@ -65,8 +66,8 @@ export class TestCaseServiceApi {
         `${this.baseUrl}/measures/${measureId}/test-cases/series`,
         {
           headers: {
-            Authorization: `Bearer ${this.getAccessToken()}`,
-          },
+            Authorization: `Bearer ${this.getAccessToken()}`
+          }
         }
       );
       return response.data;
@@ -92,8 +93,8 @@ export class TestCaseServiceApi {
         testCase,
         {
           headers: {
-            Authorization: `Bearer ${this.getAccessToken()}`,
-          },
+            Authorization: `Bearer ${this.getAccessToken()}`
+          }
         }
       );
       return response.data;
@@ -109,8 +110,8 @@ export class TestCaseServiceApi {
         `${this.baseUrl}/measures/${measureId}/test-cases/${testCaseId}`,
         {
           headers: {
-            Authorization: `Bearer ${this.getAccessToken()}`,
-          },
+            Authorization: `Bearer ${this.getAccessToken()}`
+          }
         }
       );
       return response.data;
@@ -127,13 +128,56 @@ export class TestCaseServiceApi {
         bundle,
         {
           headers: {
-            Authorization: `Bearer ${this.getAccessToken()}`,
-          },
+            Authorization: `Bearer ${this.getAccessToken()}`
+          }
         }
       );
       return response.data;
     } catch (err) {
       const message = `Unable to validate test case bundle`;
+      throw new Error(message);
+    }
+  }
+
+  async importTestCases(
+    measureId: string,
+    testCases: TestCase[]
+  ): Promise<TestCase[]> {
+    try {
+      const response = await axios.post<TestCase[]>(
+        `${this.baseUrl}/measures/${measureId}/test-cases/list`,
+        testCases,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`
+          }
+        }
+      );
+      return response.data;
+    } catch (err) {
+      console.error("error: ", err);
+      const message = `Unable to create new test case`;
+      throw new Error(message);
+    }
+  }
+
+  async scanImportFile(file: any): Promise<any> {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await axios.post<any>(
+        `${this.baseUrl}/validations/files`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`,
+            "Content-Type": "multipart/form-data"
+          }
+        }
+      );
+      return response.data;
+    } catch (err) {
+      const message = "Unable to scan the import file. Please try again later.";
       throw new Error(message);
     }
   }
