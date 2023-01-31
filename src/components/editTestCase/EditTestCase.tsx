@@ -1000,41 +1000,41 @@ const EditTestCase = (props: EditTestCaseProps) => {
                 <FileUploader onFileImport={updateTestCaseJson} />
               )}
             </div>
-            {canEdit && (
-              <div
-                tw="w-1/2 flex justify-end items-center px-10 py-6"
-                style={{ alignItems: "end" }}
+            <div
+              tw="w-1/2 flex justify-end items-center px-10 py-6"
+              style={{ alignItems: "end" }}
+            >
+              <Button
+                tw="m-2"
+                variant="outline"
+                onClick={() => setDiscardDialogOpen(true)}
+                data-testid="edit-test-case-discard-button"
+                disabled={!isModified()}
               >
-                <Button
-                  tw="m-2"
-                  variant="outline"
-                  onClick={() => setDiscardDialogOpen(true)}
-                  data-testid="edit-test-case-discard-button"
-                  disabled={!isModified()}
-                >
-                  Discard Changes
-                </Button>
-                <Button
-                  tw="m-2"
-                  type="button"
-                  onClick={calculate}
-                  disabled={
-                    !!measure?.cqlErrors ||
-                    _.isNil(measure?.groups) ||
-                    measure?.groups.length === 0 ||
-                    (!isJsonModified() && hasErrorSeverity(validationErrors)) ||
-                    isEmptyTestCaseJsonString(editorVal) ||
-                    !executionContextReady ||
-                    executing
-                  }
-                  /*
-                    if new test case
-                      enable run button if json modified, regardless of errors
-                   */
-                  data-testid="run-test-case-button"
-                >
-                  Run Test Case
-                </Button>
+                Discard Changes
+              </Button>
+              <Button
+                tw="m-2"
+                type="button"
+                onClick={calculate}
+                disabled={
+                  !!measure?.cqlErrors ||
+                  _.isNil(measure?.groups) ||
+                  measure?.groups.length === 0 ||
+                  (!isJsonModified() && hasErrorSeverity(validationErrors)) ||
+                  isEmptyTestCaseJsonString(editorVal) ||
+                  !executionContextReady ||
+                  executing
+                }
+                /*
+                  if new test case
+                    enable run button if json modified, regardless of errors
+                 */
+                data-testid="run-test-case-button"
+              >
+                Run Test Case
+              </Button>
+              {canEdit && (
                 <Button
                   tw="m-2"
                   variant="cyan"
@@ -1044,8 +1044,8 @@ const EditTestCase = (props: EditTestCaseProps) => {
                 >
                   Save
                 </Button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -1065,7 +1065,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
         open={toastOpen}
         message={toastMessage}
         onClose={onToastClose}
-        autoHideDuration={6000}
+        autoHideDuration={10000}
       />
     </TestCaseForm>
   );

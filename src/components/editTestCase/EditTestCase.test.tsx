@@ -2,7 +2,6 @@ import * as React from "react";
 import { ChangeEvent } from "react";
 import {
   fireEvent,
-  logRoles,
   render,
   screen,
   waitFor,
@@ -27,15 +26,9 @@ import {
 } from "@madie/madie-models";
 import TestCaseRoutes from "../routes/TestCaseRoutes";
 import { act } from "react-dom/test-utils";
-import calculationService, {
-  PopulationEpisodeResult,
-} from "../../api/CalculationService";
+import { PopulationEpisodeResult } from "../../api/CalculationService";
 import { simpleMeasureFixture } from "../createTestCase/__mocks__/simpleMeasureFixture";
 import { testCaseFixture } from "../createTestCase/__mocks__/testCaseFixture";
-import {
-  ExecutionResult,
-  CalculationOutput,
-} from "fqm-execution/build/types/Calculator";
 import {
   buildMeasureBundle,
   getExampleValueSet,
@@ -44,11 +37,7 @@ import { ExecutionContextProvider } from "../routes/ExecutionContext";
 import { multiGroupMeasureFixture } from "../createTestCase/__mocks__/multiGroupMeasureFixture";
 import { nonBoolTestCaseFixture } from "../createTestCase/__mocks__/nonBoolTestCaseFixture";
 import { TestCaseValidator } from "../../validators/TestCaseValidator";
-import {
-  useOktaTokens,
-  checkUserCanEdit,
-  useFeatureFlags,
-} from "@madie/madie-util";
+import { checkUserCanEdit } from "@madie/madie-util";
 import { PopulationType as FqmPopulationType } from "fqm-execution/build/types/Enums";
 
 //temporary solution (after jest updated to version 27) for error: thrown: "Exceeded timeout of 5000 ms for a test.
@@ -1916,9 +1905,6 @@ describe("EditTestCase component", () => {
       },
       { timeout: 1500 }
     );
-    expect(
-      screen.queryByRole("button", { name: "Discard Changes" })
-    ).not.toBeInTheDocument();
 
     expect(editor).toBeInTheDocument();
   });
