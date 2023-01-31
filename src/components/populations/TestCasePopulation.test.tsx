@@ -108,7 +108,6 @@ describe("TestCasePopulation component", () => {
         </table>
       </MemoryRouter>
     );
-    screen.debug(undefined, 40000);
 
     const row = screen.getByTestId(
       `test-row-population-id-${testCasePopulation.name}`
@@ -142,7 +141,6 @@ describe("TestCasePopulation component", () => {
         </table>
       </MemoryRouter>
     );
-    screen.debug(undefined, 40000);
 
     const row = screen.getByTestId(
       `test-row-population-id-${testCasePopulation.name}`
