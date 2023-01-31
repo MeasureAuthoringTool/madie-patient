@@ -163,7 +163,7 @@ describe("TestCaseServiceApi Tests", () => {
     await waitFor(() => {
       expect(readTestCaseCb).toHaveBeenCalledWith(
         testcase,
-        "No test case resources were found in imported file"
+        "No test case resources were found in imported file."
       );
     });
   });

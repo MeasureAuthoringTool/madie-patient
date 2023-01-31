@@ -88,12 +88,12 @@ const serviceConfig: ServiceConfig = {
   },
 };
 const MEASURE_CREATEDBY = "testuser";
-let mockFeatureBool = false;
+let mockApplyDefaults = false;
 jest.mock("@madie/madie-util", () => {
   return {
     useDocumentTitle: jest.fn(),
     useFeatureFlags: () => {
-      return { applyDefaults: mockFeatureBool };
+      return { applyDefaults: mockApplyDefaults };
     },
     measureStore: {
       updateMeasure: jest.fn((measure) => measure),
@@ -2033,24 +2033,6 @@ describe("EditTestCase component", () => {
     });
     await waitFor(() => expect(saveButton).toBeDisabled());
   });
-  it("Import button is not shown if feature flag is false", async () => {
-    renderWithRouter(
-      ["/measures/m1234/edit/test-cases"],
-      "/measures/:measureId/edit/test-cases"
-    );
-    const importButton = screen.queryByRole("button", { name: "Import" });
-    expect(importButton).not.toBeInTheDocument();
-  });
-
-  it("Import button is shown if feature flag is true ASDF", async () => {
-    mockFeatureBool = true;
-    renderWithRouter(
-      ["/measures/m1234/edit/test-cases"],
-      "/measures/:measureId/edit/test-cases"
-    );
-    const importButton = screen.queryByRole("button", { name: "Import" });
-    expect(importButton).toBeInTheDocument();
-  });
 
   it("executes a test case and shows the errors for invalid test case json", async () => {
     mockedAxios.post.mockResolvedValue({
@@ -2466,6 +2448,145 @@ describe("EditTestCase component", () => {
       name: "Run Test Case",
     });
     expect(runButton).toBeDisabled();
+  });
+
+  describe("Import test case file", () => {
+    let testcase, measure, testcaseBundle;
+    beforeEach(() => {
+      testcaseBundle = {
+        id: "601adb9198086b165a47f550",
+        resourceType: "Bundle",
+        entry: [
+          {
+            id: "601adb9198086b165a47f550",
+            resourceType: "Patient",
+          },
+        ],
+      };
+
+      testcase = {
+        id: "1",
+        createdBy: MEASURE_CREATEDBY,
+        title: "Ip Pass",
+        json: "test",
+      } as TestCase;
+
+      measure = {
+        createdBy: MEASURE_CREATEDBY,
+        testCases: [testcase],
+      } as Measure;
+    });
+
+    const importTestCase = (file) => {
+      renderWithRouter(
+        ["/measures/m1234/edit/test-cases"],
+        "/measures/:measureId/edit/test-cases",
+        measure
+      );
+      const importTestBtn = screen.getByRole("button", {
+        name: "Import",
+      });
+      expect(importTestBtn).toBeInTheDocument();
+      const fileInput = screen.getByTestId(
+        "import-file-input"
+      ) as HTMLInputElement;
+      userEvent.click(importTestBtn);
+      userEvent.upload(fileInput, file);
+    };
+
+    it("Import button is not shown if feature flag is false", async () => {
+      renderWithRouter(
+        ["/measures/m1234/edit/test-cases"],
+        "/measures/:measureId/edit/test-cases"
+      );
+      const importButton = screen.queryByRole("button", { name: "Import" });
+      expect(importButton).not.toBeInTheDocument();
+    });
+
+    it("should import test case file successfully", async () => {
+      mockApplyDefaults = true;
+      const file = new File([JSON.stringify(testcaseBundle)], "testcase.json", {
+        type: "application/json",
+      });
+      mockedAxios.post.mockResolvedValue({
+        data: {
+          fileName: "testcase.json",
+          valid: true,
+          error: null,
+        },
+      });
+
+      importTestCase(file);
+      await waitFor(() => {
+        expect(screen.getByTestId("success-toast")).toHaveTextContent(
+          "Test Case JSON copied into editor. QI-Core Defaults have been added. Please review and save your Test Case."
+        );
+      });
+      // make sure edior state updated to have imported bundle contents
+      const editor = screen.getByTestId(
+        "test-case-json-editor"
+      ) as HTMLInputElement;
+      expect(JSON.parse(editor.value)).toEqual(testcaseBundle);
+    });
+
+    it("should report error for empty test case file import", async () => {
+      mockApplyDefaults = true;
+      const bundle = { ...testcaseBundle, entry: [] };
+      const file = new File([JSON.stringify(bundle)], "testcase.json", {
+        type: "application/json",
+      });
+      mockedAxios.post.mockResolvedValue({
+        data: {
+          fileName: "testcase.json",
+          valid: true,
+          error: null,
+        },
+      });
+
+      importTestCase(file);
+      await waitFor(() => {
+        expect(screen.getByTestId("error-toast")).toHaveTextContent(
+          "No test case resources were found in imported file."
+        );
+      });
+    });
+
+    it("should report error if imported test case file is virus infected", async () => {
+      mockApplyDefaults = true;
+      const file = new File([JSON.stringify(testcaseBundle)], "testcase.json", {
+        type: "application/json",
+      });
+      mockedAxios.post.mockResolvedValue({
+        data: {
+          fileName: "testcase.json",
+          valid: false,
+        },
+      });
+
+      importTestCase(file);
+      await waitFor(() => {
+        expect(screen.getByTestId("error-toast")).toHaveTextContent(
+          "There was an error importing this file. Please contact the help desk for error code V100."
+        );
+      });
+    });
+
+    it("should report error if virus scan service is down", async () => {
+      mockApplyDefaults = true;
+      const file = new File([JSON.stringify(testcaseBundle)], "testcase.json", {
+        type: "application/json",
+      });
+      mockedAxios.post.mockRejectedValue({
+        data: "server error",
+      });
+
+      importTestCase(file);
+      await waitFor(() => {
+        expect(screen.getByTestId("error-toast")).toHaveTextContent(
+          "An error occurred while importing the test case, please try again. If the error persists, please contact the help desk."
+        );
+      });
+    });
   });
 });
 

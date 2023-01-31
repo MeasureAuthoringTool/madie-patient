@@ -1055,7 +1055,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
         onContinue={discardChanges}
       />
       <Toast
-        toastKey="measure-action-toast"
+        toastKey="edit-action-toast"
         aria-live="polite"
         toastType={toastType}
         testId={toastType === "danger" ? "error-toast" : "success-toast"}
