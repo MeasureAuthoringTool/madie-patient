@@ -29,7 +29,7 @@ describe("Group Populations", () => {
             id: "321",
             name: "strata-1 Initial Population",
             expected: true,
-            actual: true,
+            actual: false,
           },
         ],
       },
@@ -194,11 +194,13 @@ describe("Group Populations", () => {
   it("should handle checkbox changes", () => {
     testCaseGroups[0].scoring = MeasureScoring.CONTINUOUS_VARIABLE;
     const handleChange = jest.fn();
+    const handleStratificationChange = jest.fn();
     render(
       <GroupPopulations
         executionRun
         groupPopulations={testCaseGroups}
         onChange={handleChange}
+        onStratificationChange={handleStratificationChange}
       />
     );
 
@@ -224,6 +226,15 @@ describe("Group Populations", () => {
       "Group1_ID",
       { actual: true, expected: false, id: "123", name: "initialPopulation" }
     );
+
+    const stratRow = screen.getByRole("row", {
+      name: "strata-1 Initial Population",
+    });
+    const stratCbs = within(stratRow).getAllByRole("checkbox");
+    expect(stratCbs[0]).not.toBeDisabled();
+    expect(stratCbs[0]).toBeChecked();
+    userEvent.click(stratCbs[0]);
+    expect(handleStratificationChange).toHaveBeenCalledTimes(1);
   });
 
   it("should display empty on non run", () => {
