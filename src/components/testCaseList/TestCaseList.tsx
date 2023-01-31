@@ -94,7 +94,13 @@ const TestCaseList = (props: TestCaseListProps) => {
   }, [measure]);
 
   useEffect(() => {
-    setCanEdit(checkUserCanEdit(measure?.createdBy, measure?.acls));
+    setCanEdit(
+      checkUserCanEdit(
+        measure?.createdBy,
+        measure?.acls,
+        measure?.measureMetaData?.draft
+      )
+    );
     setErrors([]);
   }, [measure]);
 
@@ -239,7 +245,16 @@ const TestCaseList = (props: TestCaseListProps) => {
       ]);
     }
   };
-
+  const generateSRString = (testCaseList) => {
+    let string = "";
+    if (testCases) {
+      testCaseList.forEach((testCase) => {
+        string += `test case ${testCase.title}, status: ${testCase.executionStatus}`;
+      });
+    }
+    return string;
+  };
+  const readerString = generateSRString(testCases);
   return (
     <div
       tw="grid lg:grid-cols-6 gap-4 mx-8 my-6 shadow-lg rounded-md border border-slate bg-white"
@@ -269,44 +284,49 @@ const TestCaseList = (props: TestCaseListProps) => {
               />
             </div>
             <CreateNewTestCaseDialog open={createOpen} onClose={handleClose} />
-
             {activeTab === "passing" && (
               <div tw="overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div tw="py-2 inline-block min-w-full sm:px-6 lg:px-8">
                   {!executing && (
-                    <table
-                      tw="min-w-full"
-                      data-testid="test-case-tbl"
-                      className="tcl-table"
-                      style={{
-                        borderTop: "solid 1px #DDD",
-                        borderSpacing: "0 2em !important",
-                      }}
-                    >
-                      <thead tw="bg-slate">
-                        <tr>
-                          <TH scope="col">Status</TH>
-                          <TH scope="col">Group</TH>
-                          <TH scope="col">Title</TH>
-                          <TH scope="col">Description</TH>
-                          <TH scope="col">Action</TH>
-                        </tr>
-                      </thead>
-                      <tbody className="table-body" style={{ padding: 20 }}>
-                        {testCases?.map((testCase) => {
-                          return (
-                            <TestCaseComponent
-                              testCase={testCase}
-                              key={testCase.id}
-                              canEdit={canEdit}
-                              executionResult={executionResults[testCase.id]}
-                              deleteTestCase={deleteTestCase}
-                              // we assume all results have been run here
-                            />
-                          );
-                        })}
-                      </tbody>
-                    </table>
+                    <>
+                      <div
+                        aria-live="polite"
+                        aria-label={readerString || ""}
+                      ></div>
+                      <table
+                        tw="min-w-full"
+                        data-testid="test-case-tbl"
+                        className="tcl-table"
+                        style={{
+                          borderTop: "solid 1px #DDD",
+                          borderSpacing: "0 2em !important",
+                        }}
+                      >
+                        <thead tw="bg-slate">
+                          <tr>
+                            <TH scope="col">Status</TH>
+                            <TH scope="col">Group</TH>
+                            <TH scope="col">Title</TH>
+                            <TH scope="col">Description</TH>
+                            <TH scope="col">Action</TH>
+                          </tr>
+                        </thead>
+                        <tbody className="table-body" style={{ padding: 20 }}>
+                          {testCases?.map((testCase) => {
+                            return (
+                              <TestCaseComponent
+                                testCase={testCase}
+                                key={testCase.id}
+                                canEdit={canEdit}
+                                executionResult={executionResults[testCase.id]}
+                                deleteTestCase={deleteTestCase}
+                                // we assume all results have been run here
+                              />
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </>
                   )}
                   {executing && (
                     <div style={{ display: "flex", justifyContent: "center" }}>

@@ -110,49 +110,45 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
       />
       <div style={{ margin: "6px 0 0 auto", display: "flex" }}>
         <div>
-          {canEdit && (
-            <Button
-              disabled={false}
-              onClick={createNewTestCase}
-              data-testid="create-new-test-case-button"
-            >
-              <AddIcon style={{ margin: "0 5px 0 -2px" }} fontSize="small" />
-              New Test Case
-            </Button>
-          )}
+          <Button
+            disabled={!canEdit}
+            onClick={createNewTestCase}
+            data-testid="create-new-test-case-button"
+          >
+            <AddIcon style={{ margin: "0 5px 0 -2px" }} fontSize="small" />
+            New Test Case
+          </Button>
         </div>
         <div style={{ margin: "0 6px 0 26px" }}>
-          {canEdit && (
-            <Box sx={{ position: "relative" }}>
-              <Button
-                variant="cyan"
-                disabled={
-                  !!measure?.cqlErrors ||
-                  _.isNil(measure?.groups) ||
-                  measure?.groups.length === 0 ||
-                  !executionContextReady ||
-                  executing
-                }
-                onClick={executeTestCases}
-                data-testid="execute-test-cases-button"
-              >
-                Run Test Cases
-              </Button>
-              {executing && (
-                <CircularProgress
-                  size={24}
-                  sx={{
-                    color: "#209FA6",
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    marginTop: "-5px",
-                    marginLeft: "-12px",
-                  }}
-                />
-              )}
-            </Box>
-          )}
+          <Box sx={{ position: "relative" }}>
+            <Button
+              variant="cyan"
+              disabled={
+                !!measure?.cqlErrors ||
+                _.isNil(measure?.groups) ||
+                measure?.groups.length === 0 ||
+                !executionContextReady ||
+                executing
+              }
+              onClick={executeTestCases}
+              data-testid="execute-test-cases-button"
+            >
+              Run Test Cases
+            </Button>
+            {executing && (
+              <CircularProgress
+                size={24}
+                sx={{
+                  color: "#209FA6",
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  marginTop: "-5px",
+                  marginLeft: "-12px",
+                }}
+              />
+            )}
+          </Box>
         </div>
       </div>
     </Tabs>

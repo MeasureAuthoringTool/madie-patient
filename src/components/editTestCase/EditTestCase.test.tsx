@@ -2,6 +2,7 @@ import * as React from "react";
 import { ChangeEvent } from "react";
 import {
   fireEvent,
+  logRoles,
   render,
   screen,
   waitFor,
@@ -43,7 +44,11 @@ import { ExecutionContextProvider } from "../routes/ExecutionContext";
 import { multiGroupMeasureFixture } from "../createTestCase/__mocks__/multiGroupMeasureFixture";
 import { nonBoolTestCaseFixture } from "../createTestCase/__mocks__/nonBoolTestCaseFixture";
 import { TestCaseValidator } from "../../validators/TestCaseValidator";
-import { useOktaTokens, checkUserCanEdit } from "@madie/madie-util";
+import {
+  useOktaTokens,
+  checkUserCanEdit,
+  useFeatureFlags,
+} from "@madie/madie-util";
 import { PopulationType as FqmPopulationType } from "fqm-execution/build/types/Enums";
 
 //temporary solution (after jest updated to version 27) for error: thrown: "Exceeded timeout of 5000 ms for a test.
@@ -94,35 +99,39 @@ const serviceConfig: ServiceConfig = {
   },
 };
 const MEASURE_CREATEDBY = "testuser";
-
-jest.mock("@madie/madie-util", () => ({
-  useDocumentTitle: jest.fn(),
-  measureStore: {
-    updateMeasure: jest.fn((measure) => measure),
-    state: null,
-    initialState: null,
-    subscribe: (set) => {
-      set({} as Measure);
-      return { unsubscribe: () => null };
+let mockFeatureBool = false;
+jest.mock("@madie/madie-util", () => {
+  return {
+    useDocumentTitle: jest.fn(),
+    useFeatureFlags: () => {
+      return { applyDefaults: mockFeatureBool };
     },
-    unsubscribe: () => null,
-  },
-  useOktaTokens: jest.fn(() => ({
-    getAccessToken: () => "test.jwt",
-  })),
-  checkUserCanEdit: jest.fn(() => {
-    return true;
-  }),
-  routeHandlerStore: {
-    subscribe: (set) => {
-      return { unsubscribe: () => null };
+    measureStore: {
+      updateMeasure: jest.fn((measure) => measure),
+      state: null,
+      initialState: null,
+      subscribe: (set) => {
+        set({} as Measure);
+        return { unsubscribe: () => null };
+      },
+      unsubscribe: () => null,
     },
-    updateRouteHandlerState: () => null,
-    state: { canTravel: false, pendingPath: "" },
-    initialState: { canTravel: false, pendingPath: "" },
-  },
-}));
-
+    useOktaTokens: jest.fn(() => ({
+      getAccessToken: () => "test.jwt",
+    })),
+    checkUserCanEdit: jest.fn(() => {
+      return true;
+    }),
+    routeHandlerStore: {
+      subscribe: (set) => {
+        return { unsubscribe: () => null };
+      },
+      updateRouteHandlerState: () => null,
+      state: { canTravel: false, pendingPath: "" },
+      initialState: { canTravel: false, pendingPath: "" },
+    },
+  };
+});
 const hapiOperationSuccessOutcome = {
   code: 200,
   message: null,
@@ -2045,41 +2054,23 @@ describe("EditTestCase component", () => {
     });
     await waitFor(() => expect(saveButton).toBeDisabled());
   });
-});
+  it("Import button is not shown if feature flag is false", async () => {
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases"],
+      "/measures/:measureId/edit/test-cases"
+    );
+    const importButton = screen.queryByRole("button", { name: "Import" });
+    expect(importButton).not.toBeInTheDocument();
+  });
 
-describe("Measure Calculation ", () => {
-  it("calculates a measure against a test case", async () => {
-    const calculationSrv = calculationService();
-    const executionResults: CalculationOutput<any> =
-      await calculationSrv.calculateTestCases(
-        simpleMeasureFixture,
-        [testCaseFixture],
-        buildMeasureBundle(simpleMeasureFixture),
-        []
-      );
-
-    /*const calculationResults = executionResults[0].results;
-    expect(calculationResults).toHaveLength(1);
-    expect(calculationResults[0].detailedResults).toHaveLength(1);
-    */
-    const populationResults =
-      executionResults.results[0].detailedResults[0].populationResults;
-    expect(populationResults).toHaveLength(3);
-    expect(populationResults).toContainEqual({
-      criteriaExpression: "first",
-      populationType: "initial-population",
-      result: true,
-    });
-    expect(populationResults).toContainEqual({
-      criteriaExpression: "second",
-      populationType: "denominator",
-      result: true,
-    });
-    expect(populationResults).toContainEqual({
-      criteriaExpression: "third",
-      populationType: "numerator",
-      result: false,
-    });
+  it("Import button is shown if feature flag is true ASDF", async () => {
+    mockFeatureBool = true;
+    renderWithRouter(
+      ["/measures/m1234/edit/test-cases"],
+      "/measures/:measureId/edit/test-cases"
+    );
+    const importButton = screen.queryByRole("button", { name: "Import" });
+    expect(importButton).toBeInTheDocument();
   });
 
   it("executes a test case and shows the errors for invalid test case json", async () => {

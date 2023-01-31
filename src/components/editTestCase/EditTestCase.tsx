@@ -7,7 +7,6 @@ import React, {
   useState,
 } from "react";
 import { MadieDiscardDialog } from "@madie/madie-design-system/dist/react/";
-import { HelperText } from "@madie/madie-components";
 import { useNavigate, useParams } from "react-router-dom";
 import { useFormik } from "formik";
 import tw, { styled } from "twin.macro";
@@ -48,6 +47,7 @@ import {
   routeHandlerStore,
   useDocumentTitle,
   checkUserCanEdit,
+  useFeatureFlags,
 } from "@madie/madie-util";
 import useExecutionContext from "../routes/useExecutionContext";
 import { MadieEditor } from "@madie/madie-editor";
@@ -63,7 +63,6 @@ import {
 } from "@madie/madie-design-system/dist/react";
 import TextArea from "../createTestCase/TextArea";
 
-const FormErrors = tw.div`h-6`;
 const TestCaseForm = tw.form`m-3`;
 
 const ValidationErrorsButton = tw.button`
@@ -220,8 +219,13 @@ const EditTestCase = (props: EditTestCaseProps) => {
   const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
   const { updateMeasure } = measureStore;
   const load = useRef(0);
-  const canEdit = checkUserCanEdit(measure?.createdBy, measure?.acls);
+  const canEdit = checkUserCanEdit(
+    measure?.createdBy,
+    measure?.acls,
+    measure?.measureMetaData?.draft
+  );
 
+  const featureFlags = useFeatureFlags();
   const formik = useFormik({
     initialValues: { ...INITIAL_VALUES },
     validationSchema: TestCaseValidator,
@@ -953,6 +957,13 @@ const EditTestCase = (props: EditTestCaseProps) => {
 
         <div tw="h-24 bg-gray-75 w-full sticky bottom-0 left-0 z-10">
           <div tw="flex items-center">
+            <div tw="w-1/4  px-4 py-6">
+              {featureFlags && featureFlags.applyDefaults && canEdit && (
+                <Button type="button" data-testid="import-test-case-button">
+                  Import
+                </Button>
+              )}
+            </div>
             <div tw="w-1/2 flex justify-end items-center px-10 py-6">
               <Button
                 type="button"
