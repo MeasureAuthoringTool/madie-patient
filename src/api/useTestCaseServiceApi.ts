@@ -3,6 +3,7 @@ import useServiceConfig from "./useServiceConfig";
 import { ServiceConfig } from "./ServiceContext";
 import { HapiOperationOutcome, TestCase } from "@madie/madie-models";
 import { useOktaTokens } from "@madie/madie-util";
+import { ScanValidationDto } from "./models/ScanValidationDto";
 
 export class TestCaseServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
@@ -135,6 +136,48 @@ export class TestCaseServiceApi {
     } catch (err) {
       const message = `Unable to validate test case bundle`;
       throw new Error(message);
+    }
+  }
+
+  async createTestCases(
+    measureId: string,
+    testCases: TestCase[]
+  ): Promise<TestCase[]> {
+    try {
+      const response = await axios.post<TestCase[]>(
+        `${this.baseUrl}/measures/${measureId}/test-cases/list`,
+        testCases,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      throw new Error(`Unable to create new test cases`);
+    }
+  }
+
+  async scanImportFile(file: any): Promise<ScanValidationDto> {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await axios.post<ScanValidationDto>(
+        `${this.baseUrl}/validations/files`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      throw new Error(
+        "Unable to scan the import file. Please try again later."
+      );
     }
   }
 }
