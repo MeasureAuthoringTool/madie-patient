@@ -6,7 +6,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { MadieDiscardDialog } from "@madie/madie-design-system/dist/react/";
 import { useNavigate, useParams } from "react-router-dom";
 import { useFormik } from "formik";
 import tw, { styled } from "twin.macro";
@@ -60,11 +59,15 @@ import {
   TextField,
   MadieAlert,
   MadieSpinner,
+  MadieDiscardDialog,
+  Toast,
 } from "@madie/madie-design-system/dist/react";
 import TextArea from "../createTestCase/TextArea";
+import FileUploader from "../fileUploader/FileUploader";
+import { ScanValidationDto } from "../../api/models/ScanValidationDto";
+import { Bundle } from "fhir/r4";
 
 const TestCaseForm = tw.form`m-3`;
-
 const ValidationErrorsButton = tw.button`
   text-lg
   -translate-y-6
@@ -187,6 +190,25 @@ const EditTestCase = (props: EditTestCaseProps) => {
   if (!errors) {
     setErrors([]);
   }
+
+  // Toast utilities
+  const [toastOpen, setToastOpen] = useState<boolean>(false);
+  const [toastMessage, setToastMessage] = useState<string>("");
+  const [toastType, setToastType] = useState<string>("danger");
+  const onToastClose = () => {
+    setToastMessage("");
+    setToastOpen(false);
+  };
+
+  const showToast = (
+    message: string,
+    toastType: "success" | "danger" | "warning"
+  ) => {
+    setToastOpen(true);
+    setToastType(toastType);
+    setToastMessage(message);
+  };
+
   const [testCase, setTestCase] = useState<TestCase>(null);
   const [editorVal, setEditorVal]: [string, Dispatch<SetStateAction<string>>] =
     useState("Loading...");
@@ -682,6 +704,38 @@ const EditTestCase = (props: EditTestCaseProps) => {
     return "info";
   };
 
+  const readTestFileCb = (testCaseBundle: Bundle, errorMessage: string) => {
+    if (errorMessage) {
+      showToast(errorMessage, "danger");
+    } else {
+      setEditorVal(JSON.stringify(testCaseBundle, null, "\t"));
+      showToast(
+        "Test Case JSON copied into editor. QI-Core Defaults have been added. Please review and save your Test Case.",
+        "success"
+      );
+    }
+  };
+  const updateTestCaseJson = (file) => {
+    testCaseService.current
+      .scanImportFile(file)
+      .then(async (response: ScanValidationDto) => {
+        if (response.valid) {
+          testCaseService.current.readTestCaseFile(file, readTestFileCb);
+        } else {
+          showToast(
+            "There was an error importing this file. Please contact the help desk for error code V100.",
+            "danger"
+          );
+        }
+      })
+      .catch((errors) => {
+        showToast(
+          "An error occurred while importing the test case, please try again. If the error persists, please contact the help desk.",
+          "danger"
+        );
+      });
+  };
+
   return (
     <TestCaseForm
       data-testid="create-test-case-form"
@@ -941,34 +995,10 @@ const EditTestCase = (props: EditTestCaseProps) => {
 
         <div tw="h-24 bg-gray-75 w-full sticky bottom-0 left-0 z-10">
           <div tw="flex items-center">
-            <div tw="w-1/4  px-4 py-6">
-              {featureFlags && featureFlags.applyDefaults && canEdit && (
-                <Button type="button" data-testid="import-test-case-button">
-                  Import
-                </Button>
+            <div tw="w-1/2 flex items-center px-2">
+              {featureFlags?.applyDefaults && canEdit && (
+                <FileUploader onFileImport={updateTestCaseJson} />
               )}
-            </div>
-            <div tw="w-1/2 flex justify-end items-center px-10 py-6">
-              <Button
-                type="button"
-                onClick={calculate}
-                disabled={
-                  !!measure?.cqlErrors ||
-                  _.isNil(measure?.groups) ||
-                  measure?.groups.length === 0 ||
-                  (!isJsonModified() && hasErrorSeverity(validationErrors)) ||
-                  isEmptyTestCaseJsonString(editorVal) ||
-                  !executionContextReady ||
-                  executing
-                }
-                /*
-                  if new test case
-                    enable run button if json modified, regardless of errors
-                 */
-                data-testid="run-test-case-button"
-              >
-                Run Test Case
-              </Button>
             </div>
             {canEdit && (
               <div
@@ -983,6 +1013,27 @@ const EditTestCase = (props: EditTestCaseProps) => {
                   disabled={!isModified()}
                 >
                   Discard Changes
+                </Button>
+                <Button
+                  tw="m-2"
+                  type="button"
+                  onClick={calculate}
+                  disabled={
+                    !!measure?.cqlErrors ||
+                    _.isNil(measure?.groups) ||
+                    measure?.groups.length === 0 ||
+                    (!isJsonModified() && hasErrorSeverity(validationErrors)) ||
+                    isEmptyTestCaseJsonString(editorVal) ||
+                    !executionContextReady ||
+                    executing
+                  }
+                  /*
+                    if new test case
+                      enable run button if json modified, regardless of errors
+                   */
+                  data-testid="run-test-case-button"
+                >
+                  Run Test Case
                 </Button>
                 <Button
                   tw="m-2"
@@ -1002,6 +1053,19 @@ const EditTestCase = (props: EditTestCaseProps) => {
         open={discardDialogOpen}
         onClose={() => setDiscardDialogOpen(false)}
         onContinue={discardChanges}
+      />
+      <Toast
+        toastKey="measure-action-toast"
+        aria-live="polite"
+        toastType={toastType}
+        testId={toastType === "danger" ? "error-toast" : "success-toast"}
+        closeButtonProps={{
+          "data-testid": "close-toast-button",
+        }}
+        open={toastOpen}
+        message={toastMessage}
+        onClose={onToastClose}
+        autoHideDuration={6000}
       />
     </TestCaseForm>
   );

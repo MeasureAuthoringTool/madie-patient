@@ -180,6 +180,26 @@ export class TestCaseServiceApi {
       );
     }
   }
+
+  readTestCaseFile(file: File, onReadCallback): void {
+    const fileReader = new FileReader();
+    fileReader.onload = (e) => {
+      const content: string = e.target.result as string;
+      let testCaseBundle = null,
+        errorMessage = null;
+      try {
+        testCaseBundle = JSON.parse(content);
+        if (testCaseBundle.entry?.length === 0) {
+          errorMessage = "No test case resources were found in imported file";
+        }
+      } catch (error) {
+        errorMessage =
+          "An error occurred while reading the file. Please make sure the test case file is valid.";
+      }
+      onReadCallback(testCaseBundle, errorMessage);
+    };
+    fileReader.readAsText(file);
+  }
 }
 
 const useTestCaseServiceApi = (): TestCaseServiceApi => {
