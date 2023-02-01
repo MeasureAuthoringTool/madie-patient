@@ -755,6 +755,22 @@ const EditTestCase = (props: EditTestCaseProps) => {
                   stratOutput as GroupPopulation[]
                 );
               }}
+              onStratificationChange={(
+                groupPopulations,
+                changedGroupId,
+                changedStratification
+              ) => {
+                const stratOutput = triggerPopChanges(
+                  groupPopulations,
+                  changedGroupId,
+                  changedStratification,
+                  measure?.groups
+                );
+                formik.setFieldValue(
+                  "groupPopulations",
+                  stratOutput as GroupPopulation[]
+                );
+              }}
             />
           )}
           {/*

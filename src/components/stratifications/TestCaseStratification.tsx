@@ -1,16 +1,16 @@
 import React from "react";
 import "styled-components/macro";
-import { DisplayPopulationValue } from "@madie/madie-models";
+import { DisplayStratificationValue } from "@madie/madie-models";
 import ExpectActualInput from "../populations/ExpectActualInput";
 
 export interface TestCaseStratificationProps {
   strataCode: string;
   executionRun: boolean;
-  stratification: DisplayPopulationValue;
+  stratification: DisplayStratificationValue;
   populationBasis: string;
   showExpected?: boolean;
   disableExpected?: boolean;
-  onChange: (stratification: DisplayPopulationValue) => void;
+  onStratificationChange: (stratification: DisplayStratificationValue) => void;
 }
 
 const TestCaseStratification = ({
@@ -19,7 +19,7 @@ const TestCaseStratification = ({
   stratification,
   populationBasis,
   disableExpected = false,
-  onChange,
+  onStratificationChange,
 }: TestCaseStratificationProps) => {
   return (
     <React.Fragment key={`fragment-key-${strataCode}`}>
@@ -36,7 +36,10 @@ const TestCaseStratification = ({
             id={`${stratification.name}-expected-cb`}
             expectedValue={stratification.expected}
             onChange={(expectedValue) =>
-              onChange({ ...stratification, expected: expectedValue })
+              onStratificationChange({
+                ...stratification,
+                expected: expectedValue,
+              })
             }
             populationBasis={populationBasis}
             disabled={disableExpected}
@@ -50,7 +53,10 @@ const TestCaseStratification = ({
               id={`${stratification.name}-actual-cb`}
               expectedValue={stratification.actual}
               onChange={(expectedValue) =>
-                onChange({ ...stratification, actual: expectedValue })
+                onStratificationChange({
+                  ...stratification,
+                  actual: expectedValue,
+                })
               }
               stratificationBasis={populationBasis}
               disabled={true}

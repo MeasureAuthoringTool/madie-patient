@@ -5,6 +5,7 @@ const ExpectedActual = ({
   canEdit,
   groupPopulations,
   onChange,
+  onStratificationChange,
   errors,
   executionRun = false,
 }) => {
@@ -17,6 +18,7 @@ const ExpectedActual = ({
         disableExpected={!canEdit}
         groupPopulations={groupPopulations}
         onChange={onChange}
+        onStratificationChange={onStratificationChange}
         errors={errors}
         executionRun={executionRun}
       />

@@ -1983,6 +1983,13 @@ describe("EditTestCase component", () => {
     userEvent.click(ipCheckbox);
     await waitFor(() => expect(ipCheckbox).toBeChecked());
 
+    const stratCheckbox = await screen.findByTestId(
+      "test-population-Strata-1 Initial Population-expected"
+    );
+    expect(stratCheckbox).toBeInTheDocument();
+    userEvent.click(stratCheckbox);
+    await waitFor(() => expect(stratCheckbox).toBeChecked());
+
     userEvent.click(screen.getByTestId("details-tab"));
 
     const tcTitle = await screen.findByTestId("test-case-title");

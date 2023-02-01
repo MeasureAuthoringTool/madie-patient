@@ -2,6 +2,7 @@ import {
   PopulationType,
   GroupPopulation,
   DisplayPopulationValue,
+  DisplayStratificationValue,
   Measure,
   Group,
   MeasureScoring,
@@ -486,12 +487,12 @@ it("return the input matches output with no changes", () => {
     expected: true,
     actual: false,
   };
-  const stratVal1: DisplayPopulationValue = {
+  const stratVal1: DisplayStratificationValue = {
     id: "1",
     name: "strata-1",
     expected: true,
   };
-  const stratVal2: DisplayPopulationValue = {
+  const stratVal2: DisplayStratificationValue = {
     id: "2",
     name: "strata-2",
     expected: false,
@@ -539,12 +540,12 @@ it("return the input matches output with strat expected change", () => {
     expected: true,
     actual: false,
   };
-  const stratVal1: DisplayPopulationValue = {
+  const stratVal1: DisplayStratificationValue = {
     id: "1",
     name: "strata-1",
     expected: true,
   };
-  const stratVal2: DisplayPopulationValue = {
+  const stratVal2: DisplayStratificationValue = {
     id: "2",
     name: "strata-2",
     expected: false,
@@ -567,7 +568,7 @@ it("return the input matches output with strat expected change", () => {
     groupPop1.groupId,
     {
       id: "2",
-      name: "strata-2",
+      name: PopulationType.INITIAL_POPULATION,
       expected: true,
       actual: undefined,
     },
@@ -2370,3 +2371,226 @@ function findObservationByCriteriaReference(
   });
   return returnVal;
 }
+
+it("test proportion scoring with denominatorExclusion as changedPopulationName, when expectedValue is false, expected value for INITIAL_POPULATION and DENOMINATOR are both false", () => {
+  const ipp: DisplayPopulationValue = {
+    id: "1",
+    name: PopulationType.INITIAL_POPULATION,
+    expected: false,
+    actual: false,
+  };
+  const denom: DisplayPopulationValue = {
+    id: "2",
+    name: PopulationType.DENOMINATOR,
+    expected: false,
+    actual: false,
+  };
+  const denomExclu: DisplayPopulationValue = {
+    id: "3",
+    name: PopulationType.DENOMINATOR_EXCLUSION,
+    expected: false,
+    actual: false,
+  };
+  const numer: DisplayPopulationValue = {
+    id: "4",
+    name: PopulationType.NUMERATOR,
+    expected: false,
+    actual: false,
+  };
+
+  const populationValues: DisplayPopulationValue[] = [];
+  populationValues.push(ipp);
+  populationValues.push(denom);
+  populationValues.push(denomExclu);
+  populationValues.push(numer);
+
+  const group1: GroupPopulation = {
+    groupId: "shrug",
+    populationBasis: "boolean",
+    scoring: "Proportion",
+    populationValues: populationValues,
+    stratificationValues: [],
+  };
+  const groupPopulations: GroupPopulation[] = [];
+  groupPopulations.push(group1);
+
+  const resultPops = triggerPopChanges(
+    groupPopulations,
+    group1.groupId,
+    {
+      id: "3",
+      name: PopulationType.DENOMINATOR_EXCLUSION,
+      expected: true,
+      actual: undefined,
+    },
+    measureGroup
+  );
+
+  expect(resultPops.length).toEqual(groupPopulations.length);
+
+  expect(
+    parsingTheExpectedResult(
+      resultPops[0].populationValues,
+      PopulationType.INITIAL_POPULATION,
+      "Proportion"
+    )
+  ).toBeFalsy();
+  expect(
+    parsingTheExpectedResult(
+      resultPops[0].populationValues,
+      PopulationType.DENOMINATOR,
+      "Proportion"
+    )
+  ).toBeFalsy();
+});
+
+it("test proportion scoring with denominatorException as changedPopulationName, when expectedValue is false, expected value for INITIAL_POPULATION and DENOMINATOR are both false", () => {
+  const ipp: DisplayPopulationValue = {
+    id: "1",
+    name: PopulationType.INITIAL_POPULATION,
+    expected: false,
+    actual: false,
+  };
+  const denom: DisplayPopulationValue = {
+    id: "2",
+    name: PopulationType.DENOMINATOR,
+    expected: false,
+    actual: false,
+  };
+  const denomExclu: DisplayPopulationValue = {
+    id: "3",
+    name: PopulationType.DENOMINATOR_EXCEPTION,
+    expected: false,
+    actual: false,
+  };
+  const numer: DisplayPopulationValue = {
+    id: "4",
+    name: PopulationType.NUMERATOR,
+    expected: false,
+    actual: false,
+  };
+
+  const populationValues: DisplayPopulationValue[] = [];
+  populationValues.push(ipp);
+  populationValues.push(denom);
+  populationValues.push(denomExclu);
+  populationValues.push(numer);
+
+  const group1: GroupPopulation = {
+    groupId: "shrug",
+    populationBasis: "boolean",
+    scoring: "Proportion",
+    populationValues: populationValues,
+    stratificationValues: [],
+  };
+  const groupPopulations: GroupPopulation[] = [];
+  groupPopulations.push(group1);
+
+  const resultPops = triggerPopChanges(
+    groupPopulations,
+    group1.groupId,
+    {
+      id: "3",
+      name: PopulationType.DENOMINATOR_EXCEPTION,
+      expected: true,
+      actual: undefined,
+    },
+    measureGroup
+  );
+
+  expect(resultPops.length).toEqual(groupPopulations.length);
+
+  expect(
+    parsingTheExpectedResult(
+      resultPops[0].populationValues,
+      PopulationType.INITIAL_POPULATION,
+      "Proportion"
+    )
+  ).toBeFalsy();
+  expect(
+    parsingTheExpectedResult(
+      resultPops[0].populationValues,
+      PopulationType.DENOMINATOR,
+      "Proportion"
+    )
+  ).toBeFalsy();
+});
+
+it("test proportion scoring with numeratorExclusion as changedPopulationName, when expectedValue is false, expected value for INITIAL_POPULATION and DENOMINATOR and NUMERATOR are all false", () => {
+  const ipp: DisplayPopulationValue = {
+    id: "1",
+    name: PopulationType.INITIAL_POPULATION,
+    expected: false,
+    actual: false,
+  };
+  const denom: DisplayPopulationValue = {
+    id: "2",
+    name: PopulationType.DENOMINATOR,
+    expected: false,
+    actual: false,
+  };
+  const numer: DisplayPopulationValue = {
+    id: "3",
+    name: PopulationType.NUMERATOR,
+    expected: false,
+    actual: false,
+  };
+  const numExclu: DisplayPopulationValue = {
+    id: "4",
+    name: PopulationType.NUMERATOR_EXCLUSION,
+    expected: false,
+    actual: false,
+  };
+
+  const populationValues: DisplayPopulationValue[] = [];
+  populationValues.push(ipp);
+  populationValues.push(denom);
+  populationValues.push(numer);
+  populationValues.push(numExclu);
+
+  const group1: GroupPopulation = {
+    groupId: "shrug",
+    populationBasis: "boolean",
+    scoring: "Proportion",
+    populationValues: populationValues,
+    stratificationValues: [],
+  };
+  const groupPopulations: GroupPopulation[] = [];
+  groupPopulations.push(group1);
+
+  const resultPops = triggerPopChanges(
+    groupPopulations,
+    group1.groupId,
+    {
+      id: "3",
+      name: PopulationType.NUMERATOR_EXCLUSION,
+      expected: true,
+      actual: undefined,
+    },
+    measureGroup
+  );
+
+  expect(resultPops.length).toEqual(groupPopulations.length);
+
+  expect(
+    parsingTheExpectedResult(
+      resultPops[0].populationValues,
+      PopulationType.INITIAL_POPULATION,
+      "Proportion"
+    )
+  ).toBeFalsy();
+  expect(
+    parsingTheExpectedResult(
+      resultPops[0].populationValues,
+      PopulationType.DENOMINATOR,
+      "Proportion"
+    )
+  ).toBeFalsy();
+  expect(
+    parsingTheExpectedResult(
+      resultPops[0].populationValues,
+      PopulationType.NUMERATOR,
+      "Proportion"
+    )
+  ).toBeFalsy();
+});

@@ -82,4 +82,70 @@ describe("TestCasePopulation component", () => {
     //   actual: true,
     // });
   });
+
+  it("Should display CV populationNameTemplate as Measure Observation 1 when measureObservationsCount is bigger than 0", async () => {
+    const testCasePopulation = {
+      id: "1",
+      name: PopulationType.MEASURE_POPULATION_OBSERVATION,
+      expected: true,
+      actual: false,
+    };
+    const handleChange = jest.fn();
+    const setChangedPopulation = jest.fn();
+    render(
+      <MemoryRouter>
+        <table>
+          <tbody>
+            <TestCasePopulation
+              executionRun
+              population={testCasePopulation}
+              onChange={handleChange}
+              setChangedPopulation={setChangedPopulation}
+              populationBasis="boolean"
+              measureObservationsCount={1}
+            />
+          </tbody>
+        </table>
+      </MemoryRouter>
+    );
+
+    const row = screen.getByTestId(
+      `test-row-population-id-${testCasePopulation.name}`
+    );
+    const columns = row.querySelectorAll("td");
+    expect(columns[1]).toHaveTextContent("Measure Observation 1");
+  });
+
+  it("Should display CV populationNameTemplate as Measure Observation 1 when measureObservationsCount is not bigger than 0", async () => {
+    const testCasePopulation = {
+      id: "1",
+      name: PopulationType.MEASURE_POPULATION_OBSERVATION,
+      expected: true,
+      actual: false,
+    };
+    const handleChange = jest.fn();
+    const setChangedPopulation = jest.fn();
+    render(
+      <MemoryRouter>
+        <table>
+          <tbody>
+            <TestCasePopulation
+              executionRun
+              population={testCasePopulation}
+              onChange={handleChange}
+              setChangedPopulation={setChangedPopulation}
+              populationBasis="boolean"
+              measureObservationsCount={0}
+            />
+          </tbody>
+        </table>
+      </MemoryRouter>
+    );
+
+    const row = screen.getByTestId(
+      `test-row-population-id-${testCasePopulation.name}`
+    );
+    const columns = row.querySelectorAll("td");
+    expect(columns[1]).toHaveTextContent("Measure Observation");
+  });
 });
