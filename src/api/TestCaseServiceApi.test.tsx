@@ -2,6 +2,7 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { TestCaseServiceApi } from "./useTestCaseServiceApi";
 import { ScanValidationDto } from "./models/ScanValidationDto";
 import { TestCase } from "@madie/madie-models";
+import { waitFor } from "@testing-library/react";
 
 jest.mock("axios");
 
@@ -121,5 +122,61 @@ describe("TestCaseServiceApi Tests", () => {
     await expect(async () => {
       await testCaseService.createTestCases("M123", testCases);
     }).rejects.toThrowError("Unable to create new test cases");
+  });
+
+  it("should read file successfully", async () => {
+    const testcase = {
+      id: "601adb9198086b165a47f550",
+      resourceType: "Bundle",
+      type: "collection",
+      entry: [
+        {
+          fullUrl: "601adb9198086b165a47f550",
+          resource: {
+            id: "601adb9198086b165a47f550",
+            resourceType: "Patient",
+          },
+        },
+      ],
+    };
+    const file = new File([JSON.stringify(testcase)], "testcase.json", {
+      type: "application/json",
+    });
+    const readTestCaseCb = jest.fn();
+    testCaseService.readTestCaseFile(file, readTestCaseCb);
+    await waitFor(() => {
+      expect(readTestCaseCb).toHaveBeenCalledWith(testcase, null);
+    });
+  });
+
+  it("should read file successfully when no resources found and report error", async () => {
+    const testcase = {
+      id: "601adb9198086b165a47f550",
+      resourceType: "Bundle",
+      entry: [],
+    };
+    const file = new File([JSON.stringify(testcase)], "testcase.json", {
+      type: "application/json",
+    });
+    const readTestCaseCb = jest.fn();
+    testCaseService.readTestCaseFile(file, readTestCaseCb);
+    await waitFor(() => {
+      expect(readTestCaseCb).toHaveBeenCalledWith(
+        testcase,
+        "No test case resources were found in imported file."
+      );
+    });
+  });
+
+  it("should read file and report if it is invalid", async () => {
+    const file = new File([new ArrayBuffer(1)], "file.jpg");
+    const readTestCaseCb = jest.fn();
+    testCaseService.readTestCaseFile(file, readTestCaseCb);
+    await waitFor(() => {
+      expect(readTestCaseCb).toHaveBeenCalledWith(
+        null,
+        "An error occurred while reading the file. Please make sure the test case file is valid."
+      );
+    });
   });
 });
