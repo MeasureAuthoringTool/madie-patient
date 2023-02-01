@@ -718,7 +718,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
   const updateTestCaseJson = (file) => {
     testCaseService.current
       .scanImportFile(file)
-      .then(async (response: ScanValidationDto) => {
+      .then((response: ScanValidationDto) => {
         if (response.valid) {
           testCaseService.current.readTestCaseFile(file, readTestFileCb);
         } else {
