@@ -37,7 +37,7 @@
     "@madie/madie-auth": "^0.0.1",
     "@madie/madie-components": "^0.0.4",
     "@madie/madie-editor": "^0.0.1",
-    "@madie/madie-models": "^1.3.3",
+    "@madie/madie-models": "^1.3.7",
     "@madie/madie-root": "^0.0.2",
     "@mui/lab": "^5.0.0-alpha.73",
     "@mui/material": "~5.5.0",
@@ -83,7 +83,7 @@
     "identity-obj-proxy": "^3.0.0",
     "jest": "^27.1.0",
     "jest-cli": "^27.1.0",
-    "jest-enzyme": "^7.1.2",
+    "jest-enzyme": "^4.2.0",
     "lodash": "^4.17.21",
     "node-polyfill-webpack-plugin": "^1.1.4",
     "postcss": "^8.3.6",
@@ -119,7 +119,8 @@
     "single-spa-react": "^4.2.0"
   },
   "overrides": {
-    "loader-utils@<2.0.3": "2.0.4"
+    "loader-utils@<2.0.3": "2.0.4",
+    "dset": "3.1.2"
   },
   "types": "dist/madie-madie-patient.d.ts",
   "browserslist": [

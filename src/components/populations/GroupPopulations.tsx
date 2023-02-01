@@ -6,6 +6,7 @@ import {
   DisplayGroupPopulation,
   GroupPopulation,
   DisplayPopulationValue,
+  DisplayStratificationValue,
 } from "@madie/madie-models";
 import * as _ from "lodash";
 
@@ -19,6 +20,12 @@ export interface PopulationsProps {
     changedGroupId: string,
     changedPopulation: DisplayPopulationValue
   ) => void;
+  onStratificationChange?: (
+    groupPopulations: GroupPopulation[],
+    changedGroupId: string,
+    changedStratification: DisplayStratificationValue
+  ) => void;
+
   errors?: any[];
 }
 
@@ -28,6 +35,7 @@ const GroupPopulations = ({
   executionRun = false,
   groupPopulations = [],
   onChange,
+  onStratificationChange,
   errors,
 }: PopulationsProps) => (
   <>
@@ -69,21 +77,26 @@ const GroupPopulations = ({
                 scoring={gp.scoring}
                 disableExpected={disableExpected}
                 executionRun={executionRun}
-                populations={gp.stratificationValues}
+                populations={null}
+                stratifications={gp.stratificationValues}
                 populationBasis={gp.populationBasis}
-                onChange={(populations, type, changedPopulation) => {
+                onStratificationChange={(
+                  stratifications,
+                  type,
+                  changedStratification
+                ) => {
                   const nextPopulations = _.cloneDeep(groupPopulations);
                   const groupPopulation = nextPopulations.find(
                     (np) => np.groupId === gp.groupId
                   );
                   if (groupPopulation) {
-                    groupPopulation.stratificationValues = populations;
+                    groupPopulation.stratificationValues = stratifications;
                   }
-                  if (onChange) {
-                    onChange(
+                  if (onStratificationChange) {
+                    onStratificationChange(
                       nextPopulations,
                       groupPopulation.groupId,
-                      changedPopulation
+                      changedStratification
                     );
                   }
                 }}

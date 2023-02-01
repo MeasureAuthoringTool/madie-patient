@@ -3,7 +3,12 @@ import tw, { styled } from "twin.macro";
 import "styled-components/macro";
 import * as _ from "lodash";
 import TestCasePopulation from "./TestCasePopulation";
-import { DisplayPopulationValue, PopulationType } from "@madie/madie-models";
+import TestCaseStratification from "../stratifications/TestCaseStratification";
+import {
+  DisplayPopulationValue,
+  DisplayStratificationValue,
+  PopulationType,
+} from "@madie/madie-models";
 import classNames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -16,6 +21,7 @@ export interface TestCasePopulationListProps {
   i: number;
   scoring: string;
   populations: DisplayPopulationValue[];
+  stratifications?: DisplayStratificationValue[];
   populationBasis: string;
   disableExpected?: boolean;
   executionRun?: boolean;
@@ -23,6 +29,11 @@ export interface TestCasePopulationListProps {
     populations: DisplayPopulationValue[],
     type: "actual" | "expected",
     changedPopulation: DisplayPopulationValue
+  ) => void;
+  onStratificationChange?: (
+    stratifications: DisplayStratificationValue[],
+    type: "actual" | "expected",
+    changedStratification: DisplayStratificationValue
   ) => void;
   errors?: any;
 }
@@ -63,16 +74,50 @@ export const determineGroupResult = (
   return "pass";
 };
 
+export const determineGroupResultStratification = (
+  populationBasis: string,
+  stratifications: DisplayStratificationValue[],
+  executionRun?: boolean
+) => {
+  if (!executionRun) {
+    return "initial";
+  }
+  for (let i = 0; i < stratifications?.length; i++) {
+    const stratification = stratifications[i];
+    const { expected, actual } = stratification;
+
+    if (populationBasis === "boolean" && expected != actual) {
+      return "fail";
+    } else if (populationBasis !== "boolean") {
+      const expectedNum =
+        _.isNil(expected) ||
+        (typeof expected === "string" && _.isEmpty(expected))
+          ? 0
+          : expected;
+      const actualNum =
+        _.isNil(actual) || (typeof actual === "string" && _.isEmpty(actual))
+          ? 0
+          : actual;
+      if (expectedNum != actualNum) {
+        return "fail";
+      }
+    }
+  }
+  return "pass";
+};
+
 // Test case population table. We need to know if the execution has been
 const TestCasePopulationList = ({
   content,
   scoring,
   i,
   populations,
+  stratifications,
   populationBasis,
   disableExpected = true,
   executionRun = false,
   onChange,
+  onStratificationChange,
   errors,
 }: TestCasePopulationListProps) => {
   let measureObservations = [];
@@ -135,6 +180,28 @@ const TestCasePopulationList = ({
     }
   };
 
+  const handleStratificationChange = (
+    stratification: DisplayStratificationValue
+  ) => {
+    const newStratifications = [...stratifications];
+    const newStrat = newStratifications.find(
+      (strat) => strat.id === stratification.id
+    );
+
+    const type =
+      newStrat.actual !== stratification.actual
+        ? "actual"
+        : newStrat.expected !== stratification.expected
+        ? "expected"
+        : null;
+
+    newStrat.actual = stratification.actual;
+    newStrat.expected = stratification.expected;
+    if (onStratificationChange) {
+      onStratificationChange(newStratifications, type, stratification);
+    }
+  };
+
   const getIppCount = (population: DisplayPopulationValue) => {
     if (scoring === "Ratio") {
       const initialPopulationsCount = populations.filter(
@@ -152,6 +219,12 @@ const TestCasePopulationList = ({
 
   // we need to do an all check here for pass / no pass
   const view = determineGroupResult(populationBasis, populations, executionRun);
+
+  const viewStratification = determineGroupResultStratification(
+    populationBasis,
+    stratifications,
+    executionRun
+  );
 
   /*
     we have three separate views
@@ -212,6 +285,18 @@ const TestCasePopulationList = ({
               }
               initialPopulationCount={getIppCount(population)}
               error={errors?.populationValues?.[j]}
+            />
+          ))}
+
+          {stratifications?.map((stratification, j) => (
+            <TestCaseStratification
+              strataCode={stratification.name}
+              executionRun={executionRun}
+              stratification={stratification}
+              populationBasis={populationBasis}
+              key={stratification.id}
+              disableExpected={disableExpected}
+              onStratificationChange={handleStratificationChange}
             />
           ))}
         </tbody>
