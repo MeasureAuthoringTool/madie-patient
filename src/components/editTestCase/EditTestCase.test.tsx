@@ -709,12 +709,6 @@ describe("EditTestCase component", () => {
         "/measures/:measureId/edit/test-cases/:id",
         measure
       );
-
-      // userEvent.click(screen.getByTestId("expectoractual-tab"));
-      // const errorMessage = await screen.findByText(
-      //   "No populations for current scoring. Please make sure at least one measure group has been created."
-      // );
-      // expect(errorMessage).toBeInTheDocument();
       mockedAxios.put.mockResolvedValue({
         data: {
           ...testCase,
@@ -748,16 +742,6 @@ describe("EditTestCase component", () => {
       const listItems = within(list).getAllByRole("option");
       expect(listItems[1]).toHaveTextContent("SeriesB");
       userEvent.click(listItems[1]);
-
-      // const ippExpectedCb = await screen.findByTestId(
-      //   "test-population-initialPopulation-expected"
-      // );
-      // expect(ippExpectedCb).toBeChecked();
-      // const mpExpectedCb = await screen.findByTestId(
-      //   "test-population-measurePopulation-expected"
-      // );
-      // expect(mpExpectedCb).toBeChecked();
-      // userEvent.click(mpExpectedCb);
 
       userEvent.click(screen.getByTestId("details-tab"));
       await testTitle("TC1");
@@ -1360,14 +1344,6 @@ describe("EditTestCase component", () => {
         "/measures/:measureId/edit/test-cases/:id",
         measure
       );
-
-      // userEvent.click(screen.getByTestId("expectoractual-tab"));
-      // const g1MeasureName = await screen.getByTestId("measure-group-1");
-      // expect(g1MeasureName).toBeInTheDocument();
-      // const g1ScoringName = await screen.getByTestId(
-      //   "measure-group-1-scoring-unit-1"
-      // );
-      // expect(g1ScoringName).toBeInTheDocument();
 
       userEvent.click(screen.getByTestId("details-tab"));
       const testCaseDescription =
