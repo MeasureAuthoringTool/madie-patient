@@ -629,7 +629,7 @@ describe("EditTestCase component", () => {
       );
       const testCaseDescription = "TestCase123";
       mockedAxios.post.mockResolvedValue({
-        data: `The requested URL was rejected. Please contact soc@hcqis.org.
+        data: `The requested URL was rejected. Please contact soc.
             
              Your support ID is: 12345678901234567890
             `,
