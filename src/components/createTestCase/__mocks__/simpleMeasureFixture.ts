@@ -41,6 +41,12 @@ export const simpleMeasureFixture: Measure = {
           definition: "third",
         },
       ],
+      stratifications: [
+        {
+          id: "id-4",
+          association: PopulationType.INITIAL_POPULATION,
+        },
+      ],
       measureGroupTypes: [MeasureGroupTypes.OUTCOME],
     },
   ],

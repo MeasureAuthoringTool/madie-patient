@@ -1,4 +1,4 @@
-import { TestCase } from "@madie/madie-models";
+import { PopulationType, TestCase } from "@madie/madie-models";
 
 export const nonBoolTestCaseFixture: TestCase = {
   id: "631f98927e7cb7651b971d1d",
@@ -38,17 +38,17 @@ export const nonBoolTestCaseFixture: TestCase = {
       populationValues: [
         {
           id: "20b107a1-ba80-4bab-a95e-7b8834e294fb",
-          name: "initialPopulation",
+          name: PopulationType.INITIAL_POPULATION,
           expected: 2,
         },
         {
           id: "977925da-974e-4bd1-9b68-1fa7a53c8380",
-          name: "denominator",
+          name: PopulationType.DENOMINATOR,
           expected: 2,
         },
         {
           id: "515975e7-4043-4dec-8eab-9a4abb0b542a",
-          name: "numerator",
+          name: PopulationType.NUMERATOR,
           expected: undefined,
         },
       ],

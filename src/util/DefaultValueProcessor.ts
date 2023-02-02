@@ -8,7 +8,7 @@ import addCoverageValues from "./CoverageDefaultValueProcessor";
 import addEncounterValues from "./EncounterDefaultValueProcessor";
 
 export const addValues = (testCase: any): any => {
-  //create a clone of testCase
+  // create a clone of testCase
   const resultJson: any = _.cloneDeep(testCase);
 
   // safe to assume single Patient within the Bonnie Export bundle.

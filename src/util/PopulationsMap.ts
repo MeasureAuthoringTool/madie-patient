@@ -5,6 +5,8 @@ import {
   PopulationExpectedValue,
   DisplayPopulationValue,
   MeasureObservation,
+  DisplayStratificationValue,
+  StratificationExpectedValue,
 } from "@madie/madie-models";
 
 import _ from "lodash";
@@ -128,18 +130,17 @@ export function triggerPopChanges(
 
 const buildStratificationMap = (
   populationCritiera: GroupPopulation,
-  changedPopulation: DisplayPopulationValue
+  changedStratification: DisplayStratificationValue
 ) => {
   let stratificationMap = {};
   populationCritiera.stratificationValues?.forEach(
-    (value: PopulationExpectedValue) => {
-      stratificationMap[value.name] = value;
-
+    (value: StratificationExpectedValue) => {
+      stratificationMap[value.id] = value;
       if (
-        !_.isUndefined(changedPopulation) &&
-        value.name === changedPopulation.name
+        !_.isUndefined(changedStratification) &&
+        value.id === changedStratification.id
       ) {
-        stratificationMap[value.name].expected = changedPopulation.expected;
+        stratificationMap[value.id].expected = changedStratification.expected;
       }
     }
   );

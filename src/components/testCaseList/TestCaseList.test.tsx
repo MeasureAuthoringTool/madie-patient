@@ -859,6 +859,7 @@ describe("TestCaseList component", () => {
 
     expect(screen.getByText("Passing (2/3)")).toBeInTheDocument();
     expect(screen.getByText("100%")).toBeInTheDocument();
+    expect(screen.getByTestId("sr-div")).toBeInTheDocument();
   });
 });
 

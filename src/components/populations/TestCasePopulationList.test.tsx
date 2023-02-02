@@ -3,15 +3,17 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import TestCasePopulationList, {
   determineGroupResult,
+  determineGroupResultStratification,
 } from "./TestCasePopulationList";
 import {
   DisplayPopulationValue,
+  DisplayStratificationValue,
   MeasureScoring,
   PopulationType,
 } from "@madie/madie-models";
 import userEvent from "@testing-library/user-event";
 
-describe("TestCasePopulationPopulation component", () => {
+describe("TestCasePopulationList component", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -114,6 +116,109 @@ describe("TestCasePopulationPopulation component", () => {
     });
   });
 
+  it("should handle stratification changes for the test case population", async () => {
+    const testCasePopulations = [
+      {
+        id: "1",
+        name: PopulationType.INITIAL_POPULATION,
+        expected: true,
+        actual: true,
+      },
+    ];
+    const testCaseStratifications = [
+      {
+        id: "1",
+        name: "Strata-1 Initial Population",
+        expected: true,
+        actual: true,
+      },
+    ];
+    const handleChange = jest.fn();
+    const handleStratificationChange = jest.fn();
+
+    render(
+      <MemoryRouter>
+        <TestCasePopulationList
+          populations={testCasePopulations}
+          stratifications={testCaseStratifications}
+          onChange={handleChange}
+          onStratificationChange={handleStratificationChange}
+          disableExpected={false}
+          populationBasis="boolean"
+          content="population"
+          i={0}
+          scoring="Proportion"
+        />
+      </MemoryRouter>
+    );
+
+    const table = screen.getByTestId("test-case-population-list-tbl");
+
+    const tableRows = table.querySelectorAll("tbody tr");
+    expect(tableRows[0]).toHaveTextContent("Initial Population");
+
+    const ippCb = screen.getByTestId(
+      "test-population-Strata-1 Initial Population-expected"
+    );
+    expect(ippCb).toBeInTheDocument();
+    userEvent.click(ippCb);
+    await waitFor(() => {
+      expect(handleStratificationChange).toHaveBeenCalled();
+    });
+  });
+
+  it("should handle stratification changes for the test case population with executionRun", async () => {
+    const testCasePopulations = [
+      {
+        id: "1",
+        name: PopulationType.INITIAL_POPULATION,
+        expected: true,
+        actual: true,
+      },
+    ];
+    const testCaseStratifications = [
+      {
+        id: "1",
+        name: "Strata-1 Initial Population",
+        expected: true,
+        actual: true,
+      },
+    ];
+    const handleChange = jest.fn();
+    const handleStratificationChange = jest.fn();
+
+    render(
+      <MemoryRouter>
+        <TestCasePopulationList
+          populations={testCasePopulations}
+          stratifications={testCaseStratifications}
+          onChange={handleChange}
+          onStratificationChange={handleStratificationChange}
+          disableExpected={false}
+          populationBasis="boolean"
+          content="population"
+          i={0}
+          scoring="Proportion"
+          executionRun={true}
+        />
+      </MemoryRouter>
+    );
+
+    const table = screen.getByTestId("test-case-population-list-tbl");
+
+    const tableRows = table.querySelectorAll("tbody tr");
+    expect(tableRows[0]).toHaveTextContent("Initial Population");
+
+    const ippCb = screen.getByTestId(
+      "test-population-Strata-1 Initial Population-expected"
+    );
+    expect(ippCb).toBeInTheDocument();
+    userEvent.click(ippCb);
+    await waitFor(() => {
+      expect(handleStratificationChange).toHaveBeenCalled();
+    });
+  });
+
   it("should render ratio observations", async () => {
     const testCasePopulations = [
       {
@@ -154,7 +259,7 @@ describe("TestCasePopulationPopulation component", () => {
       },
       {
         id: "7",
-        name: PopulationType.NUMERATOR_OBSERVATION,
+        name: PopulationType.INITIAL_POPULATION,
         expected: 1,
         actual: 1,
       },
@@ -181,8 +286,7 @@ describe("TestCasePopulationPopulation component", () => {
     expect(tableRows[2]).toHaveTextContent("Denominator Observation 1");
     expect(tableRows[3]).toHaveTextContent("Denominator Observation 2");
     expect(tableRows[4]).toHaveTextContent("Numerator");
-    expect(tableRows[5]).toHaveTextContent("Numerator Observation 1");
-    expect(tableRows[6]).toHaveTextContent("Numerator Observation 2");
+    expect(tableRows[5]).toHaveTextContent("Numerator Observation");
   });
 
   it("should render ratio observations with two IP's", async () => {
