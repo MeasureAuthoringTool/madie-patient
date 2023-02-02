@@ -1,8 +1,4 @@
 import * as _ from "lodash";
-import {
-  addingDefaultMedicationRequestProperties,
-  addingDefaultProcedureProperties,
-} from "./AddDefaultValuesProcessor";
 import { Reference } from "fhir/r4";
 import addCoverageValues from "./CoverageDefaultValueProcessor";
 import addEncounterValues from "./EncounterDefaultValueProcessor";
@@ -17,6 +13,23 @@ export const addValues = (testCase: any): any => {
     (entry) => entry.resource.resourceType === "Patient"
   ).resource.id;
   const patientRef: Reference = { reference: `Patient/${patientId}` };
+
+  function addingDefaultMedicationRequestProperties(entry: any) {
+    if (!entry?.resource?.status) {
+      entry.resource.status = "active";
+    }
+    if (!entry?.resource?.intent) {
+      entry.resource.intent = "order";
+    }
+    return entry;
+  }
+
+  function addingDefaultProcedureProperties(entry: any) {
+    if (!entry?.resource?.status) {
+      entry.resource.status = "completed";
+    }
+    return entry;
+  }
 
   const entriesWithDefaultValues = resultJson?.entry?.map((entry) => {
     switch (entry.resource.resourceType) {
