@@ -14,6 +14,36 @@ export const addValues = (testCase: any): any => {
   ).resource.id;
   const patientRef: Reference = { reference: `Patient/${patientId}` };
 
+  function addingDefaultMedicationRequestProperties(entry: any) {
+    if (!entry?.resource?.status) {
+      entry.resource.status = "active";
+    }
+    if (!entry?.resource?.intent) {
+      entry.resource.intent = "order";
+    }
+    return entry;
+  }
+
+  function addingDefaultProcedureProperties(entry: any) {
+    if (!entry?.resource?.status) {
+      entry.resource.status = "completed";
+    }
+    return entry;
+  }
+
+  const entriesWithDefaultValues = resultJson?.entry?.map((entry) => {
+    switch (entry.resource.resourceType) {
+      case "MedicationRequest":
+        return addingDefaultMedicationRequestProperties(entry);
+      case "Procedure":
+        return addingDefaultProcedureProperties(entry);
+      default:
+        return entry;
+    }
+  });
+
+  resultJson.entry = entriesWithDefaultValues;
+
   addCoverageValues(resultJson, patientRef);
   addEncounterValues(resultJson);
 
