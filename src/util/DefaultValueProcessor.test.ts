@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { addValues } from "./DefaultValueProcessor";
 
 describe("Modify JSON to add Default Values", () => {
@@ -50,6 +51,68 @@ describe("Modify JSON to add Default Values", () => {
       }
     });
 
+    expect(results).toBeDefined();
+
+    expect(results.length).toBe(1);
+  });
+
+  it("should set Coverage.payor Reference to the default Organization", () => {
+    const coverageJson = require("../mockdata/testcase_wo_coverage.json");
+    const resultJson: any = addValues(coverageJson);
+
+    expect(resultJson).toBeDefined();
+
+    const results = resultJson?.entry.filter((entry) => {
+      return (
+        entry.resource.resourceType === "Coverage" &&
+        entry.resource.payor[0]?.reference === "Organization/123456"
+      );
+    });
+
+    expect(results).toBeDefined();
+    expect(results.length).toBe(1);
+
+    const organizations = resultJson?.entry.filter(
+      (entry) =>
+        entry.resource.resourceType === "Organization" &&
+        entry.resource.name === "Blue Cross Blue Shield of Texas"
+    );
+    expect(organizations).toHaveLength(1);
+    expect(organizations[0].resource.id).toBe("123456");
+  });
+
+  it("should set Coverage.beneficiary Reference to the Patient", () => {
+    const coverageJson = require("../mockdata/testcase_with_Coverage.json");
+    const resultJson = addValues(coverageJson);
+
+    const patientResource = _.find(
+      resultJson.entry,
+      (entry) => entry.resource.resourceType === "Patient"
+    ).resource;
+
+    resultJson?.entry?.forEach((entry) => {
+      if (entry.resource.resourceType === "Coverage") {
+        expect(entry.resource.beneficiary).toBeDefined();
+        expect(entry.resource.beneficiary.reference).toBe(
+          `Patient/${patientResource.id}`
+        );
+      }
+    });
+  });
+
+  it('should set MedicationRequest.status to "active" and MedicationRequest.intent to "order" in the TestCase where there are multiple coverages', () => {
+    const medicationRequestJson = require("../mockdata/medication_request_test.json");
+    const resultJson: any = addValues(medicationRequestJson);
+
+    expect(resultJson).toBeDefined();
+
+    let results = resultJson?.entry.filter((entry) => {
+      return (
+        entry.resource.resourceType === "MedicationRequest" &&
+        entry.resource.status === "active" &&
+        entry.resource.intent === "order"
+      );
+    });
     expect(results).toBeDefined();
 
     expect(results.length).toBe(1);
