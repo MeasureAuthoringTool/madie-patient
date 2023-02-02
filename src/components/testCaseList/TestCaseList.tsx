@@ -52,6 +52,7 @@ const TestCaseList = (props: TestCaseListProps) => {
   const [executionResults, setExecutionResults] = useState<{
     [key: string]: DetailedPopulationGroupResult[];
   }>({});
+
   const { errors, setErrors } = props;
   if (!errors) {
     setErrors([]);
@@ -255,6 +256,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     return string;
   };
   const readerString = generateSRString(testCases);
+  const executionResultLength = Object.keys(executionResults).length;
   return (
     <div
       tw="grid lg:grid-cols-6 gap-4 mx-8 my-6 shadow-lg rounded-md border border-slate bg-white"
@@ -289,10 +291,14 @@ const TestCaseList = (props: TestCaseListProps) => {
                 <div tw="py-2 inline-block min-w-full sm:px-6 lg:px-8">
                   {!executing && (
                     <>
-                      <div
-                        aria-live="polite"
-                        aria-label={readerString || ""}
-                      ></div>
+                      {executionResultLength > 0 && (
+                        <div
+                          aria-live="polite"
+                          aria-label={readerString}
+                          style={{ width: 1 }}
+                          data-testid="sr-div"
+                        ></div>
+                      )}
                       <table
                         tw="min-w-full"
                         data-testid="test-case-tbl"
