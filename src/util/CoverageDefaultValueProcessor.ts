@@ -14,7 +14,7 @@ import _ from "lodash";
 const addCoverageValues = (testCaseJson: any, patientRef: Reference) => {
   const hasCoverageResource = _.find(
     testCaseJson.entry,
-    (e) => e.resource.resourceType === "Coverage"
+    (e) => e.resource?.resourceType === "Coverage"
   );
 
   if (hasCoverageResource) {

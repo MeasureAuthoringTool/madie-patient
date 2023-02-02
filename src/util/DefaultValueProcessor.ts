@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import { Reference } from "fhir/r4";
+import { Reference, MedicationRequest, Procedure } from "fhir/r4";
 import addCoverageValues from "./CoverageDefaultValueProcessor";
 import addEncounterValues from "./EncounterDefaultValueProcessor";
 
@@ -14,29 +14,37 @@ export const addValues = (testCase: any): any => {
   ).resource.id;
   const patientRef: Reference = { reference: `Patient/${patientId}` };
 
-  function addingDefaultMedicationRequestProperties(entry: any) {
-    if (!entry?.resource?.status) {
-      entry.resource.status = "active";
+  function addingDefaultMedicationRequestProperties(
+    medicationRequestEntry: MedicationRequest
+  ) {
+    if (!medicationRequestEntry?.status) {
+      medicationRequestEntry.status = "active";
     }
-    if (!entry?.resource?.intent) {
-      entry.resource.intent = "order";
+    if (!medicationRequestEntry.intent) {
+      medicationRequestEntry.intent = "order";
     }
-    return entry;
+    return medicationRequestEntry;
   }
 
-  function addingDefaultProcedureProperties(entry: any) {
-    if (!entry?.resource?.status) {
-      entry.resource.status = "completed";
+  function addingDefaultProcedureProperties(procedureEntry: Procedure) {
+    if (!procedureEntry?.status) {
+      procedureEntry.status = "completed";
     }
-    return entry;
+    return procedureEntry;
   }
 
   const entriesWithDefaultValues = resultJson?.entry?.map((entry) => {
     switch (entry.resource.resourceType) {
       case "MedicationRequest":
-        return addingDefaultMedicationRequestProperties(entry);
+        return {
+          ...entry,
+          resource: addingDefaultMedicationRequestProperties(entry?.resource),
+        };
       case "Procedure":
-        return addingDefaultProcedureProperties(entry);
+        return {
+          ...entry,
+          resource: addingDefaultProcedureProperties(entry?.resource),
+        };
       default:
         return entry;
     }
