@@ -294,7 +294,9 @@ const TestCaseList = (props: TestCaseListProps) => {
                       {executionResultLength > 0 && (
                         <div
                           aria-live="polite"
-                          aria-label={readerString || ""}
+                          aria-label={readerString}
+                          style={{ width: 1 }}
+                          data-testid="sr-div"
                         ></div>
                       )}
                       <table
