@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 import {
-  HumanName,
+  DomainResource,
   MedicationRequest,
   Practitioner,
   Procedure,
@@ -22,15 +22,41 @@ export const addValues = (testCase: any): any => {
 
   resultJson.entry = resultJson?.entry?.map((entry) => {
     switch (entry.resource.resourceType) {
+      case "Condition":
+        return {
+          ...entry,
+          resource: setSubjectReference(entry?.resource, patientRef),
+        };
+      case "Device":
+        return {
+          ...entry,
+          resource: setPatientReference(entry?.resource, patientRef),
+        };
+      case "MedicationAdministration":
+        return {
+          ...entry,
+          resource: setSubjectReference(entry?.resource, patientRef),
+        };
       case "MedicationRequest":
         return {
           ...entry,
-          resource: addingDefaultMedicationRequestProperties(entry?.resource),
+          resource: addingDefaultMedicationRequestProperties(
+            entry?.resource,
+            patientRef
+          ),
+        };
+      case "Observation":
+        return {
+          ...entry,
+          resource: setSubjectReference(entry?.resource, patientRef),
         };
       case "Procedure":
         return {
           ...entry,
-          resource: addingDefaultProcedureProperties(entry?.resource),
+          resource: addingDefaultProcedureProperties(
+            entry?.resource,
+            patientRef
+          ),
         };
       case "Practitioner":
         return {
@@ -69,7 +95,8 @@ const addingDefaultPractitionerProperties = (practitioner: Practitioner) => {
 };
 
 function addingDefaultMedicationRequestProperties(
-  medicationRequestEntry: MedicationRequest
+  medicationRequestEntry: MedicationRequest,
+  patientRef: Reference
 ) {
   if (!medicationRequestEntry?.status) {
     medicationRequestEntry.status = "active";
@@ -77,12 +104,36 @@ function addingDefaultMedicationRequestProperties(
   if (!medicationRequestEntry.intent) {
     medicationRequestEntry.intent = "order";
   }
+  if (!medicationRequestEntry.subject) {
+    medicationRequestEntry.subject = patientRef;
+  }
   return medicationRequestEntry;
 }
 
-function addingDefaultProcedureProperties(procedureEntry: Procedure) {
+function addingDefaultProcedureProperties(
+  procedureEntry: Procedure,
+  patientRef: Reference
+) {
   if (!procedureEntry?.status) {
     procedureEntry.status = "completed";
   }
+  if (!procedureEntry?.subject) {
+    procedureEntry.subject = patientRef;
+  }
   return procedureEntry;
+}
+
+function setReference(resource: DomainResource, el, ref: Reference) {
+  if (!resource[el]) {
+    resource[el] = ref;
+  }
+  return resource;
+}
+
+function setPatientReference(resource: DomainResource, patientRef: Reference) {
+  return setReference(resource, "patient", patientRef);
+}
+
+function setSubjectReference(resource: DomainResource, patientRef: Reference) {
+  return setReference(resource, "subject", patientRef);
 }
