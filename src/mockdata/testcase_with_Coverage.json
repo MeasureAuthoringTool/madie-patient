@@ -38,9 +38,7 @@
             ]
           }
         ],
-        "subject": {
-          "reference": "Patient/numer-pos-EXM135v11QICore4"
-        },
+        
         "participant": [
           {
             "individual": {

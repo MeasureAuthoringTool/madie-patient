@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import { Reference, MedicationRequest, Procedure } from "fhir/r4";
+import { Reference, MedicationRequest, Procedure, Encounter } from "fhir/r4";
 import addCoverageValues from "./CoverageDefaultValueProcessor";
 import addEncounterValues from "./EncounterDefaultValueProcessor";
 
@@ -33,6 +33,19 @@ export const addValues = (testCase: any): any => {
     return procedureEntry;
   }
 
+  function encounterDefaultProperties(encounterEntry: Encounter) {
+    if (
+      !encounterEntry.status ||
+      encounterEntry.status.toLowerCase() == "finished"
+    ) {
+      encounterEntry.status = "finished";
+    }
+    if (!encounterEntry.subject) {
+      encounterEntry.subject = { reference: `Patient/${patientId}` };
+    }
+    return encounterEntry;
+  }
+
   const entriesWithDefaultValues = resultJson?.entry?.map((entry) => {
     switch (entry.resource.resourceType) {
       case "MedicationRequest":
@@ -45,6 +58,11 @@ export const addValues = (testCase: any): any => {
           ...entry,
           resource: addingDefaultProcedureProperties(entry?.resource),
         };
+      case "Encounter":
+        return {
+          ...entry,
+          resource: encounterDefaultProperties(entry?.resource),
+        };
       default:
         return entry;
     }
@@ -53,7 +71,6 @@ export const addValues = (testCase: any): any => {
   resultJson.entry = entriesWithDefaultValues;
 
   addCoverageValues(resultJson, patientRef);
-  addEncounterValues(resultJson);
 
   return resultJson;
 };
