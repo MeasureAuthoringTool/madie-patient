@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _, { result } from "lodash";
 import { addValues } from "./DefaultValueProcessor";
 
 describe("Modify JSON to add Default Values", () => {
@@ -115,5 +115,13 @@ describe("Modify JSON to add Default Values", () => {
     expect(results).toBeDefined();
 
     expect(results.length).toBe(1);
+  });
+  it('should set a missing Encounter.subject to an object containing patient ID and a missing Encounter.status to finished', () => {
+    const encounterRequestJson = require("../mockdata/testcase_with_Coverage.json");
+    const resultJson: any = addValues(encounterRequestJson);
+    console.log(resultJson.entry[0])
+    expect(resultJson).toBeDefined();
+    expect(resultJson.entry[0].resource.status).toBe("finished")
+    expect(resultJson.entry[0].resource.subject.reference).toBe("Patient/numer-pos-EXM135v11QICore4")
   });
 });
