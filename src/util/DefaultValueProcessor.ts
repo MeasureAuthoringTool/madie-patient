@@ -1,5 +1,11 @@
 import * as _ from "lodash";
-import { Reference, MedicationRequest, Procedure } from "fhir/r4";
+import {
+  HumanName,
+  MedicationRequest,
+  Practitioner,
+  Procedure,
+  Reference,
+} from "fhir/r4";
 import addCoverageValues from "./CoverageDefaultValueProcessor";
 import addEncounterValues from "./EncounterDefaultValueProcessor";
 
@@ -14,26 +20,7 @@ export const addValues = (testCase: any): any => {
   ).resource.id;
   const patientRef: Reference = { reference: `Patient/${patientId}` };
 
-  function addingDefaultMedicationRequestProperties(
-    medicationRequestEntry: MedicationRequest
-  ) {
-    if (!medicationRequestEntry?.status) {
-      medicationRequestEntry.status = "active";
-    }
-    if (!medicationRequestEntry.intent) {
-      medicationRequestEntry.intent = "order";
-    }
-    return medicationRequestEntry;
-  }
-
-  function addingDefaultProcedureProperties(procedureEntry: Procedure) {
-    if (!procedureEntry?.status) {
-      procedureEntry.status = "completed";
-    }
-    return procedureEntry;
-  }
-
-  const entriesWithDefaultValues = resultJson?.entry?.map((entry) => {
+  resultJson.entry = resultJson?.entry?.map((entry) => {
     switch (entry.resource.resourceType) {
       case "MedicationRequest":
         return {
@@ -45,15 +32,57 @@ export const addValues = (testCase: any): any => {
           ...entry,
           resource: addingDefaultProcedureProperties(entry?.resource),
         };
+      case "Practitioner":
+        return {
+          ...entry,
+          resource: addingDefaultPractitionerProperties(entry?.resource),
+        };
       default:
         return entry;
     }
   });
-
-  resultJson.entry = entriesWithDefaultValues;
 
   addCoverageValues(resultJson, patientRef);
   addEncounterValues(resultJson);
 
   return resultJson;
 };
+
+const addingDefaultPractitionerProperties = (practitioner: Practitioner) => {
+  if (!practitioner?.name) {
+    practitioner.name = [
+      {
+        family: "Evil",
+        prefix: ["Dr"],
+      },
+    ];
+  }
+  if (!practitioner?.identifier) {
+    practitioner.identifier = [
+      {
+        system: "http://hl7.org/fhir/sid/us-npi",
+        value: "123456",
+      },
+    ];
+  }
+  return practitioner;
+};
+
+function addingDefaultMedicationRequestProperties(
+  medicationRequestEntry: MedicationRequest
+) {
+  if (!medicationRequestEntry?.status) {
+    medicationRequestEntry.status = "active";
+  }
+  if (!medicationRequestEntry.intent) {
+    medicationRequestEntry.intent = "order";
+  }
+  return medicationRequestEntry;
+}
+
+function addingDefaultProcedureProperties(procedureEntry: Procedure) {
+  if (!procedureEntry?.status) {
+    procedureEntry.status = "completed";
+  }
+  return procedureEntry;
+}
