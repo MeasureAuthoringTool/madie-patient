@@ -1,0 +1,106 @@
+{
+  "resourceType": "Bundle",
+  "meta": {
+    "versionId": "1",
+    "lastUpdated": "2022-07-13T12:45:42.154+00:00"
+  },
+  "type": "collection",
+  "entry": [
+    {
+      "fullUrl": "Practitioner-1",
+      "resource": {
+        "resourceType" : "Practitioner",
+        "id" : "Practitioner-1",
+        "identifier" : [
+          {
+            "use" : "temp",
+            "system" : "urn:oid:2.16.840.1.113883.4.336",
+            "value" : "Practitioner-23"
+          }
+        ],
+        "name" : [
+          {
+            "family" : "Careful",
+            "given" : [
+              "Adam"
+            ],
+            "prefix" : [
+              "Dr"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Practitioner-1",
+      "resource": {
+        "resourceType" : "Practitioner",
+        "id" : "Practitioner-2"
+      }
+    },
+    {
+      "fullUrl": "Practitioner-1",
+      "resource": {
+        "resourceType" : "Practitioner",
+        "id" : "Practitioner-3",
+        "identifier" : [
+          {
+            "use" : "temp",
+            "system" : "urn:oid:2.16.840.1.113883.4.336",
+            "value" : "Practitioner-23"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Practitioner-1",
+      "resource": {
+        "resourceType" : "Practitioner",
+        "id" : "Practitioner-4",
+        "name" : [
+          {
+            "family" : "Careful",
+            "given" : [
+              "Adam"
+            ],
+            "prefix" : [
+              "Dr"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://local/Patient",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "numer-pos-EXM135v11QICore4",
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Lizzy Health</div>"
+        },
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-patient"
+          ]
+        },
+        "identifier": [
+          {
+            "system": "http://clinfhir.com/fhir/NamingSystem/identifier",
+            "value": "20181011LizzyHealth"
+          }
+        ],
+        "name": [
+          {
+            "use": "official",
+            "text": "Lizzy Health",
+            "family": "Health",
+            "given": ["Lizzy"]
+          }
+        ],
+        "gender": "female",
+        "birthDate": "2000-10-11"
+      }
+    }
+  ]
+}
