@@ -1,7 +1,6 @@
 import * as _ from "lodash";
 import { Reference, MedicationRequest, Procedure, Encounter } from "fhir/r4";
 import addCoverageValues from "./CoverageDefaultValueProcessor";
-import addEncounterValues from "./EncounterDefaultValueProcessor";
 
 export const addValues = (testCase: any): any => {
   // create a clone of testCase
