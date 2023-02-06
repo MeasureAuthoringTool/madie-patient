@@ -177,7 +177,6 @@ describe("Modify JSON to add Default Values", () => {
       );
     });
     expect(results).toBeDefined();
-
     expect(results.length).toBe(1);
     expect(medicationRequestResource.status).toBe("cancelled");
     expect(medicationRequestResource.intent).toBe("option");
