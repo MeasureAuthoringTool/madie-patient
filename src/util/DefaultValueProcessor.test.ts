@@ -124,27 +124,6 @@ describe("Modify JSON to add Default Values", () => {
     expect(results.length).toBe(1);
   });
 
-  it("checking if all the entries with medication requests have both status and intent properties", () => {
-    const medicationRequestJson = require("../mockdata/testcase_with_Medication_Request.json");
-    const beforeDefaultValuesJson: any = _.cloneDeep(
-      medicationRequestJson
-    )?.entry.filter(
-      (entry) => entry.resource.resourceType === "MedicationRequest"
-    ).length;
-
-    const resultJson: any = addValues(medicationRequestJson);
-    expect(resultJson).toBeDefined();
-    let results = resultJson?.entry.filter((entry) => {
-      return (
-        entry.resource?.resourceType === "MedicationRequest" &&
-        entry.resource?.status &&
-        entry.resource?.intent
-      );
-    }).length;
-
-    expect(results).toBe(beforeDefaultValuesJson);
-  });
-
   it("should not modify already set MedicationRequest status, intent, or subject values", () => {
     const medicationRequestJson = require("../mockdata/testcase_with_Medication_Request.json");
     const resultJson: any = addValues(medicationRequestJson);
@@ -185,7 +164,7 @@ describe("Modify JSON to add Default Values", () => {
     );
   });
 
-  it("should set all the entries with medication requests with status intent and subject properties", () => {
+  it("should set all the medication requests entries with status, intent and subject properties", () => {
     const serviceRequestJson = require("../mockdata/testcase_with_Service_Request.json");
     const beforeDefaultValuesJson: any = _.cloneDeep(
       serviceRequestJson
@@ -276,6 +255,26 @@ describe("Modify JSON to add Default Values", () => {
     expect(deviceEntries[0].resource.patient.reference).toBe(
       `Patient/${patientResource.id}`
     );
+  });
+
+  it("should set all the Procedure entries with status and subject properties", () => {
+    const serviceRequestJson = require("../mockdata/testcase_with_Procedure.json");
+    const beforeDefaultValuesJson: any = _.cloneDeep(
+      serviceRequestJson
+    )?.entry.filter(
+      (entry) => entry.resource.resourceType === "Procedure"
+    ).length;
+
+    const resultJson: any = addValues(serviceRequestJson);
+    expect(resultJson).toBeDefined();
+    let results = resultJson?.entry.filter((entry) => {
+      return (
+        entry.resource?.resourceType === "Procedure" &&
+        entry.resource?.status &&
+        entry.resource?.subject
+      );
+    }).length;
+    expect(results).toBe(beforeDefaultValuesJson);
   });
 
   it("should set MedicationAdministration.subject to Patient Reference", () => {
