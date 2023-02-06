@@ -7,9 +7,16 @@
     "declarationMap": true,
     "jsx": "react-jsx",
     "sourceMap": true,
-    "target": "es2015"
+    "target": "es2015",
+    "resolveJsonModule": true
   },
-  "files": ["src/madie-madie-patient.tsx"],
-  "include": ["src/**/*"],
-  "exclude": ["src/**/*.test*"]
+  "files": [
+    "src/madie-madie-patient.tsx"
+  ],
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "src/**/*.test*"
+  ]
 }
