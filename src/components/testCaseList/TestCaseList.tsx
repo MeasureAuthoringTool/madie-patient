@@ -18,6 +18,9 @@ import CodeCoverageHighlighting from "./CodeCoverageHighlighting";
 import CreateNewTestCaseDialog from "../createTestCase/CreateNewTestCaseDialog";
 import { MadieSpinner } from "@madie/madie-design-system/dist/react";
 import TestCaseListSideBarNav from "./TestCaseListSideBarNav";
+import Backdrop from "@mui/material/Backdrop";
+import { CircularProgress, Typography } from "@mui/material";
+import TestCaseImportDialog from "./import/TestCaseImportDialog";
 
 const TH = tw.th`p-3 border-b text-left text-sm font-bold capitalize`;
 
@@ -80,6 +83,13 @@ const TestCaseList = (props: TestCaseListProps) => {
   const [measureBundle] = bundleState;
   const [valueSets] = valueSetsState;
   const [selectedPopCriteria, setSelectedPopCriteria] = useState<Group>();
+  const [loadingState, setLoadingState] = useState<any>({
+    loading: false,
+    message: "",
+  });
+  const [importDialogState, setImportDialogState] = useState<any>({
+    open: false,
+  });
 
   const [createOpen, setCreateOpen] = useState<boolean>(false);
 
@@ -106,6 +116,10 @@ const TestCaseList = (props: TestCaseListProps) => {
   }, [measure]);
 
   const retrieveTestCases = useCallback(() => {
+    setLoadingState(() => ({
+      loading: false,
+      message: "Loading Test Cases...",
+    }));
     testCaseService.current
       .getTestCasesByMeasureId(measureId)
       .then((testCaseList: TestCase[]) => {
@@ -119,6 +133,9 @@ const TestCaseList = (props: TestCaseListProps) => {
       })
       .finally(() => {
         setInitialLoad(false);
+        setTimeout(() => {
+          setLoadingState({ loading: false, message: "" });
+        }, 500);
       });
   }, [measureId, testCaseService]);
 
@@ -257,6 +274,29 @@ const TestCaseList = (props: TestCaseListProps) => {
   };
   const readerString = generateSRString(testCases);
   const executionResultLength = Object.keys(executionResults).length;
+
+  const onTestCaseImport = async (testCases: TestCase[]) => {
+    setImportDialogState({ ...importDialogState, open: false });
+
+    setLoadingState(() => ({
+      loading: true,
+      message: "Importing Test Cases...",
+    }));
+
+    // TODO: catch errors and display error message if persist fails
+    try {
+      await testCaseService.current.createTestCases(measureId, testCases);
+
+      retrieveTestCases();
+    } catch (error) {
+      // TODO: display error message from import POST
+    } finally {
+      setTimeout(() => {
+        setLoadingState({ loading: false, message: "" });
+      }, 500);
+    }
+  };
+
   return (
     <div
       tw="grid lg:grid-cols-6 gap-4 mx-8 my-6 shadow-lg rounded-md border border-slate bg-white"
@@ -281,6 +321,9 @@ const TestCaseList = (props: TestCaseListProps) => {
                 measure={measure}
                 createNewTestCase={createNewTestCase}
                 executeTestCases={executeTestCases}
+                onImportTestCases={() => {
+                  setImportDialogState({ ...importDialogState, open: true });
+                }}
                 testCasePassFailStats={testCasePassFailStats}
                 coveragePercentage={coveragePercentage}
               />
@@ -356,6 +399,27 @@ const TestCaseList = (props: TestCaseListProps) => {
           <MadieSpinner style={{ height: 50, width: 50 }} />
         </div>
       )}
+      <TestCaseImportDialog
+        open={importDialogState.open}
+        measure={measure}
+        onImport={onTestCaseImport}
+        handleClose={() =>
+          setImportDialogState({ ...importDialogState, open: false })
+        }
+      />
+
+      <Backdrop
+        sx={{
+          color: "#fff",
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          display: "flex",
+          flexDirection: "column",
+        }}
+        open={loadingState.loading}
+      >
+        <Typography color="inherit">{loadingState.message}</Typography>
+        <CircularProgress color="inherit" size={80} />
+      </Backdrop>
     </div>
   );
 };
