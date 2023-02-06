@@ -69,9 +69,7 @@
           "name": [
             {
               "family": "Lork",
-              "given": [
-                "Jason"
-              ]
+              "given": ["Jason"]
             }
           ],
           "gender": "male",
