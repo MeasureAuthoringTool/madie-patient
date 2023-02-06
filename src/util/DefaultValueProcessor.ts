@@ -1,11 +1,5 @@
 import * as _ from "lodash";
-import {
-  DomainResource,
-  MedicationRequest,
-  Practitioner,
-  Procedure,
-  Reference,
-} from "fhir/r4";
+import { DomainResource, Practitioner, Procedure, Reference } from "fhir/r4";
 import addCoverageValues from "./CoverageDefaultValueProcessor";
 import addEncounterValues from "./EncounterDefaultValueProcessor";
 
@@ -38,9 +32,10 @@ export const addValues = (testCase: any): any => {
           resource: setSubjectReference(entry?.resource, patientRef),
         };
       case "MedicationRequest":
+      case "ServiceRequest":
         return {
           ...entry,
-          resource: addingDefaultMedicationRequestProperties(
+          resource: addingDefaultMedicationOrServiceRequestProperties(
             entry?.resource,
             patientRef
           ),
@@ -94,26 +89,26 @@ const addingDefaultPractitionerProperties = (practitioner: Practitioner) => {
   return practitioner;
 };
 
-function addingDefaultMedicationRequestProperties(
-  medicationRequestEntry: MedicationRequest,
+const addingDefaultMedicationOrServiceRequestProperties = (
+  medicationOrServiceRequestEntry: any,
   patientRef: Reference
-) {
-  if (!medicationRequestEntry?.status) {
-    medicationRequestEntry.status = "active";
+) => {
+  if (!medicationOrServiceRequestEntry?.status) {
+    medicationOrServiceRequestEntry.status = "active";
   }
-  if (!medicationRequestEntry.intent) {
-    medicationRequestEntry.intent = "order";
+  if (!medicationOrServiceRequestEntry.intent) {
+    medicationOrServiceRequestEntry.intent = "order";
   }
-  if (!medicationRequestEntry.subject) {
-    medicationRequestEntry.subject = patientRef;
+  if (!medicationOrServiceRequestEntry.subject) {
+    medicationOrServiceRequestEntry.subject = patientRef;
   }
-  return medicationRequestEntry;
-}
+  return medicationOrServiceRequestEntry;
+};
 
-function addingDefaultProcedureProperties(
+const addingDefaultProcedureProperties = (
   procedureEntry: Procedure,
   patientRef: Reference
-) {
+) => {
   if (!procedureEntry?.status) {
     procedureEntry.status = "completed";
   }
@@ -121,19 +116,25 @@ function addingDefaultProcedureProperties(
     procedureEntry.subject = patientRef;
   }
   return procedureEntry;
-}
+};
 
-function setReference(resource: DomainResource, el, ref: Reference) {
+const setReference = (resource: DomainResource, el, ref: Reference) => {
   if (!resource[el]) {
     resource[el] = ref;
   }
   return resource;
-}
+};
 
-function setPatientReference(resource: DomainResource, patientRef: Reference) {
+const setPatientReference = (
+  resource: DomainResource,
+  patientRef: Reference
+) => {
   return setReference(resource, "patient", patientRef);
-}
+};
 
-function setSubjectReference(resource: DomainResource, patientRef: Reference) {
+const setSubjectReference = (
+  resource: DomainResource,
+  patientRef: Reference
+) => {
   return setReference(resource, "subject", patientRef);
-}
+};

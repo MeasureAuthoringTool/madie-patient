@@ -102,7 +102,7 @@ describe("Modify JSON to add Default Values", () => {
   });
 
   it('should set MedicationRequest.status to "active" and MedicationRequest.intent to "order" in the TestCase where there are multiple medication requests', () => {
-    const medicationRequestJson = require("../mockdata/medication_request_test.json");
+    const medicationRequestJson = require("../mockdata/testcase_with_medication_request.json");
     const resultJson: any = addValues(medicationRequestJson);
 
     const patientResource = _.find(
@@ -124,8 +124,29 @@ describe("Modify JSON to add Default Values", () => {
     expect(results.length).toBe(1);
   });
 
+  it("checking if all the entries with medication requests have both status and intent properties", () => {
+    const medicationRequestJson = require("../mockdata/testcase_with_Medication_Request.json");
+    const beforeDefaultValuesJson: any = _.cloneDeep(
+      medicationRequestJson
+    )?.entry.filter(
+      (entry) => entry.resource.resourceType === "MedicationRequest"
+    ).length;
+
+    const resultJson: any = addValues(medicationRequestJson);
+    expect(resultJson).toBeDefined();
+    let results = resultJson?.entry.filter((entry) => {
+      return (
+        entry.resource?.resourceType === "MedicationRequest" &&
+        entry.resource?.status &&
+        entry.resource?.intent
+      );
+    }).length;
+
+    expect(results).toBe(beforeDefaultValuesJson);
+  });
+
   it("should not modify already set MedicationRequest status, intent, or subject values", () => {
-    const medicationRequestJson = require("../mockdata/medication_request_test.json");
+    const medicationRequestJson = require("../mockdata/testcase_with_medication_request.json");
     const resultJson: any = addValues(medicationRequestJson);
 
     const patientResource = _.find(
@@ -165,13 +186,35 @@ describe("Modify JSON to add Default Values", () => {
     );
   });
 
+  it("should set all the entries with medication requests with status intent and subject properties", () => {
+    const serviceRequestJson = require("../mockdata/testcase_with_Service_Request.json");
+    const beforeDefaultValuesJson: any = _.cloneDeep(
+      serviceRequestJson
+    )?.entry.filter(
+      (entry) => entry.resource.resourceType === "ServiceRequest"
+    ).length;
+
+    const resultJson: any = addValues(serviceRequestJson);
+    expect(resultJson).toBeDefined();
+    let results = resultJson?.entry.filter((entry) => {
+      return (
+        entry.resource?.resourceType === "ServiceRequest" &&
+        entry.resource?.status &&
+        entry.resource?.intent &&
+        entry.resource?.subject
+      );
+    }).length;
+
+    expect(results).toBe(beforeDefaultValuesJson);
+  });
+
   it("Should set identifier and name attributes to Practitioner", () => {
     const defaultFamilyName = "Evil";
     const defaultPrefix = "Dr";
     const defaultIdentifierSystem = "http://hl7.org/fhir/sid/us-npi";
     const defaultIdentifierValue = "123456";
 
-    const testCaseWithPractitioner = require("../mockdata/testCase_with_Practitioner.json");
+    const testCaseWithPractitioner = require("../mockdata/testcase_with_Practitioner.json");
     const updatedTestCaseWithDefaults: any = addValues(
       testCaseWithPractitioner
     );
@@ -216,7 +259,7 @@ describe("Modify JSON to add Default Values", () => {
   });
 
   it("should set Device.patient to Patient Reference", () => {
-    const testCaseWithDevice = require("../mockdata/testCase_with_Practitioner.json");
+    const testCaseWithDevice = require("../mockdata/testcase_with_Practitioner.json");
 
     const updatedTestCaseWithDefaults: any = addValues(testCaseWithDevice);
 
@@ -237,7 +280,7 @@ describe("Modify JSON to add Default Values", () => {
   });
 
   it("should set MedicationAdministration.subject to Patient Reference", () => {
-    const testCase = require("../mockdata/testCase_with_Practitioner.json");
+    const testCase = require("../mockdata/testcase_with_Practitioner.json");
 
     const updatedTestCaseWithDefaults: any = addValues(testCase);
 
@@ -258,7 +301,7 @@ describe("Modify JSON to add Default Values", () => {
   });
 
   it("should set Observation.subject to Patient Reference", () => {
-    const testCase = require("../mockdata/testCase_with_Practitioner.json");
+    const testCase = require("../mockdata/testcase_with_Practitioner.json");
 
     const updatedTestCaseWithDefaults: any = addValues(testCase);
 
@@ -279,7 +322,7 @@ describe("Modify JSON to add Default Values", () => {
   });
 
   it("should set Condition.subject to Patient Reference", () => {
-    const testCase = require("../mockdata/testCase_with_Practitioner.json");
+    const testCase = require("../mockdata/testcase_with_Practitioner.json");
 
     const updatedTestCaseWithDefaults: any = addValues(testCase);
 
