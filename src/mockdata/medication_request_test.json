@@ -115,13 +115,16 @@
         "resourceType": "MedicationRequest",
         "status": "cancelled",
         "intent": "option",
-        "authoredOn": "2022-02-01T08:00:00.000+00:00"
+        "authoredOn": "2022-02-01T08:00:00.000+00:00",
+        "subject": {
+          "reference": "Patient/613a412602c62a011f3641d5"
+        }
       }
     },
     {
-      "fullUrl": "glucocorticoids-oral-only-3e95",
+      "fullUrl": "glucocorticoids-oral-only-3e100",
       "resource": {
-        "id": "glucocorticoids-oral-only-3e95",
+        "id": "glucocorticoids-oral-only-3e100",
         "resourceType": "Procedure",
         "authoredOn": "2022-02-01T08:00:00.000+00:00"
       }
@@ -147,9 +150,9 @@
       }
     },
     {
-      "fullUrl": "glucocorticoids-oral-only-3e95",
+      "fullUrl": "glucocorticoids-oral-only-3e99",
       "resource": {
-        "id": "glucocorticoids-oral-only-3e95",
+        "id": "glucocorticoids-oral-only-3e99",
         "resourceType": "MedicationRequest",
         "intent": "option",
         "authoredOn": "2022-02-01T08:00:00.000+00:00"

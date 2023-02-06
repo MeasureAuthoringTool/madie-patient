@@ -105,17 +105,64 @@ describe("Modify JSON to add Default Values", () => {
     const medicationRequestJson = require("../mockdata/medication_request_test.json");
     const resultJson: any = addValues(medicationRequestJson);
 
+    const patientResource = _.find(
+      resultJson.entry,
+      (entry) => entry.resource.resourceType === "Patient"
+    ).resource;
+
     expect(resultJson).toBeDefined();
     let results = resultJson?.entry.filter((entry) => {
       return (
         entry.resource?.resourceType === "MedicationRequest" &&
         entry.resource?.status === "active" &&
-        entry.resource?.intent === "order"
+        entry.resource?.intent === "order" &&
+        entry.resource?.subject.reference === `Patient/${patientResource.id}`
       );
     });
     expect(results).toBeDefined();
 
     expect(results.length).toBe(1);
+  });
+
+  it("should not modify already set MedicationRequest status, intent, or subject values", () => {
+    const medicationRequestJson = require("../mockdata/medication_request_test.json");
+    const resultJson: any = addValues(medicationRequestJson);
+
+    const patientResource = _.find(
+      resultJson.entry,
+      (entry) => entry.resource.resourceType === "Patient"
+    ).resource;
+
+    const medicationRequestResource = _.find(
+      resultJson.entry,
+      (entry) =>
+        entry.resource.resourceType === "MedicationRequest" &&
+        entry.resource.status === "cancelled"
+    ).resource;
+
+    expect(medicationRequestResource).toBeDefined();
+    expect(medicationRequestResource.status).toBe("cancelled");
+    expect(medicationRequestResource.intent).toBe("option");
+    expect(medicationRequestResource.subject.reference).toBe(
+      `Patient/${patientResource.id}`
+    );
+    const medicationRequestId = medicationRequestResource.id;
+
+    expect(resultJson).toBeDefined();
+    let results = resultJson?.entry.filter((entry) => {
+      return (
+        entry.resource?.resourceType === "MedicationRequest" &&
+        entry.resource?.id === medicationRequestId
+      );
+    });
+    expect(results).toBeDefined();
+
+    expect(results.length).toBe(1);
+    expect(medicationRequestResource.status).toBe("cancelled");
+    expect(medicationRequestResource.intent).toBe("option");
+    expect(medicationRequestResource.subject.reference).toBe(
+      `Patient/${patientResource.id}`
+    );
   });
 
   it("Should set identifier and name attributes to Practitioner", () => {
@@ -166,5 +213,89 @@ describe("Modify JSON to add Default Values", () => {
     expect(practitioners[3].name[0].prefix[0]).toBe("Dr");
     expect(practitioners[3].identifier[0].system).toBe(defaultIdentifierSystem);
     expect(practitioners[3].identifier[0].value).toBe(defaultIdentifierValue);
+  });
+
+  it("should set Device.patient to Patient Reference", () => {
+    const testCaseWithDevice = require("../mockdata/testCase_with_Practitioner.json");
+
+    const updatedTestCaseWithDefaults: any = addValues(testCaseWithDevice);
+
+    const patientResource = _.find(
+      updatedTestCaseWithDefaults.entry,
+      (entry) => entry.resource.resourceType === "Patient"
+    ).resource;
+
+    expect(updatedTestCaseWithDefaults).toBeDefined();
+    const deviceEntries = updatedTestCaseWithDefaults?.entry.filter(
+      (entry) => entry.resource?.resourceType === "Device"
+    );
+    expect(deviceEntries.length).toBe(1);
+    expect(deviceEntries[0].resource.patient).toBeDefined();
+    expect(deviceEntries[0].resource.patient.reference).toBe(
+      `Patient/${patientResource.id}`
+    );
+  });
+
+  it("should set MedicationAdministration.subject to Patient Reference", () => {
+    const testCase = require("../mockdata/testCase_with_Practitioner.json");
+
+    const updatedTestCaseWithDefaults: any = addValues(testCase);
+
+    const patientResource = _.find(
+      updatedTestCaseWithDefaults.entry,
+      (entry) => entry.resource.resourceType === "Patient"
+    ).resource;
+
+    expect(updatedTestCaseWithDefaults).toBeDefined();
+    const entries = updatedTestCaseWithDefaults?.entry.filter(
+      (entry) => entry.resource?.resourceType === "MedicationAdministration"
+    );
+    expect(entries.length).toBe(1);
+    expect(entries[0].resource.subject).toBeDefined();
+    expect(entries[0].resource.subject.reference).toBe(
+      `Patient/${patientResource.id}`
+    );
+  });
+
+  it("should set Observation.subject to Patient Reference", () => {
+    const testCase = require("../mockdata/testCase_with_Practitioner.json");
+
+    const updatedTestCaseWithDefaults: any = addValues(testCase);
+
+    const patientResource = _.find(
+      updatedTestCaseWithDefaults.entry,
+      (entry) => entry.resource.resourceType === "Patient"
+    ).resource;
+
+    expect(updatedTestCaseWithDefaults).toBeDefined();
+    const entries = updatedTestCaseWithDefaults?.entry.filter(
+      (entry) => entry.resource?.resourceType === "Observation"
+    );
+    expect(entries.length).toBe(1);
+    expect(entries[0].resource.subject).toBeDefined();
+    expect(entries[0].resource.subject.reference).toBe(
+      `Patient/${patientResource.id}`
+    );
+  });
+
+  it("should set Condition.subject to Patient Reference", () => {
+    const testCase = require("../mockdata/testCase_with_Practitioner.json");
+
+    const updatedTestCaseWithDefaults: any = addValues(testCase);
+
+    const patientResource = _.find(
+      updatedTestCaseWithDefaults.entry,
+      (entry) => entry.resource.resourceType === "Patient"
+    ).resource;
+
+    expect(updatedTestCaseWithDefaults).toBeDefined();
+    const entries = updatedTestCaseWithDefaults?.entry.filter(
+      (entry) => entry.resource?.resourceType === "Condition"
+    );
+    expect(entries.length).toBe(1);
+    expect(entries[0].resource.subject).toBeDefined();
+    expect(entries[0].resource.subject.reference).toBe(
+      `Patient/${patientResource.id}`
+    );
   });
 });
