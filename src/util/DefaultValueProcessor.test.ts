@@ -278,7 +278,7 @@ describe("Modify JSON to add Default Values", () => {
     );
   });
 
-  it("should set Observation.subject to Patient Reference", () => {
+  it("should set Condition.subject to Patient Reference", () => {
     const testCase = require("../mockdata/testCase_with_Practitioner.json");
 
     const updatedTestCaseWithDefaults: any = addValues(testCase);
