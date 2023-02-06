@@ -128,10 +128,7 @@ function addingDefaultProcedureProperties(
 }
 
 function encounterDefaultProperties(encounterEntry: Encounter, patientRef) {
-  if (
-    !encounterEntry.status ||
-    encounterEntry.status.toLowerCase() == "finished"
-  ) {
+  if (!encounterEntry.status) {
     encounterEntry.status = "finished";
   }
   if (!encounterEntry.subject) {
