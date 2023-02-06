@@ -1,4 +1,5 @@
 {
+  "esModuleInterop": true,
   "extends": "ts-config-single-spa",
   "compilerOptions": {
     "declaration": true,
