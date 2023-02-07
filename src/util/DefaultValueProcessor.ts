@@ -140,7 +140,6 @@ function encounterDefaultProperties(encounterEntry: Encounter, patientRef) {
 }
 
 const setReference = (resource: DomainResource, el, ref: Reference) => {
-
   if (!resource[el]) {
     resource[el] = ref;
   }
