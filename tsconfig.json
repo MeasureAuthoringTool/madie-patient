@@ -10,13 +10,7 @@
     "target": "es2015",
     "resolveJsonModule": true
   },
-  "files": [
-    "src/madie-madie-patient.tsx"
-  ],
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "src/**/*.test*"
-  ]
+  "files": ["src/madie-madie-patient.tsx"],
+  "include": ["src/**/*"],
+  "exclude": ["src/**/*.test*"]
 }
