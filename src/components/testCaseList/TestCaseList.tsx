@@ -329,14 +329,6 @@ const TestCaseList = (props: TestCaseListProps) => {
                 <div tw="py-2 inline-block min-w-full sm:px-6 lg:px-8">
                   {!executing && (
                     <>
-                      {executionResultLength > 0 && (
-                        <div
-                          aria-live="polite"
-                          aria-label={readerString}
-                          style={{ width: 1 }}
-                          data-testid="sr-div"
-                        ></div>
-                      )}
                       <table
                         tw="min-w-full"
                         data-testid="test-case-tbl"
@@ -346,6 +338,21 @@ const TestCaseList = (props: TestCaseListProps) => {
                           borderSpacing: "0 2em !important",
                         }}
                       >
+                        {executionResultLength > 0 && (
+                          <th
+                            aria-live="polite"
+                            aria-label={readerString}
+                            style={{
+                              width: "1px",
+                              position: "absolute",
+                              zIndex: "-1",
+                              opacity: 0,
+                            }}
+                            data-testid="sr-div"
+                          >
+                            {readerString}
+                          </th>
+                        )}
                         <thead tw="bg-slate">
                           <tr>
                             <TH scope="col">Status</TH>
