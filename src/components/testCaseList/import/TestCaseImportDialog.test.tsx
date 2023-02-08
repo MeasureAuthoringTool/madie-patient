@@ -54,14 +54,12 @@ describe("TestCaseImportDialog", () => {
   it("should render nothing when open is false", () => {
     const open = false;
     const handleClose = jest.fn();
-    const measure = {} as Measure;
     const onImport = jest.fn();
 
     render(
       <TestCaseImportDialog
         open={open}
         handleClose={handleClose}
-        measure={measure}
         onImport={onImport}
       />
     );
@@ -72,14 +70,12 @@ describe("TestCaseImportDialog", () => {
   it("should render when open is true", () => {
     const open = true;
     const handleClose = jest.fn();
-    const measure = {} as Measure;
     const onImport = jest.fn();
 
     render(
       <TestCaseImportDialog
         open={open}
         handleClose={handleClose}
-        measure={measure}
         onImport={onImport}
       />
     );
@@ -93,14 +89,12 @@ describe("TestCaseImportDialog", () => {
   it("should call handleClose when Cancel button is clicked", () => {
     const open = true;
     const handleClose = jest.fn();
-    const measure = {} as Measure;
     const onImport = jest.fn();
 
     render(
       <TestCaseImportDialog
         open={open}
         handleClose={handleClose}
-        measure={measure}
         onImport={onImport}
       />
     );
@@ -115,7 +109,6 @@ describe("TestCaseImportDialog", () => {
   it("should preview and import valid file", async () => {
     const open = true;
     const handleClose = jest.fn();
-    const measure = {} as Measure;
     const onImport = jest.fn();
     const fileName = "testcases.json";
 
@@ -145,7 +138,6 @@ describe("TestCaseImportDialog", () => {
       <TestCaseImportDialog
         open={open}
         handleClose={handleClose}
-        measure={measure}
         onImport={onImport}
       />
     );
@@ -169,10 +161,54 @@ describe("TestCaseImportDialog", () => {
     expect(onImport).toHaveBeenCalled();
   });
 
+  it("should show error message when file scan validation call fails", async () => {
+    const open = true;
+    const handleClose = jest.fn();
+    const onImport = jest.fn();
+    const fileName = "testcases.json";
+
+    mockProcessedTestCases = [
+      {
+        id: "62c6c617e59fac0e20e02a03",
+        title: "Dr",
+        series: "Evil",
+        description: "",
+        createdAt: "2023-02-03T12:21:14.449Z",
+        json: JSON.stringify(bonnieJson),
+      },
+    ];
+
+    window.URL.createObjectURL = jest.fn().mockImplementation(() => "url");
+
+    mockedAxios.post.mockReset().mockRejectedValue(new Error("BAD THINGS"));
+
+    render(
+      <TestCaseImportDialog
+        open={open}
+        handleClose={handleClose}
+        onImport={onImport}
+      />
+    );
+
+    const inputEl = screen.getByTestId("file-drop-input"); // getByTestId because input is hidden
+    const file = new File([JSON.stringify(bonnieJson)], fileName, {
+      type: "application/json",
+    });
+    Object.defineProperty(inputEl, "files", {
+      value: [file],
+    });
+    fireEvent.drop(inputEl);
+
+    expect(
+      await screen.findByText(
+        "An error occurred while validating the import file. Please try again or reach out to the Help Desk."
+      )
+    ).toBeInTheDocument();
+  });
+
   it("should display message when no bundles are present", async () => {
     const open = true;
     const handleClose = jest.fn();
-    const measure = {} as Measure;
     const onImport = jest.fn();
     const fileName = "testcases.json";
 
@@ -202,7 +238,6 @@ describe("TestCaseImportDialog", () => {
       <TestCaseImportDialog
         open={open}
         handleClose={handleClose}
-        measure={measure}
         onImport={onImport}
       />
     );
@@ -230,7 +265,6 @@ describe("TestCaseImportDialog", () => {
   it("should display message when bundles empty", async () => {
     const open = true;
     const handleClose = jest.fn();
-    const measure = {} as Measure;
     const onImport = jest.fn();
     const fileName = "testcases.json";
 
@@ -260,7 +294,6 @@ describe("TestCaseImportDialog", () => {
       <TestCaseImportDialog
         open={open}
         handleClose={handleClose}
-        measure={measure}
         onImport={onImport}
       />
     );
@@ -288,7 +321,6 @@ describe("TestCaseImportDialog", () => {
   it("should display bundle processing error", async () => {
     const open = true;
     const handleClose = jest.fn();
-    const measure = {} as Measure;
     const onImport = jest.fn();
     const fileName = "testcases.json";
 
@@ -321,7 +353,6 @@ describe("TestCaseImportDialog", () => {
       <TestCaseImportDialog
         open={open}
         handleClose={handleClose}
-        measure={measure}
         onImport={onImport}
       />
     );
@@ -345,7 +376,6 @@ describe("TestCaseImportDialog", () => {
   it("should show an error message when readImportFile fails", async () => {
     const open = true;
     const handleClose = jest.fn();
-    const measure = {} as Measure;
     const onImport = jest.fn();
     const fileName = "testcases.json";
 
@@ -375,7 +405,6 @@ describe("TestCaseImportDialog", () => {
       <TestCaseImportDialog
         open={open}
         handleClose={handleClose}
-        measure={measure}
         onImport={onImport}
       />
     );
@@ -396,10 +425,9 @@ describe("TestCaseImportDialog", () => {
     expect(readImportFile as jest.Mock).toHaveBeenCalled();
   });
 
-  it("displays error when scan validation fails", async () => {
+  it("displays error when scan validation returns invalid file", async () => {
     const open = true;
     const handleClose = jest.fn();
-    const measure = {} as Measure;
     const onImport = jest.fn();
     const fileName = "testcases.json";
 
@@ -420,7 +448,6 @@ describe("TestCaseImportDialog", () => {
       <TestCaseImportDialog
         open={open}
         handleClose={handleClose}
-        measure={measure}
         onImport={onImport}
       />
     );
@@ -435,6 +462,46 @@ describe("TestCaseImportDialog", () => {
     fireEvent.drop(inputEl);
     await waitFor(() => {
       screen.getByText("BAD THINGS HAPPENED");
+    });
+    expect(screen.queryByText(/Test Cases from File/i)).not.toBeInTheDocument();
+  });
+
+  it("displays default error when scan validation returns invalid file but no error message", async () => {
+    const open = true;
+    const handleClose = jest.fn();
+    const onImport = jest.fn();
+    const fileName = "testcases.json";
+
+    window.URL.createObjectURL = jest.fn().mockImplementation(() => "url");
+
+    const scanResult: ScanValidationDto = {
+      fileName: "testcases.json",
+      valid: false,
+      error: null,
+    };
+
+    mockedAxios.post.mockReset().mockResolvedValue({ data: scanResult });
+
+    render(
+      <TestCaseImportDialog
+        open={open}
+        handleClose={handleClose}
+        onImport={onImport}
+      />
+    );
+
+    const inputEl = screen.getByTestId("file-drop-input"); // getByTestId because input is hidden
+    const file = new File([JSON.stringify(bonnieJson)], fileName, {
+      type: "application/json",
+    });
+    Object.defineProperty(inputEl, "files", {
+      value: [file],
+    });
+    fireEvent.drop(inputEl);
+    await waitFor(() => {
+      screen.getByText(
+        "An error occurred during file import. Please try again or reach out to the Help Desk."
+      );
     });
     expect(screen.queryByText(/Test Cases from File/i)).not.toBeInTheDocument();
   });
