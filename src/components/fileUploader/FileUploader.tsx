@@ -3,15 +3,16 @@ import { Button } from "@madie/madie-design-system/dist/react";
 
 const FileUploader = ({ onFileImport }) => {
   // reference to file input element
-  const fileInput = React.useRef(null);
+  let fileInput = React.useRef(null);
   const importTestCase = () => {
     fileInput.current.click();
   };
-  const handleChange = (event) => {
+  const handleChange = async (event) => {
     const fileUploaded = event.target.files[0];
     if (fileUploaded) {
-      onFileImport(fileUploaded);
+      await onFileImport(fileUploaded);
     }
+    fileInput.current.value = null;
   };
 
   return (
