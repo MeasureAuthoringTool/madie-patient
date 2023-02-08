@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _, { result } from "lodash";
 import { addValues } from "./DefaultValueProcessor";
 import { Practitioner } from "fhir/r4";
 
@@ -102,7 +102,7 @@ describe("Modify JSON to add Default Values", () => {
   });
 
   it('should set MedicationRequest.status to "active" and MedicationRequest.intent to "order" in the TestCase where there are multiple medication requests', () => {
-    const medicationRequestJson = require("../mockdata/medication_request_test.json");
+    const medicationRequestJson = require("../mockdata/testcase_with_Medication_Request.json");
     const resultJson: any = addValues(medicationRequestJson);
 
     const patientResource = _.find(
@@ -123,9 +123,18 @@ describe("Modify JSON to add Default Values", () => {
 
     expect(results.length).toBe(1);
   });
+  it("should set a missing Encounter.subject to an object containing patient ID and a missing Encounter.status to finished", () => {
+    const encounterRequestJson = require("../mockdata/testcase_with_Coverage.json");
+    const resultJson: any = addValues(encounterRequestJson);
+    expect(resultJson).toBeDefined();
+    expect(resultJson.entry[0].resource.status).toBe("finished");
+    expect(resultJson.entry[0].resource.subject.reference).toBe(
+      "Patient/numer-pos-EXM135v11QICore4"
+    );
+  });
 
   it("should not modify already set MedicationRequest status, intent, or subject values", () => {
-    const medicationRequestJson = require("../mockdata/medication_request_test.json");
+    const medicationRequestJson = require("../mockdata/testcase_with_Medication_Request.json");
     const resultJson: any = addValues(medicationRequestJson);
 
     const patientResource = _.find(
@@ -156,13 +165,34 @@ describe("Modify JSON to add Default Values", () => {
       );
     });
     expect(results).toBeDefined();
-
     expect(results.length).toBe(1);
     expect(medicationRequestResource.status).toBe("cancelled");
     expect(medicationRequestResource.intent).toBe("option");
     expect(medicationRequestResource.subject.reference).toBe(
       `Patient/${patientResource.id}`
     );
+  });
+
+  it("should set all the medication requests entries with status, intent and subject properties", () => {
+    const serviceRequestJson = require("../mockdata/testcase_with_Service_Request.json");
+    const beforeDefaultValuesJson: any = _.cloneDeep(
+      serviceRequestJson
+    )?.entry.filter(
+      (entry) => entry.resource.resourceType === "ServiceRequest"
+    ).length;
+
+    const resultJson: any = addValues(serviceRequestJson);
+    expect(resultJson).toBeDefined();
+    let results = resultJson?.entry.filter((entry) => {
+      return (
+        entry.resource?.resourceType === "ServiceRequest" &&
+        entry.resource?.status &&
+        entry.resource?.intent &&
+        entry.resource?.subject
+      );
+    }).length;
+
+    expect(results).toBe(beforeDefaultValuesJson);
   });
 
   it("Should set identifier and name attributes to Practitioner", () => {
@@ -234,6 +264,26 @@ describe("Modify JSON to add Default Values", () => {
     expect(deviceEntries[0].resource.patient.reference).toBe(
       `Patient/${patientResource.id}`
     );
+  });
+
+  it("should set all the Procedure entries with status and subject properties", () => {
+    const serviceRequestJson = require("../mockdata/testcase_with_Procedure.json");
+    const beforeDefaultValuesJson: any = _.cloneDeep(
+      serviceRequestJson
+    )?.entry.filter(
+      (entry) => entry.resource.resourceType === "Procedure"
+    ).length;
+
+    const resultJson: any = addValues(serviceRequestJson);
+    expect(resultJson).toBeDefined();
+    let results = resultJson?.entry.filter((entry) => {
+      return (
+        entry.resource?.resourceType === "Procedure" &&
+        entry.resource?.status &&
+        entry.resource?.subject
+      );
+    }).length;
+    expect(results).toBe(beforeDefaultValuesJson);
   });
 
   it("should set MedicationAdministration.subject to Patient Reference", () => {

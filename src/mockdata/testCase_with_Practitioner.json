@@ -285,6 +285,16 @@
         "gender": "female",
         "birthDate": "2000-10-11"
       }
+    },
+    {
+      "fullUrl": "glucocorticoids-oral-only-3e95",
+      "resource": {
+        "id": "glucocorticoids-oral-only-3e95",
+        "resourceType": "MedicationRequest",
+        "authoredOn": "2022-02-01T08:00:00.000+00:00",
+        "status": "testing",
+        "intent": "noworder"
+      }
     }
   ]
 }
