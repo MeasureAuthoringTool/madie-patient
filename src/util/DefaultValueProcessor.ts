@@ -1,7 +1,14 @@
 import * as _ from "lodash";
-import { DomainResource, Practitioner, Procedure, Reference } from "fhir/r4";
+import {
+  DomainResource,
+  MedicationRequest,
+  Practitioner,
+  Procedure,
+  Reference,
+  Encounter,
+} from "fhir/r4";
+
 import addCoverageValues from "./CoverageDefaultValueProcessor";
-import addEncounterValues from "./EncounterDefaultValueProcessor";
 
 export const addValues = (testCase: any): any => {
   // create a clone of testCase
@@ -58,13 +65,17 @@ export const addValues = (testCase: any): any => {
           ...entry,
           resource: addingDefaultPractitionerProperties(entry?.resource),
         };
+      case "Encounter":
+        return {
+          ...entry,
+          resource: encounterDefaultProperties(entry?.resource, patientRef),
+        };
       default:
         return entry;
     }
   });
 
   addCoverageValues(resultJson, patientRef);
-  addEncounterValues(resultJson);
 
   return resultJson;
 };
@@ -117,6 +128,16 @@ const addingDefaultProcedureProperties = (
   }
   return procedureEntry;
 };
+
+function encounterDefaultProperties(encounterEntry: Encounter, patientRef) {
+  if (!encounterEntry.status) {
+    encounterEntry.status = "finished";
+  }
+  if (!encounterEntry.subject) {
+    encounterEntry.subject = patientRef;
+  }
+  return encounterEntry;
+}
 
 const setReference = (resource: DomainResource, el, ref: Reference) => {
   if (!resource[el]) {
