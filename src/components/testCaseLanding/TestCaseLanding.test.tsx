@@ -45,6 +45,10 @@ jest.mock("@madie/madie-util", () => ({
   checkUserCanEdit: jest.fn(() => {
     return true;
   }),
+  useFeatureFlags: jest.fn().mockImplementation(() => ({
+    applyDefaults: false,
+    importTestCases: false,
+  })),
 }));
 
 describe("TestCaseLanding component", () => {

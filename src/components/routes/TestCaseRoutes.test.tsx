@@ -72,6 +72,10 @@ jest.mock("@madie/madie-util", () => ({
     },
     unsubscribe: () => null,
   },
+  useFeatureFlags: jest.fn().mockImplementation(() => ({
+    applyDefaults: false,
+    importTestCases: false,
+  })),
   useOktaTokens: () => ({
     getAccessToken: () => "test.jwt",
     getUserName: () => MEASURE_CREATEDBY,

@@ -19,7 +19,7 @@ import * as _ from "lodash";
 import useTestCaseServiceApi from "../../../api/useTestCaseServiceApi";
 import { ScanValidationDto } from "../../../api/models/ScanValidationDto";
 
-const TestCaseImportDialog = ({ open, handleClose, measure, onImport }) => {
+const TestCaseImportDialog = ({ open, handleClose, onImport }) => {
   const [file, setFile] = useState(null);
   const [fileInputKey, setFileInputKey] = useState(Math.random().toString(36));
   const [errorMessage, setErrorMessage] = useState(null);
