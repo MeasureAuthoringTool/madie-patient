@@ -8,11 +8,13 @@ declare module "@madie/madie-util" {
     clientId: string;
     redirectUri: string;
   }
+
   interface FeatureFlags {
     export: boolean;
     measureVersioning: boolean;
     populationCriteriaTabs: boolean;
     applyDefaults: boolean;
+    importTestCases: boolean;
   }
 
   export interface ServiceConfig {
@@ -51,9 +53,11 @@ declare module "@madie/madie-util" {
   };
 
   export function useFeatureFlags(): FeatureFlags;
+
   export function getServiceConfig(): Promise<ServiceConfig>;
 
   export function useKeyPress(targetKey: any): boolean;
+
   export const useOktaTokens: (storageKey?: string) => {
     getAccessToken: () => any;
     getAccessTokenObj: () => any;
@@ -61,6 +65,7 @@ declare module "@madie/madie-util" {
     getIdToken: () => any;
     getIdTokenObj: () => any;
   };
+
   export function useOnClickOutside(ref: any, handler: any): void;
 
   export function checkUserCanEdit(
@@ -71,9 +76,12 @@ declare module "@madie/madie-util" {
 
   export class TerminologyServiceApi {
     constructor(baseUrl: string, getAccessToken: () => string);
+
     checkLogin(): Promise<Boolean>;
+
     loginUMLS(apiKey: string): Promise<string>;
   }
+
   export function useTerminologyServiceApi(): TerminologyServiceApi;
 
   export function useDocumentTitle(

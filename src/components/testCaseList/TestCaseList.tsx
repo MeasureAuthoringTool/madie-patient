@@ -293,11 +293,17 @@ const TestCaseList = (props: TestCaseListProps) => {
                     <>
                       {executionResultLength > 0 && (
                         <div
-                          aria-live="polite"
-                          aria-label={readerString}
-                          style={{ width: 1 }}
+                          role="alert"
+                          style={{
+                            width: "1px",
+                            position: "absolute",
+                            zIndex: "-1",
+                            overflow: "hidden",
+                          }}
                           data-testid="sr-div"
-                        ></div>
+                        >
+                          <span>{readerString}</span>
+                        </div>
                       )}
                       <table
                         tw="min-w-full"
