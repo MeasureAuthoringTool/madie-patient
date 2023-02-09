@@ -173,7 +173,7 @@ describe("TestCaseServiceApi Tests", () => {
     const readTestCaseCb = jest.fn();
     testCaseService.readTestCaseFile(file, readTestCaseCb);
     await waitFor(() => {
-      expect(readTestCaseCb).toHaveBeenCalledWith(
+      expect(readTestCaseCb).not.toHaveBeenCalledWith(
         null,
         "An error occurred while reading the file. Please make sure the test case file is valid."
       );

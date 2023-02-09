@@ -196,6 +196,13 @@ export class TestCaseServiceApi {
         errorMessage =
           "An error occurred while reading the file. Please make sure the test case file is valid.";
       }
+      if (
+        testCaseBundle.resourceType !== "Bundle" ||
+        !testCaseBundle.entry ||
+        testCaseBundle.entry.length === 0
+      ) {
+        errorMessage = "No test case resources were found in imported file.";
+      }
       onReadCallback(testCaseBundle, errorMessage);
     };
     fileReader.readAsText(file);
