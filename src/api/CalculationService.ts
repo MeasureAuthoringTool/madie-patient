@@ -120,7 +120,7 @@ export class CalculationService {
         patientBundles,
         {
           includeClauseResults: false,
-          profileValidation: true,
+          trustMetaProfile: true,
           measurementPeriodStart: measurementPeriodStart,
           measurementPeriodEnd: measurementPeriodEnd,
         },

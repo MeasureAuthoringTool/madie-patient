@@ -36,9 +36,12 @@ const Editor = ({
 
   useEffect(() => {
     // This is to set aria-label on textarea for accessibility
-    aceRef.current.editor.container
-      .getElementsByClassName("ace_text-input")[0]
-      .setAttribute("aria-label", "Test case editor");
+    const editorTextArea =
+      aceRef.current.editor.container.getElementsByClassName(
+        "ace_text-input"
+      )[0];
+    editorTextArea.setAttribute("aria-label", "Test case editor");
+    editorTextArea.setAttribute("data-testid", "test-case-json-editor-input");
   });
 
   aceRef?.current?.editor?.on("focus", function () {
