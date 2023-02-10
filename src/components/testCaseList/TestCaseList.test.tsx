@@ -5,10 +5,14 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
-import TestCaseList, { removeHtmlCoverageHeader } from "./TestCaseList";
+import TestCaseList, {
+  IMPORT_ERROR,
+  removeHtmlCoverageHeader,
+} from "./TestCaseList";
 import calculationService, {
   CalculationService,
 } from "../../api/CalculationService";
@@ -32,6 +36,7 @@ import {
   getExampleValueSet,
 } from "../../util/CalculationTestHelpers";
 import { ExecutionContextProvider } from "../routes/ExecutionContext";
+import { checkUserCanEdit, useFeatureFlags } from "@madie/madie-util";
 
 const serviceConfig: ServiceConfig = {
   testCaseService: {
@@ -48,7 +53,37 @@ const serviceConfig: ServiceConfig = {
 const MEASURE_CREATEDBY = "testuser";
 jest.mock("@madie/madie-util", () => ({
   checkUserCanEdit: jest.fn().mockImplementation(() => true),
+  useFeatureFlags: jest.fn().mockImplementation(() => ({
+    applyDefaults: false,
+    importTestCases: false,
+  })),
 }));
+
+let importingTestCases = [];
+jest.mock(
+  "./import/TestCaseImportDialog",
+  () =>
+    ({ open, handleClose, onImport }) => {
+      return open ? (
+        <div data-testid="test-case-import-dialog">
+          <button
+            data-testid="test-case-import-cancel-btn"
+            onClick={handleClose}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => onImport(importingTestCases)}
+            data-testid="test-case-import-import-btn"
+          >
+            Import
+          </button>
+        </div>
+      ) : (
+        <></>
+      );
+    }
+);
 
 const mockedUsedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -355,6 +390,7 @@ const useTestCaseServiceMockResolved = {
   getTestCaseSeriesForMeasure: jest
     .fn()
     .mockResolvedValue(["Series 1", "Series 2"]),
+  createTestCases: jest.fn().mockResolvedValue([]),
 } as unknown as TestCaseServiceApi;
 
 // Mock data for Measure retrieved from MeasureService
@@ -417,13 +453,18 @@ describe("TestCaseList component", () => {
     useMeasureServiceMock.mockImplementation(() => {
       return useMeasureServiceMockResolved;
     });
+    (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      applyDefaults: false,
+      importTestCases: false,
+    }));
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  function renderTestCaseListComponent() {
+  function renderTestCaseListComponent(errors: string[] = []) {
     return render(
       <MemoryRouter>
         <ApiContextProvider value={serviceConfig}>
@@ -437,7 +478,7 @@ describe("TestCaseList component", () => {
               setExecuting: jest.fn(),
             }}
           >
-            <TestCaseList errors={[]} setErrors={setError} />
+            <TestCaseList errors={errors} setErrors={setError} />
           </ExecutionContextProvider>
         </ApiContextProvider>
       </MemoryRouter>
@@ -860,6 +901,137 @@ describe("TestCaseList component", () => {
     expect(screen.getByText("Passing (2/3)")).toBeInTheDocument();
     expect(screen.getByText("100%")).toBeInTheDocument();
     expect(screen.getByTestId("sr-div")).toBeInTheDocument();
+  });
+
+  it("should hide the button for import test cases when feature is disabled", async () => {
+    (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      importTestCases: false,
+    }));
+
+    renderTestCaseListComponent();
+    const importBtn = await screen.queryByRole("button", {
+      name: /import test cases/i,
+    });
+    expect(importBtn).not.toBeInTheDocument();
+  });
+
+  it("should have a disabled button for import test cases when feature is enabled but user cannot edit", async () => {
+    (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => false);
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      importTestCases: true,
+    }));
+
+    renderTestCaseListComponent();
+    const importBtn = await screen.findByRole("button", {
+      name: /import test cases/i,
+    });
+    expect(importBtn).toBeInTheDocument();
+    expect(importBtn).toBeDisabled();
+  });
+
+  it("should have a enabled button for import test cases when feature is enabled and user can edit", async () => {
+    (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      importTestCases: true,
+    }));
+
+    renderTestCaseListComponent();
+    const importBtn = await screen.findByRole("button", {
+      name: /import test cases/i,
+    });
+    expect(importBtn).toBeInTheDocument();
+    await waitFor(() => expect(importBtn).not.toBeDisabled());
+  });
+
+  it("should display import dialog when import button is clicked", async () => {
+    (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      importTestCases: true,
+    }));
+
+    renderTestCaseListComponent();
+    const showImportBtn = await screen.findByRole("button", {
+      name: /import test cases/i,
+    });
+    expect(showImportBtn).toBeInTheDocument();
+    await waitFor(() => expect(showImportBtn).not.toBeDisabled());
+    userEvent.click(showImportBtn);
+    const importDialog = await screen.findByTestId("test-case-import-dialog");
+    expect(importDialog).toBeInTheDocument();
+    const importBtn = within(importDialog).getByRole("button", {
+      name: "Import",
+    });
+    expect(importBtn).toBeInTheDocument();
+    userEvent.click(importBtn);
+    const removedImportDialog = await screen.queryByTestId(
+      "test-case-import-dialog"
+    );
+    expect(removedImportDialog).not.toBeInTheDocument();
+  });
+
+  it("should display import error when createTestCases call fails", async () => {
+    (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      importTestCases: true,
+    }));
+
+    const useTestCaseServiceMockRejected = {
+      getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
+      getTestCaseSeriesForMeasure: jest
+        .fn()
+        .mockResolvedValue(["Series 1", "Series 2"]),
+      createTestCases: jest.fn().mockRejectedValueOnce(new Error("BAD THINGS")),
+    } as unknown as TestCaseServiceApi;
+
+    useTestCaseServiceMock.mockImplementation(() => {
+      return useTestCaseServiceMockRejected;
+    });
+
+    renderTestCaseListComponent();
+    const showImportBtn = await screen.findByRole("button", {
+      name: /import test cases/i,
+    });
+    await waitFor(() => expect(showImportBtn).not.toBeDisabled());
+    userEvent.click(showImportBtn);
+    const importDialog = await screen.findByTestId("test-case-import-dialog");
+    expect(importDialog).toBeInTheDocument();
+    const importBtn = within(importDialog).getByRole("button", {
+      name: "Import",
+    });
+    userEvent.click(importBtn);
+    const removedImportDialog = await screen.queryByTestId(
+      "test-case-import-dialog"
+    );
+    expect(removedImportDialog).not.toBeInTheDocument();
+    await waitFor(() => expect(setError).toHaveBeenCalledWith([IMPORT_ERROR]));
+  });
+
+  it("should close import dialog when cancel button is clicked", async () => {
+    (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      importTestCases: true,
+    }));
+
+    renderTestCaseListComponent([IMPORT_ERROR]);
+    const showImportBtn = await screen.findByRole("button", {
+      name: /import test cases/i,
+    });
+    expect(showImportBtn).toBeInTheDocument();
+    await waitFor(() => expect(showImportBtn).not.toBeDisabled());
+    userEvent.click(showImportBtn);
+    const importDialog = await screen.findByTestId("test-case-import-dialog");
+    expect(importDialog).toBeInTheDocument();
+    const cancelBtn = within(importDialog).getByRole("button", {
+      name: "Cancel",
+    });
+    expect(cancelBtn).toBeInTheDocument();
+    userEvent.click(cancelBtn);
+    const removedImportDialog = await screen.queryByTestId(
+      "test-case-import-dialog"
+    );
+    expect(removedImportDialog).not.toBeInTheDocument();
+    expect(setError).toHaveBeenCalledWith([]);
   });
 });
 
