@@ -189,7 +189,11 @@ export class TestCaseServiceApi {
         errorMessage = null;
       try {
         testCaseBundle = JSON.parse(content);
-        if (testCaseBundle.entry?.length === 0) {
+        if (
+          testCaseBundle.resourceType !== "Bundle" ||
+          !testCaseBundle.entry ||
+          testCaseBundle.entry.length === 0
+        ) {
           errorMessage = "No test case resources were found in imported file.";
         }
       } catch (error) {

@@ -7,11 +7,12 @@ const FileUploader = ({ onFileImport }) => {
   const importTestCase = () => {
     fileInput.current.click();
   };
-  const handleChange = (event) => {
+  const handleChange = async (event) => {
     const fileUploaded = event.target.files[0];
     if (fileUploaded) {
-      onFileImport(fileUploaded);
+      await onFileImport(fileUploaded);
     }
+    fileInput.current.value = null;
   };
 
   return (
