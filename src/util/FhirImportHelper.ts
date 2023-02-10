@@ -20,7 +20,7 @@ export function processPatientBundles(patientBundles): TestCase[] {
       series: familyName,
       description: "",
       createdAt: new Date().toISOString(),
-      json: JSON.stringify(bundleToSave),
+      json: JSON.stringify(bundleToSave, null, 4),
       groupPopulations: [],
     } as TestCase);
   }

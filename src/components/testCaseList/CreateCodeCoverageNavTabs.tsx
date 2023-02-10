@@ -2,10 +2,12 @@ import React from "react";
 import { Tabs, Tab, CircularProgress, Box } from "@mui/material";
 import { Button } from "@madie/madie-design-system/dist/react";
 import AddIcon from "@mui/icons-material/Add";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
 import * as _ from "lodash";
 import { Measure } from "@madie/madie-models";
 import useExecutionContext from "../routes/useExecutionContext";
 import { TestCasesPassingDetailsProps } from "./TestCaseList";
+import { useFeatureFlags } from "@madie/madie-util";
 
 export interface NavTabProps {
   activeTab: string;
@@ -15,6 +17,7 @@ export interface NavTabProps {
   measure: Measure;
   createNewTestCase: (value: string) => void;
   executeTestCases: (value: string) => void;
+  onImportTestCases?: () => void;
   testCasePassFailStats: TestCasesPassingDetailsProps;
   coveragePercentage: number;
 }
@@ -41,9 +44,11 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     createNewTestCase,
     measure,
     executeTestCases,
+    onImportTestCases,
     testCasePassFailStats,
     coveragePercentage,
   } = props;
+  const featureFlags = useFeatureFlags();
 
   const executionResultsDisplayTemplate = (label) => {
     const codeCoverage = executeAllTestCases ? coveragePercentage : "-";
@@ -109,7 +114,26 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
         value="coverage"
       />
       <div style={{ margin: "6px 0 0 auto", display: "flex" }}>
-        <div>
+        {featureFlags?.importTestCases && (
+          <div>
+            <Button
+              onClick={() => {
+                if (onImportTestCases) {
+                  onImportTestCases();
+                }
+              }}
+              disabled={!canEdit}
+              data-testid="show-import-test-cases-button"
+            >
+              <FileUploadIcon
+                style={{ margin: "0 5px 0 -2px" }}
+                fontSize="small"
+              />
+              Import Test Cases
+            </Button>
+          </div>
+        )}
+        <div style={{ margin: "0 6px 0 26px" }}>
           <Button
             disabled={!canEdit}
             onClick={createNewTestCase}

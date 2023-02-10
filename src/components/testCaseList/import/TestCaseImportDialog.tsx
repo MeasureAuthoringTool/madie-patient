@@ -19,7 +19,7 @@ import * as _ from "lodash";
 import useTestCaseServiceApi from "../../../api/useTestCaseServiceApi";
 import { ScanValidationDto } from "../../../api/models/ScanValidationDto";
 
-const TestCaseImportDialog = ({ open, handleClose, measure, onImport }) => {
+const TestCaseImportDialog = ({ open, handleClose, onImport }) => {
   const [file, setFile] = useState(null);
   const [fileInputKey, setFileInputKey] = useState(Math.random().toString(36));
   const [errorMessage, setErrorMessage] = useState(null);
@@ -30,9 +30,16 @@ const TestCaseImportDialog = ({ open, handleClose, measure, onImport }) => {
     setErrorMessage(() => null);
     setFileInputKey(Math.random().toString(36));
     const importFile = acceptedFiles[0];
-
-    const response: ScanValidationDto =
-      await testCaseService.current.scanImportFile(importFile);
+    let response: ScanValidationDto;
+    try {
+      response = await testCaseService.current.scanImportFile(importFile);
+    } catch (error) {
+      setErrorMessage(
+        () =>
+          "An error occurred while validating the import file. Please try again or reach out to the Help Desk."
+      );
+      return;
+    }
     if (response.valid) {
       setFile(importFile);
       let patientBundles;
