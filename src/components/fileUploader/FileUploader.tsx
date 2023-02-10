@@ -3,7 +3,7 @@ import { Button } from "@madie/madie-design-system/dist/react";
 
 const FileUploader = ({ onFileImport }) => {
   // reference to file input element
-  let fileInput = React.useRef(null);
+  const fileInput = React.useRef(null);
   const importTestCase = () => {
     fileInput.current.click();
   };
