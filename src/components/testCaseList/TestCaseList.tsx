@@ -295,7 +295,6 @@ const TestCaseList = (props: TestCaseListProps) => {
       tw="grid lg:grid-cols-6 gap-4 mx-8 my-6 shadow-lg rounded-md border border-slate bg-white"
       style={{ marginTop: 16 }}
     >
-      <span>canEdit: {canEdit ? "yes" : "no"}</span>
       {!loadingState.loading && (
         <>
           <TestCaseListSideBarNav
