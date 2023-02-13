@@ -1,4 +1,5 @@
 import { TestCase } from "@madie/madie-models";
+import { addValues } from "./DefaultValueProcessor";
 
 export function processPatientBundles(patientBundles): TestCase[] {
   const testCases: TestCase[] = [];
@@ -6,10 +7,13 @@ export function processPatientBundles(patientBundles): TestCase[] {
     const patient = bundle.entry?.find(
       (e) => e?.resource?.resourceType === "Patient"
     );
-    const bundleToSave = {
+    const importedBundle = {
       ...bundle,
       entry: bundle.entry?.filter((e) => e.resourceType !== "MeasureReport"),
     };
+
+    // Apply Default Values
+    const bundleToSave = addValues(importedBundle);
 
     const familyName = patient?.resource?.name?.[0]?.family || "";
     const givenName = patient?.resource?.name?.[0]?.given?.[0] || "";
@@ -27,6 +31,7 @@ export function processPatientBundles(patientBundles): TestCase[] {
   return testCases;
 }
 
+// TODO: Refactor to dedup with useTestCaseService::readTestCaseFile
 export function readImportFile(importFile): Promise<string> {
   return new Promise((resolve, reject) => {
     const fileReader = new FileReader();

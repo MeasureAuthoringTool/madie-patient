@@ -18,15 +18,23 @@ const addCoverageValues = (testCaseJson: any, patientRef: Reference) => {
   );
 
   if (hasCoverageResource) {
-    // set status -> active and payor ref on existing Coverages
+    // set status -> active, set payor ref on existing Coverages
     testCaseJson.entry?.forEach((entry) => {
       if (entry.resource?.resourceType === "Coverage") {
         const coverage: Coverage = entry.resource;
         coverage.status = "active";
         coverage.beneficiary = patientRef;
-        coverage.payor.push({
-          reference: "Organization/123456",
-        });
+        if (coverage.payor) {
+          coverage.payor.push({
+            reference: "Organization/123456",
+          });
+        } else {
+          coverage.payor = [
+            {
+              reference: "Organization/123456",
+            },
+          ];
+        }
       }
     });
   } else {
@@ -36,8 +44,8 @@ const addCoverageValues = (testCaseJson: any, patientRef: Reference) => {
     });
   }
 
-  // add default Organization
-  // ignoring existing Organization Resources
+  // Always add default Organization for Payor Reference.
+  // Ignoring existing Organization Resources, if any.
   testCaseJson.entry.push({
     fullUrl: "http://Organization/123456",
     resource: { ...defaultOrganization },
