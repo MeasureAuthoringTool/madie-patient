@@ -1,7 +1,6 @@
 import * as _ from "lodash";
 import {
   DomainResource,
-  MedicationRequest,
   Practitioner,
   Procedure,
   Reference,
@@ -17,8 +16,11 @@ export const addValues = (testCase: any): any => {
   // safe to assume single Patient within the Bonnie Export bundle.
   const patientId = _.find(
     resultJson.entry,
-    (entry) => entry.resource.resourceType === "Patient"
-  ).resource.id;
+    (entry) => entry?.resource?.resourceType === "Patient"
+  )?.resource?.id;
+  if (!patientId) {
+    throw new Error("Unable to parse Patient Resource");
+  }
   const patientRef: Reference = { reference: `Patient/${patientId}` };
 
   resultJson.entry = resultJson?.entry?.map((entry) => {

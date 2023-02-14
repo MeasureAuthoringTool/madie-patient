@@ -3,6 +3,22 @@ import { addValues } from "./DefaultValueProcessor";
 import { Practitioner } from "fhir/r4";
 
 describe("Modify JSON to add Default Values", () => {
+  it("should throw an Error when the patient ID cannot be found", () => {
+    const badTestCaseJson = {
+      entry: [
+        {
+          fullUrl: "601adb9198086b165a47f550",
+          resource: {
+            resourceType: "Patient",
+          },
+        },
+      ],
+    };
+    expect(() => {
+      addValues(badTestCaseJson);
+    }).toThrowError();
+  });
+
   it('should set Coverage.status to "active" in the TestCase', () => {
     const coverageJson = require("../mockdata/testcase_with_Coverage.json");
     const resultJson: any = addValues(coverageJson);
@@ -57,8 +73,8 @@ describe("Modify JSON to add Default Values", () => {
     expect(results.length).toBe(1);
   });
 
-  it("should set Coverage.payor Reference to the default Organization", () => {
-    const coverageJson = require("../mockdata/testcase_wo_coverage.json");
+  it("should add entry to Coverage.payor with Reference to the default Organization", () => {
+    const coverageJson = require("../mockdata/testcase_with_Coverages.json");
     const resultJson: any = addValues(coverageJson);
 
     expect(resultJson).toBeDefined();
@@ -66,12 +82,13 @@ describe("Modify JSON to add Default Values", () => {
     const results = resultJson?.entry.filter((entry) => {
       return (
         entry.resource.resourceType === "Coverage" &&
-        entry.resource.payor[0]?.reference === "Organization/123456"
+        _.find(entry.resource.payor, ["reference", "Organization/123456"]) !==
+          undefined
       );
     });
 
     expect(results).toBeDefined();
-    expect(results.length).toBe(1);
+    expect(results.length).toBe(2);
 
     const organizations = resultJson?.entry.filter(
       (entry) =>

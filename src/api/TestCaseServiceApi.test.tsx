@@ -3,6 +3,7 @@ import { TestCaseServiceApi } from "./useTestCaseServiceApi";
 import { ScanValidationDto } from "./models/ScanValidationDto";
 import { TestCase } from "@madie/madie-models";
 import { waitFor } from "@testing-library/react";
+import { addValues } from "../util/DefaultValueProcessor";
 
 jest.mock("axios");
 
@@ -145,7 +146,7 @@ describe("TestCaseServiceApi Tests", () => {
     const readTestCaseCb = jest.fn();
     testCaseService.readTestCaseFile(file, readTestCaseCb);
     await waitFor(() => {
-      expect(readTestCaseCb).toHaveBeenCalledWith(testcase, null);
+      expect(readTestCaseCb).toHaveBeenCalledWith(addValues(testcase), null);
     });
   });
 

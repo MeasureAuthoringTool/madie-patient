@@ -39,6 +39,7 @@ import { nonBoolTestCaseFixture } from "../createTestCase/__mocks__/nonBoolTestC
 import { TestCaseValidator } from "../../validators/TestCaseValidator";
 import { checkUserCanEdit } from "@madie/madie-util";
 import { PopulationType as FqmPopulationType } from "fqm-execution/build/types/Enums";
+import { addValues } from "../../util/DefaultValueProcessor";
 
 //temporary solution (after jest updated to version 27) for error: thrown: "Exceeded timeout of 5000 ms for a test.
 jest.setTimeout(60000);
@@ -239,8 +240,11 @@ describe("EditTestCase component", () => {
         resourceType: "Bundle",
         entry: [
           {
-            id: "601adb9198086b165a47f550",
-            resourceType: "Patient",
+            fullUrl: "testUrl",
+            resource: {
+              id: "601adb9198086b165a47f550",
+              resourceType: "Patient",
+            },
           },
         ],
       };
@@ -307,7 +311,7 @@ describe("EditTestCase component", () => {
       const editor = screen.getByTestId(
         "test-case-json-editor"
       ) as HTMLInputElement;
-      expect(JSON.parse(editor.value)).toEqual(testcaseBundle);
+      expect(JSON.parse(editor.value)).toEqual(addValues(testcaseBundle));
     });
 
     it("should report error for empty test case file import", async () => {

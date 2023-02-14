@@ -213,11 +213,6 @@
           "start": "2011-05-23",
           "end": "2012-05-23"
         },
-        "payor": [
-          {
-            "reference": "Organization/example"
-          }
-        ],
         "order": 9
       }
     },

@@ -4,6 +4,7 @@ import { ServiceConfig } from "./ServiceContext";
 import { HapiOperationOutcome, TestCase } from "@madie/madie-models";
 import { useOktaTokens } from "@madie/madie-util";
 import { ScanValidationDto } from "./models/ScanValidationDto";
+import { addValues } from "../util/DefaultValueProcessor";
 
 export class TestCaseServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
@@ -55,6 +56,8 @@ export class TestCaseServiceApi {
       );
       return response.data;
     } catch (err) {
+      // TODO: throw err to continue to display 404 page or
+      //  throw with message to swap to error message?
       const message = "Unable to retrieve test case, please try later.";
       throw new Error(err);
     }
@@ -181,6 +184,7 @@ export class TestCaseServiceApi {
     }
   }
 
+  // TODO: Refactor to dedup with FhirImportHelper::readImportFile
   readTestCaseFile(file: File, onReadCallback): void {
     const fileReader = new FileReader();
     fileReader.onload = (e) => {
@@ -195,6 +199,9 @@ export class TestCaseServiceApi {
           testCaseBundle.entry.length === 0
         ) {
           errorMessage = "No test case resources were found in imported file.";
+        } else {
+          // Apply Default Values
+          testCaseBundle = addValues(testCaseBundle);
         }
       } catch (error) {
         errorMessage =
