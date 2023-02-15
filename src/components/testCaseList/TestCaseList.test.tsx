@@ -574,6 +574,44 @@ describe("TestCaseList component", () => {
     });
   });
 
+  it("should handle delete error on Test Case list page when delete button is clicked", async () => {
+    useTestCaseServiceMock.mockImplementation(() => {
+      return {
+        ...useTestCaseServiceMockResolved,
+        deleteTestCaseByTestCaseId: jest
+          .fn()
+          .mockRejectedValue(new Error("BAD THINGS")),
+      } as unknown as TestCaseServiceApi;
+    });
+
+    let nextState;
+    setError.mockImplementation((callback) => {
+      nextState = callback([]);
+    });
+
+    const { getByTestId } = renderTestCaseListComponent();
+    await waitFor(() => {
+      const selectButton = getByTestId(`select-action-${testCases[0].id}`);
+      expect(selectButton).toBeInTheDocument();
+      fireEvent.click(selectButton);
+    });
+    const deleteButton = getByTestId(`delete-test-case-btn-${testCases[0].id}`);
+    fireEvent.click(deleteButton);
+
+    expect(screen.getByTestId("delete-dialog")).toBeInTheDocument();
+    const confirmDeleteBtn = screen.getByTestId(
+      "delete-dialog-continue-button"
+    );
+    expect(confirmDeleteBtn).toBeInTheDocument();
+    expect(
+      screen.getByTestId("delete-dialog-cancel-button")
+    ).toBeInTheDocument();
+
+    userEvent.click(confirmDeleteBtn);
+    await waitFor(() => expect(setError).toHaveBeenCalled());
+    expect(nextState).toEqual(["BAD THINGS"]);
+  });
+
   it("should navigate to the Test Case details page on edit button click for shared user", async () => {
     const { getByTestId } = renderTestCaseListComponent();
     await waitFor(() => {
@@ -951,6 +989,11 @@ describe("TestCaseList component", () => {
       importTestCases: true,
     }));
 
+    let nextState;
+    setError.mockImplementation((callback) => {
+      nextState = callback([IMPORT_ERROR]);
+    });
+
     renderTestCaseListComponent();
     const showImportBtn = await screen.findByRole("button", {
       name: /import test cases/i,
@@ -969,7 +1012,39 @@ describe("TestCaseList component", () => {
       "test-case-import-dialog"
     );
     expect(removedImportDialog).not.toBeInTheDocument();
+    expect(nextState).toEqual([]);
   });
+
+  // it("should invoke import callback", async () => {
+  //   (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
+  //   (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+  //     importTestCases: true,
+  //   }));
+  //
+  //   let nextState;
+  //   setError.mockImplementation((callback) => {
+  //     nextState = callback([IMPORT_ERROR]);
+  //   });
+  //
+  //   renderTestCaseListComponent();
+  //   const showImportBtn = await screen.findByRole("button", {
+  //     name: /import test cases/i,
+  //   });
+  //   expect(showImportBtn).toBeInTheDocument();
+  //   await waitFor(() => expect(showImportBtn).not.toBeDisabled());
+  //   userEvent.click(showImportBtn);
+  //   const importDialog = await screen.findByTestId("test-case-import-dialog");
+  //   expect(importDialog).toBeInTheDocument();
+  //   const importBtn = within(importDialog).getByRole("button", {
+  //     name: "Import",
+  //   });
+  //   expect(importBtn).toBeInTheDocument();
+  //   userEvent.click(importBtn);
+  //   const removedImportDialog = await screen.queryByTestId(
+  //     "test-case-import-dialog"
+  //   );
+  //   expect(removedImportDialog).not.toBeInTheDocument();
+  // });
 
   it("should display import error when createTestCases call fails", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
