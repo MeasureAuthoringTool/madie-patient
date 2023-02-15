@@ -458,6 +458,7 @@ describe("TestCaseList component", () => {
       applyDefaults: false,
       importTestCases: false,
     }));
+    setError.mockClear();
   });
 
   afterEach(() => {
@@ -988,6 +989,11 @@ describe("TestCaseList component", () => {
       return useTestCaseServiceMockRejected;
     });
 
+    let nextState;
+    setError.mockImplementation((callback) => {
+      nextState = callback([]);
+    });
+
     renderTestCaseListComponent();
     const showImportBtn = await screen.findByRole("button", {
       name: /import test cases/i,
@@ -1004,7 +1010,8 @@ describe("TestCaseList component", () => {
       "test-case-import-dialog"
     );
     expect(removedImportDialog).not.toBeInTheDocument();
-    await waitFor(() => expect(setError).toHaveBeenCalledWith([IMPORT_ERROR]));
+    await waitFor(() => expect(setError).toHaveBeenCalledTimes(2));
+    expect(nextState).toEqual([IMPORT_ERROR]);
   });
 
   it("should close import dialog when cancel button is clicked", async () => {
@@ -1013,6 +1020,10 @@ describe("TestCaseList component", () => {
       importTestCases: true,
     }));
 
+    let nextState;
+    setError.mockImplementation((callback) => {
+      nextState = callback([]);
+    });
     renderTestCaseListComponent([IMPORT_ERROR]);
     const showImportBtn = await screen.findByRole("button", {
       name: /import test cases/i,
@@ -1031,7 +1042,8 @@ describe("TestCaseList component", () => {
       "test-case-import-dialog"
     );
     expect(removedImportDialog).not.toBeInTheDocument();
-    expect(setError).toHaveBeenCalledWith([]);
+    expect(setError).toHaveBeenCalled();
+    expect(nextState).toEqual([]);
   });
 });
 
