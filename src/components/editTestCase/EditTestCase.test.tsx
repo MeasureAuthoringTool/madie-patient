@@ -18,6 +18,7 @@ import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
 import {
   HapiOperationOutcome,
   Measure,
+  MeasureErrorType,
   MeasureScoring,
   Population,
   PopulationExpectedValue,
@@ -2329,6 +2330,59 @@ describe("EditTestCase component", () => {
       expect(
         screen.getByTestId("test-population-numerator-actual")
       ).not.toBeChecked();
+    });
+
+    it("disables run button when CQL return type mismatch error exists on measure", async () => {
+      mockedAxios.get.mockClear().mockImplementation((args) => {
+        if (args && args.endsWith("series")) {
+          return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
+        }
+        return Promise.resolve({
+          data: { ...testCaseFixture, createdBy: MEASURE_CREATEDBY },
+        });
+      });
+      mockedAxios.post.mockResolvedValue({
+        data: {
+          code: 200,
+          message: null,
+          successful: true,
+          outcomeResponse: {
+            resourceType: "OperationOutcome",
+            issue: [
+              {
+                severity: "informational",
+                code: "processing",
+                diagnostics: "No issues!",
+              },
+            ],
+          },
+        },
+      });
+      const measure = {
+        ...simpleMeasureFixture,
+        createdBy: MEASURE_CREATEDBY,
+        errors: [MeasureErrorType.MISMATCH_CQL_POPULATION_RETURN_TYPES],
+      };
+      renderWithRouter(
+        [
+          "/measures/623cacebe74613783378c17b/edit/test-cases/623cacffe74613783378c17c",
+        ],
+        "/measures/:measureId/edit/test-cases/:id",
+        measure
+      );
+      userEvent.click(screen.getByTestId("details-tab"));
+
+      // this is to make form dirty so that run test button is enabled
+      const tcTitle = await screen.findByTestId("test-case-title");
+      userEvent.type(tcTitle, "testTitle");
+
+      userEvent.click(screen.getByTestId("expectoractual-tab"));
+
+      await waitFor(async () => {
+        expect(
+          await screen.findByRole("button", { name: "Run Test Case" })
+        ).toBeDisabled();
+      });
     });
 
     it("displays non-boolean results", async () => {

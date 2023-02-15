@@ -17,12 +17,13 @@ import calculationService, {
   CalculationService,
 } from "../../api/CalculationService";
 import {
-  Measure,
-  TestCase,
   GroupPopulation,
+  Measure,
+  MeasureErrorType,
   MeasureScoring,
   PopulationExpectedValue,
   PopulationType,
+  TestCase,
 } from "@madie/madie-models";
 import useTestCaseServiceApi, {
   TestCaseServiceApi,
@@ -1015,37 +1016,6 @@ describe("TestCaseList component", () => {
     expect(nextState).toEqual([]);
   });
 
-  // it("should invoke import callback", async () => {
-  //   (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
-  //   (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-  //     importTestCases: true,
-  //   }));
-  //
-  //   let nextState;
-  //   setError.mockImplementation((callback) => {
-  //     nextState = callback([IMPORT_ERROR]);
-  //   });
-  //
-  //   renderTestCaseListComponent();
-  //   const showImportBtn = await screen.findByRole("button", {
-  //     name: /import test cases/i,
-  //   });
-  //   expect(showImportBtn).toBeInTheDocument();
-  //   await waitFor(() => expect(showImportBtn).not.toBeDisabled());
-  //   userEvent.click(showImportBtn);
-  //   const importDialog = await screen.findByTestId("test-case-import-dialog");
-  //   expect(importDialog).toBeInTheDocument();
-  //   const importBtn = within(importDialog).getByRole("button", {
-  //     name: "Import",
-  //   });
-  //   expect(importBtn).toBeInTheDocument();
-  //   userEvent.click(importBtn);
-  //   const removedImportDialog = await screen.queryByTestId(
-  //     "test-case-import-dialog"
-  //   );
-  //   expect(removedImportDialog).not.toBeInTheDocument();
-  // });
-
   it("should display import error when createTestCases call fails", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
@@ -1119,6 +1089,26 @@ describe("TestCaseList component", () => {
     expect(removedImportDialog).not.toBeInTheDocument();
     expect(setError).toHaveBeenCalled();
     expect(nextState).toEqual([]);
+  });
+
+  it("should disable execute button if CQL Return type mismatch error exists on measure", async () => {
+    measure.createdBy = MEASURE_CREATEDBY;
+    measure.errors = [MeasureErrorType.MISMATCH_CQL_POPULATION_RETURN_TYPES];
+    renderTestCaseListComponent();
+
+    const table = await screen.findByTestId("test-case-tbl");
+    const tableRows = table.querySelectorAll("tbody tr");
+    await waitFor(() => {
+      expect(tableRows[0]).toHaveTextContent("N/A");
+      expect(tableRows[1]).toHaveTextContent("N/A");
+      expect(tableRows[2]).toHaveTextContent("Invalid");
+    });
+
+    const executeAllTestCasesButton = screen.getByRole("button", {
+      name: "Run Test Cases",
+    });
+
+    await waitFor(() => expect(executeAllTestCasesButton).toBeDisabled());
   });
 });
 
