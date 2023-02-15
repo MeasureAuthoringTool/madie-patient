@@ -460,6 +460,9 @@ describe("TestCaseList component", () => {
       importTestCases: false,
     }));
     setError.mockClear();
+
+    testCases[0].validResource = true;
+    testCases[1].validResource = true;
   });
 
   afterEach(() => {
@@ -667,6 +670,38 @@ describe("TestCaseList component", () => {
     ).toBeInTheDocument();
     userEvent.click(screen.getByTestId("passing-tab"));
     expect(screen.getByTestId("test-case-tbl")).toBeInTheDocument();
+  });
+
+  it("should display error if run button is clicked but all test cases are invalid", async () => {
+    measure.createdBy = MEASURE_CREATEDBY;
+    testCases[0].validResource = false;
+    testCases[1].validResource = false;
+
+    let nextState;
+    setError.mockImplementation((callback) => {
+      nextState = callback([]);
+    });
+
+    renderTestCaseListComponent();
+
+    const table = await screen.findByTestId("test-case-tbl");
+    const tableRows = table.querySelectorAll("tbody tr");
+    await waitFor(() => {
+      expect(tableRows[0]).toHaveTextContent("Invalid");
+      expect(tableRows[1]).toHaveTextContent("Invalid");
+      expect(tableRows[2]).toHaveTextContent("Invalid");
+    });
+
+    const executeAllTestCasesButton = screen.getByRole("button", {
+      name: "Run Test Cases",
+    });
+
+    userEvent.click(executeAllTestCasesButton);
+    await waitFor(() =>
+      expect(nextState).toEqual([
+        "calculateTestCases: No valid test cases to execute",
+      ])
+    );
   });
 
   it("should not render execute button for user who is not the owner of the measure", () => {
