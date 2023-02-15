@@ -1,11 +1,17 @@
 import * as React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import TestCaseRoutes from "./TestCaseRoutes";
+import TestCaseRoutes, {
+  CQL_RETURN_TYPES_MISMATCH_ERROR,
+} from "./TestCaseRoutes";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
-import { MeasureScoring, PopulationType } from "@madie/madie-models";
+import {
+  MeasureErrorType,
+  MeasureScoring,
+  PopulationType,
+} from "@madie/madie-models";
 import { getExampleValueSet } from "../../util/CalculationTestHelpers";
 import { Bundle } from "fhir/r4";
 import { act } from "react-dom/test-utils";
@@ -39,6 +45,7 @@ const mockMeasure = {
   measurementPeriodEnd: "03/07/2022",
   active: true,
   cqlErrors: false,
+  errors: [],
   elmJson: "Fak3",
   groups: [
     {
@@ -96,6 +103,8 @@ jest.mock("@madie/madie-util", () => ({
 describe("TestCaseRoutes", () => {
   afterEach(() => {
     jest.clearAllMocks();
+    mockMeasure.errors = [];
+    measureBundle.entry = undefined;
   });
 
   it("should render the landing component first", async () => {
@@ -126,6 +135,38 @@ describe("TestCaseRoutes", () => {
     expect(testCaseSeries).toBeInTheDocument();
     const editBtn = screen.getByRole("button", { name: "select-action-TC1" });
     expect(editBtn).toBeInTheDocument();
+  });
+
+  it("should show error message for CQL return type error on measure", async () => {
+    mockMeasure.errors = [
+      MeasureErrorType.MISMATCH_CQL_POPULATION_RETURN_TYPES,
+    ];
+    mockedAxios.get.mockImplementation((args) => {
+      return Promise.resolve({
+        data: [
+          {
+            id: "id1",
+            title: "TC1",
+            description: "Desc1",
+            series: "IPP_Pass",
+            status: null,
+          },
+        ],
+      });
+    });
+    render(
+      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases"]}>
+        <ApiContextProvider value={serviceConfig}>
+          <TestCaseRoutes />
+        </ApiContextProvider>
+      </MemoryRouter>
+    );
+
+    const testCaseTitle = await screen.findByText("TC1");
+    expect(testCaseTitle).toBeInTheDocument();
+    expect(
+      await screen.findByText(CQL_RETURN_TYPES_MISMATCH_ERROR)
+    ).toBeInTheDocument();
   });
 
   it("should allow navigation to create test case dialog from landing page ", async () => {
@@ -451,6 +492,56 @@ describe("TestCaseRoutes", () => {
       ).toBeTruthy();
       expect(screen.getByTestId("close-error-button")).toBeTruthy();
     });
+  });
+
+  it("should display value sets error", async () => {
+    //entry.resource?.resourceType === "Library"
+    measureBundle.entry = [
+      {
+        resource: {
+          resourceType: "Library",
+          relatedArtifact: [
+            {
+              type: "depends-on",
+              url: "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1029.213",
+            },
+          ],
+        } as any,
+      },
+    ];
+
+    mockedAxios.get.mockImplementation((args) => {
+      if (args?.endsWith("/bundle")) {
+        return Promise.resolve({ data: measureBundle });
+      } else if (args?.endsWith("/value-sets/searches")) {
+        return Promise.reject(new Error("VALUE SET ERRORS"));
+      }
+      return Promise.resolve({
+        data: [
+          {
+            id: "id1",
+            title: "TC1",
+            description: "Desc1",
+            series: "IPP_Pass",
+            status: null,
+          },
+        ],
+      });
+    });
+
+    mockedAxios.put.mockRejectedValue(new Error("VALUE SET ERRORS"));
+    render(
+      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases"]}>
+        <ApiContextProvider value={serviceConfig}>
+          <TestCaseRoutes />
+        </ApiContextProvider>
+      </MemoryRouter>
+    );
+    expect(
+      await screen.findByText(
+        "An error occurred, please try again. If the error persists, please contact the help desk."
+      )
+    ).toBeInTheDocument();
   });
 
   it("Fetch measure bundle on Routes load", async () => {
