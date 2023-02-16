@@ -4,7 +4,7 @@ import { Button } from "@madie/madie-design-system/dist/react";
 import AddIcon from "@mui/icons-material/Add";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import * as _ from "lodash";
-import { Measure } from "@madie/madie-models";
+import { Measure, MeasureErrorType } from "@madie/madie-models";
 import useExecutionContext from "../routes/useExecutionContext";
 import { TestCasesPassingDetailsProps } from "./TestCaseList";
 import { useFeatureFlags } from "@madie/madie-util";
@@ -149,6 +149,9 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
               variant="cyan"
               disabled={
                 !!measure?.cqlErrors ||
+                measure?.errors?.includes(
+                  MeasureErrorType.MISMATCH_CQL_POPULATION_RETURN_TYPES
+                ) ||
                 _.isNil(measure?.groups) ||
                 measure?.groups.length === 0 ||
                 !executionContextReady ||

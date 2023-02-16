@@ -10,6 +10,10 @@ import { ExecutionContextProvider } from "./ExecutionContext";
 import useMeasureServiceApi from "../../api/useMeasureServiceApi";
 import * as _ from "lodash";
 import StatusHandler from "../statusHandler/StatusHandler";
+import { MeasureErrorType } from "@madie/madie-models";
+
+export const CQL_RETURN_TYPES_MISMATCH_ERROR =
+  "One or more Population Criteria has a mismatch with CQL return types. Test Cases cannot be executed until this is resolved.";
 
 const TestCaseRoutes = () => {
   const [measureBundle, setMeasureBundle] = useState<Bundle>();
@@ -38,16 +42,16 @@ const TestCaseRoutes = () => {
         return;
       }
       setLastMeasure(compareTo);
-      setErrors(null);
+      setErrors(() => []);
       if (measure.cqlErrors || !measure.elmJson) {
-        setErrors([
-          ...errors,
+        setErrors((prevState) => [
+          ...prevState,
           "An error exists with the measure CQL, please review the CQL Editor tab.",
         ]);
       }
       if (!measure.groups) {
-        setErrors([
-          ...errors,
+        setErrors((prevState) => [
+          ...prevState,
           "No Population Criteria is associated with this measure. Please review the Population Criteria tab.",
         ]);
       }
@@ -58,10 +62,21 @@ const TestCaseRoutes = () => {
             setMeasureBundle(bundle);
           })
           .catch((err) => {
-            errors.push(err.message);
-            setErrors(errors);
+            setErrors((prevState) => [...prevState, err.message]);
           });
       }
+      setErrors((prevState) => {
+        if (
+          measure?.errors?.includes(
+            MeasureErrorType.MISMATCH_CQL_POPULATION_RETURN_TYPES
+          )
+        ) {
+          return [...prevState, CQL_RETURN_TYPES_MISMATCH_ERROR];
+        }
+        return [
+          ...prevState.filter((s) => s !== CQL_RETURN_TYPES_MISMATCH_ERROR),
+        ];
+      });
     }
   }, [measure]);
 
@@ -73,8 +88,7 @@ const TestCaseRoutes = () => {
           setValueSets(vs);
         })
         .catch((err) => {
-          errors.push(err.message);
-          setErrors(errors);
+          setErrors((prevState) => [...prevState, err.message]);
         });
     }
   }, [measureBundle]);

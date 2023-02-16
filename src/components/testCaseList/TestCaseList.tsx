@@ -1,4 +1,11 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import tw from "twin.macro";
 import "styled-components/macro";
 import * as _ from "lodash";
@@ -49,7 +56,7 @@ export interface TestCasesPassingDetailsProps {
 
 export interface TestCaseListProps {
   errors: Array<string>;
-  setErrors: (value: Array<string>) => void;
+  setErrors: Dispatch<SetStateAction<Array<string>>>;
 }
 
 const TestCaseList = (props: TestCaseListProps) => {
@@ -58,10 +65,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     [key: string]: DetailedPopulationGroupResult[];
   }>({});
 
-  const { errors, setErrors } = props;
-  if (!errors) {
-    setErrors([]);
-  }
+  const { setErrors } = props;
   const { measureId } = useParams<{ measureId: string }>();
   const testCaseService = useRef(useTestCaseServiceApi());
   const calculation = useRef(calculationService());
@@ -113,7 +117,6 @@ const TestCaseList = (props: TestCaseListProps) => {
         measure?.measureMetaData?.draft
       )
     );
-    setErrors([]);
   }, [measure]);
 
   const retrieveTestCases = useCallback(() => {
@@ -130,7 +133,7 @@ const TestCaseList = (props: TestCaseListProps) => {
         setTestCases(testCaseList);
       })
       .catch((err) => {
-        setErrors([...errors, err.message]);
+        setErrors((prevState) => [...prevState, err.message]);
       })
       .finally(() => {
         setLoadingState({ loading: false, message: "" });
@@ -216,7 +219,7 @@ const TestCaseList = (props: TestCaseListProps) => {
         console.error(
           "deleteTestCaseByTestCaseId: err.message = " + err.message
         );
-        setErrors([...errors, err.message]);
+        setErrors((prevState) => [...prevState, err.message]);
       });
   };
 
@@ -229,8 +232,8 @@ const TestCaseList = (props: TestCaseListProps) => {
       console.error(
         "executeTestCases: Cannot execute test cases while errors exist in the measure CQL! "
       );
-      setErrors([
-        ...errors,
+      setErrors((prevState) => [
+        ...prevState,
         "Cannot execute test cases while errors exist in the measure CQL!",
       ]);
       return null;
@@ -250,13 +253,13 @@ const TestCaseList = (props: TestCaseListProps) => {
         setCalculationOutput(calculationOutput);
       } catch (error) {
         console.error("calculateTestCases: error.message = " + error.message);
-        setErrors([...errors, error.message]);
+        setErrors((prevState) => [...prevState, error.message]);
       }
       setExecuting(false);
     } else if (_.isNil(validTestCases) || _.isEmpty(validTestCases)) {
       console.error("calculateTestCases: No valid test cases to execute");
-      setErrors([
-        ...errors,
+      setErrors((prevState) => [
+        ...prevState,
         "calculateTestCases: No valid test cases to execute",
       ]);
     }
@@ -284,7 +287,7 @@ const TestCaseList = (props: TestCaseListProps) => {
       await testCaseService.current.createTestCases(measureId, testCases);
       retrieveTestCases();
     } catch (error) {
-      setErrors([...errors, IMPORT_ERROR]);
+      setErrors((prevState) => [...prevState, IMPORT_ERROR]);
     } finally {
       setLoadingState({ loading: false, message: "" });
     }
@@ -315,7 +318,9 @@ const TestCaseList = (props: TestCaseListProps) => {
                 createNewTestCase={createNewTestCase}
                 executeTestCases={executeTestCases}
                 onImportTestCases={() => {
-                  setErrors([...errors?.filter((e) => e !== IMPORT_ERROR)]);
+                  setErrors((prevState) => [
+                    ...prevState?.filter((e) => e !== IMPORT_ERROR),
+                  ]);
                   setImportDialogState({ ...importDialogState, open: true });
                 }}
                 testCasePassFailStats={testCasePassFailStats}
