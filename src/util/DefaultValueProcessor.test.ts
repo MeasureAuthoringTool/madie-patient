@@ -212,7 +212,7 @@ describe("Modify JSON to add Default Values", () => {
     expect(results).toBe(beforeDefaultValuesJson);
   });
 
-  it("Should set identifier and name attributes to Practitioner", () => {
+  it("Should add a default Practitioner resource", () => {
     const defaultFamilyName = "Evil";
     const defaultPrefix = "Dr";
     const defaultIdentifierSystem = "http://hl7.org/fhir/sid/us-npi";
@@ -224,42 +224,31 @@ describe("Modify JSON to add Default Values", () => {
     );
 
     expect(updatedTestCaseWithDefaults).toBeDefined();
-    const practitioners: Practitioner[] = [];
-    _.forEach(
-      updatedTestCaseWithDefaults?.entry,
-      (entry) =>
-        entry.resource?.resourceType === "Practitioner" &&
-        practitioners.push(entry.resource)
+    const practitionerEntries = updatedTestCaseWithDefaults.entry.filter(
+      (entry) => {
+        return entry.resource?.resourceType === "Practitioner";
+      }
     );
-    expect(practitioners.length).toBe(4);
+    expect(practitionerEntries.length).toBe(5);
 
-    // Nothing should be changed for 1st practitioner
-    expect(practitioners[0].name[0].family).toBe("Careful");
-    expect(practitioners[0].name[0].prefix[0]).toBe("Dr");
-    expect(practitioners[0].identifier[0].system).toBe(
-      "urn:oid:2.16.840.1.113883.4.336"
+    const defaultPractitioners = practitionerEntries.filter((p) => {
+      return _.find(p.resource.identifier, ["value", "123456"]) !== undefined;
+    });
+
+    expect(defaultPractitioners).toHaveLength(1);
+
+    expect(defaultPractitioners[0].resource.name[0].family).toBe(
+      defaultFamilyName
     );
-    expect(practitioners[0].identifier[0].value).toBe("Practitioner-23");
-
-    // name and identifier defaults are added to 2nd practitioner
-    expect(practitioners[1].name[0].family).toBe(defaultFamilyName);
-    expect(practitioners[1].name[0].prefix[0]).toBe(defaultPrefix);
-    expect(practitioners[1].identifier[0].system).toBe(defaultIdentifierSystem);
-    expect(practitioners[1].identifier[0].value).toBe(defaultIdentifierValue);
-
-    // only default name is added to 3rd practitioner
-    expect(practitioners[2].name[0].family).toBe(defaultFamilyName);
-    expect(practitioners[2].name[0].prefix[0]).toBe(defaultPrefix);
-    expect(practitioners[2].identifier[0].system).toBe(
-      "urn:oid:2.16.840.1.113883.4.336"
+    expect(defaultPractitioners[0].resource.name[0].prefix[0]).toBe(
+      defaultPrefix
     );
-    expect(practitioners[2].identifier[0].value).toBe("Practitioner-23");
-
-    // only default identifier is added to 4th practitioner
-    expect(practitioners[3].name[0].family).toBe("Careful");
-    expect(practitioners[3].name[0].prefix[0]).toBe("Dr");
-    expect(practitioners[3].identifier[0].system).toBe(defaultIdentifierSystem);
-    expect(practitioners[3].identifier[0].value).toBe(defaultIdentifierValue);
+    expect(defaultPractitioners[0].resource.identifier[0].system).toBe(
+      defaultIdentifierSystem
+    );
+    expect(defaultPractitioners[0].resource.identifier[0].value).toBe(
+      defaultIdentifierValue
+    );
   });
 
   it("should set Device.patient to Patient Reference", () => {
@@ -285,7 +274,7 @@ describe("Modify JSON to add Default Values", () => {
 
   it("should set all the Procedure entries with status and subject properties", () => {
     const serviceRequestJson = require("../mockdata/testcase_with_Procedure.json");
-    const beforeDefaultValuesJson: any = _.cloneDeep(
+    const beforeProcedureCount: any = _.cloneDeep(
       serviceRequestJson
     )?.entry.filter(
       (entry) => entry.resource.resourceType === "Procedure"
@@ -293,14 +282,14 @@ describe("Modify JSON to add Default Values", () => {
 
     const resultJson: any = addValues(serviceRequestJson);
     expect(resultJson).toBeDefined();
-    let results = resultJson?.entry.filter((entry) => {
+    let afterProcedureCount = resultJson?.entry.filter((entry) => {
       return (
         entry.resource?.resourceType === "Procedure" &&
         entry.resource?.status &&
         entry.resource?.subject
       );
     }).length;
-    expect(results).toBe(beforeDefaultValuesJson);
+    expect(afterProcedureCount).toEqual(beforeProcedureCount);
   });
 
   it("should set MedicationAdministration.subject to Patient Reference", () => {
