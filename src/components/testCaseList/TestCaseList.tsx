@@ -264,11 +264,14 @@ const TestCaseList = (props: TestCaseListProps) => {
       ]);
     }
   };
+  // Test case 2 "test case name" has a status of "status".
   const generateSRString = (testCaseList) => {
     let string = "";
     if (testCases) {
-      testCaseList.forEach((testCase) => {
-        string += `test case ${testCase.title}, status: ${testCase.executionStatus}`;
+      testCaseList.forEach((testCase, i) => {
+        string += `test case ${i + 1} ${testCase.title} has a status of ${
+          testCase.executionStatus
+        }. `;
       });
     }
     return string;
