@@ -27,9 +27,11 @@ describe("FHIR Import Helper utility functions", () => {
       const file = new File(["NOT JSON CONTENTS"], "test.json", {
         type: "application/json",
       });
-      await expect(readImportFile(file)).rejects.toThrow(
-        "Unexpected token N in JSON at position 0"
-      );
+      /*
+        This throws either "Unexpected token 'N', \"NOT JSON CONTENTS\" is not valid JSON"
+        or "Unexpected token N in JSON at position 0"
+      */
+      await expect(readImportFile(file)).rejects.toThrow();
     });
   });
 });
