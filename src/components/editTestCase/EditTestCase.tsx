@@ -21,6 +21,7 @@ import {
   GroupPopulation,
   HapiOperationOutcome,
   PopulationExpectedValue,
+  MeasureErrorType,
 } from "@madie/madie-models";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import Editor from "../editor/Editor";
@@ -1035,6 +1036,9 @@ const EditTestCase = (props: EditTestCaseProps) => {
                 onClick={calculate}
                 disabled={
                   !!measure?.cqlErrors ||
+                  measure?.errors?.includes(
+                    MeasureErrorType.MISMATCH_CQL_POPULATION_RETURN_TYPES
+                  ) ||
                   _.isNil(measure?.groups) ||
                   measure?.groups.length === 0 ||
                   (!isJsonModified() && hasErrorSeverity(validationErrors)) ||

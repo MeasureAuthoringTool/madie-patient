@@ -17,12 +17,13 @@ import calculationService, {
   CalculationService,
 } from "../../api/CalculationService";
 import {
-  Measure,
-  TestCase,
   GroupPopulation,
+  Measure,
+  MeasureErrorType,
   MeasureScoring,
   PopulationExpectedValue,
   PopulationType,
+  TestCase,
 } from "@madie/madie-models";
 import useTestCaseServiceApi, {
   TestCaseServiceApi,
@@ -458,6 +459,10 @@ describe("TestCaseList component", () => {
       applyDefaults: false,
       importTestCases: false,
     }));
+    setError.mockClear();
+
+    testCases[0].validResource = true;
+    testCases[1].validResource = true;
   });
 
   afterEach(() => {
@@ -573,6 +578,44 @@ describe("TestCaseList component", () => {
     });
   });
 
+  it("should handle delete error on Test Case list page when delete button is clicked", async () => {
+    useTestCaseServiceMock.mockImplementation(() => {
+      return {
+        ...useTestCaseServiceMockResolved,
+        deleteTestCaseByTestCaseId: jest
+          .fn()
+          .mockRejectedValue(new Error("BAD THINGS")),
+      } as unknown as TestCaseServiceApi;
+    });
+
+    let nextState;
+    setError.mockImplementation((callback) => {
+      nextState = callback([]);
+    });
+
+    const { getByTestId } = renderTestCaseListComponent();
+    await waitFor(() => {
+      const selectButton = getByTestId(`select-action-${testCases[0].id}`);
+      expect(selectButton).toBeInTheDocument();
+      fireEvent.click(selectButton);
+    });
+    const deleteButton = getByTestId(`delete-test-case-btn-${testCases[0].id}`);
+    fireEvent.click(deleteButton);
+
+    expect(screen.getByTestId("delete-dialog")).toBeInTheDocument();
+    const confirmDeleteBtn = screen.getByTestId(
+      "delete-dialog-continue-button"
+    );
+    expect(confirmDeleteBtn).toBeInTheDocument();
+    expect(
+      screen.getByTestId("delete-dialog-cancel-button")
+    ).toBeInTheDocument();
+
+    userEvent.click(confirmDeleteBtn);
+    await waitFor(() => expect(setError).toHaveBeenCalled());
+    expect(nextState).toEqual(["BAD THINGS"]);
+  });
+
   it("should navigate to the Test Case details page on edit button click for shared user", async () => {
     const { getByTestId } = renderTestCaseListComponent();
     await waitFor(() => {
@@ -627,6 +670,38 @@ describe("TestCaseList component", () => {
     ).toBeInTheDocument();
     userEvent.click(screen.getByTestId("passing-tab"));
     expect(screen.getByTestId("test-case-tbl")).toBeInTheDocument();
+  });
+
+  it("should display error if run button is clicked but all test cases are invalid", async () => {
+    measure.createdBy = MEASURE_CREATEDBY;
+    testCases[0].validResource = false;
+    testCases[1].validResource = false;
+
+    let nextState;
+    setError.mockImplementation((callback) => {
+      nextState = callback([]);
+    });
+
+    renderTestCaseListComponent();
+
+    const table = await screen.findByTestId("test-case-tbl");
+    const tableRows = table.querySelectorAll("tbody tr");
+    await waitFor(() => {
+      expect(tableRows[0]).toHaveTextContent("Invalid");
+      expect(tableRows[1]).toHaveTextContent("Invalid");
+      expect(tableRows[2]).toHaveTextContent("Invalid");
+    });
+
+    const executeAllTestCasesButton = screen.getByRole("button", {
+      name: "Run Test Cases",
+    });
+
+    userEvent.click(executeAllTestCasesButton);
+    await waitFor(() =>
+      expect(nextState).toEqual([
+        "calculateTestCases: No valid test cases to execute",
+      ])
+    );
   });
 
   it("should not render execute button for user who is not the owner of the measure", () => {
@@ -950,6 +1025,11 @@ describe("TestCaseList component", () => {
       importTestCases: true,
     }));
 
+    let nextState;
+    setError.mockImplementation((callback) => {
+      nextState = callback([IMPORT_ERROR]);
+    });
+
     renderTestCaseListComponent();
     const showImportBtn = await screen.findByRole("button", {
       name: /import test cases/i,
@@ -968,6 +1048,7 @@ describe("TestCaseList component", () => {
       "test-case-import-dialog"
     );
     expect(removedImportDialog).not.toBeInTheDocument();
+    expect(nextState).toEqual([]);
   });
 
   it("should display import error when createTestCases call fails", async () => {
@@ -988,6 +1069,11 @@ describe("TestCaseList component", () => {
       return useTestCaseServiceMockRejected;
     });
 
+    let nextState;
+    setError.mockImplementation((callback) => {
+      nextState = callback([]);
+    });
+
     renderTestCaseListComponent();
     const showImportBtn = await screen.findByRole("button", {
       name: /import test cases/i,
@@ -1004,7 +1090,8 @@ describe("TestCaseList component", () => {
       "test-case-import-dialog"
     );
     expect(removedImportDialog).not.toBeInTheDocument();
-    await waitFor(() => expect(setError).toHaveBeenCalledWith([IMPORT_ERROR]));
+    await waitFor(() => expect(setError).toHaveBeenCalledTimes(2));
+    expect(nextState).toEqual([IMPORT_ERROR]);
   });
 
   it("should close import dialog when cancel button is clicked", async () => {
@@ -1013,6 +1100,10 @@ describe("TestCaseList component", () => {
       importTestCases: true,
     }));
 
+    let nextState;
+    setError.mockImplementation((callback) => {
+      nextState = callback([]);
+    });
     renderTestCaseListComponent([IMPORT_ERROR]);
     const showImportBtn = await screen.findByRole("button", {
       name: /import test cases/i,
@@ -1031,7 +1122,28 @@ describe("TestCaseList component", () => {
       "test-case-import-dialog"
     );
     expect(removedImportDialog).not.toBeInTheDocument();
-    expect(setError).toHaveBeenCalledWith([]);
+    expect(setError).toHaveBeenCalled();
+    expect(nextState).toEqual([]);
+  });
+
+  it("should disable execute button if CQL Return type mismatch error exists on measure", async () => {
+    measure.createdBy = MEASURE_CREATEDBY;
+    measure.errors = [MeasureErrorType.MISMATCH_CQL_POPULATION_RETURN_TYPES];
+    renderTestCaseListComponent();
+
+    const table = await screen.findByTestId("test-case-tbl");
+    const tableRows = table.querySelectorAll("tbody tr");
+    await waitFor(() => {
+      expect(tableRows[0]).toHaveTextContent("N/A");
+      expect(tableRows[1]).toHaveTextContent("N/A");
+      expect(tableRows[2]).toHaveTextContent("Invalid");
+    });
+
+    const executeAllTestCasesButton = screen.getByRole("button", {
+      name: "Run Test Cases",
+    });
+
+    await waitFor(() => expect(executeAllTestCasesButton).toBeDisabled());
   });
 });
 

@@ -62,11 +62,6 @@ export const addValues = (testCase: any): any => {
             patientRef
           ),
         };
-      case "Practitioner":
-        return {
-          ...entry,
-          resource: addingDefaultPractitionerProperties(entry?.resource),
-        };
       case "Encounter":
         return {
           ...entry,
@@ -76,30 +71,33 @@ export const addValues = (testCase: any): any => {
         return entry;
     }
   });
-
   addCoverageValues(resultJson, patientRef);
+  addPractitionerValues(resultJson);
 
   return resultJson;
 };
 
-const addingDefaultPractitionerProperties = (practitioner: Practitioner) => {
-  if (!practitioner?.name) {
-    practitioner.name = [
-      {
-        family: "Evil",
-        prefix: ["Dr"],
-      },
-    ];
-  }
-  if (!practitioner?.identifier) {
-    practitioner.identifier = [
-      {
-        system: "http://hl7.org/fhir/sid/us-npi",
-        value: "123456",
-      },
-    ];
-  }
-  return practitioner;
+const addPractitionerValues = (testCaseJson) => {
+  testCaseJson.entry.push({
+    fullUrl: "http://Practitioner/123456",
+    resource: {
+      resourceType: "Practitioner",
+      id: "practitioner-123456",
+      name: [
+        {
+          family: "Evil",
+          prefix: ["Dr"],
+        },
+      ],
+      identifier: [
+        {
+          system: "http://hl7.org/fhir/sid/us-npi",
+          value: "123456",
+        },
+      ],
+    },
+  });
+  return testCaseJson;
 };
 
 const addingDefaultMedicationOrServiceRequestProperties = (
