@@ -354,4 +354,23 @@ describe("Modify JSON to add Default Values", () => {
       `Patient/${patientResource.id}`
     );
   });
+  it("should set Condition.category to encounter properties if encounter references it", () => {
+    const testCase = require("../mockdata/testCase_with_Conditions.json");
+
+    const updatedTestCaseWithDefaults: any = addValues(testCase);
+
+    expect(updatedTestCaseWithDefaults).toBeDefined();
+    const entries = updatedTestCaseWithDefaults?.entry.filter(
+      (entry) => entry.resource?.resourceType === "Condition"
+    );
+    expect(entries.length).toBe(2);
+    expect(entries[0].resource.category[0].coding[0]).toBeDefined();
+    expect(entries[0].resource.category[0].coding[0].code).toBe(
+      "encounter-diagnosis"
+    );
+    expect(entries[1].resource.category[0].coding[0]).toBeDefined();
+    expect(entries[1].resource.category[0].coding[0].code).toBe(
+      "problem-list-item"
+    );
+  });
 });
