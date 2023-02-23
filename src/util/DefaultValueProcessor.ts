@@ -39,7 +39,6 @@ export const addValues = (testCase: any): any => {
       case "Condition":
         return {
           ...entry,
-          //resource: setSubjectReference(entry?.resource, patientRef),
           resource: conditionActions(
             entry?.resource,
             patientRef,
