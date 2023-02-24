@@ -1,7 +1,6 @@
 import * as _ from "lodash";
 import {
   DomainResource,
-  Practitioner,
   Procedure,
   Reference,
   Encounter,
@@ -26,7 +25,7 @@ export const addValues = (testCase: any): any => {
   const conditionReferences: string[] = [];
   resultJson?.entry?.forEach((entry) => {
     if (
-      entry.resource.resourceType == "Encounter" &&
+      entry.resource.resourceType === "Encounter" &&
       entry.resource.diagnosis
     ) {
       entry.resource.diagnosis.forEach((diagnosis) => {
@@ -148,7 +147,7 @@ const addConditionCategory = (
   conditionEntry: Condition,
   conditionReferences: string[]
 ) => {
-  if (!conditionEntry?.category) {
+  if (conditionEntry && !conditionEntry?.category) {
     if (conditionReferences?.includes(`Condition/${conditionEntry.id}`)) {
       conditionEntry.category = [
         {
