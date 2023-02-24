@@ -107,11 +107,19 @@ const addingDefaultMedicationOrServiceRequestProperties = (
   if (!medicationOrServiceRequestEntry?.status) {
     medicationOrServiceRequestEntry.status = "active";
   }
-  if (!medicationOrServiceRequestEntry.intent) {
+  if (!medicationOrServiceRequestEntry?.intent) {
     medicationOrServiceRequestEntry.intent = "order";
   }
-  if (!medicationOrServiceRequestEntry.subject) {
+  if (!medicationOrServiceRequestEntry?.subject) {
     medicationOrServiceRequestEntry.subject = patientRef;
+  }
+  if (
+    medicationOrServiceRequestEntry?.resourceType === "MedicationRequest" &&
+    !medicationOrServiceRequestEntry?.requester
+  ) {
+    medicationOrServiceRequestEntry.requester = {
+      reference: "Practitioner/123456",
+    };
   }
   return medicationOrServiceRequestEntry;
 };
