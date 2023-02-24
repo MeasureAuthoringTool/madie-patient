@@ -355,7 +355,7 @@ describe("Modify JSON to add Default Values", () => {
     );
   });
   it("should set Condition.category to encounter properties if encounter references it", () => {
-    const testCase = require("../mockdata/testCase_with_Conditions.json");
+    const testCase = require("../mockdata/testcase_with_Conditions.json");
 
     const updatedTestCaseWithDefaults: any = addValues(testCase);
 
