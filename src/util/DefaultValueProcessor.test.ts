@@ -363,6 +363,13 @@ describe("Modify JSON to add Default Values", () => {
     const entries = updatedTestCaseWithDefaults?.entry.filter(
       (entry) => entry.resource?.resourceType === "Condition"
     );
+    const encounterEntries = updatedTestCaseWithDefaults?.entry.filter(
+      (entry) => entry.resource?.resourceType === "Encounter"
+    );
+    expect(encounterEntries.length).toBe(1);
+    expect(encounterEntries[0].resource.diagnosis[0].condition.reference).toBe(
+      `Condition/${entries[0].resource.id}`
+    );
     expect(entries.length).toBe(2);
     expect(entries[0].resource.category[0].coding[0]).toBeDefined();
     expect(entries[0].resource.category[0].coding[0].code).toBe(
