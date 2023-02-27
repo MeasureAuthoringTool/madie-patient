@@ -118,7 +118,7 @@ describe("Modify JSON to add Default Values", () => {
     });
   });
 
-  it('should set MedicationRequest.status to "active" and MedicationRequest.intent to "order" in the TestCase where there are multiple medication requests', () => {
+  it("should set all default values in the TestCase where there are multiple medication requests", () => {
     const medicationRequestJson = require("../mockdata/testcase_with_Medication_Request.json");
     const resultJson: any = addValues(medicationRequestJson);
 
@@ -128,16 +128,18 @@ describe("Modify JSON to add Default Values", () => {
     ).resource;
 
     expect(resultJson).toBeDefined();
+
     let results = resultJson?.entry.filter((entry) => {
       return (
         entry.resource?.resourceType === "MedicationRequest" &&
         entry.resource?.status === "active" &&
         entry.resource?.intent === "order" &&
-        entry.resource?.subject.reference === `Patient/${patientResource.id}`
+        entry.resource?.subject.reference === `Patient/${patientResource.id}` &&
+        entry.resource?.requester.reference === "Practitioner/123456"
       );
     });
-    expect(results).toBeDefined();
 
+    expect(results).toBeDefined();
     expect(results.length).toBe(1);
   });
   it("should set a missing Encounter.subject to an object containing patient ID and a missing Encounter.status to finished", () => {
@@ -190,7 +192,7 @@ describe("Modify JSON to add Default Values", () => {
     );
   });
 
-  it("should set all the medication requests entries with status, intent and subject properties", () => {
+  it("should set all the service requests entries with status, intent and subject properties", () => {
     const serviceRequestJson = require("../mockdata/testcase_with_Service_Request.json");
     const beforeDefaultValuesJson: any = _.cloneDeep(
       serviceRequestJson
