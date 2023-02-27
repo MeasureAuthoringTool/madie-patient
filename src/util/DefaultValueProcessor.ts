@@ -1,10 +1,10 @@
 import * as _ from "lodash";
 import {
   DomainResource,
-  Practitioner,
   Procedure,
   Reference,
   Encounter,
+  Condition,
 } from "fhir/r4";
 
 import addCoverageValues from "./CoverageDefaultValueProcessor";
@@ -22,13 +22,27 @@ export const addValues = (testCase: any): any => {
     throw new Error("Unable to parse Patient Resource");
   }
   const patientRef: Reference = { reference: `Patient/${patientId}` };
-
+  const conditionReferences: string[] = [];
+  resultJson?.entry?.forEach((entry) => {
+    if (
+      entry.resource.resourceType === "Encounter" &&
+      entry.resource.diagnosis
+    ) {
+      entry.resource.diagnosis.forEach((diagnosis) => {
+        conditionReferences.push(diagnosis?.condition?.reference);
+      });
+    }
+  });
   resultJson.entry = resultJson?.entry?.map((entry) => {
     switch (entry.resource.resourceType) {
       case "Condition":
         return {
           ...entry,
-          resource: setSubjectReference(entry?.resource, patientRef),
+          resource: conditionActions(
+            entry?.resource,
+            patientRef,
+            conditionReferences
+          ),
         };
       case "Device":
         return {
@@ -137,6 +151,42 @@ const addingDefaultProcedureProperties = (
   return procedureEntry;
 };
 
+const addConditionCategory = (
+  conditionEntry: Condition,
+  conditionReferences: string[]
+) => {
+  if (conditionEntry && !conditionEntry?.category) {
+    if (conditionReferences?.includes(`Condition/${conditionEntry.id}`)) {
+      conditionEntry.category = [
+        {
+          coding: [
+            {
+              system:
+                "http://terminology.hl7.org/CodeSystem/condition-category",
+              code: "encounter-diagnosis",
+              display: "Encounter Diagnosis",
+            },
+          ],
+        },
+      ];
+    } else {
+      conditionEntry.category = [
+        {
+          coding: [
+            {
+              system:
+                "http://terminology.hl7.org/CodeSystem/condition-category",
+              code: "problem-list-item",
+              display: "Problem List Item",
+            },
+          ],
+        },
+      ];
+    }
+  }
+  return conditionEntry;
+};
+
 function encounterDefaultProperties(encounterEntry: Encounter, patientRef) {
   if (!encounterEntry.status) {
     encounterEntry.status = "finished";
@@ -166,4 +216,14 @@ const setSubjectReference = (
   patientRef: Reference
 ) => {
   return setReference(resource, "subject", patientRef);
+};
+const conditionActions = (
+  resource: DomainResource,
+  patientRef: Reference,
+  conditionReferences: string[]
+) => {
+  let tempResource: any;
+  tempResource = setReference(resource, "subject", patientRef);
+  tempResource = addConditionCategory(tempResource, conditionReferences);
+  return tempResource;
 };

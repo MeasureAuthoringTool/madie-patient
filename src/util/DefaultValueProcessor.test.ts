@@ -356,4 +356,53 @@ describe("Modify JSON to add Default Values", () => {
       `Patient/${patientResource.id}`
     );
   });
+  it("should set Condition.category to encounter properties if encounter references it", () => {
+    const testCase = require("../mockdata/testcase_with_Conditions.json");
+
+    const updatedTestCaseWithDefaults: any = addValues(testCase);
+
+    expect(updatedTestCaseWithDefaults).toBeDefined();
+    const entries = updatedTestCaseWithDefaults?.entry.filter(
+      (entry) => entry.resource?.resourceType === "Condition"
+    );
+    const encounterEntries = updatedTestCaseWithDefaults?.entry.filter(
+      (entry) => entry.resource?.resourceType === "Encounter"
+    );
+    expect(encounterEntries.length).toBe(1);
+    expect(encounterEntries[0].resource.diagnosis[0].condition.reference).toBe(
+      `Condition/${entries[0].resource.id}`
+    );
+    expect(entries.length).toBe(2);
+    expect(entries[0].resource.category[0].coding[0]).toBeDefined();
+    expect(entries[0].resource.category[0].coding[0].code).toBe(
+      "encounter-diagnosis"
+    );
+    expect(entries[1].resource.category[0].coding[0]).toBeDefined();
+    expect(entries[1].resource.category[0].coding[0].code).toBe(
+      "problem-list-item"
+    );
+  });
+  it("should set Condition.category to non-encounter properties if there is no encounter", () => {
+    const testCase = require("../mockdata/testcase_with_Conditions_no_Encounter.json");
+
+    const updatedTestCaseWithDefaults: any = addValues(testCase);
+
+    expect(updatedTestCaseWithDefaults).toBeDefined();
+    const entries = updatedTestCaseWithDefaults?.entry.filter(
+      (entry) => entry.resource?.resourceType === "Condition"
+    );
+    const encounterEntries = updatedTestCaseWithDefaults?.entry.filter(
+      (entry) => entry.resource?.resourceType === "Encounter"
+    );
+    expect(encounterEntries.length).toBe(0);
+    expect(entries.length).toBe(2);
+    expect(entries[0].resource.category[0].coding[0]).toBeDefined();
+    expect(entries[0].resource.category[0].coding[0].code).toBe(
+      "problem-list-item"
+    );
+    expect(entries[1].resource.category[0].coding[0]).toBeDefined();
+    expect(entries[1].resource.category[0].coding[0].code).toBe(
+      "problem-list-item"
+    );
+  });
 });
