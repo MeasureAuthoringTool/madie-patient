@@ -10,7 +10,7 @@ import tw from "twin.macro";
 import "styled-components/macro";
 import * as _ from "lodash";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
-import { Group, TestCase } from "@madie/madie-models";
+import { Group, TestCase, MeasureErrorType } from "@madie/madie-models";
 import { useParams } from "react-router-dom";
 import TestCaseComponent from "./TestCase";
 import calculationService from "../../api/CalculationService";
@@ -23,7 +23,7 @@ import useExecutionContext from "../routes/useExecutionContext";
 import CreateCodeCoverageNavTabs from "./CreateCodeCoverageNavTabs";
 import CodeCoverageHighlighting from "./CodeCoverageHighlighting";
 import CreateNewTestCaseDialog from "../createTestCase/CreateNewTestCaseDialog";
-import { MadieSpinner } from "@madie/madie-design-system/dist/react";
+import { MadieSpinner, Toast } from "@madie/madie-design-system/dist/react";
 import TestCaseListSideBarNav from "./TestCaseListSideBarNav";
 import Typography from "@mui/material/Typography";
 import TestCaseImportDialog from "./import/TestCaseImportDialog";
@@ -98,6 +98,23 @@ const TestCaseList = (props: TestCaseListProps) => {
 
   const [createOpen, setCreateOpen] = useState<boolean>(false);
 
+  // toast utilities
+  // toast is only used for success messages
+  // creating and updating PC
+  const [toastOpen, setToastOpen] = useState<boolean>(false);
+  const [toastMessage, setToastMessage] = useState<string>("");
+  const [toastType, setToastType] = useState<string>("danger");
+  const onToastClose = () => {
+    setToastType("danger");
+    setToastMessage("");
+    setToastOpen(false);
+  };
+  const handleToast = (type, message, open) => {
+    setToastType(type);
+    setToastMessage(message);
+    setToastOpen(open);
+  };
+
   useEffect(() => {
     if (
       !_.isNil(measure?.groups) &&
@@ -106,6 +123,15 @@ const TestCaseList = (props: TestCaseListProps) => {
         _.isNil(measure.groups?.find((g) => g.id === selectedPopCriteria.id)))
     ) {
       setSelectedPopCriteria(measure.groups[0]);
+      if (
+        measure?.errors?.length > 0 &&
+        measure.errors.includes(MeasureErrorType.MISMATCH_CQL_SUPPLEMENTAL_DATA)
+      ) {
+        setToastOpen(true);
+        setToastMessage(
+          "Supplemental Data Elements or Risk Adjustment Variables in the Population Criteria section are invalid. Please check and update these values. Test cases will not execute until this issue is resolved."
+        );
+      }
     }
   }, [measure]);
 
@@ -303,6 +329,22 @@ const TestCaseList = (props: TestCaseListProps) => {
     >
       {!loadingState.loading && (
         <>
+          <Toast
+            toastKey="population-criteria-toast"
+            toastType={toastType}
+            testId={
+              toastType === "danger"
+                ? `population-criteria-error`
+                : `population-criteria-success`
+            }
+            open={toastOpen}
+            message={toastMessage}
+            onClose={onToastClose}
+            autoHideDuration={6000}
+            closeButtonProps={{
+              "data-testid": "close-error-button",
+            }}
+          />
           <TestCaseListSideBarNav
             allPopulationCriteria={measure?.groups}
             selectedPopulationCriteria={selectedPopCriteria}
