@@ -125,7 +125,12 @@ const TestCaseList = (props: TestCaseListProps) => {
       setSelectedPopCriteria(measure.groups[0]);
       if (
         measure?.errors?.length > 0 &&
-        measure.errors.includes(MeasureErrorType.MISMATCH_CQL_SUPPLEMENTAL_DATA)
+        (measure.errors.includes(
+          MeasureErrorType.MISMATCH_CQL_SUPPLEMENTAL_DATA
+        ) ||
+          measure.errors.includes(
+            MeasureErrorType.MISMATCH_CQL_RISK_ADJUSTMENT
+          ))
       ) {
         setToastOpen(true);
         setToastMessage(
