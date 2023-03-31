@@ -11,9 +11,7 @@ declare module "@madie/madie-util" {
 
   interface FeatureFlags {
     export: boolean;
-    measureVersioning: boolean;
     populationCriteriaTabs: boolean;
-    applyDefaults: boolean;
     importTestCases: boolean;
   }
 
