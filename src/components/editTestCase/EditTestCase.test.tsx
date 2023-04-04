@@ -280,7 +280,7 @@ describe("EditTestCase component", () => {
       userEvent.upload(fileInput, file);
     };
 
-    it("Import button is shown if feature flag is false, since we deprecated this part of the flag", async () => {
+    it("Import button is shown", async () => {
       renderWithRouter(
         ["/measures/m1234/edit/test-cases"],
         "/measures/:measureId/edit/test-cases"
