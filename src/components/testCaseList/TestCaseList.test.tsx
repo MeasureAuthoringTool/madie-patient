@@ -672,7 +672,7 @@ describe("TestCaseList component", () => {
     expect(screen.getByTestId("test-case-tbl")).toBeInTheDocument();
   });
 
-  it("should display error if run button is clicked but all test cases are invalid", async () => {
+  it("Run Test Cases button should be disabled if no valid test cases", async () => {
     measure.createdBy = MEASURE_CREATEDBY;
     testCases[0].validResource = false;
     testCases[1].validResource = false;
@@ -696,12 +696,7 @@ describe("TestCaseList component", () => {
       name: "Run Test Cases",
     });
 
-    userEvent.click(executeAllTestCasesButton);
-    await waitFor(() =>
-      expect(nextState).toEqual([
-        "calculateTestCases: No valid test cases to execute",
-      ])
-    );
+    expect(executeAllTestCasesButton).toBeDisabled();
   });
 
   it("should not render execute button for user who is not the owner of the measure", () => {

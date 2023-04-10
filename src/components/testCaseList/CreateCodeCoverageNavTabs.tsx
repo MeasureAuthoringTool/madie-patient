@@ -20,6 +20,7 @@ export interface NavTabProps {
   onImportTestCases?: () => void;
   testCasePassFailStats: TestCasesPassingDetailsProps;
   coveragePercentage: number;
+  validTestCases: any;
 }
 
 const defaultStyle = {
@@ -47,6 +48,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     onImportTestCases,
     testCasePassFailStats,
     coveragePercentage,
+    validTestCases,
   } = props;
   const featureFlags = useFeatureFlags();
 
@@ -155,7 +157,9 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
                 _.isNil(measure?.groups) ||
                 measure?.groups.length === 0 ||
                 !executionContextReady ||
-                executing
+                executing ||
+                _.isNil(validTestCases) ||
+                _.isEmpty(validTestCases)
               }
               onClick={executeTestCases}
               data-testid="execute-test-cases-button"
