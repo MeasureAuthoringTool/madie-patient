@@ -49,7 +49,7 @@ const TestCaseRoutes = () => {
           "An error exists with the measure CQL, please review the CQL Editor tab.",
         ]);
       }
-      if (!measure.groups) {
+      if (!measure?.groups?.length) {
         setErrors((prevState) => [
           ...prevState,
           "No Population Criteria is associated with this measure. Please review the Population Criteria tab.",

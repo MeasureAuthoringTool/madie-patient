@@ -280,13 +280,13 @@ describe("EditTestCase component", () => {
       userEvent.upload(fileInput, file);
     };
 
-    it("Import button is not shown if feature flag is false", async () => {
+    it("Import button is shown", async () => {
       renderWithRouter(
         ["/measures/m1234/edit/test-cases"],
         "/measures/:measureId/edit/test-cases"
       );
       const importButton = screen.queryByRole("button", { name: "Import" });
-      expect(importButton).not.toBeInTheDocument();
+      expect(importButton).toBeInTheDocument();
     });
 
     it("should import test case file successfully", async () => {
