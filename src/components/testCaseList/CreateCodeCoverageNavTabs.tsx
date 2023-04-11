@@ -4,7 +4,7 @@ import { Button } from "@madie/madie-design-system/dist/react";
 import AddIcon from "@mui/icons-material/Add";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import * as _ from "lodash";
-import { Measure, MeasureErrorType } from "@madie/madie-models";
+import { Measure, MeasureErrorType, TestCase } from "@madie/madie-models";
 import useExecutionContext from "../routes/useExecutionContext";
 import { TestCasesPassingDetailsProps } from "./TestCaseList";
 import { useFeatureFlags } from "@madie/madie-util";
@@ -20,7 +20,7 @@ export interface NavTabProps {
   onImportTestCases?: () => void;
   testCasePassFailStats: TestCasesPassingDetailsProps;
   coveragePercentage: number;
-  validTestCases: any;
+  validTestCases: TestCase[];
 }
 
 const defaultStyle = {
@@ -158,7 +158,6 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
                 measure?.groups.length === 0 ||
                 !executionContextReady ||
                 executing ||
-                _.isNil(validTestCases) ||
                 _.isEmpty(validTestCases)
               }
               onClick={executeTestCases}
