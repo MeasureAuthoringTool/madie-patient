@@ -70,18 +70,18 @@ describe("TestCase component", () => {
     );
 
     expect(screen.getByRole("navigation")).toBeInTheDocument();
-    expect(screen.getAllByRole("link").length).toEqual(2);
-    const activeLink = screen.getByRole("link", {
+    expect(screen.getAllByRole("tab").length).toEqual(2);
+    const activeLink = screen.getByRole("tab", {
       name: "Population Criteria 2",
     });
     expect(activeLink).toBeInTheDocument();
     userEvent.click(activeLink);
-    expect(onChange).not.toHaveBeenCalled();
-    const inactiveLink = screen.getByRole("link", {
+    expect(onChange).toHaveBeenCalled();
+    const inactiveLink = screen.getByRole("tab", {
       name: "Population Criteria 1",
     });
     expect(inactiveLink).toBeInTheDocument();
     userEvent.click(inactiveLink);
-    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledTimes(2);
   });
 });

@@ -1,6 +1,6 @@
 import React from "react";
-import { Tabs, Tab, CircularProgress, Box } from "@mui/material";
-import { Button } from "@madie/madie-design-system/dist/react";
+import { CircularProgress, Box } from "@mui/material";
+import { Button, Tabs, Tab } from "@madie/madie-design-system/dist/react";
 import AddIcon from "@mui/icons-material/Add";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import * as _ from "lodash";
@@ -79,27 +79,11 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
       onChange={(e, v) => {
         setActiveTab(v);
       }}
-      sx={{
-        fontWeight: 450,
-        height: "95px",
-        minHeight: "95px",
-        padding: 0,
-        fontSize: "39px",
-        fontFamily: "Rubik, sans serif",
-        color: "#515151",
-        borderBottom: "solid 1px #DDDDDD",
-        "& .MuiTabs-indicator": {
-          height: "5px",
-          backgroundColor: "#209FA6",
-        },
-        "& .Mui-selected": {
-          fontWeight: 480,
-          fontHeight: "35px",
-          color: "#242424 !important",
-        },
-      }}
+      type="B"
+      style={{ maxHeight: "85px" }}
     >
       <Tab
+        type="B"
         tabIndex={0}
         aria-label="Passing tab panel"
         sx={defaultStyle}
@@ -108,6 +92,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
         value="passing"
       />
       <Tab
+        type="B"
         tabIndex={0}
         aria-label="Coverage tab panel"
         sx={defaultStyle}

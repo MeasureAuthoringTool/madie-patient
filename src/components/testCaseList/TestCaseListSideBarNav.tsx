@@ -3,6 +3,7 @@ import { Group } from "@madie/madie-models";
 import { Box } from "@mui/material";
 import tw from "twin.macro";
 import { Link as NavLink } from "react-router-dom";
+import { Tabs, Tab } from "@madie/madie-design-system/dist/react";
 
 const OuterWrapper = tw.div`flex flex-col flex-grow py-10 bg-slate overflow-y-auto border-r border-slate`;
 const Nav = tw.nav`flex-1 space-y-1 bg-slate`;
@@ -30,35 +31,34 @@ const TestCaseListSideBarNav = ({
   return (
     <OuterWrapper>
       <Nav data-testid="test-case-pop-criteria-nav">
-        {allPopulationCriteria && allPopulationCriteria.length > 0 ? (
-          allPopulationCriteria.map((populationCriteria, idx) => {
-            if (populationCriteria.id === selectedPopulationCriteria?.id) {
+        <Tabs
+          type="C"
+          size="standard"
+          orientation="vertical"
+          value={selectedPopulationCriteria?.id}
+        >
+          {allPopulationCriteria && allPopulationCriteria.length > 0 ? (
+            allPopulationCriteria.map((populationCriteria, idx) => {
               return (
-                <ActiveNavLink
+                <Tab
+                  label={`Population Criteria ${idx + 1}`}
                   key={populationCriteria.id}
-                  to={""}
                   data-testid={`pop-criteria-nav-link-${populationCriteria.id}`}
-                >{`Population Criteria ${idx + 1}`}</ActiveNavLink>
+                  value={populationCriteria.id}
+                  type="C"
+                  orientation="vertical"
+                  onClick={() => {
+                    onChange(populationCriteria);
+                  }}
+                />
               );
-            }
-
-            return (
-              <InactiveNavLink
-                key={populationCriteria.id}
-                to={""}
-                data-testid={`pop-criteria-nav-link-${populationCriteria.id}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  onChange(populationCriteria);
-                }}
-              >{`Population Criteria ${idx + 1}`}</InactiveNavLink>
-            );
-          })
-        ) : (
-          <Box>
-            <i>No Population Criteria Exist</i>
-          </Box>
-        )}
+            })
+          ) : (
+            <Box>
+              <i>No Population Criteria Exist</i>
+            </Box>
+          )}
+        </Tabs>
       </Nav>
     </OuterWrapper>
   );
