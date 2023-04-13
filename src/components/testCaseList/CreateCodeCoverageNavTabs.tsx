@@ -74,32 +74,41 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
   };
 
   return (
-    <Tabs
-      value={activeTab}
-      onChange={(e, v) => {
-        setActiveTab(v);
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        flexGrow: 1,
+        alignItems: "center",
       }}
-      type="B"
-      style={{ maxHeight: "85px" }}
     >
-      <Tab
+      <Tabs
+        value={activeTab}
+        onChange={(e, v) => {
+          setActiveTab(v);
+        }}
         type="B"
-        tabIndex={0}
-        aria-label="Passing tab panel"
-        sx={defaultStyle}
-        label={executionResultsDisplayTemplate("Passing")}
-        data-testid="passing-tab"
-        value="passing"
-      />
-      <Tab
-        type="B"
-        tabIndex={0}
-        aria-label="Coverage tab panel"
-        sx={defaultStyle}
-        label={executionResultsDisplayTemplate("Coverage")}
-        data-testid="coverage-tab"
-        value="coverage"
-      />
+        orientation="horizontal"
+      >
+        <Tab
+          type="B"
+          tabIndex={0}
+          aria-label="Passing tab panel"
+          sx={defaultStyle}
+          label={executionResultsDisplayTemplate("Passing")}
+          data-testid="passing-tab"
+          value="passing"
+        />
+        <Tab
+          type="B"
+          tabIndex={0}
+          aria-label="Coverage tab panel"
+          sx={defaultStyle}
+          label={executionResultsDisplayTemplate("Coverage")}
+          data-testid="coverage-tab"
+          value="coverage"
+        />
+      </Tabs>
       <div style={{ margin: "6px 0 0 auto", display: "flex" }}>
         {featureFlags?.importTestCases && (
           <div>
@@ -166,6 +175,6 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           </Box>
         </div>
       </div>
-    </Tabs>
+    </div>
   );
 }
