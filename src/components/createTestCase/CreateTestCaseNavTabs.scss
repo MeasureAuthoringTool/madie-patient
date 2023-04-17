@@ -3,4 +3,8 @@
   display: flex;
   padding-left: 2rem;
   padding-right: 2rem;
+
+  > .MuiTabs-scroller {
+    overflow-x: scroll !important;
+  }
 }
