@@ -10,6 +10,7 @@ export default function CreateTestCaseNavTabs(props: NavTabProps) {
   const { activeTab, setActiveTab } = props;
   return (
     <Tabs
+      id="test-case-nav-container"
       value={activeTab}
       onChange={(e, v) => {
         setActiveTab(v);
