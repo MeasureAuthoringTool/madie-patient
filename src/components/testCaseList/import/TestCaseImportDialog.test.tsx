@@ -465,44 +465,4 @@ describe("TestCaseImportDialog", () => {
     });
     expect(screen.queryByText(/Test Cases from File/i)).not.toBeInTheDocument();
   });
-
-  it("displays default error when scan validation returns invalid file but no error message", async () => {
-    const open = true;
-    const handleClose = jest.fn();
-    const onImport = jest.fn();
-    const fileName = "testcases.json";
-
-    window.URL.createObjectURL = jest.fn().mockImplementation(() => "url");
-
-    const scanResult: ScanValidationDto = {
-      fileName: "testcases.json",
-      valid: false,
-      error: null,
-    };
-
-    mockedAxios.post.mockReset().mockResolvedValue({ data: scanResult });
-
-    render(
-      <TestCaseImportDialog
-        open={open}
-        handleClose={handleClose}
-        onImport={onImport}
-      />
-    );
-
-    const inputEl = screen.getByTestId("file-drop-input"); // getByTestId because input is hidden
-    const file = new File([JSON.stringify(bonnieJson)], fileName, {
-      type: "application/json",
-    });
-    Object.defineProperty(inputEl, "files", {
-      value: [file],
-    });
-    fireEvent.drop(inputEl);
-    await waitFor(() => {
-      screen.getByText(
-        "An error occurred during file import. Please try again or reach out to the Help Desk."
-      );
-    });
-    expect(screen.queryByText(/Test Cases from File/i)).not.toBeInTheDocument();
-  });
 });

@@ -346,6 +346,11 @@ describe("EditTestCase component", () => {
         data: {
           fileName: "testcase.json",
           valid: false,
+          error: {
+            codes: ["V100"],
+            defaultMessage:
+              "There was an error importing this file. Please contact the help desk for error code V100.",
+          },
         },
       });
 
