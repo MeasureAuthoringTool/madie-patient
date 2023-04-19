@@ -186,7 +186,7 @@ const TestCaseImportDialog = ({ open, handleClose, onImport }) => {
       </DialogActions>
 
       <Toast
-        toastKey="edit-action-toast"
+        toastKey="import-tests-toast"
         aria-live="polite"
         toastType={toastType}
         testId="error-toast"
