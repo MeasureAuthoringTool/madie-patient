@@ -721,10 +721,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
         if (response.valid) {
           testCaseService.current.readTestCaseFile(file, readTestFileCb);
         } else {
-          showToast(
-            "There was an error importing this file. Please contact the help desk for error code V100.",
-            "danger"
-          );
+          showToast(response.error.defaultMessage, "danger");
         }
       })
       .catch((errors) => {
