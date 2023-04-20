@@ -464,5 +464,8 @@ describe("TestCaseImportDialog", () => {
       screen.getByText("BAD THINGS HAPPENED");
     });
     expect(screen.queryByText(/Test Cases from File/i)).not.toBeInTheDocument();
+    // close toast
+    userEvent.click(screen.getByTestId("close-toast-button"));
+    expect(screen.queryByText(/BAD THINGS HAPPENED/i)).not.toBeInTheDocument();
   });
 });
