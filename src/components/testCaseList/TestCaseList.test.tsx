@@ -10,6 +10,7 @@ import {
 import { MemoryRouter } from "react-router-dom";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
 import TestCaseList, {
+  getCoverageValueFromHtml,
   IMPORT_ERROR,
   removeHtmlCoverageHeader,
 } from "./TestCaseList";
@@ -99,7 +100,7 @@ const executionResults = {
       patientId: "1",
       detailedResults: [
         {
-          groupId: "population-group-1",
+          groupId: "1",
           populationResults: [
             {
               populationType: "initial-population",
@@ -121,7 +122,7 @@ const executionResults = {
       patientId: "2",
       detailedResults: [
         {
-          groupId: "population-group-1",
+          groupId: "2",
           populationResults: [
             {
               populationType: "initial-population",
@@ -140,6 +141,10 @@ const executionResults = {
       ],
     },
   ],
+  groupClauseCoverageHTML: {
+    1: `<div><h2> a345sda45 Clause Coverage: 75.0%</h2></div>`,
+    2: `<div><h2> a345sda45 Clause Coverage: 100%</h2></div>`,
+  },
 };
 
 // mock data for list of testCases retrieved from testCaseService
@@ -372,13 +377,10 @@ const mockGetPassingPercentageForTestCases = jest
   .fn()
   .mockReturnValue({ passPercentage: 50, passFailRatio: "1/2" });
 
-const mockGetCoveragePercentageForGroup = jest.fn().mockReturnValue(75);
-
 const calculationServiceMockResolved = {
   calculateTestCases: jest.fn().mockResolvedValue(executionResults),
   processTestCaseResults: mockProcessTestCaseResults,
   getPassingPercentageForTestCases: mockGetPassingPercentageForTestCases,
-  getCoveragePercentageForGroup: mockGetCoveragePercentageForGroup,
 } as unknown as CalculationService;
 
 // mocking testCaseService
@@ -954,7 +956,6 @@ describe("TestCaseList component", () => {
     mockGetPassingPercentageForTestCases
       .mockClear()
       .mockReturnValue({ passPercentage: 66, passFailRatio: "2/3" });
-    mockGetCoveragePercentageForGroup.mockClear().mockReturnValue(100);
 
     const popCriteria2 = screen.getByText("Population Criteria 2");
     expect(popCriteria2).toBeInTheDocument();
@@ -1142,6 +1143,41 @@ describe("TestCaseList component", () => {
   });
 });
 
+describe("retrieve coverage value from HTML coverage", () => {
+  it("should retrieve the numeric coverage value for decimal percentages", () => {
+    const coverageHtml: Record<string, string> = {
+      a345sda45: `<div><h2> a345sda45 Clause Coverage: 50.0%</h2></div>`,
+    };
+    const coverageValue = getCoverageValueFromHtml(coverageHtml, "a345sda45");
+    expect(coverageValue).toEqual(expect.any(Number));
+    expect(coverageValue).toEqual(50);
+  });
+
+  it("should retrieve the numeric coverage value for whole numbers", () => {
+    const coverageHtml: Record<string, string> = {
+      a345sda45: `<div><h2> a345sda45 Clause Coverage: 100%</h2></div>`,
+    };
+    const coverageValue = getCoverageValueFromHtml(coverageHtml, "a345sda45");
+    expect(coverageValue).toEqual(100);
+  });
+
+  it("should return 0 for NaN percentages", () => {
+    const coverageHtml: Record<string, string> = {
+      a345sda45: `<div><h2> a345sda45 Clause Coverage: NaN%</h2></div>`,
+    };
+    const coverageValue = getCoverageValueFromHtml(coverageHtml, "a345sda45");
+    expect(coverageValue).toEqual(0);
+  });
+
+  it("should return 0 for missing percentages", () => {
+    const coverageHtml: Record<string, string> = {
+      a345sda45: `<div><h2> a345sda45 Clause Coverage: %</h2></div>`,
+    };
+    const coverageValue = getCoverageValueFromHtml(coverageHtml, "a345sda45");
+    expect(coverageValue).toEqual(0);
+  });
+});
+
 describe("removeHtmlCoverageHeader", () => {
   it("should remove header with numeric percentage", () => {
     const coverage: Record<string, string> = {
@@ -1174,6 +1210,13 @@ describe("removeHtmlCoverageHeader", () => {
   it("should remove header with NaN percentage", () => {
     const htmlCoverage = removeHtmlCoverageHeader({
       ab4c23fd5f: `<div><h2> ab4c23fd5f Clause Coverage: NaN%</h2></div>`,
+    });
+    expect(htmlCoverage["ab4c23fd5f"]).toEqual(`<div></div>`);
+  });
+
+  it("should remove header with 100 percentage", () => {
+    const htmlCoverage = removeHtmlCoverageHeader({
+      ab4c23fd5f: `<div><h2> ab4c23fd5f Clause Coverage: 100%</h2></div>`,
     });
     expect(htmlCoverage["ab4c23fd5f"]).toEqual(`<div></div>`);
   });
