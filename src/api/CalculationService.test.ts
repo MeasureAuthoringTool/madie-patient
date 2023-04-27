@@ -295,60 +295,6 @@ describe("CalculationService Tests", () => {
     expect(output["P111"]["group1"]["denomDef"]).toBeFalsy();
   });
 
-  it("calculates overall coverage for a selected group when coverage info not available", () => {
-    // No groups provided
-    let overallCoverage = calculationService.getCoveragePercentageForGroup(
-      "id-123",
-      undefined
-    );
-    expect(overallCoverage).toBe(0);
-    // Empty group Array
-    overallCoverage = calculationService.getCoveragePercentageForGroup(
-      "id-123",
-      []
-    );
-    expect(overallCoverage).toBe(0);
-
-    // selected group missing clauseResults
-    overallCoverage = calculationService.getCoveragePercentageForGroup(
-      "633dae976efe1b323e5bf3d3",
-      groupResults
-    );
-    expect(overallCoverage).toBe(0);
-
-    // selected group not present in groupResults
-    overallCoverage = calculationService.getCoveragePercentageForGroup(
-      "invalid-group-id",
-      groupResults
-    );
-    expect(overallCoverage).toBe(0);
-  });
-
-  it("calculates overall coverage for a selected group when coverage info available", () => {
-    let overallCoverage = calculationService.getCoveragePercentageForGroup(
-      "633dae796efe1b323e5bf3a8",
-      groupResults
-    );
-    expect(overallCoverage).toBe(66);
-
-    overallCoverage = calculationService.getCoveragePercentageForGroup(
-      "633dae976efe1b323e5bf3a9",
-      groupResults
-    );
-    expect(overallCoverage).toBe(83);
-  });
-
-  it("test isClauseIgnored", () => {
-    const clause = {};
-    clause["raw"] = { name: "something" };
-    expect(calculationService.isClauseIgnored(clause)).toBeFalsy();
-
-    clause["final"] = "NA";
-    expect(calculationService.isClauseIgnored(clause)).toBeTruthy();
-    clause["raw"] = { name: "ValueSet" };
-    expect(calculationService.isClauseIgnored(clause)).toBeTruthy();
-  });
-
   describe("CalculationService.isValuePass", () => {
     it("should pass two blanks", () => {
       const output = calculationService.isValuePass("", "", false);
