@@ -34,7 +34,7 @@ export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
 
 export const coverageHeaderRegex =
-  /<h2> (.*) Clause Coverage: ((\d*\.\d+)|NaN)%<\/h2>/i;
+  /<h2> .* Clause Coverage: (\d*\.\d+|\d*|NaN)%<\/h2>/i;
 
 export const removeHtmlCoverageHeader = (
   coverageHtml: Record<string, string>
@@ -47,6 +47,16 @@ export const removeHtmlCoverageHeader = (
     );
   }
   return groupCoverage;
+};
+
+export const getCoverageValueFromHtml = (
+  coverageHtml: Record<string, string>,
+  groupId: string
+): number => {
+  const coverageValue = parseInt(
+    coverageHtml[groupId]?.match(coverageHeaderRegex)[1]
+  );
+  return isNaN(coverageValue) ? 0 : coverageValue;
 };
 
 export interface TestCasesPassingDetailsProps {
@@ -192,10 +202,17 @@ const TestCaseList = (props: TestCaseListProps) => {
   useEffect(() => {
     const validTestCases = testCases?.filter((tc) => tc.validResource);
     if (validTestCases && calculationOutput?.results) {
-      const executionResults = calculationOutput.results;
+      // Pull Clause Coverage from coverage HTML
+      setCoveragePercentage(
+        getCoverageValueFromHtml(
+          calculationOutput["groupClauseCoverageHTML"],
+          selectedPopCriteria.id
+        )
+      );
       setCoverageHTML(
         removeHtmlCoverageHeader(calculationOutput["groupClauseCoverageHTML"])
       );
+      const executionResults = calculationOutput.results;
       const nextExecutionResults = {};
       validTestCases.forEach((testCase, i) => {
         const detailedResults = executionResults.find(
@@ -220,18 +237,6 @@ const TestCaseList = (props: TestCaseListProps) => {
       });
       setTestCases([...testCases]);
       setExecutionResults(nextExecutionResults);
-      // execution results for all groups for all test cases
-      const populationGroupResults: DetailedPopulationGroupResult[] =
-        Object.values(
-          nextExecutionResults
-        ).flat() as DetailedPopulationGroupResult[];
-
-      const coveragePercentage =
-        calculation.current.getCoveragePercentageForGroup(
-          selectedPopCriteria.id,
-          populationGroupResults
-        );
-      setCoveragePercentage(coveragePercentage);
     }
   }, [calculationOutput, selectedPopCriteria]);
 
