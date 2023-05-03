@@ -441,6 +441,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
   const calculate = async (e) => {
     e.preventDefault();
     setExecuting(true);
+    setErrors([]);
     setPopulationGroupResults(() => undefined);
     if (measure && measure.cqlErrors) {
       setCalculationErrors({
