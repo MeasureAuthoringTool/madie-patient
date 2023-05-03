@@ -114,7 +114,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
         value="coverage"
       />
       <div style={{ margin: "6px 0 0 auto", display: "flex" }}>
-        {true && (
+        {featureFlags?.importTestCases && (
           <div>
             <Button
               onClick={() => {
