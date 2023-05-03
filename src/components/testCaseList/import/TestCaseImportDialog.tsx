@@ -14,6 +14,7 @@ import {
   readImportFile,
 } from "../../../util/FhirImportHelper";
 import { useDropzone } from "react-dropzone";
+import { Toast } from "@madie/madie-design-system/dist/react";
 import "./TestCaseImportDialog.css";
 import * as _ from "lodash";
 import useTestCaseServiceApi from "../../../api/useTestCaseServiceApi";
@@ -26,6 +27,21 @@ const TestCaseImportDialog = ({ open, handleClose, onImport }) => {
   const [testCases, setTestCases] = useState([]);
   const testCaseService = useRef(useTestCaseServiceApi());
 
+  // Toast utilities
+  const [toastOpen, setToastOpen] = useState<boolean>(false);
+  const [toastMessage, setToastMessage] = useState<string>("");
+  const [toastType, setToastType] = useState<string>("danger");
+  const onToastClose = () => {
+    setToastMessage("");
+    setToastOpen(false);
+  };
+
+  const showErrorToast = (message: string) => {
+    setToastOpen(true);
+    setToastType("danger");
+    setToastMessage(message);
+  };
+
   const onDrop = useCallback(async (acceptedFiles) => {
     setErrorMessage(() => null);
     setFileInputKey(Math.random().toString(36));
@@ -34,9 +50,8 @@ const TestCaseImportDialog = ({ open, handleClose, onImport }) => {
     try {
       response = await testCaseService.current.scanImportFile(importFile);
     } catch (error) {
-      setErrorMessage(
-        () =>
-          "An error occurred while validating the import file. Please try again or reach out to the Help Desk."
+      showErrorToast(
+        "An error occurred while validating the import file. Please try again or reach out to the Help Desk."
       );
       return;
     }
@@ -46,9 +61,8 @@ const TestCaseImportDialog = ({ open, handleClose, onImport }) => {
       try {
         patientBundles = await readImportFile(importFile);
       } catch (error) {
-        setErrorMessage(
-          () =>
-            "An error occurred while processing the import file. Please try to regenerate the file and re-import, or contact the Help Desk."
+        showErrorToast(
+          "An error occurred while processing the import file. Please try to regenerate the file and re-import, or contact the Help Desk."
         );
         return;
       }
@@ -57,21 +71,15 @@ const TestCaseImportDialog = ({ open, handleClose, onImport }) => {
           const testCases = processPatientBundles(patientBundles);
           setTestCases(testCases);
         } catch (error) {
-          setErrorMessage(
-            () =>
-              "An error occurred while processing the patient bundles. Please try to regenerate the file and re-import, or contact the Help Desk."
+          showErrorToast(
+            "An error occurred while processing the patient bundles. Please try to regenerate the file and re-import, or contact the Help Desk."
           );
         }
       } else {
-        setErrorMessage(
-          () => "No patients were found in the selected import file!"
-        );
+        showErrorToast("No patients were found in the selected import file!");
       }
     } else {
-      const message =
-        response.error?.defaultMessage ||
-        "An error occurred during file import. Please try again or reach out to the Help Desk.";
-      setErrorMessage(() => message);
+      showErrorToast(response.error.defaultMessage);
     }
   }, []);
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -176,6 +184,20 @@ const TestCaseImportDialog = ({ open, handleClose, onImport }) => {
           Import
         </Button>
       </DialogActions>
+
+      <Toast
+        toastKey="import-tests-toast"
+        aria-live="polite"
+        toastType={toastType}
+        testId="error-toast"
+        closeButtonProps={{
+          "data-testid": "close-toast-button",
+        }}
+        open={toastOpen}
+        message={toastMessage}
+        onClose={onToastClose}
+        autoHideDuration={10000}
+      />
     </Dialog>
   );
 };

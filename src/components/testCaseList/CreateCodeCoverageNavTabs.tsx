@@ -1,10 +1,10 @@
 import React from "react";
-import { Tabs, Tab, CircularProgress, Box } from "@mui/material";
-import { Button } from "@madie/madie-design-system/dist/react";
+import { CircularProgress, Box } from "@mui/material";
+import { Button, Tabs, Tab } from "@madie/madie-design-system/dist/react";
 import AddIcon from "@mui/icons-material/Add";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import * as _ from "lodash";
-import { Measure, MeasureErrorType } from "@madie/madie-models";
+import { Measure, MeasureErrorType, TestCase } from "@madie/madie-models";
 import useExecutionContext from "../routes/useExecutionContext";
 import { TestCasesPassingDetailsProps } from "./TestCaseList";
 import { useFeatureFlags } from "@madie/madie-util";
@@ -20,6 +20,7 @@ export interface NavTabProps {
   onImportTestCases?: () => void;
   testCasePassFailStats: TestCasesPassingDetailsProps;
   coveragePercentage: number;
+  validTestCases: TestCase[];
 }
 
 const defaultStyle = {
@@ -47,6 +48,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     onImportTestCases,
     testCasePassFailStats,
     coveragePercentage,
+    validTestCases,
   } = props;
   const featureFlags = useFeatureFlags();
 
@@ -72,47 +74,41 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
   };
 
   return (
-    <Tabs
-      value={activeTab}
-      onChange={(e, v) => {
-        setActiveTab(v);
-      }}
-      sx={{
-        fontWeight: 450,
-        height: "95px",
-        minHeight: "95px",
-        padding: 0,
-        fontSize: "39px",
-        fontFamily: "Rubik, sans serif",
-        color: "#515151",
-        borderBottom: "solid 1px #DDDDDD",
-        "& .MuiTabs-indicator": {
-          height: "5px",
-          backgroundColor: "#209FA6",
-        },
-        "& .Mui-selected": {
-          fontWeight: 480,
-          fontHeight: "35px",
-          color: "#242424 !important",
-        },
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        flexGrow: 1,
+        alignItems: "center",
       }}
     >
-      <Tab
-        tabIndex={0}
-        aria-label="Passing tab panel"
-        sx={defaultStyle}
-        label={executionResultsDisplayTemplate("Passing")}
-        data-testid="passing-tab"
-        value="passing"
-      />
-      <Tab
-        tabIndex={0}
-        aria-label="Coverage tab panel"
-        sx={defaultStyle}
-        label={executionResultsDisplayTemplate("Coverage")}
-        data-testid="coverage-tab"
-        value="coverage"
-      />
+      <Tabs
+        value={activeTab}
+        onChange={(e, v) => {
+          setActiveTab(v);
+        }}
+        type="B"
+        orientation="horizontal"
+      >
+        <Tab
+          type="B"
+          tabIndex={0}
+          aria-label="Passing tab panel"
+          sx={defaultStyle}
+          label={executionResultsDisplayTemplate("Passing")}
+          data-testid="passing-tab"
+          value="passing"
+        />
+        <Tab
+          type="B"
+          tabIndex={0}
+          aria-label="Coverage tab panel"
+          sx={defaultStyle}
+          label={executionResultsDisplayTemplate("Coverage")}
+          data-testid="coverage-tab"
+          value="coverage"
+        />
+      </Tabs>
       <div style={{ margin: "6px 0 0 auto", display: "flex" }}>
         {featureFlags?.importTestCases && (
           <div>
@@ -155,7 +151,8 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
                 _.isNil(measure?.groups) ||
                 measure?.groups.length === 0 ||
                 !executionContextReady ||
-                executing
+                executing ||
+                _.isEmpty(validTestCases)
               }
               onClick={executeTestCases}
               data-testid="execute-test-cases-button"
@@ -178,6 +175,6 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           </Box>
         </div>
       </div>
-    </Tabs>
+    </div>
   );
 }

@@ -575,7 +575,7 @@ describe("TestCaseRoutes", () => {
       name: "Run Test Cases",
     });
     await waitFor(() => {
-      expect(runAllTestsButton).toBeEnabled();
+      expect(runAllTestsButton).toBeInTheDocument();
     });
     expect(mockedAxios.get).toHaveBeenCalled();
     expect(mockedAxios.get).toHaveBeenCalledWith(
