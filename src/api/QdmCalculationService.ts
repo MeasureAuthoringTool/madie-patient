@@ -19,6 +19,7 @@ export class QdmCalculationService {
       options
     );
 
+    // eslint-disable-next-line no-console
     console.log("cqm execution calculation results", calculationResults);
     return calculationResults;
   }
