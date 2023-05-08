@@ -19,7 +19,7 @@ import {
   DetailedPopulationGroupResult,
 } from "fqm-execution/build/types/Calculator";
 import { checkUserCanEdit } from "@madie/madie-util";
-import useExecutionContext from "../routes/useExecutionContext";
+import useExecutionContext from "../routes/qiCore/useExecutionContext";
 import CreateCodeCoverageNavTabs from "./CreateCodeCoverageNavTabs";
 import CodeCoverageHighlighting from "./CodeCoverageHighlighting";
 import CreateNewTestCaseDialog from "../createTestCase/CreateNewTestCaseDialog";

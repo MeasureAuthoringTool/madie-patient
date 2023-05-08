@@ -14,7 +14,7 @@ import EditTestCase, {
 } from "./EditTestCase";
 import userEvent from "@testing-library/user-event";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
+import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
 import {
   HapiOperationOutcome,
   Measure,
@@ -25,22 +25,22 @@ import {
   PopulationType,
   TestCase,
 } from "@madie/madie-models";
-import TestCaseRoutes from "../routes/TestCaseRoutes";
+import TestCaseRoutes from "../../routes/qiCore/TestCaseRoutes";
 import { act } from "react-dom/test-utils";
-import { PopulationEpisodeResult } from "../../api/CalculationService";
-import { simpleMeasureFixture } from "../createTestCase/__mocks__/simpleMeasureFixture";
-import { testCaseFixture } from "../createTestCase/__mocks__/testCaseFixture";
+import { PopulationEpisodeResult } from "../../../api/CalculationService";
+import { simpleMeasureFixture } from "../../createTestCase/__mocks__/simpleMeasureFixture";
+import { testCaseFixture } from "../../createTestCase/__mocks__/testCaseFixture";
 import {
   buildMeasureBundle,
   getExampleValueSet,
-} from "../../util/CalculationTestHelpers";
-import { ExecutionContextProvider } from "../routes/ExecutionContext";
-import { multiGroupMeasureFixture } from "../createTestCase/__mocks__/multiGroupMeasureFixture";
-import { nonBoolTestCaseFixture } from "../createTestCase/__mocks__/nonBoolTestCaseFixture";
-import { TestCaseValidator } from "../../validators/TestCaseValidator";
+} from "../../../util/CalculationTestHelpers";
+import { ExecutionContextProvider } from "../../routes/qiCore/ExecutionContext";
+import { multiGroupMeasureFixture } from "../../createTestCase/__mocks__/multiGroupMeasureFixture";
+import { nonBoolTestCaseFixture } from "../../createTestCase/__mocks__/nonBoolTestCaseFixture";
+import { TestCaseValidator } from "../../../validators/TestCaseValidator";
 import { checkUserCanEdit } from "@madie/madie-util";
 import { PopulationType as FqmPopulationType } from "fqm-execution/build/types/Enums";
-import { addValues } from "../../util/DefaultValueProcessor";
+import { addValues } from "../../../util/DefaultValueProcessor";
 
 //temporary solution (after jest updated to version 27) for error: thrown: "Exceeded timeout of 5000 ms for a test.
 jest.setTimeout(60000);
@@ -51,7 +51,7 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 // mock editor to reduce errors and warnings
 const mockEditor = { resize: jest.fn() };
 jest.mock(
-  "../editor/Editor",
+  "../../editor/Editor",
   () =>
     ({ setEditor, value, onChange, readOnly }) => {
       const React = require("react");

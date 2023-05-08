@@ -23,21 +23,21 @@ import {
   PopulationExpectedValue,
   MeasureErrorType,
 } from "@madie/madie-models";
-import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
-import Editor from "../editor/Editor";
-import { TestCaseValidator } from "../../validators/TestCaseValidator";
-import { sanitizeUserInput } from "../../util/Utils";
-import TestCaseSeries from "../createTestCase/TestCaseSeries";
+import useTestCaseServiceApi from "../../../api/useTestCaseServiceApi";
+import Editor from "../../editor/Editor";
+import { TestCaseValidator } from "../../../validators/TestCaseValidator";
+import { sanitizeUserInput } from "../../../util/Utils";
+import TestCaseSeries from "../../createTestCase/TestCaseSeries";
 import * as _ from "lodash";
 import { Ace } from "ace-builds";
 import {
   FHIR_POPULATION_CODES,
   getPopulationTypesForScoring,
   triggerPopChanges,
-} from "../../util/PopulationsMap";
+} from "../../../util/PopulationsMap";
 import calculationService, {
   PopulationEpisodeResult,
-} from "../../api/CalculationService";
+} from "../../../api/CalculationService";
 import {
   CalculationOutput,
   DetailedPopulationGroupResult,
@@ -48,12 +48,12 @@ import {
   useDocumentTitle,
   checkUserCanEdit,
 } from "@madie/madie-util";
-import useExecutionContext from "../routes/useExecutionContext";
+import useExecutionContext from "../../routes/qiCore/useExecutionContext";
 import { MadieEditor } from "@madie/madie-editor";
-import CreateTestCaseNavTabs from "../createTestCase/CreateTestCaseNavTabs";
-import ExpectedActual from "../createTestCase/RightPanel/ExpectedActual/ExpectedActual";
+import CreateTestCaseNavTabs from "../../createTestCase/CreateTestCaseNavTabs";
+import ExpectedActual from "../../createTestCase/RightPanel/ExpectedActual/ExpectedActual";
 import "./EditTestCase.scss";
-import CalculationResults from "../createTestCase/calculationResults/CalculationResults";
+import CalculationResults from "../../createTestCase/calculationResults/CalculationResults";
 import {
   Button,
   TextField,
@@ -62,9 +62,9 @@ import {
   MadieDiscardDialog,
   Toast,
 } from "@madie/madie-design-system/dist/react";
-import TextArea from "../createTestCase/TextArea";
-import FileUploader from "../fileUploader/FileUploader";
-import { ScanValidationDto } from "../../api/models/ScanValidationDto";
+import TextArea from "../../createTestCase/TextArea";
+import FileUploader from "../../fileUploader/FileUploader";
+import { ScanValidationDto } from "../../../api/models/ScanValidationDto";
 import { Bundle } from "fhir/r4";
 
 const TestCaseForm = tw.form`m-3`;

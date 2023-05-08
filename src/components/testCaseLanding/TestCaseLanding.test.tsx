@@ -5,7 +5,7 @@ import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
 import { Measure, MeasureScoring } from "@madie/madie-models";
 import { Bundle, ValueSet } from "fhir/r4";
-import { ExecutionContextProvider } from "../routes/ExecutionContext";
+import { ExecutionContextProvider } from "../routes/qiCore/ExecutionContext";
 import { checkUserCanEdit } from "@madie/madie-util";
 
 const serviceConfig: ServiceConfig = {
