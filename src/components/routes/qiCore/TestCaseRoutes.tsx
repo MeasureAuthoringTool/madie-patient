@@ -1,16 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Route, Routes } from "react-router-dom";
-import TestCaseLanding from "../testCaseLanding/TestCaseLanding";
-import EditTestCase from "../editTestCase/EditTestCase";
-import NotFound from "../notfound/NotFound";
+import TestCaseLanding from "../../testCaseLanding/TestCaseLanding";
+import EditTestCase from "../../editTestCase/qiCore/EditTestCase";
+import NotFound from "../../notfound/NotFound";
 import { measureStore } from "@madie/madie-util";
 import { Bundle, ValueSet } from "fhir/r4";
-import useTerminologyServiceApi from "../../api/useTerminologyServiceApi";
+import useTerminologyServiceApi from "../../../api/useTerminologyServiceApi";
 import { ExecutionContextProvider } from "./ExecutionContext";
-import useMeasureServiceApi from "../../api/useMeasureServiceApi";
+import useMeasureServiceApi from "../../../api/useMeasureServiceApi";
 import * as _ from "lodash";
-import StatusHandler from "../statusHandler/StatusHandler";
-import { MeasureErrorType } from "@madie/madie-models";
+import StatusHandler from "../../statusHandler/StatusHandler";
+import { Measure, MeasureErrorType } from "@madie/madie-models";
 
 export const CQL_RETURN_TYPES_MISMATCH_ERROR =
   "One or more Population Criteria has a mismatch with CQL return types. Test Cases cannot be executed until this is resolved.";
@@ -26,7 +26,7 @@ const TestCaseRoutes = () => {
   const terminologyService = useRef(useTerminologyServiceApi());
   const measureService = useRef(useMeasureServiceApi());
 
-  const [measure, setMeasure] = useState<any>();
+  const [measure, setMeasure] = useState<Measure>();
   useEffect(() => {
     const subscription = measureStore.subscribe(setMeasure);
     return () => {
@@ -113,17 +113,13 @@ const TestCaseRoutes = () => {
           error={true}
           errorMessages={errors}
           testDataId="execution_context_loading_errors"
-        ></StatusHandler>
+        />
       )}
       <Routes>
         <Route path="/measures/:measureId/edit/test-cases">
           <Route
             index
             element={<TestCaseLanding errors={errors} setErrors={setErrors} />}
-          />
-          <Route
-            path="edit"
-            element={<EditTestCase errors={errors} setErrors={setErrors} />}
           />
           <Route
             path=":id"

@@ -1,4 +1,5 @@
 import {
+  BaseConfigurationTypes,
   Measure,
   MeasureGroupTypes,
   Model,
@@ -56,6 +57,7 @@ export const simpleMeasureFixture: Measure = {
   lastModifiedBy: "joseph.kotanchik@semanticbits.com",
   measurementPeriodStart: new Date("2023-01-01"),
   measurementPeriodEnd: new Date("2023-12-31"),
+  baseConfigurationTypes: [BaseConfigurationTypes.PROCESS],
   model: Model.QICORE,
   measureMetaData: {
     steward: null,

@@ -37,7 +37,7 @@ import {
   buildMeasureBundle,
   getExampleValueSet,
 } from "../../util/CalculationTestHelpers";
-import { ExecutionContextProvider } from "../routes/ExecutionContext";
+import { ExecutionContextProvider } from "../routes/qiCore/ExecutionContext";
 import { checkUserCanEdit, useFeatureFlags } from "@madie/madie-util";
 
 const serviceConfig: ServiceConfig = {

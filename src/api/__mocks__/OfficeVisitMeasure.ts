@@ -1,4 +1,5 @@
 import {
+  BaseConfigurationTypes,
   Measure,
   MeasureGroupTypes,
   Model,
@@ -47,7 +48,7 @@ export const officeVisitMeasure: Measure = {
   lastModifiedBy: "test",
   measureHumanReadableId: null,
   measureMetaData: {
-    steward: "test",
+    steward: { name: "The Joint Commission" },
     description: "Test Description",
     copyright: null,
     disclaimer: null,
@@ -57,6 +58,7 @@ export const officeVisitMeasure: Measure = {
   measureSetId: null,
   measurementPeriodEnd: new Date("2023-12-21"),
   measurementPeriodStart: new Date("2022-01-01"),
+  baseConfigurationTypes: [BaseConfigurationTypes.PROCESS],
   model: Model.QICORE,
   state: null,
 };

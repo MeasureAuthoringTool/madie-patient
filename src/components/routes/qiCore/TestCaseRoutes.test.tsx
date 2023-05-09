@@ -6,18 +6,18 @@ import TestCaseRoutes, {
 } from "./TestCaseRoutes";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
-import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
+import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
 import {
   MeasureErrorType,
   MeasureScoring,
   PopulationType,
 } from "@madie/madie-models";
-import { getExampleValueSet } from "../../util/CalculationTestHelpers";
+import { getExampleValueSet } from "../../../util/CalculationTestHelpers";
 import { Bundle } from "fhir/r4";
 import { act } from "react-dom/test-utils";
 
 // mock the editor cause we don't care for this test and it gets rid of errors
-jest.mock("../editor/Editor", () => () => <div>editor contents</div>);
+jest.mock("../../editor/Editor", () => () => <div>editor contents</div>);
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;

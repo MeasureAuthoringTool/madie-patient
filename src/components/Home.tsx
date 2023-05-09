@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { BrowserRouter } from "react-router-dom";
-import TestCaseRoutes from "./routes/TestCaseRoutes";
+import RoutesWrapper from "./routes/RoutesWrapper";
 import { ServiceConfig, ApiContextProvider } from "../api/ServiceContext";
 import axios from "axios";
 
@@ -34,7 +34,9 @@ export default function Home() {
   const loadedState = (
     <BrowserRouter>
       <ApiContextProvider value={serviceConfig}>
-        <TestCaseRoutes />
+        <Suspense fallback={<div>loading</div>}>
+          <RoutesWrapper />
+        </Suspense>
       </ApiContextProvider>
     </BrowserRouter>
   );
