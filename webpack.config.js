@@ -2,6 +2,7 @@
 
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { mergeWithRules } = require("webpack-merge");
+const TerserPlugin = require("terser-webpack-plugin");
 const singleSpaDefaults = require("webpack-config-single-spa-react-ts");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 const path = require("path");
@@ -174,6 +175,11 @@ module.exports = (webpackConfigEnv, argv) => {
     defaultConfig,
     polyfillConfig,
     handlebarsConfig,
-    newCssRule
+    newCssRule,
+    {
+      optimization: {
+        minimize: false,
+      },
+    }
   );
 };
