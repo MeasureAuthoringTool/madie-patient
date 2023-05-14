@@ -99,7 +99,6 @@ const EditTestCase = () => {
           <div className="spacer" />
           <Button
             variant="primary"
-            type="submit"
             data-testid="qdm-test-case-run-button"
             onClick={calculateQdmTestCases}
           >
