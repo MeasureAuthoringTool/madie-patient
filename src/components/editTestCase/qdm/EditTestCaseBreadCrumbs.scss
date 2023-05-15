@@ -1,0 +1,26 @@
+$grey-80: #333;
+$blue-60: #0073c8;
+
+#edit-test-case-bread-crumbs {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 8px 48px 6px 48px;
+  > .madie-link {
+    color: $blue-60;
+    font-weight: 500;
+    font-size: 14px;
+    &.active {
+      color: $grey-80;
+      font-weight: 400;
+      text-decoration: none;
+    }
+  }
+  > .spacer {
+    color: $grey-80;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 24px;
+    margin: 0 5px;
+  }
+}

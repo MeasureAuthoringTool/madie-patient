@@ -1,9 +1,17 @@
-import React, { useRef, useState } from "react";
-import "styled-components/macro";
+import React, { useEffect, useRef, useCallback, useState } from "react";
 import { useDocumentTitle } from "@madie/madie-util";
+import { TestCase } from "@madie/madie-models";
 import "../qiCore/EditTestCase.scss";
 import { Button, Toast } from "@madie/madie-design-system/dist/react";
 import qdmCalculationService from "../../../api/QdmCalculationService";
+import { Allotment } from "allotment";
+import RightPanel from "./RightPanel/RightPanel";
+import LeftPanel from "./LeftPanel/LeftPanel";
+import EditTestCaseBreadCrumbs from "./EditTestCaseBreadCrumbs";
+import { useParams } from "react-router-dom";
+import useTestCaseServiceApi from "../../../api/useTestCaseServiceApi";
+import "allotment/dist/style.css";
+import "./EditTestCase.scss";
 
 const EditTestCase = () => {
   useDocumentTitle("MADiE Edit Measure Edit Test Case");
@@ -17,7 +25,6 @@ const EditTestCase = () => {
     setToastMessage("");
     setToastOpen(false);
   };
-
   const showToast = (
     message: string,
     toastType: "success" | "danger" | "warning"
@@ -27,6 +34,20 @@ const EditTestCase = () => {
     setToastMessage(message);
   };
 
+  const testCaseService = useRef(useTestCaseServiceApi());
+  const [currentTestCase, setCurrentTestCase] = useState<TestCase>(null);
+  const { measureId, id } = useParams();
+
+  const retrieveTestCase = useCallback(() => {
+    testCaseService.current.getTestCase(id, measureId).then((tc: TestCase) => {
+      setCurrentTestCase(tc);
+    });
+  }, [measureId, id, testCaseService]);
+  useEffect(() => {
+    if (measureId && id) {
+      retrieveTestCase();
+    }
+  }, [testCaseService, measureId, id]);
   const calculateQdmTestCases = () => {
     try {
       const calculationResult = qdmCalculation.current.calculateQdmTestCases();
@@ -42,28 +63,59 @@ const EditTestCase = () => {
 
   return (
     <>
-      <Button
-        tw="m-2"
-        variant="cyan"
-        type="submit"
-        data-testid="qdm-test-case-run-button"
-        onClick={calculateQdmTestCases}
-      >
-        QDM Run Execution
-      </Button>
-      <Toast
-        toastKey="edit-action-toast"
-        aria-live="polite"
-        toastType={toastType}
-        testId={toastType === "danger" ? "error-toast" : "success-toast"}
-        closeButtonProps={{
-          "data-testid": "close-toast-button",
-        }}
-        open={toastOpen}
-        message={toastMessage}
-        onClose={onToastClose}
-        autoHideDuration={10000}
+      <EditTestCaseBreadCrumbs
+        testCase={currentTestCase}
+        measureId={measureId}
       />
+      <form id="edit-test-case-qdm">
+        <div className="allotment-wrapper">
+          <Allotment
+            defaultSizes={[200, 100]}
+            // proportionalLayout={true}
+            separator={true}
+            vertical={false}
+          >
+            <Allotment.Pane>
+              <LeftPanel />
+            </Allotment.Pane>
+            <Allotment.Pane>
+              <RightPanel />
+            </Allotment.Pane>
+          </Allotment>
+        </div>
+
+        <div className="bottom-row">
+          {/* shows up in some mockups. leaving for later */}
+          {/* <Button variant="outline-filled">Import</Button> */}
+          <div className="spacer" />
+          <Button
+            variant="primary"
+            data-testid="qdm-test-case-run-button"
+            onClick={calculateQdmTestCases}
+          >
+            Run Test
+          </Button>
+          <Button variant="cyan">Save</Button>
+          <Button variant="outline-filled">
+            {/* variant="outline-filled" */}
+            Discard Changes
+          </Button>
+        </div>
+        {/* outside flow of page */}
+        <Toast
+          toastKey="edit-action-toast"
+          aria-live="polite"
+          toastType={toastType}
+          testId={toastType === "danger" ? "error-toast" : "success-toast"}
+          closeButtonProps={{
+            "data-testid": "close-toast-button",
+          }}
+          open={toastOpen}
+          message={toastMessage}
+          onClose={onToastClose}
+          autoHideDuration={10000}
+        />
+      </form>
     </>
   );
 };

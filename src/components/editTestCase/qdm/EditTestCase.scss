@@ -1,0 +1,103 @@
+#edit-test-case-qdm {
+  > .allotment-wrapper {
+    margin: 0 32px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    .split-view {
+      position: relative;
+      height: 700px;
+      .left-panel {
+        > .panel-content {
+          padding-left: 32px;
+          padding-right: 20px;
+          height: calc(100% - 48px);
+        }
+      }
+      .right-panel {
+        margin-left: 12px;
+        > .panel-content {
+          padding-left: 16px;
+          padding-right: 16px;
+          height: calc(100% - 48px);
+        }
+        > .tab-container {
+          > .MuiButtonBase-root {
+            margin-right: 8px;
+            > .back-icon {
+              color: #0073c8;
+            }
+          }
+          > .spacer {
+            display: flex;
+            flex-grow: 1;
+          }
+        }
+      }
+      .left-panel,
+      .right-panel {
+        height: 100%;
+        background: #fff;
+        > .tab-container {
+          background-color: #ededed;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          > .MuiTabs-root {
+            background-color: #ededed;
+            margin-left: 16px;
+          }
+        }
+        > .panel-content {
+          padding-top: 32px;
+          overflow: scroll;
+        }
+      }
+
+      .sash {
+        width: 16px;
+        background-color: #ddd;
+        &:before {
+          position: absolute;
+          content: "";
+          top: 50%;
+          width: 4px;
+          height: 34px;
+          border: solid 1.5px #717171;
+          border-color: transparent #717171 transparent #717171;
+        }
+        // after is a pretend pseudo element to cover the overlap up into the nav bars.
+        // We want the top to scroll, so so, they must be divided by the allotment
+        // solution is to hide the overlap. genius.
+        &:after {
+          position: absolute;
+          content: "";
+          top: 0;
+          height: 48px;
+          width: 100%;
+          background-color: #ededed;
+        }
+      }
+    }
+  }
+  > .bottom-row {
+    height: 112px;
+    z-index: 35; //one above allotment?
+    background: #fff;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: -webkit-sticky;
+    position: sticky;
+    bottom: 0;
+    box-shadow: 0px 0px 2px 1px rgba(241, 242, 244, 0.25);
+    border-top: solid 1px #b0b0b0;
+    padding-right: 48px;
+    > .spacer {
+      display: flex;
+      flex-grow: 1;
+    }
+    > .qpp-c-button {
+      margin: 0;
+      margin-left: 32px;
+    }
+  }
+}

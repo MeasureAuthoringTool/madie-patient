@@ -10,6 +10,11 @@ import { Model, PopulationType } from "@madie/madie-models";
 // jest.mock("../../editor/Editor", () => () => <div>editor contents</div>);
 
 jest.mock("axios");
+global.ResizeObserver = jest.fn().mockImplementation(() => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn(),
+}));
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const serviceConfig: ServiceConfig = {
@@ -88,6 +93,10 @@ jest.mock("@madie/madie-util", () => ({
   },
 }));
 
+jest.mock("use-resize-observer", () => {
+  return jest.requireActual("use-resize-observer/polyfilled");
+});
+
 describe("TestCaseRoutes", () => {
   it("should render the test case list component", async () => {
     mockedAxios.get.mockImplementation(() => {
@@ -142,7 +151,7 @@ describe("TestCaseRoutes", () => {
     );
 
     const runTestCaseButton = await screen.getByRole("button", {
-      name: "QDM Run Execution",
+      name: "Run Test",
     });
     expect(runTestCaseButton).toBeInTheDocument();
   });
