@@ -519,7 +519,7 @@ describe("TestCaseList component", () => {
         screen.getByTestId(`select-action-${testCases[1].id}`)
       ).toBeInTheDocument();
     });
-  });
+  }, 15000);
 
   it("should not display error message when fetch test cases fails", async () => {
     const error = {

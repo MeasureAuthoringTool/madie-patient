@@ -37,24 +37,15 @@ const EditTestCase = () => {
   const testCaseService = useRef(useTestCaseServiceApi());
   const [currentTestCase, setCurrentTestCase] = useState<TestCase>(null);
   const { measureId, id } = useParams();
-  const retrieveTestCases = useCallback(() => {
-    testCaseService.current
-      .getTestCasesByMeasureId(measureId)
-      .then((testCaseList: TestCase[]) => {
-        const currentTestCase = testCaseList.find((el) => el.id === id);
-        setCurrentTestCase(currentTestCase);
-      });
-    // to implement later
-    // .catch((err) => {
-    //   // setErrors((prevState) => [...prevState, err.message]); // may need to be implemented later
-    // })
-    // .finally(() => {
-    //   // setLoadingState({ loading: false, message: "" });
-    // });
+
+  const retrieveTestCase = useCallback(() => {
+    testCaseService.current.getTestCase(id, measureId).then((tc: TestCase) => {
+      setCurrentTestCase(tc);
+    });
   }, [measureId, id, testCaseService]);
   useEffect(() => {
     if (measureId && id) {
-      retrieveTestCases();
+      retrieveTestCase();
     }
   }, [testCaseService, measureId, id]);
   const calculateQdmTestCases = () => {
@@ -73,14 +64,14 @@ const EditTestCase = () => {
   return (
     <>
       <EditTestCaseBreadCrumbs
-        testCaseTitle={currentTestCase?.title}
-        testCaseId={currentTestCase?.id}
+        testCase={currentTestCase}
         measureId={measureId}
       />
       <form id="edit-test-case-qdm">
         <div className="allotment-wrapper">
           <Allotment
-            proportionalLayout={true}
+            defaultSizes={[200, 100]}
+            // proportionalLayout={true}
             separator={true}
             vertical={false}
           >

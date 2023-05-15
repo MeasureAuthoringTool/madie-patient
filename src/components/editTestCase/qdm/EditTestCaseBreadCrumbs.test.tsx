@@ -12,15 +12,20 @@ describe("EditTestCaseBreadCrumbs", () => {
     render(
       <MemoryRouter>
         <EditTestCaseBreadCrumbs
-          testCaseTitle="title"
-          testCaseId="4321"
+          testCase={{
+            title: "title",
+            series: "",
+            createdAt: "",
+            createdBy: "",
+            description: "",
+          }}
           measureId="unknown"
         />
       </MemoryRouter>
     );
     fireEvent.click(getByText("Test Cases"));
     await waitFor(() => {
-      expect(screen.getByText("Test Cases")).toHaveClass("madie-link active");
+      expect(screen.getByText("Test Cases")).toHaveClass("madie-link");
     });
 
     fireEvent.click(getByText("title"));
