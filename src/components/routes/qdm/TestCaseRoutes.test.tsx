@@ -11,7 +11,6 @@ import { Model, PopulationType } from "@madie/madie-models";
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
-
 const serviceConfig: ServiceConfig = {
   measureService: {
     baseUrl: "measure.url",
@@ -70,6 +69,7 @@ jest.mock("@madie/madie-util", () => ({
   useFeatureFlags: jest.fn().mockImplementation(() => ({
     applyDefaults: false,
     importTestCases: false,
+    qdmTestCases: true,
   })),
   useOktaTokens: () => ({
     getAccessToken: () => "test.jwt",
