@@ -13,6 +13,7 @@ declare module "@madie/madie-util" {
     export: boolean;
     populationCriteriaTabs: boolean;
     importTestCases: boolean;
+    qdmTestCases: boolean;
   }
 
   export interface ServiceConfig {
