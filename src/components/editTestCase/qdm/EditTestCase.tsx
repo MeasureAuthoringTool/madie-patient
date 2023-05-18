@@ -93,7 +93,7 @@ const EditTestCase = () => {
     testCaseService.current
       .updateTestCase(submitTestCase, measureId)
       .then(() => {
-        showToast(`Test Case Saved Successfully`, "success");
+        showToast(`Test Case Updated Successfully`, "success");
       })
       .catch(() => {
         const message = `Error updating Test Case "${measure.measureName}"`;
@@ -141,6 +141,7 @@ const EditTestCase = () => {
           </Button>
           <Button
             variant="cyan"
+            data-testid="qdm-test-case-save-button"
             onClick={() => {
               submitForm();
             }}

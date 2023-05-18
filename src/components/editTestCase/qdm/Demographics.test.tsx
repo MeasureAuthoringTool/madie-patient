@@ -35,6 +35,24 @@ describe("QDM Demographics Component", () => {
     "      {\n" +
     '         "dataElementCodes":[\n' +
     "            {\n" +
+    '               "code":"2135-2",\n' +
+    '               "system":"2.16.840.1.113883.6.238",\n' +
+    '               "version":"1.2",\n' +
+    '               "display":"Hispanic or Latino"\n' +
+    "            }\n" +
+    "         ],\n" +
+    '         "qdmTitle":"Patient Characteristic Ethnicity",\n' +
+    '         "hqmfOid":"2.16.840.1.113883.10.20.28.4.56",\n' +
+    '         "qdmCategory":"patient_characteristic",\n' +
+    '         "qdmStatus":"ethnicity",\n' +
+    '         "qdmVersion":"5.6",\n' +
+    '         "_type":"QDM::PatientCharacteristicEthnicity",\n' +
+    '         "description":"Patient Characteristic Ethnicity: Ethnicity",\n' +
+    '         "codeListId":"2.16.840.1.114222.4.11.837"\n' +
+    "      },\n" +
+    "      {\n" +
+    '         "dataElementCodes":[\n' +
+    "            {\n" +
     '               "code":"2028-9",\n' +
     '               "system":"2.16.840.1.113883.6.238",\n' +
     '               "version":"1.2",\n' +

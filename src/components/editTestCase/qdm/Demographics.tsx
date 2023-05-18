@@ -107,7 +107,8 @@ const Demographics = (props: {
       dataElements.forEach((element) => {
         if (element.qdmStatus === "race") {
           setRaceDataElement(element);
-        } else if (element.qdmStatus === "gender") {
+        }
+        if (element.qdmStatus === "gender") {
           setGenderDataElement(element);
         }
       });
