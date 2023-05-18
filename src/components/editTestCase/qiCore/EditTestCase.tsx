@@ -970,11 +970,14 @@ const EditTestCase = (props: EditTestCaseProps) => {
                   )
                   .map((error) => {
                     return (
+                      //here
                       <ValidationAlertCard
                         key={error.key}
                         status={error.severity ? error.severity : "error"}
                       >
-                        {error.diagnostics}
+                        {error.severity.charAt(0).toUpperCase() +
+                          error.severity.slice(1)}
+                        : {error.diagnostics}
                       </ValidationAlertCard>
                     );
                   })
