@@ -55,7 +55,10 @@ const TestCaseRoutes = () => {
               <TestCaseLandingQdm errors={errors} setErrors={setErrors} />
             }
           />
-          <Route path=":id" element={<EditTestCase />} />
+          <Route
+            path=":id"
+            element={<EditTestCase errors={errors} setErrors={setErrors} />}
+          />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
