@@ -221,8 +221,8 @@ const Demographics = (props: {
   };
 
   return (
-    <>
-      <Box sx={{ maxWidth: "40%" }}>
+    <div style={{ display: "flex" }}>
+      <Box sx={{ minWidth: "30%" }}>
         <FormControl fullWidth>
           <Select
             labelId="demographics-race-select-label"
@@ -243,7 +243,7 @@ const Demographics = (props: {
         </FormControl>
       </Box>
 
-      <Box sx={{ maxWidth: "20%" }}>
+      <Box sx={{ maxWidth: "20%", paddingLeft: 1 }}>
         <FormControl fullWidth>
           <Select
             labelId="demographics-gender-select-label"
@@ -260,7 +260,7 @@ const Demographics = (props: {
           ></Select>
         </FormControl>
       </Box>
-    </>
+    </div>
   );
 };
 
