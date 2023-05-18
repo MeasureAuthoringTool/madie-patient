@@ -148,9 +148,6 @@ const Demographics = (props: {
       });
     }
     patient.dataElements = dataElements;
-    // console.log(
-    //   "generateNewQdmPatient(): patient = " + JSON.stringify(patient)
-    // );
     setQdmPatient(patient);
     props.setTestCaseJson(JSON.stringify(patient));
   };

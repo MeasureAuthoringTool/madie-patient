@@ -96,7 +96,6 @@ jest.mock("@madie/madie-util", () => {
       state: null,
       initialState: null,
       subscribe: (set) => {
-        //set({} as Measure);
         set(testMeasure);
         return { unsubscribe: () => null };
       },

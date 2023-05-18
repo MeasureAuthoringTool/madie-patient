@@ -28,9 +28,8 @@ describe("TabHeadings", () => {
     const foundTitle = await findByText(title);
     expect(foundTitle).toBeInTheDocument();
   });
-  //temp skip
+
   test("Tab Headings display descriptions when clicked on, hides after", async () => {
-    //const title = "evenMoreFakeTitle";
     const title = "Demographics";
     const expectedId = `qdm-header-content-${title}`;
     render(
