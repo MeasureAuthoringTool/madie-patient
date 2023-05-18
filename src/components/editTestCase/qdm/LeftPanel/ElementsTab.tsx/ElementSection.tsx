@@ -1,17 +1,16 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import "./TabHeading.scss";
-import Demographics from "./Demographics";
-import { TestCase } from "@madie/madie-models";
-
+import "./ElementSection.scss";
 // Tab heading to display weather or not we can see contents
-const TabHeading = (props: {
+
+interface ElementSectionProps {
   title: string;
-  currentTestCase: TestCase;
-  setTestCaseJson;
-  canEdit: boolean;
-}) => {
-  const [open, setOpen] = useState(false);
+  children?: any;
+}
+
+const ElementSection = (props: ElementSectionProps) => {
+  const { title, children } = props;
+  const [open, setOpen] = useState(true);
   const chevronClass = open ? "chevron-display open" : "chevron-display";
   const growingDivClass = open ? "growing-div open" : "growing-div";
 
@@ -38,18 +37,12 @@ const TabHeading = (props: {
       </div>
 
       <div className={growingDivClass}>
-        {open && props.title === "Demographics" && (
-          <div data-testid={`qdm-header-content-${props.title}`}>
-            <Demographics
-              currentTestCase={props.currentTestCase}
-              setTestCaseJson={props.setTestCaseJson}
-              canEdit={props.canEdit}
-            ></Demographics>
-          </div>
+        {open && (
+          <div data-testid={`qdm-header-content-${title}`}>{children}</div>
         )}
       </div>
     </div>
   );
 };
 
-export default TabHeading;
+export default ElementSection;

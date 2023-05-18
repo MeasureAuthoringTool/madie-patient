@@ -5,10 +5,11 @@ $grey-19: #dddddd;
 .test-case-tab-heading {
   display: flex;
   flex-direction: column;
-  border-bottom: solid 1px $grey-19;
+  // border-bottom: solid 1px $grey-19;
   margin-bottom: 48px;
   > .heading-row {
     display: flex;
+    border-bottom: solid 1px $grey-19;
     flex-direction: row;
     flex-grow: 1;
     justify-content: space-between;
@@ -28,5 +29,8 @@ $grey-19: #dddddd;
   > .growing-div {
     flex-direction: column;
     overflow: hidden;
+    &.open {
+      margin-top: 35px;
+    }
   }
 }

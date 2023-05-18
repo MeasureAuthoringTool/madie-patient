@@ -1,0 +1,14 @@
+.birth-date {
+  display: flex;
+  max-width: 250px;
+}
+
+.demographics-container {
+  display: flex;
+  .demographics-row {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    column-gap: 32px;
+  }
+}
