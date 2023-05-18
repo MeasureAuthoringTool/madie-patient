@@ -1,5 +1,9 @@
 import React, { useEffect, useRef, useCallback, useState } from "react";
-import { useDocumentTitle } from "@madie/madie-util";
+import {
+  useDocumentTitle,
+  measureStore,
+  checkUserCanEdit,
+} from "@madie/madie-util";
 import { TestCase } from "@madie/madie-models";
 import "../qiCore/EditTestCase.scss";
 import { Button, Toast } from "@madie/madie-design-system/dist/react";
@@ -12,10 +16,27 @@ import { useParams } from "react-router-dom";
 import useTestCaseServiceApi from "../../../api/useTestCaseServiceApi";
 import "allotment/dist/style.css";
 import "./EditTestCase.scss";
+import tw from "twin.macro";
+
+const TestCaseForm = tw.form`m-3`;
 
 const EditTestCase = () => {
   useDocumentTitle("MADiE Edit Measure Edit Test Case");
   const qdmCalculation = useRef(qdmCalculationService());
+  const [measure, setMeasure] = useState<any>(measureStore.state);
+
+  useEffect(() => {
+    const subscription = measureStore.subscribe(setMeasure);
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const canEdit = checkUserCanEdit(
+    measure?.createdBy,
+    measure?.acls,
+    measure?.measureMetaData?.draft
+  );
 
   // Toast utilities
   const [toastOpen, setToastOpen] = useState<boolean>(false);
@@ -37,10 +58,12 @@ const EditTestCase = () => {
   const testCaseService = useRef(useTestCaseServiceApi());
   const [currentTestCase, setCurrentTestCase] = useState<TestCase>(null);
   const { measureId, id } = useParams();
+  const [testCaseJson, setTestCaseJson] = useState<string>(null);
 
   const retrieveTestCase = useCallback(() => {
     testCaseService.current.getTestCase(id, measureId).then((tc: TestCase) => {
       setCurrentTestCase(tc);
+      setTestCaseJson(tc.json);
     });
   }, [measureId, id, testCaseService]);
   useEffect(() => {
@@ -61,8 +84,25 @@ const EditTestCase = () => {
     }
   };
 
+  const submitForm = () => {
+    const submitTestCase = {
+      ...currentTestCase,
+      json: testCaseJson,
+    };
+
+    testCaseService.current
+      .updateTestCase(submitTestCase, measureId)
+      .then(() => {
+        showToast(`Test Case Saved Successfully`, "success");
+      })
+      .catch(() => {
+        const message = `Error updating Test Case "${measure.measureName}"`;
+        showToast(message, "danger");
+      });
+  };
+
   return (
-    <>
+    <TestCaseForm>
       <EditTestCaseBreadCrumbs
         testCase={currentTestCase}
         measureId={measureId}
@@ -76,7 +116,11 @@ const EditTestCase = () => {
             vertical={false}
           >
             <Allotment.Pane>
-              <LeftPanel />
+              <LeftPanel
+                currentTestCase={currentTestCase}
+                setTestCaseJson={setTestCaseJson}
+                canEdit={canEdit}
+              />
             </Allotment.Pane>
             <Allotment.Pane>
               <RightPanel />
@@ -95,7 +139,14 @@ const EditTestCase = () => {
           >
             Run Test
           </Button>
-          <Button variant="cyan">Save</Button>
+          <Button
+            variant="cyan"
+            onClick={() => {
+              submitForm();
+            }}
+          >
+            Save
+          </Button>
           <Button variant="outline-filled">
             {/* variant="outline-filled" */}
             Discard Changes
@@ -116,7 +167,7 @@ const EditTestCase = () => {
           autoHideDuration={10000}
         />
       </form>
-    </>
+    </TestCaseForm>
   );
 };
 
