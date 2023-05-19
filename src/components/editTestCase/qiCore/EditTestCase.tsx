@@ -971,7 +971,6 @@ const EditTestCase = (props: EditTestCaseProps) => {
                   )
                   .map((error) => {
                     return (
-                      //here
                       <ValidationAlertCard
                         key={error.key}
                         status={
