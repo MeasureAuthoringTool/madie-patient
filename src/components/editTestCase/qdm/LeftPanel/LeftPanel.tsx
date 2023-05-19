@@ -1,8 +1,13 @@
 import React, { useState } from "react";
 import LeftPanelNavTabs from "./LeftPanelNavTabs";
 import TabHeading from "../TabHeading";
+import { TestCase } from "@madie/madie-models";
 
-const LeftPanel = () => {
+const LeftPanel = (props: {
+  currentTestCase: TestCase;
+  setTestCaseJson;
+  canEdit: boolean;
+}) => {
   const [activeTab, setActiveTab] = useState<string>("elements");
   return (
     <div className="left-panel">
@@ -10,8 +15,18 @@ const LeftPanel = () => {
         <LeftPanelNavTabs activeTab={activeTab} setActiveTab={setActiveTab} />
       </div>
       <div className="panel-content">
-        <TabHeading title="Demographics" />
-        <TabHeading title="Elements" />
+        <TabHeading
+          title="Demographics"
+          currentTestCase={props.currentTestCase}
+          setTestCaseJson={props.setTestCaseJson}
+          canEdit={props.canEdit}
+        />
+        <TabHeading
+          title="Elements"
+          currentTestCase={props.currentTestCase}
+          setTestCaseJson={props.setTestCaseJson}
+          canEdit={props.canEdit}
+        />
       </div>
     </div>
   );
