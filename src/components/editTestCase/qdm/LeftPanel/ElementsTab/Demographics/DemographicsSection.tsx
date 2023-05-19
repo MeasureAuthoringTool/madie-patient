@@ -67,7 +67,6 @@ const DemographicsSection = ({ canEdit }) => {
   // this populates the json making it able to be edited. we should only do this before change
   useEffect(() => {
     let patient: QDMPatient = null;
-    // if (props.currentTestCase?.json) {
     if (formik.values?.json) {
       patient = JSON.parse(formik.values.json);
     }
@@ -101,7 +100,7 @@ const DemographicsSection = ({ canEdit }) => {
 
   // given element and type make this return instead
   const generateNewQdmPatient = (newElement: DataElement, type: string) => {
-    const patient: QDMPatient = new QDMPatient(...qdmPatient);
+    const patient: QDMPatient = new QDMPatient(qdmPatient);
     // patient.qdmVersion = "5.6";
     if (qdmPatient.birthDatetime) {
       patient.birthDatetime = qdmPatient.birthDatetime;
