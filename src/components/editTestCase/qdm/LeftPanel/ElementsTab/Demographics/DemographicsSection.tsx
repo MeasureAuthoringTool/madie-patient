@@ -6,8 +6,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import EventIcon from "@mui/icons-material/Event";
 import { useFormikContext } from "formik";
 
-// import customParseFormat from "dayjs/plugin/customParseFormat";
-import { QDMPatient, DataElement, DataElementCode } from "cqm-models";
+import { QDMPatient, DataElement } from "cqm-models";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -41,13 +40,13 @@ const DemographicsSection = ({ canEdit }) => {
   dayjs.extend(utc);
   dayjs.utc().format(); // utc format
   const formik: any = useFormikContext();
-
   // select stuff
   const [qdmPatient, setQdmPatient] = useState<QDMPatient>();
   // this will be local
   const [raceDataElement, setRaceDataElement] = useState<DataElement>();
   const [genderDataElement, setGenderDataElement] = useState<DataElement>();
-  const [birthDateElement, setBirthDateElement] = useState<DataElement>();
+
+  const pcr = new PatientCharacteristicRace();
 
   const selectOptions = (options) => {
     return [
@@ -87,10 +86,6 @@ const DemographicsSection = ({ canEdit }) => {
         if (element.qdmStatus === "gender") {
           setGenderDataElement(element);
         }
-        // seems unecessary?
-        if (element.qdmStatus === "birthdate") {
-          setBirthDateElement(element);
-        }
       });
     } else {
       // default values for QDM patient. to do race and gender default values?
@@ -100,20 +95,16 @@ const DemographicsSection = ({ canEdit }) => {
       setRaceDataElement(newRaceDataElement);
       const newGenderDataElement: DataElement = getGenderDataElement("Female");
       setGenderDataElement(newGenderDataElement);
-      // unneeded ?
-      const newbirthDateElement = getBirthDateElement(dayjs());
-      setBirthDateElement(newbirthDateElement);
 
       const patient: QDMPatient = new QDMPatient();
-      patient.qdmVersion = "5.6";
       setQdmPatient(patient);
     }
   }, [formik.values.json]);
 
   // given element and type make this return instead
   const generateNewQdmPatient = (newElement: DataElement, type: string) => {
-    const patient: QDMPatient = new QDMPatient();
-    patient.qdmVersion = "5.6";
+    const patient: QDMPatient = new QDMPatient(...qdmPatient);
+    // patient.qdmVersion = "5.6";
     if (qdmPatient.birthDatetime) {
       patient.birthDatetime = qdmPatient.birthDatetime;
     }
@@ -157,10 +148,10 @@ const DemographicsSection = ({ canEdit }) => {
 
   const handleTimeChange = (val) => {
     const formatted = dayjs.utc(val).format();
-    const newTimeEleement = getBirthDateElement(formatted);
+    const newTimeElement = getBirthDateElement(formatted);
 
     // setBirthDateElement(newTimeEleement);
-    const patient = generateNewQdmPatient(newTimeEleement, "birthdate");
+    const patient = generateNewQdmPatient(newTimeElement, "birthdate");
     patient.birthDatetime = val; // extra ste
     setQdmPatient(patient);
     formik.setFieldValue("json", JSON.stringify(patient));
