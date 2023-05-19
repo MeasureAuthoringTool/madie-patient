@@ -3,8 +3,17 @@ import RightPanelNavTabs from "./RightPanelNavTabs";
 import KeyboardTabIcon from "@mui/icons-material/KeyboardTab";
 import { IconButton } from "@mui/material";
 
-const RightPanel = () => {
-  const [activeTab, setActiveTab] = useState<string>("highlighting");
+import DetailsSection from "./DetailsTab/DetailsSection";
+
+interface RightPanelProps {
+  canEdit: Boolean;
+}
+const RightPanel = (props: RightPanelProps) => {
+  const { canEdit } = props;
+
+  // const [activeTab, setActiveTab] = useState<string>("highlighting");
+  const [activeTab, setActiveTab] = useState<string>("details");
+  console.log("activetab", activeTab);
   return (
     <div className="right-panel">
       <div className="tab-container">
@@ -14,7 +23,9 @@ const RightPanel = () => {
           <KeyboardTabIcon className="back-icon" />
         </IconButton>
       </div>
-      <div className="panel-content" />
+      <div className="panel-content">
+        {activeTab === "details" && <DetailsSection canEdit={canEdit} />}
+      </div>
       {/* header end */}
     </div>
   );

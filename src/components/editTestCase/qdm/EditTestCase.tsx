@@ -15,7 +15,7 @@ import EditTestCaseBreadCrumbs from "./EditTestCaseBreadCrumbs";
 import { useParams } from "react-router-dom";
 import useTestCaseServiceApi from "../../../api/useTestCaseServiceApi";
 import { useFormik, FormikProvider } from "formik";
-
+import { TestCaseValidator } from "../../../validators/TestCaseValidator";
 import "allotment/dist/style.css";
 import "./EditTestCase.scss";
 
@@ -68,6 +68,7 @@ const EditTestCase = () => {
       retrieveTestCase();
     }
   }, [testCaseService, measureId, id]);
+
   const calculateQdmTestCases = () => {
     try {
       const calculationResult = qdmCalculation.current.calculateQdmTestCases();
@@ -85,7 +86,7 @@ const EditTestCase = () => {
     initialValues: {
       ...currentTestCase,
     },
-    // validationSchema: QDMPatientSchemaValidator, to do
+    validationSchema: TestCaseValidator,
     enableReinitialize: true,
     onSubmit: (currentTestCase: TestCase) => {
       testCaseService.current
@@ -121,7 +122,7 @@ const EditTestCase = () => {
                 <LeftPanel canEdit={canEdit} />
               </Allotment.Pane>
               <Allotment.Pane>
-                <RightPanel />
+                <RightPanel canEdit={canEdit} />
               </Allotment.Pane>
             </Allotment>
           </div>
