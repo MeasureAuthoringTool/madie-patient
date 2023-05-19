@@ -12,7 +12,6 @@ const testcase: TestCase = {
   id: "1",
   title: "Test Case",
 } as TestCase;
-const setTestCaseJson = jest.fn();
 
 describe("TabHeadings", () => {
   test("TabHeading does in fact exist with specified text", async () => {
@@ -29,12 +28,9 @@ describe("TabHeadings", () => {
     const foundTitle = await findByText(title);
     // open
     expect(foundTitle).toBeInTheDocument();
-    act(() => {
-      fireEvent.click(foundTitle);
-    });
     const foundBody = await findByTestId(expectedId);
     expect(foundBody).toBeInTheDocument();
-    // close
+
     act(() => {
       fireEvent.click(foundTitle);
     });

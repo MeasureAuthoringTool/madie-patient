@@ -26,7 +26,6 @@ import {
   GENDER_CODE_OPTIONS,
   getGenderDataElement,
   getBirthDateElement,
-  getNewCode,
   getRaceDataElement,
 } from "./DemographicsSectionConst";
 import { MenuItem as MuiMenuItem } from "@mui/material";

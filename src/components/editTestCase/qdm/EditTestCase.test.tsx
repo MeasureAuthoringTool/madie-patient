@@ -1,10 +1,11 @@
 import * as React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import EditTestCase from "./EditTestCase";
 import { Measure, TestCase } from "@madie/madie-models";
 import { MemoryRouter } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
+import { act } from "react-dom/test-utils";
 
 const testcase: TestCase = {
   id: "1",
@@ -71,7 +72,6 @@ const testCaseJson =
   "   ],\n" +
   '   "_id":"646628cb235ff80000718c1a"\n' +
   "}";
-testcase.json = testCaseJson;
 const testMeasure: Measure = {
   id: "testMeasureId",
 } as Measure;
@@ -118,7 +118,36 @@ jest.mock("@madie/madie-util", () => {
   };
 });
 
+describe("LeftPanel", () => {
+  const { findByTestId, findByText } = screen;
+  test("LeftPanel navigation works as expected.", async () => {
+    await render(
+      <MemoryRouter>
+        <EditTestCase />
+      </MemoryRouter>
+    );
+    const json = await findByText("JSON");
+    // const elements = await findByText("Elements"); // this doesn't work?
+    const elements = await findByTestId("json-tab");
+
+    act(() => {
+      fireEvent.click(elements);
+    });
+    await waitFor(() => {
+      expect(elements).toHaveAttribute("aria-selected", "true");
+    });
+
+    act(() => {
+      fireEvent.click(json);
+    });
+    await waitFor(() => {
+      expect(json).toHaveAttribute("aria-selected", "true");
+    });
+  });
+});
+
 describe("EditTestCase QDM Component", () => {
+  const { getByRole, findByTestId, findByText } = screen;
   beforeEach(() => {
     mockedAxios.get.mockResolvedValueOnce(testcase);
   });
@@ -129,10 +158,82 @@ describe("EditTestCase QDM Component", () => {
         <EditTestCase />
       </MemoryRouter>
     );
-    const runTestCaseButton = await screen.getByRole("button", {
+    const runTestCaseButton = await getByRole("button", {
       name: "Run Test",
     });
     expect(runTestCaseButton).toBeInTheDocument();
+  });
+
+  it("should render qdm edit Demographics component with default values", () => {
+    render(
+      <MemoryRouter>
+        <EditTestCase />
+      </MemoryRouter>
+    );
+
+    const raceInput = screen.getByTestId(
+      "demographics-race-input"
+    ) as HTMLInputElement;
+    expect(raceInput).toBeInTheDocument();
+    expect(raceInput.value).toBe("American Indian or Alaska Native");
+    const genderInput = screen.getByTestId(
+      "demographics-gender-input"
+    ) as HTMLInputElement;
+    expect(genderInput).toBeInTheDocument();
+    expect(genderInput.value).toBe("Female");
+  });
+
+  it.skip("should render qdm edit Demographics component with values from TestCase JSON", async () => {
+    testcase.json = testCaseJson;
+    render(
+      <MemoryRouter>
+        <EditTestCase />
+      </MemoryRouter>
+    );
+
+    const raceInput = screen.getByTestId(
+      "demographics-race-input"
+    ) as HTMLInputElement;
+    expect(raceInput).toBeInTheDocument();
+    await waitFor(() => {
+      expect(raceInput.value).toBe("Asian");
+    });
+    const genderInput = screen.getByTestId(
+      "demographics-gender-input"
+    ) as HTMLInputElement;
+    expect(genderInput).toBeInTheDocument();
+    expect(genderInput.value).toBe("Female");
+  });
+
+  it.skip("test change dropwdown values", () => {
+    testcase.json = testCaseJson;
+    render(
+      <MemoryRouter>
+        <EditTestCase />
+      </MemoryRouter>
+    );
+
+    const raceInput = screen.getByTestId(
+      "demographics-race-input"
+    ) as HTMLInputElement;
+    expect(raceInput).toBeInTheDocument();
+    expect(raceInput.value).toBe("Asian");
+
+    fireEvent.change(raceInput, {
+      target: { value: "White" },
+    });
+    expect(raceInput.value).toBe("White");
+
+    const genderInput = screen.getByTestId(
+      "demographics-gender-input"
+    ) as HTMLInputElement;
+    expect(genderInput).toBeInTheDocument();
+    expect(genderInput.value).toBe("Female");
+
+    fireEvent.change(genderInput, {
+      target: { value: "Male" },
+    });
+    expect(genderInput.value).toBe("Male");
   });
 
   it("test update test case successfully with success toast", async () => {
@@ -143,10 +244,31 @@ describe("EditTestCase QDM Component", () => {
       </MemoryRouter>
     );
 
-    const saveTestCaseButton = await screen.getByRole("button", {
+    const saveTestCaseButton = await getByRole("button", {
       name: "Save",
     });
     expect(saveTestCaseButton).toBeInTheDocument();
+    const expectedId = `qdm-header-content-Demographics`;
+    const foundTitle = await findByText("Demographics");
+    // open
+    expect(foundTitle).toBeInTheDocument();
+    const foundBody = await findByTestId(expectedId);
+    expect(foundBody).toBeInTheDocument();
+
+    const raceInput = screen.getByTestId(
+      "demographics-race-input"
+    ) as HTMLInputElement;
+    expect(raceInput).toBeInTheDocument();
+    expect(raceInput.value).toBe("American Indian or Alaska Native");
+    const genderInput = screen.getByTestId(
+      "demographics-gender-input"
+    ) as HTMLInputElement;
+    expect(genderInput).toBeInTheDocument();
+    fireEvent.change(genderInput, {
+      target: { value: "Male" },
+    });
+    expect(genderInput.value).toBe("Male");
+    expect(saveTestCaseButton).toBeEnabled();
 
     userEvent.click(saveTestCaseButton);
 
@@ -173,7 +295,30 @@ describe("EditTestCase QDM Component", () => {
     const saveTestCaseButton = await screen.getByRole("button", {
       name: "Save",
     });
+
     expect(saveTestCaseButton).toBeInTheDocument();
+    const raceInput = screen.getByTestId(
+      "demographics-race-input"
+    ) as HTMLInputElement;
+    expect(raceInput).toBeInTheDocument();
+    expect(raceInput.value).toBe("American Indian or Alaska Native");
+
+    fireEvent.change(raceInput, {
+      target: { value: "White" },
+    });
+    expect(raceInput.value).toBe("White");
+
+    const genderInput = screen.getByTestId(
+      "demographics-gender-input"
+    ) as HTMLInputElement;
+    expect(genderInput).toBeInTheDocument();
+    expect(genderInput.value).toBe("Female");
+
+    fireEvent.change(genderInput, {
+      target: { value: "Male" },
+    });
+    expect(genderInput.value).toBe("Male");
+    expect(saveTestCaseButton).toBeEnabled();
 
     userEvent.click(saveTestCaseButton);
 

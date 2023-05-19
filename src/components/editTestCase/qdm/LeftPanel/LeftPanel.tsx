@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import LeftPanelNavTabs from "./LeftPanelNavTabs";
-import ElementsTab from "./ElementsTab.tsx/ElementsTab";
-import { TestCase } from "@madie/madie-models";
+import ElementsTab from "./ElementsTab/ElementsTab";
 
 const LeftPanel = (props: { canEdit: boolean }) => {
   const [activeTab, setActiveTab] = useState<string>("elements");

@@ -60,12 +60,10 @@ const EditTestCase = () => {
   const testCaseService = useRef(useTestCaseServiceApi());
   const [currentTestCase, setCurrentTestCase] = useState<TestCase>(null);
   const { measureId, id } = useParams();
-  const [testCaseJson, setTestCaseJson] = useState<string>(null);
 
   const retrieveTestCase = useCallback(() => {
     testCaseService.current.getTestCase(id, measureId).then((tc: TestCase) => {
       setCurrentTestCase(tc);
-      setTestCaseJson(tc.json);
     });
   }, [measureId, id, testCaseService]);
   useEffect(() => {
@@ -143,7 +141,12 @@ const EditTestCase = () => {
             >
               Run Test
             </Button>
-            <Button variant="cyan" disabled={!formik.dirty} type="submit">
+            <Button
+              variant="cyan"
+              data-testid="qdm-test-case-save-button"
+              disabled={!formik.dirty}
+              type="submit"
+            >
               Save
             </Button>
             <Button variant="outline-filled">Discard Changes</Button>
