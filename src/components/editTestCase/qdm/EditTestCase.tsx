@@ -18,9 +18,6 @@ import { useFormik, FormikProvider } from "formik";
 
 import "allotment/dist/style.css";
 import "./EditTestCase.scss";
-import tw from "twin.macro";
-
-const TestCaseForm = tw.form`m-3`;
 
 const EditTestCase = () => {
   useDocumentTitle("MADiE Edit Measure Edit Test Case");
