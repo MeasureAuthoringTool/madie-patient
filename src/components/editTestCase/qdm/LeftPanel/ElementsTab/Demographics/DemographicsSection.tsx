@@ -46,8 +46,6 @@ const DemographicsSection = ({ canEdit }) => {
   const [raceDataElement, setRaceDataElement] = useState<DataElement>();
   const [genderDataElement, setGenderDataElement] = useState<DataElement>();
 
-  const pcr = new PatientCharacteristicRace();
-
   const selectOptions = (options) => {
     return [
       options
