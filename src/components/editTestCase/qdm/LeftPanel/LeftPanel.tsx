@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import LeftPanelNavTabs from "./LeftPanelNavTabs";
-import TabHeading from "../TabHeading";
+import ElementsTab from "./ElementsTab/ElementsTab";
 
-const LeftPanel = () => {
+const LeftPanel = (props: { canEdit: boolean }) => {
   const [activeTab, setActiveTab] = useState<string>("elements");
   return (
     <div className="left-panel">
@@ -10,8 +10,7 @@ const LeftPanel = () => {
         <LeftPanelNavTabs activeTab={activeTab} setActiveTab={setActiveTab} />
       </div>
       <div className="panel-content">
-        <TabHeading title="Demographics" />
-        <TabHeading title="Elements" />
+        {activeTab === "elements" && <ElementsTab canEdit={props.canEdit} />}
       </div>
     </div>
   );

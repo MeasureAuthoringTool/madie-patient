@@ -1,12 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useCallback, useState } from "react";
 import {
-  checkUserCanEdit,
-  measureStore,
   useDocumentTitle,
+  measureStore,
+  checkUserCanEdit,
 } from "@madie/madie-util";
 import {
-  PopulationExpectedValue,
   TestCase,
+  PopulationExpectedValue,
   Group,
   GroupPopulation,
 } from "@madie/madie-models";
@@ -19,22 +19,30 @@ import LeftPanel from "./LeftPanel/LeftPanel";
 import EditTestCaseBreadCrumbs from "./EditTestCaseBreadCrumbs";
 import { useNavigate, useParams } from "react-router-dom";
 import useTestCaseServiceApi from "../../../api/useTestCaseServiceApi";
+import { useFormik, FormikProvider } from "formik";
 import "allotment/dist/style.css";
 import "./EditTestCase.scss";
-import useExecutionContext from "../../routes/qiCore/useExecutionContext";
-import { useFormik } from "formik";
 import { sanitizeUserInput } from "../../../util/Utils";
 import * as _ from "lodash";
 import "styled-components/macro";
 import { getPopulationTypesForScoring } from "../../../util/PopulationsMap";
-
-export interface EditTestCaseProps {
-  errors: Array<string>;
-  setErrors: (value: Array<string>) => void;
-}
-
-const EditTestCase = (props: EditTestCaseProps) => {
+const EditTestCase = () => {
   useDocumentTitle("MADiE Edit Measure Edit Test Case");
+
+  const [measure, setMeasure] = useState<any>(measureStore.state);
+  useEffect(() => {
+    const subscription = measureStore.subscribe(setMeasure);
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const canEdit = checkUserCanEdit(
+    measure?.createdBy,
+    measure?.acls,
+    measure?.measureMetaData?.draft
+  );
+
   // Toast utilities
   const [toastOpen, setToastOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>("");
@@ -51,16 +59,6 @@ const EditTestCase = (props: EditTestCaseProps) => {
     setToastType(toastType);
     setToastMessage(message);
   };
-
-  const { measureState } = useExecutionContext();
-  const [measure] = measureState;
-  const { updateMeasure } = measureStore;
-
-  const canEdit = checkUserCanEdit(
-    measure?.createdBy,
-    measure?.acls,
-    measure?.measureMetaData?.draft
-  );
 
   const qdmCalculation = useRef(qdmCalculationService());
   const testCaseService = useRef(useTestCaseServiceApi());
@@ -104,12 +102,9 @@ const EditTestCase = (props: EditTestCaseProps) => {
       });
       setCurrentTestCase(_.cloneDeep(updatedTestCase));
       updateMeasureStore(updatedTestCase);
-      showToast(`Test Case Updated Successfully`, "success");
+      showToast("Test Case Updated Successfully", "success");
     } catch (error) {
-      props.setErrors([
-        ...props.errors,
-        "An error occurred while updating the test case.",
-      ]);
+      showToast(`Error updating Test Case "${measure.measureName}"`, "danger");
     }
   };
 
@@ -126,8 +121,11 @@ const EditTestCase = (props: EditTestCaseProps) => {
       measureCopy.testCases = [testCase];
     }
     // update measure store
-    updateMeasure(measureCopy);
+    setMeasure(measureCopy);
   }
+
+  // eslint-disable-next-line no-console
+  console.log("measure", measure);
 
   // maps measure.group => testcase.groupPopulation
   // if patient based, then default for expected and actual is false, else null
@@ -150,8 +148,6 @@ const EditTestCase = (props: EditTestCaseProps) => {
       ),
     };
   };
-
-  console.log("measure", measure);
 
   // Fetches test case based on ID, identifies measure.group converts it to testcase.groupPopulation
   // if the measure.group is not in TC then a new testcase.groupPopulation is added to nextTc
@@ -201,73 +197,79 @@ const EditTestCase = (props: EditTestCaseProps) => {
       showToast("Error while calculating QDM test cases", "danger");
     }
   };
+
   // Todo Need back end changes to save populations
+
   return (
     <>
-      <EditTestCaseBreadCrumbs
-        testCase={currentTestCase}
-        measureId={measureId}
-      />
-      <form id="edit-test-case-form" onSubmit={formik.handleSubmit}>
-        <div className="allotment-wrapper">
-          <Allotment defaultSizes={[200, 100]} vertical={false}>
-            <Allotment.Pane>
-              <LeftPanel />
-            </Allotment.Pane>
-            <Allotment.Pane>
-              <RightPanel
-                canEdit={canEdit}
-                groupPopulations={groupPopulations}
-                errors={formik.errors.groupPopulations}
-                onChange={(groupPopulations) => {
-                  formik.setFieldValue("groupPopulations", groupPopulations);
-                }}
-              />
-            </Allotment.Pane>
-          </Allotment>
-        </div>
-
-        <div className="bottom-row">
-          {/* shows up in some mockups. leaving for later */}
-          {/* <Button variant="outline-filled">Import</Button> */}
-          <div className="spacer" />
-          <Button
-            variant="primary"
-            data-testid="qdm-test-case-run-button"
-            onClick={calculateQdmTestCases}
-            disabled={!canEdit}
-          >
-            Run Test
-          </Button>
-          <Button
-            variant="cyan"
-            type="submit"
-            data-testid="edit-test-case-save-button"
-            // todo rohit uncomment this before pushing changes
-            disabled={!(formik.dirty && formik.isValid) || !canEdit}
-          >
-            Save
-          </Button>
-          <Button variant="outline-filled" disabled={!formik.dirty || !canEdit}>
-            {/* variant="outline-filled" */}
-            Discard Changes
-          </Button>
-        </div>
-        {/* outside flow of page */}
-        <Toast
-          toastKey="edit-action-toast"
-          aria-live="polite"
-          toastType={toastType}
-          testId={toastType === "danger" ? "error-toast" : "success-toast"}
-          closeButtonProps={{
-            "data-testid": "close-toast-button",
-          }}
-          open={toastOpen}
-          message={toastMessage}
-          onClose={onToastClose}
-          autoHideDuration={10000}
+      <FormikProvider value={formik}>
+        <EditTestCaseBreadCrumbs
+          testCase={currentTestCase}
+          measureId={measureId}
         />
-      </form>
+        <form id="edit-test-case-form" onSubmit={formik.handleSubmit}>
+          <div className="allotment-wrapper">
+            <Allotment defaultSizes={[200, 100]} vertical={false}>
+              <Allotment.Pane>
+                <LeftPanel canEdit={canEdit} />
+              </Allotment.Pane>
+              <Allotment.Pane>
+                <RightPanel
+                  canEdit={canEdit}
+                  groupPopulations={groupPopulations}
+                  errors={formik.errors.groupPopulations}
+                  onChange={(groupPopulations) => {
+                    formik.setFieldValue("groupPopulations", groupPopulations);
+                  }}
+                />
+              </Allotment.Pane>
+            </Allotment>
+          </div>
+
+          <div className="bottom-row">
+            {/* shows up in some mockups. leaving for later */}
+            {/* <Button variant="outline-filled">Import</Button> */}
+            <div className="spacer" />
+            <Button
+              variant="primary"
+              data-testid="qdm-test-case-run-button"
+              onClick={calculateQdmTestCases}
+              disabled={!canEdit}
+            >
+              Run Test
+            </Button>
+            <Button
+              variant="cyan"
+              type="submit"
+              data-testid="edit-test-case-save-button"
+              disabled={!(formik.dirty && formik.isValid) || !canEdit}
+            >
+              Save
+            </Button>
+            <Button
+              variant="outline-filled"
+              disabled={!formik.dirty || !canEdit}
+            >
+              {/* variant="outline-filled" */}
+              Discard Changes
+            </Button>
+          </div>
+          {/* outside flow of page */}
+          <Toast
+            toastKey="edit-action-toast"
+            aria-live="polite"
+            toastType={toastType}
+            testId={toastType === "danger" ? "error-toast" : "success-toast"}
+            closeButtonProps={{
+              "data-testid": "close-toast-button",
+            }}
+            open={toastOpen}
+            message={toastMessage}
+            onClose={onToastClose}
+            autoHideDuration={10000}
+          />
+        </form>
+      </FormikProvider>
     </>
   );
 };
