@@ -25,28 +25,8 @@ import useExecutionContext from "../../routes/qiCore/useExecutionContext";
 import { useFormik } from "formik";
 import { sanitizeUserInput } from "../../../util/Utils";
 import * as _ from "lodash";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import tw, { styled } from "twin.macro";
 import "styled-components/macro";
 import { getPopulationTypesForScoring } from "../../../util/PopulationsMap";
-
-interface AlertProps {
-  status?: "success" | "warning" | "error" | "info" | null;
-  message?: any;
-}
-
-const Alert = styled.div<AlertProps>(({ status = "default" }) => [
-  styles[status],
-  tw`rounded-lg p-2 m-2 text-base inline-flex items-center w-11/12`,
-]);
-
-const styles = {
-  success: tw`bg-green-100 text-green-700`,
-  warning: tw`bg-yellow-100 text-yellow-700`,
-  error: tw`bg-red-100 text-red-700`,
-  default: tw`bg-blue-100 text-blue-700`,
-};
 
 export interface EditTestCaseProps {
   errors: Array<string>;
@@ -89,7 +69,6 @@ const EditTestCase = (props: EditTestCaseProps) => {
   const { measureId, id } = useParams();
 
   const [currentTestCase, setCurrentTestCase] = useState<TestCase>(null);
-  const [alert, setAlert] = useState<AlertProps>(null);
   const [groupPopulations, setGroupPopulations] = useState<GroupPopulation[]>(
     []
   );
@@ -172,7 +151,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
     };
   };
 
-  // todo Unable to create CV measures as observation validations could be incorrect
+  console.log("measure", measure);
 
   // Fetches test case based on ID, identifies measure.group converts it to testcase.groupPopulation
   // if the measure.group is not in TC then a new testcase.groupPopulation is added to nextTc
@@ -222,38 +201,13 @@ const EditTestCase = (props: EditTestCaseProps) => {
       showToast("Error while calculating QDM test cases", "danger");
     }
   };
-
-  console.log("formik values", formik.values);
-
-  // Todo Rohit Save populations
-  // Need back end changes to save populations
-
+  // Todo Need back end changes to save populations
   return (
     <>
       <EditTestCaseBreadCrumbs
         testCase={currentTestCase}
         measureId={measureId}
       />
-      {alert && (
-        <Alert
-          status={alert?.status}
-          role="alert"
-          aria-label="Edit Alert"
-          data-testid="edit-test-case-alert"
-        >
-          {alert?.message}
-          <button
-            data-testid="close-edit-test-case-alert"
-            type="button"
-            tw="box-content h-4 p-1 ml-3 mb-1.5"
-            data-bs-dismiss="alert"
-            aria-label="Close Alert"
-            onClick={() => setAlert(null)}
-          >
-            <FontAwesomeIcon icon={faTimes} />
-          </button>
-        </Alert>
-      )}
       <form id="edit-test-case-form" onSubmit={formik.handleSubmit}>
         <div className="allotment-wrapper">
           <Allotment defaultSizes={[200, 100]} vertical={false}>
@@ -294,7 +248,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
           >
             Save
           </Button>
-          <Button variant="outline-filled">
+          <Button variant="outline-filled" disabled={!formik.dirty || !canEdit}>
             {/* variant="outline-filled" */}
             Discard Changes
           </Button>
