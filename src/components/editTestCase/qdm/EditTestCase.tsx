@@ -14,11 +14,10 @@ import LeftPanel from "./LeftPanel/LeftPanel";
 import EditTestCaseBreadCrumbs from "./EditTestCaseBreadCrumbs";
 import { useParams } from "react-router-dom";
 import useTestCaseServiceApi from "../../../api/useTestCaseServiceApi";
+import { useFormik, FormikProvider } from "formik";
+
 import "allotment/dist/style.css";
 import "./EditTestCase.scss";
-import tw from "twin.macro";
-
-const TestCaseForm = tw.form`m-3`;
 
 const EditTestCase = () => {
   useDocumentTitle("MADiE Edit Measure Edit Test Case");
@@ -58,12 +57,10 @@ const EditTestCase = () => {
   const testCaseService = useRef(useTestCaseServiceApi());
   const [currentTestCase, setCurrentTestCase] = useState<TestCase>(null);
   const { measureId, id } = useParams();
-  const [testCaseJson, setTestCaseJson] = useState<string>(null);
 
   const retrieveTestCase = useCallback(() => {
     testCaseService.current.getTestCase(id, measureId).then((tc: TestCase) => {
       setCurrentTestCase(tc);
-      setTestCaseJson(tc.json);
     });
   }, [measureId, id, testCaseService]);
   useEffect(() => {
@@ -84,91 +81,90 @@ const EditTestCase = () => {
     }
   };
 
-  const submitForm = () => {
-    const submitTestCase = {
+  const formik = useFormik({
+    initialValues: {
       ...currentTestCase,
-      json: testCaseJson,
-    };
+    },
+    // validationSchema: QDMPatientSchemaValidator, to do
+    enableReinitialize: true,
+    onSubmit: (currentTestCase: TestCase) => {
+      testCaseService.current
+        .updateTestCase(currentTestCase, measureId)
+        .then((t) => {
+          setCurrentTestCase(t);
+          showToast(`Test Case Updated Successfully`, "success");
+        })
+        .catch(() => {
+          const message = `Error updating Test Case "${measure.measureName}"`;
+          showToast(message, "danger");
+        });
+    },
+  });
 
-    testCaseService.current
-      .updateTestCase(submitTestCase, measureId)
-      .then(() => {
-        showToast(`Test Case Updated Successfully`, "success");
-      })
-      .catch(() => {
-        const message = `Error updating Test Case "${measure.measureName}"`;
-        showToast(message, "danger");
-      });
-  };
+  // probably define all initial values here
 
   return (
-    <TestCaseForm>
-      <EditTestCaseBreadCrumbs
-        testCase={currentTestCase}
-        measureId={measureId}
-      />
-      <form id="edit-test-case-qdm">
-        <div className="allotment-wrapper">
-          <Allotment
-            defaultSizes={[200, 100]}
-            // proportionalLayout={true}
-            separator={true}
-            vertical={false}
-          >
-            <Allotment.Pane>
-              <LeftPanel
-                currentTestCase={currentTestCase}
-                setTestCaseJson={setTestCaseJson}
-                canEdit={canEdit}
-              />
-            </Allotment.Pane>
-            <Allotment.Pane>
-              <RightPanel />
-            </Allotment.Pane>
-          </Allotment>
-        </div>
-
-        <div className="bottom-row">
-          {/* shows up in some mockups. leaving for later */}
-          {/* <Button variant="outline-filled">Import</Button> */}
-          <div className="spacer" />
-          <Button
-            variant="primary"
-            data-testid="qdm-test-case-run-button"
-            onClick={calculateQdmTestCases}
-          >
-            Run Test
-          </Button>
-          <Button
-            variant="cyan"
-            data-testid="qdm-test-case-save-button"
-            onClick={() => {
-              submitForm();
-            }}
-          >
-            Save
-          </Button>
-          <Button variant="outline-filled">
-            {/* variant="outline-filled" */}
-            Discard Changes
-          </Button>
-        </div>
-        {/* outside flow of page */}
-        <Toast
-          toastKey="edit-action-toast"
-          aria-live="polite"
-          toastType={toastType}
-          testId={toastType === "danger" ? "error-toast" : "success-toast"}
-          closeButtonProps={{
-            "data-testid": "close-toast-button",
-          }}
-          open={toastOpen}
-          message={toastMessage}
-          onClose={onToastClose}
-          autoHideDuration={10000}
+    <>
+      <FormikProvider value={formik}>
+        <EditTestCaseBreadCrumbs
+          testCase={currentTestCase}
+          measureId={measureId}
         />
-      </form>
-    </TestCaseForm>
+        <form id="edit-test-case-qdm" onSubmit={formik.handleSubmit}>
+          <div className="allotment-wrapper">
+            <Allotment
+              defaultSizes={[200, 100]}
+              separator={true}
+              vertical={false}
+            >
+              <Allotment.Pane>
+                <LeftPanel canEdit={canEdit} />
+              </Allotment.Pane>
+              <Allotment.Pane>
+                <RightPanel />
+              </Allotment.Pane>
+            </Allotment>
+          </div>
+
+          <div className="bottom-row">
+            {/* shows up in some mockups. leaving for later */}
+            {/* <Button variant="outline-filled">Import</Button> */}
+            <div className="spacer" />
+            <Button
+              variant="primary"
+              data-testid="qdm-test-case-run-button"
+              onClick={calculateQdmTestCases}
+              type="submit"
+            >
+              Run Test
+            </Button>
+            <Button
+              variant="cyan"
+              data-testid="qdm-test-case-save-button"
+              disabled={!formik.dirty}
+              type="submit"
+            >
+              Save
+            </Button>
+            <Button variant="outline-filled">Discard Changes</Button>
+          </div>
+          {/* outside flow of page */}
+          <Toast
+            toastKey="edit-action-toast"
+            aria-live="polite"
+            toastType={toastType}
+            testId={toastType === "danger" ? "error-toast" : "success-toast"}
+            closeButtonProps={{
+              "data-testid": "close-toast-button",
+            }}
+            open={toastOpen}
+            message={toastMessage}
+            onClose={onToastClose}
+            autoHideDuration={10000}
+          />
+        </form>
+      </FormikProvider>
+    </>
   );
 };
 
