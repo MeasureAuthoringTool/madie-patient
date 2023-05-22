@@ -983,9 +983,12 @@ const EditTestCase = (props: EditTestCaseProps) => {
                       >
                         {error.diagnostics.includes("Meta.profile")
                           ? "Meta.profile"
-                          : error.severity.charAt(0).toUpperCase() +
-                            error.severity.slice(1)}
-                        : {error.diagnostics}
+                          : error.severity
+                          ? error.severity.charAt(0).toUpperCase() +
+                            error.severity.slice(1) +
+                            ": "
+                          : ""}
+                        {error.diagnostics}
                       </ValidationAlertCard>
                     );
                   })
