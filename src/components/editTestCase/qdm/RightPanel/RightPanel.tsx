@@ -7,10 +7,10 @@ import DetailsSection from "./DetailsTab/DetailsSection";
 
 interface RightPanelProps {
   canEdit: Boolean;
+  measureName: string;
 }
 const RightPanel = (props: RightPanelProps) => {
-  const { canEdit } = props;
-
+  const { canEdit, measureName } = props;
   // const [activeTab, setActiveTab] = useState<string>("highlighting");
   const [activeTab, setActiveTab] = useState<string>("details");
   console.log("activetab", activeTab);
@@ -24,7 +24,9 @@ const RightPanel = (props: RightPanelProps) => {
         </IconButton>
       </div>
       <div className="panel-content">
-        {activeTab === "details" && <DetailsSection canEdit={canEdit} />}
+        {activeTab === "details" && (
+          <DetailsSection canEdit={canEdit} measureName={measureName} />
+        )}
       </div>
       {/* header end */}
     </div>

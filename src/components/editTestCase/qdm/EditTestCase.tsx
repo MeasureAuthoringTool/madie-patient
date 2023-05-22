@@ -103,7 +103,6 @@ const EditTestCase = () => {
   });
 
   // probably define all initial values here
-
   return (
     <>
       <FormikProvider value={formik}>
@@ -122,7 +121,10 @@ const EditTestCase = () => {
                 <LeftPanel canEdit={canEdit} />
               </Allotment.Pane>
               <Allotment.Pane>
-                <RightPanel canEdit={canEdit} />
+                <RightPanel
+                  canEdit={canEdit}
+                  measureName={measure?.measureName}
+                />
               </Allotment.Pane>
             </Allotment>
           </div>

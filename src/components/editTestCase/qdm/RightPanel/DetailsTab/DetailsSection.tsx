@@ -12,13 +12,14 @@ import { InputLabelStyle, seriesStyles } from "./DetailsSectionStyles";
 
 interface DetailsSectionProps {
   canEdit: Boolean;
+  measureName: string;
   // to do, hook up alert/error if needed
   // setErrors: Function;
   // setAlert: Function;
 }
 const DetailsSection = (props: DetailsSectionProps) => {
   const { measureId, id } = useParams();
-  const { canEdit } = props;
+  const { canEdit, measureName } = props;
   const [seriesState, setSeriesState] = useState<any>({
     loaded: false,
     series: [],
@@ -26,8 +27,6 @@ const DetailsSection = (props: DetailsSectionProps) => {
 
   const formik: any = useFormikContext();
   const testCaseService = useRef(useTestCaseServiceApi());
-
-  console.log("formik.values", formik);
 
   useEffect(() => {
     if (!seriesState.loaded) {
@@ -49,7 +48,7 @@ const DetailsSection = (props: DetailsSectionProps) => {
 
   return (
     <ElementSection
-      title={formik?.initialValues?.title}
+      title={measureName}
       children={
         <div data-testId="qdm-details-section" id="qdm-details-section">
           <TextField
