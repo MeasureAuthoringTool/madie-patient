@@ -982,7 +982,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
                         }
                       >
                         {error.diagnostics.includes("Meta.profile")
-                          ? "Meta.profile"
+                          ? "Meta.profile: "
                           : error.severity
                           ? error.severity.charAt(0).toUpperCase() +
                             error.severity.slice(1) +
