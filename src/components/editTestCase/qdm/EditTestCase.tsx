@@ -15,7 +15,8 @@ import EditTestCaseBreadCrumbs from "./EditTestCaseBreadCrumbs";
 import { useParams } from "react-router-dom";
 import useTestCaseServiceApi from "../../../api/useTestCaseServiceApi";
 import { useFormik, FormikProvider } from "formik";
-import { TestCaseValidator } from "../../../validators/TestCaseValidator";
+import { QDMPatientSchemaValidator } from "./QDMPatientSchemaValidator";
+
 import "allotment/dist/style.css";
 import "./EditTestCase.scss";
 
@@ -81,14 +82,23 @@ const EditTestCase = () => {
       showToast("Error while calculating QDM test cases", "danger");
     }
   };
-
+  const {
+    title = "",
+    description = "",
+    series = "",
+    json = "",
+  } = currentTestCase || {};
   const formik = useFormik({
     initialValues: {
-      ...currentTestCase,
+      title,
+      description,
+      series,
+      json,
+      id,
     },
-    validationSchema: TestCaseValidator,
+    validationSchema: QDMPatientSchemaValidator,
     enableReinitialize: true,
-    onSubmit: (currentTestCase: TestCase) => {
+    onSubmit: (currentTestCase: any) => {
       testCaseService.current
         .updateTestCase(currentTestCase, measureId)
         .then((t) => {
@@ -101,8 +111,6 @@ const EditTestCase = () => {
         });
     },
   });
-
-  // probably define all initial values here
   return (
     <>
       <FormikProvider value={formik}>

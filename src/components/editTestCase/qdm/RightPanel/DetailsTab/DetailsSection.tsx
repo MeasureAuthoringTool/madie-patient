@@ -45,7 +45,11 @@ const DetailsSection = (props: DetailsSectionProps) => {
         });
     }
   }, [id, measureId, testCaseService, seriesState.loaded]);
-
+  function formikErrorHandler(name: string) {
+    if (formik.touched[name] && formik.errors[name]) {
+      return `${formik.errors[name]}`;
+    }
+  }
   return (
     <ElementSection
       title={measureName}
@@ -53,8 +57,18 @@ const DetailsSection = (props: DetailsSectionProps) => {
         <div data-testId="qdm-details-section" id="qdm-details-section">
           <TextField
             label="Title"
-            {...formik.getFieldProps("title")}
+            placeholder="Test Case Title"
             required
+            disabled={!canEdit}
+            id="test-case-title"
+            inputProps={{
+              "data-testid": "test-case-title",
+              "aria-describedby": "title-helper-text",
+            }}
+            helperText={formikErrorHandler("title")}
+            size="small"
+            error={formik.touched.title && Boolean(formik.errors.title)}
+            {...formik.getFieldProps("title")}
           />
           <TextArea
             placeholder="Test Case Description"
@@ -68,24 +82,23 @@ const DetailsSection = (props: DetailsSectionProps) => {
               "data-testid": "test-case-description",
               "aria-describedby": "description-helper-text",
             }}
-            onChange={formik.handleChange}
-            value={formik.values.description}
             error={
               formik.touched.description && Boolean(formik.errors.description)
             }
-            // helperText={formikErrorHandler("description")} // todo
+            helperText={formikErrorHandler("description")}
           />
           <div>
             <InputLabel
               htmlFor={"test-case-series"}
               style={{ marginBottom: 8, height: 16 }}
               sx={InputLabelStyle}
+              disabled={!canEdit}
             >
               Groups
             </InputLabel>
             <TestCaseSeries
               disabled={!canEdit}
-              value={formik.values.series}
+              value={formik?.values?.series || ""} // this additional check is needed since formik is blank and undefined breaks update
               onChange={(nextValue) =>
                 formik.setFieldValue("series", nextValue)
               }

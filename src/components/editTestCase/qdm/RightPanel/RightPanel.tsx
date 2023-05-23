@@ -11,9 +11,7 @@ interface RightPanelProps {
 }
 const RightPanel = (props: RightPanelProps) => {
   const { canEdit, measureName } = props;
-  // const [activeTab, setActiveTab] = useState<string>("highlighting");
-  const [activeTab, setActiveTab] = useState<string>("details");
-  console.log("activetab", activeTab);
+  const [activeTab, setActiveTab] = useState<string>("highlighting");
   return (
     <div className="right-panel">
       <div className="tab-container">
