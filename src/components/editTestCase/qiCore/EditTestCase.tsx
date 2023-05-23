@@ -243,8 +243,8 @@ const EditTestCase = (props: EditTestCaseProps) => {
   const { updateMeasure } = measureStore;
   const load = useRef(0);
   const canEdit = checkUserCanEdit(
-    measure?.createdBy,
-    measure?.acls,
+    measure?.measureSet?.owner,
+    measure?.measureSet?.acls,
     measure?.measureMetaData?.draft
   );
 
