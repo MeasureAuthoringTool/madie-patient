@@ -3,7 +3,14 @@ import RightPanelNavTabs from "./RightPanelNavTabs";
 import KeyboardTabIcon from "@mui/icons-material/KeyboardTab";
 import { IconButton } from "@mui/material";
 
-const RightPanel = () => {
+import DetailsSection from "./DetailsTab/DetailsSection";
+
+interface RightPanelProps {
+  canEdit: Boolean;
+  measureName: string;
+}
+const RightPanel = (props: RightPanelProps) => {
+  const { canEdit, measureName } = props;
   const [activeTab, setActiveTab] = useState<string>("highlighting");
   return (
     <div className="right-panel">
@@ -14,7 +21,11 @@ const RightPanel = () => {
           <KeyboardTabIcon className="back-icon" />
         </IconButton>
       </div>
-      <div className="panel-content" />
+      <div className="panel-content">
+        {activeTab === "details" && (
+          <DetailsSection canEdit={canEdit} measureName={measureName} />
+        )}
+      </div>
       {/* header end */}
     </div>
   );

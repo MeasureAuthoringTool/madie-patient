@@ -15,6 +15,7 @@ import EditTestCaseBreadCrumbs from "./EditTestCaseBreadCrumbs";
 import { useParams } from "react-router-dom";
 import useTestCaseServiceApi from "../../../api/useTestCaseServiceApi";
 import { useFormik, FormikProvider } from "formik";
+import { QDMPatientSchemaValidator } from "./QDMPatientSchemaValidator";
 
 import "allotment/dist/style.css";
 import "./EditTestCase.scss";
@@ -68,6 +69,7 @@ const EditTestCase = () => {
       retrieveTestCase();
     }
   }, [testCaseService, measureId, id]);
+
   const calculateQdmTestCases = () => {
     try {
       const calculationResult = qdmCalculation.current.calculateQdmTestCases();
@@ -80,14 +82,23 @@ const EditTestCase = () => {
       showToast("Error while calculating QDM test cases", "danger");
     }
   };
-
+  const {
+    title = "",
+    description = "",
+    series = "",
+    json = "",
+  } = currentTestCase || {};
   const formik = useFormik({
     initialValues: {
-      ...currentTestCase,
+      title,
+      description,
+      series,
+      json,
+      id,
     },
-    // validationSchema: QDMPatientSchemaValidator, to do
+    validationSchema: QDMPatientSchemaValidator,
     enableReinitialize: true,
-    onSubmit: (currentTestCase: TestCase) => {
+    onSubmit: (currentTestCase: any) => {
       testCaseService.current
         .updateTestCase(currentTestCase, measureId)
         .then((t) => {
@@ -100,9 +111,6 @@ const EditTestCase = () => {
         });
     },
   });
-
-  // probably define all initial values here
-
   return (
     <>
       <FormikProvider value={formik}>
@@ -121,7 +129,10 @@ const EditTestCase = () => {
                 <LeftPanel canEdit={canEdit} />
               </Allotment.Pane>
               <Allotment.Pane>
-                <RightPanel />
+                <RightPanel
+                  canEdit={canEdit}
+                  measureName={measure?.measureName}
+                />
               </Allotment.Pane>
             </Allotment>
           </div>
@@ -134,7 +145,6 @@ const EditTestCase = () => {
               variant="primary"
               data-testid="qdm-test-case-run-button"
               onClick={calculateQdmTestCases}
-              type="submit"
             >
               Run Test
             </Button>
