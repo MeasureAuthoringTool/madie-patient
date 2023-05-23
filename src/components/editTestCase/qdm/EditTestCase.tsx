@@ -145,7 +145,6 @@ const EditTestCase = () => {
               variant="primary"
               data-testid="qdm-test-case-run-button"
               onClick={calculateQdmTestCases}
-              type="submit"
             >
               Run Test
             </Button>
