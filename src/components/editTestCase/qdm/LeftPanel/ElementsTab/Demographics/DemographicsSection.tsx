@@ -176,6 +176,7 @@ const DemographicsSection = ({ canEdit }) => {
                     </InputLabel>
                     <div style={{ display: "flex" }}>
                       <DatePicker
+                        disabled={!canEdit}
                         disableOpenPicker
                         value={
                           qdmPatient?.birthDatetime
@@ -209,6 +210,7 @@ const DemographicsSection = ({ canEdit }) => {
                       />
                       <TimePicker
                         disableOpenPicker
+                        disabled={!canEdit}
                         value={
                           qdmPatient?.birthDatetime
                             ? dayjs(qdmPatient?.birthDatetime)

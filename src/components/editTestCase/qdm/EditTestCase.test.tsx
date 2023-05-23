@@ -91,7 +91,20 @@ const testCaseJson =
 const testMeasure: Measure = {
   id: "testMeasureId",
 } as Measure;
-
+const testTitle = async (title: string, clear = false) => {
+  const tcTitle = await screen.findByTestId("test-case-title");
+  expect(tcTitle).toBeInTheDocument();
+  if (clear) {
+    userEvent.clear(tcTitle);
+    await waitFor(() => {
+      expect(tcTitle).toHaveValue("");
+    });
+  }
+  userEvent.type(tcTitle, title);
+  await waitFor(() => {
+    expect(tcTitle).toHaveValue(title);
+  });
+};
 jest.mock("axios");
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -397,7 +410,7 @@ describe("EditTestCase QDM Component", () => {
     });
   });
   it("RightPanel navigation works as expected.", async () => {
-    await render(
+    render(
       <MemoryRouter>
         <EditTestCase />
       </MemoryRouter>
@@ -429,9 +442,6 @@ describe("EditTestCase QDM Component", () => {
   });
 
   it("Should render the details tab with relevant information", async () => {
-    useTestCaseServiceMock.mockImplementation(() => {
-      return useTestCaseServiceMockResolved;
-    });
     await render(
       <MemoryRouter>
         <EditTestCase />
@@ -457,26 +467,22 @@ describe("EditTestCase QDM Component", () => {
       .querySelector("input");
     expect(seriesInput).toHaveValue("test series");
 
-    // update:
-
-    userEvent.click(seriesInput);
+    act(() => {
+      userEvent.click(seriesInput);
+    });
     const list = await screen.findByRole("listbox");
     expect(list).toBeInTheDocument();
     const listItems = within(list).getAllByRole("option");
     expect(listItems[1]).toHaveTextContent("Series 2");
-    userEvent.click(listItems[1]);
+    act(() => {
+      userEvent.click(listItems[1]);
+    });
 
-    userEvent.clear(tcTitle);
-    userEvent.type(tcTitle, "testTitle");
-    await waitFor(() => expect(tcTitle).toHaveValue("testTitle"));
-
-    await waitFor(
-      () => {
-        const descriptionInput = screen.getByTestId("test-case-description");
-        userEvent.type(descriptionInput, "testtestsetse");
-      },
-      { timeout: 1500 }
-    );
+    await testTitle("newtesttitle1", true);
+    await waitFor(() => {
+      const descriptionInput = screen.getByTestId("test-case-description");
+      userEvent.type(descriptionInput, "testtestsetse");
+    });
 
     const saveTestCasebtn = await findByTestId("qdm-test-case-save-button");
     expect(saveTestCasebtn).toBeEnabled();
@@ -489,9 +495,5 @@ describe("EditTestCase QDM Component", () => {
         "Test Case Updated Successfully"
       );
     });
-  });
-
-  // it("Should render the details tab with relevant information", async () => {
-
-  // })
+  }, 30000);
 });
