@@ -1620,11 +1620,11 @@ describe("EditTestCase component", () => {
       );
       expect(validationErrorsList).toBeInTheDocument();
       const patientNameError = await within(validationErrorsList).findByText(
-        "Patient.name is a required field"
+        "Error: Patient.name is a required field"
       );
       expect(patientNameError).toBeInTheDocument();
       const patientIdentifierError = within(validationErrorsList).getByText(
-        "Patient.identifier is a required field"
+        "Error: Patient.identifier is a required field"
       );
       expect(patientIdentifierError).toBeInTheDocument();
     }, 15000);
@@ -1723,11 +1723,11 @@ describe("EditTestCase component", () => {
       );
       expect(validationErrorsList).toBeInTheDocument();
       const patientNameError = await within(validationErrorsList).findByText(
-        "Patient.name is a required field"
+        "Error: Patient.name is a required field"
       );
       expect(patientNameError).toBeInTheDocument();
       const patientIdentifierError = within(validationErrorsList).getByText(
-        "Patient.identifier is a required field"
+        "Error: Patient.identifier is a required field"
       );
       expect(patientIdentifierError).toBeInTheDocument();
     });
@@ -1781,7 +1781,7 @@ describe("EditTestCase component", () => {
           message: "An unknown error occurred with HAPI FHIR",
           outcomeResponse: {
             resourceType: "OperationOutcome",
-            text: "Bad things happened",
+            text: "Error: Bad things happened",
             issue: [
               {
                 severity: "error",

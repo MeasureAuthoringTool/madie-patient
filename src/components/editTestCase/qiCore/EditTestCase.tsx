@@ -81,7 +81,7 @@ const ValidationErrorsButton = tw.button`
 `;
 
 interface AlertProps {
-  status?: "success" | "warning" | "error" | "info" | null;
+  status?: "success" | "warning" | "error" | "info" | "meta" | null;
   message?: any;
 }
 
@@ -94,6 +94,7 @@ const styles = {
   success: tw`bg-green-100 text-green-700`,
   warning: tw`bg-yellow-100 text-yellow-700`,
   error: tw`bg-red-100 text-red-700`,
+  meta: tw`bg-blue-100 text-black`,
   default: tw`bg-blue-100 text-blue-700`,
 };
 
@@ -972,8 +973,21 @@ const EditTestCase = (props: EditTestCaseProps) => {
                     return (
                       <ValidationAlertCard
                         key={error.key}
-                        status={error.severity ? error.severity : "error"}
+                        status={
+                          error.diagnostics.includes("Meta.profile")
+                            ? "meta"
+                            : error.severity
+                            ? error.severity
+                            : "error"
+                        }
                       >
+                        {error.diagnostics.includes("Meta.profile")
+                          ? "Meta.profile: "
+                          : error.severity
+                          ? error.severity.charAt(0).toUpperCase() +
+                            error.severity.slice(1) +
+                            ": "
+                          : ""}
                         {error.diagnostics}
                       </ValidationAlertCard>
                     );
