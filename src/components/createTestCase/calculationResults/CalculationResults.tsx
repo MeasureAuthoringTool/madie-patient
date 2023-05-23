@@ -6,7 +6,7 @@ import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calcula
 import { MadieAlert } from "@madie/madie-design-system/dist/react";
 
 type ErrorProps = {
-  status?: "success" | "warning" | "error" | "info";
+  status?: "success" | "warning" | "error" | "info" | "meta";
   message?: string;
 };
 
