@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   useDocumentTitle,
   measureStore,
@@ -195,8 +195,6 @@ const EditTestCase = () => {
       showToast("Error while calculating QDM test cases", "danger");
     }
   };
-
-  // Todo Need back end changes to save populations
 
   return (
     <>
