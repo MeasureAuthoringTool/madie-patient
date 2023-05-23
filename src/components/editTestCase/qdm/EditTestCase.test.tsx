@@ -12,6 +12,7 @@ import { MemoryRouter } from "react-router-dom";
 import { act } from "react-dom/test-utils";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
+import { test } from "@jest/globals";
 
 const testCaseJson =
   "{\n" +
@@ -88,12 +89,12 @@ const testCase: TestCase = {
     {
       groupId: "test_groupId",
       scoring: MeasureScoring.COHORT,
-      populationBasis: "false",
+      populationBasis: "true",
       populationValues: [
         {
           id: "4f0a1989-205f-45df-a476-8e19999d21c7",
           name: PopulationType.INITIAL_POPULATION,
-          expected: 3,
+          expected: true,
         },
       ],
       stratificationValues: [],
@@ -115,7 +116,7 @@ const mockMeasure = {
         {
           id: "308d2af8-9650-49c0-a454-14a85163d9f9",
           name: PopulationType.INITIAL_POPULATION,
-          definition: "IPPoP",
+          definition: "IP",
         },
       ],
       populationBasis: "true",
@@ -125,6 +126,18 @@ const mockMeasure = {
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
+
+const mockNavigate = jest.fn();
+
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useParams: () => ({
+    measureId: "m1234",
+    id: "1",
+  }),
+
+  useNavigate: () => mockNavigate,
+}));
 
 let mockApplyDefaults = false;
 global.ResizeObserver = jest.fn().mockImplementation(() => ({
@@ -140,7 +153,7 @@ jest.mock("@madie/madie-util", () => ({
   },
   measureStore: {
     updateMeasure: jest.fn((measure) => measure),
-    state: null,
+    state: jest.fn().mockImplementation(() => mockMeasure),
     initialState: null,
     subscribe: (set) => {
       set(mockMeasure);
@@ -194,9 +207,15 @@ describe("LeftPanel", () => {
 
 describe("EditTestCase QDM Component", () => {
   const { getByRole, findByTestId, findByText } = screen;
+
   beforeEach(() => {
-    mockedAxios.get.mockResolvedValueOnce(testCase);
+    mockedAxios.get.mockImplementation((args) => {
+      if (args && args.endsWith("test-cases/1")) {
+        return Promise.resolve({ data: testCase });
+      }
+    });
   });
+
   it("should render qdm edit test case component along with action buttons", async () => {
     await render(
       <MemoryRouter>
@@ -213,27 +232,64 @@ describe("EditTestCase QDM Component", () => {
   });
 
   it("should render group populations from DB", async () => {
-    mockedAxios.get.mockResolvedValue({
-      data: { ...testCase },
-    });
-
-    await render(
+    render(
       <MemoryRouter>
         <EditTestCase />
       </MemoryRouter>
     );
 
-    const expectedActualTab = screen.getByRole("tab", {
+    const expectedActualTab = getByRole("tab", {
       name: "Expected or Actual tab panel",
     });
     userEvent.click(expectedActualTab);
-    screen.debug();
-    const ipCheckbox = (await screen.findByTestId(
+    const ipCheckbox = (await findByTestId(
       "test-population-initialPopulation-expected"
     )) as HTMLInputElement;
-    // await waitFor(() => expect(ipCheckbox).not.toBeChecked());
-    // userEvent.click(ipCheckbox);
     await waitFor(() => expect(ipCheckbox).toBeChecked());
+  });
+
+  it("should throw 404 when fetching a test case that doesn't exists in DB", async () => {
+    mockedAxios.get.mockRejectedValue("404");
+    render(
+      <MemoryRouter>
+        <EditTestCase />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalled();
+    });
+  });
+
+  it("should render group populations from DB and able to update the values and save test case", async () => {
+    mockedAxios.put.mockResolvedValueOnce(testCase);
+    render(
+      <MemoryRouter>
+        <EditTestCase />
+      </MemoryRouter>
+    );
+
+    const saveButton = getByRole("button", { name: "Save" });
+    const expectedActualTab = getByRole("tab", {
+      name: "Expected or Actual tab panel",
+    });
+    userEvent.click(expectedActualTab);
+    const ipCheckbox = (await findByTestId(
+      "test-population-initialPopulation-expected"
+    )) as HTMLInputElement;
+    await waitFor(() => expect(ipCheckbox).toBeChecked());
+    expect(saveButton).toBeDisabled();
+    userEvent.click(ipCheckbox);
+    await waitFor(() => expect(ipCheckbox).not.toBeChecked());
+
+    expect(saveButton).not.toBeDisabled();
+    userEvent.click(saveButton);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("success-toast")).toHaveTextContent(
+        "Test Case Updated Successfully"
+      );
+    });
   });
 
   it("should render qdm edit Demographics component with default values", () => {

@@ -1,37 +1,40 @@
-import React from "react";
+import * as React from "react";
 
 import "@testing-library/jest-dom";
-import { describe, expect, test } from "@jest/globals";
-import { act } from "react-dom/test-utils";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 
 import RightPanel from "./RightPanel";
+import userEvent from "@testing-library/user-event";
 
 describe("RightPanel", () => {
-  const { findByText } = screen;
   test("RightPanel navigation works as expected.", async () => {
-    render(<RightPanel />);
-    const highlighting = await findByText("Highlighting");
-    const expectedActual = await findByText("Expected / Actual");
-    const details = await findByText("Details");
-
-    act(() => {
-      fireEvent.click(highlighting);
+    render(
+      <RightPanel
+        canEdit={true}
+        groupPopulations={[]}
+        onChange={jest.fn()}
+        errors={jest.fn()}
+      />
+    );
+    const highlighting = screen.getByRole("tab", {
+      name: "Highlighting tab panel",
     });
+    const expectedActual = screen.getByRole("tab", {
+      name: "Expected or Actual tab panel",
+    });
+    const details = screen.getByRole("tab", { name: "Details tab panel" });
+
+    userEvent.click(highlighting);
     await waitFor(() => {
       expect(highlighting).toHaveAttribute("aria-selected", "true");
     });
 
-    act(() => {
-      fireEvent.click(expectedActual);
-    });
+    userEvent.click(expectedActual);
     await waitFor(() => {
       expect(expectedActual).toHaveAttribute("aria-selected", "true");
     });
 
-    act(() => {
-      fireEvent.click(details);
-    });
+    userEvent.click(details);
     await waitFor(() => {
       expect(details).toHaveAttribute("aria-selected", "true");
     });

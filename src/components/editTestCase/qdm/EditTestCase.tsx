@@ -26,6 +26,7 @@ import { sanitizeUserInput } from "../../../util/Utils";
 import * as _ from "lodash";
 import "styled-components/macro";
 import { getPopulationTypesForScoring } from "../../../util/PopulationsMap";
+
 const EditTestCase = () => {
   useDocumentTitle("MADiE Edit Measure Edit Test Case");
 
@@ -123,9 +124,6 @@ const EditTestCase = () => {
     // update measure store
     setMeasure(measureCopy);
   }
-
-  // eslint-disable-next-line no-console
-  console.log("measure", measure);
 
   // maps measure.group => testcase.groupPopulation
   // if patient based, then default for expected and actual is false, else null

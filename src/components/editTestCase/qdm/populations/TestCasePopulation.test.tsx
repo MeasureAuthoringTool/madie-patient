@@ -4,6 +4,8 @@ import { MemoryRouter } from "react-router-dom";
 import TestCasePopulation from "./TestCasePopulation";
 import { PopulationType } from "@madie/madie-models";
 
+const error = jest.fn();
+
 describe("TestCasePopulation component", () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -11,12 +13,12 @@ describe("TestCasePopulation component", () => {
 
   it("should render test case population", async () => {
     const testCasePopulation = {
+      id: "1234",
       name: PopulationType.INITIAL_POPULATION,
       expected: true,
       actual: true,
     };
     const handleChange = jest.fn();
-    const setChangedPopulation = jest.fn();
     render(
       <MemoryRouter>
         <table>
@@ -25,8 +27,10 @@ describe("TestCasePopulation component", () => {
               executionRun
               population={testCasePopulation}
               onChange={handleChange}
-              setChangedPopulation={setChangedPopulation}
-              populationBasis="boolean"
+              populationBasis="true"
+              error={error}
+              measureObservationsCount={0}
+              initialPopulationCount={1}
             />
           </tbody>
         </table>
@@ -43,12 +47,12 @@ describe("TestCasePopulation component", () => {
 
   it("should handle changes to checkboxes", async () => {
     const testCasePopulation = {
+      id: "1234",
       name: PopulationType.INITIAL_POPULATION,
       expected: false,
       actual: false,
     };
     const handleChange = jest.fn();
-    const setChangedPopulation = jest.fn();
     render(
       <MemoryRouter>
         <table>
@@ -57,8 +61,10 @@ describe("TestCasePopulation component", () => {
               executionRun
               population={testCasePopulation}
               onChange={handleChange}
-              setChangedPopulation={setChangedPopulation}
-              populationBasis="boolean"
+              populationBasis="true"
+              error={error}
+              measureObservationsCount={0}
+              initialPopulationCount={1}
             />
           </tbody>
         </table>
@@ -91,7 +97,6 @@ describe("TestCasePopulation component", () => {
       actual: false,
     };
     const handleChange = jest.fn();
-    const setChangedPopulation = jest.fn();
     render(
       <MemoryRouter>
         <table>
@@ -100,9 +105,10 @@ describe("TestCasePopulation component", () => {
               executionRun
               population={testCasePopulation}
               onChange={handleChange}
-              setChangedPopulation={setChangedPopulation}
-              populationBasis="boolean"
+              populationBasis="true"
+              error={error}
               measureObservationsCount={1}
+              initialPopulationCount={1}
             />
           </tbody>
         </table>
@@ -124,7 +130,6 @@ describe("TestCasePopulation component", () => {
       actual: false,
     };
     const handleChange = jest.fn();
-    const setChangedPopulation = jest.fn();
     render(
       <MemoryRouter>
         <table>
@@ -133,9 +138,10 @@ describe("TestCasePopulation component", () => {
               executionRun
               population={testCasePopulation}
               onChange={handleChange}
-              setChangedPopulation={setChangedPopulation}
-              populationBasis="boolean"
+              populationBasis="true"
+              error={error}
               measureObservationsCount={0}
+              initialPopulationCount={1}
             />
           </tbody>
         </table>

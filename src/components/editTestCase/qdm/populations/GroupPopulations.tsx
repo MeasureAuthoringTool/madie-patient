@@ -32,7 +32,7 @@ import * as _ from "lodash";
 const GroupPopulations = ({
   disableExpected = false,
   // Execution run determines weather we display one of 3 views.
-  // executionRun = false,
+  executionRun = false,
   groupPopulations = [],
   onChange,
   errors,
@@ -49,7 +49,7 @@ const GroupPopulations = ({
                 scoring={gp.scoring}
                 errors={errors?.[i]}
                 disableExpected={disableExpected}
-                // executionRun={executionRun}
+                executionRun={executionRun}
                 populations={gp.populationValues}
                 // populationBasis will contain patientBasis field
                 populationBasis={gp?.populationBasis}
