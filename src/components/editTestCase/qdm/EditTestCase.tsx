@@ -151,7 +151,7 @@ const EditTestCase = () => {
             <Button
               variant="cyan"
               data-testid="qdm-test-case-save-button"
-              disabled={!formik.dirty}
+              disabled={!formik.dirty || !formik.isValid}
               type="submit"
             >
               Save
