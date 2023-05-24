@@ -13,6 +13,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { TimePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import {
+  birthDateLabelStyle,
   textFieldStyle,
   timeTextFieldStyle,
 } from "./DemographicsSectionStyles";
@@ -169,31 +170,13 @@ const DemographicsSection = ({ canEdit }) => {
                       required
                       htmlFor={"birth-date"}
                       style={{ marginBottom: 0, height: 16 }} // force a heignt
-                      sx={[
-                        {
-                          backgroundColor: "transparent",
-                          display: "flex",
-                          flexDirection: "row-reverse",
-                          alignSelf: "baseline",
-                          textTransform: "none",
-                          // force it outside the select box
-                          position: "initial",
-                          transform: "translateX(0px) translateY(0px)",
-                          fontFamily: "Rubik",
-                          fontWeight: 500,
-                          fontSize: 14,
-                          color: "#333",
-                          "& .MuiInputLabel-asterisk": {
-                            color: "#AE1C1C !important",
-                            marginRight: "3px !important", //this was
-                          },
-                        },
-                      ]}
+                      sx={birthDateLabelStyle}
                     >
                       Date of Birth
                     </InputLabel>
                     <div style={{ display: "flex" }}>
                       <DatePicker
+                        disabled={!canEdit}
                         disableOpenPicker
                         value={
                           qdmPatient?.birthDatetime
@@ -227,6 +210,7 @@ const DemographicsSection = ({ canEdit }) => {
                       />
                       <TimePicker
                         disableOpenPicker
+                        disabled={!canEdit}
                         value={
                           qdmPatient?.birthDatetime
                             ? dayjs(qdmPatient?.birthDatetime)

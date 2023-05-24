@@ -20,6 +20,8 @@ import EditTestCaseBreadCrumbs from "./EditTestCaseBreadCrumbs";
 import { useNavigate, useParams } from "react-router-dom";
 import useTestCaseServiceApi from "../../../api/useTestCaseServiceApi";
 import { useFormik, FormikProvider } from "formik";
+import { QDMPatientSchemaValidator } from "./QDMPatientSchemaValidator";
+
 import "allotment/dist/style.css";
 import "./EditTestCase.scss";
 import { sanitizeUserInput } from "../../../util/Utils";
@@ -68,17 +70,25 @@ const EditTestCase = () => {
   const { measureId, id } = useParams();
 
   const [currentTestCase, setCurrentTestCase] = useState<TestCase>(null);
-  const [groupPopulations, setGroupPopulations] = useState<GroupPopulation[]>(
-    []
-  );
 
+  const {
+    title = "",
+    description = "",
+    series = "",
+    json = "",
+    groupPopulations = [],
+  } = currentTestCase || {};
   const formik = useFormik({
     initialValues: {
-      title: "",
-      description: "",
-      series: "",
-      groupPopulations: [],
+      title,
+      description,
+      series,
+      json,
+      id,
+      groupPopulations,
     } as TestCase,
+    validationSchema: QDMPatientSchemaValidator,
+    enableReinitialize: true,
     onSubmit: async (values: TestCase) => await handleSubmit(values),
   });
   const { resetForm } = formik;
@@ -155,7 +165,6 @@ const EditTestCase = () => {
       testCaseService.current
         .getTestCase(id, measureId)
         .then((tc: TestCase) => {
-          setCurrentTestCase(tc);
           const nextTc = _.cloneDeep(tc);
           if (measure?.groups) {
             nextTc.groupPopulations = measure.groups?.map((group) => {
@@ -171,8 +180,7 @@ const EditTestCase = () => {
           } else {
             nextTc.groupPopulations = [];
           }
-          resetForm({ values: _.cloneDeep(nextTc) });
-          setGroupPopulations(_.cloneDeep(nextTc.groupPopulations));
+          setCurrentTestCase(nextTc);
         })
         .catch((error) => {
           if (error.toString().includes("404")) {
@@ -217,6 +225,7 @@ const EditTestCase = () => {
                   onChange={(groupPopulations) => {
                     formik.setFieldValue("groupPopulations", groupPopulations);
                   }}
+                  measureName={measure?.measureName}
                 />
               </Allotment.Pane>
             </Allotment>
