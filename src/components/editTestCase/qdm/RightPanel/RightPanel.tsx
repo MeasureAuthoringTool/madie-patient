@@ -2,15 +2,16 @@ import React, { useState } from "react";
 import RightPanelNavTabs from "./RightPanelNavTabs";
 import KeyboardTabIcon from "@mui/icons-material/KeyboardTab";
 import { IconButton } from "@mui/material";
-
+import GroupPopulations from "../populations/GroupPopulations";
 import DetailsSection from "./DetailsTab/DetailsSection";
 
-interface RightPanelProps {
-  canEdit: Boolean;
-  measureName: string;
-}
-const RightPanel = (props: RightPanelProps) => {
-  const { canEdit, measureName } = props;
+const RightPanel = ({
+  canEdit,
+  groupPopulations,
+  errors,
+  onChange,
+  measureName,
+}) => {
   const [activeTab, setActiveTab] = useState<string>("highlighting");
   return (
     <div className="right-panel">
@@ -22,6 +23,14 @@ const RightPanel = (props: RightPanelProps) => {
         </IconButton>
       </div>
       <div className="panel-content">
+        {activeTab === "expectoractual" && (
+          <GroupPopulations
+            disableExpected={!canEdit}
+            groupPopulations={groupPopulations}
+            onChange={onChange}
+            errors={errors}
+          />
+        )}
         {activeTab === "details" && (
           <DetailsSection canEdit={canEdit} measureName={measureName} />
         )}

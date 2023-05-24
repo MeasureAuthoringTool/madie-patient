@@ -7,26 +7,23 @@ import {
   within,
 } from "@testing-library/react";
 import EditTestCase from "./EditTestCase";
-import { Measure, TestCase } from "@madie/madie-models";
-import Router, { MemoryRouter } from "react-router-dom";
+import {
+  Measure,
+  MeasureScoring,
+  Model,
+  PopulationType,
+  TestCase,
+} from "@madie/madie-models";
+import { act } from "react-dom/test-utils";
+import { MemoryRouter } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
-import { act } from "react-dom/test-utils";
+import { test } from "@jest/globals";
+
 import useTestCaseServiceApi, {
   TestCaseServiceApi,
 } from "../../../api/useTestCaseServiceApi";
-const testcase: TestCase = {
-  id: "1",
-  title: "Test Case",
-  createdBy: "test",
-  createdAt: "test",
-  series: "test series",
-  description: "test description",
-  lastModifiedAt: "test",
-  lastModifiedBy: "test",
-  validResource: false,
-  name: "",
-} as TestCase;
+
 const testCaseJson =
   "{\n" +
   '   "qdmVersion":"5.6",\n' +
@@ -88,9 +85,55 @@ const testCaseJson =
   "   ],\n" +
   '   "_id":"646628cb235ff80000718c1a"\n' +
   "}";
-const testMeasure: Measure = {
-  id: "testMeasureId",
+
+const measureOwner = "testUser";
+
+const testCase: TestCase = {
+  id: "testid",
+  title: "Test Case",
+  series: "test series",
+  description: "test description",
+  createdBy: measureOwner,
+  validResource: true,
+  groupPopulations: [
+    {
+      groupId: "test_groupId",
+      scoring: MeasureScoring.COHORT,
+      populationBasis: "true",
+      populationValues: [
+        {
+          id: "4f0a1989-205f-45df-a476-8e19999d21c7",
+          name: PopulationType.INITIAL_POPULATION,
+          expected: true,
+        },
+      ],
+      stratificationValues: [],
+    },
+  ],
+} as unknown as TestCase;
+
+const mockMeasure = {
+  id: "testmeasureid",
+  scoring: MeasureScoring.COHORT,
+  model: Model.QDM_5_6,
+  createdBy: "testUserOwner",
+  patientBasis: true,
+  groups: [
+    {
+      id: "test_groupId",
+      scoring: MeasureScoring.COHORT,
+      populations: [
+        {
+          id: "308d2af8-9650-49c0-a454-14a85163d9f9",
+          name: PopulationType.INITIAL_POPULATION,
+          definition: "IP",
+        },
+      ],
+      populationBasis: "true",
+    },
+  ],
 } as Measure;
+
 const testTitle = async (title: string, clear = false) => {
   const tcTitle = await screen.findByTestId("test-case-title");
   expect(tcTitle).toBeInTheDocument();
@@ -105,25 +148,42 @@ const testTitle = async (title: string, clear = false) => {
     expect(tcTitle).toHaveValue(title);
   });
 };
+
 jest.mock("axios");
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+
+const mockNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
-  useParams: jest.fn(),
+  useParams: () => ({
+    measureId: "testmeasureid",
+    id: "testid",
+  }),
+  useNavigate: () => mockNavigate,
 }));
 
 jest.mock("../../../api/useTestCaseServiceApi");
 const useTestCaseServiceMock =
   useTestCaseServiceApi as jest.Mock<TestCaseServiceApi>;
 const useTestCaseServiceMockResolved = {
-  getTestCase: jest.fn().mockResolvedValue(testcase),
+  getTestCase: jest.fn().mockResolvedValue(testCase),
   getTestCaseSeriesForMeasure: jest
     .fn()
     .mockResolvedValue(["Series 1", "Series 2"]),
-  updateTestCase: jest.fn().mockResolvedValue(testcase),
+  updateTestCase: jest.fn().mockResolvedValue(testCase),
+} as unknown as TestCaseServiceApi;
+
+const useTestCaseServiceMockRejectedGetTestCase = {
+  getTestCase: jest.fn().mockRejectedValue("404"),
+} as unknown as TestCaseServiceApi;
+
+const useTestCaseServiceMockResolvedWithTestCaseJson = {
+  getTestCase: jest.fn().mockResolvedValue({ ...testCase, json: testCaseJson }),
+  updateTestCase: jest.fn().mockResolvedValue(testCase),
 } as unknown as TestCaseServiceApi;
 
 const useTestCaseServiceMockRejected = {
-  getTestCase: jest.fn().mockResolvedValue(testcase),
+  getTestCase: jest.fn().mockResolvedValue(testCase),
   getTestCaseSeriesForMeasure: jest
     .fn()
     .mockResolvedValue(["Series 1", "Series 2"]),
@@ -134,55 +194,50 @@ const useTestCaseServiceMockRejected = {
   }),
 } as unknown as TestCaseServiceApi;
 
-const mockedAxios = axios as jest.Mocked<typeof axios>;
-
 let mockApplyDefaults = false;
 global.ResizeObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
   unobserve: jest.fn(),
   disconnect: jest.fn(),
 }));
-jest.mock("@madie/madie-util", () => {
-  return {
-    useDocumentTitle: jest.fn(),
-    useFeatureFlags: () => {
-      return { applyDefaults: mockApplyDefaults };
+
+jest.mock("@madie/madie-util", () => ({
+  useDocumentTitle: jest.fn(),
+  useFeatureFlags: () => {
+    return { applyDefaults: mockApplyDefaults };
+  },
+  measureStore: {
+    updateMeasure: jest.fn((measure) => measure),
+    state: jest.fn().mockImplementation(() => mockMeasure),
+    initialState: null,
+    subscribe: (set) => {
+      set(mockMeasure);
+      return { unsubscribe: () => null };
     },
-    measureStore: {
-      updateMeasure: jest.fn((measure) => measure),
-      state: null,
-      initialState: null,
-      subscribe: (set) => {
-        set(testMeasure);
-        return { unsubscribe: () => null };
-      },
-      unsubscribe: () => null,
+    unsubscribe: () => null,
+  },
+  useOktaTokens: jest.fn(() => ({
+    getAccessToken: () => "test.jwt",
+  })),
+  checkUserCanEdit: jest.fn(() => {
+    return true;
+  }),
+  routeHandlerStore: {
+    subscribe: (set) => {
+      return { unsubscribe: () => null };
     },
-    useOktaTokens: jest.fn(() => ({
-      getAccessToken: () => "test.jwt",
-    })),
-    checkUserCanEdit: jest.fn(() => {
-      return true;
-    }),
-    routeHandlerStore: {
-      subscribe: (set) => {
-        return { unsubscribe: () => null };
-      },
-      updateRouteHandlerState: () => null,
-      state: { canTravel: false, pendingPath: "" },
-      initialState: { canTravel: false, pendingPath: "" },
-    },
-  };
-});
+    updateRouteHandlerState: () => null,
+    state: { canTravel: false, pendingPath: "" },
+    initialState: { canTravel: false, pendingPath: "" },
+  },
+}));
 
 describe("LeftPanel", () => {
-  jest
-    .spyOn(Router, "useParams")
-    .mockReturnValue({ id: "testid", measureId: "testmeasureid" });
   const { findByTestId, findByText } = screen;
   useTestCaseServiceMock.mockImplementation(() => {
     return useTestCaseServiceMockResolved;
   });
+
   test("LeftPanel navigation works as expected.", async () => {
     await render(
       <MemoryRouter>
@@ -211,17 +266,20 @@ describe("LeftPanel", () => {
 
 describe("EditTestCase QDM Component", () => {
   const { getByRole, findByTestId, findByText } = screen;
+
   beforeEach(() => {
+    // mockedAxios.get.mockImplementation((args) => {
+    //   if (args && args.endsWith("test-cases/1")) {
+    //     return Promise.resolve({ data: testCase });
+    //   }
+    // });
     useTestCaseServiceMock.mockImplementation(() => {
       return useTestCaseServiceMockResolved;
     });
-    jest
-      .spyOn(Router, "useParams")
-      .mockReturnValue({ id: "testid", measureId: "testmeasureid" });
   });
 
-  it("should render qdm edit test case component along with run execution button", async () => {
-    render(
+  it("should render qdm edit test case component along with action buttons", async () => {
+    await render(
       <MemoryRouter>
         <EditTestCase />
       </MemoryRouter>
@@ -230,6 +288,73 @@ describe("EditTestCase QDM Component", () => {
       name: "Run Test",
     });
     expect(runTestCaseButton).toBeInTheDocument();
+
+    expect(getByRole("button", { name: "Save" })).toBeDisabled();
+    expect(getByRole("button", { name: "Discard Changes" })).toBeDisabled();
+  });
+
+  it("should render group populations from DB", async () => {
+    render(
+      <MemoryRouter>
+        <EditTestCase />
+      </MemoryRouter>
+    );
+
+    const expectedActualTab = getByRole("tab", {
+      name: "Expected or Actual tab panel",
+    });
+    userEvent.click(expectedActualTab);
+    const ipCheckbox = (await findByTestId(
+      "test-population-initialPopulation-expected"
+    )) as HTMLInputElement;
+    await waitFor(() => expect(ipCheckbox).toBeChecked());
+  });
+
+  it("should throw 404 when fetching a test case that doesn't exists in DB", async () => {
+    useTestCaseServiceMock.mockImplementation(() => {
+      return useTestCaseServiceMockRejectedGetTestCase;
+    });
+
+    render(
+      <MemoryRouter>
+        <EditTestCase />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalled();
+    });
+  });
+
+  it.skip("should render group populations from DB and able to update the values and save test case", async () => {
+    mockedAxios.put.mockResolvedValueOnce(testCase);
+    render(
+      <MemoryRouter>
+        <EditTestCase />
+      </MemoryRouter>
+    );
+
+    const saveButton = getByRole("button", { name: "Save" });
+    const expectedActualTab = getByRole("tab", {
+      name: "Expected or Actual tab panel",
+    });
+    userEvent.click(expectedActualTab);
+    const ipCheckbox = (await findByTestId(
+      "test-population-initialPopulation-expected"
+    )) as HTMLInputElement;
+    await waitFor(() => expect(ipCheckbox).toBeChecked());
+    expect(saveButton).toBeDisabled();
+    userEvent.click(ipCheckbox);
+    await waitFor(() => expect(ipCheckbox).not.toBeChecked());
+
+    expect(saveButton).not.toBeDisabled();
+    userEvent.click(saveButton);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("success-toast")).toHaveTextContent(
+        "Test Case Updated Successfully"
+      );
+    });
   });
 
   it("should render qdm edit Demographics component with default values", () => {
@@ -272,7 +397,7 @@ describe("EditTestCase QDM Component", () => {
     expect(genderInput.value).toBe("Female");
   });
 
-  it.skip("test change dropwdown values", () => {
+  it.skip("test change dropdown values", () => {
     render(
       <MemoryRouter>
         <EditTestCase />
@@ -303,26 +428,24 @@ describe("EditTestCase QDM Component", () => {
   });
 
   it("test update test case successfully with success toast", async () => {
-    testcase.json = testCaseJson;
-    mockedAxios.put.mockResolvedValueOnce(testcase);
+    useTestCaseServiceMock.mockImplementation(() => {
+      return useTestCaseServiceMockResolvedWithTestCaseJson;
+    });
+
     await render(
       <MemoryRouter>
         <EditTestCase />
       </MemoryRouter>
     );
 
-    const expectedId = `qdm-header-content-Demographics`;
-    const foundTitle = await findByText("Demographics");
-
-    expect(foundTitle).toBeInTheDocument();
-    const foundBody = await findByTestId(expectedId);
-    expect(foundBody).toBeInTheDocument();
-
     const raceInput = screen.getByTestId(
       "demographics-race-input"
     ) as HTMLInputElement;
     expect(raceInput).toBeInTheDocument();
-    expect(raceInput.value).toBe("Asian");
+    await waitFor(() => {
+      expect(raceInput.value).toBe("Asian");
+    });
+
     act(() => {
       fireEvent.change(raceInput, {
         target: { value: "White" },
@@ -339,10 +462,10 @@ describe("EditTestCase QDM Component", () => {
       target: { value: "Male" },
     });
     expect(genderInput.value).toBe("Male");
-    const saveTestCasebtn = await findByTestId("qdm-test-case-save-button");
-    expect(saveTestCasebtn).toBeEnabled();
+    const saveButton = getByRole("button", { name: "Save" });
+    expect(saveButton).toBeEnabled();
     act(() => {
-      fireEvent.click(saveTestCasebtn);
+      fireEvent.click(saveButton);
     });
 
     await waitFor(() => {
@@ -409,6 +532,7 @@ describe("EditTestCase QDM Component", () => {
       ).not.toBeInTheDocument();
     });
   });
+
   it("RightPanel navigation works as expected.", async () => {
     render(
       <MemoryRouter>
@@ -447,8 +571,8 @@ describe("EditTestCase QDM Component", () => {
         <EditTestCase />
       </MemoryRouter>
     );
-    // navigate
-    const detailsTab = await findByText("Details");
+
+    const detailsTab = getByRole("tab", { name: "Details tab panel" });
     act(() => {
       fireEvent.click(detailsTab);
     });
@@ -457,10 +581,10 @@ describe("EditTestCase QDM Component", () => {
     });
     // check title is as expected
     const tcTitle = await screen.findByTestId("test-case-title");
-    expect(tcTitle).toHaveValue(testcase.title);
+    expect(tcTitle).toHaveValue(testCase.title);
 
     const descriptionInput = screen.getByTestId("test-case-description");
-    expect(descriptionInput).toHaveTextContent(testcase.description);
+    expect(descriptionInput).toHaveTextContent(testCase.description);
 
     const seriesInput = screen
       .getByTestId("test-case-series")
@@ -484,10 +608,10 @@ describe("EditTestCase QDM Component", () => {
       userEvent.type(descriptionInput, "testtestsetse");
     });
 
-    const saveTestCasebtn = await findByTestId("qdm-test-case-save-button");
-    expect(saveTestCasebtn).toBeEnabled();
+    const saveButton = getByRole("button", { name: "Save" });
+    expect(saveButton).toBeEnabled();
     act(() => {
-      fireEvent.click(saveTestCasebtn);
+      fireEvent.click(saveButton);
     });
 
     await waitFor(() => {

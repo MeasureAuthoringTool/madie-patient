@@ -4,7 +4,7 @@ import valueSets from "../mockdata/qdm/CMS108/value_sets.json";
 import patient from "../mockdata/qdm/CMS108/IPP_DENOME_NUMER_PASS_NoVTEPatientRefusal.json";
 
 export class QdmCalculationService {
-  calculateQdmTestCases() {
+  async calculateQdmTestCases() {
     let patients = [];
     patients.push(patient);
 
@@ -12,7 +12,7 @@ export class QdmCalculationService {
     const options = { doPretty: true };
 
     // Todo Mocked data will be replaced in future stories
-    const calculationResults = Calculator.calculate(
+    const calculationResults = await Calculator.calculate(
       cqmMeasure,
       patients,
       valueSets,
