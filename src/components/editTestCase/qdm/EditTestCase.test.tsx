@@ -268,11 +268,6 @@ describe("EditTestCase QDM Component", () => {
   const { getByRole, findByTestId, findByText } = screen;
 
   beforeEach(() => {
-    // mockedAxios.get.mockImplementation((args) => {
-    //   if (args && args.endsWith("test-cases/1")) {
-    //     return Promise.resolve({ data: testCase });
-    //   }
-    // });
     useTestCaseServiceMock.mockImplementation(() => {
       return useTestCaseServiceMockResolved;
     });
@@ -326,7 +321,7 @@ describe("EditTestCase QDM Component", () => {
     });
   });
 
-  it.skip("should render group populations from DB and able to update the values and save test case", async () => {
+  it("should render group populations from DB and able to update the values and save test case", async () => {
     mockedAxios.put.mockResolvedValueOnce(testCase);
     render(
       <MemoryRouter>
@@ -347,7 +342,7 @@ describe("EditTestCase QDM Component", () => {
     userEvent.click(ipCheckbox);
     await waitFor(() => expect(ipCheckbox).not.toBeChecked());
 
-    expect(saveButton).not.toBeDisabled();
+    expect(saveButton).toBeEnabled();
     userEvent.click(saveButton);
 
     await waitFor(() => {

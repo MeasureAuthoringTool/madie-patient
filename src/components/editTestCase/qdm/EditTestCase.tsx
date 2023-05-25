@@ -27,7 +27,10 @@ import "./EditTestCase.scss";
 import { sanitizeUserInput } from "../../../util/Utils";
 import * as _ from "lodash";
 import "styled-components/macro";
-import { getPopulationTypesForScoring } from "../../../util/PopulationsMap";
+import {
+  getPopulationTypesForScoring,
+  triggerPopChanges,
+} from "../../../util/PopulationsMap";
 
 const EditTestCase = () => {
   useDocumentTitle("MADiE Edit Measure Edit Test Case");
@@ -71,24 +74,15 @@ const EditTestCase = () => {
 
   const [currentTestCase, setCurrentTestCase] = useState<TestCase>(null);
 
-  const {
-    title = "",
-    description = "",
-    series = "",
-    json = "",
-    groupPopulations = [],
-  } = currentTestCase || {};
   const formik = useFormik({
     initialValues: {
-      title,
-      description,
-      series,
-      json,
-      id,
-      groupPopulations,
+      title: "",
+      description: "",
+      series: "",
+      json: "",
+      groupPopulations: [],
     } as TestCase,
     validationSchema: QDMPatientSchemaValidator,
-    enableReinitialize: true,
     onSubmit: async (values: TestCase) => await handleSubmit(values),
   });
   const { resetForm } = formik;
@@ -181,6 +175,7 @@ const EditTestCase = () => {
             nextTc.groupPopulations = [];
           }
           setCurrentTestCase(nextTc);
+          formik.resetForm({ values: _.cloneDeep(nextTc) });
         })
         .catch((error) => {
           if (error.toString().includes("404")) {
@@ -220,10 +215,20 @@ const EditTestCase = () => {
               <Allotment.Pane>
                 <RightPanel
                   canEdit={canEdit}
-                  groupPopulations={groupPopulations}
+                  groupPopulations={currentTestCase?.groupPopulations}
                   errors={formik.errors.groupPopulations}
-                  onChange={(groupPopulations) => {
-                    formik.setFieldValue("groupPopulations", groupPopulations);
+                  onChange={(
+                    groupPopulations,
+                    changedGroupId,
+                    changedPopulation
+                  ) => {
+                    const updatedPops = triggerPopChanges(
+                      groupPopulations,
+                      changedGroupId,
+                      changedPopulation,
+                      measure?.groups
+                    );
+                    formik.setFieldValue("groupPopulations", updatedPops);
                   }}
                   measureName={measure?.measureName}
                 />
