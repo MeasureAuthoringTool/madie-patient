@@ -1,8 +1,7 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import tw from "twin.macro";
 import "styled-components/macro";
 import * as _ from "lodash";
-import useTestCaseServiceApi from "../../../api/useTestCaseServiceApi";
 import { Group, TestCase, MeasureErrorType } from "@madie/madie-models";
 import { useParams } from "react-router-dom";
 import calculationService from "../../../api/CalculationService";
@@ -24,6 +23,9 @@ import {
   TestCaseListProps,
 } from "../common/interfaces";
 import TestCaseTable from "../common/TestCaseTable";
+import UseTestCases from "../common/Hooks/UseTestCases";
+import UseToast from "../common/Hooks/UseToast";
+
 const TH = tw.th`p-3 border-b text-left text-sm font-bold capitalize`;
 
 export const IMPORT_ERROR =
@@ -56,14 +58,32 @@ export const getCoverageValueFromHtml = (
 };
 
 const TestCaseList = (props: TestCaseListProps) => {
-  const [testCases, setTestCases] = useState<TestCase[]>(null);
+  const { setErrors } = props;
+  const { measureId } = useParams<{ measureId: string }>();
+  const {
+    testCases,
+    setTestCases,
+    testCaseService,
+    loadingState,
+    setLoadingState,
+    retrieveTestCases,
+  } = UseTestCases({
+    measureId,
+    setErrors,
+  });
+  const {
+    toastOpen,
+    setToastOpen,
+    toastMessage,
+    setToastMessage,
+    toastType,
+    onToastClose,
+  } = UseToast();
+
   const [executionResults, setExecutionResults] = useState<{
     [key: string]: DetailedPopulationGroupResult[];
   }>({});
 
-  const { setErrors } = props;
-  const { measureId } = useParams<{ measureId: string }>();
-  const testCaseService = useRef(useTestCaseServiceApi());
   const calculation = useRef(calculationService());
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("passing");
@@ -84,27 +104,11 @@ const TestCaseList = (props: TestCaseListProps) => {
   const [measureBundle] = bundleState;
   const [valueSets] = valueSetsState;
   const [selectedPopCriteria, setSelectedPopCriteria] = useState<Group>();
-  const [loadingState, setLoadingState] = useState<any>({
-    loading: true,
-    message: "",
-  });
   const [importDialogState, setImportDialogState] = useState<any>({
     open: false,
   });
 
   const [createOpen, setCreateOpen] = useState<boolean>(false);
-
-  // toast utilities
-  // toast is only used for success messages
-  // creating and updating PC
-  const [toastOpen, setToastOpen] = useState<boolean>(false);
-  const [toastMessage, setToastMessage] = useState<string>("");
-  const [toastType, setToastType] = useState<string>("danger");
-  const onToastClose = () => {
-    setToastType("danger");
-    setToastMessage("");
-    setToastOpen(false);
-  };
 
   useEffect(() => {
     if (
@@ -140,31 +144,6 @@ const TestCaseList = (props: TestCaseListProps) => {
       )
     );
   }, [measure]);
-
-  const retrieveTestCases = useCallback(() => {
-    setLoadingState(() => ({
-      loading: true,
-      message: "Loading Test Cases...",
-    }));
-    testCaseService.current
-      .getTestCasesByMeasureId(measureId)
-      .then((testCaseList: TestCase[]) => {
-        testCaseList.forEach((testCase: any) => {
-          testCase.executionStatus = testCase.validResource ? "NA" : "Invalid";
-        });
-        setTestCases(testCaseList);
-      })
-      .catch((err) => {
-        setErrors((prevState) => [...prevState, err.message]);
-      })
-      .finally(() => {
-        setLoadingState({ loading: false, message: "" });
-      });
-  }, [measureId, testCaseService]);
-
-  useEffect(() => {
-    retrieveTestCases();
-  }, [measureId, testCaseService]);
 
   useEffect(() => {
     const createTestCaseListener = () => {

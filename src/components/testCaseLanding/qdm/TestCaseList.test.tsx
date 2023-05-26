@@ -459,6 +459,7 @@ describe("TestCaseList component", () => {
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
       applyDefaults: false,
       importTestCases: false,
+      qdmTestCases: true,
     }));
     setError.mockClear();
 
