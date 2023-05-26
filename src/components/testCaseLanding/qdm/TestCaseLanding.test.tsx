@@ -1,11 +1,11 @@
 import * as React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import TestCaseLanding from "./TestCaseLanding";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
-import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
-import { Measure, MeasureScoring } from "@madie/madie-models";
+import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
+import { Measure } from "@madie/madie-models";
 import { Bundle, ValueSet } from "fhir/r4";
-import { ExecutionContextProvider } from "../routes/qiCore/ExecutionContext";
+import { ExecutionContextProvider } from "../../routes/qiCore/ExecutionContext";
 import { checkUserCanEdit } from "@madie/madie-util";
 
 const serviceConfig: ServiceConfig = {
