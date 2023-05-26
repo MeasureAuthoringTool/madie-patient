@@ -52,6 +52,25 @@ const testCaseJson =
   "      {\n" +
   '         "dataElementCodes":[\n' +
   "            {\n" +
+  '               "code":"21112-8",\n' +
+  '               "system":"2.16.840.1.113883.6.1",\n' +
+  '               "version":"2022-11",\n' +
+  '               "display":"Birth date"\n' +
+  "            }\n" +
+  "         ],\n" +
+  '         "qdmTitle":"Patient Characteristic Birthdate",\n' +
+  '         "hqmfOid":"2.16.840.1.113883.10.20.28.4.54",\n' +
+  '         "qdmCategory":"patient_characteristic",\n' +
+  '         "qdmStatus":"birthdate",\n' +
+  '         "qdmVersion":"5.6",\n' +
+  '         "_type":"QDM::PatientCharacteristicBirthdate",\n' +
+  '         "description":"Patient Characteristic Birthdate: Birth date",\n' +
+  '         "birthDatetime":"1985-01-01T08:00:00.000+00:00",\n' +
+  '         "codeListId":"drc-c48426f721cede4d865df946157d5e2dc90bd32763ffcb982ca45b3bd97a29db"\n' +
+  "      },\n" +
+  "      {\n" +
+  '         "dataElementCodes":[\n' +
+  "            {\n" +
   '               "code":"2135-2",\n' +
   '               "system":"2.16.840.1.113883.6.238",\n' +
   '               "version":"1.2",\n' +
@@ -86,7 +105,8 @@ const testCaseJson =
   '         "codeListId":"2.16.840.1.114222.4.11.836"\n' +
   "      }\n" +
   "   ],\n" +
-  '   "_id":"646628cb235ff80000718c1a"\n' +
+  '   "_id":"646628cb235ff80000718c1a",\n' +
+  '   "birthDatetime":"1985-01-01T08:00:00.000+00:00"\n' +
   "}";
 const testMeasure: Measure = {
   id: "testMeasureId",
@@ -251,7 +271,8 @@ describe("EditTestCase QDM Component", () => {
     expect(genderInput.value).toBe("Female");
   });
 
-  it.skip("should render qdm edit Demographics component with values from TestCase JSON", async () => {
+  it("should render qdm edit Demographics component with values from TestCase JSON", async () => {
+    testcase.json = testCaseJson;
     render(
       <MemoryRouter>
         <EditTestCase />
@@ -272,7 +293,7 @@ describe("EditTestCase QDM Component", () => {
     expect(genderInput.value).toBe("Female");
   });
 
-  it.skip("test change dropwdown values", () => {
+  it("test change dropwdown values", () => {
     render(
       <MemoryRouter>
         <EditTestCase />
@@ -283,7 +304,7 @@ describe("EditTestCase QDM Component", () => {
       "demographics-race-input"
     ) as HTMLInputElement;
     expect(raceInput).toBeInTheDocument();
-    expect(raceInput.value).toBe("Asian");
+    expect(raceInput.value).toBe("American Indian or Alaska Native");
 
     fireEvent.change(raceInput, {
       target: { value: "White" },
@@ -353,6 +374,7 @@ describe("EditTestCase QDM Component", () => {
   });
 
   it("test update test case fails with failure toast", async () => {
+    testcase.json = testCaseJson;
     useTestCaseServiceMock.mockImplementation(() => {
       return useTestCaseServiceMockRejected;
     });
@@ -442,6 +464,7 @@ describe("EditTestCase QDM Component", () => {
   });
 
   it("Should render the details tab with relevant information", async () => {
+    testcase.json = testCaseJson;
     await render(
       <MemoryRouter>
         <EditTestCase />

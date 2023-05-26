@@ -94,7 +94,12 @@ const DemographicsSection = ({ canEdit }) => {
       const newGenderDataElement: DataElement = getGenderDataElement("Female");
       setGenderDataElement(newGenderDataElement);
 
+      let dataElements: DataElement[] = [];
+      dataElements.push(newRaceDataElement);
+      dataElements.push(newGenderDataElement);
+
       const patient: QDMPatient = new QDMPatient();
+      patient.dataElements = dataElements;
       setQdmPatient(patient);
     }
   }, [formik.values.json]);
@@ -153,6 +158,7 @@ const DemographicsSection = ({ canEdit }) => {
     patient.birthDatetime = val; // extra ste
     setQdmPatient(patient);
     formik.setFieldValue("json", JSON.stringify(patient));
+    formik.setFieldValue("birthDate", val);
   };
 
   return (
@@ -186,15 +192,21 @@ const DemographicsSection = ({ canEdit }) => {
                         onChange={(newValue: any) => {
                           const currentDate = dayjs(qdmPatient?.birthDatetime);
                           const newDate = dayjs(currentDate)
-                            .set("year", newValue.$y)
-                            .set("month", newValue.$M)
-                            .set("date", newValue.$D);
+                            .set("year", newValue?.$y)
+                            .set("month", newValue?.$M)
+                            .set("date", newValue?.$D);
+
                           handleTimeChange(newDate);
                         }}
                         slotProps={{
                           textField: {
                             id: "birth-date",
                             sx: textFieldStyle,
+                            required: true,
+                            error: formik.errors?.birthDate ? true : false,
+                            helperText: formik?.errors?.birthDate
+                              ? formik.errors.birthDate
+                              : "",
                             InputProps: {
                               startAdornment: (
                                 <InputAdornment
@@ -220,8 +232,9 @@ const DemographicsSection = ({ canEdit }) => {
                           const currentDate = qdmPatient?.birthDatetime;
                           // hours and minute seem to already take into account AMPM
                           const newDate = dayjs(currentDate)
-                            .set("hour", newValue.$H)
-                            .set("minute", newValue.$m);
+                            .set("hour", newValue?.$H)
+                            .set("minute", newValue?.$m);
+
                           handleTimeChange(newDate);
                           // on change we need to combine with the date before we set date
                           // formik.setFieldValue("birthDatetime", newDate);
@@ -229,6 +242,8 @@ const DemographicsSection = ({ canEdit }) => {
                         slotProps={{
                           textField: {
                             sx: timeTextFieldStyle,
+                            required: true,
+                            error: formik.errors?.birthDate ? true : false,
                           },
                         }}
                       />

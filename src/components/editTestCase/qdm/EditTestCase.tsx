@@ -16,6 +16,9 @@ import { useParams } from "react-router-dom";
 import useTestCaseServiceApi from "../../../api/useTestCaseServiceApi";
 import { useFormik, FormikProvider } from "formik";
 import { QDMPatientSchemaValidator } from "./QDMPatientSchemaValidator";
+import { QDMPatient } from "cqm-models";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 
 import "allotment/dist/style.css";
 import "./EditTestCase.scss";
@@ -58,10 +61,20 @@ const EditTestCase = () => {
   const testCaseService = useRef(useTestCaseServiceApi());
   const [currentTestCase, setCurrentTestCase] = useState<TestCase>(null);
   const { measureId, id } = useParams();
+  const [qdmPatient, setQdmPatient] = useState<QDMPatient>();
+  dayjs.extend(utc);
+  dayjs.utc().format();
 
   const retrieveTestCase = useCallback(() => {
     testCaseService.current.getTestCase(id, measureId).then((tc: TestCase) => {
       setCurrentTestCase(tc);
+      let patient: QDMPatient = null;
+      if (tc?.json) {
+        patient = JSON.parse(tc?.json);
+        if (patient) {
+          setQdmPatient(patient);
+        }
+      }
     });
   }, [measureId, id, testCaseService]);
   useEffect(() => {
@@ -95,6 +108,12 @@ const EditTestCase = () => {
       series,
       json,
       id,
+      birthDate: qdmPatient?.birthDatetime
+        ? dayjs(qdmPatient?.birthDatetime)
+        : null,
+      birthTime: qdmPatient?.birthDatetime
+        ? dayjs(qdmPatient?.birthDatetime)
+        : null,
     },
     validationSchema: QDMPatientSchemaValidator,
     enableReinitialize: true,
