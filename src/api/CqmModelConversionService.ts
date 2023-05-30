@@ -7,7 +7,7 @@ import axios from "axios";
 import { CalculationMethod } from "./models/CalculationMethod";
 import { DataCriteria } from "./models/DataCriteria";
 import _ from "lodash";
-import { CqmModelFactory } from "./CqmModelFactory";
+import { CqmModelFactory } from "./model-factory/CqmModelFactory";
 
 export class CqmConversionService {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
