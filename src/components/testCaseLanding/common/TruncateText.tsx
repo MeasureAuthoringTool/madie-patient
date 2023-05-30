@@ -2,7 +2,7 @@ import React from "react";
 import ButtonUnstyled from "@mui/base/ButtonUnstyled";
 import { styled } from "@mui/system";
 import Tooltip from "@mui/material/Tooltip";
-import { truncateInput } from "../../util/Utils";
+import { truncateInput } from "../../../util/Utils";
 import { useTheme } from "@mui/material";
 
 const MoreButton = styled(ButtonUnstyled)`

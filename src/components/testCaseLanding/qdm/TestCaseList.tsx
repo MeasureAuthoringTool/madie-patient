@@ -1,32 +1,30 @@
-import React, {
-  useEffect,
-  useRef,
-  useState,
-  useCallback,
-  Dispatch,
-  SetStateAction,
-} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import tw from "twin.macro";
 import "styled-components/macro";
 import * as _ from "lodash";
-import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import { Group, TestCase, MeasureErrorType } from "@madie/madie-models";
 import { useParams } from "react-router-dom";
-import TestCaseComponent from "./TestCase";
-import calculationService from "../../api/CalculationService";
+import calculationService from "../../../api/CalculationService";
 import {
   CalculationOutput,
   DetailedPopulationGroupResult,
 } from "fqm-execution/build/types/Calculator";
 import { checkUserCanEdit } from "@madie/madie-util";
-import useExecutionContext from "../routes/qiCore/useExecutionContext";
-import CreateCodeCoverageNavTabs from "./CreateCodeCoverageNavTabs";
-import CodeCoverageHighlighting from "./CodeCoverageHighlighting";
-import CreateNewTestCaseDialog from "../createTestCase/CreateNewTestCaseDialog";
+import useExecutionContext from "../../routes/qiCore/useExecutionContext";
+import CreateCodeCoverageNavTabs from "../common/CreateCodeCoverageNavTabs";
+import CodeCoverageHighlighting from "../common/CodeCoverageHighlighting";
+import CreateNewTestCaseDialog from "../../createTestCase/CreateNewTestCaseDialog";
 import { MadieSpinner, Toast } from "@madie/madie-design-system/dist/react";
-import TestCaseListSideBarNav from "./TestCaseListSideBarNav";
+import TestCaseListSideBarNav from "../common/TestCaseListSideBarNav";
 import Typography from "@mui/material/Typography";
-import TestCaseImportDialog from "./import/TestCaseImportDialog";
+import TestCaseImportDialog from "../common/import/TestCaseImportDialog";
+import {
+  TestCasesPassingDetailsProps,
+  TestCaseListProps,
+} from "../common/interfaces";
+import TestCaseTable from "../common/TestCaseTable";
+import UseTestCases from "../common/Hooks/UseTestCases";
+import UseToast from "../common/Hooks/UseToast";
 
 const TH = tw.th`p-3 border-b text-left text-sm font-bold capitalize`;
 
@@ -59,25 +57,33 @@ export const getCoverageValueFromHtml = (
   return isNaN(coverageValue) ? 0 : coverageValue;
 };
 
-export interface TestCasesPassingDetailsProps {
-  passPercentage: number;
-  passFailRatio: string;
-}
-
-export interface TestCaseListProps {
-  errors: Array<string>;
-  setErrors: Dispatch<SetStateAction<Array<string>>>;
-}
-
 const TestCaseList = (props: TestCaseListProps) => {
-  const [testCases, setTestCases] = useState<TestCase[]>(null);
+  const { setErrors } = props;
+  const { measureId } = useParams<{ measureId: string }>();
+  const {
+    testCases,
+    setTestCases,
+    testCaseService,
+    loadingState,
+    setLoadingState,
+    retrieveTestCases,
+  } = UseTestCases({
+    measureId,
+    setErrors,
+  });
+  const {
+    toastOpen,
+    setToastOpen,
+    toastMessage,
+    setToastMessage,
+    toastType,
+    onToastClose,
+  } = UseToast();
+
   const [executionResults, setExecutionResults] = useState<{
     [key: string]: DetailedPopulationGroupResult[];
   }>({});
 
-  const { setErrors } = props;
-  const { measureId } = useParams<{ measureId: string }>();
-  const testCaseService = useRef(useTestCaseServiceApi());
   const calculation = useRef(calculationService());
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("passing");
@@ -98,32 +104,11 @@ const TestCaseList = (props: TestCaseListProps) => {
   const [measureBundle] = bundleState;
   const [valueSets] = valueSetsState;
   const [selectedPopCriteria, setSelectedPopCriteria] = useState<Group>();
-  const [loadingState, setLoadingState] = useState<any>({
-    loading: true,
-    message: "",
-  });
   const [importDialogState, setImportDialogState] = useState<any>({
     open: false,
   });
 
   const [createOpen, setCreateOpen] = useState<boolean>(false);
-
-  // toast utilities
-  // toast is only used for success messages
-  // creating and updating PC
-  const [toastOpen, setToastOpen] = useState<boolean>(false);
-  const [toastMessage, setToastMessage] = useState<string>("");
-  const [toastType, setToastType] = useState<string>("danger");
-  const onToastClose = () => {
-    setToastType("danger");
-    setToastMessage("");
-    setToastOpen(false);
-  };
-  const handleToast = (type, message, open) => {
-    setToastType(type);
-    setToastMessage(message);
-    setToastOpen(open);
-  };
 
   useEffect(() => {
     if (
@@ -159,27 +144,6 @@ const TestCaseList = (props: TestCaseListProps) => {
       )
     );
   }, [measure]);
-
-  const retrieveTestCases = useCallback(() => {
-    setLoadingState(() => ({
-      loading: true,
-      message: "Loading Test Cases...",
-    }));
-    testCaseService.current
-      .getTestCasesByMeasureId(measureId)
-      .then((testCaseList: TestCase[]) => {
-        testCaseList.forEach((testCase: any) => {
-          testCase.executionStatus = testCase.validResource ? "NA" : "Invalid";
-        });
-        setTestCases(testCaseList);
-      })
-      .catch((err) => {
-        setErrors((prevState) => [...prevState, err.message]);
-      })
-      .finally(() => {
-        setLoadingState({ loading: false, message: "" });
-      });
-  }, [measureId, testCaseService]);
 
   useEffect(() => {
     retrieveTestCases();
@@ -403,39 +367,13 @@ const TestCaseList = (props: TestCaseListProps) => {
                           <span>{readerString}</span>
                         </div>
                       )}
-                      <table
-                        tw="min-w-full"
-                        data-testid="test-case-tbl"
-                        className="tcl-table"
-                        style={{
-                          borderTop: "solid 1px #DDD",
-                          borderSpacing: "0 2em !important",
-                        }}
-                      >
-                        <thead tw="bg-slate">
-                          <tr>
-                            <TH scope="col">Status</TH>
-                            <TH scope="col">Group</TH>
-                            <TH scope="col">Title</TH>
-                            <TH scope="col">Description</TH>
-                            <TH scope="col">Action</TH>
-                          </tr>
-                        </thead>
-                        <tbody className="table-body" style={{ padding: 20 }}>
-                          {testCases?.map((testCase) => {
-                            return (
-                              <TestCaseComponent
-                                testCase={testCase}
-                                key={testCase.id}
-                                canEdit={canEdit}
-                                executionResult={executionResults[testCase.id]}
-                                deleteTestCase={deleteTestCase}
-                                // we assume all results have been run here
-                              />
-                            );
-                          })}
-                        </tbody>
-                      </table>
+
+                      <TestCaseTable
+                        testCases={testCases}
+                        canEdit={canEdit}
+                        executionResults={executionResults}
+                        deleteTestCase={deleteTestCase}
+                      />
                     </>
                   )}
                   {executing && (
