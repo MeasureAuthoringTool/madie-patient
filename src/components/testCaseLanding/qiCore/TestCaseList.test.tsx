@@ -424,7 +424,7 @@ const measure = {
       ],
     },
   ],
-  acls: [{ userId: "othertestuser@example.com", roles: ["SHARED_WITH"] }],
+  acls: [{ userId: "othertestuser@example.com", roles: ["SHARED_WITH"] }], //#nosec
 } as Measure;
 
 // mocking measureService
