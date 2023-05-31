@@ -12,4 +12,10 @@ export const QDMPatientSchemaValidator = Yup.object().shape({
   series: Yup.string(),
   // json: Yup.string().nullable(),
   id: Yup.string(),
+  birthDate: Yup.string()
+    .required("Birthdate is required")
+    .nullable()
+    .test("birthDate", "Birthdate is required", async (birthDate) => {
+      return birthDate !== "Invalid Date";
+    }),
 });

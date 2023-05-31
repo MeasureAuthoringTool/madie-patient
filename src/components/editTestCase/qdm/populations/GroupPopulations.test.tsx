@@ -9,6 +9,7 @@ import {
 import userEvent from "@testing-library/user-event";
 
 const errors = jest.fn();
+const birthDateTime = 90436320690;
 
 describe("Group Populations", () => {
   let testCaseGroups: GroupPopulation[];
@@ -77,6 +78,7 @@ describe("Group Populations", () => {
         groupPopulations={groupPopulations}
         onChange={handleChange}
         errors={errors}
+        birthDateTime={birthDateTime}
       />
     );
     const g1MeasureName = screen.getByTestId("measure-group-1");
@@ -137,6 +139,7 @@ describe("Group Populations", () => {
         onChange={jest.fn()}
         executionRun
         errors={errors}
+        birthDateTime={birthDateTime}
       />
     );
     expect(
@@ -153,6 +156,7 @@ describe("Group Populations", () => {
         onChange={jest.fn()}
         executionRun
         errors={errors}
+        birthDateTime={birthDateTime}
       />
     );
     expect(
@@ -169,6 +173,7 @@ describe("Group Populations", () => {
         onChange={jest.fn()}
         executionRun
         errors={errors}
+        birthDateTime={birthDateTime}
       />
     );
     expect(
@@ -187,6 +192,7 @@ describe("Group Populations", () => {
         groupPopulations={testCaseGroups}
         onChange={handleChange}
         errors={errors}
+        birthDateTime={birthDateTime}
       />
     );
 
@@ -209,6 +215,7 @@ describe("Group Populations", () => {
         onChange={handleChange}
         // onStratificationChange={handleStratificationChange}
         errors={errors}
+        birthDateTime={birthDateTime}
       />
     );
 
@@ -253,6 +260,7 @@ describe("Group Populations", () => {
         groupPopulations={testCaseGroups}
         onChange={handleChange}
         errors={errors}
+        birthDateTime={birthDateTime}
       />
     );
 
