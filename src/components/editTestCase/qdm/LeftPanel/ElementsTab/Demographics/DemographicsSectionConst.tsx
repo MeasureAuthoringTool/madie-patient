@@ -1,4 +1,12 @@
-import { QDMPatient, DataElement, DataElementCode } from "cqm-models";
+import {
+  QDMPatient,
+  DataElement,
+  DataElementCode,
+  PatientCharacteristicRace,
+  PatientCharacteristicEthnicity,
+  PatientCharacteristicBirthdate,
+  PatientCharacteristicSex,
+} from "cqm-models";
 
 export interface CodeSystem {
   code: string;
@@ -61,68 +69,47 @@ export const GENDER_CODE_OPTIONS: DataElementCode[] = [
   },
 ];
 
+export const ETHNICITY_CODE_OPTIONS: DataElementCode[] = [
+  {
+    code: "2135-2",
+    display: "Hispanic or Latino",
+    version: "1.2",
+    system: "2.16.840.1.113883.6.238",
+  },
+  {
+    code: "2186-5",
+    display: "Not Hispanic or Latino",
+    version: "1.2",
+    system: "2.16.840.1.113883.6.238",
+  },
+];
+
 export const getBirthDateElement = (value): DataElement => {
-  const newBirthDateElement: DataElement = {
-    dataElementCodes: [
-      {
-        code: "21112-8",
-        system: "2.16.840.1.113883.6.1",
-        version: null,
-        display: "Birth date",
-      },
-    ],
-    qdmTitle: "Patient Characteristic Birthdate",
-    hqmfOid: "2.16.840.1.113883.10.20.28.4.54",
-    qdmCategory: "patient_characteristic",
-    qdmStatus: "birthdate",
-    qdmVersion: "5.6",
-    _type: "QDM::PatientCharacteristicBirthdate",
-    description: "Patient Characteristic Birthdate: Birth date",
-    codeListId:
-      "drc-c48426f721cede4d865df946157d5e2dc90bd32763ffcb982ca45b3bd97a29db",
-    birthDatetime: value,
-    // birthDatetime: "1985-01-01T08:00:00.000+00:00",
-    // _id: "609d95acb789028849ab7be4",
-    // id: "609d95acb789028849ab7be4" ??
-  };
-  return newBirthDateElement;
+  const pcb: DataElement = new PatientCharacteristicBirthdate();
+  pcb.birthDatetime = value;
+  return pcb;
 };
 
 // given a value, return a data element
 export const getRaceDataElement = (value: string): DataElement => {
   const newCode: DataElementCode = getNewCode(RACE_CODE_OPTIONS, value);
-  const newRaceDataElement: DataElement = {
-    dataElementCodes: [newCode],
-    qdmTitle: "Patient Characteristic Race",
-    hqmfOid: "2.16.840.1.113883.10.20.28.4.59",
-    qdmCategory: "patient_characteristic",
-    qdmStatus: "race",
-    qdmVersion: "5.6",
-    _type: "QDM::PatientCharacteristicRace",
-    description: "Patient Characteristic Race: Race",
-    codeListId: "2.16.840.1.114222.4.11.836",
-
-    //ids???
-    // _id: "609d95acb789028849ab7bcc",
-    // id: "609d95acb789028849ab7bcc",
-  };
-  return newRaceDataElement;
+  const pcr: DataElement = new PatientCharacteristicRace();
+  pcr.dataElementCodes = [newCode];
+  return pcr;
 };
 
 export const getGenderDataElement = (value: string): DataElement => {
   const newCode: DataElementCode = getNewCode(GENDER_CODE_OPTIONS, value);
-  const newGenderDataElement: DataElement = {
-    dataElementCodes: [newCode],
-    qdmTitle: "Patient Characteristic Sex",
-    hqmfOid: "2.16.840.1.113883.10.20.28.4.55",
-    qdmCategory: "patient_characteristic",
-    qdmStatus: "gender",
-    qdmVersion: "5.6",
-    _type: "QDM::PatientCharacteristicSex",
-    description: "Patient Characteristic Sex: ONCAdministrativeSex",
-    codeListId: "2.16.840.1.113762.1.4.1",
-  };
-  return newGenderDataElement;
+  const pcs: DataElement = new PatientCharacteristicSex();
+  pcs.dataElementCodes = [newCode];
+  return pcs;
+};
+
+export const getEthnicityDataElement = (value: string): DataElement => {
+  const newCode: DataElementCode = getNewCode(ETHNICITY_CODE_OPTIONS, value);
+  const pce: DataElement = new PatientCharacteristicEthnicity();
+  pce.dataElementCodes = [newCode];
+  return pce;
 };
 
 export const getNewCode = (options, selectedValue: string) => {

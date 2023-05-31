@@ -27,6 +27,8 @@ import {
   getGenderDataElement,
   getBirthDateElement,
   getRaceDataElement,
+  ETHNICITY_CODE_OPTIONS,
+  getEthnicityDataElement,
 } from "./DemographicsSectionConst";
 import { MenuItem as MuiMenuItem } from "@mui/material";
 
@@ -46,6 +48,8 @@ const DemographicsSection = ({ canEdit }) => {
   // this will be local
   const [raceDataElement, setRaceDataElement] = useState<DataElement>();
   const [genderDataElement, setGenderDataElement] = useState<DataElement>();
+  const [ethnicityDataElement, setEthnicityDataElement] =
+    useState<DataElement>();
 
   const selectOptions = (options) => {
     return [
@@ -84,6 +88,9 @@ const DemographicsSection = ({ canEdit }) => {
         if (element.qdmStatus === "gender") {
           setGenderDataElement(element);
         }
+        if (element.qdmStatus === "ethnicity") {
+          setEthnicityDataElement(element);
+        }
       });
     } else {
       // default values for QDM patient. to do race and gender default values?
@@ -93,6 +100,9 @@ const DemographicsSection = ({ canEdit }) => {
       setRaceDataElement(newRaceDataElement);
       const newGenderDataElement: DataElement = getGenderDataElement("Female");
       setGenderDataElement(newGenderDataElement);
+      const newEthnicityDataElement: DataElement =
+        getEthnicityDataElement("Hispanic or Latino");
+      setEthnicityDataElement(newEthnicityDataElement);
 
       let dataElements: DataElement[] = [];
       dataElements.push(newRaceDataElement);
@@ -145,6 +155,16 @@ const DemographicsSection = ({ canEdit }) => {
     );
     setGenderDataElement(newGenderDataElement);
     const patient = generateNewQdmPatient(newGenderDataElement, "gender");
+    setQdmPatient(patient);
+    formik.setFieldValue("json", JSON.stringify(patient));
+  };
+
+  const handleEthnicityChange = (event) => {
+    const newEthnicityDataElement: DataElement = getEthnicityDataElement(
+      event.target.value
+    );
+    setEthnicityDataElement(newEthnicityDataElement);
+    const patient = generateNewQdmPatient(newEthnicityDataElement, "ethnicity");
     setQdmPatient(patient);
     formik.setFieldValue("json", JSON.stringify(patient));
   };
@@ -284,6 +304,27 @@ const DemographicsSection = ({ canEdit }) => {
                   }
                   onChange={handleGenderChange}
                   options={selectOptions(GENDER_CODE_OPTIONS)}
+                ></Select>
+              </FormControl>
+            </div>
+            <div className="demographics-row">
+              <FormControl>
+                <Select
+                  labelId="demographics-ethnicity-select-label"
+                  id="demographics-ethnicity-select-id"
+                  defaultValue="Hispanic or Latino"
+                  label="Ethnicity"
+                  disabled={!canEdit}
+                  inputProps={{
+                    "data-testid": `demographics-ethnicity-input`,
+                  }}
+                  value={
+                    ethnicityDataElement?.dataElementCodes?.[0].display ||
+                    "Hispanic or Latino"
+                  }
+                  onChange={handleEthnicityChange}
+                  options={selectOptions(ETHNICITY_CODE_OPTIONS)}
+                  style={{ minWidth: "250px" }}
                 ></Select>
               </FormControl>
             </div>
