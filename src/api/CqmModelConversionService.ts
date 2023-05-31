@@ -74,7 +74,7 @@ export class CqmConversionService {
 
     // TODO: need UI checkbox to determine yes/no
     cqmMeasure.calculate_sdes = false;
-    // TODO: build population_sets
+    // TODO: build population_sets- MAT-5779
     cqmMeasure.population_sets = null;
     return cqmMeasure;
   }
@@ -88,9 +88,9 @@ export class CqmConversionService {
     cqlLibrary.elm = elmJson;
     // true for all non-composite measures
     cqlLibrary.is_top_level = true;
-    // TODO: prepare elm_annotations
+    // TODO: prepare elm_annotations- MAT-5787
     cqlLibrary.elm_annotations = null;
-    // TODO: prepare statement_dependencies
+    // TODO: prepare statement_dependencies- MAT-5786
     cqlLibrary.statement_dependencies = null;
     return cqlLibrary;
   }
