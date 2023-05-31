@@ -104,7 +104,10 @@ const DemographicsSection = ({ canEdit }) => {
         getEthnicityDataElement("Hispanic or Latino");
       setEthnicityDataElement(newEthnicityDataElement);
 
-      let dataElements: DataElement[] = [newRaceDataElement, newGenderDataElement];
+      let dataElements: DataElement[] = [
+        newRaceDataElement,
+        newGenderDataElement,
+      ];
 
       const patient: QDMPatient = new QDMPatient();
       patient.dataElements = dataElements;
