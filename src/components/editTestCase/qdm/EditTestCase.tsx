@@ -31,6 +31,9 @@ import {
   getPopulationTypesForScoring,
   triggerPopChanges,
 } from "../../../util/PopulationsMap";
+import { QDMPatient } from "cqm-models";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 
 const EditTestCase = () => {
   useDocumentTitle("MADiE Edit Measure Edit Test Case");
@@ -73,6 +76,9 @@ const EditTestCase = () => {
   const { measureId, id } = useParams();
 
   const [currentTestCase, setCurrentTestCase] = useState<TestCase>(null);
+  const [qdmPatient, setQdmPatient] = useState<QDMPatient>();
+  dayjs.extend(utc);
+  dayjs.utc().format(); // utc format
 
   const formik = useFormik({
     initialValues: {
@@ -81,9 +87,12 @@ const EditTestCase = () => {
       series: "",
       json: "",
       groupPopulations: [],
-    } as TestCase,
+      birthDate: qdmPatient?.birthDatetime
+        ? dayjs(qdmPatient?.birthDatetime)
+        : null,
+    },
     validationSchema: QDMPatientSchemaValidator,
-    onSubmit: async (values: TestCase) => await handleSubmit(values),
+    onSubmit: async (values: any) => await handleSubmit(values),
   });
   const { resetForm } = formik;
 
@@ -91,6 +100,18 @@ const EditTestCase = () => {
     testCase.title = sanitizeUserInput(testCase.title);
     testCase.description = sanitizeUserInput(testCase.description);
     testCase.series = sanitizeUserInput(testCase.series);
+
+    if (formik.values?.json) {
+      testCase.json = formik.values?.json;
+      const patient: QDMPatient = JSON.parse(formik.values.json);
+      if (patient) {
+        setQdmPatient(patient);
+        formik.setFieldValue(
+          "birthDate",
+          patient?.birthDatetime ? dayjs(patient?.birthDatetime) : null
+        );
+      }
+    }
 
     await updateTestCase(testCase);
   };
@@ -175,6 +196,17 @@ const EditTestCase = () => {
             nextTc.groupPopulations = [];
           }
           setCurrentTestCase(nextTc);
+          let patient: QDMPatient = null;
+          if (nextTc?.json) {
+            patient = JSON.parse(tc?.json);
+            if (patient) {
+              setQdmPatient(patient);
+              formik.setFieldValue(
+                "birthDate",
+                patient?.birthDatetime ? dayjs(patient?.birthDatetime) : null
+              );
+            }
+          }
           formik.resetForm({ values: _.cloneDeep(nextTc) });
         })
         .catch((error) => {
@@ -229,8 +261,23 @@ const EditTestCase = () => {
                       measure?.groups
                     );
                     formik.setFieldValue("groupPopulations", updatedPops);
+                    formik.setFieldValue(
+                      "birthDate",
+                      formik.values?.birthDate
+                        ? formik.values?.birthDate
+                        : qdmPatient?.birthDatetime
+                        ? dayjs(qdmPatient?.birthDatetime)
+                        : null
+                    );
                   }}
                   measureName={measure?.measureName}
+                  birthDateTime={
+                    formik.values?.birthDate
+                      ? formik.values?.birthDate
+                      : qdmPatient?.birthDatetime
+                      ? dayjs(qdmPatient?.birthDatetime)
+                      : null
+                  }
                 />
               </Allotment.Pane>
             </Allotment>
