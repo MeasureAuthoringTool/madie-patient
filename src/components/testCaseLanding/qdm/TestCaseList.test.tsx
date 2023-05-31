@@ -1,14 +1,13 @@
 import * as React from "react";
 import {
   fireEvent,
-  getByTestId,
   render,
   screen,
   waitFor,
   within,
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { ApiContextProvider, ServiceConfig } from "../../api/ServiceContext";
+import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
 import TestCaseList, {
   getCoverageValueFromHtml,
   IMPORT_ERROR,
@@ -16,7 +15,7 @@ import TestCaseList, {
 } from "./TestCaseList";
 import calculationService, {
   CalculationService,
-} from "../../api/CalculationService";
+} from "../../../api/CalculationService";
 import {
   GroupPopulation,
   Measure,
@@ -28,16 +27,16 @@ import {
 } from "@madie/madie-models";
 import useTestCaseServiceApi, {
   TestCaseServiceApi,
-} from "../../api/useTestCaseServiceApi";
+} from "../../../api/useTestCaseServiceApi";
 import useMeasureServiceApi, {
   MeasureServiceApi,
-} from "../../api/useMeasureServiceApi";
+} from "../../../api/useMeasureServiceApi";
 import userEvent from "@testing-library/user-event";
 import {
   buildMeasureBundle,
   getExampleValueSet,
-} from "../../util/CalculationTestHelpers";
-import { ExecutionContextProvider } from "../routes/qiCore/ExecutionContext";
+} from "../../../util/CalculationTestHelpers";
+import { ExecutionContextProvider } from "../../routes/qiCore/ExecutionContext";
 import { checkUserCanEdit, useFeatureFlags } from "@madie/madie-util";
 
 const serviceConfig: ServiceConfig = {
@@ -63,7 +62,7 @@ jest.mock("@madie/madie-util", () => ({
 
 let importingTestCases = [];
 jest.mock(
-  "./import/TestCaseImportDialog",
+  "../common/import/TestCaseImportDialog",
   () =>
     ({ open, handleClose, onImport }) => {
       return open ? (
@@ -364,7 +363,7 @@ const failingTestCaseResults = [
 ] as TestCase[];
 
 // mocking calculationService
-jest.mock("../../api/CalculationService");
+jest.mock("../../../api/CalculationService");
 const calculationServiceMock =
   calculationService as jest.Mock<CalculationService>;
 
@@ -384,7 +383,7 @@ const calculationServiceMockResolved = {
 } as unknown as CalculationService;
 
 // mocking testCaseService
-jest.mock("../../api/useTestCaseServiceApi");
+jest.mock("../../../api/useTestCaseServiceApi");
 const useTestCaseServiceMock =
   useTestCaseServiceApi as jest.Mock<TestCaseServiceApi>;
 
@@ -429,7 +428,7 @@ const measure = {
 } as Measure;
 
 // mocking measureService
-jest.mock("../../api/useMeasureServiceApi");
+jest.mock("../../../api/useMeasureServiceApi");
 const useMeasureServiceMock =
   useMeasureServiceApi as jest.Mock<MeasureServiceApi>;
 
@@ -460,6 +459,7 @@ describe("TestCaseList component", () => {
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
       applyDefaults: false,
       importTestCases: false,
+      qdmTestCases: true,
     }));
     setError.mockClear();
 

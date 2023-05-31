@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
-import TestCaseLandingQdm from "../../testCaseLanding/TestCaseLandingQdm";
+import TestCaseLandingQdm from "../../testCaseLanding/qdm/TestCaseLanding";
 import EditTestCase from "../../editTestCase/qdm/EditTestCase";
 import NotFound from "../../notfound/NotFound";
 import StatusHandler from "../../statusHandler/StatusHandler";

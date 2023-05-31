@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Route, Routes } from "react-router-dom";
-import TestCaseLanding from "../../testCaseLanding/TestCaseLanding";
+import TestCaseLanding from "../../testCaseLanding/qiCore/TestCaseLanding";
 import EditTestCase from "../../editTestCase/qiCore/EditTestCase";
 import NotFound from "../../notfound/NotFound";
 import { measureStore } from "@madie/madie-util";
