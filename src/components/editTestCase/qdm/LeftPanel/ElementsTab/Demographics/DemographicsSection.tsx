@@ -13,6 +13,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { TimePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import {
+  birthDateLabelStyle,
   textFieldStyle,
   timeTextFieldStyle,
 } from "./DemographicsSectionStyles";
@@ -26,6 +27,8 @@ import {
   getGenderDataElement,
   getBirthDateElement,
   getRaceDataElement,
+  ETHNICITY_CODE_OPTIONS,
+  getEthnicityDataElement,
 } from "./DemographicsSectionConst";
 import { MenuItem as MuiMenuItem } from "@mui/material";
 
@@ -45,6 +48,8 @@ const DemographicsSection = ({ canEdit }) => {
   // this will be local
   const [raceDataElement, setRaceDataElement] = useState<DataElement>();
   const [genderDataElement, setGenderDataElement] = useState<DataElement>();
+  const [ethnicityDataElement, setEthnicityDataElement] =
+    useState<DataElement>();
 
   const selectOptions = (options) => {
     return [
@@ -83,6 +88,9 @@ const DemographicsSection = ({ canEdit }) => {
         if (element.qdmStatus === "gender") {
           setGenderDataElement(element);
         }
+        if (element.qdmStatus === "ethnicity") {
+          setEthnicityDataElement(element);
+        }
       });
     } else {
       // default values for QDM patient. to do race and gender default values?
@@ -92,8 +100,17 @@ const DemographicsSection = ({ canEdit }) => {
       setRaceDataElement(newRaceDataElement);
       const newGenderDataElement: DataElement = getGenderDataElement("Female");
       setGenderDataElement(newGenderDataElement);
+      const newEthnicityDataElement: DataElement =
+        getEthnicityDataElement("Hispanic or Latino");
+      setEthnicityDataElement(newEthnicityDataElement);
+
+      let dataElements: DataElement[] = [
+        newRaceDataElement,
+        newGenderDataElement,
+      ];
 
       const patient: QDMPatient = new QDMPatient();
+      patient.dataElements = dataElements;
       setQdmPatient(patient);
     }
   }, [formik.values.json]);
@@ -143,6 +160,16 @@ const DemographicsSection = ({ canEdit }) => {
     formik.setFieldValue("json", JSON.stringify(patient));
   };
 
+  const handleEthnicityChange = (event) => {
+    const newEthnicityDataElement: DataElement = getEthnicityDataElement(
+      event.target.value
+    );
+    setEthnicityDataElement(newEthnicityDataElement);
+    const patient = generateNewQdmPatient(newEthnicityDataElement, "ethnicity");
+    setQdmPatient(patient);
+    formik.setFieldValue("json", JSON.stringify(patient));
+  };
+
   const handleTimeChange = (val) => {
     const formatted = dayjs.utc(val).format();
     const newTimeElement = getBirthDateElement(formatted);
@@ -152,6 +179,7 @@ const DemographicsSection = ({ canEdit }) => {
     patient.birthDatetime = val; // extra ste
     setQdmPatient(patient);
     formik.setFieldValue("json", JSON.stringify(patient));
+    formik.setFieldValue("birthDate", val);
   };
 
   return (
@@ -169,31 +197,13 @@ const DemographicsSection = ({ canEdit }) => {
                       required
                       htmlFor={"birth-date"}
                       style={{ marginBottom: 0, height: 16 }} // force a heignt
-                      sx={[
-                        {
-                          backgroundColor: "transparent",
-                          display: "flex",
-                          flexDirection: "row-reverse",
-                          alignSelf: "baseline",
-                          textTransform: "none",
-                          // force it outside the select box
-                          position: "initial",
-                          transform: "translateX(0px) translateY(0px)",
-                          fontFamily: "Rubik",
-                          fontWeight: 500,
-                          fontSize: 14,
-                          color: "#333",
-                          "& .MuiInputLabel-asterisk": {
-                            color: "#AE1C1C !important",
-                            marginRight: "3px !important", //this was
-                          },
-                        },
-                      ]}
+                      sx={birthDateLabelStyle}
                     >
                       Date of Birth
                     </InputLabel>
                     <div style={{ display: "flex" }}>
                       <DatePicker
+                        disabled={!canEdit}
                         disableOpenPicker
                         value={
                           qdmPatient?.birthDatetime
@@ -203,15 +213,21 @@ const DemographicsSection = ({ canEdit }) => {
                         onChange={(newValue: any) => {
                           const currentDate = dayjs(qdmPatient?.birthDatetime);
                           const newDate = dayjs(currentDate)
-                            .set("year", newValue.$y)
-                            .set("month", newValue.$M)
-                            .set("date", newValue.$D);
+                            .set("year", newValue?.$y)
+                            .set("month", newValue?.$M)
+                            .set("date", newValue?.$D);
+
                           handleTimeChange(newDate);
                         }}
                         slotProps={{
                           textField: {
                             id: "birth-date",
                             sx: textFieldStyle,
+                            required: true,
+                            error: formik.errors?.birthDate ? true : false,
+                            helperText: formik?.errors?.birthDate
+                              ? formik.errors.birthDate
+                              : "",
                             InputProps: {
                               startAdornment: (
                                 <InputAdornment
@@ -227,6 +243,7 @@ const DemographicsSection = ({ canEdit }) => {
                       />
                       <TimePicker
                         disableOpenPicker
+                        disabled={!canEdit}
                         value={
                           qdmPatient?.birthDatetime
                             ? dayjs(qdmPatient?.birthDatetime)
@@ -236,8 +253,9 @@ const DemographicsSection = ({ canEdit }) => {
                           const currentDate = qdmPatient?.birthDatetime;
                           // hours and minute seem to already take into account AMPM
                           const newDate = dayjs(currentDate)
-                            .set("hour", newValue.$H)
-                            .set("minute", newValue.$m);
+                            .set("hour", newValue?.$H)
+                            .set("minute", newValue?.$m);
+
                           handleTimeChange(newDate);
                           // on change we need to combine with the date before we set date
                           // formik.setFieldValue("birthDatetime", newDate);
@@ -245,6 +263,8 @@ const DemographicsSection = ({ canEdit }) => {
                         slotProps={{
                           textField: {
                             sx: timeTextFieldStyle,
+                            required: true,
+                            error: formik.errors?.birthDate ? true : false,
                           },
                         }}
                       />
@@ -285,6 +305,27 @@ const DemographicsSection = ({ canEdit }) => {
                   }
                   onChange={handleGenderChange}
                   options={selectOptions(GENDER_CODE_OPTIONS)}
+                ></Select>
+              </FormControl>
+            </div>
+            <div className="demographics-row">
+              <FormControl>
+                <Select
+                  labelId="demographics-ethnicity-select-label"
+                  id="demographics-ethnicity-select-id"
+                  defaultValue="Hispanic or Latino"
+                  label="Ethnicity"
+                  disabled={!canEdit}
+                  inputProps={{
+                    "data-testid": `demographics-ethnicity-input`,
+                  }}
+                  value={
+                    ethnicityDataElement?.dataElementCodes?.[0].display ||
+                    "Hispanic or Latino"
+                  }
+                  onChange={handleEthnicityChange}
+                  options={selectOptions(ETHNICITY_CODE_OPTIONS)}
+                  style={{ minWidth: "250px" }}
                 ></Select>
               </FormControl>
             </div>

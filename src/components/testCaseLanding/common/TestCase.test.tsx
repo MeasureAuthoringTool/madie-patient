@@ -1,7 +1,7 @@
 import * as React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import TestCaseComponent from "./TestCase";
+import TestCaseComponent from "../common/TestCase";
 
 describe("TestCase component", () => {
   afterEach(() => {

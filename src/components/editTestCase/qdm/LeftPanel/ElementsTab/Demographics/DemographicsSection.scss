@@ -4,7 +4,8 @@
 }
 
 .demographics-container {
-  display: flex;
+  display: grid;
+  grid-row-gap: 24px;
   .demographics-row {
     display: flex;
     flex-direction: row;

@@ -12,13 +12,13 @@ import Button from "@mui/material/Button";
 import {
   processPatientBundles,
   readImportFile,
-} from "../../../util/FhirImportHelper";
+} from "../../../../util/FhirImportHelper";
 import { useDropzone } from "react-dropzone";
 import { Toast } from "@madie/madie-design-system/dist/react";
 import "./TestCaseImportDialog.css";
 import * as _ from "lodash";
-import useTestCaseServiceApi from "../../../api/useTestCaseServiceApi";
-import { ScanValidationDto } from "../../../api/models/ScanValidationDto";
+import useTestCaseServiceApi from "../../../../api/useTestCaseServiceApi";
+import { ScanValidationDto } from "../../../../api/models/ScanValidationDto";
 
 const TestCaseImportDialog = ({ open, handleClose, onImport }) => {
   const [file, setFile] = useState(null);

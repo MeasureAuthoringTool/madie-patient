@@ -4,18 +4,18 @@ import TestCaseImportDialog from "./TestCaseImportDialog";
 import { Measure } from "@madie/madie-models";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
-import { ScanValidationDto } from "../../../api/models/ScanValidationDto";
+import { ScanValidationDto } from "../../../../api/models/ScanValidationDto";
 import {
   processPatientBundles,
   readImportFile,
-} from "../../../util/FhirImportHelper";
-import bonnieJson from "../../../__mocks__/bonniePatient.json";
+} from "../../../../util/FhirImportHelper";
+import bonnieJson from "../../../../__mocks__/bonniePatient.json";
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 let mockProcessedTestCases;
-jest.mock("../../../util/FhirImportHelper", () => ({
+jest.mock("../../../../util/FhirImportHelper", () => ({
   processPatientBundles: jest
     .fn()
     .mockImplementation(() => mockProcessedTestCases),
