@@ -5,7 +5,7 @@ export const dateTextFieldStyle = {
   border: "0px solid #DDDDDD",
   marginTop: "8px",
   "& .MuiOutlinedInput-notchedOutline": {
-    borderRadius: "0px",
+    borderRadius: "3px 0px 0px 3px",
     "& legend": {
       width: 0,
     },
@@ -39,7 +39,7 @@ export const timeTextFieldStyle = {
   width: "90px",
   marginTop: "8px",
   "& .MuiOutlinedInput-notchedOutline": {
-    borderRadius: "0px",
+    borderRadius: "0px 3px 3px 0px",
     "& legend": {
       width: 0,
     },
