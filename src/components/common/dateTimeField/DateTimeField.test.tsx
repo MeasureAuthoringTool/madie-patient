@@ -9,8 +9,12 @@ describe("DateTimeField Component", () => {
       <DateTimeField
         label="Active"
         dateValue={dayjs("2022-04-17")}
-        dateOnChange={() => {return;}}
-        timeOnChange={() => {return;}}
+        dateOnChange={() => {
+          return;
+        }}
+        timeOnChange={() => {
+          return;
+        }}
         timeValue={dayjs("2022-04-17T15:30")}
       />
     );
