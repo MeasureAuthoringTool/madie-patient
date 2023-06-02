@@ -9,8 +9,8 @@ describe("DateTimeField Component", () => {
       <DateTimeField
         label="Active"
         dateValue={dayjs("2022-04-17")}
-        dateOnChange={() => console.log("date on change")}
-        timeOnChange={() => console.log("time on change")}
+        dateOnChange={() => {return;}}
+        timeOnChange={() => {return;}}
         timeValue={dayjs("2022-04-17T15:30")}
       />
     );
