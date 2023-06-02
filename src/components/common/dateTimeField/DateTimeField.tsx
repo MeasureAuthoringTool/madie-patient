@@ -9,8 +9,9 @@ import EventIcon from "@mui/icons-material/Event";
 import { FormControl } from "@mui/material";
 import { TimePicker } from "@mui/x-date-pickers";
 import { dateTextFieldStyle, timeTextFieldStyle } from "./DateTimeFieldStyles";
+import { kebabCase } from "lodash";
 
-const DateTimeFieldTest = ({
+const DateTimeField = ({
   label,
   dateValue,
   dateOnChange,
@@ -23,6 +24,7 @@ const DateTimeFieldTest = ({
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <InputLabel
             style={{ marginBottom: 0, height: 16 }}
+            data-testId={`${kebabCase(label)}-date/time`}
             sx={[
               {
                 backgroundColor: "transparent",
@@ -77,12 +79,12 @@ const DateTimeFieldTest = ({
     </div>
   );
 };
-DateTimeFieldTest.propTypes = {
+DateTimeField.propTypes = {
   dateValue: PropTypes.any,
   dateOnChange: PropTypes.func.isRequired,
   label: PropTypes.string.isRequired,
-  timeValue: PropTypes.string.isRequired,
+  timeValue: PropTypes.any,
   timeOnChange: PropTypes.func.isRequired,
 };
 
-export default DateTimeFieldTest;
+export default DateTimeField;
