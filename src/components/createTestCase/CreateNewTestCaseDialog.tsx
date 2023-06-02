@@ -6,13 +6,13 @@ import {
   MadieDialog,
   TextField,
   Toast,
+  TextArea,
 } from "@madie/madie-design-system/dist/react";
 import { Box } from "@mui/system";
 import { InputLabel } from "@mui/material";
 import { useFormik } from "formik";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import * as _ from "lodash";
-import TextArea from "./TextArea";
 import TestCaseSeries from "./TestCaseSeries";
 import { sanitizeUserInput } from "../../util/Utils";
 
