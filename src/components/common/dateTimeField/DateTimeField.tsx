@@ -1,23 +1,14 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { InputLabel } from "@madie/madie-design-system/dist/react";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import InputAdornment from "@mui/material/InputAdornment";
-import EventIcon from "@mui/icons-material/Event";
 import { FormControl } from "@mui/material";
-import { TimePicker } from "@mui/x-date-pickers";
-import { dateTextFieldStyle, timeTextFieldStyle } from "./DateTimeFieldStyles";
+import { dateTimeTextFieldStyle } from "./DateTimeFieldStyles";
 import { kebabCase } from "lodash";
 
-const DateTimeField = ({
-  label,
-  dateValue,
-  dateOnChange,
-  timeOnChange,
-  timeValue,
-}) => {
+const DateTimeField = ({ label, value, onChange }) => {
   return (
     <div>
       <FormControl>
@@ -41,50 +32,26 @@ const DateTimeField = ({
           >
             {`${label} Date/Time`}
           </InputLabel>
-          <div style={{ display: "flex" }}>
-            <DatePicker
-              disableOpenPicker
-              value={dateValue ? dateValue : null}
-              onChange={dateOnChange}
-              slotProps={{
-                textField: {
-                  id: "date",
-                  sx: dateTextFieldStyle,
-                  InputProps: {
-                    startAdornment: (
-                      <InputAdornment
-                        position="start"
-                        style={{ color: "#515151" }}
-                      >
-                        <EventIcon />
-                      </InputAdornment>
-                    ),
-                  },
-                },
-              }}
-            />
-            <TimePicker
-              disableOpenPicker
-              value={timeValue ? timeValue : null}
-              onChange={timeOnChange}
-              slotProps={{
-                textField: {
-                  sx: timeTextFieldStyle,
-                },
-              }}
-            />
-          </div>
+          <DateTimePicker
+            value={value ? value : null}
+            onChange={onChange}
+            views={["year", "day", "hours", "minutes"]}
+            slotProps={{
+              textField: {
+                id: "dateTime",
+                sx: dateTimeTextFieldStyle,
+              },
+            }}
+          />
         </LocalizationProvider>
       </FormControl>
     </div>
   );
 };
 DateTimeField.propTypes = {
-  dateValue: PropTypes.any,
-  dateOnChange: PropTypes.func.isRequired,
+  value: PropTypes.any,
+  onChange: PropTypes.func.isRequired,
   label: PropTypes.string.isRequired,
-  timeValue: PropTypes.any,
-  timeOnChange: PropTypes.func.isRequired,
 };
 
 export default DateTimeField;
