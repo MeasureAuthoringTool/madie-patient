@@ -1,0 +1,16 @@
+$grey-19: #dddddd;
+
+#elements-section {
+  display: flex;
+
+  #categories-tabs {
+    .MuiTabs-flexContainer {
+      border-bottom: solid 1px $grey-19;
+    }
+  }
+  .madie-icon {
+    &.cyan {
+      fill: rgb(32, 159, 166);
+    }
+  }
+}
