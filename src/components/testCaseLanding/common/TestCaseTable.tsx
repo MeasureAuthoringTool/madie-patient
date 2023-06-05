@@ -19,39 +19,39 @@ const TestCaseTable = (props: TestCaseTableProps) => {
   const TH = tw.th`p-3 border-b text-left text-sm font-bold capitalize`;
 
   return (
-      <table
-        tw="min-w-full"
-        data-testid="test-case-tbl"
-        className="tcl-table"
-        style={{
-          borderTop: "solid 1px #DDD",
-          borderSpacing: "0 2em !important",
-        }}
-      >
-        <thead tw="bg-slate">
-          <tr>
-            <TH scope="col">Status</TH>
-            <TH scope="col">Group</TH>
-            <TH scope="col">Title</TH>
-            <TH scope="col">Description</TH>
-            <TH scope="col">Action</TH>
-          </tr>
-        </thead>
-        <tbody className="table-body" style={{ padding: 20 }}>
-          {testCases?.map((testCase) => {
-            return (
-              <TestCaseComponent
-                testCase={testCase}
-                key={testCase.id}
-                canEdit={canEdit}
-                executionResult={executionResults[testCase.id]}
-                deleteTestCase={deleteTestCase}
-                // we assume all results have been run here
-              />
-            );
-          })}
-        </tbody>
-      </table>
+    <table
+      tw="min-w-full"
+      data-testid="test-case-tbl"
+      className="tcl-table"
+      style={{
+        borderTop: "solid 1px #DDD",
+        borderSpacing: "0 2em !important",
+      }}
+    >
+      <thead tw="bg-slate">
+        <tr>
+          <TH scope="col">Status</TH>
+          <TH scope="col">Group</TH>
+          <TH scope="col">Title</TH>
+          <TH scope="col">Description</TH>
+          <TH scope="col">Action</TH>
+        </tr>
+      </thead>
+      <tbody className="table-body" style={{ padding: 20 }}>
+        {testCases?.map((testCase) => {
+          return (
+            <TestCaseComponent
+              testCase={testCase}
+              key={testCase.id}
+              canEdit={canEdit}
+              executionResult={executionResults[testCase.id]}
+              deleteTestCase={deleteTestCase}
+              // we assume all results have been run here
+            />
+          );
+        })}
+      </tbody>
+    </table>
   );
 };
 
