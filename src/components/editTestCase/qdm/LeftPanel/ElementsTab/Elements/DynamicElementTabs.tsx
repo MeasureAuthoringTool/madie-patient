@@ -32,6 +32,7 @@ const DynamicElementTabs = ({ categories, activeTab, setActiveTab }) => {
       {categories.map((cat) => (
         // @ts-ignore-line
         <DynamicElementTab
+          data-testid={`elements-tab-${cat}`}
           value={cat}
           key={cat}
           label={categoriesMap[cat][0]}

@@ -5,6 +5,7 @@ import {
   waitFor,
   fireEvent,
   within,
+  // findByTestId,
 } from "@testing-library/react";
 import EditTestCase from "./EditTestCase";
 import {
@@ -19,10 +20,27 @@ import { MemoryRouter } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
 import { test } from "@jest/globals";
-
+import { mockCqlWithAllCategoriesPresent } from "./mockCql";
+import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
 import useTestCaseServiceApi, {
   TestCaseServiceApi,
 } from "../../../api/useTestCaseServiceApi";
+
+import useCqmConversionService, {
+  CqmConversionService,
+} from "../../../api/CqmModelConversionService";
+
+const serviceConfig: ServiceConfig = {
+  testCaseService: {
+    baseUrl: "base.url",
+  },
+  measureService: {
+    baseUrl: "base.url",
+  },
+  terminologyService: {
+    baseUrl: "http.com",
+  },
+};
 
 const testCaseJson =
   "{\n" +
@@ -138,6 +156,7 @@ const mockMeasure = {
   model: Model.QDM_5_6,
   createdBy: "testUserOwner",
   patientBasis: true,
+  cql: mockCqlWithAllCategoriesPresent,
   groups: [
     {
       id: "test_groupId",
@@ -181,6 +200,23 @@ jest.mock("react-router-dom", () => ({
   }),
   useNavigate: () => mockNavigate,
 }));
+// mocking cqm api
+jest.mock("../../../api/CqmModelConversionService");
+const CQMConversionMock =
+  useCqmConversionService as jest.Mock<TestCaseServiceApi>;
+const useCqmConversionServiceMockResolved = {
+  fetchSourceDataCriteria: jest.fn().mockResolvedValue([
+    {
+      qdmCategory: "symptom",
+    },
+    {
+      qdmCategory: "allergy",
+    },
+    {
+      qdmCategory: "device",
+    },
+  ]),
+} as unknown as TestCaseServiceApi;
 
 jest.mock("../../../api/useTestCaseServiceApi");
 const useTestCaseServiceMock =
@@ -252,13 +288,16 @@ jest.mock("@madie/madie-util", () => ({
   },
 }));
 
-describe("LeftPanel", () => {
-  const { findByTestId, findByText } = screen;
+const { findByTestId, findByText } = screen;
+describe("ElementsTab", () => {
   useTestCaseServiceMock.mockImplementation(() => {
     return useTestCaseServiceMockResolved;
   });
 
-  test("LeftPanel navigation works as expected.", async () => {
+  test("Icons present and navigate correctly.", async () => {
+    CQMConversionMock.mockImplementation(() => {
+      return useCqmConversionServiceMockResolved;
+    });
     await render(
       <MemoryRouter>
         <EditTestCase />
@@ -284,6 +323,41 @@ describe("LeftPanel", () => {
   });
 });
 
+test("LeftPanel navigation works as expected.", async () => {
+  CQMConversionMock.mockImplementation(() => {
+    return useCqmConversionServiceMockResolved;
+  });
+  await render(
+    <MemoryRouter>
+      <ApiContextProvider value={serviceConfig}>
+        <EditTestCase />
+      </ApiContextProvider>
+    </MemoryRouter>
+  );
+  const symptom = await findByTestId("elements-tab-symptom");
+  await waitFor(() => {
+    expect(symptom).toBeInTheDocument();
+  });
+
+  const allergy = await findByText("Allergy");
+  await waitFor(() => {
+    expect(allergy).toBeInTheDocument();
+  });
+  // elements-tab-allergy
+
+  const device = await findByText("Device");
+  await waitFor(() => {
+    expect(device).toBeInTheDocument();
+  });
+  expect(allergy).toHaveAttribute("aria-selected", "true");
+  act(() => {
+    fireEvent.click(device);
+  });
+  await waitFor(() => {
+    expect(device).toHaveAttribute("aria-selected", "true");
+  });
+});
+
 describe("EditTestCase QDM Component", () => {
   const { getByRole, findByTestId, findByText } = screen;
 
@@ -291,12 +365,17 @@ describe("EditTestCase QDM Component", () => {
     useTestCaseServiceMock.mockImplementation(() => {
       return useTestCaseServiceMockResolved;
     });
+    CQMConversionMock.mockImplementation(() => {
+      return useCqmConversionServiceMockResolved;
+    });
   });
 
   it("should render qdm edit test case component along with action buttons", async () => {
     await render(
       <MemoryRouter>
-        <EditTestCase />
+        <ApiContextProvider value={serviceConfig}>
+          <EditTestCase />
+        </ApiContextProvider>
       </MemoryRouter>
     );
     const runTestCaseButton = await getByRole("button", {
@@ -311,7 +390,9 @@ describe("EditTestCase QDM Component", () => {
   it("should render group populations from DB", async () => {
     render(
       <MemoryRouter>
-        <EditTestCase />
+        <ApiContextProvider value={serviceConfig}>
+          <EditTestCase />
+        </ApiContextProvider>{" "}
       </MemoryRouter>
     );
 
@@ -332,7 +413,9 @@ describe("EditTestCase QDM Component", () => {
 
     render(
       <MemoryRouter>
-        <EditTestCase />
+        <ApiContextProvider value={serviceConfig}>
+          <EditTestCase />
+        </ApiContextProvider>{" "}
       </MemoryRouter>
     );
 
@@ -379,7 +462,9 @@ describe("EditTestCase QDM Component", () => {
   it("should render qdm edit Demographics component with default values", () => {
     render(
       <MemoryRouter>
-        <EditTestCase />
+        <ApiContextProvider value={serviceConfig}>
+          <EditTestCase />
+        </ApiContextProvider>{" "}
       </MemoryRouter>
     );
 
@@ -399,7 +484,9 @@ describe("EditTestCase QDM Component", () => {
     testCase.json = testCaseJson;
     render(
       <MemoryRouter>
-        <EditTestCase />
+        <ApiContextProvider value={serviceConfig}>
+          <EditTestCase />
+        </ApiContextProvider>{" "}
       </MemoryRouter>
     );
 
@@ -420,7 +507,9 @@ describe("EditTestCase QDM Component", () => {
   it("test change dropwdown values", () => {
     render(
       <MemoryRouter>
-        <EditTestCase />
+        <ApiContextProvider value={serviceConfig}>
+          <EditTestCase />
+        </ApiContextProvider>{" "}
       </MemoryRouter>
     );
 
@@ -454,7 +543,9 @@ describe("EditTestCase QDM Component", () => {
 
     await render(
       <MemoryRouter>
-        <EditTestCase />
+        <ApiContextProvider value={serviceConfig}>
+          <EditTestCase />
+        </ApiContextProvider>{" "}
       </MemoryRouter>
     );
 
@@ -502,7 +593,9 @@ describe("EditTestCase QDM Component", () => {
     });
     render(
       <MemoryRouter>
-        <EditTestCase />
+        <ApiContextProvider value={serviceConfig}>
+          <EditTestCase />
+        </ApiContextProvider>{" "}
       </MemoryRouter>
     );
 
@@ -593,7 +686,9 @@ describe("EditTestCase QDM Component", () => {
     testCase.json = testCaseJson;
     await render(
       <MemoryRouter>
-        <EditTestCase />
+        <ApiContextProvider value={serviceConfig}>
+          <EditTestCase />
+        </ApiContextProvider>{" "}
       </MemoryRouter>
     );
 

@@ -7,6 +7,7 @@ import { uniq } from "lodash";
 import { measureStore } from "@madie/madie-util";
 
 const ElementsSection = () => {
+  const cqmService = useRef(useCqmConversionService());
   const [measure, setMeasure] = useState<any>(measureStore.state);
   useEffect(() => {
     const subscription = measureStore.subscribe(setMeasure);
@@ -16,14 +17,13 @@ const ElementsSection = () => {
   }, []);
 
   const [categories, setCategories] = useState([]);
-  const cqmService = useRef(useCqmConversionService());
 
   const retrieveCategories = useCallback(() => {
     cqmService.current.fetchSourceDataCriteria(measure.cql).then((r) => {
       const categories = r.map((r) => r.qdmCategory).sort();
       setCategories(uniq(categories));
     });
-  }, [measure?.cql, cqmService.current, setCategories]);
+  }, [measure?.cql, cqmService.current, setCategories, cqmService?.current]);
 
   useEffect(() => {
     if (measure?.cql) {

@@ -64,9 +64,7 @@ export class CqmConversionService {
     cqmMeasure.component = false; // for now
     cqmMeasure.id = measure.id;
     const dataCriteria = await this.fetchSourceDataCriteria(measure.cql);
-    cqmMeasure.source_data_criteria = dataCriteria.map((dc) =>
-      this.buildSourceDataCriteria(dc)
-    );
+    cqmMeasure.source_data_criteria = dataCriteria;
     const elms = await this.fetchElmForCql(measure.cql);
     cqmMeasure.cql_libraries = elms.map((elm) =>
       this.buildCQLLibrary(elm, measure.cqlLibraryName)
