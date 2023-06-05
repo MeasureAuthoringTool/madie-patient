@@ -30,3 +30,15 @@ export const dateTimeTextFieldStyle = {
     },
   },
 };
+
+export const labelFieldStyle = {
+  backgroundColor: "transparent",
+  display: "flex",
+  height: 17,
+  textTransform: "none",
+  fontFamily: "Rubik",
+  fontStyle: "normal",
+  fontWeight: 500,
+  fontSize: 14,
+  color: "#333333",
+};

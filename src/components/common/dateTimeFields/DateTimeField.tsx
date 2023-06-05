@@ -5,10 +5,13 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { FormControl } from "@mui/material";
-import { dateTimeTextFieldStyle } from "./DateTimeFieldStyles";
+import {
+  dateTimeTextFieldStyle,
+  labelFieldStyle,
+} from "./DateTimeFieldsStyles";
 import { kebabCase } from "lodash";
 
-const DateTimeField = ({ label, value, onChange }) => {
+const DateTimeField = ({ label, dateTimevalue, handleDateTimeChange }) => {
   return (
     <div>
       <FormControl>
@@ -16,25 +19,13 @@ const DateTimeField = ({ label, value, onChange }) => {
           <InputLabel
             style={{ marginBottom: 0, height: 16 }}
             data-testId={`${kebabCase(label)}-date/time`}
-            sx={[
-              {
-                backgroundColor: "transparent",
-                display: "flex",
-                height: 17,
-                textTransform: "none",
-                fontFamily: "Rubik",
-                fontStyle: "normal",
-                fontWeight: 500,
-                fontSize: 14,
-                color: "#333333",
-              },
-            ]}
+            sx={labelFieldStyle}
           >
             {`${label} Date/Time`}
           </InputLabel>
           <DateTimePicker
-            value={value ? value : null}
-            onChange={onChange}
+            value={dateTimevalue ? dateTimevalue : null}
+            onChange={handleDateTimeChange}
             views={["year", "day", "hours", "minutes"]}
             slotProps={{
               textField: {
@@ -49,8 +40,8 @@ const DateTimeField = ({ label, value, onChange }) => {
   );
 };
 DateTimeField.propTypes = {
-  value: PropTypes.any,
-  onChange: PropTypes.func.isRequired,
+  dateTimevalue: PropTypes.object,
+  handleDateTimeChange: PropTypes.func.isRequired,
   label: PropTypes.string.isRequired,
 };
 
