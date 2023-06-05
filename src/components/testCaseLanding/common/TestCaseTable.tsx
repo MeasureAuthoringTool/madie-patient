@@ -4,8 +4,6 @@ import "styled-components/macro";
 import { TestCase } from "@madie/madie-models";
 import TestCaseComponent from "../common/TestCase";
 import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calculator";
-import DateTimeField from "../../common/dateTimeFields/DateTimeField";
-import dayjs from "dayjs";
 
 interface TestCaseTableProps {
   testCases: TestCase[];
@@ -21,7 +19,6 @@ const TestCaseTable = (props: TestCaseTableProps) => {
   const TH = tw.th`p-3 border-b text-left text-sm font-bold capitalize`;
 
   return (
-    <>
       <table
         tw="min-w-full"
         data-testid="test-case-tbl"
@@ -55,12 +52,6 @@ const TestCaseTable = (props: TestCaseTableProps) => {
           })}
         </tbody>
       </table>
-      <DateTimeField
-        label="Active"
-        dateTimevalue={dayjs("2022-04-17T15:30")}
-        handleDateTimeChange={() => {}}
-      />
-    </>
   );
 };
 
