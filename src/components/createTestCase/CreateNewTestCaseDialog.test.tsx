@@ -71,9 +71,7 @@ describe("Create New Test Case Dialog", () => {
       expect(titleInput.value).toBe("");
       Simulate.change(titleInput);
 
-      const descriptonInput = await getByTestId(
-        "create-test-case-description-input"
-      );
+      const descriptonInput = await getByTestId("create-test-case-description");
       userEvent.type(descriptonInput, "");
       expect(descriptonInput.value).toBe("");
       Simulate.change(titleInput);
@@ -104,7 +102,7 @@ describe("Create New Test Case Dialog", () => {
       Simulate.change(titleInput);
 
       const descriptionInput = await getByTestId(
-        "create-test-case-description-input"
+        "create-test-case-description"
       );
       userEvent.type(descriptionInput, formikInfo.description);
       expect(descriptionInput.value).toBe(formikInfo.description);
@@ -149,7 +147,7 @@ describe("Create New Test Case Dialog", () => {
       Simulate.change(titleInput);
 
       const descriptionInput = await getByTestId(
-        "create-test-case-description-input"
+        "create-test-case-description"
       );
       userEvent.type(descriptionInput, formikInfo.description);
       expect(descriptionInput.value).toBe(formikInfo.description);
