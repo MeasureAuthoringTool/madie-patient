@@ -21,6 +21,62 @@ import {
 } from "./index";
 describe("Icons", () => {
   const { findByTestId } = screen;
+  test("All icons render without classname", async () => {
+    await render(
+      <div>
+        <AssessmentIcon data-testid="assessment" />
+        <CharacteristicIcon data-testid="characteristic" />
+        <ConditionIcon data-testid="condition" />
+        <DeviceIcon data-testid="device" />
+        <EncounterIcon data-testid="encounter" />
+        <ExclamationIcon data-testid="exclamation" />
+        <ExclamationTriangleIcon data-testid="exclamationtriangle" />
+
+        <FilesIcon data-testid="files" />
+        <HeartbeatIcon data-testid="heartbeat" />
+        <InterventionIcon data-testid="intervention" />
+        <LaboratoryIcon data-testid="laboratory" />
+        <MedicationIcon data-testid="medication" />
+        <ProcedureIcon data-testid="procedure" />
+        <ShieldIcon data-testid="shield" />
+        <SiteMapIcon data-testid="sitemap" />
+        <SymptomIcon data-testid="symptom" />
+      </div>
+    );
+    const assessment = await findByTestId("assessment");
+    expect(assessment).toBeInTheDocument();
+    const characteristic = await findByTestId("characteristic");
+    expect(characteristic).toBeInTheDocument();
+    const condition = await findByTestId("condition");
+    expect(condition).toBeInTheDocument();
+    const device = await findByTestId("device");
+    expect(device).toBeInTheDocument();
+    const encounter = await findByTestId("encounter");
+    expect(encounter).toBeInTheDocument();
+    const exclamation = await findByTestId("exclamation");
+    expect(exclamation).toBeInTheDocument();
+    const exclamationtriangle = await findByTestId("exclamationtriangle");
+    expect(exclamationtriangle).toBeInTheDocument();
+    const files = await findByTestId("files");
+    expect(files).toBeInTheDocument();
+    const heartbeat = await findByTestId("heartbeat");
+    expect(heartbeat).toBeInTheDocument();
+    const intervention = await findByTestId("intervention");
+    expect(intervention).toBeInTheDocument();
+    const laboratory = await findByTestId("laboratory");
+    expect(laboratory).toBeInTheDocument();
+    const medication = await findByTestId("medication");
+    expect(medication).toBeInTheDocument();
+    const procedure = await findByTestId("procedure");
+    expect(procedure).toBeInTheDocument();
+    const shield = await findByTestId("shield");
+    expect(shield).toBeInTheDocument();
+    const sitemap = await findByTestId("sitemap");
+    expect(sitemap).toBeInTheDocument();
+    const symptom = await findByTestId("symptom");
+    expect(symptom).toBeInTheDocument();
+  });
+
   test("All icons render default state", async () => {
     await render(
       <div>
