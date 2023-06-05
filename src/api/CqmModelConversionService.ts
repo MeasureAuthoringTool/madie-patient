@@ -26,7 +26,7 @@ export class CqmConversionService {
     }
   }
 
-  async fetchSourceDataCriteria(cql: string): Promise<Array<DataCriteria>> {
+  async fetchSourceDataCriteria(cql: string): Promise<Array<DataElement>> {
     try {
       const response = await axios.put(
         `${this.baseUrl}/cql/source-data-criteria`,
@@ -38,7 +38,7 @@ export class CqmConversionService {
           },
         }
       );
-      return response.data;
+      return response.data.map((dc) => this.buildSourceDataCriteria(dc));
     } catch (error) {
       throw new Error(
         error.message || "An Error occurred while fetching source data criteria"
