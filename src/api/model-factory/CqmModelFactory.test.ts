@@ -172,7 +172,7 @@ describe("CqmModelFactory", () => {
       CqmModelFactory.instantiateModel("ProcedurePerformed")
     ).toBeInstanceOf(ProcedurePerformed);
     expect(
-      CqmModelFactory.instantiateModel("AllergyIntolerance")
+      CqmModelFactory.instantiateModel("Allergy/Intolerance")
     ).toBeInstanceOf(AllergyIntolerance);
     expect(
       CqmModelFactory.instantiateModel("PhysicalExamRecommended")

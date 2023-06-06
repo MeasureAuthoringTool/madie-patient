@@ -141,7 +141,7 @@ export class CqmModelFactory {
         return new EncounterRecommended();
       case "ProcedurePerformed":
         return new ProcedurePerformed();
-      case "AllergyIntolerance":
+      case "Allergy/Intolerance":
         return new AllergyIntolerance();
       case "PhysicalExamRecommended":
         return new PhysicalExamRecommended();
