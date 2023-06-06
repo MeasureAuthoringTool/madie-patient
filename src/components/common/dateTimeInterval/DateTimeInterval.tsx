@@ -3,13 +3,21 @@ import PropTypes from "prop-types";
 import { DateTimeField } from "@madie/madie-design-system/dist/react";
 import { FormControl } from "@mui/material";
 
+interface DateTimeIntervalProps {
+  label: string;
+  startDateTime: object;
+  handleStartDateTimeChange: Function;
+  endDateTime: object;
+  handleEndDateTimeChange: Function;
+}
+
 const DateTimeInterval = ({
   label,
   startDateTime,
   handleStartDateTimeChange,
   endDateTime,
   handleEndDateTimeChange,
-}) => {
+}: DateTimeIntervalProps) => {
   return (
     <div>
       <FormControl
@@ -33,14 +41,6 @@ const DateTimeInterval = ({
       </FormControl>
     </div>
   );
-};
-
-DateTimeInterval.propTypes = {
-  startDateTime: PropTypes.object,
-  endDateTime: PropTypes.object,
-  handleStartDateTimeChange: PropTypes.func.isRequired,
-  handleEndDateTimeChange: PropTypes.func.isRequired,
-  label: PropTypes.string.isRequired,
 };
 
 export default DateTimeInterval;
