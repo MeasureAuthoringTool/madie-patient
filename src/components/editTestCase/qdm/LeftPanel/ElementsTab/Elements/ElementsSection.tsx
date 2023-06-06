@@ -32,7 +32,6 @@ const ElementsSection = () => {
   }, [measure?.cql]);
   const [activeTab, setActiveTab] = useState("");
   // we retain state up here so we can use it to generate the other components.
-
   return (
     <ElementSection
       title="Elements"
