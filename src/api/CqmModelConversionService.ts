@@ -26,7 +26,7 @@ export class CqmConversionService {
     }
   }
 
-  async fetchSourceDataCriteria(cql: string): Promise<Array<DataCriteria>> {
+  async fetchSourceDataCriteria(cql: string): Promise<Array<DataElement>> {
     try {
       const response = await axios.put(
         `${this.baseUrl}/cql/source-data-criteria`,
@@ -38,7 +38,7 @@ export class CqmConversionService {
           },
         }
       );
-      return response.data;
+      return response.data.map((dc) => this.buildSourceDataCriteria(dc));
     } catch (error) {
       throw new Error(
         error.message || "An Error occurred while fetching source data criteria"
@@ -64,9 +64,7 @@ export class CqmConversionService {
     cqmMeasure.component = false; // for now
     cqmMeasure.id = measure.id;
     const dataCriteria = await this.fetchSourceDataCriteria(measure.cql);
-    cqmMeasure.source_data_criteria = dataCriteria.map((dc) =>
-      this.buildSourceDataCriteria(dc)
-    );
+    cqmMeasure.source_data_criteria = dataCriteria;
     const elms = await this.fetchElmForCql(measure.cql);
     cqmMeasure.cql_libraries = elms.map((elm) =>
       this.buildCQLLibrary(elm, measure.cqlLibraryName)

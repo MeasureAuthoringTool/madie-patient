@@ -1,0 +1,46 @@
+import {
+  AssessmentIcon,
+  CharacteristicIcon,
+  ConditionIcon,
+  DeviceIcon,
+  EncounterIcon,
+  ExclamationIcon,
+  ExclamationTriangleIcon,
+  FilesIcon,
+  HeartbeatIcon,
+  InterventionIcon,
+  LaboratoryIcon,
+  MedicationIcon,
+  ProcedureIcon,
+  ShieldIcon,
+  SiteMapIcon,
+  SymptomIcon,
+} from "../../../../../../icons";
+
+// The keys to this map are qdm category codes, their touple is our determined Title and icon to display for them
+export const categoriesMap = {
+  adverse_event: ["Adverse Event", ExclamationIcon],
+  allergy: ["Allergy", ExclamationTriangleIcon],
+  assessment: ["Assessment", AssessmentIcon],
+  care_experience: ["Care Experience", HeartbeatIcon],
+  patient_characteristic: ["Characteristic", CharacteristicIcon],
+  condition: ["Condition", ConditionIcon],
+  communication: ["Communication", FilesIcon],
+  device: ["Device", DeviceIcon],
+  diagnostic_study: ["Diagnostic Study", ConditionIcon],
+  encounter: ["Encounter", EncounterIcon],
+  family_history: ["Family History", SiteMapIcon],
+  immunization: ["Immunization", SymptomIcon],
+  intervention: ["Intervention", InterventionIcon],
+  laboratory_test: ["Laboratory", LaboratoryIcon],
+  medication: ["Medication", MedicationIcon],
+  participation: ["Participation", ShieldIcon],
+  physical_exam: ["Physical Exam", EncounterIcon],
+  procedure: ["Procedure", ProcedureIcon],
+  substance: ["Substance", DeviceIcon],
+  symptom: ["Symptom", SymptomIcon],
+
+  // these two are currently reusing other icons for now as we don't have icons for them
+  care_goal: ["Care Experience", HeartbeatIcon],
+  related_person: ["Related Person", SiteMapIcon],
+};
