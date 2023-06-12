@@ -478,6 +478,11 @@ describe("EditTestCase QDM Component", () => {
     ) as HTMLInputElement;
     expect(genderInput).toBeInTheDocument();
     expect(genderInput.value).toBe("Female");
+    const livingStatusInput = screen.getByTestId(
+      "demographics-living-status-input"
+    ) as HTMLInputElement;
+    expect(livingStatusInput).toBeInTheDocument();
+    expect(livingStatusInput.value).toBe("Living");
   });
 
   it("should render qdm edit Demographics component with values from TestCase JSON", async () => {
@@ -534,6 +539,17 @@ describe("EditTestCase QDM Component", () => {
       target: { value: "Male" },
     });
     expect(genderInput.value).toBe("Male");
+
+    const livingStatusInput = screen.getByTestId(
+      "demographics-living-status-input"
+    ) as HTMLInputElement;
+    expect(livingStatusInput).toBeInTheDocument();
+    expect(livingStatusInput.value).toBe("Living");
+
+    fireEvent.change(livingStatusInput, {
+      target: { value: "Deceased" },
+    });
+    expect(livingStatusInput.value).toBe("Deceased");
   });
 
   it("test update test case successfully with success toast", async () => {
@@ -573,6 +589,18 @@ describe("EditTestCase QDM Component", () => {
       target: { value: "Male" },
     });
     expect(genderInput.value).toBe("Male");
+
+    const livingStatusInput = screen.getByTestId(
+      "demographics-living-status-input"
+    ) as HTMLInputElement;
+    expect(livingStatusInput).toBeInTheDocument();
+    expect(livingStatusInput.value).toBe("Living");
+
+    fireEvent.change(livingStatusInput, {
+      target: { value: "Deceased" },
+    });
+    expect(livingStatusInput.value).toBe("Deceased");
+
     const saveButton = getByRole("button", { name: "Save" });
     expect(saveButton).toBeEnabled();
     act(() => {
