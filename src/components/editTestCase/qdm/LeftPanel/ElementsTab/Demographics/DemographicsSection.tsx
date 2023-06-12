@@ -24,11 +24,15 @@ import utc from "dayjs/plugin/utc";
 import {
   RACE_CODE_OPTIONS,
   GENDER_CODE_OPTIONS,
+  // Expired_CODE_OPTIONS,
+  LIVING_STATUS_CODE_OPTIONS,
   getGenderDataElement,
   getBirthDateElement,
   getRaceDataElement,
   ETHNICITY_CODE_OPTIONS,
+ //getExpiredStatusDataElement,
   getEthnicityDataElement,
+  getLivingStatusDataElement
 } from "./DemographicsSectionConst";
 import { MenuItem as MuiMenuItem } from "@mui/material";
 
@@ -50,6 +54,8 @@ const DemographicsSection = ({ canEdit }) => {
   const [genderDataElement, setGenderDataElement] = useState<DataElement>();
   const [ethnicityDataElement, setEthnicityDataElement] =
     useState<DataElement>();
+  const [livingStatusDataElement, setLivingStatusDataElement] = useState<DataElement>();
+  const [expiredStatusDataElement,setExpiredStatusDataElement] = useState();
 
   const selectOptions = (options) => {
     return [
@@ -91,6 +97,9 @@ const DemographicsSection = ({ canEdit }) => {
         if (element.qdmStatus === "ethnicity") {
           setEthnicityDataElement(element);
         }
+        if (element.qdmStatus === "expired") {
+          setLivingStatusDataElement(element);
+        }
       });
     } else {
       // default values for QDM patient. to do race and gender default values?
@@ -103,6 +112,8 @@ const DemographicsSection = ({ canEdit }) => {
       const newEthnicityDataElement: DataElement =
         getEthnicityDataElement("Hispanic or Latino");
       setEthnicityDataElement(newEthnicityDataElement);
+      const newLivingStatusDataElement = getLivingStatusDataElement("Living");
+      setLivingStatusDataElement(newLivingStatusDataElement);
 
       let dataElements: DataElement[] = [
         newRaceDataElement,
@@ -169,6 +180,25 @@ const DemographicsSection = ({ canEdit }) => {
     setQdmPatient(patient);
     formik.setFieldValue("json", JSON.stringify(patient));
   };
+
+  const handleLivingStatusChange = (event) => {
+    if(event.target.value !== "Living"){
+      const newLivingStatusDataElement: DataElement = getLivingStatusDataElement(
+        event.target.value
+      );
+      setLivingStatusDataElement(newLivingStatusDataElement);
+      const patient = generateNewQdmPatient(newLivingStatusDataElement, "expired");
+      setQdmPatient(patient);
+      formik.setFieldValue("json", JSON.stringify(patient));
+    }else{
+      const patient = JSON.parse(formik.values.json);
+      const dataElements: DataElement[] = patient.dataElements;
+      const test=dataElements.filter(ele=>ele.qdmStatus != "expired")
+      patient.dataElements = test;
+      formik.setFieldValue("json", JSON.stringify(patient));
+      setLivingStatusDataElement(event.target.value);
+    }
+  }
 
   const handleTimeChange = (val) => {
     const formatted = dayjs.utc(val).format();
@@ -272,6 +302,24 @@ const DemographicsSection = ({ canEdit }) => {
                   </LocalizationProvider>
                 </FormControl>
               </div>
+              <FormControl>
+                <Select
+                  labelId="demographics-living-status-select-label"
+                  id="demographics-living-status-select-id"
+                  defaultValue="Living"
+                  label="Living Status"
+                  disabled={!canEdit}
+                  inputProps={{
+                    "data-testid": `demographics-living-status-input`,
+                  }}
+                  value={
+                    livingStatusDataElement?.dataElementCodes?.[0].display ||
+                    "Living"
+                  }
+                  onChange={handleLivingStatusChange}
+                  options={selectOptions(LIVING_STATUS_CODE_OPTIONS)}
+                ></Select>
+                </FormControl>
               <FormControl>
                 <Select
                   labelId="demographics-race-select-label"

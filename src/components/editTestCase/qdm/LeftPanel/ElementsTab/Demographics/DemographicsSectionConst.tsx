@@ -6,6 +6,7 @@ import {
   PatientCharacteristicEthnicity,
   PatientCharacteristicBirthdate,
   PatientCharacteristicSex,
+  PatientCharacteristicExpired,
 } from "cqm-models";
 
 export interface CodeSystem {
@@ -84,6 +85,21 @@ export const ETHNICITY_CODE_OPTIONS: DataElementCode[] = [
   },
 ];
 
+export const LIVING_STATUS_CODE_OPTIONS = [
+  {
+    code: "2186-5",
+    version: null,
+    system: "2.16.840.1.113883.6.238",
+    display: "Living",
+  },
+  {
+    code: "2135-2",
+    version: null,
+    system: "2.16.840.1.113883.6.238",
+    display: "Deceased",
+  },
+];
+
 export const getBirthDateElement = (value): DataElement => {
   const pcb: DataElement = new PatientCharacteristicBirthdate();
   pcb.birthDatetime = value;
@@ -111,6 +127,41 @@ export const getEthnicityDataElement = (value: string): DataElement => {
   pce.dataElementCodes = [newCode];
   return pce;
 };
+
+export const getLivingStatusDataElement = (value: string): DataElement => {
+  const newCode: DataElementCode = getNewCode(
+    LIVING_STATUS_CODE_OPTIONS,
+    value
+  );
+  const pce: DataElement = new PatientCharacteristicExpired();
+  pce.dataElementCodes = [newCode];
+  
+  return pce;
+};
+
+// export const getExpiredStatusDataElement = (value: string) => {
+//   const newCode = test(
+//     Expired_CODE_OPTIONS,
+//     value
+//   );
+//   console.log(newCode)
+//   const pce  = new PatientCharacteristicExpired();
+//   pce.expired = [newCode];
+//   console.log(pce)
+//   return pce;
+// }
+
+// export const test= (options, selectedValue: string) => {
+//   const found: CodeSystem = options.find(
+//     (option) => selectedValue === option.display
+//   );
+//   const newCode: DataElementCode = {
+//     display: found?.display,
+//   };
+//   return newCode;
+// }
+
+
 
 export const getNewCode = (options, selectedValue: string) => {
   const found: CodeSystem = options.find(
