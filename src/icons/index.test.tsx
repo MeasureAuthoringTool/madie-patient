@@ -17,6 +17,7 @@ import {
   ProcedureIcon,
   ShieldIcon,
   SiteMapIcon,
+  SliderIcon,
   SymptomIcon,
 } from "./index";
 describe("Icons", () => {
@@ -40,6 +41,7 @@ describe("Icons", () => {
         <ProcedureIcon data-testid="procedure" />
         <ShieldIcon data-testid="shield" />
         <SiteMapIcon data-testid="sitemap" />
+        <SliderIcon data-testid="slider" />
         <SymptomIcon data-testid="symptom" />
       </div>
     );
@@ -73,6 +75,8 @@ describe("Icons", () => {
     expect(shield).toBeInTheDocument();
     const sitemap = await findByTestId("sitemap");
     expect(sitemap).toBeInTheDocument();
+    const slider = await findByTestId("slider");
+    expect(slider).toBeInTheDocument();
     const symptom = await findByTestId("symptom");
     expect(symptom).toBeInTheDocument();
   });
@@ -102,6 +106,7 @@ describe("Icons", () => {
         <ProcedureIcon className="madie-icon" data-testid="procedure" />
         <ShieldIcon className="madie-icon" data-testid="shield" />
         <SiteMapIcon className="madie-icon" data-testid="sitemap" />
+        <SliderIcon className="madie-icon" data-testid="slider" />
         <SymptomIcon className="madie-icon" data-testid="symptom" />
       </div>
     );
@@ -136,6 +141,8 @@ describe("Icons", () => {
     expect(shield).toBeInTheDocument();
     const sitemap = await findByTestId("sitemap");
     expect(sitemap).toBeInTheDocument();
+    const slider = await findByTestId("slider");
+    expect(slider).toBeInTheDocument();
     const symptom = await findByTestId("symptom");
     expect(symptom).toBeInTheDocument();
   });
@@ -171,6 +178,7 @@ describe("Icons", () => {
         <ProcedureIcon className="madie-icon cyan" data-testid="procedure" />
         <ShieldIcon className="madie-icon cyan" data-testid="shield" />
         <SiteMapIcon className="madie-icon cyan" data-testid="sitemap" />
+        <SliderIcon className="madie-icon cyan" data-testid="slider" />
         <SymptomIcon className="madie-icon cyan" data-testid="symptom" />
       </div>
     );
@@ -234,6 +242,10 @@ describe("Icons", () => {
     const sitemap = await findByTestId("sitemap");
     expect(sitemap).toBeInTheDocument();
     expect(sitemap).toHaveClass("cyan");
+
+    const slider = await findByTestId("slider");
+    expect(slider).toBeInTheDocument();
+    expect(slider).toHaveClass("cyan");
 
     const symptom = await findByTestId("symptom");
     expect(symptom).toBeInTheDocument();

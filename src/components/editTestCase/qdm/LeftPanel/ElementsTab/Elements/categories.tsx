@@ -14,6 +14,7 @@ import {
   ProcedureIcon,
   ShieldIcon,
   SiteMapIcon,
+  SliderIcon,
   SymptomIcon,
 } from "../../../../../../icons";
 
@@ -41,6 +42,6 @@ export const categoriesMap = {
   symptom: ["Symptom", SymptomIcon],
 
   // these two are currently reusing other icons for now as we don't have icons for them
-  care_goal: ["Care Experience", HeartbeatIcon],
-  related_person: ["Related Person", SiteMapIcon],
+  care_goal: ["Care Goal", SliderIcon],
+  related_person: ["Related Person", CharacteristicIcon],
 };

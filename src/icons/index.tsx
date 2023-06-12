@@ -13,6 +13,7 @@ import MedicationIcon from "./Medication";
 import ProcedureIcon from "./Procedure";
 import ShieldIcon from "./Shield";
 import SiteMapIcon from "./Sitemap";
+import SliderIcon from "./Slider";
 import SymptomIcon from "./Symptom";
 // default fill to #515151 in case no class supplied. associate a more specific css fill rule to change color
 import "./index.scss";
@@ -33,5 +34,6 @@ export {
   ProcedureIcon,
   ShieldIcon,
   SiteMapIcon,
+  SliderIcon,
   SymptomIcon,
 };
