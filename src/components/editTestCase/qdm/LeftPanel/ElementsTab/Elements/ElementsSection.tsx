@@ -5,6 +5,7 @@ import "./ElementsSection.scss";
 import useCqmConversionService from "../../../../../../api/CqmModelConversionService";
 import { uniq } from "lodash";
 import { measureStore } from "@madie/madie-util";
+import { DataElement } from "cqm-models";
 
 const ElementsSection = () => {
   const cqmService = useRef(useCqmConversionService());
@@ -17,11 +18,13 @@ const ElementsSection = () => {
   }, []);
 
   const [categories, setCategories] = useState([]);
+  const [dataElements, setDataElements] = useState<DataElement[]>([]);
 
   const retrieveCategories = useCallback(() => {
     cqmService.current.fetchSourceDataCriteria(measure.cql).then((r) => {
       const categories = r.map((r) => r.qdmCategory).sort();
       setCategories(uniq(categories));
+      setDataElements(r);
     });
   }, [measure?.cql, cqmService.current, setCategories, cqmService?.current]);
 
@@ -43,6 +46,7 @@ const ElementsSection = () => {
               categories={categories}
               activeTab={activeTab}
               setActiveTab={setActiveTab}
+              dataElements={dataElements}
             />
           )}
         </div>
