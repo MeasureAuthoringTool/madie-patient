@@ -24,13 +24,11 @@ import utc from "dayjs/plugin/utc";
 import {
   RACE_CODE_OPTIONS,
   GENDER_CODE_OPTIONS,
-  // Expired_CODE_OPTIONS,
   LIVING_STATUS_CODE_OPTIONS,
   getGenderDataElement,
   getBirthDateElement,
   getRaceDataElement,
   ETHNICITY_CODE_OPTIONS,
-  //getExpiredStatusDataElement,
   getEthnicityDataElement,
   getLivingStatusDataElement,
 } from "./DemographicsSectionConst";
@@ -56,14 +54,20 @@ const DemographicsSection = ({ canEdit }) => {
     useState<DataElement>();
   const [livingStatusDataElement, setLivingStatusDataElement] =
     useState<DataElement>();
-  const [expiredStatusDataElement, setExpiredStatusDataElement] = useState();
 
   const selectOptions = (options) => {
     return [
       options
-        .sort((a, b) => a.display.localeCompare(b.display))
+        .sort((a, b) =>
+          a.display && b.display
+            ? a.display.localeCompare(b.display)
+            : a.localeCompare(b)
+        )
         .map((opt, i) => {
-          const sanitizedString = opt.display.replace(/"/g, "");
+          const { display } = opt || {};
+          const sanitizedString = display
+            ? display.replace(/"/g, "")
+            : opt?.replace(/"/g, "");
           return (
             <MuiMenuItem
               key={`${sanitizedString}-${i}`}
@@ -113,8 +117,7 @@ const DemographicsSection = ({ canEdit }) => {
       const newEthnicityDataElement: DataElement =
         getEthnicityDataElement("Hispanic or Latino");
       setEthnicityDataElement(newEthnicityDataElement);
-      const newLivingStatusDataElement = getLivingStatusDataElement("Living");
-      setLivingStatusDataElement(newLivingStatusDataElement);
+      setLivingStatusDataElement("Living");
 
       let dataElements: DataElement[] = [
         newRaceDataElement,
@@ -194,12 +197,12 @@ const DemographicsSection = ({ canEdit }) => {
       setQdmPatient(patient);
       formik.setFieldValue("json", JSON.stringify(patient));
     } else {
-      const patient = JSON.parse(formik.values.json);
-      const dataElements: DataElement[] = patient.dataElements;
-      const test = dataElements.filter((ele) => ele.qdmStatus != "expired");
-      patient.dataElements = test;
-      formik.setFieldValue("json", JSON.stringify(patient));
       setLivingStatusDataElement(event.target.value);
+      const patient = JSON.parse(formik.values.json);
+      patient.dataElements = patient.dataElements.filter(
+        (element) => element.qdmStatus !== "expired"
+      );
+      formik.setFieldValue("json", JSON.stringify(patient));
     }
   };
 
@@ -316,8 +319,9 @@ const DemographicsSection = ({ canEdit }) => {
                     "data-testid": `demographics-living-status-input`,
                   }}
                   value={
-                    livingStatusDataElement?.dataElementCodes?.[0].display ||
-                    "Living"
+                    livingStatusDataElement?.qdmStatus === "expired"
+                      ? "Deceased"
+                      : "Living"
                   }
                   onChange={handleLivingStatusChange}
                   options={selectOptions(LIVING_STATUS_CODE_OPTIONS)}
