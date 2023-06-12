@@ -30,9 +30,9 @@ import {
   getBirthDateElement,
   getRaceDataElement,
   ETHNICITY_CODE_OPTIONS,
- //getExpiredStatusDataElement,
+  //getExpiredStatusDataElement,
   getEthnicityDataElement,
-  getLivingStatusDataElement
+  getLivingStatusDataElement,
 } from "./DemographicsSectionConst";
 import { MenuItem as MuiMenuItem } from "@mui/material";
 
@@ -54,8 +54,9 @@ const DemographicsSection = ({ canEdit }) => {
   const [genderDataElement, setGenderDataElement] = useState<DataElement>();
   const [ethnicityDataElement, setEthnicityDataElement] =
     useState<DataElement>();
-  const [livingStatusDataElement, setLivingStatusDataElement] = useState<DataElement>();
-  const [expiredStatusDataElement,setExpiredStatusDataElement] = useState();
+  const [livingStatusDataElement, setLivingStatusDataElement] =
+    useState<DataElement>();
+  const [expiredStatusDataElement, setExpiredStatusDataElement] = useState();
 
   const selectOptions = (options) => {
     return [
@@ -182,23 +183,25 @@ const DemographicsSection = ({ canEdit }) => {
   };
 
   const handleLivingStatusChange = (event) => {
-    if(event.target.value !== "Living"){
-      const newLivingStatusDataElement: DataElement = getLivingStatusDataElement(
-        event.target.value
-      );
+    if (event.target.value !== "Living") {
+      const newLivingStatusDataElement: DataElement =
+        getLivingStatusDataElement(event.target.value);
       setLivingStatusDataElement(newLivingStatusDataElement);
-      const patient = generateNewQdmPatient(newLivingStatusDataElement, "expired");
+      const patient = generateNewQdmPatient(
+        newLivingStatusDataElement,
+        "expired"
+      );
       setQdmPatient(patient);
       formik.setFieldValue("json", JSON.stringify(patient));
-    }else{
+    } else {
       const patient = JSON.parse(formik.values.json);
       const dataElements: DataElement[] = patient.dataElements;
-      const test=dataElements.filter(ele=>ele.qdmStatus != "expired")
+      const test = dataElements.filter((ele) => ele.qdmStatus != "expired");
       patient.dataElements = test;
       formik.setFieldValue("json", JSON.stringify(patient));
       setLivingStatusDataElement(event.target.value);
     }
-  }
+  };
 
   const handleTimeChange = (val) => {
     const formatted = dayjs.utc(val).format();
@@ -319,7 +322,7 @@ const DemographicsSection = ({ canEdit }) => {
                   onChange={handleLivingStatusChange}
                   options={selectOptions(LIVING_STATUS_CODE_OPTIONS)}
                 ></Select>
-                </FormControl>
+              </FormControl>
               <FormControl>
                 <Select
                   labelId="demographics-race-select-label"

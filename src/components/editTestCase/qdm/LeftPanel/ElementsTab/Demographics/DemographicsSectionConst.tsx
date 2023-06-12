@@ -135,7 +135,7 @@ export const getLivingStatusDataElement = (value: string): DataElement => {
   );
   const pce: DataElement = new PatientCharacteristicExpired();
   pce.dataElementCodes = [newCode];
-  
+
   return pce;
 };
 
@@ -160,8 +160,6 @@ export const getLivingStatusDataElement = (value: string): DataElement => {
 //   };
 //   return newCode;
 // }
-
-
 
 export const getNewCode = (options, selectedValue: string) => {
   const found: CodeSystem = options.find(
