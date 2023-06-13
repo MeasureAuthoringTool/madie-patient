@@ -3,6 +3,7 @@ import {
   useDocumentTitle,
   measureStore,
   checkUserCanEdit,
+  routeHandlerStore,
 } from "@madie/madie-util";
 import {
   TestCase,
@@ -11,7 +12,7 @@ import {
   GroupPopulation,
 } from "@madie/madie-models";
 import "../qiCore/EditTestCase.scss";
-import { Button, Toast } from "@madie/madie-design-system/dist/react";
+import { Button, Toast, MadieDiscardDialog, } from "@madie/madie-design-system/dist/react";
 import qdmCalculationService from "../../../api/QdmCalculationService";
 import { Allotment } from "allotment";
 import RightPanel from "./RightPanel/RightPanel";
@@ -77,6 +78,7 @@ const EditTestCase = () => {
 
   const [currentTestCase, setCurrentTestCase] = useState<TestCase>(null);
   const [qdmPatient, setQdmPatient] = useState<QDMPatient>();
+  const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
   dayjs.extend(utc);
   dayjs.utc().format(); // utc format
 
@@ -231,6 +233,22 @@ const EditTestCase = () => {
     }
   };
 
+  const { updateRouteHandlerState } = routeHandlerStore;
+  useEffect(() => {
+    updateRouteHandlerState({
+      canTravel: !formik.dirty,
+      pendingRoute: "",
+    });
+  }, [formik.dirty, currentTestCase?.json]);
+
+    const discardChanges = () => {
+    //To DO: need to optimize it as it is calling the backend
+    //loadTestCase();
+    
+    resetForm();
+    setDiscardDialogOpen(false);
+  };
+
   return (
     <>
       <FormikProvider value={formik}>
@@ -306,6 +324,7 @@ const EditTestCase = () => {
             <Button
               variant="outline-filled"
               disabled={!formik.dirty || !canEdit}
+              onClick={() => setDiscardDialogOpen(true)}
             >
               {/* variant="outline-filled" */}
               Discard Changes
@@ -327,6 +346,11 @@ const EditTestCase = () => {
           />
         </form>
       </FormikProvider>
+      <MadieDiscardDialog
+        open={discardDialogOpen}
+        onClose={() => setDiscardDialogOpen(false)}
+        onContinue={discardChanges}
+      />
     </>
   );
 };
