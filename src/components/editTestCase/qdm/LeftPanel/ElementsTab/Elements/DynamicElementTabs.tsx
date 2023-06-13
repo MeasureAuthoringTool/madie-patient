@@ -47,8 +47,6 @@ const DynamicElementTabs = ({
         id="categories-tabs"
         value={activeTab}
         onChange={(e, v) => {
-          const elements: DataElement[] = findDataElements(v);
-          //setSelectedDataElements(elements);
           setActiveTab(v);
         }}
         type="B"
