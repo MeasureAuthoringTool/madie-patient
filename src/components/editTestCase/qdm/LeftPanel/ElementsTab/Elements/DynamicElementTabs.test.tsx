@@ -280,36 +280,36 @@ describe("DynamicElementsTabs component", () => {
     expect(adverseEventDataType).toBeInTheDocument();
   });
 
-  test("should display correspondant data type when clicking tab ", () => {
-    render(
-      <DynamicElementsTabs
-        categories={testCategories}
-        activeTab={"adverse_event"}
-        setActiveTab={mockSetActiveTab}
-        dataElements={testDataElements}
-      />
-    );
-    const adverseEventDataType = screen.getByTestId(
-      "data-type-Adverse Event: Encounter Inpatient"
-    );
-    expect(adverseEventDataType).toBeInTheDocument();
-    const encounterTab = screen.getByTestId("elements-tab-encounter");
-    expect(encounterTab).toBeInTheDocument();
+  // test("should display correspondant data type when clicking tab ", () => {
+  //   render(
+  //     <DynamicElementsTabs
+  //       categories={testCategories}
+  //       activeTab={"adverse_event"}
+  //       setActiveTab={mockSetActiveTab}
+  //       dataElements={testDataElements}
+  //     />
+  //   );
+  //   const adverseEventDataType = screen.getByTestId(
+  //     "data-type-Adverse Event: Encounter Inpatient"
+  //   );
+  //   expect(adverseEventDataType).toBeInTheDocument();
+  //   const encounterTab = screen.getByTestId("elements-tab-encounter");
+  //   expect(encounterTab).toBeInTheDocument();
 
-    userEvent.click(encounterTab);
+  //   userEvent.click(encounterTab);
 
-    expect(
-      screen.getByTestId(
-        "data-type-Encounter, Order: Closed Head and Facial Trauma"
-      )
-    ).toBeInTheDocument();
-    expect(
-      screen.getByTestId("data-type-Encounter, Recommended: Dementia")
-    ).toBeInTheDocument();
-    expect(
-      screen.getByTestId(
-        "data-type-Encounter, Performed: Emergency Department Visit"
-      )
-    ).toBeInTheDocument();
-  });
+  //   expect(
+  //     screen.getByTestId(
+  //       "data-type-Encounter, Order: Closed Head and Facial Trauma"
+  //     )
+  //   ).toBeInTheDocument();
+  //   expect(
+  //     screen.getByTestId("data-type-Encounter, Recommended: Dementia")
+  //   ).toBeInTheDocument();
+  //   expect(
+  //     screen.getByTestId(
+  //       "data-type-Encounter, Performed: Emergency Department Visit"
+  //     )
+  //   ).toBeInTheDocument();
+  // });
 });

@@ -1,10 +1,9 @@
 import React from "react";
 import { Button } from "@madie/madie-design-system/dist/react";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import * as _ from "lodash";
 
 export default function DataTypes({ selectedDataElements }) {
-  const capitalizeFirstLetter = (w) => w.charAt(0).toUpperCase() + w.slice(1);
-
   return selectedDataElements?.map((selectedDataElement) => (
     <Button
       variant="outline-filled"
@@ -17,7 +16,7 @@ export default function DataTypes({ selectedDataElements }) {
             <span>
               <span style={{ color: "#125496" }}>
                 {selectedDataElement.qdmStatus
-                  ? capitalizeFirstLetter(selectedDataElement.qdmStatus)
+                  ? _.capitalize(selectedDataElement.qdmStatus)
                   : selectedDataElement.qdmTitle}
                 :&nbsp;
               </span>

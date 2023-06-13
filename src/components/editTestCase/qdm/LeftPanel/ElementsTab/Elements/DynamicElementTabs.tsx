@@ -48,7 +48,7 @@ const DynamicElementTabs = ({
         value={activeTab}
         onChange={(e, v) => {
           const elements: DataElement[] = findDataElements(v);
-          setSelectedDataElements(elements);
+          //setSelectedDataElements(elements);
           setActiveTab(v);
         }}
         type="B"
