@@ -36,7 +36,11 @@ const DynamicElementTabs = ({
 
   const findDataElements = (category: string): DataElement[] => {
     const elements: DataElement[] = dataElements?.filter(
-      (element) => element.qdmCategory === category
+      (element) =>
+        element.qdmCategory === category &&
+        element.qdmStatus !== "ethnicity" &&
+        element.qdmStatus !== "race" &&
+        element.qdmStatus !== "gender"
     );
     return elements;
   };
