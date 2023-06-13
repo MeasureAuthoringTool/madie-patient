@@ -3,6 +3,7 @@ import {
   useDocumentTitle,
   measureStore,
   checkUserCanEdit,
+  routeHandlerStore,
 } from "@madie/madie-util";
 import {
   TestCase,
@@ -230,6 +231,14 @@ const EditTestCase = () => {
       showToast("Error while calculating QDM test cases", "danger");
     }
   };
+
+  const { updateRouteHandlerState } = routeHandlerStore;
+  useEffect(() => {
+    updateRouteHandlerState({
+      canTravel: !formik.dirty,
+      pendingRoute: "",
+    });
+  }, [formik.dirty, currentTestCase?.json]);
 
   return (
     <>
