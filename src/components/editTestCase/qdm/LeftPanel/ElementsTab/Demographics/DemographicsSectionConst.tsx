@@ -6,6 +6,7 @@ import {
   PatientCharacteristicEthnicity,
   PatientCharacteristicBirthdate,
   PatientCharacteristicSex,
+  PatientCharacteristicExpired,
 } from "cqm-models";
 
 export interface CodeSystem {
@@ -84,6 +85,8 @@ export const ETHNICITY_CODE_OPTIONS: DataElementCode[] = [
   },
 ];
 
+export const LIVING_STATUS_CODE_OPTIONS = ["Living", "Deceased"];
+
 export const getBirthDateElement = (value): DataElement => {
   const pcb: DataElement = new PatientCharacteristicBirthdate();
   pcb.birthDatetime = value;
@@ -109,6 +112,12 @@ export const getEthnicityDataElement = (value: string): DataElement => {
   const newCode: DataElementCode = getNewCode(ETHNICITY_CODE_OPTIONS, value);
   const pce: DataElement = new PatientCharacteristicEthnicity();
   pce.dataElementCodes = [newCode];
+  return pce;
+};
+
+export const getLivingStatusDataElement = (value: string): DataElement => {
+  const pce: DataElement = new PatientCharacteristicExpired();
+  pce.dataElementCodes = [];
   return pce;
 };
 
