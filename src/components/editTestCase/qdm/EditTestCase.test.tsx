@@ -208,12 +208,18 @@ const useCqmConversionServiceMockResolved = {
   fetchSourceDataCriteria: jest.fn().mockResolvedValue([
     {
       qdmCategory: "symptom",
+      qdmStatus: "Encounter",
+      description: "Allergy/Intolerance: Observation Services",
     },
     {
       qdmCategory: "allergy",
+      qdmStatus: "Encounter",
+      description: "Allergy/Intolerance: Observation Services",
     },
     {
       qdmCategory: "device",
+      qdmStatus: "Encounter",
+      description: "Allergy/Intolerance: Observation Services",
     },
   ]),
 } as unknown as TestCaseServiceApi;
