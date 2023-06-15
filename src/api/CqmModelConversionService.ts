@@ -1,5 +1,10 @@
 import { Measure } from "@madie/madie-models";
-import { Measure as CqmMeasure, CQLLibrary, DataElement } from "cqm-models";
+import {
+  Measure as CqmMeasure,
+  CQLLibrary,
+  DataElement,
+  StatementDependency,
+} from "cqm-models";
 import { ServiceConfig } from "./ServiceContext";
 import useServiceConfig from "./useServiceConfig";
 import { useOktaTokens } from "@madie/madie-util";
@@ -9,9 +14,18 @@ import { DataCriteria } from "./models/DataCriteria";
 import _ from "lodash";
 import { CqmModelFactory } from "./model-factory/CqmModelFactory";
 import { parse } from "./ElmParser";
+import { ElmDependencyFinder } from "./elmDependencyFinder/ElmDependencyFinder";
+
+interface StatementReference {
+  library_name: String;
+  statement_name: String;
+  hqmf_id?: String;
+}
 
 export class CqmConversionService {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
+
+  elmDependencyFinder = new ElmDependencyFinder();
 
   async fetchElmForCql(cql: string): Promise<Array<string>> {
     try {
@@ -67,8 +81,18 @@ export class CqmConversionService {
     const dataCriteria = await this.fetchSourceDataCriteria(measure.cql);
     cqmMeasure.source_data_criteria = dataCriteria;
     const elms = await this.fetchElmForCql(measure.cql);
+    // Fetch statement dependencies
+    const statementDependenciesMap =
+      await this.elmDependencyFinder.findDependencies(
+        elms,
+        measure.cqlLibraryName
+      );
     cqmMeasure.cql_libraries = elms.map((elm) =>
-      this.buildCQLLibrary(elm, measure.cqlLibraryName)
+      this.buildCQLLibrary(
+        elm,
+        measure.cqlLibraryName,
+        statementDependenciesMap
+      )
     );
 
     // TODO: need UI checkbox to determine yes/no
@@ -78,7 +102,11 @@ export class CqmConversionService {
     return cqmMeasure;
   }
 
-  private buildCQLLibrary(elm: string, measureLibraryName: string): CQLLibrary {
+  private buildCQLLibrary(
+    elm: string,
+    measureLibraryName: string,
+    statementDependenciesMap: any
+  ): CQLLibrary {
     const elmJson = JSON.parse(elm);
     const cqlLibrary = new CQLLibrary();
     cqlLibrary.library_name = elmJson.library?.identifier.id;
@@ -90,8 +118,23 @@ export class CqmConversionService {
 
     cqlLibrary.elm_annotations = parse(cqlLibrary.elm);
     // TODO: prepare statement_dependencies- MAT-5786
-    cqlLibrary.statement_dependencies = null;
+    cqlLibrary.statement_dependencies = this.generateCqlStatementDependencies(
+      statementDependenciesMap[elmJson.library?.identifier.id]
+    );
     return cqlLibrary;
+  }
+
+  private generateCqlStatementDependencies(
+    statementDependencies: any
+  ): StatementDependency[] {
+    return _.map(
+      statementDependencies,
+      (statementDep) =>
+        new StatementDependency({
+          statement_name: statementDep.name,
+          statement_references: statementDep.refs as StatementReference[],
+        })
+    );
   }
 
   private buildSourceDataCriteria(
