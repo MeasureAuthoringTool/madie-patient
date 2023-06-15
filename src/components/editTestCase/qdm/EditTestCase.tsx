@@ -247,8 +247,6 @@ const EditTestCase = () => {
   }, [formik.dirty, currentTestCase?.json]);
 
   const discardChanges = () => {
-    //To DO: need to optimize it as it is calling the backend
-    //loadTestCase();
     resetForm();
     setDiscardDialogOpen(false);
   };

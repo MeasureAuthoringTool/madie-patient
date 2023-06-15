@@ -1,14 +1,15 @@
 {
-  "esModuleInterop": true,
   "extends": "ts-config-single-spa",
   "compilerOptions": {
+    "module": "commonjs",
     "declaration": true,
     "declarationDir": "dist",
     "declarationMap": true,
     "jsx": "react-jsx",
     "sourceMap": true,
     "target": "es2015",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "esModuleInterop": true
   },
   "files": ["src/madie-madie-patient.tsx"],
   "include": ["src/**/*"],

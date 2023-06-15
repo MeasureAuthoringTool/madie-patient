@@ -24,11 +24,13 @@ import utc from "dayjs/plugin/utc";
 import {
   RACE_CODE_OPTIONS,
   GENDER_CODE_OPTIONS,
+  LIVING_STATUS_CODE_OPTIONS,
   getGenderDataElement,
   getBirthDateElement,
   getRaceDataElement,
   ETHNICITY_CODE_OPTIONS,
   getEthnicityDataElement,
+  getLivingStatusDataElement,
 } from "./DemographicsSectionConst";
 import { MenuItem as MuiMenuItem } from "@mui/material";
 
@@ -50,13 +52,22 @@ const DemographicsSection = ({ canEdit }) => {
   const [genderDataElement, setGenderDataElement] = useState<DataElement>();
   const [ethnicityDataElement, setEthnicityDataElement] =
     useState<DataElement>();
+  const [livingStatusDataElement, setLivingStatusDataElement] =
+    useState<DataElement>();
 
   const selectOptions = (options) => {
     return [
       options
-        .sort((a, b) => a.display.localeCompare(b.display))
+        .sort((a, b) =>
+          a.display && b.display
+            ? a.display.localeCompare(b.display)
+            : a.localeCompare(b)
+        )
         .map((opt, i) => {
-          const sanitizedString = opt.display.replace(/"/g, "");
+          const { display } = opt || {};
+          const sanitizedString = display
+            ? display.replace(/"/g, "")
+            : opt?.replace(/"/g, "");
           return (
             <MuiMenuItem
               key={`${sanitizedString}-${i}`}
@@ -91,6 +102,9 @@ const DemographicsSection = ({ canEdit }) => {
         if (element.qdmStatus === "ethnicity") {
           setEthnicityDataElement(element);
         }
+        if (element.qdmStatus === "expired") {
+          setLivingStatusDataElement(element);
+        }
       });
     } else {
       // default values for QDM patient. to do race and gender default values?
@@ -103,6 +117,7 @@ const DemographicsSection = ({ canEdit }) => {
       const newEthnicityDataElement: DataElement =
         getEthnicityDataElement("Hispanic or Latino");
       setEthnicityDataElement(newEthnicityDataElement);
+      setLivingStatusDataElement("Living");
 
       let dataElements: DataElement[] = [
         newRaceDataElement,
@@ -168,6 +183,27 @@ const DemographicsSection = ({ canEdit }) => {
     const patient = generateNewQdmPatient(newEthnicityDataElement, "ethnicity");
     setQdmPatient(patient);
     formik.setFieldValue("json", JSON.stringify(patient));
+  };
+
+  const handleLivingStatusChange = (event) => {
+    if (event.target.value !== "Living") {
+      const newLivingStatusDataElement: DataElement =
+        getLivingStatusDataElement(event.target.value);
+      setLivingStatusDataElement(newLivingStatusDataElement);
+      const patient = generateNewQdmPatient(
+        newLivingStatusDataElement,
+        "expired"
+      );
+      setQdmPatient(patient);
+      formik.setFieldValue("json", JSON.stringify(patient));
+    } else {
+      setLivingStatusDataElement(event.target.value);
+      const patient = JSON.parse(formik.values.json);
+      patient.dataElements = patient.dataElements.filter(
+        (element) => element.qdmStatus !== "expired"
+      );
+      formik.setFieldValue("json", JSON.stringify(patient));
+    }
   };
 
   const handleTimeChange = (val) => {
@@ -271,6 +307,25 @@ const DemographicsSection = ({ canEdit }) => {
                   </LocalizationProvider>
                 </FormControl>
               </div>
+              <FormControl>
+                <Select
+                  labelId="demographics-living-status-select-label"
+                  id="demographics-living-status-select-id"
+                  defaultValue="Living"
+                  label="Living Status"
+                  disabled={!canEdit}
+                  inputProps={{
+                    "data-testid": `demographics-living-status-input`,
+                  }}
+                  value={
+                    livingStatusDataElement?.qdmStatus === "expired"
+                      ? "Deceased"
+                      : "Living"
+                  }
+                  onChange={handleLivingStatusChange}
+                  options={selectOptions(LIVING_STATUS_CODE_OPTIONS)}
+                ></Select>
+              </FormControl>
               <FormControl>
                 <Select
                   labelId="demographics-race-select-label"
