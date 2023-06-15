@@ -8,6 +8,7 @@ import { CalculationMethod } from "./models/CalculationMethod";
 import { DataCriteria } from "./models/DataCriteria";
 import _ from "lodash";
 import { CqmModelFactory } from "./model-factory/CqmModelFactory";
+import { parse } from "./ElmParser";
 
 export class CqmConversionService {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
@@ -86,8 +87,8 @@ export class CqmConversionService {
     cqlLibrary.elm = elmJson;
     // true for all non-composite measures
     cqlLibrary.is_top_level = true;
-    // TODO: prepare elm_annotations- MAT-5787
-    cqlLibrary.elm_annotations = null;
+
+    cqlLibrary.elm_annotations = parse(cqlLibrary.elm);
     // TODO: prepare statement_dependencies- MAT-5786
     cqlLibrary.statement_dependencies = null;
     return cqlLibrary;
