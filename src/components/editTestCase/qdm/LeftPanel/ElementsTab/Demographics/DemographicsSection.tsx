@@ -4,7 +4,7 @@ import { Select, InputLabel } from "@madie/madie-design-system/dist/react";
 import FormControl from "@mui/material/FormControl";
 import InputAdornment from "@mui/material/InputAdornment";
 import EventIcon from "@mui/icons-material/Event";
-import { useFormikContext } from "formik";
+import { FormikContext, useFormikContext } from "formik";
 
 import { QDMPatient, DataElement } from "cqm-models";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -206,8 +206,8 @@ const DemographicsSection = ({ canEdit }) => {
                         disabled={!canEdit}
                         disableOpenPicker
                         value={
-                          qdmPatient?.birthDatetime
-                            ? dayjs(qdmPatient?.birthDatetime)
+                          formik.values.birthDate
+                            ? dayjs(formik.values.birthDate)
                             : null
                         }
                         onChange={(newValue: any) => {
@@ -255,7 +255,6 @@ const DemographicsSection = ({ canEdit }) => {
                           const newDate = dayjs(currentDate)
                             .set("hour", newValue?.$H)
                             .set("minute", newValue?.$m);
-
                           handleTimeChange(newDate);
                           // on change we need to combine with the date before we set date
                           // formik.setFieldValue("birthDatetime", newDate);

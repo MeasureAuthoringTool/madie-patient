@@ -12,7 +12,11 @@ import {
   GroupPopulation,
 } from "@madie/madie-models";
 import "../qiCore/EditTestCase.scss";
-import { Button, Toast, MadieDiscardDialog, } from "@madie/madie-design-system/dist/react";
+import {
+  Button,
+  Toast,
+  MadieDiscardDialog,
+} from "@madie/madie-design-system/dist/react";
 import qdmCalculationService from "../../../api/QdmCalculationService";
 import { Allotment } from "allotment";
 import RightPanel from "./RightPanel/RightPanel";
@@ -57,6 +61,7 @@ const EditTestCase = () => {
   const [toastOpen, setToastOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>("");
   const [toastType, setToastType] = useState<string>("danger");
+  const [discardTrigger, setDiscardTrigger] = useState<boolean>(false);
   const onToastClose = () => {
     setToastMessage("");
     setToastOpen(false);
@@ -91,7 +96,7 @@ const EditTestCase = () => {
       groupPopulations: [],
       birthDate: qdmPatient?.birthDatetime
         ? dayjs(qdmPatient?.birthDatetime)
-        : null,
+        : "null",
     },
     validationSchema: QDMPatientSchemaValidator,
     onSubmit: async (values: any) => await handleSubmit(values),
@@ -241,10 +246,9 @@ const EditTestCase = () => {
     });
   }, [formik.dirty, currentTestCase?.json]);
 
-    const discardChanges = () => {
+  const discardChanges = () => {
     //To DO: need to optimize it as it is calling the backend
     //loadTestCase();
-    
     resetForm();
     setDiscardDialogOpen(false);
   };
@@ -256,6 +260,7 @@ const EditTestCase = () => {
           testCase={currentTestCase}
           measureId={measureId}
         />
+
         <form id="edit-test-case-form" onSubmit={formik.handleSubmit}>
           <div className="allotment-wrapper">
             <Allotment defaultSizes={[200, 100]} vertical={false}>
