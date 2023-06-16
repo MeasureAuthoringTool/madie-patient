@@ -48,25 +48,24 @@ export const parse = (elmJson) => {
     json: elmJson,
   })[0];
   //all the define statements including functions
-  const annotations = JSONPath({
+  const definitions = JSONPath({
     path: "$.library.statements.def.[?(@.annotation)]",
     json: elmJson,
   });
 
   let index: number = 0;
-  annotations.forEach((annotation) => {
-    Object.keys(annotation).forEach((key) => {
-      if (key === "annotation") {
-        ret.statements[0] = new StatementObj();
-        ret.statements[0].children[index] = new ChildObj();
+  definitions.forEach((definition) => {
+    const annotation = definition.annotation;
+    if (annotation) {
+      ret.statements[0] = new StatementObj();
+      ret.statements[0].children[index] = new ChildObj();
 
-        parse_node(
-          annotation[key],
-          ret.statements[0].children[index++],
-          localid_to_type_map
-        );
-      }
-    });
+      parse_node(
+        annotation,
+        ret.statements[0].children[index++],
+        localid_to_type_map
+      );
+    }
   });
 
   return ret;
