@@ -558,9 +558,9 @@ describe("EditTestCase QDM Component", () => {
     expect(livingStatusInput.value).toBe("Living");
 
     fireEvent.change(livingStatusInput, {
-      target: { value: "Deceased" },
+      target: { value: "Expired" },
     });
-    expect(livingStatusInput.value).toBe("Deceased");
+    expect(livingStatusInput.value).toBe("Expired");
   });
 
   it("test update test case successfully with success toast", async () => {
@@ -608,9 +608,9 @@ describe("EditTestCase QDM Component", () => {
     expect(livingStatusInput.value).toBe("Living");
 
     fireEvent.change(livingStatusInput, {
-      target: { value: "Deceased" },
+      target: { value: "Expired" },
     });
-    expect(livingStatusInput.value).toBe("Deceased");
+    expect(livingStatusInput.value).toBe("Expired");
 
     const saveButton = getByRole("button", { name: "Save" });
     expect(saveButton).toBeEnabled();
@@ -677,10 +677,10 @@ describe("EditTestCase QDM Component", () => {
 
     act(() => {
       fireEvent.change(livingStatusInput, {
-        target: { value: "Deceased" },
+        target: { value: "Expired" },
       });
     });
-    expect(livingStatusInput.value).toBe("Deceased");
+    expect(livingStatusInput.value).toBe("Expired");
 
     expect(saveTestCaseButton).toBeEnabled();
     act(() => {
