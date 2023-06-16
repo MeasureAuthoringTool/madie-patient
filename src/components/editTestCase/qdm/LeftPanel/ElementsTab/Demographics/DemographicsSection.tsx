@@ -320,7 +320,7 @@ const DemographicsSection = ({ canEdit }) => {
                   }}
                   value={
                     livingStatusDataElement?.qdmStatus === "expired"
-                      ? "Deceased"
+                      ? "Expired"
                       : "Living"
                   }
                   onChange={handleLivingStatusChange}
