@@ -85,7 +85,7 @@ export const ETHNICITY_CODE_OPTIONS: DataElementCode[] = [
   },
 ];
 
-export const LIVING_STATUS_CODE_OPTIONS = ["Living", "Deceased"];
+export const LIVING_STATUS_CODE_OPTIONS = ["Living", "Expired"];
 
 export const getBirthDateElement = (value): DataElement => {
   const pcb: DataElement = new PatientCharacteristicBirthdate();
