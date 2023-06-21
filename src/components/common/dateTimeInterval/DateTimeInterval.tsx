@@ -13,16 +13,6 @@ interface DateTimeIntervalProps {
   canEdit: boolean;
 }
 
-export const dateTimeTextFieldStyle = {
-  fontFamily: "Rubik",
-  fontStyle: "normal",
-  fontWeight: "500",
-  fontSize: "16px",
-  lineHeight: "19px",
-  height: "19px",
-  color: "#125496",
-};
-
 const DateTimeInterval = ({
   label,
   startDateTime,
