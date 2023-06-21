@@ -5,6 +5,8 @@ import { FormControl } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import "twin.macro";
+import "styled-components/macro";
 
 interface DateTimeIntervalProps {
   label: string;
@@ -35,20 +37,15 @@ const DateTimeInterval = ({
 }: DateTimeIntervalProps) => {
   return (
     <div>
-      <h5 style={dateTimeTextFieldStyle}>Time Range</h5>
-      <FormControl
-        style={{ display: "flex", gap: "32px", flexDirection: "row" }}
-      >
-        <div>
+      <h5 tw="text-blue-800 mb-2">Time Range</h5>
+      <FormControl>
+        <div tw="flex flex-row gap-8">
           <DateTimeField
             disabled={!canEdit}
             label={`${label} - Start`}
             handlDateTimeChange={handleStartDateTimeChange}
             dateTimeValue={startDateTime}
           />
-        </div>
-
-        <div>
           <DateTimeField
             disabled={!canEdit}
             label={`${label} - End`}
