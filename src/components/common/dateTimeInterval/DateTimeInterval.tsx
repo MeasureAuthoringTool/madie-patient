@@ -1,10 +1,6 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { DateTimeField } from "@madie/madie-design-system/dist/react";
 import { FormControl } from "@mui/material";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import "twin.macro";
 import "styled-components/macro";
 

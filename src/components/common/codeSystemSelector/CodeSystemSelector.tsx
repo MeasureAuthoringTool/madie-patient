@@ -42,7 +42,7 @@ const CodeSystemSelector = ({
   return (
     <div>
       <div tw="flex">
-        <div tw="flex-initial w-1/4 h-10 mr-8">
+        <div tw="flex-initial w-1/4 mr-8">
           <Select
             placeHolder={{ name: `Select ${codeProps.label}`, value: "" }}
             {...codeProps}
@@ -59,7 +59,7 @@ const CodeSystemSelector = ({
             options={getMenuItems(codeProps.options, codeProps.required)}
           />
         </div>
-        <div tw="flex-initial w-2/4 h-10">
+        <div tw="flex-initial w-2/4 ">
           <Select
             placeHolder={{
               name: `Select ${codeSystemProps.label}`,
