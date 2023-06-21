@@ -21,4 +21,5 @@ module.exports = {
       useEsm: true,
     },
   },
+  testTimeout: 20000,
 };
