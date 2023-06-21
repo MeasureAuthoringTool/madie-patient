@@ -102,7 +102,7 @@ function parse_node(node: any, output: ChildObj, localid_to_type_map: any) {
         node[key].value.forEach((value) => {
           if (value) {
             let textObj = new TextObj();
-            textObj.text = value;
+            textObj.text = removeNewlines(value);
             output.children[childIdx].children.push(textObj);
           }
         });
