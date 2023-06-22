@@ -3,55 +3,67 @@ import { render, screen, within } from "@testing-library/react";
 import CodeSystemSelector from "./CodeSystemSelector";
 import userEvent from "@testing-library/user-event";
 
-const options = ["option 1", "option 2", "option 3"];
+const options = [
+  {
+    system: "http://snomed.info/sct",
+    version: "2023-03",
+    concept: [
+      {
+        code: "183452005",
+        display: "Snomed Emergency hospital admission (procedure)",
+      },
+      {
+        code: "32485007",
+        display: "Snomed Hospital admission (procedure)",
+      },
+    ],
+  },
+  {
+    system: "http://ionic.info/sct",
+    version: "2023-03",
+    concept: [
+      {
+        code: "183452005",
+        display: "Ionic Emergency hospital admission (procedure)",
+      },
+      {
+        code: "32485007",
+        display: "Ionic Hospital admission (procedure)",
+      },
+      {
+        code: "8715000",
+        display: "Ionic Hospital admission, elective (procedure)",
+      },
+    ],
+  },
+];
 
 describe("CodeSystemSelector Component", () => {
   it("Should render child components with appropriate data", async () => {
     render(
       <CodeSystemSelector
         canEdit={true}
-        codeProps={{
-          label: "Code",
-          options: options,
-          required: false,
-          error: false,
-          helperText: "",
-          value: options[0],
-        }}
         codeSystemProps={{
           label: "Code System",
           options: options,
           required: false,
           error: false,
           helperText: "",
-          value: options[2],
+        }}
+        codeProps={{
+          label: "Code",
+          required: false,
+          error: false,
+          helperText: "",
         }}
       />
     );
-
-    const codeSelectInput = screen.getByTestId(
-      "code-select-input"
-    ) as HTMLInputElement;
-
-    expect(codeSelectInput.value).toBe("option 1");
-
-    const codeSelect = screen.getByTestId("code-select");
-    const codeSelectDropdown = within(codeSelect).getByRole(
-      "button"
-    ) as HTMLInputElement;
-    userEvent.click(codeSelectDropdown);
-
-    const renderedOptionsForCode = await screen.findAllByRole("option");
-    expect(renderedOptionsForCode).toHaveLength(4); // including '-'
-
-    // This click will not update the value as onChange is not handled, but it helps in closing the Meunitems
-    userEvent.click(renderedOptionsForCode[1]);
 
     const codeSystemSelectInput = screen.getByTestId(
       "code-system-select-input"
     ) as HTMLInputElement;
 
-    expect(codeSystemSelectInput.value).toBe("option 3");
+    expect(codeSystemSelectInput.value).toBe("");
 
     const codeSystemSelect = screen.getByTestId("code-system-select");
     const codeSystemSelectDropdown = within(codeSystemSelect).getByRole(
@@ -60,31 +72,11 @@ describe("CodeSystemSelector Component", () => {
     userEvent.click(codeSystemSelectDropdown);
 
     const renderedOptionsForCodeSystem = await screen.findAllByRole("option");
-    expect(renderedOptionsForCodeSystem).toHaveLength(4); // including '-'
-  });
+    expect(renderedOptionsForCodeSystem).toHaveLength(3); // including '-'
 
-  it("Should render child components as required", async () => {
-    render(
-      <CodeSystemSelector
-        canEdit={true}
-        codeProps={{
-          label: "Code",
-          options: options,
-          required: true,
-          error: false,
-          helperText: "",
-          value: options[0],
-        }}
-        codeSystemProps={{
-          label: "Code System",
-          options: options,
-          required: true,
-          error: false,
-          helperText: "",
-          value: options[2],
-        }}
-      />
-    );
+    // This click will not update the value as onChange is not handled, but it helps in closing the Meunitems
+    userEvent.click(renderedOptionsForCodeSystem[1]);
+    expect(codeSystemSelectInput.value).toBe("http://snomed.info/sct");
 
     const codeSelect = screen.getByTestId("code-select");
     const codeSelectDropdown = within(codeSelect).getByRole(
@@ -95,17 +87,56 @@ describe("CodeSystemSelector Component", () => {
     const renderedOptionsForCode = await screen.findAllByRole("option");
     expect(renderedOptionsForCode).toHaveLength(3); // including '-'
 
-    // This click will not update the value as onChange is not handled, but it helps in closing the Meunitems
-    userEvent.click(renderedOptionsForCode[1]);
+    const codeSelectInput = screen.getByTestId(
+      "code-select-input"
+    ) as HTMLInputElement;
 
-    const codeSystemSelect = screen.getByTestId("code-select");
+    userEvent.click(renderedOptionsForCode[1]);
+    expect(codeSelectInput.value).toBe(
+      "183452005 (Snomed Emergency hospital admission (procedure))"
+    );
+  });
+
+  it("Should render code options based on the value selected in codesystem", async () => {
+    render(
+      <CodeSystemSelector
+        canEdit={true}
+        codeSystemProps={{
+          label: "Code System",
+          options: options,
+          required: false,
+          error: false,
+          helperText: "",
+        }}
+        codeProps={{
+          label: "Code",
+          required: false,
+          error: false,
+          helperText: "",
+        }}
+      />
+    );
+
+    const codeSystemSelect = screen.getByTestId("code-system-select");
     const codeSystemSelectDropdown = within(codeSystemSelect).getByRole(
       "button"
     ) as HTMLInputElement;
     userEvent.click(codeSystemSelectDropdown);
 
+    const renderedOptionsForCode = await screen.findAllByRole("option");
+    expect(renderedOptionsForCode).toHaveLength(3); // including '-'
+
+    // This click will not update the value as onChange is not handled, but it helps in closing the Meunitems
+    userEvent.click(renderedOptionsForCode[2]);
+
+    const codeSelect = screen.getByTestId("code-select");
+    const codeSelectDropdown = within(codeSelect).getByRole(
+      "button"
+    ) as HTMLInputElement;
+    userEvent.click(codeSelectDropdown);
+
     const renderedOptionsForCodeSystem = await screen.findAllByRole("option");
-    expect(renderedOptionsForCodeSystem).toHaveLength(3); // including '-'
+    expect(renderedOptionsForCodeSystem).toHaveLength(4); // including '-'
   });
 
   it("Should render disabled state of child components", async () => {
@@ -114,11 +145,9 @@ describe("CodeSystemSelector Component", () => {
         canEdit={false}
         codeProps={{
           label: "Code",
-          options: options,
           required: true,
           error: false,
           helperText: "",
-          value: options[0],
         }}
         codeSystemProps={{
           label: "Code System",
@@ -126,7 +155,6 @@ describe("CodeSystemSelector Component", () => {
           required: true,
           error: false,
           helperText: "",
-          value: options[2],
         }}
       />
     );
