@@ -95,7 +95,7 @@
     "react-ace": "^9.5.0",
     "sass": "^1.54.5",
     "sass-loader": "^13.0.2",
-    "styled-components": "^5.3.1",
+    "styled-components": "^5.3.7",
     "tailwindcss": "^2.2.9",
     "ts-config-single-spa": "^3.0.0",
     "twin.macro": "^2.7.0",
