@@ -15,13 +15,6 @@ interface codeOptionProps {
   concept: conceptOptionProps[];
 }
 
-interface CodeSelectorProps {
-  label: string;
-  required: boolean;
-  error?: boolean;
-  helperText?: string;
-}
-
 interface CodeSystemSelectorProps extends ComponentProps<any> {
   label: string;
   options: codeOptionProps[];
@@ -33,18 +26,16 @@ interface CodeSystemSelectorProps extends ComponentProps<any> {
 interface CodeSystemSelectProps {
   canEdit: boolean;
   codeSystemProps: CodeSystemSelectorProps;
-  codeProps: CodeSelectorProps;
 }
 
 const CodeSystemSelector = ({
   canEdit,
   codeSystemProps,
-  codeProps,
 }: CodeSystemSelectProps) => {
   const [codeOptions, setCodeOptions] = useState<codeOptionProps[]>();
 
   // if the field is not required a default option is provided
-  const getMenuItems = (options: codeOptionProps[], required: boolean) => {
+  const getCodeSystems = (options: codeOptionProps[], required: boolean) => {
     return [
       !required && (
         <MenuItem key="-" value="">
@@ -66,7 +57,7 @@ const CodeSystemSelector = ({
     ];
   };
 
-  const getCodeConceptItems = (
+  const getCodeConcepts = (
     conceptOptions: codeOptionProps[],
     required: boolean
   ) => {
@@ -117,7 +108,7 @@ const CodeSystemSelector = ({
             SelectDisplayProps={{
               "aria-required": "true",
             }}
-            options={getMenuItems(
+            options={getCodeSystems(
               codeSystemProps.options,
               codeSystemProps.required
             )}
@@ -127,21 +118,21 @@ const CodeSystemSelector = ({
         <div tw="flex-initial w-2/4 ">
           <Select
             placeHolder={{
-              name: `Select ${codeProps.label}`,
+              name: `Select Code`,
               value: "",
             }}
-            {...codeProps}
-            id={`${kebabCase(codeProps.label)}-select`}
+            label="Code"
+            id={`code-select`}
             inputProps={{
-              "data-testid": `${kebabCase(codeProps.label)}-select-input`,
+              "data-testid": `code-select-input`,
             }}
-            data-testid={`${kebabCase(codeProps.label)}-select`}
+            data-testid={`code-select`}
             disabled={!canEdit}
             size="small"
             SelectDisplayProps={{
               "aria-required": "true",
             }}
-            options={getCodeConceptItems(codeOptions, codeProps.required)}
+            options={getCodeConcepts(codeOptions, codeSystemProps.required)}
           />
         </div>
       </div>

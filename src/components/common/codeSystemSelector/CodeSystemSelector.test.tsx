@@ -50,12 +50,6 @@ describe("CodeSystemSelector Component", () => {
           error: false,
           helperText: "",
         }}
-        codeProps={{
-          label: "Code",
-          required: false,
-          error: false,
-          helperText: "",
-        }}
       />
     );
 
@@ -108,12 +102,6 @@ describe("CodeSystemSelector Component", () => {
           error: false,
           helperText: "",
         }}
-        codeProps={{
-          label: "Code",
-          required: false,
-          error: false,
-          helperText: "",
-        }}
       />
     );
 
@@ -143,12 +131,6 @@ describe("CodeSystemSelector Component", () => {
     render(
       <CodeSystemSelector
         canEdit={false}
-        codeProps={{
-          label: "Code",
-          required: true,
-          error: false,
-          helperText: "",
-        }}
         codeSystemProps={{
           label: "Code System",
           options: options,
