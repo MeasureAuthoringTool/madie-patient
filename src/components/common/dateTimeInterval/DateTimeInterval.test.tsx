@@ -16,6 +16,7 @@ describe("DateTimeInterval Field Component", () => {
         handleEndDateTimeChange={() => {
           return;
         }}
+        canEdit={false}
       />
     );
 
