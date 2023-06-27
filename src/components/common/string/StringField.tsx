@@ -1,0 +1,51 @@
+import React, { useState } from "react";
+import { InputLabel } from "@madie/madie-design-system/dist/react/";
+import { FormControl } from "@mui/material";
+import { TextField } from "@madie/madie-design-system/dist/react";
+
+const labelStyle = {
+  color: "#125496",
+};
+
+export interface StringFieldProps {
+  label: string;
+  fieldValue: string;
+  canEdit: boolean;
+}
+
+const StringField = ({ label, fieldValue, canEdit }: StringFieldProps) => {
+  const [field, setField] = useState<string>(fieldValue);
+  return (
+    <div style={{ width: "134px" }}>
+      <FormControl>
+        <InputLabel
+          id="string-field-label"
+          data-testid="string-field-label"
+          required={false}
+          sx={labelStyle}
+        >
+          {label}
+        </InputLabel>
+        <TextField
+          disabled={!canEdit}
+          label={label}
+          placeholder=""
+          id={`string-field-${label}`}
+          data-testid={`string-field-${label}`}
+          inputProps={{
+            "data-testid": `string-field-${label}-input`,
+            "aria-describedby": `string-field-${label}input-helper-text`,
+            required: true,
+          }}
+          size="small"
+          onChange={(event) => {
+            setField(event.target.value);
+          }}
+          value={field}
+        />
+      </FormControl>
+    </div>
+  );
+};
+
+export default StringField;
