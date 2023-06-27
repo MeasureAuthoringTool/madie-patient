@@ -1,7 +1,8 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { DateTimeField } from "@madie/madie-design-system/dist/react";
 import { FormControl } from "@mui/material";
+import "twin.macro";
+import "styled-components/macro";
 
 interface DateTimeIntervalProps {
   label: string;
@@ -9,6 +10,7 @@ interface DateTimeIntervalProps {
   handleStartDateTimeChange: Function;
   endDateTime: object;
   handleEndDateTimeChange: Function;
+  canEdit: boolean;
 }
 
 const DateTimeInterval = ({
@@ -17,22 +19,21 @@ const DateTimeInterval = ({
   handleStartDateTimeChange,
   endDateTime,
   handleEndDateTimeChange,
+  canEdit,
 }: DateTimeIntervalProps) => {
   return (
     <div>
-      <FormControl
-        style={{ display: "flex", gap: "40px", flexDirection: "row" }}
-      >
-        <div>
+      <h5 tw="text-blue-800 mb-2">Time Range</h5>
+      <FormControl>
+        <div tw="flex flex-row gap-8">
           <DateTimeField
+            disabled={!canEdit}
             label={`${label} - Start`}
             handlDateTimeChange={handleStartDateTimeChange}
             dateTimeValue={startDateTime}
           />
-        </div>
-
-        <div>
           <DateTimeField
+            disabled={!canEdit}
             label={`${label} - End`}
             handlDateTimeChange={handleEndDateTimeChange}
             dateTimeValue={endDateTime}
