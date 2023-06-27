@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { InputLabel } from "@madie/madie-design-system/dist/react/";
 import { FormControl } from "@mui/material";
 import { TextField } from "@madie/madie-design-system/dist/react";
+import { kebabCase } from "lodash";
 
 const labelStyle = {
   color: "#125496",
@@ -34,7 +35,7 @@ const StringField = ({
         </InputLabel>
         <TextField
           disabled={!canEdit}
-          label={label}
+          label={kebabCase(label)}
           placeholder=""
           id={`string-field-${label}`}
           data-testid={`string-field-${label}`}
