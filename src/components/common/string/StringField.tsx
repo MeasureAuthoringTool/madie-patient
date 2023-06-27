@@ -11,9 +11,15 @@ export interface StringFieldProps {
   label: string;
   fieldValue: string;
   canEdit: boolean;
+  required?: boolean;
 }
 
-const StringField = ({ label, fieldValue, canEdit }: StringFieldProps) => {
+const StringField = ({
+  label,
+  fieldValue,
+  canEdit,
+  required = false,
+}: StringFieldProps) => {
   const [field, setField] = useState<string>(fieldValue);
   return (
     <div style={{ width: "134px" }}>
@@ -21,7 +27,7 @@ const StringField = ({ label, fieldValue, canEdit }: StringFieldProps) => {
         <InputLabel
           id="string-field-label"
           data-testid="string-field-label"
-          required={false}
+          required={required}
           sx={labelStyle}
         >
           {label}
