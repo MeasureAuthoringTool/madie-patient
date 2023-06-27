@@ -41,7 +41,7 @@ const StringField = ({
           inputProps={{
             "data-testid": `string-field-${label}-input`,
             "aria-describedby": `string-field-${label}input-helper-text`,
-            required: true,
+            required: { required },
           }}
           size="small"
           onChange={(event) => {
