@@ -9,7 +9,7 @@ import {
   CalculationOutput,
   DetailedPopulationGroupResult,
 } from "fqm-execution/build/types/Calculator";
-import { checkUserCanEdit } from "@madie/madie-util";
+import { checkUserCanEdit, measureStore } from "@madie/madie-util";
 import useExecutionContext from "../../routes/qiCore/useExecutionContext";
 import CreateCodeCoverageNavTabs from "../common/CreateCodeCoverageNavTabs";
 import CodeCoverageHighlighting from "../common/CodeCoverageHighlighting";
@@ -83,7 +83,7 @@ const TestCaseList = (props: TestCaseListProps) => {
   const [executionResults, setExecutionResults] = useState<{
     [key: string]: DetailedPopulationGroupResult[];
   }>({});
-
+  const { updateMeasure } = measureStore;
   const calculation = useRef(calculationService());
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("passing");
@@ -100,7 +100,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     });
   const { measureState, bundleState, valueSetsState, executing, setExecuting } =
     useExecutionContext();
-  const [measure] = measureState;
+  const [measure, setMeasure] = useState<any>(measureStore.state);
   const [measureBundle] = bundleState;
   const [valueSets] = valueSetsState;
   const [selectedPopCriteria, setSelectedPopCriteria] = useState<Group>();
@@ -136,6 +136,13 @@ const TestCaseList = (props: TestCaseListProps) => {
   }, [measure]);
 
   useEffect(() => {
+    if (testCases?.length != measure?.testCalength) {
+      const newMeasure = { ...measure, testCases };
+      updateMeasure(newMeasure);
+    }
+  }, [testCases]);
+
+  useEffect(() => {
     setCanEdit(
       checkUserCanEdit(
         measure?.measureSet?.owner,
@@ -160,6 +167,13 @@ const TestCaseList = (props: TestCaseListProps) => {
         createTestCaseListener,
         false
       );
+    };
+  }, []);
+
+  useEffect(() => {
+    const subscription = measureStore.subscribe(setMeasure);
+    return () => {
+      subscription.unsubscribe();
     };
   }, []);
 

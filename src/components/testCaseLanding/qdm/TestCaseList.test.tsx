@@ -37,7 +37,8 @@ import {
   getExampleValueSet,
 } from "../../../util/CalculationTestHelpers";
 import { ExecutionContextProvider } from "../../routes/qiCore/ExecutionContext";
-import { checkUserCanEdit, useFeatureFlags } from "@madie/madie-util";
+import { checkUserCanEdit, useFeatureFlags, measureStore } from "@madie/madie-util";
+
 
 const serviceConfig: ServiceConfig = {
   testCaseService: {
@@ -52,8 +53,49 @@ const serviceConfig: ServiceConfig = {
 };
 
 const MEASURE_CREATEDBY = "testuser";
+// Mock data for Measure retrieved from MeasureService
+const measure = {
+  id: "1",
+  measureName: "measureName",
+  createdBy: MEASURE_CREATEDBY,
+  groups: [
+    {
+      id: "1",
+      scoring: MeasureScoring.PROPORTION,
+      populationBasis: "boolean",
+      populations: [
+        {
+          id: "id-1",
+          name: PopulationType.INITIAL_POPULATION,
+          definition: "ipp",
+        },
+        {
+          id: "id-2",
+          name: PopulationType.DENOMINATOR,
+          definition: "denom",
+        },
+        {
+          id: "id-3",
+          name: PopulationType.NUMERATOR,
+          definition: "num",
+        },
+      ],
+    },
+  ],
+  acls: [{ userId: "othertestuser@example.com", roles: ["SHARED_WITH"] }],
+} as unknown as Measure;
+
+
 jest.mock("@madie/madie-util", () => ({
   checkUserCanEdit: jest.fn().mockImplementation(() => true),
+  measureStore: {
+    updateMeasure: jest.fn((measure) => measure),
+    //state: jest.fn().mockImplementation(() => measure),
+    //initialState: jest.fn().mockImplementation(() => measure),
+    subscribe: jest.fn().mockImplementation((set) => {
+      return { unsubscribe: () => null };
+    }),
+  },
   useFeatureFlags: jest.fn().mockImplementation(() => ({
     applyDefaults: false,
     importTestCases: false,
@@ -394,38 +436,6 @@ const useTestCaseServiceMockResolved = {
     .mockResolvedValue(["Series 1", "Series 2"]),
   createTestCases: jest.fn().mockResolvedValue([]),
 } as unknown as TestCaseServiceApi;
-
-// Mock data for Measure retrieved from MeasureService
-const measure = {
-  id: "1",
-  measureName: "measureName",
-  createdBy: MEASURE_CREATEDBY,
-  groups: [
-    {
-      id: "1",
-      scoring: MeasureScoring.PROPORTION,
-      populationBasis: "boolean",
-      populations: [
-        {
-          id: "id-1",
-          name: PopulationType.INITIAL_POPULATION,
-          definition: "ipp",
-        },
-        {
-          id: "id-2",
-          name: PopulationType.DENOMINATOR,
-          definition: "denom",
-        },
-        {
-          id: "id-3",
-          name: PopulationType.NUMERATOR,
-          definition: "num",
-        },
-      ],
-    },
-  ],
-  acls: [{ userId: "othertestuser@example.com", roles: ["SHARED_WITH"] }],
-} as Measure;
 
 // mocking measureService
 jest.mock("../../../api/useMeasureServiceApi");
