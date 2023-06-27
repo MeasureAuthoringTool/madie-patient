@@ -100,7 +100,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     });
   const { measureState, bundleState, valueSetsState, executing, setExecuting } =
     useExecutionContext();
-  const [measure, setMeasure] = useState<any>(measureStore.state);
+  const [measure] = measureState;
   const [measureBundle] = bundleState;
   const [valueSets] = valueSetsState;
   const [selectedPopCriteria, setSelectedPopCriteria] = useState<Group>();
@@ -136,7 +136,7 @@ const TestCaseList = (props: TestCaseListProps) => {
   }, [measure]);
 
   useEffect(() => {
-    if (testCases?.length != measure?.testCalength) {
+    if (testCases?.length != measure?.testCases?.length) {
       const newMeasure = { ...measure, testCases };
       updateMeasure(newMeasure);
     }
@@ -167,13 +167,6 @@ const TestCaseList = (props: TestCaseListProps) => {
         createTestCaseListener,
         false
       );
-    };
-  }, []);
-
-  useEffect(() => {
-    const subscription = measureStore.subscribe(setMeasure);
-    return () => {
-      subscription.unsubscribe();
     };
   }, []);
 

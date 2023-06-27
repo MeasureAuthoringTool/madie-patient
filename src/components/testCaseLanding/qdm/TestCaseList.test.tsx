@@ -37,8 +37,7 @@ import {
   getExampleValueSet,
 } from "../../../util/CalculationTestHelpers";
 import { ExecutionContextProvider } from "../../routes/qiCore/ExecutionContext";
-import { checkUserCanEdit, useFeatureFlags, measureStore } from "@madie/madie-util";
-
+import { checkUserCanEdit, useFeatureFlags } from "@madie/madie-util";
 
 const serviceConfig: ServiceConfig = {
   testCaseService: {
@@ -85,16 +84,10 @@ const measure = {
   acls: [{ userId: "othertestuser@example.com", roles: ["SHARED_WITH"] }],
 } as unknown as Measure;
 
-
 jest.mock("@madie/madie-util", () => ({
   checkUserCanEdit: jest.fn().mockImplementation(() => true),
   measureStore: {
     updateMeasure: jest.fn((measure) => measure),
-    //state: jest.fn().mockImplementation(() => measure),
-    //initialState: jest.fn().mockImplementation(() => measure),
-    subscribe: jest.fn().mockImplementation((set) => {
-      return { unsubscribe: () => null };
-    }),
   },
   useFeatureFlags: jest.fn().mockImplementation(() => ({
     applyDefaults: false,
