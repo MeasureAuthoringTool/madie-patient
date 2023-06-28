@@ -4,7 +4,7 @@ import { Select, InputLabel } from "@madie/madie-design-system/dist/react";
 import FormControl from "@mui/material/FormControl";
 import InputAdornment from "@mui/material/InputAdornment";
 import EventIcon from "@mui/icons-material/Event";
-import { FormikContext, useFormikContext } from "formik";
+import { useFormikContext } from "formik";
 
 import { QDMPatient, DataElement } from "cqm-models";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";

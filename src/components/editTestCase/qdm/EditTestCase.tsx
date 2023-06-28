@@ -96,7 +96,7 @@ const EditTestCase = () => {
       groupPopulations: [],
       birthDate: qdmPatient?.birthDatetime
         ? dayjs(qdmPatient?.birthDatetime)
-        : "null",
+        : "",
     },
     validationSchema: QDMPatientSchemaValidator,
     onSubmit: async (values: any) => await handleSubmit(values),
