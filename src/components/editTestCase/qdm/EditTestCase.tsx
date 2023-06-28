@@ -121,20 +121,20 @@ const EditTestCase = () => {
 
   const updateTestCase = async (testCase: TestCase) => {
     try {
-      // const updatedTestCase = await testCaseService.current.updateTestCase(
-      //   testCase,
-      //   measureId
-      // );
+      const updatedTestCase = await testCaseService.current.updateTestCase(
+        testCase,
+        measureId
+      );
 
       await cqmService.current.convertToCqmMeasure(measure);
       //console.log(testing);
 
-      // resetForm({
-      //   values: _.cloneDeep(updatedTestCase),
-      // });
-      // setCurrentTestCase(_.cloneDeep(updatedTestCase));
-      // updateMeasureStore(updatedTestCase);
-      // showToast("Test Case Updated Successfully", "success");
+      resetForm({
+        values: _.cloneDeep(updatedTestCase),
+      });
+      setCurrentTestCase(_.cloneDeep(updatedTestCase));
+      updateMeasureStore(updatedTestCase);
+      showToast("Test Case Updated Successfully", "success");
     } catch (error) {
       showToast(`Error updating Test Case "${measure.measureName}"`, "danger");
     }

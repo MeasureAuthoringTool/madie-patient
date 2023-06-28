@@ -89,13 +89,13 @@ export class CqmConversionService {
         measure.cqlLibraryName
       );
 
-    // cqmMeasure.cql_libraries = elms.map((elm) =>
-    //   this.buildCQLLibrary(
-    //     elm,
-    //     measure.cqlLibraryName,
-    //     statementDependenciesMap
-    //   )
-    // );
+    cqmMeasure.cql_libraries = elms.map((elm) =>
+      this.buildCQLLibrary(
+        elm,
+        measure.cqlLibraryName,
+        statementDependenciesMap
+      )
+    );
 
     //console.log("Actual Measure Groups", measure.groups);
 
