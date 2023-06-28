@@ -1,11 +1,5 @@
-import React, { useState } from "react";
-import {
-  render,
-  screen,
-  within,
-  fireEvent,
-  waitFor,
-} from "@testing-library/react";
+import React from "react";
+import { render, screen, within, fireEvent } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import Quantity from "./Quantity";
 
@@ -53,19 +47,53 @@ describe("Quantity Component", () => {
         quantityValue={0}
         handleQuantityValueChange={handleChange}
         options={options}
+        label="low"
       />
     );
     const quantityUnitLabel = screen.getByTestId(
-      "quantity-unit-dropdown-label"
+      "quantity-unit-dropdown-label-low"
     );
     expect(quantityUnitLabel).toBeInTheDocument();
     const quantityUnitInput = screen.getByRole("combobox");
     expect(quantityUnitInput).toBeInTheDocument();
 
-    const quantityValueLabel = screen.getByTestId("quantity-value-label");
+    const quantityValueLabel = screen.getByTestId("quantity-value-label-low");
     expect(quantityValueLabel).toBeInTheDocument();
     const quantityValueInput = screen.getByRole("textbox");
     expect(quantityValueInput).toBeInTheDocument();
+  });
+
+  test("Change of value should render the new value", () => {
+    const handleChange = jest.fn();
+    render(
+      <Quantity
+        quantityUnit={"Test Option1"}
+        handleQuantityUnitChange={handleChange}
+        canEdit={true}
+        placeholder="test"
+        quantityValue={0}
+        handleQuantityValueChange={handleChange}
+        options={options}
+        label="low"
+      />
+    );
+    const quantityUnitLabel = screen.getByTestId(
+      "quantity-unit-dropdown-label-low"
+    );
+    expect(quantityUnitLabel).toBeInTheDocument();
+    const quantityUnitInput = screen.getByRole("combobox");
+    expect(quantityUnitInput).toBeInTheDocument();
+
+    const quantityValueLabel = screen.getByTestId("quantity-value-label-low");
+    expect(quantityValueLabel).toBeInTheDocument();
+    const quantityValueInput = screen.getByRole("textbox") as HTMLInputElement;
+    expect(quantityValueInput).toBeInTheDocument();
+    const inputLow = screen.getByTestId(
+      "quantity-value-input-low"
+    ) as HTMLInputElement;
+    expect(inputLow.value).toBe("0");
+    fireEvent.change(inputLow, { target: { value: "10" } });
+    expect(inputLow.value).toBe("10");
   });
 
   test("Should render quantity unit field with selected option", async () => {
@@ -79,15 +107,16 @@ describe("Quantity Component", () => {
         quantityValue={0}
         handleQuantityValueChange={handleChange}
         options={options}
+        label="high"
       />
     );
     await act(async () => {
       const quantityUnitLabel = screen.getByTestId(
-        "quantity-unit-dropdown-label"
+        "quantity-unit-dropdown-label-high"
       );
       expect(quantityUnitLabel).toBeInTheDocument();
       const quantityAutoComplete = await screen.findByTestId(
-        "quantity-unit-dropdown"
+        "quantity-unit-dropdown-high"
       );
       const listBox = within(quantityAutoComplete).getByRole("combobox");
       expect(listBox).toHaveValue(
@@ -107,9 +136,10 @@ describe("Quantity Component", () => {
         quantityValue={0}
         handleQuantityValueChange={handleChange}
         options={options}
+        label="test"
       />
     );
-    const autocomplete = screen.getByTestId("quantity-unit-dropdown");
+    const autocomplete = screen.getByTestId("quantity-unit-dropdown-test");
     const input = within(autocomplete).getByRole("combobox");
     autocomplete.click();
     autocomplete.focus();

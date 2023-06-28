@@ -1,8 +1,13 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { InputLabel } from "@madie/madie-design-system/dist/react/";
 import { Autocomplete, FormControl, TextField } from "@mui/material";
 import * as ucum from "@lhncbc/ucum-lhc";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+
+export interface UCUM {
+  label: string;
+  value: ucum;
+}
 
 export const textFieldStyle = {
   borderRadius: "3px",
@@ -43,6 +48,7 @@ export interface QuantityProps {
   options?: any;
   canEdit: boolean;
   placeholder: string;
+  label: string;
 }
 
 const Quantity = ({
@@ -53,12 +59,13 @@ const Quantity = ({
   options,
   canEdit,
   placeholder,
+  label,
 }: QuantityProps) => {
   const autoCompleteStyles = {
     borderRadius: "3px",
     minHeight: "40px",
     border: "1px solid #DDDDDD",
-    width: 100,
+    width: 124,
     "& .MuiOutlinedInput-notchedOutline": {
       borderRadius: "3px",
       "& legend": {
@@ -82,6 +89,12 @@ const Quantity = ({
   };
 
   const parsedValue = quantityUnit?.value || null;
+  const parsedLabel = quantityUnit?.label || null;
+  const [selected, setSelected] = useState<UCUM>({
+    label: parsedLabel,
+    value: parsedValue,
+  });
+  const [value, setValue] = useState<number>(quantityValue);
 
   interface Option {
     name: string;
@@ -96,32 +109,33 @@ const Quantity = ({
         <FormControl>
           <InputLabel
             id="quantity-value-label"
-            data-testid="quantity-value-label"
+            data-testid={`quantity-value-label-${label}`}
             required={false}
           >
             Value
           </InputLabel>
           <TextField
-            value={quantityValue}
+            value={value}
             sx={textFieldStyle}
             disabled={!canEdit}
             label=""
-            id={"quantity-value-field"}
-            data-testid={"quantity-value-field"}
+            id={`quantity-value-field-${label}`}
+            data-testid={`quantity-value-field-${label}`}
             inputProps={{
-              "data-testid": "quantity-value-input",
-              "aria-describedby": "quantity-value-input-helper-text",
+              "data-testid": `quantity-value-input-${label}`,
+              "aria-describedby": `quantity-value-input-helper-text-${label}`,
               required: true,
             }}
-            onChange={(newValue: any) => {
-              handleQuantityValueChange(newValue);
+            onChange={(event) => {
+              setValue(parseInt(event.target.value));
+              handleQuantityValueChange(event.target.value);
             }}
           />
         </FormControl>
         <FormControl>
           <InputLabel
-            id="quantity-unit-dropdown-label"
-            data-testid="quantity-unit-dropdown-label"
+            id={`quantity-unit-dropdown-label-${label}`}
+            data-testid={`quantity-unit-dropdown-label-${label}`}
             required={false}
           >
             Unit
@@ -130,10 +144,10 @@ const Quantity = ({
             fullWidth={true}
             disabled={!canEdit}
             options={options}
-            data-testid="quantity-unit-dropdown"
+            data-testid={`quantity-unit-dropdown-${label}`}
             popupIcon={<KeyboardArrowDownIcon sx={{ color: "#1C2556" }} />}
             sx={autoCompleteStyles}
-            value={parsedValue}
+            value={selected.value}
             getOptionLabel={(option: Option): string =>
               `${option.code} ${option.name}`
             }
@@ -158,6 +172,7 @@ const Quantity = ({
                   label,
                   value: values,
                 };
+                setSelected(transformedResult);
                 handleQuantityUnitChange(transformedResult);
               } else {
                 handleQuantityUnitChange("");
@@ -171,7 +186,7 @@ const Quantity = ({
               return (
                 <TextField
                   {...params}
-                  data-testid="quantity-unit-text-input"
+                  data-testid={`quantity-unit-text-input-${label}`}
                   inputProps={inputProps}
                   disabled={!canEdit}
                   sx={{
