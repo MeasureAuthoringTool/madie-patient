@@ -34,6 +34,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.16",
+    "@lhncbc/ucum-lhc": "^5.0.0",
     "@madie/madie-auth": "^0.0.1",
     "@madie/madie-components": "^0.0.4",
     "@madie/madie-editor": "^0.0.1",
