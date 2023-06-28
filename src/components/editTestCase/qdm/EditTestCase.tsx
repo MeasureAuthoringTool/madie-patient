@@ -281,6 +281,10 @@ const EditTestCase = () => {
                       changedPopulation,
                       measure?.groups
                     );
+                    setCurrentTestCase((prevCurrentTestCase) => ({
+                      ...prevCurrentTestCase,
+                      groupPopulations: updatedPops,
+                    }));
                     formik.setFieldValue("groupPopulations", updatedPops);
                     formik.setFieldValue(
                       "birthDate",
