@@ -35,8 +35,10 @@ import {
 import { QDMPatient } from "cqm-models";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import useCqmConversionService from "../../../api/CqmModelConversionService";
 
 const EditTestCase = () => {
+  const cqmService = useRef(useCqmConversionService());
   useDocumentTitle("MADiE Edit Measure Edit Test Case");
 
   const [measure, setMeasure] = useState<any>(measureStore.state);
@@ -119,17 +121,20 @@ const EditTestCase = () => {
 
   const updateTestCase = async (testCase: TestCase) => {
     try {
-      const updatedTestCase = await testCaseService.current.updateTestCase(
-        testCase,
-        measureId
-      );
+      // const updatedTestCase = await testCaseService.current.updateTestCase(
+      //   testCase,
+      //   measureId
+      // );
 
-      resetForm({
-        values: _.cloneDeep(updatedTestCase),
-      });
-      setCurrentTestCase(_.cloneDeep(updatedTestCase));
-      updateMeasureStore(updatedTestCase);
-      showToast("Test Case Updated Successfully", "success");
+      await cqmService.current.convertToCqmMeasure(measure);
+      //console.log(testing);
+
+      // resetForm({
+      //   values: _.cloneDeep(updatedTestCase),
+      // });
+      // setCurrentTestCase(_.cloneDeep(updatedTestCase));
+      // updateMeasureStore(updatedTestCase);
+      // showToast("Test Case Updated Successfully", "success");
     } catch (error) {
       showToast(`Error updating Test Case "${measure.measureName}"`, "danger");
     }

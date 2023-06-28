@@ -1,9 +1,10 @@
-import { Measure } from "@madie/madie-models";
+import { Measure, Population, PopulationType } from "@madie/madie-models";
 import {
   Measure as CqmMeasure,
   CQLLibrary,
   DataElement,
   StatementDependency,
+  PopulationSet,
 } from "cqm-models";
 import { ServiceConfig } from "./ServiceContext";
 import useServiceConfig from "./useServiceConfig";
@@ -87,21 +88,79 @@ export class CqmConversionService {
         elms,
         measure.cqlLibraryName
       );
-    cqmMeasure.cql_libraries = elms.map((elm) =>
-      this.buildCQLLibrary(
-        elm,
-        measure.cqlLibraryName,
-        statementDependenciesMap
-      )
-    );
+
+    // cqmMeasure.cql_libraries = elms.map((elm) =>
+    //   this.buildCQLLibrary(
+    //     elm,
+    //     measure.cqlLibraryName,
+    //     statementDependenciesMap
+    //   )
+    // );
+
+    //console.log("Actual Measure Groups", measure.groups);
 
     // TODO: need UI checkbox to determine yes/no
     cqmMeasure.calculate_sdes = false;
     // TODO: build population_sets- MAT-5779
-    cqmMeasure.population_sets = null;
+    const populationSets: PopulationSet[] =
+      this.creatingPopulationSets(measure);
+    // console.log(populationriteria)
+    cqmMeasure.population_sets = populationSets;
+    //console.log(cqmMeasure);
     return cqmMeasure;
   }
 
+  private creatingPopulationSets = (measure: Measure) => {
+    const measureScoring = measure.scoring.replace(/ +/g, "");
+    const populationSets: PopulationSet[] = measure.groups.map((group, i) => ({
+      title: "Population Criteria Section",
+      population_set_id: `PopulationSet_${i + 1}`,
+      populations: this.generatingKeyValuePairsForPopulations(
+        group.populations,
+        measure.cqlLibraryName,
+        measureScoring
+      ),
+      stratifications: group.stratifications,
+      supplemental_data_elements: null,
+      ...(measureScoring === "ContinuousVariable" || measureScoring === "Ratio"
+        ? { observations: group.measureObservations }
+        : {}),
+    }));
+
+    // console.log("generated Population Sets", populationSets);
+    return populationSets;
+  };
+
+  private generatingKeyValuePairsForPopulations = (
+    populations: Population[],
+    cqlLibraryName: string,
+    scoring: string
+  ) => {
+    return populations.reduce(
+      (acc, population) => {
+        const key = this.mapPopulationName(population.name);
+        acc[key] = {
+          library_name: cqlLibraryName,
+          statement_name: population.definition,
+          hqmf_id: null,
+        };
+        return acc;
+      },
+      { _type: `CQM::${scoring}PopulationMap` }
+    ); //need to ask
+  };
+
+  private mapPopulationName = (populationName: string) => {
+    if (populationName === PopulationType.INITIAL_POPULATION) return "IPP";
+    if (populationName === PopulationType.DENOMINATOR) return "DENOM";
+    if (populationName === PopulationType.DENOMINATOR_EXCLUSION) return "DENEX";
+    if (populationName === PopulationType.DENOMINATOR_EXCEPTION)
+      return "DENEXCEP";
+    if (populationName === PopulationType.NUMERATOR) return "NUMER";
+    if (populationName === PopulationType.NUMERATOR_EXCLUSION) return "NUMEX";
+    if (populationName === PopulationType.MEASURE_POPULATION) return "MSRPOPL";
+    else return populationName;
+  };
   private buildCQLLibrary(
     elm: string,
     measureLibraryName: string,
