@@ -65,52 +65,84 @@ const QuantityInterval = ({
   }, [ucum, ucumUnits]);
 
   return (
-    <div>
-      <h5 style={{ marginBottom: 15, height: 16, color: "#0073c8" }}>
-        {label}
-      </h5>
+    <div tw="flex flex-row gap-2">
+      <div tw="flex flex-col">
+        <h5 tw="text-blue-800 mb-2">Low</h5>
+        <Quantity
+          quantityValue={lowQuantity}
+          handleQuantityValueChange={handleLowQuantityChange}
+          placeholder="Search"
+          quantityUnit={lowQuantityUnit}
+          handleQuantityUnitChange={handleLowQuantityUnitChange}
+          options={ucumOptions}
+          canEdit={canEdit}
+          label="low"
+        />
+      </div>
 
-      <FormControl>
-        <div>
-          <div>
-            <table>
-              <tbody>
-                <tr>
-                  <td>
-                    <h5 tw="text-blue-800 mb-2">Low</h5>
-                    <Quantity
-                      quantityValue={lowQuantity}
-                      handleQuantityValueChange={handleLowQuantityChange}
-                      placeholder="Search"
-                      quantityUnit={lowQuantityUnit}
-                      handleQuantityUnitChange={handleLowQuantityUnitChange}
-                      options={ucumOptions}
-                      canEdit={canEdit}
-                      label="low"
-                    />
-                  </td>
-                  <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                  <td>
-                    <h5 tw="text-blue-800 mb-2">High</h5>
-                    <Quantity
-                      quantityValue={highQuantity}
-                      handleQuantityValueChange={handleHighQuantityChange}
-                      placeholder="Search"
-                      quantityUnit={highQuantityUnit}
-                      handleQuantityUnitChange={handleHighQuantityUnitChange}
-                      options={ucumOptions}
-                      canEdit={canEdit}
-                      label="high"
-                    />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </FormControl>
+      <div tw="flex flex-col">
+        <h5 tw="text-blue-800 mb-2">High</h5>
+        <Quantity
+          quantityValue={highQuantity}
+          handleQuantityValueChange={handleHighQuantityChange}
+          placeholder="Search"
+          quantityUnit={highQuantityUnit}
+          handleQuantityUnitChange={handleHighQuantityUnitChange}
+          options={ucumOptions}
+          canEdit={canEdit}
+          label="high"
+        />
+      </div>
     </div>
   );
+
+  // return (
+  //   <div>
+  //     <h5 style={{ marginBottom: 15, height: 16, color: "#0073c8" }}>
+  //       {label}
+  //     </h5>
+  //
+  //     <FormControl>
+  //       <div>
+  //         <div>
+  //           <table>
+  //             <tbody>
+  //               <tr>
+  //                 <td>
+  //                   <h5 tw="text-blue-800 mb-2">Low</h5>
+  //                   <Quantity
+  //                     quantityValue={lowQuantity}
+  //                     handleQuantityValueChange={handleLowQuantityChange}
+  //                     placeholder="Search"
+  //                     quantityUnit={lowQuantityUnit}
+  //                     handleQuantityUnitChange={handleLowQuantityUnitChange}
+  //                     options={ucumOptions}
+  //                     canEdit={canEdit}
+  //                     label="low"
+  //                   />
+  //                 </td>
+  //                 <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+  //                 <td>
+  //                   <h5 tw="text-blue-800 mb-2">High</h5>
+  //                   <Quantity
+  //                     quantityValue={highQuantity}
+  //                     handleQuantityValueChange={handleHighQuantityChange}
+  //                     placeholder="Search"
+  //                     quantityUnit={highQuantityUnit}
+  //                     handleQuantityUnitChange={handleHighQuantityUnitChange}
+  //                     options={ucumOptions}
+  //                     canEdit={canEdit}
+  //                     label="high"
+  //                   />
+  //                 </td>
+  //               </tr>
+  //             </tbody>
+  //           </table>
+  //         </div>
+  //       </div>
+  //     </FormControl>
+  //   </div>
+  // );
 };
 
 export default QuantityInterval;

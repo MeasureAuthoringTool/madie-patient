@@ -6,6 +6,7 @@ import useCqmConversionService from "../../../../../../api/CqmModelConversionSer
 import { uniq } from "lodash";
 import { measureStore } from "@madie/madie-util";
 import { DataElement } from "cqm-models";
+import QuantityInterval from "../../../../../common/quantityInterval/QuantityInterval";
 
 const ElementsSection = () => {
   const cqmService = useRef(useCqmConversionService());
@@ -36,21 +37,35 @@ const ElementsSection = () => {
   const [activeTab, setActiveTab] = useState("");
   // we retain state up here so we can use it to generate the other components.
   return (
-    <ElementSection
-      title="Elements"
-      children={
-        <div id="elements-section">
-          {categories.length > 0 && (
-            <DynamicElementTabs
-              categories={categories}
-              activeTab={activeTab}
-              setActiveTab={setActiveTab}
-              dataElements={dataElements}
-            />
-          )}
-        </div>
-      }
-    />
+    <>
+      <ElementSection
+        title="Elements"
+        children={
+          <div id="elements-section">
+            {categories.length > 0 && (
+              <DynamicElementTabs
+                categories={categories}
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                dataElements={dataElements}
+              />
+            )}
+          </div>
+        }
+      />
+      <QuantityInterval
+        label={"Low"}
+        lowQuantity={1}
+        handleLowQuantityChange={() => {}}
+        lowQuantityUnit={{ code: "", name: "" }}
+        handleLowQuantityUnitChange={() => {}}
+        highQuantity={100}
+        handleHighQuantityChange={() => {}}
+        highQuantityUnit={{ code: "", name: "" }}
+        handleHighQuantityUnitChange={() => {}}
+        canEdit={true}
+      />
+    </>
   );
 };
 export default ElementsSection;
