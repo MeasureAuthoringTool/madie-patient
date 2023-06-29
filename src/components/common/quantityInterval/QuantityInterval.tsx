@@ -65,8 +65,8 @@ const QuantityInterval = ({
   }, [ucum, ucumUnits]);
 
   return (
-    <div tw="flex flex-row gap-2">
-      <div tw="flex flex-col">
+    <div tw="flex flex-row flex-wrap gap-4">
+      <div tw="flex flex-col w-80">
         <h5 tw="text-blue-800 mb-2">Low</h5>
         <Quantity
           quantityValue={lowQuantity}
@@ -80,7 +80,7 @@ const QuantityInterval = ({
         />
       </div>
 
-      <div tw="flex flex-col">
+      <div tw="flex flex-col w-80">
         <h5 tw="text-blue-800 mb-2">High</h5>
         <Quantity
           quantityValue={highQuantity}
