@@ -520,6 +520,51 @@ describe("EditTestCase QDM Component", () => {
     expect(livingStatusInput.value).toBe("Living");
   });
 
+  it("discard button resets form", () => {
+    render(
+      <MemoryRouter>
+        <ApiContextProvider value={serviceConfig}>
+          <EditTestCase />
+        </ApiContextProvider>{" "}
+      </MemoryRouter>
+    );
+
+    const raceInput = screen.getByTestId(
+      "demographics-race-input"
+    ) as HTMLInputElement;
+    expect(raceInput).toBeInTheDocument();
+    expect(raceInput.value).toBe("American Indian or Alaska Native");
+
+    fireEvent.change(raceInput, {
+      target: { value: "White" },
+    });
+    expect(raceInput.value).toBe("White");
+
+    const genderInput = screen.getByTestId(
+      "demographics-gender-input"
+    ) as HTMLInputElement;
+    expect(genderInput).toBeInTheDocument();
+    expect(genderInput.value).toBe("Female");
+
+    fireEvent.change(genderInput, {
+      target: { value: "Male" },
+    });
+    expect(genderInput.value).toBe("Male");
+
+    const discardButton = screen.getByTestId("ds-btn");
+    expect(discardButton).toBeInTheDocument();
+    expect(discardButton).not.toBeDisabled();
+    fireEvent.click(discardButton);
+
+    const discardConfirm = screen.getByTestId("discard-dialog-continue-button");
+    expect(discardConfirm).toBeInTheDocument();
+    expect(discardConfirm).not.toBeDisabled();
+    fireEvent.click(discardConfirm);
+
+    expect(raceInput.value).toBe("American Indian or Alaska Native");
+    expect(genderInput.value).toBe("Female");
+  });
+
   it("test change dropwdown values", () => {
     render(
       <MemoryRouter>
