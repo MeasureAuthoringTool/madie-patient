@@ -5,12 +5,6 @@ import {
 } from "@madie/madie-design-system/dist/react/";
 import "twin.macro";
 import "styled-components/macro";
-import * as ucum from "@lhncbc/ucum-lhc";
-
-export interface UCUM {
-  label: string;
-  value: ucum;
-}
 
 export interface QuantityProps {
   quantityValue: number;
@@ -19,7 +13,6 @@ export interface QuantityProps {
   handleQuantityUnitChange: Function;
   options?: any;
   canEdit: boolean;
-  placeholder: string;
   label: string;
 }
 
@@ -30,16 +23,8 @@ const Quantity = ({
   handleQuantityUnitChange,
   options,
   canEdit,
-  placeholder,
   label,
 }: QuantityProps) => {
-  interface Option {
-    name: string;
-    code: string;
-    guidance: string;
-    system: string;
-  }
-
   return (
     <div tw="flex flex-row">
       <div tw="w-28">

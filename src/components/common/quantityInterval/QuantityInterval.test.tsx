@@ -30,6 +30,7 @@ describe("QuantityInterval Component", () => {
   it("Should render Quantity Interval component with appropriate data", async () => {
     render(
       <QuantityInterval
+        label="Interval<Quantity>"
         lowQuantity={1}
         handleLowQuantityChange={() => {}}
         lowQuantityUnit={testValue1}
@@ -41,7 +42,7 @@ describe("QuantityInterval Component", () => {
         canEdit={true}
       />
     );
-
+    expect(screen.getByText("Interval<Quantity>")).toBeInTheDocument();
     expect(screen.getAllByText("Value").length).toBe(2);
     expect(screen.getAllByText("Unit").length).toBe(2);
 
