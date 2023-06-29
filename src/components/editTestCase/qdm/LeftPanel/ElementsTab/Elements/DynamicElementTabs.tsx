@@ -1,49 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Tabs } from "@madie/madie-design-system/dist/react";
+
 import { categoriesMap } from "./categories";
 import DynamicElementTab from "./DynamicElementTab";
-import { DataElement } from "cqm-models";
-import DataTypes from "./DataTypes";
-import "./DataTypes.scss";
 
 export interface NavTabProps {
   activeTab: string;
   setActiveTab: (value: string) => void;
   categories: string[];
-  dataElements: DataElement[];
 }
 
-const DynamicElementTabs = ({
-  categories,
-  activeTab,
-  setActiveTab,
-  dataElements,
-}) => {
-  const [selectedDataElements, setSelectedDataElements] =
-    useState<DataElement[]>();
-
+const DynamicElementTabs = ({ categories, activeTab, setActiveTab }) => {
   useEffect(() => {
     if (categories.length > 0) {
       setActiveTab(categories[0]);
     }
   }, [categories]);
-
-  useEffect(() => {
-    if (activeTab) {
-      setSelectedDataElements(findDataElements(activeTab));
-    }
-  }, [activeTab]);
-
-  const findDataElements = (category: string): DataElement[] => {
-    const elements: DataElement[] = dataElements?.filter(
-      (element) =>
-        element.qdmCategory === category &&
-        element.qdmStatus !== "ethnicity" &&
-        element.qdmStatus !== "race" &&
-        element.qdmStatus !== "gender"
-    );
-    return elements;
-  };
 
   return (
     <div>
@@ -73,12 +45,6 @@ const DynamicElementTabs = ({
           />
         ))}
       </Tabs>
-
-      {selectedDataElements && (
-        <div className="datatypes">
-          <DataTypes selectedDataElements={selectedDataElements} />
-        </div>
-      )}
     </div>
   );
 };
