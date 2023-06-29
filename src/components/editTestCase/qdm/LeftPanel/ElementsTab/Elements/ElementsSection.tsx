@@ -92,7 +92,7 @@ const ElementsSection = () => {
           </div>
           {/* data elements list */}
           {availableDataElements && !selectedDataElement && (
-            <div className="datatypes">
+            <div className="data-types">
               {/* @ts-ignore-line */}
               <DataElementsList
                 availableDataElements={availableDataElements}

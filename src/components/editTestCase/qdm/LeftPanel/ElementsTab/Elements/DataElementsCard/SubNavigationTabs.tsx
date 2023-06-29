@@ -33,7 +33,6 @@ const OPTIONS = [
 const SubNavigationTabs = ({ activeTab, setActiveTab }) => {
   return (
     <div className="tabs-container">
-      {/* // <div> */}
       <Tabs
         id="sub-navigation-tabs"
         value={activeTab}
@@ -54,7 +53,6 @@ const SubNavigationTabs = ({ activeTab, setActiveTab }) => {
             return "madie-icon";
           };
           return (
-            // @ts-ignore-line
             <Tab
               tabIndex={0}
               type="B"
