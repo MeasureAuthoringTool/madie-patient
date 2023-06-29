@@ -1,4 +1,11 @@
-import { Measure, Population, PopulationType } from "@madie/madie-models";
+import {
+  Measure,
+  Population,
+  PopulationType,
+  MeasureObservation,
+  SupplementalData,
+  Stratification,
+} from "@madie/madie-models";
 import {
   Measure as CqmMeasure,
   CQLLibrary,
@@ -79,8 +86,9 @@ export class CqmConversionService {
     cqmMeasure.composite = false; // for now
     cqmMeasure.component = false; // for now
     cqmMeasure.id = measure.id;
-    const dataCriteria = await this.fetchSourceDataCriteria(measure.cql);
-    cqmMeasure.source_data_criteria = dataCriteria;
+    cqmMeasure.source_data_criteria = await this.fetchSourceDataCriteria(
+      measure.cql
+    );
     const elms = await this.fetchElmForCql(measure.cql);
     // Fetch statement dependencies
     const statementDependenciesMap =
@@ -101,10 +109,8 @@ export class CqmConversionService {
 
     // TODO: need UI checkbox to determine yes/no
     cqmMeasure.calculate_sdes = false;
-    // TODO: build population_sets- MAT-5779
     const populationSets: PopulationSet[] =
       this.creatingPopulationSets(measure);
-    // console.log(populationriteria)
     cqmMeasure.population_sets = populationSets;
     //console.log(cqmMeasure);
     return cqmMeasure;
@@ -113,41 +119,33 @@ export class CqmConversionService {
   private creatingPopulationSets = (measure: Measure) => {
     const measureScoring = measure.scoring.replace(/ +/g, "");
     const populationSets: PopulationSet[] = measure.groups.map((group, i) => ({
+      id: group.id,
       title: "Population Criteria Section",
       population_set_id: `PopulationSet_${i + 1}`,
-      populations: this.generatingKeyValuePairsForPopulations(
+      populations: this.generatingKeyValuePairPopulations(
         group.populations,
-        measure.cqlLibraryName,
-        measureScoring
+        measure.cqlLibraryName
       ),
-      stratifications: group.stratifications,
-      supplemental_data_elements: null,
+      stratifications: this.generateStratifications(
+        group.stratifications,
+        measure.cqlLibraryName
+      ),
+      supplemental_data_elements: this.generateSupplementalDataELements(
+        measure.supplementalData,
+        measure.cqlLibraryName
+      ),
       ...(measureScoring === "ContinuousVariable" || measureScoring === "Ratio"
-        ? { observations: group.measureObservations }
+        ? {
+            observations: this.generateObservations(
+              group.measureObservations,
+              measure.cqlLibraryName
+            ),
+          }
         : {}),
     }));
 
-    // console.log("generated Population Sets", populationSets);
+    //console.log("generated Population Sets", populationSets);
     return populationSets;
-  };
-
-  private generatingKeyValuePairsForPopulations = (
-    populations: Population[],
-    cqlLibraryName: string,
-    scoring: string
-  ) => {
-    return populations.reduce(
-      (acc, population) => {
-        const key = this.mapPopulationName(population.name);
-        acc[key] = {
-          library_name: cqlLibraryName,
-          statement_name: population.definition,
-          hqmf_id: null,
-        };
-        return acc;
-      },
-      { _type: `CQM::${scoring}PopulationMap` }
-    ); //need to ask
   };
 
   private mapPopulationName = (populationName: string) => {
@@ -159,8 +157,80 @@ export class CqmConversionService {
     if (populationName === PopulationType.NUMERATOR) return "NUMER";
     if (populationName === PopulationType.NUMERATOR_EXCLUSION) return "NUMEX";
     if (populationName === PopulationType.MEASURE_POPULATION) return "MSRPOPL";
+    if (populationName === PopulationType.MEASURE_POPULATION_EXCLUSION)
+      return "MSRPOPLEX";
     else return populationName;
   };
+
+  private generatingKeyValuePairPopulations = (
+    populations: Population[],
+    cqlLibraryName: string
+  ) => {
+    return populations.reduce((acc, population) => {
+      const key = this.mapPopulationName(population.name);
+      acc[key] = {
+        id: population.id,
+        library_name: cqlLibraryName,
+        statement_name: population.definition,
+        hqmf_id: null,
+      };
+      return acc;
+    }, {});
+  };
+
+  private generateObservations = (
+    observations: MeasureObservation[],
+    cqlLibraryName: string
+  ) => {
+    return observations.map((observation, i) => ({
+      id: observation.id,
+      hqmf_id: null,
+      aggregation_type: observation.aggregateMethod,
+      observation_function: {
+        //id --> need to ask
+        library_name: cqlLibraryName,
+        statement_name: "", //need to ask
+        hqmf_id: null,
+      },
+      observation_paramater: {
+        //id --> need to ask
+        library_name: cqlLibraryName,
+        statement_name: "", //need to ask
+        hqmf_id: null,
+      },
+    }));
+  };
+
+  private generateSupplementalDataELements = (
+    supplementalDataElements: SupplementalData[],
+    cqlLibraryName: string
+  ) => {
+    return supplementalDataElements.map((supplementalDataElement) => ({
+      //id --> need to ask
+      library_name: cqlLibraryName,
+      statement_name: supplementalDataElement.definition,
+      hqmf_id: null,
+    }));
+  };
+
+  private generateStratifications = (
+    stratifications: Stratification[],
+    cqlLibraryName: string
+  ) => {
+    return stratifications.map((stratification) => ({
+      //id --> need to ask
+      hqmf_id: null,
+      stratification_id: "", //need to ask
+      title: "", //need to ask
+      statement: {
+        //id --> need to ask
+        library_name: cqlLibraryName,
+        statement_name: stratification.cqlDefinition,
+        hqmf_id: null,
+      },
+    }));
+  };
+
   private buildCQLLibrary(
     elm: string,
     measureLibraryName: string,

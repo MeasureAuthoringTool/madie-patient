@@ -126,8 +126,7 @@ const EditTestCase = () => {
         measureId
       );
 
-      await cqmService.current.convertToCqmMeasure(measure);
-      //console.log(testing);
+      // await cqmService.current.convertToCqmMeasure(measure);
 
       resetForm({
         values: _.cloneDeep(updatedTestCase),
