@@ -39,6 +39,9 @@ const setError = jest.fn();
 
 jest.mock("@madie/madie-util", () => ({
   useDocumentTitle: jest.fn(),
+  measureStore: {
+    updateMeasure: jest.fn((measure) => measure),
+  },
   useOktaTokens: () => ({
     getAccessToken: () => "test.jwt",
   }),
