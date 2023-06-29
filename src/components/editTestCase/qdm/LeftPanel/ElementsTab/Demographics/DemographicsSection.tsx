@@ -242,8 +242,8 @@ const DemographicsSection = ({ canEdit }) => {
                         disabled={!canEdit}
                         disableOpenPicker
                         value={
-                          qdmPatient?.birthDatetime
-                            ? dayjs(qdmPatient?.birthDatetime)
+                          formik.values.birthDate
+                            ? dayjs(formik.values.birthDate)
                             : null
                         }
                         onChange={(newValue: any) => {
@@ -291,7 +291,6 @@ const DemographicsSection = ({ canEdit }) => {
                           const newDate = dayjs(currentDate)
                             .set("hour", newValue?.$H)
                             .set("minute", newValue?.$m);
-
                           handleTimeChange(newDate);
                           // on change we need to combine with the date before we set date
                           // formik.setFieldValue("birthDatetime", newDate);
