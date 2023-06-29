@@ -52,7 +52,41 @@ const serviceConfig: ServiceConfig = {
 };
 
 const MEASURE_CREATEDBY = "testuser";
+// Mock data for Measure retrieved from MeasureService
+const measure = {
+  id: "1",
+  measureName: "measureName",
+  createdBy: MEASURE_CREATEDBY,
+  groups: [
+    {
+      id: "1",
+      scoring: MeasureScoring.PROPORTION,
+      populationBasis: "boolean",
+      populations: [
+        {
+          id: "id-1",
+          name: PopulationType.INITIAL_POPULATION,
+          definition: "ipp",
+        },
+        {
+          id: "id-2",
+          name: PopulationType.DENOMINATOR,
+          definition: "denom",
+        },
+        {
+          id: "id-3",
+          name: PopulationType.NUMERATOR,
+          definition: "num",
+        },
+      ],
+    },
+  ],
+  acls: [{ userId: "othertestuser@example.com", roles: ["SHARED_WITH"] }], //#nosec
+} as Measure;
 jest.mock("@madie/madie-util", () => ({
+  measureStore: {
+    updateMeasure: jest.fn((measure) => measure),
+  },
   checkUserCanEdit: jest.fn().mockImplementation(() => true),
   useFeatureFlags: jest.fn().mockImplementation(() => ({
     applyDefaults: false,
@@ -394,38 +428,6 @@ const useTestCaseServiceMockResolved = {
     .mockResolvedValue(["Series 1", "Series 2"]),
   createTestCases: jest.fn().mockResolvedValue([]),
 } as unknown as TestCaseServiceApi;
-
-// Mock data for Measure retrieved from MeasureService
-const measure = {
-  id: "1",
-  measureName: "measureName",
-  createdBy: MEASURE_CREATEDBY,
-  groups: [
-    {
-      id: "1",
-      scoring: MeasureScoring.PROPORTION,
-      populationBasis: "boolean",
-      populations: [
-        {
-          id: "id-1",
-          name: PopulationType.INITIAL_POPULATION,
-          definition: "ipp",
-        },
-        {
-          id: "id-2",
-          name: PopulationType.DENOMINATOR,
-          definition: "denom",
-        },
-        {
-          id: "id-3",
-          name: PopulationType.NUMERATOR,
-          definition: "num",
-        },
-      ],
-    },
-  ],
-  acls: [{ userId: "othertestuser@example.com", roles: ["SHARED_WITH"] }], //#nosec
-} as Measure;
 
 // mocking measureService
 jest.mock("../../../api/useMeasureServiceApi");
