@@ -6,7 +6,6 @@ import * as ucum from "@lhncbc/ucum-lhc";
 import Quantity from "../quantity/Quantity";
 
 interface QuantityIntervalProps {
-  label: string;
   lowQuantity: number;
   handleLowQuantityChange: Function;
   lowQuantityUnit: any;
@@ -19,7 +18,6 @@ interface QuantityIntervalProps {
 }
 
 const QuantityInterval = ({
-  label,
   lowQuantity,
   handleLowQuantityChange,
   lowQuantityUnit,
@@ -66,46 +64,33 @@ const QuantityInterval = ({
 
   return (
     <div>
-      <h5 style={{ marginBottom: 15, height: 16, color: "#0073c8" }}>
-        {label}
-      </h5>
-
       <FormControl>
-        <div>
+        <div tw="grid lg:grid-cols-2 gap-2 items-center py-2">
           <div>
-            <table>
-              <tbody>
-                <tr>
-                  <td>
-                    <h5 tw="text-blue-800 mb-2">Low</h5>
-                    <Quantity
-                      quantityValue={lowQuantity}
-                      handleQuantityValueChange={handleLowQuantityChange}
-                      placeholder="Search"
-                      quantityUnit={lowQuantityUnit}
-                      handleQuantityUnitChange={handleLowQuantityUnitChange}
-                      options={ucumOptions}
-                      canEdit={canEdit}
-                      label="low"
-                    />
-                  </td>
-                  <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                  <td>
-                    <h5 tw="text-blue-800 mb-2">High</h5>
-                    <Quantity
-                      quantityValue={highQuantity}
-                      handleQuantityValueChange={handleHighQuantityChange}
-                      placeholder="Search"
-                      quantityUnit={highQuantityUnit}
-                      handleQuantityUnitChange={handleHighQuantityUnitChange}
-                      options={ucumOptions}
-                      canEdit={canEdit}
-                      label="high"
-                    />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <h5 tw="text-blue-800 mb-2">Low</h5>
+            <Quantity
+              quantityValue={lowQuantity}
+              handleQuantityValueChange={handleLowQuantityChange}
+              placeholder="Search"
+              quantityUnit={lowQuantityUnit}
+              handleQuantityUnitChange={handleLowQuantityUnitChange}
+              options={ucumOptions}
+              canEdit={canEdit}
+              label="low"
+            />
+          </div>
+          <div>
+            <h5 tw="text-blue-800 mb-2">High</h5>
+            <Quantity
+              quantityValue={highQuantity}
+              handleQuantityValueChange={handleHighQuantityChange}
+              placeholder="Search"
+              quantityUnit={highQuantityUnit}
+              handleQuantityUnitChange={handleHighQuantityUnitChange}
+              options={ucumOptions}
+              canEdit={canEdit}
+              label="high"
+            />
           </div>
         </div>
       </FormControl>

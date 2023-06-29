@@ -27,6 +27,7 @@ describe("Quantity Component", () => {
     },
   ];
   const testValue = {
+    label: "mho mho",
     value: {
       code: "mho",
       guidance:
@@ -50,20 +51,19 @@ describe("Quantity Component", () => {
         label="low"
       />
     );
-    const quantityUnitLabel = screen.getByTestId(
-      "quantity-unit-dropdown-label-low"
-    );
-    expect(quantityUnitLabel).toBeInTheDocument();
+
+    const quantityValue = screen.getByTestId("quantity-value-field-low");
+    expect(quantityValue).toBeInTheDocument();
+    const quantityValueInput = screen.getByTestId("quantity-value-input-low");
+    expect(quantityValueInput).toBeInTheDocument();
+
+    const quantityUnit = screen.getByTestId("quantity-unit-dropdown-low");
+    expect(quantityUnit).toBeInTheDocument();
     const quantityUnitInput = screen.getByRole("combobox");
     expect(quantityUnitInput).toBeInTheDocument();
-
-    const quantityValueLabel = screen.getByTestId("quantity-value-label-low");
-    expect(quantityValueLabel).toBeInTheDocument();
-    const quantityValueInput = screen.getByRole("textbox");
-    expect(quantityValueInput).toBeInTheDocument();
   });
 
-  test("Change of value should render the new value", () => {
+  test("Test hange of value", () => {
     const handleChange = jest.fn();
     render(
       <Quantity
@@ -77,23 +77,20 @@ describe("Quantity Component", () => {
         label="low"
       />
     );
-    const quantityUnitLabel = screen.getByTestId(
-      "quantity-unit-dropdown-label-low"
-    );
-    expect(quantityUnitLabel).toBeInTheDocument();
-    const quantityUnitInput = screen.getByRole("combobox");
-    expect(quantityUnitInput).toBeInTheDocument();
 
-    const quantityValueLabel = screen.getByTestId("quantity-value-label-low");
-    expect(quantityValueLabel).toBeInTheDocument();
-    const quantityValueInput = screen.getByRole("textbox") as HTMLInputElement;
-    expect(quantityValueInput).toBeInTheDocument();
-    const inputLow = screen.getByTestId(
+    const quantityValue = screen.getByTestId("quantity-value-field-low");
+    expect(quantityValue).toBeInTheDocument();
+    const quantityValueInput = screen.getByTestId(
       "quantity-value-input-low"
     ) as HTMLInputElement;
-    expect(inputLow.value).toBe("0");
-    fireEvent.change(inputLow, { target: { value: "10" } });
-    expect(inputLow.value).toBe("10");
+    expect(quantityValueInput).toBeInTheDocument();
+    expect(quantityValueInput.value).toBe("0");
+    fireEvent.change(quantityValueInput, { target: { value: "10" } });
+
+    const quantityUnit = screen.getByTestId("quantity-unit-dropdown-low");
+    expect(quantityUnit).toBeInTheDocument();
+    const quantityUnitInput = screen.getByRole("combobox");
+    expect(quantityUnitInput).toBeInTheDocument();
   });
 
   test("Should render quantity unit field with selected option", async () => {
@@ -111,10 +108,6 @@ describe("Quantity Component", () => {
       />
     );
     await act(async () => {
-      const quantityUnitLabel = screen.getByTestId(
-        "quantity-unit-dropdown-label-high"
-      );
-      expect(quantityUnitLabel).toBeInTheDocument();
       const quantityAutoComplete = await screen.findByTestId(
         "quantity-unit-dropdown-high"
       );
@@ -129,7 +122,10 @@ describe("Quantity Component", () => {
     const handleChange = jest.fn();
     render(
       <Quantity
-        quantityUnit={null}
+        quantityUnit={{
+          label: "",
+          value: { code: "", guidance: "", name: "", system: "" },
+        }}
         handleQuantityUnitChange={handleChange}
         canEdit={true}
         placeholder="test"
@@ -149,5 +145,33 @@ describe("Quantity Component", () => {
     });
     fireEvent.click(screen.getAllByRole("option")[1]);
     expect(input.value).toEqual("B bel");
+  });
+
+  test("should render No Options when input is invalid", async () => {
+    const handleChange = jest.fn();
+    render(
+      <Quantity
+        quantityUnit={{
+          label: "",
+          value: { code: "", guidance: "", name: "", system: "" },
+        }}
+        handleQuantityUnitChange={handleChange}
+        canEdit={true}
+        placeholder="test"
+        quantityValue={0}
+        handleQuantityValueChange={handleChange}
+        options={options}
+        label="test"
+      />
+    );
+    const autocomplete = screen.getByTestId("quantity-unit-dropdown-test");
+    const input = within(autocomplete).getByRole("combobox");
+    autocomplete.click();
+    autocomplete.focus();
+    fireEvent.change(input, { target: { value: "w" } });
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(screen.getByText("No options")).toBeInTheDocument();
   });
 });

@@ -30,7 +30,6 @@ describe("QuantityInterval Component", () => {
   it("Should render Quantity Interval component with appropriate data", async () => {
     render(
       <QuantityInterval
-        label="test"
         lowQuantity={1}
         handleLowQuantityChange={() => {}}
         lowQuantityUnit={testValue1}
@@ -46,14 +45,7 @@ describe("QuantityInterval Component", () => {
     expect(screen.getAllByText("Value").length).toBe(2);
     expect(screen.getAllByText("Unit").length).toBe(2);
 
-    expect(screen.getByTestId("quantity-value-label-low")).toBeInTheDocument();
     expect(screen.getByTestId("quantity-value-field-low")).toBeInTheDocument();
-    expect(
-      screen.getByTestId("quantity-unit-dropdown-label-low")
-    ).toBeInTheDocument();
-    expect(
-      screen.getByTestId("quantity-unit-text-input-low")
-    ).toBeInTheDocument();
     const inputLow = screen.getByTestId(
       "quantity-value-input-low"
     ) as HTMLInputElement;
@@ -64,14 +56,7 @@ describe("QuantityInterval Component", () => {
     ) as HTMLInputElement;
     expect(unitInputLow.value).toEqual("mg milligram");
 
-    expect(screen.getByTestId("quantity-value-label-high")).toBeInTheDocument();
     expect(screen.getByTestId("quantity-value-field-high")).toBeInTheDocument();
-    expect(
-      screen.getByTestId("quantity-unit-dropdown-label-high")
-    ).toBeInTheDocument();
-    expect(
-      screen.getByTestId("quantity-unit-text-input-high")
-    ).toBeInTheDocument();
     const inputHigh = screen.getByTestId(
       "quantity-value-input-high"
     ) as HTMLInputElement;
