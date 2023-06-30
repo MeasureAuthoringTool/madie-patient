@@ -119,42 +119,38 @@ export class CqmConversionService {
 
   private creatingPopulationSets = (measure: Measure) => {
     const measureScoring = measure.scoring.replace(/ +/g, "");
-    if (!_.isEmpty(measure?.groups)) {
-      const populationSets: PopulationSet[] = measure.groups.map(
-        (group, i) => ({
-          id: group.id,
-          title: "Population Criteria Section",
-          population_set_id: `PopulationSet_${i + 1}`,
-          populations: this.generateKeyValuePairPopulations(
-            group.populations,
-            measure.cqlLibraryName
-          ),
-          stratifications: this.generateStratifications(
-            group.stratifications,
-            measure.cqlLibraryName,
-            i
-          ),
-          supplemental_data_elements: this.generateSupplementalDataElements(
-            measure.supplementalData,
-            measure.cqlLibraryName
-          ),
-          ...(measureScoring === "ContinuousVariable" ||
-          measureScoring === "Ratio"
-            ? {
-                observations: this.generateObservations(
-                  group.measureObservations,
-                  measure.cqlLibraryName
-                ),
-              }
-            : {}),
-        })
-      );
-
-      //console.log("generated Population Sets", populationSets);
-      return populationSets;
-    } else {
-      return [];
+    if (_.isEmpty(measure?.groups)) {
+      return null;
     }
+    const populationSets: PopulationSet[] = measure.groups.map((group, i) => ({
+      id: group.id,
+      title: "Population Criteria Section",
+      population_set_id: `PopulationSet_${i + 1}`,
+      populations: this.generateKeyValuePairPopulations(
+        group.populations,
+        measure.cqlLibraryName
+      ),
+      stratifications: this.generateStratifications(
+        group.stratifications,
+        measure.cqlLibraryName,
+        i
+      ),
+      supplemental_data_elements: this.generateSupplementalDataElements(
+        measure.supplementalData,
+        measure.cqlLibraryName
+      ),
+      ...(measureScoring === "ContinuousVariable" || measureScoring === "Ratio"
+        ? {
+            observations: this.generateObservations(
+              group.measureObservations,
+              measure.cqlLibraryName
+            ),
+          }
+        : {}),
+    }));
+
+    //console.log("generated Population Sets", populationSets);
+    return populationSets;
   };
 
   private mapPopulationName = (populationName: string) => {
@@ -198,13 +194,13 @@ export class CqmConversionService {
       observation_function: {
         id: uuidv4(),
         library_name: cqlLibraryName,
-        statement_name: observation.definition, //might need to verify again
+        statement_name: observation.definition,
         hqmf_id: null,
       },
       observation_paramater: {
         id: uuidv4(),
         library_name: cqlLibraryName,
-        statement_name: "", //need to ask
+        statement_name: "", //association name
         hqmf_id: null,
       },
     }));
@@ -215,7 +211,7 @@ export class CqmConversionService {
     cqlLibraryName: string
   ) => {
     return supplementalDataElements.map((supplementalDataElement) => ({
-      //id --> need to ask if this should be measureId
+      id: uuidv4(), //no id is present in the madie so generating a new id
       library_name: cqlLibraryName,
       statement_name: supplementalDataElement.definition,
       hqmf_id: null,
@@ -228,14 +224,14 @@ export class CqmConversionService {
     groupIndex: number
   ) => {
     return stratifications.map((stratification, i) => ({
-      //id --> need to ask
+      id: uuidv4(),
       hqmf_id: null,
       stratification_id: `PopulationSet_${groupIndex + 1}_Stratification_${
         i + 1
-      }`, //need to confirm
-      title: `PopSet${groupIndex + 1} Stratification ${i + 1}`, //need to confirm
+      }`,
+      title: `PopSet${groupIndex + 1} Stratification ${i + 1}`,
       statement: {
-        //id --> need to ask
+        id: stratification.id,
         library_name: cqlLibraryName,
         statement_name: stratification.cqlDefinition,
         hqmf_id: null,
