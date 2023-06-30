@@ -23,6 +23,7 @@ import _ from "lodash";
 import { CqmModelFactory } from "./model-factory/CqmModelFactory";
 import { parse } from "./ElmParser";
 import { ElmDependencyFinder } from "./elmDependencyFinder/ElmDependencyFinder";
+import { v4 as uuidv4 } from "uuid";
 
 interface StatementReference {
   library_name: String;
@@ -105,7 +106,7 @@ export class CqmConversionService {
       )
     );
 
-    //console.log("Actual Measure Groups", measure.groups);
+    // console.log("Actual Measure Groups", measure.groups);
 
     // TODO: need UI checkbox to determine yes/no
     cqmMeasure.calculate_sdes = false;
@@ -118,34 +119,42 @@ export class CqmConversionService {
 
   private creatingPopulationSets = (measure: Measure) => {
     const measureScoring = measure.scoring.replace(/ +/g, "");
-    const populationSets: PopulationSet[] = measure.groups.map((group, i) => ({
-      id: group.id,
-      title: "Population Criteria Section",
-      population_set_id: `PopulationSet_${i + 1}`,
-      populations: this.generatingKeyValuePairPopulations(
-        group.populations,
-        measure.cqlLibraryName
-      ),
-      stratifications: this.generateStratifications(
-        group.stratifications,
-        measure.cqlLibraryName
-      ),
-      supplemental_data_elements: this.generateSupplementalDataELements(
-        measure.supplementalData,
-        measure.cqlLibraryName
-      ),
-      ...(measureScoring === "ContinuousVariable" || measureScoring === "Ratio"
-        ? {
-            observations: this.generateObservations(
-              group.measureObservations,
-              measure.cqlLibraryName
-            ),
-          }
-        : {}),
-    }));
+    if (!_.isEmpty(measure?.groups)) {
+      const populationSets: PopulationSet[] = measure.groups.map(
+        (group, i) => ({
+          id: group.id,
+          title: "Population Criteria Section",
+          population_set_id: `PopulationSet_${i + 1}`,
+          populations: this.generateKeyValuePairPopulations(
+            group.populations,
+            measure.cqlLibraryName
+          ),
+          stratifications: this.generateStratifications(
+            group.stratifications,
+            measure.cqlLibraryName,
+            i
+          ),
+          supplemental_data_elements: this.generateSupplementalDataElements(
+            measure.supplementalData,
+            measure.cqlLibraryName
+          ),
+          ...(measureScoring === "ContinuousVariable" ||
+          measureScoring === "Ratio"
+            ? {
+                observations: this.generateObservations(
+                  group.measureObservations,
+                  measure.cqlLibraryName
+                ),
+              }
+            : {}),
+        })
+      );
 
-    //console.log("generated Population Sets", populationSets);
-    return populationSets;
+      //console.log("generated Population Sets", populationSets);
+      return populationSets;
+    } else {
+      return [];
+    }
   };
 
   private mapPopulationName = (populationName: string) => {
@@ -162,7 +171,7 @@ export class CqmConversionService {
     else return populationName;
   };
 
-  private generatingKeyValuePairPopulations = (
+  private generateKeyValuePairPopulations = (
     populations: Population[],
     cqlLibraryName: string
   ) => {
@@ -187,13 +196,13 @@ export class CqmConversionService {
       hqmf_id: null,
       aggregation_type: observation.aggregateMethod,
       observation_function: {
-        //id --> need to ask
+        id: uuidv4(),
         library_name: cqlLibraryName,
-        statement_name: "", //need to ask
+        statement_name: observation.definition, //might need to verify again
         hqmf_id: null,
       },
       observation_paramater: {
-        //id --> need to ask
+        id: uuidv4(),
         library_name: cqlLibraryName,
         statement_name: "", //need to ask
         hqmf_id: null,
@@ -201,12 +210,12 @@ export class CqmConversionService {
     }));
   };
 
-  private generateSupplementalDataELements = (
+  private generateSupplementalDataElements = (
     supplementalDataElements: SupplementalData[],
     cqlLibraryName: string
   ) => {
     return supplementalDataElements.map((supplementalDataElement) => ({
-      //id --> need to ask
+      //id --> need to ask if this should be measureId
       library_name: cqlLibraryName,
       statement_name: supplementalDataElement.definition,
       hqmf_id: null,
@@ -215,13 +224,16 @@ export class CqmConversionService {
 
   private generateStratifications = (
     stratifications: Stratification[],
-    cqlLibraryName: string
+    cqlLibraryName: string,
+    groupIndex: number
   ) => {
-    return stratifications.map((stratification) => ({
+    return stratifications.map((stratification, i) => ({
       //id --> need to ask
       hqmf_id: null,
-      stratification_id: "", //need to ask
-      title: "", //need to ask
+      stratification_id: `PopulationSet_${groupIndex + 1}_Stratification_${
+        i + 1
+      }`, //need to confirm
+      title: `PopSet${groupIndex + 1} Stratification ${i + 1}`, //need to confirm
       statement: {
         //id --> need to ask
         library_name: cqlLibraryName,

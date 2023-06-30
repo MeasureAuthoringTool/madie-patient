@@ -2,6 +2,7 @@ import { Measure } from "@madie/madie-models";
 import axios from "axios";
 import { DataCriteria } from "./models/DataCriteria";
 import { CqmConversionService } from "./CqmModelConversionService";
+import { PopulationSet } from "cqm-models";
 
 jest.mock("axios");
 const axiosMock = axios as jest.Mocked<typeof axios>;
@@ -20,6 +21,7 @@ describe("CqmConversionService", () => {
   let cqmConversionService = new CqmConversionService("url", getAccessToken);
   let dataCriteria: Array<DataCriteria>;
   let elms: Array<String>;
+  let population_sets: Array<PopulationSet>;
   beforeEach(() => {
     dataCriteria = [
       {
@@ -48,12 +50,14 @@ describe("CqmConversionService", () => {
       '{"library":{"annotation":{},"identifier":{"id":"CQM01","version":"1.0.000"},"statements":{}}}',
       '{"library":{"annotation":{},"identifier":{"id":"IncludedLib","version":"0.1.000"},"statements":{}}}',
     ];
+    population_sets = [];
   });
 
   it("converts MADiE measure to cqm measure successfully", async () => {
     axiosMock.put
       .mockResolvedValueOnce({ data: dataCriteria })
-      .mockResolvedValueOnce({ data: elms });
+      .mockResolvedValueOnce({ data: elms })
+      .mockResolvedValueOnce({ data: population_sets });
 
     const cqmMeasure = await cqmConversionService.convertToCqmMeasure(measure);
     expect(cqmMeasure.title).toEqual(measure.measureName);
@@ -77,6 +81,9 @@ describe("CqmConversionService", () => {
     expect(cqlLibraries[1].library_name).toEqual("IncludedLib");
     expect(cqlLibraries[1].library_version).toEqual("0.1.000");
     expect(cqlLibraries[1].is_main_library).toEqual(false);
+
+    const populationSets = cqmMeasure.population_sets;
+    expect(populationSets.length).toEqual(0);
   });
 
   it("converts to cqm measure when MADiE measure is null/undefined", async () => {
