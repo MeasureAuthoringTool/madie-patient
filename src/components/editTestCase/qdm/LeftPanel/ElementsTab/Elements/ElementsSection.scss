@@ -2,11 +2,12 @@ $grey-19: #dddddd;
 
 #elements-section {
   display: flex;
-
-  #categories-tabs {
-    .MuiTabs-flexContainer {
-      border-bottom: solid 1px $grey-19;
-    }
+  flex-direction: column;
+  > div:first-of-type {
+    border-bottom: solid 1px $grey-19;
+  }
+  .tabs-container {
+    border-bottom: solid 1px $grey-19;
   }
   .madie-icon {
     &.cyan {

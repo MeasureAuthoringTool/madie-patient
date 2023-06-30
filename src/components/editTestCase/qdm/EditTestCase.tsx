@@ -12,7 +12,11 @@ import {
   GroupPopulation,
 } from "@madie/madie-models";
 import "../qiCore/EditTestCase.scss";
-import { Button, Toast } from "@madie/madie-design-system/dist/react";
+import {
+  Button,
+  Toast,
+  MadieDiscardDialog,
+} from "@madie/madie-design-system/dist/react";
 import qdmCalculationService from "../../../api/QdmCalculationService";
 import { Allotment } from "allotment";
 import RightPanel from "./RightPanel/RightPanel";
@@ -57,6 +61,7 @@ const EditTestCase = () => {
   const [toastOpen, setToastOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>("");
   const [toastType, setToastType] = useState<string>("danger");
+  const [discardTrigger, setDiscardTrigger] = useState<boolean>(false);
   const onToastClose = () => {
     setToastMessage("");
     setToastOpen(false);
@@ -78,6 +83,7 @@ const EditTestCase = () => {
 
   const [currentTestCase, setCurrentTestCase] = useState<TestCase>(null);
   const [qdmPatient, setQdmPatient] = useState<QDMPatient>();
+  const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
   dayjs.extend(utc);
   dayjs.utc().format(); // utc format
 
@@ -90,7 +96,7 @@ const EditTestCase = () => {
       groupPopulations: [],
       birthDate: qdmPatient?.birthDatetime
         ? dayjs(qdmPatient?.birthDatetime)
-        : null,
+        : "",
     },
     validationSchema: QDMPatientSchemaValidator,
     onSubmit: async (values: any) => await handleSubmit(values),
@@ -240,6 +246,11 @@ const EditTestCase = () => {
     });
   }, [formik.dirty, currentTestCase?.json]);
 
+  const discardChanges = () => {
+    resetForm();
+    setDiscardDialogOpen(false);
+  };
+
   return (
     <>
       <FormikProvider value={formik}>
@@ -247,6 +258,7 @@ const EditTestCase = () => {
           testCase={currentTestCase}
           measureId={measureId}
         />
+
         <form id="edit-test-case-form" onSubmit={formik.handleSubmit}>
           <div className="allotment-wrapper">
             <Allotment defaultSizes={[200, 100]} vertical={false}>
@@ -319,6 +331,7 @@ const EditTestCase = () => {
             <Button
               variant="outline-filled"
               disabled={!formik.dirty || !canEdit}
+              onClick={() => setDiscardDialogOpen(true)}
             >
               {/* variant="outline-filled" */}
               Discard Changes
@@ -340,6 +353,11 @@ const EditTestCase = () => {
           />
         </form>
       </FormikProvider>
+      <MadieDiscardDialog
+        open={discardDialogOpen}
+        onClose={() => setDiscardDialogOpen(false)}
+        onContinue={discardChanges}
+      />
     </>
   );
 };

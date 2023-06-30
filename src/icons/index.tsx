@@ -1,4 +1,12 @@
+/*
+ This is a library of Icons that can be made directly from vectors found within our current figma
+ if you want to add an Icon you find there, export the SVG and wrap it in a react component, passing in props and className like the other examples
+ Make sure that you remove all references for "fill" as the className will do that on it's own
+*/
+
 import AssessmentIcon from "./Assessment";
+import AttributesIcon from "./Attributes";
+import CodesIcon from "./Codes";
 import CharacteristicIcon from "./Characteristic";
 import ConditionIcon from "./Condition";
 import DeviceIcon from "./Device";
@@ -10,6 +18,7 @@ import HeartbeatIcon from "./HeartBeat";
 import InterventionIcon from "./Intervention";
 import LaboratoryIcon from "./Laboratory";
 import MedicationIcon from "./Medication";
+import NegationRationaleIcon from "./NegationRationale";
 import ProcedureIcon from "./Procedure";
 import ShieldIcon from "./Shield";
 import SiteMapIcon from "./Sitemap";
@@ -20,6 +29,8 @@ import "./index.scss";
 
 export {
   AssessmentIcon,
+  AttributesIcon,
+  CodesIcon,
   CharacteristicIcon,
   ConditionIcon,
   DeviceIcon,
@@ -31,6 +42,7 @@ export {
   InterventionIcon,
   LaboratoryIcon,
   MedicationIcon,
+  NegationRationaleIcon,
   ProcedureIcon,
   ShieldIcon,
   SiteMapIcon,

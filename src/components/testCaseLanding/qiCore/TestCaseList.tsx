@@ -9,7 +9,7 @@ import {
   CalculationOutput,
   DetailedPopulationGroupResult,
 } from "fqm-execution/build/types/Calculator";
-import { checkUserCanEdit } from "@madie/madie-util";
+import { checkUserCanEdit, measureStore } from "@madie/madie-util";
 import useExecutionContext from "../../routes/qiCore/useExecutionContext";
 import CreateCodeCoverageNavTabs from "../common/CreateCodeCoverageNavTabs";
 import CodeCoverageHighlighting from "../common/CodeCoverageHighlighting";
@@ -85,6 +85,7 @@ const TestCaseList = (props: TestCaseListProps) => {
   }>({});
 
   const calculation = useRef(calculationService());
+  const { updateMeasure } = measureStore;
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("passing");
   const [calculationOutput, setCalculationOutput] =
@@ -109,6 +110,13 @@ const TestCaseList = (props: TestCaseListProps) => {
   });
 
   const [createOpen, setCreateOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (testCases?.length != measure?.testCases?.length) {
+      const newMeasure = { ...measure, testCases };
+      updateMeasure(newMeasure);
+    }
+  }, [testCases]);
 
   useEffect(() => {
     if (

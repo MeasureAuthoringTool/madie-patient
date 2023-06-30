@@ -19,6 +19,9 @@ import {
   SiteMapIcon,
   SliderIcon,
   SymptomIcon,
+  AttributesIcon,
+  CodesIcon,
+  NegationRationaleIcon,
 } from "./index";
 describe("Icons", () => {
   const { findByTestId } = screen;
@@ -43,6 +46,9 @@ describe("Icons", () => {
         <SiteMapIcon data-testid="sitemap" />
         <SliderIcon data-testid="slider" />
         <SymptomIcon data-testid="symptom" />
+        <AttributesIcon data-testid="attributes" />
+        <CodesIcon data-testid="codes" />
+        <NegationRationaleIcon data-testid="negation" />
       </div>
     );
     const assessment = await findByTestId("assessment");
@@ -79,6 +85,12 @@ describe("Icons", () => {
     expect(slider).toBeInTheDocument();
     const symptom = await findByTestId("symptom");
     expect(symptom).toBeInTheDocument();
+    const codes = await findByTestId("codes");
+    expect(codes).toBeInTheDocument();
+    const attributes = await findByTestId("attributes");
+    expect(attributes).toBeInTheDocument();
+    const negation = await findByTestId("negation");
+    expect(negation).toBeInTheDocument();
   });
 
   test("All icons render default state", async () => {
@@ -108,6 +120,9 @@ describe("Icons", () => {
         <SiteMapIcon className="madie-icon" data-testid="sitemap" />
         <SliderIcon className="madie-icon" data-testid="slider" />
         <SymptomIcon className="madie-icon" data-testid="symptom" />
+        <AttributesIcon className="madie-icon" data-testid="attributes" />
+        <CodesIcon className="madie-icon" data-testid="codes" />
+        <NegationRationaleIcon className="madie-icon" data-testid="negation" />
       </div>
     );
 
@@ -145,6 +160,13 @@ describe("Icons", () => {
     expect(slider).toBeInTheDocument();
     const symptom = await findByTestId("symptom");
     expect(symptom).toBeInTheDocument();
+
+    const attributes = await findByTestId("attributes");
+    expect(attributes).toBeInTheDocument();
+    const codes = await findByTestId("codes");
+    expect(codes).toBeInTheDocument();
+    const negation = await findByTestId("negation");
+    expect(negation).toBeInTheDocument();
   });
 
   test("All icons render active state", async () => {
@@ -180,6 +202,13 @@ describe("Icons", () => {
         <SiteMapIcon className="madie-icon cyan" data-testid="sitemap" />
         <SliderIcon className="madie-icon cyan" data-testid="slider" />
         <SymptomIcon className="madie-icon cyan" data-testid="symptom" />
+
+        <AttributesIcon className="madie-icon cyan" data-testid="attributes" />
+        <CodesIcon className="madie-icon cyan" data-testid="codes" />
+        <NegationRationaleIcon
+          className="madie-icon cyan"
+          data-testid="negation"
+        />
       </div>
     );
 
@@ -246,6 +275,18 @@ describe("Icons", () => {
     const slider = await findByTestId("slider");
     expect(slider).toBeInTheDocument();
     expect(slider).toHaveClass("cyan");
+
+    const codes = await findByTestId("codes");
+    expect(codes).toBeInTheDocument();
+    expect(codes).toHaveClass("cyan");
+
+    const attributes = await findByTestId("attributes");
+    expect(attributes).toBeInTheDocument();
+    expect(attributes).toHaveClass("cyan");
+
+    const negation = await findByTestId("negation");
+    expect(negation).toBeInTheDocument();
+    expect(negation).toHaveClass("cyan");
 
     const symptom = await findByTestId("symptom");
     expect(symptom).toBeInTheDocument();
