@@ -131,7 +131,6 @@ const EditTestCase = () => {
         testCase,
         measureId
       );
-
       // await cqmService.current.convertToCqmMeasure(measure);
 
       resetForm({
