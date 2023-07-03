@@ -33,7 +33,7 @@ describe("CqmConversionService", () => {
   beforeEach(() => {
     group = {
       id: null,
-      scoring: "Cohort",
+      scoring: "Continuous Variable",
       populations: [
         {
           id: "id-1",
@@ -171,7 +171,7 @@ describe("CqmConversionService", () => {
     ).toEqual("test");
     expect(
       populationSets[0].observations[0].observation_parameter.statement_name
-    ).toEqual("Measure Population");
+    ).toEqual("measurePopulation");
   });
 
   it("converts to cqm measure when MADiE measure is null/undefined", async () => {

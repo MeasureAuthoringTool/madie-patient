@@ -109,36 +109,36 @@ export class CqmConversionService {
     // TODO: need UI checkbox to determine yes/no
     cqmMeasure.calculate_sdes = false;
     const populationSets: PopulationSet[] =
-      this.creatingPopulationSets(measure);
+      this.buildCqmPopulationSets(measure);
     cqmMeasure.population_sets = populationSets;
     return cqmMeasure;
   }
 
-  private creatingPopulationSets = (measure: Measure) => {
-    const measureScoring = measure.scoring.replace(/ +/g, "");
+  private buildCqmPopulationSets = (measure: Measure) => {
     if (_.isEmpty(measure?.groups)) {
       return null;
     }
+    const measureScoring = measure.scoring.replace(/ +/g, "");
     const populationSets: PopulationSet[] = measure.groups.map((group, i) => ({
       id: group.id,
       title: "Population Criteria Section",
       population_set_id: `PopulationSet_${i + 1}`,
-      populations: this.generateKeyValuePairPopulations(
+      populations: this.generateCqmPopulations(
         group.populations,
         measure.cqlLibraryName
       ),
-      stratifications: this.generateStratifications(
+      stratifications: this.generateCqmStratifications(
         group.stratifications,
         measure.cqlLibraryName,
         i
       ),
-      supplemental_data_elements: this.generateSupplementalDataElements(
+      supplemental_data_elements: this.generateCqmSupplementalDataElements(
         measure.supplementalData,
         measure.cqlLibraryName
       ),
       ...(measureScoring === "ContinuousVariable" || measureScoring === "Ratio"
         ? {
-            observations: this.generateObservations(
+            observations: this.generateCqmObservations(
               group.measureObservations,
               measure.cqlLibraryName,
               group.populations
@@ -164,7 +164,7 @@ export class CqmConversionService {
     else return populationName;
   };
 
-  private generateKeyValuePairPopulations = (
+  private generateCqmPopulations = (
     populations: Population[],
     cqlLibraryName: string
   ) => {
@@ -180,7 +180,7 @@ export class CqmConversionService {
     }, {});
   };
 
-  private generateObservations = (
+  private generateCqmObservations = (
     observations: MeasureObservation[],
     cqlLibraryName: string,
     populations: Population[]
@@ -198,7 +198,7 @@ export class CqmConversionService {
       observation_parameter: {
         id: uuidv4(),
         library_name: cqlLibraryName,
-        statement_name: this.getObservationAssocationName(
+        statement_name: this.getCqmObservationAssocationName(
           observation.criteriaReference,
           populations
         ),
@@ -207,16 +207,16 @@ export class CqmConversionService {
     }));
   };
 
-  private getObservationAssocationName = (
+  private getCqmObservationAssocationName = (
     criteriaReference: string,
     populations: Population[]
   ) => {
-    populations.filter((population) => population.id === criteriaReference)[0]
-      ?.name;
-    return "Measure Population";
+    return populations.filter(
+      (population) => population.id === criteriaReference
+    )[0]?.name;
   };
 
-  private generateSupplementalDataElements = (
+  private generateCqmSupplementalDataElements = (
     supplementalDataElements: SupplementalData[],
     cqlLibraryName: string
   ) => {
@@ -228,7 +228,7 @@ export class CqmConversionService {
     }));
   };
 
-  private generateStratifications = (
+  private generateCqmStratifications = (
     stratifications: Stratification[],
     cqlLibraryName: string,
     groupIndex: number
