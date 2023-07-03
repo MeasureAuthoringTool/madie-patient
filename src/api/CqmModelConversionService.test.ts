@@ -1,4 +1,4 @@
-import { Measure, PopulationType } from "@madie/madie-models";
+import { Group, Measure, PopulationType } from "@madie/madie-models";
 import axios from "axios";
 import { DataCriteria } from "./models/DataCriteria";
 import { CqmConversionService } from "./CqmModelConversionService";
@@ -12,7 +12,7 @@ const measure = {
   measureName: "CQM01",
   cqlLibraryName: "CQM01",
   measureSetId: "1-2-3",
-  scoring: "Cohort",
+  scoring: "Continuous Variable",
   patientBasis: true,
   cql: "mock cql",
   supplementalData: [
@@ -41,6 +41,12 @@ describe("CqmConversionService", () => {
           definition: "Initial Population",
           description: "",
         },
+        {
+          definition: "Initial Population",
+          description: "",
+          id: "id-2",
+          name: PopulationType.MEASURE_POPULATION,
+        },
       ],
       groupDescription: "",
       measureGroupTypes: [],
@@ -58,6 +64,15 @@ describe("CqmConversionService", () => {
           cqlDefinition: "Initial Population",
           description: "",
           id: "strat-2",
+        },
+      ],
+      measureObservations: [
+        {
+          aggregateMethod: "Average",
+          criteriaReference: "id-2",
+          definition: "test",
+          description: "",
+          id: "observ-1",
         },
       ],
     };
@@ -123,10 +138,15 @@ describe("CqmConversionService", () => {
     expect(cqlLibraries[1].is_main_library).toEqual(false);
 
     const populationSets = cqmMeasure.population_sets;
+
+    //populations
     expect(populationSets.length).toEqual(1);
     expect(populationSets[0].population_set_id).toEqual("PopulationSet_1");
     expect(populationSets[0].title).toEqual("Population Criteria Section");
     expect(populationSets[0].populations).toHaveProperty("IPP");
+    expect(populationSets[0].populations).toHaveProperty("MSRPOPL");
+
+    //stratifications
     expect(populationSets[0].stratifications.length).toEqual(2);
     expect(populationSets[0].stratifications[0]).toHaveProperty(
       "stratification_id"
@@ -134,10 +154,24 @@ describe("CqmConversionService", () => {
     expect(populationSets[0].stratifications[0].stratification_id).toEqual(
       "PopulationSet_1_Stratification_1"
     );
+
+    //supplemental data elements
     expect(populationSets[0].supplemental_data_elements.length).toEqual(1);
     expect(
       populationSets[0].supplemental_data_elements[0].statement_name
     ).toEqual("SDE Definition Initial Population");
+
+    //observations
+    expect(populationSets[0].observations.length).toEqual(1);
+    expect(populationSets[0].observations[0].aggregation_type).toEqual(
+      "Average"
+    );
+    expect(
+      populationSets[0].observations[0].observation_function.statement_name
+    ).toEqual("test");
+    expect(
+      populationSets[0].observations[0].observation_parameter.statement_name
+    ).toEqual("Measure Population");
   });
 
   it("converts to cqm measure when MADiE measure is null/undefined", async () => {

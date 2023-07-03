@@ -199,7 +199,7 @@ export class CqmConversionService {
         statement_name: observation.definition,
         hqmf_id: null,
       },
-      observation_paramater: {
+      observation_parameter: {
         id: uuidv4(),
         library_name: cqlLibraryName,
         statement_name: this.getObservationAssocationName(
