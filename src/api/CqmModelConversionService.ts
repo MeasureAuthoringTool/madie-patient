@@ -1,9 +1,17 @@
-import { Measure } from "@madie/madie-models";
+import {
+  Measure,
+  Population,
+  PopulationType,
+  MeasureObservation,
+  SupplementalData,
+  Stratification,
+} from "@madie/madie-models";
 import {
   Measure as CqmMeasure,
   CQLLibrary,
   DataElement,
   StatementDependency,
+  PopulationSet,
 } from "cqm-models";
 import { ServiceConfig } from "./ServiceContext";
 import useServiceConfig from "./useServiceConfig";
@@ -15,6 +23,7 @@ import _ from "lodash";
 import { CqmModelFactory } from "./model-factory/CqmModelFactory";
 import { parse } from "./ElmParser";
 import { ElmDependencyFinder } from "./elmDependencyFinder/ElmDependencyFinder";
+import { v4 as uuidv4 } from "uuid";
 
 interface StatementReference {
   library_name: String;
@@ -78,8 +87,9 @@ export class CqmConversionService {
     cqmMeasure.composite = false; // for now
     cqmMeasure.component = false; // for now
     cqmMeasure.id = measure.id;
-    const dataCriteria = await this.fetchSourceDataCriteria(measure.cql);
-    cqmMeasure.source_data_criteria = dataCriteria;
+    cqmMeasure.source_data_criteria = await this.fetchSourceDataCriteria(
+      measure.cql
+    );
     const elms = await this.fetchElmForCql(measure.cql);
     // Fetch statement dependencies
     const statementDependenciesMap =
@@ -87,6 +97,7 @@ export class CqmConversionService {
         elms,
         measure.cqlLibraryName
       );
+
     cqmMeasure.cql_libraries = elms.map((elm) =>
       this.buildCQLLibrary(
         elm,
@@ -97,10 +108,146 @@ export class CqmConversionService {
 
     // TODO: need UI checkbox to determine yes/no
     cqmMeasure.calculate_sdes = false;
-    // TODO: build population_sets- MAT-5779
-    cqmMeasure.population_sets = null;
+    const populationSets: PopulationSet[] =
+      this.buildCqmPopulationSets(measure);
+    cqmMeasure.population_sets = populationSets;
     return cqmMeasure;
   }
+
+  private buildCqmPopulationSets = (measure: Measure) => {
+    if (_.isEmpty(measure?.groups)) {
+      return null;
+    }
+    const measureScoring = measure.scoring.replace(/ +/g, "");
+    const populationSets: PopulationSet[] = measure.groups.map((group, i) => ({
+      id: group.id,
+      title: "Population Criteria Section",
+      population_set_id: `PopulationSet_${i + 1}`,
+      populations: this.generateCqmPopulations(
+        group.populations,
+        measure.cqlLibraryName
+      ),
+      stratifications: this.generateCqmStratifications(
+        group.stratifications,
+        measure.cqlLibraryName,
+        i
+      ),
+      supplemental_data_elements: this.generateCqmSupplementalDataElements(
+        measure.supplementalData,
+        measure.cqlLibraryName
+      ),
+      ...(measureScoring === "ContinuousVariable" || measureScoring === "Ratio"
+        ? {
+            observations: this.generateCqmObservations(
+              group.measureObservations,
+              measure.cqlLibraryName,
+              group.populations
+            ),
+          }
+        : {}),
+    }));
+
+    return populationSets;
+  };
+
+  private mapPopulationName = (populationName: string) => {
+    if (populationName === PopulationType.INITIAL_POPULATION) return "IPP";
+    if (populationName === PopulationType.DENOMINATOR) return "DENOM";
+    if (populationName === PopulationType.DENOMINATOR_EXCLUSION) return "DENEX";
+    if (populationName === PopulationType.DENOMINATOR_EXCEPTION)
+      return "DENEXCEP";
+    if (populationName === PopulationType.NUMERATOR) return "NUMER";
+    if (populationName === PopulationType.NUMERATOR_EXCLUSION) return "NUMEX";
+    if (populationName === PopulationType.MEASURE_POPULATION) return "MSRPOPL";
+    if (populationName === PopulationType.MEASURE_POPULATION_EXCLUSION)
+      return "MSRPOPLEX";
+    else return populationName;
+  };
+
+  private generateCqmPopulations = (
+    populations: Population[],
+    cqlLibraryName: string
+  ) => {
+    return populations.reduce((acc, population) => {
+      const key = this.mapPopulationName(population.name);
+      acc[key] = {
+        id: population.id,
+        library_name: cqlLibraryName,
+        statement_name: population.definition,
+        hqmf_id: null,
+      };
+      return acc;
+    }, {});
+  };
+
+  private generateCqmObservations = (
+    observations: MeasureObservation[],
+    cqlLibraryName: string,
+    populations: Population[]
+  ) => {
+    return observations.map((observation, i) => ({
+      id: observation.id,
+      hqmf_id: null,
+      aggregation_type: observation.aggregateMethod,
+      observation_function: {
+        id: uuidv4(),
+        library_name: cqlLibraryName,
+        statement_name: observation.definition,
+        hqmf_id: null,
+      },
+      observation_parameter: {
+        id: uuidv4(),
+        library_name: cqlLibraryName,
+        statement_name: this.getCqmObservationAssocationName(
+          observation.criteriaReference,
+          populations
+        ),
+        hqmf_id: null,
+      },
+    }));
+  };
+
+  private getCqmObservationAssocationName = (
+    criteriaReference: string,
+    populations: Population[]
+  ) => {
+    return populations.filter(
+      (population) => population.id === criteriaReference
+    )[0]?.name;
+  };
+
+  private generateCqmSupplementalDataElements = (
+    supplementalDataElements: SupplementalData[],
+    cqlLibraryName: string
+  ) => {
+    return supplementalDataElements.map((supplementalDataElement) => ({
+      id: uuidv4(), //no id is present in the madie so generating a new id
+      library_name: cqlLibraryName,
+      statement_name: supplementalDataElement.definition,
+      hqmf_id: null,
+    }));
+  };
+
+  private generateCqmStratifications = (
+    stratifications: Stratification[],
+    cqlLibraryName: string,
+    groupIndex: number
+  ) => {
+    return stratifications.map((stratification, i) => ({
+      id: uuidv4(),
+      hqmf_id: null,
+      stratification_id: `PopulationSet_${groupIndex + 1}_Stratification_${
+        i + 1
+      }`,
+      title: `PopSet${groupIndex + 1} Stratification ${i + 1}`,
+      statement: {
+        id: stratification.id,
+        library_name: cqlLibraryName,
+        statement_name: stratification.cqlDefinition,
+        hqmf_id: null,
+      },
+    }));
+  };
 
   private buildCQLLibrary(
     elm: string,
