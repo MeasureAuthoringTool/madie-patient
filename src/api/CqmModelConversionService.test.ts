@@ -1,4 +1,4 @@
-import { Measure } from "@madie/madie-models";
+import { Measure, PopulationType } from "@madie/madie-models";
 import axios from "axios";
 import { DataCriteria } from "./models/DataCriteria";
 import { CqmConversionService } from "./CqmModelConversionService";
@@ -15,6 +15,12 @@ const measure = {
   scoring: "Cohort",
   patientBasis: true,
   cql: "mock cql",
+  supplementalData: [
+    {
+      definition: "SDE Definition Initial Population",
+      description: "",
+    },
+  ],
 } as Measure;
 describe("CqmConversionService", () => {
   const getAccessToken = jest.fn();
@@ -22,7 +28,40 @@ describe("CqmConversionService", () => {
   let dataCriteria: Array<DataCriteria>;
   let elms: Array<String>;
   let population_sets: Array<PopulationSet>;
+  let group: Group;
+
   beforeEach(() => {
+    group = {
+      id: null,
+      scoring: "Cohort",
+      populations: [
+        {
+          id: "id-1",
+          name: PopulationType.INITIAL_POPULATION,
+          definition: "Initial Population",
+          description: "",
+        },
+      ],
+      groupDescription: "",
+      measureGroupTypes: [],
+      populationBasis: "boolean",
+      scoringUnit: "",
+      stratifications: [
+        {
+          association: "initialPopulation",
+          cqlDefinition: "Initial Population",
+          description: "",
+          id: "strat-1",
+        },
+        {
+          association: "initialPopulation",
+          cqlDefinition: "Initial Population",
+          description: "",
+          id: "strat-2",
+        },
+      ],
+    };
+
     dataCriteria = [
       {
         oid: "2.16.840.1.114222.4.11.837",
@@ -59,6 +98,7 @@ describe("CqmConversionService", () => {
       .mockResolvedValueOnce({ data: elms })
       .mockResolvedValueOnce({ data: population_sets });
 
+    measure.groups = [group];
     const cqmMeasure = await cqmConversionService.convertToCqmMeasure(measure);
     expect(cqmMeasure.title).toEqual(measure.measureName);
     expect(cqmMeasure.main_cql_library).toEqual(measure.cqlLibraryName);
@@ -83,7 +123,21 @@ describe("CqmConversionService", () => {
     expect(cqlLibraries[1].is_main_library).toEqual(false);
 
     const populationSets = cqmMeasure.population_sets;
-    expect(populationSets.length).toEqual(0);
+    expect(populationSets.length).toEqual(1);
+    expect(populationSets[0].population_set_id).toEqual("PopulationSet_1");
+    expect(populationSets[0].title).toEqual("Population Criteria Section");
+    expect(populationSets[0].populations).toHaveProperty("IPP");
+    expect(populationSets[0].stratifications.length).toEqual(2);
+    expect(populationSets[0].stratifications[0]).toHaveProperty(
+      "stratification_id"
+    );
+    expect(populationSets[0].stratifications[0].stratification_id).toEqual(
+      "PopulationSet_1_Stratification_1"
+    );
+    expect(populationSets[0].supplemental_data_elements.length).toEqual(1);
+    expect(
+      populationSets[0].supplemental_data_elements[0].statement_name
+    ).toEqual("SDE Definition Initial Population");
   });
 
   it("converts to cqm measure when MADiE measure is null/undefined", async () => {
