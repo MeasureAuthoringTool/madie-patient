@@ -106,14 +106,11 @@ export class CqmConversionService {
       )
     );
 
-    // console.log("Actual Measure Groups", measure.groups);
-
     // TODO: need UI checkbox to determine yes/no
     cqmMeasure.calculate_sdes = false;
     const populationSets: PopulationSet[] =
       this.creatingPopulationSets(measure);
     cqmMeasure.population_sets = populationSets;
-    //console.log(cqmMeasure);
     return cqmMeasure;
   }
 
@@ -150,7 +147,6 @@ export class CqmConversionService {
         : {}),
     }));
 
-    //console.log("generated Population Sets", populationSets);
     return populationSets;
   };
 
