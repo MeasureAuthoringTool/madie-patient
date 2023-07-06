@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import tw from "twin.macro";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import { Toast } from "@madie/madie-design-system/dist/react";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -35,6 +36,15 @@ const TestCase = ({
   const [deleteDialogModalOpen, setDeleteDialogModalOpen] =
     useState<boolean>(false);
 
+  const [toastOpen, setToastOpen] = useState<boolean>(false);
+  const [toastMessage, setToastMessage] = useState<string>("");
+  const [toastType, setToastType] = useState<string>("danger");
+  const onToastClose = () => {
+    setToastType("danger");
+    setToastMessage("");
+    setToastOpen(false);
+  };
+
   // Popover utilities
   const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -51,6 +61,27 @@ const TestCase = ({
     setOptionsOpen(false);
     setSelectedTestCase(null);
     setAnchorEl(null);
+  };
+
+  const exportTestCase = async () => {
+    try {
+      const textFile = new Blob([JSON.stringify("")], {
+        type: "application/json",
+      });
+
+      const url = window.URL.createObjectURL(textFile);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `ADD.zip`);
+      document.body.appendChild(link);
+      link.click();
+      setToastOpen(true);
+      setToastType("success");
+      setToastMessage("Test case exported successfully");
+      document.body.removeChild(link);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const TestCaseStatus = (executionStatus: string) => {
@@ -213,6 +244,17 @@ const TestCase = ({
             >
               {viewOrEdit}
             </button>
+            <button
+              id={`export-test-case-${testCase.id}`}
+              aria-label={`export-test-case-${testCase.title}`}
+              data-testid={`export-test-case-${testCase.id}`}
+              onClick={() => {
+                exportTestCase();
+                setOptionsOpen(false);
+              }}
+            >
+              export
+            </button>
             {canEdit && (
               <button
                 id={`delete-test-case-btn-${testCase.id}`}
@@ -229,6 +271,20 @@ const TestCase = ({
           </div>
         </div>
       </Popover>
+
+      <Toast
+        toastKey="test-case-action-toast"
+        aria-live="polite"
+        toastType={toastType}
+        testId={toastType === "danger" ? "error-toast" : "success-toast"}
+        closeButtonProps={{
+          "data-testid": "close-toast-button",
+        }}
+        open={toastOpen}
+        message={toastMessage}
+        onClose={onToastClose}
+        autoHideDuration={6000}
+      />
 
       <MadieDeleteDialog
         open={deleteDialogModalOpen}
