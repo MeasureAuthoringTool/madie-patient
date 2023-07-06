@@ -1,9 +1,11 @@
 import React, { ComponentProps, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
-import { Select } from "@madie/madie-design-system/dist/react";
-import { MenuItem } from "@mui/material";
+import { Select, InputLabel } from "@madie/madie-design-system/dist/react";
+import { MenuItem, TextField } from "@mui/material";
 import { kebabCase } from "lodash";
+import { textFieldStyle } from "./CodeSystemStyles";
+import FormControl from "@mui/material/FormControl";
 
 interface conceptOptionProps {
   code: string;
@@ -33,6 +35,7 @@ const CodeSystemSelector = ({
   codeSystemProps,
 }: CodeSystemSelectProps) => {
   const [codeOptions, setCodeOptions] = useState<codeOptionProps[]>();
+  const [customOptions, setCustomOptions] = useState<boolean>();
 
   // if the field is not required a default option is provided
   const getCodeSystems = (options: codeOptionProps[], required: boolean) => {
@@ -85,10 +88,15 @@ const CodeSystemSelector = ({
   };
 
   const generateCodeOptions = (event) => {
-    const fileteredOption = codeSystemProps.options.filter((option) => {
-      return option.system === event.target.value;
-    });
-    setCodeOptions(fileteredOption);
+    if (event.target.value != "Custom") {
+      setCustomOptions(false);
+      const fileteredOption = codeSystemProps.options.filter((option) => {
+        return option.system === event.target.value;
+      });
+      setCodeOptions(fileteredOption);
+    } else {
+      setCustomOptions(true);
+    }
   };
 
   return (
@@ -116,24 +124,37 @@ const CodeSystemSelector = ({
           />
         </div>
         <div tw="flex-initial w-2/4 ">
-          <Select
-            placeHolder={{
-              name: `Select Code`,
-              value: "",
-            }}
-            label="Code"
-            id={`code-select`}
-            inputProps={{
-              "data-testid": `code-select-input`,
-            }}
-            data-testid={`code-select`}
-            disabled={!canEdit}
-            size="small"
-            SelectDisplayProps={{
-              "aria-required": "true",
-            }}
-            options={getCodeConcepts(codeOptions, codeSystemProps.required)}
-          />
+          {customOptions ? (
+            <div className="Custom Inputs">
+              <div style={{ display: "flex", marginBottom: 0, height: 16 }} />
+
+              <FormControl>
+                <TextField sx={textFieldStyle} placeholder="Code System" />
+              </FormControl>
+              <FormControl>
+                <TextField sx={textFieldStyle} placeholder="Code" />
+              </FormControl>
+            </div>
+          ) : (
+            <Select
+              placeHolder={{
+                name: `Select Code`,
+                value: "",
+              }}
+              label="Code"
+              id={`code-select`}
+              inputProps={{
+                "data-testid": `code-select-input`,
+              }}
+              data-testid={`code-select`}
+              disabled={!canEdit}
+              size="small"
+              SelectDisplayProps={{
+                "aria-required": "true",
+              }}
+              options={getCodeConcepts(codeOptions, codeSystemProps.required)}
+            />
+          )}
         </div>
       </div>
     </div>
