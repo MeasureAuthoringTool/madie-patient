@@ -219,51 +219,6 @@ const DemographicsSection = ({ canEdit }) => {
     formik.setFieldValue("birthDate", val);
   };
 
-  const options = [
-    {
-      system: "http://snomed.info/sct",
-      version: "2023-03",
-      concept: [
-        {
-          code: "183452005",
-          display: "Snomed Emergency hospital admission (procedure)",
-        },
-        {
-          code: "32485007",
-          display: "Snomed Hospital admission (procedure)",
-        },
-      ],
-    },
-    {
-      system: "http://ionic.info/sct",
-      version: "2023-03",
-      concept: [
-        {
-          code: "183452005",
-          display: "Ionic Emergency hospital admission (procedure)",
-        },
-        {
-          code: "32485007",
-          display: "Ionic Hospital admission (procedure)",
-        },
-        {
-          code: "8715000",
-          display: "Ionic Hospital admission, elective (procedure)",
-        },
-      ],
-    },
-    {
-      system: "Custom",
-      version: "Custom",
-      concept: [
-        {
-          code: "Custom",
-          display: "Custom",
-        },
-      ],
-    },
-  ];
-
   return (
     <div>
       <ElementSection
@@ -429,16 +384,6 @@ const DemographicsSection = ({ canEdit }) => {
                 ></Select>
               </FormControl>
             </div>
-            <CodeSystemSelector
-              canEdit={canEdit}
-              codeSystemProps={{
-                label: "Code System",
-                options: options,
-                required: false,
-                error: false,
-                helperText: "",
-              }}
-            />
           </div>
         }
       />
