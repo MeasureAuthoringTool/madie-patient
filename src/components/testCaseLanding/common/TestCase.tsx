@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import tw from "twin.macro";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { Toast } from "@madie/madie-design-system/dist/react";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -12,7 +11,10 @@ import ErrorIcon from "@mui/icons-material/Error";
 import DoNotDisturbOnIcon from "@mui/icons-material/DoNotDisturbOn";
 import TruncateText from "./TruncateText";
 import { TestCase as TestCaseModel } from "@madie/madie-models";
-import { MadieDeleteDialog } from "@madie/madie-design-system/dist/react";
+import {
+  MadieDeleteDialog,
+  Toast,
+} from "@madie/madie-design-system/dist/react";
 import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calculator";
 import { Box, useTheme } from "@mui/material";
 import * as _ from "lodash";
