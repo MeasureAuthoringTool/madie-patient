@@ -19,7 +19,6 @@ import {
 } from "./DemographicsSectionStyles";
 import "./DemographicsSection.scss";
 import utc from "dayjs/plugin/utc";
-import CodeSystemSelector from "../../../../../common/codeSystemSelector/CodeSystemSelector";
 
 // utils for
 import {
