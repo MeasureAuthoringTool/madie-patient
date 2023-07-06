@@ -129,10 +129,24 @@ const CodeSystemSelector = ({
               <div style={{ display: "flex", marginBottom: 0, height: 16 }} />
 
               <FormControl>
-                <TextField sx={textFieldStyle} placeholder="Code System" />
+                <TextField
+                  disabled={!canEdit}
+                  inputProps={{
+                    "data-testid": "custom-input-code-system",
+                  }}
+                  sx={textFieldStyle}
+                  placeholder="Code System"
+                />
               </FormControl>
               <FormControl>
-                <TextField sx={textFieldStyle} placeholder="Code" />
+                <TextField
+                  sx={textFieldStyle}
+                  disabled={!canEdit}
+                  placeholder="Code"
+                  inputProps={{
+                    "data-testid": "custom-input-code",
+                  }}
+                />
               </FormControl>
             </div>
           ) : (
