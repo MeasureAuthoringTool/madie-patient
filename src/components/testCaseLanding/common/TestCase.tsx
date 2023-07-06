@@ -82,7 +82,9 @@ const TestCase = ({
       setToastMessage("Test case exported successfully");
       document.body.removeChild(link);
     } catch (err) {
-      console.log(err);
+      setToastOpen(true);
+      setToastType("danger");
+      setToastMessage("Test case export was unsuccessful");
     }
   };
 
