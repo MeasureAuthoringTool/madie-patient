@@ -10,7 +10,7 @@ import {
   DetailedPopulationGroupResult,
 } from "fqm-execution/build/types/Calculator";
 import { checkUserCanEdit, measureStore } from "@madie/madie-util";
-import useExecutionContext from "../../routes/qiCore/useExecutionContext";
+//import useExecutionContext from "../../routes/qiCore/useExecutionContext";
 import CreateCodeCoverageNavTabs from "../common/CreateCodeCoverageNavTabs";
 import CodeCoverageHighlighting from "../common/CodeCoverageHighlighting";
 import CreateNewTestCaseDialog from "../../createTestCase/CreateNewTestCaseDialog";
@@ -25,6 +25,7 @@ import {
 import TestCaseTable from "../common/TestCaseTable";
 import UseTestCases from "../common/Hooks/UseTestCases";
 import UseToast from "../common/Hooks/UseToast";
+import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
 
 const TH = tw.th`p-3 border-b text-left text-sm font-bold capitalize`;
 
@@ -98,10 +99,15 @@ const TestCaseList = (props: TestCaseListProps) => {
       passPercentage: undefined,
       passFailRatio: "",
     });
-  const { measureState, bundleState, valueSetsState, executing, setExecuting } =
-    useExecutionContext();
+  const {
+    measureState,
+    cqmMeasureState,
+    valueSetsState,
+    executing,
+    setExecuting,
+  } = useQdmExecutionContext();
   const [measure] = measureState;
-  const [measureBundle] = bundleState;
+  const [cqmMeasure] = cqmMeasureState;
   const [valueSets] = valueSetsState;
   const [selectedPopCriteria, setSelectedPopCriteria] = useState<Group>();
   const [importDialogState, setImportDialogState] = useState<any>({
@@ -247,14 +253,14 @@ const TestCaseList = (props: TestCaseListProps) => {
     }
     const validTestCases = testCases?.filter((tc) => tc.validResource);
 
-    if (validTestCases && validTestCases.length > 0 && measureBundle) {
+    if (validTestCases && validTestCases.length > 0 && cqmMeasure) {
       setExecuting(true);
       try {
         const calculationOutput: CalculationOutput<any> =
           await calculation.current.calculateTestCases(
             measure,
             validTestCases,
-            measureBundle,
+            cqmMeasure,
             valueSets
           );
         setCalculationOutput(calculationOutput);

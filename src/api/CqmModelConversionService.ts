@@ -98,6 +98,7 @@ export class CqmConversionService {
         measure.cqlLibraryName
       );
 
+    console.log(statementDependenciesMap)
     cqmMeasure.cql_libraries = elms.map((elm) =>
       this.buildCQLLibrary(
         elm,
@@ -111,6 +112,12 @@ export class CqmConversionService {
     const populationSets: PopulationSet[] =
       this.buildCqmPopulationSets(measure);
     cqmMeasure.population_sets = populationSets;
+
+    // cqmMeasure.measure_period.low.value = measure.measurementPeriodStart.toString()
+    // cqmMeasure.measure_period.high.value = measure.measurementPeriodEnd.toString()
+
+    //measure_period, value_sets (from elm we need to get oid)
+    // statement_dependencies issue with
     return cqmMeasure;
   }
 
@@ -268,6 +275,7 @@ export class CqmConversionService {
     cqlLibrary.statement_dependencies = this.generateCqlStatementDependencies(
       statementDependenciesMap[elmJson.library?.identifier.id]
     );
+    console.log(JSON.parse(JSON.stringify(cqlLibrary.statement_dependencies)))
     return cqlLibrary;
   }
 
@@ -276,13 +284,22 @@ export class CqmConversionService {
   ): StatementDependency[] {
     return _.map(
       statementDependencies,
-      (statementDep) =>
-        new StatementDependency({
+      (statementDep) =>{
+       return  ({
           statement_name: statementDep.name,
           statement_references: statementDep.refs as StatementReference[],
         })
+      }
     );
   }
+
+  // private generateCqlStatementDependencies=( statementDependencies: any)=>{
+  //   console.log(statementDependencies)
+  //   return statementDependencies.map( (statementDependency)=>({
+  //     statement_name: statementDependency.name,
+  //     statement_references: statementDependency.refs as StatementReference[],
+  //   }))
+  // }
 
   private buildSourceDataCriteria(
     dataCriteria: DataCriteria

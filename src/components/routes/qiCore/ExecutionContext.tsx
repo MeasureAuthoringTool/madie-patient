@@ -2,6 +2,7 @@ import React, { createContext, useEffect, useState } from "react";
 import { Measure } from "@madie/madie-models";
 import { Bundle, ValueSet } from "fhir/r4";
 import { measureStore } from "@madie/madie-util";
+import { CqmMeasure } from "cqm-models";
 
 export interface ExecutionContextHolder {
   measureState: [measure: Measure, setMeasure: (measure: Measure) => void];
@@ -12,6 +13,10 @@ export interface ExecutionContextHolder {
   valueSetsState: [
     valueSets: ValueSet[],
     setValueSets: (valueSets: ValueSet[]) => void
+  ];
+  cqmMeasureState?: [
+    cqmMeasure: CqmMeasure,
+    setMeasureBundle: (measureBundle: CqmMeasure) => void
   ];
   executionContextReady: boolean;
   executing: boolean;

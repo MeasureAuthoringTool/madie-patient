@@ -39,6 +39,9 @@ import {
 import { QDMPatient } from "cqm-models";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import useCqmConversionService from "../../../api/CqmModelConversionService";
+//import { useExecutionContext } from "../../routes/qiCore/ExecutionContext";
+import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
 
 const EditTestCase = () => {
   useDocumentTitle("MADiE Edit Measure Edit Test Case");
@@ -77,6 +80,13 @@ const EditTestCase = () => {
 
   const qdmCalculation = useRef(qdmCalculationService());
   const testCaseService = useRef(useTestCaseServiceApi());
+  const cqmService = useRef(useCqmConversionService());
+
+  const { measureState, cqmMeasureState, valueSetsState } =
+    useQdmExecutionContext();
+
+  const [cqmMeasure] = cqmMeasureState;
+  const [valueSets] = valueSetsState;
 
   const navigate = useNavigate();
   const { measureId, id } = useParams();
@@ -226,14 +236,20 @@ const EditTestCase = () => {
 
   const calculateQdmTestCases = async () => {
     try {
+      console.log(currentTestCase.json);
       const calculationOutput =
-        await qdmCalculation.current.calculateQdmTestCases();
+        await qdmCalculation.current.calculateQdmTestCases(
+          cqmMeasure,
+          valueSets,
+          currentTestCase?.json
+        );
       calculationOutput &&
         showToast(
           "Calculation was successful, output is printed in the console",
           "success"
         );
     } catch (error) {
+      console.log(error);
       showToast("Error while calculating QDM test cases", "danger");
     }
   };

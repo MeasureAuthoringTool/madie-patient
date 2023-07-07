@@ -8,6 +8,7 @@ import { Measure, MeasureErrorType, TestCase } from "@madie/madie-models";
 import useExecutionContext from "../../routes/qiCore/useExecutionContext";
 import { TestCasesPassingDetailsProps } from "../common/interfaces";
 import { useFeatureFlags } from "@madie/madie-util";
+import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
 
 export interface NavTabProps {
   activeTab: string;
@@ -36,7 +37,6 @@ const defaultStyle = {
 };
 
 export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
-  const { executionContextReady, executing } = useExecutionContext();
   const {
     activeTab,
     setActiveTab,
@@ -50,6 +50,11 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     coveragePercentage,
     validTestCases,
   } = props;
+  const { executionContextReady, executing } = props.measure.model.includes(
+    "QDM"
+  )
+    ? useQdmExecutionContext()
+    : useExecutionContext();
   const featureFlags = useFeatureFlags();
 
   const executionResultsDisplayTemplate = (label) => {
