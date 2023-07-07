@@ -10,11 +10,15 @@ export class QdmCalculationService {
     patients.push(JSON.parse(patientJson));
 
     // Example options; includes directive to produce pretty statement results.
-    const options = { doPretty: true, effectiveDate:"201201010000", effectiveEnd: "201212312359"};
+    const options = {
+      doPretty: true,
+      effectiveDate: "201201010000",
+      effectiveEnd: "201212312359",
+    };
 
-    console.log("calculation service called", );
+    console.log("calculation service called");
     // Todo Mocked data will be replaced in future stories
-    console.log(cqmMeasure)
+    console.log(cqmMeasure);
     const calculationResults = await Calculator.calculate(
       cqmMeasure,
       patients,

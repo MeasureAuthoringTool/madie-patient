@@ -98,7 +98,7 @@ export class CqmConversionService {
         measure.cqlLibraryName
       );
 
-    console.log(statementDependenciesMap)
+    console.log(statementDependenciesMap);
     cqmMeasure.cql_libraries = elms.map((elm) =>
       this.buildCQLLibrary(
         elm,
@@ -275,22 +275,19 @@ export class CqmConversionService {
     cqlLibrary.statement_dependencies = this.generateCqlStatementDependencies(
       statementDependenciesMap[elmJson.library?.identifier.id]
     );
-    console.log(JSON.parse(JSON.stringify(cqlLibrary.statement_dependencies)))
+    console.log(JSON.parse(JSON.stringify(cqlLibrary.statement_dependencies)));
     return cqlLibrary;
   }
 
   private generateCqlStatementDependencies(
     statementDependencies: any
   ): StatementDependency[] {
-    return _.map(
-      statementDependencies,
-      (statementDep) =>{
-       return  ({
-          statement_name: statementDep.name,
-          statement_references: statementDep.refs as StatementReference[],
-        })
-      }
-    );
+    return _.map(statementDependencies, (statementDep) => {
+      return {
+        statement_name: statementDep.name,
+        statement_references: statementDep.refs as StatementReference[],
+      };
+    });
   }
 
   // private generateCqlStatementDependencies=( statementDependencies: any)=>{

@@ -7,7 +7,7 @@ export class ElmDependencyFinder {
     let allElmsDepMap = {};
     cqlLibraryElms.forEach((elm) => {
       const elmJson = JSON.parse(elm);
-      console.log("elmJson",elmJson);
+      console.log("elmJson", elmJson);
       const elmId: string = elmJson.library?.identifier?.id; //library name
       neededElmDepsMap[elmId] = {};
       allElmsDepMap[elmId] = this.makeStatementDepsForElm(elmJson);
@@ -53,7 +53,7 @@ export class ElmDependencyFinder {
     const includedLibrariesMap = {};
     includedLibrariesMap[elmJson.library?.identifier?.id] =
       elmJson.library?.identifier?.id;
-    elmJson.library?.includes?.def?.forEach((def) => {  
+    elmJson.library?.includes?.def?.forEach((def) => {
       includedLibrariesMap[def.localIdentifier] = def.path;
     });
     return includedLibrariesMap;
@@ -71,22 +71,22 @@ export class ElmDependencyFinder {
     elmDeps: {},
     includedLibrariesMap: any
   ): void {
-    if (Array.isArray(obj)) {     
-      obj.forEach((el) =>{
+    if (Array.isArray(obj)) {
+      obj.forEach((el) => {
         this.generateStatementDepsForElmHelper(
           el,
           libraryId,
           parentName,
           elmDeps,
           includedLibrariesMap
-        )
-        });
+        );
+      });
     } else if (typeof obj === "object") {
       if (
         ["ExpressionRef", "FunctionRef"].includes(obj.type) &&
         parentName !== "Patient"
       ) {
-        let dep;       
+        let dep;
         if (!includedLibrariesMap[obj.libraryName]) {
           dep = {
             library_name: libraryId,
