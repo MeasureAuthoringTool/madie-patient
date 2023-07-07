@@ -430,6 +430,9 @@ describe("ElementsSection allows card opening and closing", () => {
     await waitFor(() => {
       expect(getByTestId("data-element-card")).toBeInTheDocument();
     });
+    await waitFor(() => {
+      expect(queryByText("Negation Rationale")).not.toBeInTheDocument();
+    });
     const deviceTab = screen.getByTestId("elements-tab-device");
     expect(deviceTab).toBeInTheDocument();
     act(() => {
@@ -437,6 +440,15 @@ describe("ElementsSection allows card opening and closing", () => {
     });
     await waitFor(() => {
       expect(queryByText("Timing")).not.toBeInTheDocument();
+    });
+    const deviceDataType = screen.getByTestId(
+      "data-type-Device, Order: Cardiopulmonary Arrest"
+    );
+    act(() => {
+      fireEvent.click(deviceDataType);
+    });
+    await waitFor(() => {
+      expect(queryByText("Negation Rationale")).toBeInTheDocument();
     });
   });
 });
