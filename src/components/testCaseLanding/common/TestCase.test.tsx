@@ -39,6 +39,7 @@ describe("TestCase component", () => {
     expect(buttons[0]).toHaveTextContent("Select");
     fireEvent.click(buttons[0]);
     expect(screen.getByText("edit")).toBeInTheDocument();
+    expect(screen.getByText("export")).toBeInTheDocument();
     expect(screen.getByText("delete")).toBeInTheDocument();
 
     const deleteButton = screen.getByText("delete");
@@ -78,5 +79,35 @@ describe("TestCase component", () => {
     expect(buttons[0]).toHaveTextContent("Select");
     fireEvent.click(buttons[0]);
     expect(screen.getByText("view")).toBeInTheDocument();
+  });
+
+  it("should generate the test case zip file", async () => {
+    const table = document.createElement("table");
+    render(
+      <tbody>
+        <MemoryRouter>
+          <TestCaseComponent testCase={testCase} canEdit={true} />
+        </MemoryRouter>
+      </tbody>,
+      { container: document.body.appendChild(table) }
+    );
+
+    const buttons = await screen.findAllByRole("button");
+    expect(buttons).toHaveLength(1);
+    expect(buttons[0]).toHaveTextContent("Select");
+    fireEvent.click(buttons[0]);
+
+    window.URL.createObjectURL = jest
+      .fn()
+      .mockReturnValueOnce("http://fileurl");
+    const exportButton = screen.getByText("export");
+    expect(exportButton).toBeInTheDocument();
+    fireEvent.click(exportButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Test case exported successfully")
+      ).toBeInTheDocument();
+    });
   });
 });
