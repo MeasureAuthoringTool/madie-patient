@@ -36,6 +36,11 @@ const options = [
       },
     ],
   },
+  {
+    system: "Custom",
+    version: "Custom",
+    concept: [{ code: "Custom", display: "Custom" }],
+  },
 ];
 
 describe("CodeSystemSelector Component", () => {
@@ -66,7 +71,7 @@ describe("CodeSystemSelector Component", () => {
     userEvent.click(codeSystemSelectDropdown);
 
     const renderedOptionsForCodeSystem = await screen.findAllByRole("option");
-    expect(renderedOptionsForCodeSystem).toHaveLength(3); // including '-'
+    expect(renderedOptionsForCodeSystem).toHaveLength(4); // including '-'
 
     // This click will not update the value as onChange is not handled, but it helps in closing the Meunitems
     userEvent.click(renderedOptionsForCodeSystem[1]);
@@ -112,7 +117,7 @@ describe("CodeSystemSelector Component", () => {
     userEvent.click(codeSystemSelectDropdown);
 
     const renderedOptionsForCode = await screen.findAllByRole("option");
-    expect(renderedOptionsForCode).toHaveLength(3); // including '-'
+    expect(renderedOptionsForCode).toHaveLength(4); // including '-'
 
     // This click will not update the value as onChange is not handled, but it helps in closing the Meunitems
     userEvent.click(renderedOptionsForCode[2]);
@@ -125,6 +130,39 @@ describe("CodeSystemSelector Component", () => {
 
     const renderedOptionsForCodeSystem = await screen.findAllByRole("option");
     expect(renderedOptionsForCodeSystem).toHaveLength(4); // including '-'
+  });
+
+  it("Should render custom options when custom is selected", async () => {
+    render(
+      <CodeSystemSelector
+        canEdit={true}
+        codeSystemProps={{
+          label: "Code System",
+          options: options,
+          required: false,
+          error: false,
+          helperText: "",
+        }}
+      />
+    );
+
+    const codeSystemSelect = screen.getByTestId("code-system-select");
+    const codeSystemSelectDropdown = within(codeSystemSelect).getByRole(
+      "button"
+    ) as HTMLInputElement;
+    userEvent.click(codeSystemSelectDropdown);
+
+    const renderedOptionsForCode = await screen.findAllByRole("option");
+    expect(renderedOptionsForCode).toHaveLength(4); // including '-'
+
+    // This click will not update the value as onChange is not handled, but it helps in closing the Meunitems
+    userEvent.click(renderedOptionsForCode[3]);
+
+    const codeCustom = screen.getByTestId("custom-input-code");
+    expect(codeCustom).toBeInTheDocument();
+
+    const codeSystemCustom = screen.getByTestId("custom-input-code-system");
+    expect(codeSystemCustom).toBeInTheDocument();
   });
 
   it("Should render disabled state of child components", async () => {
