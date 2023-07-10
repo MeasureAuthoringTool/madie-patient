@@ -20,6 +20,8 @@ import {
 import "./DemographicsSection.scss";
 import utc from "dayjs/plugin/utc";
 
+import IntegerInput from "../../../../../common/IntegerInput/IntegerInput";
+
 // utils for
 import {
   RACE_CODE_OPTIONS,
@@ -47,6 +49,7 @@ const DemographicsSection = ({ canEdit }) => {
   const formik: any = useFormikContext();
   // select stuff
   const [qdmPatient, setQdmPatient] = useState<QDMPatient>();
+  const [int, setInt] = useState<number>(0);
   // this will be local
   const [raceDataElement, setRaceDataElement] = useState<DataElement>();
   const [genderDataElement, setGenderDataElement] = useState<DataElement>();
@@ -383,6 +386,12 @@ const DemographicsSection = ({ canEdit }) => {
                 ></Select>
               </FormControl>
             </div>
+            <IntegerInput
+            handleChange={setInt}
+            canEdit={true}
+            intValue={int}
+            label="asdf"
+            />
           </div>
         }
       />
