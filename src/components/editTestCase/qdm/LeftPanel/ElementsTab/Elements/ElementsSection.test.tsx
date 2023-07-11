@@ -328,6 +328,7 @@ const testDataElements = [
     id: "6480f13e91f25700004059db",
     codeListId: "2.16.840.1.113883.3.3157.4048",
     description: "Device, Order: Cardiopulmonary Arrest",
+    negationRationale: true,
   },
 ];
 
