@@ -97,8 +97,6 @@ export class CqmConversionService {
         elms,
         measure.cqlLibraryName
       );
-
-    console.log(statementDependenciesMap);
     cqmMeasure.cql_libraries = elms.map((elm) =>
       this.buildCQLLibrary(
         elm,
@@ -271,32 +269,20 @@ export class CqmConversionService {
     cqlLibrary.is_top_level = true;
 
     cqlLibrary.elm_annotations = parse(cqlLibrary.elm);
-    // TODO: prepare statement_dependencies- MAT-5786
     cqlLibrary.statement_dependencies = this.generateCqlStatementDependencies(
       statementDependenciesMap[elmJson.library?.identifier.id]
     );
-    console.log(JSON.parse(JSON.stringify(cqlLibrary.statement_dependencies)));
     return cqlLibrary;
   }
 
-  private generateCqlStatementDependencies(
-    statementDependencies: any
-  ): StatementDependency[] {
-    return _.map(statementDependencies, (statementDep) => {
-      return {
-        statement_name: statementDep.name,
-        statement_references: statementDep.refs as StatementReference[],
-      };
+  private generateCqlStatementDependencies(statementDependencies: any) {
+    return Object.entries(statementDependencies).map(([k, v]) => {
+      return new StatementDependency({
+        statement_name: k,
+        statement_references: v,
+      });
     });
   }
-
-  // private generateCqlStatementDependencies=( statementDependencies: any)=>{
-  //   console.log(statementDependencies)
-  //   return statementDependencies.map( (statementDependency)=>({
-  //     statement_name: statementDependency.name,
-  //     statement_references: statementDependency.refs as StatementReference[],
-  //   }))
-  // }
 
   private buildSourceDataCriteria(
     dataCriteria: DataCriteria

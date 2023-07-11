@@ -236,7 +236,6 @@ const EditTestCase = () => {
 
   const calculateQdmTestCases = async () => {
     try {
-      console.log(currentTestCase.json);
       const calculationOutput =
         await qdmCalculation.current.calculateQdmTestCases(
           cqmMeasure,
@@ -249,7 +248,6 @@ const EditTestCase = () => {
           "success"
         );
     } catch (error) {
-      console.log(error);
       showToast("Error while calculating QDM test cases", "danger");
     }
   };

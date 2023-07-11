@@ -1,7 +1,4 @@
 import { Calculator } from "cqm-execution";
-//import cqmMeasure from "../mockdata/qdm/CMS108/cqm_measure.json";
-//import valueSets from "../mockdata/qdm/CMS108/value_sets.json";
-import patient from "../mockdata/qdm/CMS108/IPP_DENOME_NUMER_PASS_NoVTEPatientRefusal.json";
 import { CqmMeasure } from "cqm-models";
 
 export class QdmCalculationService {
@@ -15,10 +12,7 @@ export class QdmCalculationService {
       effectiveDate: "201201010000",
       effectiveEnd: "201212312359",
     };
-
-    console.log("calculation service called");
-    // Todo Mocked data will be replaced in future stories
-    console.log(cqmMeasure);
+    
     const calculationResults = await Calculator.calculate(
       cqmMeasure,
       patients,
