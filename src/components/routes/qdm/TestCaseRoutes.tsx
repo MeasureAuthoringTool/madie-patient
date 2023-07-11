@@ -14,9 +14,6 @@ import { QdmExecutionContextProvider } from "./QdmExecutionContext";
 
 const TestCaseRoutes = () => {
   const [errors, setErrors] = useState<Array<string>>([]);
-
-  // Following states are initialized just to provide them as props to contextProvider
-  // we may need a new context provider for QDM
   const [executionContextReady, setExecutionContextReady] =
     useState<boolean>(true);
   const [executing, setExecuting] = useState<boolean>();

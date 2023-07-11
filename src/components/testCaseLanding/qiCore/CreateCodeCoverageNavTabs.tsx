@@ -8,7 +8,6 @@ import { Measure, MeasureErrorType, TestCase } from "@madie/madie-models";
 import useExecutionContext from "../../routes/qiCore/useExecutionContext";
 import { TestCasesPassingDetailsProps } from "../common/interfaces";
 import { useFeatureFlags } from "@madie/madie-util";
-import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
 
 export interface NavTabProps {
   activeTab: string;
