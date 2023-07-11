@@ -387,10 +387,10 @@ const DemographicsSection = ({ canEdit }) => {
               </FormControl>
             </div>
             <IntegerInput
-            handleChange={setInt}
-            canEdit={true}
-            intValue={int}
-            label="asdf"
+              intValue={int}
+              handleChange={setInt}
+              canEdit={true}
+              label="asdf"
             />
           </div>
         }
