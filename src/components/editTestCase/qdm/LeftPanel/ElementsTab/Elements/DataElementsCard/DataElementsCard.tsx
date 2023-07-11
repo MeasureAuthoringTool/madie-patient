@@ -21,25 +21,9 @@ const DataElementsCard = (props: {
     selectedDataElement,
     setSelectedDataElement,
   } = props;
-  let negationRationale = false;
+  const negationRationale =
+    selectedDataElement?.hasOwnProperty("negationRationale");
   // https://ecqi.healthit.gov/mcw/2020/qdm-attribute/negationrationale.html  (list of all categories that use negation rationale)
-  // we want to display negation rationale only in instances where the cql uses a qdm status that references an action.
-  if (selectedDataElement && selectedDataElement?.qdmStatus) {
-    const status = selectedDataElement.qdmStatus;
-    if (status) {
-      const negationRationaleActions = {
-        order: true,
-        recommended: true,
-        performed: true,
-        communication: true,
-        dispensed: true,
-        applied: true,
-      };
-      if (negationRationaleActions[status] === true) {
-        negationRationale = true;
-      }
-    }
-  }
 
   // centralize state one level up so we can conditionally render our child component
   return (
