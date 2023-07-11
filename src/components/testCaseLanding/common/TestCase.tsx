@@ -19,6 +19,8 @@ import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calcula
 import { Box, useTheme } from "@mui/material";
 import * as _ from "lodash";
 import "./TestCase.scss";
+import useExecutionContext from "../../routes/qiCore/useExecutionContext";
+import getModelFamily from "../../../util/measureModelHelpers";
 
 const TestCase = ({
   testCase,
@@ -37,6 +39,8 @@ const TestCase = ({
   const status = testCase.executionStatus;
   const [deleteDialogModalOpen, setDeleteDialogModalOpen] =
     useState<boolean>(false);
+  const { measureState } = useExecutionContext();
+  const [measure] = measureState;
 
   const [toastOpen, setToastOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>("");
@@ -74,7 +78,16 @@ const TestCase = ({
       const url = window.URL.createObjectURL(textFile);
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `ADD.zip`);
+      link.setAttribute(
+        "download",
+        measure.ecqmTitle +
+          "-v" +
+          measure.version +
+          "-" +
+          getModelFamily(measure.model) +
+          "-TestCases.zip"
+      );
+
       document.body.appendChild(link);
       link.click();
       setToastOpen(true);
