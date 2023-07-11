@@ -21,6 +21,7 @@ import {
   Measure,
   MeasureErrorType,
   MeasureScoring,
+  Model,
   PopulationExpectedValue,
   PopulationType,
   TestCase,
@@ -81,6 +82,7 @@ const measure = {
       ],
     },
   ],
+  model: Model.QICORE,
   acls: [{ userId: "othertestuser@example.com", roles: ["SHARED_WITH"] }], //#nosec
 } as Measure;
 jest.mock("@madie/madie-util", () => ({

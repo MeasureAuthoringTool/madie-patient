@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import TestCaseLanding from "./TestCaseLanding";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
-import { Measure } from "@madie/madie-models";
+import { Measure, Model } from "@madie/madie-models";
 import { Bundle, ValueSet } from "fhir/r4";
 import { ExecutionContextProvider } from "../../routes/qiCore/ExecutionContext";
 import { checkUserCanEdit } from "@madie/madie-util";
@@ -27,6 +27,7 @@ const measure = {
   createdBy: MEASURE_CREATEDBY,
   measurementPeriodStart: "2023-01-01",
   measurementPeriodEnd: "2023-12-31",
+  model: Model.QICORE,
 } as unknown as Measure;
 
 const measureBundle = {} as Bundle;

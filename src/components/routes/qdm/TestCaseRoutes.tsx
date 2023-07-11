@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import TestCaseLandingQdm from "../../testCaseLanding/qdm/TestCaseLanding";
 import EditTestCase from "../../editTestCase/qdm/EditTestCase";
@@ -6,8 +6,11 @@ import NotFound from "../../notfound/NotFound";
 import StatusHandler from "../../statusHandler/StatusHandler";
 import { Measure } from "@madie/madie-models";
 import { measureStore } from "@madie/madie-util";
-import { ExecutionContextProvider } from "../qiCore/ExecutionContext";
 import { Bundle, ValueSet } from "fhir/r4";
+import { CqmMeasure } from "cqm-models";
+import useCqmConversionService from "../../../api/CqmModelConversionService";
+import useTerminologyServiceApi from "../../../api/useTerminologyServiceApi";
+import { QdmExecutionContextProvider } from "./QdmExecutionContext";
 
 const TestCaseRoutes = () => {
   const [errors, setErrors] = useState<Array<string>>([]);
@@ -19,6 +22,10 @@ const TestCaseRoutes = () => {
   const [executing, setExecuting] = useState<boolean>();
   const [measureBundle, setMeasureBundle] = useState<Bundle>();
   const [valueSets, setValueSets] = useState<ValueSet[]>();
+  const [cqmMeasure, setCqmMeasure] = useState<CqmMeasure>();
+
+  const cqmService = useRef(useCqmConversionService());
+  const terminologyService = useRef(useTerminologyServiceApi());
 
   const [measure, setMeasure] = useState<Measure>(measureStore.state);
   useEffect(() => {
@@ -28,12 +35,51 @@ const TestCaseRoutes = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (measure) {
+      if (measure.cqlErrors || !measure.elmJson) {
+        setErrors((prevState) => [
+          ...prevState,
+          "An error exists with the measure CQL, please review the CQL Editor tab.",
+        ]);
+      }
+      if (!measure?.groups?.length) {
+        setErrors((prevState) => [
+          ...prevState,
+          "No Population Criteria is associated with this measure. Please review the Population Criteria tab.",
+        ]);
+      }
+
+      //check for: convert madie measure to CQM measure and throw the error if there
+      if (!errors?.length) {
+        cqmService.current
+          .convertToCqmMeasure(measure)
+          .then((convertedMeasure) => {
+            setCqmMeasure(convertedMeasure);
+          });
+      }
+    }
+  }, [measure]);
+
+  useEffect(() => {
+    if (cqmMeasure) {
+      terminologyService.current
+        .getQdmValueSetsExpansion(cqmMeasure)
+        .then((vs: ValueSet[]) => {
+          setValueSets(vs);
+        })
+        .catch((err) => {
+          setErrors((prevState) => [...prevState, err.message]);
+        });
+    }
+  }, [cqmMeasure]);
+
   // Setup a context provider which holds measure state, cqmMeasure and valueSets similar to QiCore/TestCaseRoutes
   return (
-    <ExecutionContextProvider
+    <QdmExecutionContextProvider
       value={{
         measureState: [measure, setMeasure],
-        bundleState: [measureBundle, setMeasureBundle],
+        cqmMeasureState: [cqmMeasure, setCqmMeasure],
         valueSetsState: [valueSets, setValueSets],
         executionContextReady,
         executing,
@@ -59,7 +105,7 @@ const TestCaseRoutes = () => {
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </ExecutionContextProvider>
+    </QdmExecutionContextProvider>
   );
 };
 

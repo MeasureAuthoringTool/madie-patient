@@ -29,6 +29,7 @@ import useTestCaseServiceApi, {
 import useCqmConversionService, {
   CqmConversionService,
 } from "../../../api/CqmModelConversionService";
+import { getExampleValueSet } from "../../../util/CalculationTestHelpers";
 
 const serviceConfig: ServiceConfig = {
   testCaseService: {
@@ -368,6 +369,10 @@ describe("EditTestCase QDM Component", () => {
   const { getByRole, findByTestId, findByText } = screen;
 
   beforeEach(() => {
+    const getAccessToken = jest.fn();
+    // let cqmConversionService = new CqmConversionService("url", getAccessToken);
+    // const cqmMeasure = cqmConversionService.convertToCqmMeasure(mockMeasure);
+    // const valueSets = [getExampleValueSet()];
     useTestCaseServiceMock.mockImplementation(() => {
       return useTestCaseServiceMockResolved;
     });

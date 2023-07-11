@@ -3,9 +3,10 @@ import { render, screen } from "@testing-library/react";
 import TestCaseLanding from "./TestCaseLanding";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
-import { Measure } from "@madie/madie-models";
-import { Bundle, ValueSet } from "fhir/r4";
-import { ExecutionContextProvider } from "../../routes/qiCore/ExecutionContext";
+import { Measure, Model } from "@madie/madie-models";
+import { ValueSet } from "fhir/r4";
+import { CqmMeasure } from "cqm-models";
+import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
 import { checkUserCanEdit } from "@madie/madie-util";
 
 const serviceConfig: ServiceConfig = {
@@ -27,12 +28,13 @@ const measure = {
   createdBy: MEASURE_CREATEDBY,
   measurementPeriodStart: "2023-01-01",
   measurementPeriodEnd: "2023-12-31",
+  model: Model.QDM_5_6,
 } as unknown as Measure;
 
-const measureBundle = {} as Bundle;
+const cqmMeasure = {} as CqmMeasure;
 const valueSets = [] as ValueSet[];
 const setMeasure = jest.fn();
-const setMeasureBundle = jest.fn();
+const setCqmMeasure = jest.fn();
 const setValueSets = jest.fn();
 const setExecuting = jest.fn();
 const setError = jest.fn();
@@ -64,10 +66,10 @@ describe("TestCaseLanding component", () => {
     return render(
       <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases"]}>
         <ApiContextProvider value={serviceConfig}>
-          <ExecutionContextProvider
+          <QdmExecutionContextProvider
             value={{
               measureState: [measure, setMeasure],
-              bundleState: [measureBundle, setMeasureBundle],
+              cqmMeasureState: [cqmMeasure, setCqmMeasure],
               valueSetsState: [valueSets, setValueSets],
               executionContextReady: true,
               executing: false,
@@ -80,7 +82,7 @@ describe("TestCaseLanding component", () => {
                 element={<TestCaseLanding errors={[]} setErrors={setError} />}
               />
             </Routes>
-          </ExecutionContextProvider>
+          </QdmExecutionContextProvider>
         </ApiContextProvider>
       </MemoryRouter>
     );
