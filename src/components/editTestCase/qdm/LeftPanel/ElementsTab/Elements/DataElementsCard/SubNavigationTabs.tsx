@@ -7,30 +7,33 @@ import {
 } from "../../../../../../../icons";
 
 export interface NavTabProps {
+  negationRationale: Boolean;
   activeTab: string;
   setActiveTab: (value: string) => void;
 }
 
-const OPTIONS = [
-  {
-    label: "Codes",
-    value: "codes",
-    icon: CodesIcon,
-  },
-  {
-    label: "Attributes",
-    value: "attributes",
-    icon: AttributesIcon,
-  },
-  {
-    label: "Negation Rationale",
-    value: "negation_rationale",
-    icon: NegationRationaleIcon,
-  },
-];
-
 // this guy will have to be able to access state and update the values of state to show numbers such as [Codes (1)] later on. we will have to update matchers too
-const SubNavigationTabs = ({ activeTab, setActiveTab }) => {
+const SubNavigationTabs = ({ activeTab, setActiveTab, negationRationale }) => {
+  const OPTIONS = [
+    {
+      label: "Codes",
+      value: "codes",
+      icon: CodesIcon,
+    },
+    {
+      label: "Attributes",
+      value: "attributes",
+      icon: AttributesIcon,
+    },
+  ];
+  // only push if we need it
+  if (negationRationale) {
+    OPTIONS.push({
+      label: "Negation Rationale",
+      value: "negation_rationale",
+      icon: NegationRationaleIcon,
+    });
+  }
   return (
     <div className="tabs-container">
       <Tabs
