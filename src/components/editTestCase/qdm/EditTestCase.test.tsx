@@ -306,17 +306,10 @@ const getAccessToken = jest.fn();
 let cqmConversionService = new CqmConversionService("url", getAccessToken);
 const cqmMeasure = cqmConversionService.convertToCqmMeasure(mockMeasure);
 
-describe("ElementsTab", () => {
-  useTestCaseServiceMock.mockImplementation(() => {
-    return useTestCaseServiceMockResolved;
-  });
-
-  test("Icons present and navigate correctly.", async () => {
-    CQMConversionMock.mockImplementation(() => {
-      return useCqmConversionServiceMockResolved;
-    });
-    await render(
-      <MemoryRouter>
+const renderEditTestCaseComponent = () => {
+  return render(
+    <MemoryRouter>
+      <ApiContextProvider value={serviceConfig}>
         <QdmExecutionContextProvider
           value={{
             measureState: [measure, setMeasure],
@@ -329,8 +322,21 @@ describe("ElementsTab", () => {
         >
           <EditTestCase />
         </QdmExecutionContextProvider>
-      </MemoryRouter>
-    );
+      </ApiContextProvider>
+    </MemoryRouter>
+  );
+};
+
+describe("ElementsTab", () => {
+  useTestCaseServiceMock.mockImplementation(() => {
+    return useTestCaseServiceMockResolved;
+  });
+
+  test("Icons present and navigate correctly.", async () => {
+    CQMConversionMock.mockImplementation(() => {
+      return useCqmConversionServiceMockResolved;
+    });
+    await waitFor(() => renderEditTestCaseComponent());
     const json = await findByText("JSON");
     // const elements = await findByText("Elements"); // this doesn't work?
     const elements = await findByTestId("json-tab");
@@ -355,22 +361,7 @@ test("LeftPanel navigation works as expected.", async () => {
   CQMConversionMock.mockImplementation(() => {
     return useCqmConversionServiceMockResolved;
   });
-  await render(
-    <MemoryRouter>
-      <QdmExecutionContextProvider
-        value={{
-          measureState: [measure, setMeasure],
-          cqmMeasureState: [cqmMeasure, setCqmMeasure],
-          valueSetsState: [valueSets, setValueSets],
-          executionContextReady: true,
-          executing: false,
-          setExecuting: jest.fn(),
-        }}
-      >
-        <EditTestCase />
-      </QdmExecutionContextProvider>
-    </MemoryRouter>
-  );
+  await waitFor(() => renderEditTestCaseComponent());
   const symptom = await findByTestId("elements-tab-symptom");
   await waitFor(() => {
     expect(symptom).toBeInTheDocument();
@@ -409,24 +400,7 @@ describe("EditTestCase QDM Component", () => {
   });
 
   it("should render qdm edit test case component along with action buttons", async () => {
-    await render(
-      <MemoryRouter>
-        <ApiContextProvider value={serviceConfig}>
-          <QdmExecutionContextProvider
-            value={{
-              measureState: [measure, setMeasure],
-              cqmMeasureState: [cqmMeasure, setCqmMeasure],
-              valueSetsState: [valueSets, setValueSets],
-              executionContextReady: true,
-              executing: false,
-              setExecuting: jest.fn(),
-            }}
-          >
-            <EditTestCase />
-          </QdmExecutionContextProvider>
-        </ApiContextProvider>
-      </MemoryRouter>
-    );
+    await waitFor(() => renderEditTestCaseComponent());
     const runTestCaseButton = await getByRole("button", {
       name: "Run Test",
     });
@@ -437,24 +411,7 @@ describe("EditTestCase QDM Component", () => {
   });
 
   it("should render group populations from DB", async () => {
-    render(
-      <MemoryRouter>
-        <ApiContextProvider value={serviceConfig}>
-          <QdmExecutionContextProvider
-            value={{
-              measureState: [measure, setMeasure],
-              cqmMeasureState: [cqmMeasure, setCqmMeasure],
-              valueSetsState: [valueSets, setValueSets],
-              executionContextReady: true,
-              executing: false,
-              setExecuting: jest.fn(),
-            }}
-          >
-            <EditTestCase />
-          </QdmExecutionContextProvider>
-        </ApiContextProvider>{" "}
-      </MemoryRouter>
-    );
+    await waitFor(() => renderEditTestCaseComponent());
 
     const expectedActualTab = getByRole("tab", {
       name: "Expected or Actual tab panel",
@@ -471,24 +428,7 @@ describe("EditTestCase QDM Component", () => {
       return useTestCaseServiceMockRejectedGetTestCase;
     });
 
-    render(
-      <MemoryRouter>
-        <ApiContextProvider value={serviceConfig}>
-          <QdmExecutionContextProvider
-            value={{
-              measureState: [measure, setMeasure],
-              cqmMeasureState: [cqmMeasure, setCqmMeasure],
-              valueSetsState: [valueSets, setValueSets],
-              executionContextReady: true,
-              executing: false,
-              setExecuting: jest.fn(),
-            }}
-          >
-            <EditTestCase />
-          </QdmExecutionContextProvider>
-        </ApiContextProvider>{" "}
-      </MemoryRouter>
-    );
+    await waitFor(() => renderEditTestCaseComponent());
 
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalled();
@@ -498,22 +438,7 @@ describe("EditTestCase QDM Component", () => {
   it("should render group populations from DB and able to update the values and save test case", async () => {
     testCase.json = testCaseJson;
     mockedAxios.put.mockResolvedValueOnce(testCase);
-    render(
-      <MemoryRouter>
-        <QdmExecutionContextProvider
-          value={{
-            measureState: [measure, setMeasure],
-            cqmMeasureState: [cqmMeasure, setCqmMeasure],
-            valueSetsState: [valueSets, setValueSets],
-            executionContextReady: true,
-            executing: false,
-            setExecuting: jest.fn(),
-          }}
-        >
-          <EditTestCase />
-        </QdmExecutionContextProvider>
-      </MemoryRouter>
-    );
+    await waitFor(() => renderEditTestCaseComponent());
 
     const saveButton = getByRole("button", { name: "Save" });
     const expectedActualTab = getByRole("tab", {
@@ -542,24 +467,7 @@ describe("EditTestCase QDM Component", () => {
   });
 
   it("should render qdm edit Demographics component with default values", () => {
-    render(
-      <MemoryRouter>
-        <ApiContextProvider value={serviceConfig}>
-          <QdmExecutionContextProvider
-            value={{
-              measureState: [measure, setMeasure],
-              cqmMeasureState: [cqmMeasure, setCqmMeasure],
-              valueSetsState: [valueSets, setValueSets],
-              executionContextReady: true,
-              executing: false,
-              setExecuting: jest.fn(),
-            }}
-          >
-            <EditTestCase />
-          </QdmExecutionContextProvider>
-        </ApiContextProvider>{" "}
-      </MemoryRouter>
-    );
+    renderEditTestCaseComponent();
 
     const raceInput = screen.getByTestId(
       "demographics-race-input"
@@ -580,24 +488,7 @@ describe("EditTestCase QDM Component", () => {
 
   it("should render qdm edit Demographics component with values from TestCase JSON", async () => {
     testCase.json = testCaseJson;
-    render(
-      <MemoryRouter>
-        <ApiContextProvider value={serviceConfig}>
-          <QdmExecutionContextProvider
-            value={{
-              measureState: [measure, setMeasure],
-              cqmMeasureState: [cqmMeasure, setCqmMeasure],
-              valueSetsState: [valueSets, setValueSets],
-              executionContextReady: true,
-              executing: false,
-              setExecuting: jest.fn(),
-            }}
-          >
-            <EditTestCase />
-          </QdmExecutionContextProvider>
-        </ApiContextProvider>{" "}
-      </MemoryRouter>
-    );
+    renderEditTestCaseComponent();
 
     const raceInput = screen.getByTestId(
       "demographics-race-input"
@@ -619,25 +510,7 @@ describe("EditTestCase QDM Component", () => {
   });
 
   it("discard button resets form", () => {
-    render(
-      <MemoryRouter>
-        <ApiContextProvider value={serviceConfig}>
-          <QdmExecutionContextProvider
-            value={{
-              measureState: [measure, setMeasure],
-              cqmMeasureState: [cqmMeasure, setCqmMeasure],
-              valueSetsState: [valueSets, setValueSets],
-              executionContextReady: true,
-              executing: false,
-              setExecuting: jest.fn(),
-            }}
-          >
-            <EditTestCase />
-          </QdmExecutionContextProvider>
-        </ApiContextProvider>{" "}
-      </MemoryRouter>
-    );
-
+    renderEditTestCaseComponent();
     const raceInput = screen.getByTestId(
       "demographics-race-input"
     ) as HTMLInputElement;
@@ -675,24 +548,7 @@ describe("EditTestCase QDM Component", () => {
   });
 
   it("test change dropwdown values", () => {
-    render(
-      <MemoryRouter>
-        <ApiContextProvider value={serviceConfig}>
-          <QdmExecutionContextProvider
-            value={{
-              measureState: [measure, setMeasure],
-              cqmMeasureState: [cqmMeasure, setCqmMeasure],
-              valueSetsState: [valueSets, setValueSets],
-              executionContextReady: true,
-              executing: false,
-              setExecuting: jest.fn(),
-            }}
-          >
-            <EditTestCase />
-          </QdmExecutionContextProvider>
-        </ApiContextProvider>{" "}
-      </MemoryRouter>
-    );
+    renderEditTestCaseComponent();
 
     const raceInput = screen.getByTestId(
       "demographics-race-input"
@@ -733,24 +589,7 @@ describe("EditTestCase QDM Component", () => {
       return useTestCaseServiceMockResolvedWithTestCaseJson;
     });
 
-    await render(
-      <MemoryRouter>
-        <ApiContextProvider value={serviceConfig}>
-          <QdmExecutionContextProvider
-            value={{
-              measureState: [measure, setMeasure],
-              cqmMeasureState: [cqmMeasure, setCqmMeasure],
-              valueSetsState: [valueSets, setValueSets],
-              executionContextReady: true,
-              executing: false,
-              setExecuting: jest.fn(),
-            }}
-          >
-            <EditTestCase />
-          </QdmExecutionContextProvider>
-        </ApiContextProvider>{" "}
-      </MemoryRouter>
-    );
+    await waitFor(() => renderEditTestCaseComponent());
 
     const raceInput = screen.getByTestId(
       "demographics-race-input"
@@ -806,25 +645,7 @@ describe("EditTestCase QDM Component", () => {
     useTestCaseServiceMock.mockImplementation(() => {
       return useTestCaseServiceMockRejected;
     });
-    render(
-      <MemoryRouter>
-        <ApiContextProvider value={serviceConfig}>
-          <QdmExecutionContextProvider
-            value={{
-              measureState: [measure, setMeasure],
-              cqmMeasureState: [cqmMeasure, setCqmMeasure],
-              valueSetsState: [valueSets, setValueSets],
-              executionContextReady: true,
-              executing: false,
-              setExecuting: jest.fn(),
-            }}
-          >
-            <EditTestCase />
-          </QdmExecutionContextProvider>
-        </ApiContextProvider>{" "}
-      </MemoryRouter>
-    );
-
+    renderEditTestCaseComponent();
     const saveTestCaseButton = await screen.getByRole("button", {
       name: "Save",
     });
@@ -890,22 +711,7 @@ describe("EditTestCase QDM Component", () => {
   });
 
   it("RightPanel navigation works as expected.", async () => {
-    render(
-      <MemoryRouter>
-        <QdmExecutionContextProvider
-          value={{
-            measureState: [measure, setMeasure],
-            cqmMeasureState: [cqmMeasure, setCqmMeasure],
-            valueSetsState: [valueSets, setValueSets],
-            executionContextReady: true,
-            executing: false,
-            setExecuting: jest.fn(),
-          }}
-        >
-          <EditTestCase />
-        </QdmExecutionContextProvider>
-      </MemoryRouter>
-    );
+    renderEditTestCaseComponent();
     const highlighting = await findByText("Highlighting");
     const expectedActual = await findByText("Expected / Actual");
     const details = await findByText("Details");
@@ -934,24 +740,7 @@ describe("EditTestCase QDM Component", () => {
 
   it("Should render the details tab with relevant information", async () => {
     testCase.json = testCaseJson;
-    await render(
-      <MemoryRouter>
-        <ApiContextProvider value={serviceConfig}>
-          <QdmExecutionContextProvider
-            value={{
-              measureState: [measure, setMeasure],
-              cqmMeasureState: [cqmMeasure, setCqmMeasure],
-              valueSetsState: [valueSets, setValueSets],
-              executionContextReady: true,
-              executing: false,
-              setExecuting: jest.fn(),
-            }}
-          >
-            <EditTestCase />
-          </QdmExecutionContextProvider>
-        </ApiContextProvider>{" "}
-      </MemoryRouter>
-    );
+    await waitFor(() => renderEditTestCaseComponent());
 
     const detailsTab = getByRole("tab", { name: "Details tab panel" });
     act(() => {
