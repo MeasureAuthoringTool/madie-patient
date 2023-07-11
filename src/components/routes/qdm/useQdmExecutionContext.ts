@@ -3,7 +3,7 @@ import QdmExecutionContext, {
   QdmExecutionContextHolder,
 } from "./QdmExecutionContext";
 
-const useExecutionContext = (): QdmExecutionContextHolder =>
+const useQdmExecutionContext = (): QdmExecutionContextHolder =>
   useContext(QdmExecutionContext);
 
-export default useExecutionContext;
+export default useQdmExecutionContext;

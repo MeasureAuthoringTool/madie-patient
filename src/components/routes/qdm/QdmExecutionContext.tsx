@@ -7,7 +7,7 @@ export interface QdmExecutionContextHolder {
   measureState: [measure: Measure, setMeasure: (measure: Measure) => void];
   cqmMeasureState?: [
     cqmMeasure: CqmMeasure,
-    setMeasureBundle: (cqmMeasure: CqmMeasure) => void
+    setCqmMeasure: (cqmMeasure: CqmMeasure) => void
   ];
   valueSetsState: [
     valueSets: ValueSet[],
@@ -29,7 +29,7 @@ export const useQdmExecutionContext = () => {
   const context = React.useContext(QdmExecutionContext);
   if (context === undefined) {
     throw new Error(
-      "useExecutionContext must be used within an ExecutionProvider"
+      "useQdmExecutionContext must be used within an ExecutionProvider"
     );
   }
   return context;

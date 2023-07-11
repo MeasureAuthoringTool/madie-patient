@@ -6,7 +6,7 @@ import NotFound from "../../notfound/NotFound";
 import StatusHandler from "../../statusHandler/StatusHandler";
 import { Measure } from "@madie/madie-models";
 import { measureStore } from "@madie/madie-util";
-import { Bundle, ValueSet } from "fhir/r4";
+import { ValueSet } from "fhir/r4";
 import { CqmMeasure } from "cqm-models";
 import useCqmConversionService from "../../../api/CqmModelConversionService";
 import useTerminologyServiceApi from "../../../api/useTerminologyServiceApi";
@@ -20,7 +20,6 @@ const TestCaseRoutes = () => {
   const [executionContextReady, setExecutionContextReady] =
     useState<boolean>(true);
   const [executing, setExecuting] = useState<boolean>();
-  const [measureBundle, setMeasureBundle] = useState<Bundle>();
   const [valueSets, setValueSets] = useState<ValueSet[]>();
   const [cqmMeasure, setCqmMeasure] = useState<CqmMeasure>();
 
@@ -50,12 +49,14 @@ const TestCaseRoutes = () => {
         ]);
       }
 
-      //check for: convert madie measure to CQM measure and throw the error if there
       if (!errors?.length) {
         cqmService.current
           .convertToCqmMeasure(measure)
           .then((convertedMeasure) => {
             setCqmMeasure(convertedMeasure);
+          })
+          .catch((err) => {
+            setErrors((prevState) => [...prevState, err.message]);
           });
       }
     }
@@ -74,7 +75,6 @@ const TestCaseRoutes = () => {
     }
   }, [cqmMeasure]);
 
-  // Setup a context provider which holds measure state, cqmMeasure and valueSets similar to QiCore/TestCaseRoutes
   return (
     <QdmExecutionContextProvider
       value={{
