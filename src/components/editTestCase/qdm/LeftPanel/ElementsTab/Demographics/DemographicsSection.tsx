@@ -20,8 +20,6 @@ import {
 import "./DemographicsSection.scss";
 import utc from "dayjs/plugin/utc";
 
-import IntegerInput from "../../../../../common/IntegerInput/IntegerInput";
-
 // utils for
 import {
   RACE_CODE_OPTIONS,
@@ -386,12 +384,6 @@ const DemographicsSection = ({ canEdit }) => {
                 ></Select>
               </FormControl>
             </div>
-            <IntegerInput
-              intValue={int}
-              handleChange={setInt}
-              canEdit={true}
-              label="asdf"
-            />
           </div>
         }
       />
