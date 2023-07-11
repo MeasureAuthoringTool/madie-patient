@@ -37,6 +37,8 @@ const defaultStyle = {
 };
 
 export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
+  const { executionContextReady, executing } = useExecutionContext();
+
   const {
     activeTab,
     setActiveTab,
@@ -50,13 +52,8 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     coveragePercentage,
     validTestCases,
   } = props;
-  const { executionContextReady, executing } = props.measure.model.includes(
-    "QDM"
-  )
-    ? useQdmExecutionContext()
-    : useExecutionContext();
-  const featureFlags = useFeatureFlags();
 
+  const featureFlags = useFeatureFlags();
   const executionResultsDisplayTemplate = (label) => {
     const codeCoverage = executeAllTestCases ? coveragePercentage : "-";
     const displayPercentage =

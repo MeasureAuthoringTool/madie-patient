@@ -16,7 +16,7 @@ import {
   TestCase,
 } from "@madie/madie-models";
 import { act } from "react-dom/test-utils";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
 import { test } from "@jest/globals";
@@ -30,6 +30,7 @@ import useCqmConversionService, {
   CqmConversionService,
 } from "../../../api/CqmModelConversionService";
 import { getExampleValueSet } from "../../../util/CalculationTestHelpers";
+import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
 
 const serviceConfig: ServiceConfig = {
   testCaseService: {
@@ -296,6 +297,15 @@ jest.mock("@madie/madie-util", () => ({
 }));
 
 const { findByTestId, findByText } = screen;
+const valueSets = [getExampleValueSet()];
+const measure = mockMeasure;
+const setValueSets = jest.fn();
+const setMeasure = jest.fn();
+const setCqmMeasure = jest.fn;
+const getAccessToken = jest.fn();
+let cqmConversionService = new CqmConversionService("url", getAccessToken);
+const cqmMeasure = cqmConversionService.convertToCqmMeasure(mockMeasure);
+
 describe("ElementsTab", () => {
   useTestCaseServiceMock.mockImplementation(() => {
     return useTestCaseServiceMockResolved;
@@ -307,7 +317,18 @@ describe("ElementsTab", () => {
     });
     await render(
       <MemoryRouter>
-        <EditTestCase />
+        <QdmExecutionContextProvider
+          value={{
+            measureState: [measure, setMeasure],
+            cqmMeasureState: [cqmMeasure, setCqmMeasure],
+            valueSetsState: [valueSets, setValueSets],
+            executionContextReady: true,
+            executing: false,
+            setExecuting: jest.fn(),
+          }}
+        >
+          <EditTestCase />
+        </QdmExecutionContextProvider>
       </MemoryRouter>
     );
     const json = await findByText("JSON");
@@ -336,9 +357,18 @@ test("LeftPanel navigation works as expected.", async () => {
   });
   await render(
     <MemoryRouter>
-      <ApiContextProvider value={serviceConfig}>
+      <QdmExecutionContextProvider
+        value={{
+          measureState: [measure, setMeasure],
+          cqmMeasureState: [cqmMeasure, setCqmMeasure],
+          valueSetsState: [valueSets, setValueSets],
+          executionContextReady: true,
+          executing: false,
+          setExecuting: jest.fn(),
+        }}
+      >
         <EditTestCase />
-      </ApiContextProvider>
+      </QdmExecutionContextProvider>
     </MemoryRouter>
   );
   const symptom = await findByTestId("elements-tab-symptom");
@@ -370,9 +400,6 @@ describe("EditTestCase QDM Component", () => {
 
   beforeEach(() => {
     const getAccessToken = jest.fn();
-    // let cqmConversionService = new CqmConversionService("url", getAccessToken);
-    // const cqmMeasure = cqmConversionService.convertToCqmMeasure(mockMeasure);
-    // const valueSets = [getExampleValueSet()];
     useTestCaseServiceMock.mockImplementation(() => {
       return useTestCaseServiceMockResolved;
     });
@@ -385,7 +412,18 @@ describe("EditTestCase QDM Component", () => {
     await render(
       <MemoryRouter>
         <ApiContextProvider value={serviceConfig}>
-          <EditTestCase />
+          <QdmExecutionContextProvider
+            value={{
+              measureState: [measure, setMeasure],
+              cqmMeasureState: [cqmMeasure, setCqmMeasure],
+              valueSetsState: [valueSets, setValueSets],
+              executionContextReady: true,
+              executing: false,
+              setExecuting: jest.fn(),
+            }}
+          >
+            <EditTestCase />
+          </QdmExecutionContextProvider>
         </ApiContextProvider>
       </MemoryRouter>
     );
@@ -402,7 +440,18 @@ describe("EditTestCase QDM Component", () => {
     render(
       <MemoryRouter>
         <ApiContextProvider value={serviceConfig}>
-          <EditTestCase />
+          <QdmExecutionContextProvider
+            value={{
+              measureState: [measure, setMeasure],
+              cqmMeasureState: [cqmMeasure, setCqmMeasure],
+              valueSetsState: [valueSets, setValueSets],
+              executionContextReady: true,
+              executing: false,
+              setExecuting: jest.fn(),
+            }}
+          >
+            <EditTestCase />
+          </QdmExecutionContextProvider>
         </ApiContextProvider>{" "}
       </MemoryRouter>
     );
@@ -425,7 +474,18 @@ describe("EditTestCase QDM Component", () => {
     render(
       <MemoryRouter>
         <ApiContextProvider value={serviceConfig}>
-          <EditTestCase />
+          <QdmExecutionContextProvider
+            value={{
+              measureState: [measure, setMeasure],
+              cqmMeasureState: [cqmMeasure, setCqmMeasure],
+              valueSetsState: [valueSets, setValueSets],
+              executionContextReady: true,
+              executing: false,
+              setExecuting: jest.fn(),
+            }}
+          >
+            <EditTestCase />
+          </QdmExecutionContextProvider>
         </ApiContextProvider>{" "}
       </MemoryRouter>
     );
@@ -440,7 +500,18 @@ describe("EditTestCase QDM Component", () => {
     mockedAxios.put.mockResolvedValueOnce(testCase);
     render(
       <MemoryRouter>
-        <EditTestCase />
+        <QdmExecutionContextProvider
+          value={{
+            measureState: [measure, setMeasure],
+            cqmMeasureState: [cqmMeasure, setCqmMeasure],
+            valueSetsState: [valueSets, setValueSets],
+            executionContextReady: true,
+            executing: false,
+            setExecuting: jest.fn(),
+          }}
+        >
+          <EditTestCase />
+        </QdmExecutionContextProvider>
       </MemoryRouter>
     );
 
@@ -474,7 +545,18 @@ describe("EditTestCase QDM Component", () => {
     render(
       <MemoryRouter>
         <ApiContextProvider value={serviceConfig}>
-          <EditTestCase />
+          <QdmExecutionContextProvider
+            value={{
+              measureState: [measure, setMeasure],
+              cqmMeasureState: [cqmMeasure, setCqmMeasure],
+              valueSetsState: [valueSets, setValueSets],
+              executionContextReady: true,
+              executing: false,
+              setExecuting: jest.fn(),
+            }}
+          >
+            <EditTestCase />
+          </QdmExecutionContextProvider>
         </ApiContextProvider>{" "}
       </MemoryRouter>
     );
@@ -501,7 +583,18 @@ describe("EditTestCase QDM Component", () => {
     render(
       <MemoryRouter>
         <ApiContextProvider value={serviceConfig}>
-          <EditTestCase />
+          <QdmExecutionContextProvider
+            value={{
+              measureState: [measure, setMeasure],
+              cqmMeasureState: [cqmMeasure, setCqmMeasure],
+              valueSetsState: [valueSets, setValueSets],
+              executionContextReady: true,
+              executing: false,
+              setExecuting: jest.fn(),
+            }}
+          >
+            <EditTestCase />
+          </QdmExecutionContextProvider>
         </ApiContextProvider>{" "}
       </MemoryRouter>
     );
@@ -529,7 +622,18 @@ describe("EditTestCase QDM Component", () => {
     render(
       <MemoryRouter>
         <ApiContextProvider value={serviceConfig}>
-          <EditTestCase />
+          <QdmExecutionContextProvider
+            value={{
+              measureState: [measure, setMeasure],
+              cqmMeasureState: [cqmMeasure, setCqmMeasure],
+              valueSetsState: [valueSets, setValueSets],
+              executionContextReady: true,
+              executing: false,
+              setExecuting: jest.fn(),
+            }}
+          >
+            <EditTestCase />
+          </QdmExecutionContextProvider>
         </ApiContextProvider>{" "}
       </MemoryRouter>
     );
@@ -574,7 +678,18 @@ describe("EditTestCase QDM Component", () => {
     render(
       <MemoryRouter>
         <ApiContextProvider value={serviceConfig}>
-          <EditTestCase />
+          <QdmExecutionContextProvider
+            value={{
+              measureState: [measure, setMeasure],
+              cqmMeasureState: [cqmMeasure, setCqmMeasure],
+              valueSetsState: [valueSets, setValueSets],
+              executionContextReady: true,
+              executing: false,
+              setExecuting: jest.fn(),
+            }}
+          >
+            <EditTestCase />
+          </QdmExecutionContextProvider>
         </ApiContextProvider>{" "}
       </MemoryRouter>
     );
@@ -621,7 +736,18 @@ describe("EditTestCase QDM Component", () => {
     await render(
       <MemoryRouter>
         <ApiContextProvider value={serviceConfig}>
-          <EditTestCase />
+          <QdmExecutionContextProvider
+            value={{
+              measureState: [measure, setMeasure],
+              cqmMeasureState: [cqmMeasure, setCqmMeasure],
+              valueSetsState: [valueSets, setValueSets],
+              executionContextReady: true,
+              executing: false,
+              setExecuting: jest.fn(),
+            }}
+          >
+            <EditTestCase />
+          </QdmExecutionContextProvider>
         </ApiContextProvider>{" "}
       </MemoryRouter>
     );
@@ -683,7 +809,18 @@ describe("EditTestCase QDM Component", () => {
     render(
       <MemoryRouter>
         <ApiContextProvider value={serviceConfig}>
-          <EditTestCase />
+          <QdmExecutionContextProvider
+            value={{
+              measureState: [measure, setMeasure],
+              cqmMeasureState: [cqmMeasure, setCqmMeasure],
+              valueSetsState: [valueSets, setValueSets],
+              executionContextReady: true,
+              executing: false,
+              setExecuting: jest.fn(),
+            }}
+          >
+            <EditTestCase />
+          </QdmExecutionContextProvider>
         </ApiContextProvider>{" "}
       </MemoryRouter>
     );
@@ -755,7 +892,18 @@ describe("EditTestCase QDM Component", () => {
   it("RightPanel navigation works as expected.", async () => {
     render(
       <MemoryRouter>
-        <EditTestCase />
+        <QdmExecutionContextProvider
+          value={{
+            measureState: [measure, setMeasure],
+            cqmMeasureState: [cqmMeasure, setCqmMeasure],
+            valueSetsState: [valueSets, setValueSets],
+            executionContextReady: true,
+            executing: false,
+            setExecuting: jest.fn(),
+          }}
+        >
+          <EditTestCase />
+        </QdmExecutionContextProvider>
       </MemoryRouter>
     );
     const highlighting = await findByText("Highlighting");
@@ -789,7 +937,18 @@ describe("EditTestCase QDM Component", () => {
     await render(
       <MemoryRouter>
         <ApiContextProvider value={serviceConfig}>
-          <EditTestCase />
+          <QdmExecutionContextProvider
+            value={{
+              measureState: [measure, setMeasure],
+              cqmMeasureState: [cqmMeasure, setCqmMeasure],
+              valueSetsState: [valueSets, setValueSets],
+              executionContextReady: true,
+              executing: false,
+              setExecuting: jest.fn(),
+            }}
+          >
+            <EditTestCase />
+          </QdmExecutionContextProvider>
         </ApiContextProvider>{" "}
       </MemoryRouter>
     );

@@ -10,7 +10,7 @@ import {
   DetailedPopulationGroupResult,
 } from "fqm-execution/build/types/Calculator";
 import { checkUserCanEdit, measureStore } from "@madie/madie-util";
-import CreateCodeCoverageNavTabs from "../common/CreateCodeCoverageNavTabs";
+import CreateCodeCoverageNavTabs from "./CreateCodeCoverageNavTabs";
 import CodeCoverageHighlighting from "../common/CodeCoverageHighlighting";
 import CreateNewTestCaseDialog from "../../createTestCase/CreateNewTestCaseDialog";
 import { MadieSpinner, Toast } from "@madie/madie-design-system/dist/react";
