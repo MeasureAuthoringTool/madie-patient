@@ -68,6 +68,8 @@ export class TerminologyServiceApi {
     const searchCriteria = {
       includeDraft: true, // always true for now
       tgt: this.getTicketGrantingTicket(),
+      // currently the value of cqmMeasure.vakue_sets will be always empty array
+      // value_sets implementation will be done in MAT-5918
       valueSetParams: JSON.parse(JSON.stringify(cqmMeasure)).value_sets,
     } as ValueSetsSearchCriteria;
     if (searchCriteria.valueSetParams.length == 0) {
