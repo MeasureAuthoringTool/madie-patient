@@ -264,24 +264,19 @@ export class CqmConversionService {
     cqlLibrary.is_top_level = true;
 
     cqlLibrary.elm_annotations = parse(cqlLibrary.elm);
-    // TODO: prepare statement_dependencies- MAT-5786
     cqlLibrary.statement_dependencies = this.generateCqlStatementDependencies(
       statementDependenciesMap[elmJson.library?.identifier.id]
     );
     return cqlLibrary;
   }
 
-  private generateCqlStatementDependencies(
-    statementDependencies: any
-  ): StatementDependency[] {
-    return _.map(
-      statementDependencies,
-      (statementDep) =>
-        new StatementDependency({
-          statement_name: statementDep.name,
-          statement_references: statementDep.refs as StatementReference[],
-        })
-    );
+  private generateCqlStatementDependencies(statementDependencies: any) {
+    return Object.entries(statementDependencies).map(([k, v]) => {
+      return new StatementDependency({
+        statement_name: k,
+        statement_references: v,
+      });
+    });
   }
 
   private buildSourceDataCriteria(
