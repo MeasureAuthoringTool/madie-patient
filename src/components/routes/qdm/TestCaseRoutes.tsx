@@ -50,7 +50,6 @@ const TestCaseRoutes = () => {
           .convertToCqmMeasure(measure)
           .then((convertedMeasure) => {
             setCqmMeasure(convertedMeasure);
-            console.log(convertedMeasure);
           })
           .catch((err) => {
             setErrors((prevState) => [...prevState, err.message]);
