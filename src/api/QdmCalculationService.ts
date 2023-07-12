@@ -1,8 +1,12 @@
 import { Calculator } from "cqm-execution";
-import { CqmMeasure } from "cqm-models";
+import { CqmMeasure, ValueSet } from "cqm-models";
 
 export class QdmCalculationService {
-  async calculateQdmTestCases(cqmMeasure: CqmMeasure, valueSets, patientJson) {
+  async calculateQdmTestCases(
+    cqmMeasure: CqmMeasure,
+    valueSets: ValueSet[],
+    patientJson
+  ) {
     let patients = [];
     patients.push(JSON.parse(patientJson));
 

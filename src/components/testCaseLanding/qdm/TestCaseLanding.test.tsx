@@ -4,8 +4,7 @@ import TestCaseLanding from "./TestCaseLanding";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
 import { Measure, Model } from "@madie/madie-models";
-import { ValueSet } from "fhir/r4";
-import { CqmMeasure } from "cqm-models";
+import { CqmMeasure, ValueSet } from "cqm-models";
 import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
 import { checkUserCanEdit } from "@madie/madie-util";
 

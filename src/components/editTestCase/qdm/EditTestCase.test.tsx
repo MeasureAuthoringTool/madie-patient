@@ -29,7 +29,7 @@ import useTestCaseServiceApi, {
 import useCqmConversionService, {
   CqmConversionService,
 } from "../../../api/CqmModelConversionService";
-import { getExampleValueSet } from "../../../util/CalculationTestHelpers";
+import { ValueSet } from "cqm-models";
 import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
 
 const serviceConfig: ServiceConfig = {
@@ -297,7 +297,7 @@ jest.mock("@madie/madie-util", () => ({
 }));
 
 const { findByTestId, findByText } = screen;
-const valueSets = [getExampleValueSet()];
+const valueSets = [] as ValueSet[];
 const measure = mockMeasure;
 const setValueSets = jest.fn();
 const setMeasure = jest.fn();

@@ -33,13 +33,11 @@ import useMeasureServiceApi, {
   MeasureServiceApi,
 } from "../../../api/useMeasureServiceApi";
 import userEvent from "@testing-library/user-event";
-import {
-  buildMeasureBundle,
-  getExampleValueSet,
-} from "../../../util/CalculationTestHelpers";
+import { buildMeasureBundle } from "../../../util/CalculationTestHelpers";
 import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
 import { checkUserCanEdit, useFeatureFlags } from "@madie/madie-util";
 import { CqmConversionService } from "../../../api/CqmModelConversionService";
+import { ValueSet } from "cqm-models";
 
 const serviceConfig: ServiceConfig = {
   testCaseService: {
@@ -446,7 +444,7 @@ const useMeasureServiceMockResolved = {
 const getAccessToken = jest.fn();
 let cqmConversionService = new CqmConversionService("url", getAccessToken);
 const cqmMeasure = cqmConversionService.convertToCqmMeasure(measure);
-const valueSets = [getExampleValueSet()];
+const valueSets = [] as ValueSet[];
 const setMeasure = jest.fn();
 const setCqmMeasure = jest.fn();
 const setValueSets = jest.fn();
