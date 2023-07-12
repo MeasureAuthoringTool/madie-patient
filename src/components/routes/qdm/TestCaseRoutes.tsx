@@ -50,6 +50,7 @@ const TestCaseRoutes = () => {
           .convertToCqmMeasure(measure)
           .then((convertedMeasure) => {
             setCqmMeasure(convertedMeasure);
+            console.log(convertedMeasure);
           })
           .catch((err) => {
             setErrors((prevState) => [...prevState, err.message]);
@@ -60,14 +61,9 @@ const TestCaseRoutes = () => {
 
   useEffect(() => {
     if (cqmMeasure) {
-      terminologyService.current
-        .getQdmValueSetsExpansion(cqmMeasure)
-        .then((vs: ValueSet[]) => {
-          setValueSets(vs);
-        })
-        .catch((err) => {
-          setErrors((prevState) => [...prevState, err.message]);
-        });
+      // currently the value of cqmMeasure.vakue_sets will be always empty array
+      // value_sets implementation will be done in MAT-5918
+      setValueSets([]);
     }
   }, [cqmMeasure]);
 

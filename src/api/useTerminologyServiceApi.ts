@@ -61,48 +61,6 @@ export class TerminologyServiceApi {
     }
   }
 
-  async getQdmValueSetsExpansion(cqmMeasure: CqmMeasure): Promise<ValueSet[]> {
-    if (!cqmMeasure) {
-      return null;
-    }
-    const searchCriteria = {
-      includeDraft: true, // always true for now
-      tgt: this.getTicketGrantingTicket(),
-      // currently the value of cqmMeasure.vakue_sets will be always empty array
-      // value_sets implementation will be done in MAT-5918
-      valueSetParams: JSON.parse(JSON.stringify(cqmMeasure)).value_sets,
-    } as ValueSetsSearchCriteria;
-    if (searchCriteria.valueSetParams.length == 0) {
-      return [];
-    }
-
-    try {
-      const response = await axios.put(
-        `${this.baseUrl}/vsac/qdm/value-sets/searches`,
-        searchCriteria,
-        {
-          headers: {
-            Authorization: `Bearer ${this.getAccessToken()}`,
-          },
-        }
-      );
-      return response.data;
-    } catch (error) {
-      let message =
-        "An error occurred, please try again. If the error persists, please contact the help desk.";
-      if (error.response && error.response.status === 404) {
-        const data = error.response.data?.message;
-        console.error(
-          "ValueSet not found in vsac: ",
-          this.getOidFromString(data)
-        );
-        message =
-          "An error exists with the measure CQL, please review the CQL Editor tab.";
-      }
-      throw new Error(message);
-    }
-  }
-
   /**
    * Extract the ValueSet OIDs used in Data requirements of library resources
    */
