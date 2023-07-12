@@ -47,7 +47,6 @@ const DemographicsSection = ({ canEdit }) => {
   const formik: any = useFormikContext();
   // select stuff
   const [qdmPatient, setQdmPatient] = useState<QDMPatient>();
-  const [int, setInt] = useState<number>(0);
   // this will be local
   const [raceDataElement, setRaceDataElement] = useState<DataElement>();
   const [genderDataElement, setGenderDataElement] = useState<DataElement>();
