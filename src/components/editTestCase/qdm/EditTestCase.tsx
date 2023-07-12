@@ -236,7 +236,7 @@ const EditTestCase = () => {
         await qdmCalculation.current.calculateQdmTestCases(
           cqmMeasure,
           valueSets,
-          currentTestCase?.json
+          JSON.parse(currentTestCase?.json)
         );
       calculationOutput &&
         showToast(

@@ -8,7 +8,7 @@ export class QdmCalculationService {
     patientJson
   ) {
     let patients = [];
-    patients.push(JSON.parse(patientJson));
+    patients.push(patientJson);
 
     // Example options; includes directive to produce pretty statement results.
     const options = {
