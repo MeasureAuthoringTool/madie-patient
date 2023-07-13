@@ -1,9 +1,10 @@
 import axios from "axios";
 import useServiceConfig from "./useServiceConfig";
 import { ServiceConfig } from "./ServiceContext";
-import { useOktaTokens } from "@madie/madie-util";
+import { useOktaTokens, getOidFromString } from "@madie/madie-util";
 import { Bundle, ValueSet, Library } from "fhir/r4";
 import { CqmMeasure } from "cqm-models";
+import * as _ from "lodash";
 
 type ValueSetSearchParams = {
   oid: string;
@@ -59,6 +60,70 @@ export class TerminologyServiceApi {
       }
       throw new Error(message);
     }
+  }
+
+  async getQdmValueSetsExpansion(cqmMeasure: CqmMeasure): Promise<ValueSet[]> {
+    if (!cqmMeasure) {
+      return null;
+    }
+    const searchCriteria = {
+      includeDraft: true, // always true for now
+      tgt: this.getTicketGrantingTicket(),
+      valueSetParams: this.getValueSetsOIDsFromCqmMeasure(
+        JSON.parse(JSON.stringify(cqmMeasure))
+      ),
+    } as ValueSetsSearchCriteria;
+
+    if (searchCriteria.valueSetParams.length == 0) {
+      return [];
+    }
+
+    try {
+      const response = await axios.put(
+        `${this.baseUrl}/vsac/qdm/value-sets/searches`,
+        searchCriteria,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      let message =
+        "An error occurred, please try again. If the error persists, please contact the help desk.";
+      if (error.response && error.response.status === 404) {
+        const data = error.response.data?.message;
+        console.error(
+          "ValueSet not found in vsac: ",
+          this.getOidFromString(data)
+        );
+        message =
+          "An error exists with the measure CQL, please review the CQL Editor tab.";
+      }
+      throw new Error(message);
+    }
+  }
+
+  getValueSetsOIDsFromCqmMeasure(
+    cqmMeasure: CqmMeasure
+  ): ValueSetSearchParams[] {
+    if (cqmMeasure?.cql_libraries) {
+      return cqmMeasure.cql_libraries
+        .filter((lib) => "valueSets" in lib?.elm?.library)
+        .map((cqlLibrary) => {
+          if (_.isEmpty(cqlLibrary.elm.library.valueSets)) {
+            return [];
+          }
+          return cqlLibrary.elm.library.valueSets.def.map((valueSetDef) => {
+            if (valueSetDef?.id) {
+              const oid = getOidFromString(valueSetDef.id, "QDM");
+              return { ["oid"]: oid };
+            }
+          });
+        })[0];
+    }
+    return [];
   }
 
   /**
