@@ -10,7 +10,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
 import DoNotDisturbOnIcon from "@mui/icons-material/DoNotDisturbOn";
 import TruncateText from "./TruncateText";
-import { TestCase as TestCaseModel } from "@madie/madie-models";
+import { Measure, TestCase as TestCaseModel } from "@madie/madie-models";
 import {
   MadieDeleteDialog,
   Toast,
@@ -19,17 +19,20 @@ import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calcula
 import { Box, useTheme } from "@mui/material";
 import * as _ from "lodash";
 import "./TestCase.scss";
+import getModelFamily from "../../../util/measureModelHelpers";
 
 const TestCase = ({
   testCase,
   canEdit,
   executionResult,
   deleteTestCase,
+  measure,
 }: {
   testCase: TestCaseModel;
   canEdit: boolean;
   executionResult: DetailedPopulationGroupResult[];
   deleteTestCase;
+  measure: Measure;
 }) => {
   const viewOrEdit = canEdit ? "edit" : "view";
   const theme = useTheme();
@@ -74,7 +77,16 @@ const TestCase = ({
       const url = window.URL.createObjectURL(textFile);
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `ADD.zip`);
+      link.setAttribute(
+        "download",
+        measure.ecqmTitle +
+          "-v" +
+          measure.version +
+          "-" +
+          getModelFamily(measure.model) +
+          "-TestCases.zip"
+      );
+
       document.body.appendChild(link);
       link.click();
       setToastOpen(true);
