@@ -6,6 +6,8 @@ import InputAdornment from "@mui/material/InputAdornment";
 import EventIcon from "@mui/icons-material/Event";
 import { useFormikContext } from "formik";
 
+import DecimalInput from "../../../../../common/DecimalInput/DecimalInput";
+
 import { QDMPatient, DataElement } from "cqm-models";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -47,6 +49,7 @@ const DemographicsSection = ({ canEdit }) => {
   const formik: any = useFormikContext();
   // select stuff
   const [qdmPatient, setQdmPatient] = useState<QDMPatient>();
+  const [num, SetNum] = useState<number>(0);
   // this will be local
   const [raceDataElement, setRaceDataElement] = useState<DataElement>();
   const [genderDataElement, setGenderDataElement] = useState<DataElement>();
@@ -383,6 +386,7 @@ const DemographicsSection = ({ canEdit }) => {
                 ></Select>
               </FormControl>
             </div>
+            <DecimalInput value={num} handleChange={SetNum} canEdit={true} />
           </div>
         }
       />
