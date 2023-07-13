@@ -1,11 +1,7 @@
 import React from "react";
-import {
-  AutoComplete,
-  TextField,
-} from "@madie/madie-design-system/dist/react/";
+import { TextField } from "@madie/madie-design-system/dist/react/";
 import "twin.macro";
 import "styled-components/macro";
-import "./IntegerInput.scss";
 
 export interface IntegerProps {
   intValue?: number | null;
