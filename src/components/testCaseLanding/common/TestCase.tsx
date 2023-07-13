@@ -19,7 +19,6 @@ import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calcula
 import { Box, useTheme } from "@mui/material";
 import * as _ from "lodash";
 import "./TestCase.scss";
-import useExecutionContext from "../../routes/qiCore/useExecutionContext";
 import getModelFamily from "../../../util/measureModelHelpers";
 
 const TestCase = ({
