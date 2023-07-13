@@ -52,7 +52,7 @@ describe("DecimalInput Component", () => {
     expect(DecimalFieldInput.value).toBe("10");
   });
 
-  test("should ignore - and non-number keys", async () => {
+  test("should ignore - and non-number keys, number field behavior expexted", async () => {
     //ignores keypresses by not running handleChange on non-number keys
 
     const handleChange = jest.fn();
@@ -66,19 +66,23 @@ describe("DecimalInput Component", () => {
     ) as HTMLInputElement;
     expect(DecimalFieldInput).toBeInTheDocument();
     expect(DecimalFieldInput.value).toBe("0");
-    userEvent.type(DecimalFieldInput, "-");
     expect(handleChange).not.toBeCalled();
+    userEvent.type(DecimalFieldInput, "-");
+    //number feild is weird, minimum set to 0, so it will call handlechange with a - but ignore the input
+    await expect(handleChange).toHaveBeenNthCalledWith(1, "");
     userEvent.type(DecimalFieldInput, "{backspace}");
     userEvent.type(DecimalFieldInput, "1");
     //due to the nature of jest and the component, the 0 will be in the front
     await expect(handleChange).toHaveBeenNthCalledWith(2, "01");
     userEvent.type(DecimalFieldInput, "-");
-    await expect(handleChange).not.toHaveBeenCalledTimes(3);
     userEvent.type(DecimalFieldInput, "1");
-    await expect(handleChange).toHaveBeenNthCalledWith(3, "01");
+    await expect(handleChange).toHaveBeenNthCalledWith(4, "01");
     userEvent.type(DecimalFieldInput, ".");
-    await expect(handleChange).not.toHaveBeenCalledTimes(4);
+    await expect(handleChange).toHaveBeenCalledTimes(5);
+    //a second decimal will call handlechange but the number field will ignore it
+    userEvent.type(DecimalFieldInput, ".");
+    await expect(handleChange).toHaveBeenNthCalledWith(6, "");
     userEvent.type(DecimalFieldInput, "a");
-    await expect(handleChange).not.toHaveBeenCalledTimes(4);
+    await expect(handleChange).not.toHaveBeenCalledTimes(7);
   });
 });

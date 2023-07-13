@@ -42,7 +42,6 @@ const DecimalInput = ({
           }}
           onChange={(e) => {
             if (Number(e.target.value) >= 0) {
-              console.log(e.target.value);
               handleChange(e.target.value);
             }
           }}
