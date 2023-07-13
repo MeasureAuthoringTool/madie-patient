@@ -52,7 +52,10 @@ const TestCaseRoutes = () => {
             setCqmMeasure(convertedMeasure);
           })
           .catch((err) => {
-            setErrors((prevState) => [...prevState, err.message]);
+            setErrors((prevState) => [
+              ...prevState,
+              "An error occurred, please try again. If the error persists, please contact the help desk",
+            ]);
           });
       }
     }
