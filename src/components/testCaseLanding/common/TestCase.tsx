@@ -10,7 +10,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
 import DoNotDisturbOnIcon from "@mui/icons-material/DoNotDisturbOn";
 import TruncateText from "./TruncateText";
-import { TestCase as TestCaseModel } from "@madie/madie-models";
+import { Measure, TestCase as TestCaseModel } from "@madie/madie-models";
 import {
   MadieDeleteDialog,
   Toast,
@@ -27,11 +27,13 @@ const TestCase = ({
   canEdit,
   executionResult,
   deleteTestCase,
+  measure,
 }: {
   testCase: TestCaseModel;
   canEdit: boolean;
   executionResult: DetailedPopulationGroupResult[];
   deleteTestCase;
+  measure: Measure;
 }) => {
   const viewOrEdit = canEdit ? "edit" : "view";
   const theme = useTheme();
@@ -39,8 +41,6 @@ const TestCase = ({
   const status = testCase.executionStatus;
   const [deleteDialogModalOpen, setDeleteDialogModalOpen] =
     useState<boolean>(false);
-  const { measureState } = useExecutionContext();
-  const [measure] = measureState;
 
   const [toastOpen, setToastOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>("");

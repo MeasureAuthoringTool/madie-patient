@@ -93,6 +93,7 @@ const renderWithTestCase = (
             canEdit={canEdit}
             executionResult={[]}
             deleteTestCase={jest.fn()}
+            measure={measure}
           />
         </ExecutionContextProvider>
       </ApiContextProvider>

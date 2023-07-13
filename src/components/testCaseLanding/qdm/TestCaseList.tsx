@@ -385,6 +385,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                         canEdit={canEdit}
                         executionResults={executionResults}
                         deleteTestCase={deleteTestCase}
+                        measure={measure}
                       />
                     </>
                   )}
