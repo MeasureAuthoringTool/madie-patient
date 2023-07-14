@@ -117,8 +117,11 @@ export class TerminologyServiceApi {
           }
           return cqlLibrary.elm.library.valueSets.def.map((valueSetDef) => {
             if (valueSetDef?.id) {
-              const oid = getOidFromString(valueSetDef.id, "QDM");
-              return { ["oid"]: oid };
+              if (valueSetDef.id.startsWith("urn:oid:")) {
+                const oid = getOidFromString(valueSetDef.id, "QDM");
+                return { ["oid"]: oid };
+              }
+              return { ["oid"]: valueSetDef?.id };
             }
           });
         })[0];
