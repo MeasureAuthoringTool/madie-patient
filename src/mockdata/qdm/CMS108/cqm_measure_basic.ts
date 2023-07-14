@@ -186,7 +186,7 @@ export const cqm_measure_basic = {
                 localId: "2",
                 locator: "4:1-4:71",
                 name: "Encounter Inpatient",
-                id: "2.16.840.1.113883.3.666.5.307",
+                id: "urn:oid:2.16.840.1.113883.3.666.5.307",
                 accessLevel: "Public",
               },
               {

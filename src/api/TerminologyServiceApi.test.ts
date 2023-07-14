@@ -7,6 +7,10 @@ import { cqm_measure_basic_valueset } from "../mockdata/qdm/CMS108/cqm_measure_b
 
 jest.mock("axios");
 
+jest.mock("@madie/madie-util", () => ({
+  getOidFromString: (oid) => oid.split("urn:oid:")[1],
+}));
+
 describe("TerminologyServiceApi Tests", () => {
   let terminologyService: TerminologyServiceApi;
   beforeEach(() => {
