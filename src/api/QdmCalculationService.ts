@@ -2,11 +2,7 @@ import { Calculator } from "cqm-execution";
 import { CqmMeasure, ValueSet } from "cqm-models";
 
 export class QdmCalculationService {
-  async calculateQdmTestCases(
-    cqmMeasure: CqmMeasure,
-    valueSets: ValueSet[],
-    patientJson
-  ) {
+  async calculateQdmTestCases(cqmMeasure: CqmMeasure, patientJson) {
     let patients = [];
     patients.push(patientJson);
 
@@ -20,7 +16,7 @@ export class QdmCalculationService {
     const calculationResults = await Calculator.calculate(
       cqmMeasure,
       patients,
-      valueSets,
+      cqmMeasure.value_sets,
       options
     );
 
