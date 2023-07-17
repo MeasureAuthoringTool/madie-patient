@@ -49,7 +49,7 @@ const TestCaseRoutes = () => {
         cqmService.current
           .convertToCqmMeasure(measure)
           .then((convertedMeasure) => {
-            setCqmMeasure(convertedMeasure);
+            getQdmValueSets(convertedMeasure);
           })
           .catch((err) => {
             setErrors((prevState) => [
@@ -61,18 +61,16 @@ const TestCaseRoutes = () => {
     }
   }, [measure]);
 
-  useEffect(() => {
-    if (cqmMeasure) {
-      terminologyService.current
-        .getQdmValueSetsExpansion(cqmMeasure)
-        .then((vs: ValueSet[]) => {
-          setValueSets(vs);
-        })
-        .catch((err) => {
-          setErrors((prevState) => [...prevState, err.message]);
-        });
-    }
-  }, [cqmMeasure]);
+  const getQdmValueSets = (convertedMeasure) => {
+    terminologyService.current
+      .getQdmValueSetsExpansion(convertedMeasure)
+      .then((vs: ValueSet[]) => {
+        setCqmMeasure({ ...convertedMeasure, value_sets: vs });
+      })
+      .catch((err) => {
+        setErrors((prevState) => [...prevState, err.message]);
+      });
+  };
 
   return (
     <QdmExecutionContextProvider

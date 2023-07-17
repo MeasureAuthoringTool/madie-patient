@@ -235,7 +235,7 @@ const EditTestCase = () => {
       const calculationOutput =
         await qdmCalculation.current.calculateQdmTestCases(
           cqmMeasure,
-          valueSets,
+          cqmMeasure.value_sets,
           JSON.parse(currentTestCase?.json)
         );
       calculationOutput &&
