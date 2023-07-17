@@ -79,10 +79,9 @@ const EditTestCase = () => {
   const qdmCalculation = useRef(qdmCalculationService());
   const testCaseService = useRef(useTestCaseServiceApi());
 
-  const { cqmMeasureState, valueSetsState } = useQdmExecutionContext();
+  const { cqmMeasureState } = useQdmExecutionContext();
 
   const [cqmMeasure] = cqmMeasureState;
-  const [valueSets] = valueSetsState;
 
   const navigate = useNavigate();
   const { measureId, id } = useParams();
@@ -235,7 +234,6 @@ const EditTestCase = () => {
       const calculationOutput =
         await qdmCalculation.current.calculateQdmTestCases(
           cqmMeasure,
-          cqmMeasure.value_sets,
           JSON.parse(currentTestCase?.json)
         );
       calculationOutput &&

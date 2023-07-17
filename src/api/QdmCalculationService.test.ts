@@ -1,6 +1,5 @@
 import { Calculator } from "cqm-execution";
 import cqmMeasure from "../mockdata/qdm/CMS108/cqm_measure.json";
-import valueSets from "../mockdata/qdm/CMS108/value_sets.json";
 import patientJson from "../mockdata/qdm/testCasePatient.json";
 import { QdmCalculationService } from "./QdmCalculationService";
 
@@ -15,7 +14,6 @@ describe("QDM CalculationService Tests", () => {
     const qdmCalculationResults =
       await qdmCalculationService.calculateQdmTestCases(
         cqmMeasure,
-        valueSets,
         patientJson
       );
     expect(qdmCalculationResults).toBeTruthy();

@@ -49,7 +49,9 @@ const TestCaseRoutes = () => {
         cqmService.current
           .convertToCqmMeasure(measure)
           .then((convertedMeasure) => {
-            getQdmValueSets(convertedMeasure);
+            if (convertedMeasure) {
+              getQdmValueSets(convertedMeasure);
+            }
           })
           .catch((err) => {
             setErrors((prevState) => [
@@ -77,7 +79,6 @@ const TestCaseRoutes = () => {
       value={{
         measureState: [measure, setMeasure],
         cqmMeasureState: [cqmMeasure, setCqmMeasure],
-        valueSetsState: [valueSets, setValueSets],
         executionContextReady,
         executing,
         setExecuting,
