@@ -12,12 +12,17 @@ interface TestCaseTableProps {
     [key: string]: DetailedPopulationGroupResult[];
   };
   deleteTestCase: Function;
-  measure: Measure;
+  exportTestCase: Function;
 }
 
 const TestCaseTable = (props: TestCaseTableProps) => {
-  const { testCases, canEdit, executionResults, deleteTestCase, measure } =
-    props;
+  const {
+    testCases,
+    canEdit,
+    executionResults,
+    deleteTestCase,
+    exportTestCase,
+  } = props;
   const TH = tw.th`p-3 border-b text-left text-sm font-bold capitalize`;
 
   return (
@@ -48,7 +53,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
               canEdit={canEdit}
               executionResult={executionResults[testCase.id]}
               deleteTestCase={deleteTestCase}
-              measure={measure}
+              exportTestCase={exportTestCase}
               // we assume all results have been run here
             />
           );

@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import tw from "twin.macro";
-import styled from "styled-components";
+import "twin.macro";
+import "styled-components/macro";
 import { useNavigate } from "react-router-dom";
-
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CancelIcon from "@mui/icons-material/Cancel";
 import Popover from "@mui/material/Popover";
@@ -10,7 +9,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
 import DoNotDisturbOnIcon from "@mui/icons-material/DoNotDisturbOn";
 import TruncateText from "./TruncateText";
-import { Measure, TestCase as TestCaseModel } from "@madie/madie-models";
+import { TestCase as TestCaseModel } from "@madie/madie-models";
 import {
   MadieDeleteDialog,
   Toast,
@@ -19,20 +18,19 @@ import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calcula
 import { Box, useTheme } from "@mui/material";
 import * as _ from "lodash";
 import "./TestCase.scss";
-import getModelFamily from "../../../util/measureModelHelpers";
 
 const TestCase = ({
   testCase,
   canEdit,
   executionResult,
   deleteTestCase,
-  measure,
+  exportTestCase,
 }: {
   testCase: TestCaseModel;
   canEdit: boolean;
   executionResult: DetailedPopulationGroupResult[];
   deleteTestCase;
-  measure: Measure;
+  exportTestCase: any;
 }) => {
   const viewOrEdit = canEdit ? "edit" : "view";
   const theme = useTheme();
@@ -66,38 +64,6 @@ const TestCase = ({
     setOptionsOpen(false);
     setSelectedTestCase(null);
     setAnchorEl(null);
-  };
-
-  const exportTestCase = async () => {
-    try {
-      const textFile = new Blob([JSON.stringify("")], {
-        type: "application/json",
-      });
-
-      const url = window.URL.createObjectURL(textFile);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute(
-        "download",
-        measure.ecqmTitle +
-          "-v" +
-          measure.version +
-          "-" +
-          getModelFamily(measure.model) +
-          "-TestCases.zip"
-      );
-
-      document.body.appendChild(link);
-      link.click();
-      setToastOpen(true);
-      setToastType("success");
-      setToastMessage("Test case exported successfully");
-      document.body.removeChild(link);
-    } catch (err) {
-      setToastOpen(true);
-      setToastType("danger");
-      setToastMessage("Test case export was unsuccessful");
-    }
   };
 
   const TestCaseStatus = (executionStatus: string) => {
@@ -265,7 +231,7 @@ const TestCase = ({
               aria-label={`export-test-case-${testCase.title}`}
               data-testid={`export-test-case-${testCase.id}`}
               onClick={() => {
-                exportTestCase();
+                exportTestCase(selectedTestCase);
                 setOptionsOpen(false);
               }}
             >
