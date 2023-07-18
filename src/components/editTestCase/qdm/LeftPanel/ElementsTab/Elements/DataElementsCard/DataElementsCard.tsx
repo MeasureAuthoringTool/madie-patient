@@ -8,6 +8,7 @@ import SubNavigationTabs from "./SubNavigationTabs";
 
 import "./DataElementsCard.scss";
 import * as _ from "lodash";
+import AttributeSection from "./attributes/AttributeSection";
 
 const DataElementsCard = (props: {
   cardActiveTab: string;
@@ -62,8 +63,15 @@ const DataElementsCard = (props: {
         setActiveTab={setCardActiveTab}
       />
       {cardActiveTab === "codes" && <Codes />}
+      {cardActiveTab === "attributes" && (
+        <AttributeSection
+          selectedDataElement={selectedDataElement}
+          onAddClicked={(attribute, type) => {
+            // Todo: update the Patient with the selected attribute data
+          }}
+        />
+      )}
       {/* uncomment later when we do something with it */}
-      {/* {activeTab === 'attributes' && <Attributes />} */}
       {/* {activeTab === 'negation_rationale' && <NegationRationale />} */}
     </div>
   );
