@@ -74,7 +74,7 @@ export class TerminologyServiceApi {
       ),
     } as ValueSetsSearchCriteria;
 
-    if (searchCriteria.valueSetParams.length == 0) {
+    if (_.isEmpty(searchCriteria.valueSetParams)) {
       return [];
     }
 
