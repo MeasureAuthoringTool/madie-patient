@@ -9,12 +9,16 @@ import FormControl from "@mui/material/FormControl";
 
 interface conceptOptionProps {
   code: string;
-  display: string;
+  code_system_name: string;
+  code_system_oid: string;
+  code_system_version: string;
+  display_name: string;
 }
 interface codeOptionProps {
-  system: string;
+  oid: string;
   version: string;
-  concept: conceptOptionProps[];
+  concepts: conceptOptionProps[];
+  display_name: string;
 }
 
 interface CodeSystemSelectorProps extends ComponentProps<any> {
@@ -34,26 +38,25 @@ const CodeSystemSelector = ({
   canEdit,
   codeSystemProps,
 }: CodeSystemSelectProps) => {
-  const [codeOptions, setCodeOptions] = useState<codeOptionProps[]>();
+  const [codeOptions, setCodeOptions] = useState([]);
   const [customOptions, setCustomOptions] = useState<boolean>();
 
   // if the field is not required a default option is provided
-  const getCodeSystems = (options: codeOptionProps[], required: boolean) => {
+  const getCodeSystems = (options, required: boolean) => {
     return [
       !required && (
         <MenuItem key="-" value="">
           -
         </MenuItem>
       ),
-
       options.map((option) => {
         return (
           <MenuItem
-            key={option.system}
-            value={option.system}
-            data-testid={`option-${option.system}`}
+            key={option}
+            value={option}
+            data-testid={`option-${option}`}
           >
-            {option.system}
+            {option}
           </MenuItem>
         );
       }),
@@ -61,7 +64,7 @@ const CodeSystemSelector = ({
   };
 
   const getCodeConcepts = (
-    conceptOptions: codeOptionProps[],
+    conceptOptions: conceptOptionProps[],
     required: boolean
   ) => {
     return [
@@ -73,26 +76,37 @@ const CodeSystemSelector = ({
 
       conceptOptions &&
         conceptOptions.length > 0 &&
-        conceptOptions[0].concept.map((conceptOption) => {
+        conceptOptions.map((conceptOption) => {
           return (
             <MenuItem
-              key={`${conceptOption.code} (${conceptOption.display})`}
-              value={`${conceptOption.code} (${conceptOption.display})`}
-              data-testid={`option-${conceptOption.code}-${conceptOption.display}`}
+              key={`${conceptOption.code} (${conceptOption.display_name})`}
+              value={`${conceptOption.code} (${conceptOption.display_name})`}
+              data-testid={`option-${conceptOption.code}-${conceptOption.display_name}`}
             >
-              {`${conceptOption.code} (${conceptOption.display})`}
+              {`${conceptOption.code} (${conceptOption.display_name})`}
             </MenuItem>
           );
         }),
     ];
   };
 
+  const generateUniqueCodeSystems = (options: codeOptionProps[]) => {
+    const uniqueCodeSystems = options[0].concepts.reduce((acc, item) => {
+      if (!acc.includes(item.code_system_name)) {
+        acc.push(item.code_system_name);
+      }
+      return acc;
+    }, []);
+
+    return uniqueCodeSystems;
+  };
+
   const generateCodeOptions = (event) => {
     if (event.target.value != "Custom") {
       setCustomOptions(false);
-      const fileteredOption = codeSystemProps.options.filter((option) => {
-        return option.system === event.target.value;
-      });
+      const fileteredOption = codeSystemProps?.options[0]?.concepts?.filter(
+        (concept) => concept.code_system_name === event.target.value
+      );
       setCodeOptions(fileteredOption);
     } else {
       setCustomOptions(true);
@@ -117,7 +131,7 @@ const CodeSystemSelector = ({
               "aria-required": "true",
             }}
             options={getCodeSystems(
-              codeSystemProps.options,
+              generateUniqueCodeSystems(codeSystemProps.options),
               codeSystemProps.required
             )}
             onChange={(event) => generateCodeOptions(event)}
