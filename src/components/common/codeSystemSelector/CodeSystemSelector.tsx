@@ -91,12 +91,15 @@ const CodeSystemSelector = ({
   };
 
   const generateUniqueCodeSystems = (options: codeOptionProps[]) => {
-    const uniqueCodeSystems = options[0].concepts.reduce((acc, item) => {
-      if (!acc.includes(item.code_system_name)) {
-        acc.push(item.code_system_name);
-      }
-      return acc;
-    }, []);
+    const uniqueCodeSystems = options[0].concepts.reduce(
+      (acc, item) => {
+        if (!acc.includes(item.code_system_name)) {
+          acc.push(item.code_system_name);
+        }
+        return acc;
+      },
+      ["Custom"]
+    );
 
     return uniqueCodeSystems;
   };

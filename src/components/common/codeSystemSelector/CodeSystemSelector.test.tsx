@@ -60,11 +60,6 @@ const options = [
     ],
     oid: "1.2.3",
   },
-  {
-    system: "Custom",
-    version: "Custom",
-    concept: [{ code: "Custom", display: "Custom" }],
-  },
 ];
 
 describe("CodeSystemSelector Component", () => {
@@ -95,10 +90,10 @@ describe("CodeSystemSelector Component", () => {
     userEvent.click(codeSystemSelectDropdown);
 
     const renderedOptionsForCodeSystem = await screen.findAllByRole("option");
-    expect(renderedOptionsForCodeSystem).toHaveLength(3); // including '-'
+    expect(renderedOptionsForCodeSystem).toHaveLength(4); // including '-'
 
     // This click will not update the value as onChange is not handled, but it helps in closing the Meunitems
-    userEvent.click(renderedOptionsForCodeSystem[1]);
+    userEvent.click(renderedOptionsForCodeSystem[2]);
     expect(codeSystemSelectInput.value).toBe("SNOMEDCT");
 
     const codeSelect = screen.getByTestId("code-select");
@@ -141,10 +136,10 @@ describe("CodeSystemSelector Component", () => {
     userEvent.click(codeSystemSelectDropdown);
 
     const renderedOptionsForCode = await screen.findAllByRole("option");
-    expect(renderedOptionsForCode).toHaveLength(3); // including '-'
+    expect(renderedOptionsForCode).toHaveLength(4); // including '-'
 
     // This click will not update the value as onChange is not handled, but it helps in closing the Meunitems
-    userEvent.click(renderedOptionsForCode[1]);
+    userEvent.click(renderedOptionsForCode[2]);
 
     const codeSelect = screen.getByTestId("code-select");
     const codeSelectDropdown = within(codeSelect).getByRole(
@@ -177,10 +172,10 @@ describe("CodeSystemSelector Component", () => {
     userEvent.click(codeSystemSelectDropdown);
 
     const renderedOptionsForCode = await screen.findAllByRole("option");
-    expect(renderedOptionsForCode).toHaveLength(3); // including '-'
+    expect(renderedOptionsForCode).toHaveLength(4); // including '-'
 
     // This click will not update the value as onChange is not handled, but it helps in closing the Meunitems
-    userEvent.click(renderedOptionsForCode[3]);
+    userEvent.click(renderedOptionsForCode[1]);
 
     const codeCustom = screen.getByTestId("custom-input-code");
     expect(codeCustom).toBeInTheDocument();

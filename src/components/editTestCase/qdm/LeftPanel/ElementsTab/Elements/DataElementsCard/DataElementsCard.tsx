@@ -82,6 +82,17 @@ const DataElementsCard = (props: {
       {/* uncomment later when we do something with it */}
       {/* {activeTab === 'attributes' && <Attributes />} */}
       {/* {activeTab === 'negation_rationale' && <NegationRationale />} */}
+
+      {/* <CodeSystemSelector
+        canEdit={true}
+        codeSystemProps={{
+          label: "Code System",
+          options: valueSetForSelectedDataElement(cqmMeasure.value_sets),
+          required: false,
+          error: false,
+          helperText: "",
+        }}
+      /> */}
     </div>
   );
 };
