@@ -93,7 +93,7 @@ const renderWithTestCase = (
             canEdit={canEdit}
             executionResult={[]}
             deleteTestCase={jest.fn()}
-            measure={measure}
+            exportTestCase={jest.fn()}
           />
         </ExecutionContextProvider>
       </ApiContextProvider>
@@ -155,28 +155,5 @@ describe("TestCase component", () => {
     expect(buttons[0]).toHaveTextContent("Select");
     fireEvent.click(buttons[0]);
     expect(screen.getByText("view")).toBeInTheDocument();
-  });
-
-  it("should generate the test case zip file", async () => {
-    const table = document.createElement("table");
-    renderWithTestCase(true);
-
-    const buttons = await screen.findAllByRole("button");
-    expect(buttons).toHaveLength(1);
-    expect(buttons[0]).toHaveTextContent("Select");
-    fireEvent.click(buttons[0]);
-
-    window.URL.createObjectURL = jest
-      .fn()
-      .mockReturnValueOnce("http://fileurl");
-    const exportButton = screen.getByText("export");
-    expect(exportButton).toBeInTheDocument();
-    fireEvent.click(exportButton);
-
-    await waitFor(() => {
-      expect(
-        screen.getByText("Test case exported successfully")
-      ).toBeInTheDocument();
-    });
   });
 });

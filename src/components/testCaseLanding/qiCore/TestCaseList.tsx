@@ -25,6 +25,7 @@ import {
 import TestCaseTable from "../common/TestCaseTable";
 import UseTestCases from "../common/Hooks/UseTestCases";
 import UseToast from "../common/Hooks/UseToast";
+import getModelFamily from "../../../util/measureModelHelpers";
 
 const TH = tw.th`p-3 border-b text-left text-sm font-bold capitalize`;
 
@@ -77,6 +78,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     toastMessage,
     setToastMessage,
     toastType,
+    setToastType,
     onToastClose,
   } = UseToast();
 
@@ -108,7 +110,7 @@ const TestCaseList = (props: TestCaseListProps) => {
   const [importDialogState, setImportDialogState] = useState<any>({
     open: false,
   });
-
+  const abortController = useRef(null);
   const [createOpen, setCreateOpen] = useState<boolean>(false);
 
   useEffect(() => {
@@ -225,6 +227,37 @@ const TestCaseList = (props: TestCaseListProps) => {
         );
         setErrors((prevState) => [...prevState, err.message]);
       });
+  };
+
+  const exportTestCase = async (selectedTestCase: TestCase) => {
+    try {
+      abortController.current = new AbortController();
+      const { ecqmTitle, model, version } = measure ?? {};
+      const exportData = await testCaseService?.current.exportTestCase(
+        measure?.id,
+        selectedTestCase.id,
+        abortController.current.signal
+      );
+      const url = window.URL.createObjectURL(exportData);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `${ecqmTitle}-v${version}-${getModelFamily(model)}-TestCases.zip`
+      );
+      document.body.appendChild(link);
+      link.click();
+      setToastOpen(true);
+      setToastType("success");
+      setToastMessage("Test case exported successfully");
+      document.body.removeChild(link);
+    } catch (err) {
+      setToastOpen(true);
+      setToastType("danger");
+      setToastMessage(
+        `Unable to export test case ${selectedTestCase?.title}. Please try again and contact the Help Desk if the problem persists.`
+      );
+    }
   };
 
   const handleClose = () => {
@@ -376,7 +409,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                         canEdit={canEdit}
                         executionResults={executionResults}
                         deleteTestCase={deleteTestCase}
-                        measure={measure}
+                        exportTestCase={exportTestCase}
                       />
                     </>
                   )}
