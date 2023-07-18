@@ -10,8 +10,7 @@ import {
   DetailedPopulationGroupResult,
 } from "fqm-execution/build/types/Calculator";
 import { checkUserCanEdit, measureStore } from "@madie/madie-util";
-import useExecutionContext from "../../routes/qiCore/useExecutionContext";
-import CreateCodeCoverageNavTabs from "../common/CreateCodeCoverageNavTabs";
+import CreateCodeCoverageNavTabs from "./CreateCodeCoverageNavTabs";
 import CodeCoverageHighlighting from "../common/CodeCoverageHighlighting";
 import CreateNewTestCaseDialog from "../../createTestCase/CreateNewTestCaseDialog";
 import { MadieSpinner, Toast } from "@madie/madie-design-system/dist/react";
@@ -25,6 +24,7 @@ import {
 import TestCaseTable from "../common/TestCaseTable";
 import UseTestCases from "../common/Hooks/UseTestCases";
 import UseToast from "../common/Hooks/UseToast";
+import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
 
 const TH = tw.th`p-3 border-b text-left text-sm font-bold capitalize`;
 
@@ -98,11 +98,10 @@ const TestCaseList = (props: TestCaseListProps) => {
       passPercentage: undefined,
       passFailRatio: "",
     });
-  const { measureState, bundleState, valueSetsState, executing, setExecuting } =
-    useExecutionContext();
+  const { measureState, cqmMeasureState, executing, setExecuting } =
+    useQdmExecutionContext();
   const [measure] = measureState;
-  const [measureBundle] = bundleState;
-  const [valueSets] = valueSetsState;
+  const [cqmMeasure] = cqmMeasureState;
   const [selectedPopCriteria, setSelectedPopCriteria] = useState<Group>();
   const [importDialogState, setImportDialogState] = useState<any>({
     open: false,
@@ -247,15 +246,16 @@ const TestCaseList = (props: TestCaseListProps) => {
     }
     const validTestCases = testCases?.filter((tc) => tc.validResource);
 
-    if (validTestCases && validTestCases.length > 0 && measureBundle) {
+    if (validTestCases && validTestCases.length > 0 && cqmMeasure) {
       setExecuting(true);
       try {
+        // calculation service needs to be changed: currently it is using QI Core calaculation service
         const calculationOutput: CalculationOutput<any> =
           await calculation.current.calculateTestCases(
             measure,
             validTestCases,
-            measureBundle,
-            valueSets
+            cqmMeasure,
+            cqmMeasure.value_sets
           );
         setCalculationOutput(calculationOutput);
       } catch (error) {
@@ -380,6 +380,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                         canEdit={canEdit}
                         executionResults={executionResults}
                         deleteTestCase={deleteTestCase}
+                        exportTestCase={null}
                       />
                     </>
                   )}

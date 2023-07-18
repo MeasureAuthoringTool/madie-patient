@@ -1,7 +1,7 @@
 import React from "react";
 import tw from "twin.macro";
 import "styled-components/macro";
-import { TestCase } from "@madie/madie-models";
+import { Measure, TestCase } from "@madie/madie-models";
 import TestCaseComponent from "../common/TestCase";
 import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calculator";
 
@@ -12,10 +12,17 @@ interface TestCaseTableProps {
     [key: string]: DetailedPopulationGroupResult[];
   };
   deleteTestCase: Function;
+  exportTestCase: Function;
 }
 
 const TestCaseTable = (props: TestCaseTableProps) => {
-  const { testCases, canEdit, executionResults, deleteTestCase } = props;
+  const {
+    testCases,
+    canEdit,
+    executionResults,
+    deleteTestCase,
+    exportTestCase,
+  } = props;
   const TH = tw.th`p-3 border-b text-left text-sm font-bold capitalize`;
 
   return (
@@ -46,6 +53,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
               canEdit={canEdit}
               executionResult={executionResults[testCase.id]}
               deleteTestCase={deleteTestCase}
+              exportTestCase={exportTestCase}
               // we assume all results have been run here
             />
           );

@@ -22,6 +22,10 @@ const DataElementsCard = (props: {
     selectedDataElement,
     setSelectedDataElement,
   } = props;
+  const negationRationale =
+    selectedDataElement?.hasOwnProperty("negationRationale");
+  // https://ecqi.healthit.gov/mcw/2020/qdm-attribute/negationrationale.html  (list of all categories that use negation rationale)
+
   // centralize state one level up so we can conditionally render our child component
   return (
     <div className="data-elements-card" data-testid="data-element-card">
@@ -59,6 +63,7 @@ const DataElementsCard = (props: {
       </div>
       {/* Govern our navigation for codes/att/negation */}
       <SubNavigationTabs
+        negationRationale={negationRationale}
         activeTab={cardActiveTab}
         setActiveTab={setCardActiveTab}
       />

@@ -21,6 +21,7 @@ import {
   Measure,
   MeasureErrorType,
   MeasureScoring,
+  Model,
   PopulationExpectedValue,
   PopulationType,
   TestCase,
@@ -81,6 +82,7 @@ const measure = {
       ],
     },
   ],
+  model: Model.QICORE,
   acls: [{ userId: "othertestuser@example.com", roles: ["SHARED_WITH"] }], //#nosec
 } as Measure;
 jest.mock("@madie/madie-util", () => ({
@@ -427,6 +429,11 @@ const useTestCaseServiceMockResolved = {
     .fn()
     .mockResolvedValue(["Series 1", "Series 2"]),
   createTestCases: jest.fn().mockResolvedValue([]),
+  exportTestCase: jest.fn().mockResolvedValue(
+    new Blob([JSON.stringify("exported test data")], {
+      type: "application/json",
+    })
+  ),
 } as unknown as TestCaseServiceApi;
 
 // mocking measureService
@@ -451,7 +458,7 @@ describe("TestCaseList component", () => {
     calculationServiceMock.mockImplementation(() => {
       return calculationServiceMockResolved;
     });
-    useTestCaseServiceMock.mockImplementation(() => {
+    useTestCaseServiceMock.mockReset().mockImplementation(() => {
       return useTestCaseServiceMockResolved;
     });
     useMeasureServiceMock.mockImplementation(() => {
@@ -1141,6 +1148,69 @@ describe("TestCaseList component", () => {
     });
 
     await waitFor(() => expect(executeAllTestCasesButton).toBeDisabled());
+  });
+
+  it("should export a test case", async () => {
+    renderTestCaseListComponent();
+
+    window.URL.createObjectURL = jest
+      .fn()
+      .mockReturnValueOnce("http://fileurl");
+
+    await waitFor(() => {
+      const selectButton = screen.getByTestId(
+        `select-action-${testCases[0].id}`
+      );
+      expect(selectButton).toBeInTheDocument();
+      fireEvent.click(selectButton);
+    });
+    const exportButton = screen.getByTestId(
+      `export-test-case-${testCases[0].id}`
+    );
+    fireEvent.click(exportButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Test case exported successfully")
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("should throw error while exporting a test case", async () => {
+    useTestCaseServiceMock.mockImplementation(() => {
+      return {
+        getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
+        getTestCaseSeriesForMeasure: jest
+          .fn()
+          .mockResolvedValue(["Series 1", "Series 2"]),
+        exportTestCase: jest.fn().mockRejectedValue(new Error("BAD THINGS")),
+      } as unknown as TestCaseServiceApi;
+    });
+    window.URL.createObjectURL = jest
+      .fn()
+      .mockReturnValueOnce("http://fileurl");
+
+    renderTestCaseListComponent();
+
+    await waitFor(() => {
+      const selectButton = screen.getByTestId(
+        `select-action-${testCases[0].id}`
+      );
+      expect(selectButton).toBeInTheDocument();
+      fireEvent.click(selectButton);
+    });
+    const exportButton = screen.getByTestId(
+      `export-test-case-${testCases[0].id}`
+    );
+    fireEvent.click(exportButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          `Unable to export test case ${testCases[0]?.title}. Please try again and contact the Help Desk if the problem persists.`
+        )
+      ).toBeInTheDocument();
+    });
   });
 });
 

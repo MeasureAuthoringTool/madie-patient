@@ -21,6 +21,7 @@ import {
   Measure,
   MeasureErrorType,
   MeasureScoring,
+  Model,
   PopulationExpectedValue,
   PopulationType,
   TestCase,
@@ -32,12 +33,11 @@ import useMeasureServiceApi, {
   MeasureServiceApi,
 } from "../../../api/useMeasureServiceApi";
 import userEvent from "@testing-library/user-event";
-import {
-  buildMeasureBundle,
-  getExampleValueSet,
-} from "../../../util/CalculationTestHelpers";
-import { ExecutionContextProvider } from "../../routes/qiCore/ExecutionContext";
+import { buildMeasureBundle } from "../../../util/CalculationTestHelpers";
+import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
 import { checkUserCanEdit, useFeatureFlags } from "@madie/madie-util";
+import { CqmConversionService } from "../../../api/CqmModelConversionService";
+import { ValueSet } from "cqm-models";
 
 const serviceConfig: ServiceConfig = {
   testCaseService: {
@@ -81,6 +81,7 @@ const measure = {
       ],
     },
   ],
+  model: Model.QDM_5_6,
   acls: [{ userId: "othertestuser@example.com", roles: ["SHARED_WITH"] }],
 } as unknown as Measure;
 
@@ -440,10 +441,12 @@ const useMeasureServiceMockResolved = {
   fetchMeasureBundle: jest.fn().mockResolvedValue(buildMeasureBundle(measure)),
 } as unknown as MeasureServiceApi;
 
-const measureBundle = buildMeasureBundle(measure);
-const valueSets = [getExampleValueSet()];
+const getAccessToken = jest.fn();
+let cqmConversionService = new CqmConversionService("url", getAccessToken);
+const cqmMeasure = cqmConversionService.convertToCqmMeasure(measure);
+const valueSets = [] as ValueSet[];
 const setMeasure = jest.fn();
-const setMeasureBundle = jest.fn();
+const setCqmMeasure = jest.fn();
 const setValueSets = jest.fn();
 const setError = jest.fn();
 
@@ -478,10 +481,10 @@ describe("TestCaseList component", () => {
     return render(
       <MemoryRouter>
         <ApiContextProvider value={serviceConfig}>
-          <ExecutionContextProvider
+          <QdmExecutionContextProvider
             value={{
               measureState: [measure, setMeasure],
-              bundleState: [measureBundle, setMeasureBundle],
+              cqmMeasureState: [cqmMeasure, setCqmMeasure],
               valueSetsState: [valueSets, setValueSets],
               executionContextReady: true,
               executing: false,
@@ -489,7 +492,7 @@ describe("TestCaseList component", () => {
             }}
           >
             <TestCaseList errors={errors} setErrors={setError} />
-          </ExecutionContextProvider>
+          </QdmExecutionContextProvider>
         </ApiContextProvider>
       </MemoryRouter>
     );

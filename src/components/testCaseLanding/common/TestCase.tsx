@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import tw from "twin.macro";
-import styled from "styled-components";
+import "twin.macro";
+import "styled-components/macro";
 import { useNavigate } from "react-router-dom";
-
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CancelIcon from "@mui/icons-material/Cancel";
 import Popover from "@mui/material/Popover";
@@ -25,11 +24,13 @@ const TestCase = ({
   canEdit,
   executionResult,
   deleteTestCase,
+  exportTestCase,
 }: {
   testCase: TestCaseModel;
   canEdit: boolean;
   executionResult: DetailedPopulationGroupResult[];
   deleteTestCase;
+  exportTestCase: any;
 }) => {
   const viewOrEdit = canEdit ? "edit" : "view";
   const theme = useTheme();
@@ -63,29 +64,6 @@ const TestCase = ({
     setOptionsOpen(false);
     setSelectedTestCase(null);
     setAnchorEl(null);
-  };
-
-  const exportTestCase = async () => {
-    try {
-      const textFile = new Blob([JSON.stringify("")], {
-        type: "application/json",
-      });
-
-      const url = window.URL.createObjectURL(textFile);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `ADD.zip`);
-      document.body.appendChild(link);
-      link.click();
-      setToastOpen(true);
-      setToastType("success");
-      setToastMessage("Test case exported successfully");
-      document.body.removeChild(link);
-    } catch (err) {
-      setToastOpen(true);
-      setToastType("danger");
-      setToastMessage("Test case export was unsuccessful");
-    }
   };
 
   const TestCaseStatus = (executionStatus: string) => {
@@ -253,7 +231,7 @@ const TestCase = ({
               aria-label={`export-test-case-${testCase.title}`}
               data-testid={`export-test-case-${testCase.id}`}
               onClick={() => {
-                exportTestCase();
+                exportTestCase(selectedTestCase);
                 setOptionsOpen(false);
               }}
             >

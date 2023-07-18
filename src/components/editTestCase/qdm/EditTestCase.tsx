@@ -39,6 +39,7 @@ import {
 import { QDMPatient } from "cqm-models";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
 
 const EditTestCase = () => {
   useDocumentTitle("MADiE Edit Measure Edit Test Case");
@@ -77,6 +78,10 @@ const EditTestCase = () => {
 
   const qdmCalculation = useRef(qdmCalculationService());
   const testCaseService = useRef(useTestCaseServiceApi());
+
+  const { cqmMeasureState } = useQdmExecutionContext();
+
+  const [cqmMeasure] = cqmMeasureState;
 
   const navigate = useNavigate();
   const { measureId, id } = useParams();
@@ -227,7 +232,10 @@ const EditTestCase = () => {
   const calculateQdmTestCases = async () => {
     try {
       const calculationOutput =
-        await qdmCalculation.current.calculateQdmTestCases();
+        await qdmCalculation.current.calculateQdmTestCases(
+          cqmMeasure,
+          JSON.parse(currentTestCase?.json)
+        );
       calculationOutput &&
         showToast(
           "Calculation was successful, output is printed in the console",
