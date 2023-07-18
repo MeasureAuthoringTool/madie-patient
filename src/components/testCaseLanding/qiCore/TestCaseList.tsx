@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import tw from "twin.macro";
+import "twin.macro";
 import "styled-components/macro";
 import * as _ from "lodash";
 import { Group, TestCase, MeasureErrorType } from "@madie/madie-models";
@@ -26,8 +26,7 @@ import TestCaseTable from "../common/TestCaseTable";
 import UseTestCases from "../common/Hooks/UseTestCases";
 import UseToast from "../common/Hooks/UseToast";
 import getModelFamily from "../../../util/measureModelHelpers";
-
-const TH = tw.th`p-3 border-b text-left text-sm font-bold capitalize`;
+import FileSaver from "file-saver";
 
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
@@ -238,19 +237,13 @@ const TestCaseList = (props: TestCaseListProps) => {
         selectedTestCase.id,
         abortController.current.signal
       );
-      const url = window.URL.createObjectURL(exportData);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute(
-        "download",
+      FileSaver.saveAs(
+        exportData,
         `${ecqmTitle}-v${version}-${getModelFamily(model)}-TestCases.zip`
       );
-      document.body.appendChild(link);
-      link.click();
       setToastOpen(true);
       setToastType("success");
       setToastMessage("Test case exported successfully");
-      document.body.removeChild(link);
     } catch (err) {
       setToastOpen(true);
       setToastType("danger");
