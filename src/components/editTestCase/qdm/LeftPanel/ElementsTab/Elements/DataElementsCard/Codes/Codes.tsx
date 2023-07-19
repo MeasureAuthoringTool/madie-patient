@@ -1,8 +1,10 @@
 import React from "react";
+import AttributeChipList from '../AttributeChipList'
 
 const Codes = () => {
   return (
-    <div className="codes" data-testId="codes-section">
+    <div id="codes" data-testId="codes-section">
+      <AttributeChipList items={[ "test", "test", "test1", "test really really really long one here"]}/>
       {/* uncomment later, use test data to get feel */}
       {/* <CodeSystemSelector
               canEdit={true}

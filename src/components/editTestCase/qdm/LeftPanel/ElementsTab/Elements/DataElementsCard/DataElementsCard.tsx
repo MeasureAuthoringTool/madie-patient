@@ -4,6 +4,7 @@ import { IconButton } from "@mui/material";
 import { DataElement } from "cqm-models";
 
 import Codes from "./Codes/Codes";
+import Attributes from './Attributes/Attributes'
 import SubNavigationTabs from "./SubNavigationTabs";
 
 import "./DataElementsCard.scss";
