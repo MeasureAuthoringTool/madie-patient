@@ -4,6 +4,7 @@ import "styled-components/macro";
 import { Select } from "@madie/madie-design-system/dist/react";
 import { MenuItem } from "@mui/material";
 import { kebabCase } from "lodash";
+import * as _ from "lodash";
 
 interface SelectProps extends ComponentProps<any> {
   label: string;
@@ -27,21 +28,20 @@ const AttributeSelector = ({
   // if the field is not required a default option is provided
   const getMenuItems = (options: string[], required: boolean) => {
     return [
-      !required && (
+      !required ? (
         <MenuItem key="-" value="">
           -
         </MenuItem>
-      ),
-      options.map((option) => (
+      ) : null,
+      ...options.map((option) => (
         <MenuItem key={option} value={option} data-testid={`option-${option}`}>
           {option}
         </MenuItem>
       )),
-    ];
+    ].filter((s) => !_.isNil(s));
   };
   return (
-    <div>
-      <h5 tw="text-blue-800 mb-2">Attributes</h5>
+    <div tw="pt-2">
       <div tw="flex">
         <div tw="flex-initial w-4/12 pr-3">
           <Select
