@@ -5,11 +5,9 @@ import { DataElement } from "cqm-models";
 
 import Codes from "./Codes/Codes";
 import SubNavigationTabs from "./SubNavigationTabs";
-import { useQdmExecutionContext } from "../../../../../../routes/qdm/QdmExecutionContext";
 
 import "./DataElementsCard.scss";
 import * as _ from "lodash";
-import CodeSystemSelector from "../../../../../../common/codeSystemSelector/CodeSystemSelector";
 
 const DataElementsCard = (props: {
   cardActiveTab: string;
@@ -28,16 +26,6 @@ const DataElementsCard = (props: {
   // https://ecqi.healthit.gov/mcw/2020/qdm-attribute/negationrationale.html  (list of all categories that use negation rationale)
 
   // centralize state one level up so we can conditionally render our child component
-  // const { cqmMeasureState } = useQdmExecutionContext();
-
-  // const [cqmMeasure] = cqmMeasureState;
-
-  // const valueSetForSelectedDataElement = (cqmMeasureValueSets) => {
-  //   return cqmMeasureValueSets.filter(
-  //     (valueSet) => valueSet.display_name === "Diabetes"
-  //   );
-  // };
-
   return (
     <div className="data-elements-card" data-testid="data-element-card">
       <div className="heading-row">
@@ -82,17 +70,6 @@ const DataElementsCard = (props: {
       {/* uncomment later when we do something with it */}
       {/* {activeTab === 'attributes' && <Attributes />} */}
       {/* {activeTab === 'negation_rationale' && <NegationRationale />} */}
-
-      {/* <CodeSystemSelector
-        canEdit={true}
-        codeSystemProps={{
-          label: "Code System",
-          options: valueSetForSelectedDataElement(cqmMeasure.value_sets),
-          required: false,
-          error: false,
-          helperText: "",
-        }}
-      /> */}
     </div>
   );
 };
