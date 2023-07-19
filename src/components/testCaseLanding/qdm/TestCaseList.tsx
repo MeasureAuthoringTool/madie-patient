@@ -98,16 +98,10 @@ const TestCaseList = (props: TestCaseListProps) => {
       passPercentage: undefined,
       passFailRatio: "",
     });
-  const {
-    measureState,
-    cqmMeasureState,
-    valueSetsState,
-    executing,
-    setExecuting,
-  } = useQdmExecutionContext();
+  const { measureState, cqmMeasureState, executing, setExecuting } =
+    useQdmExecutionContext();
   const [measure] = measureState;
   const [cqmMeasure] = cqmMeasureState;
-  const [valueSets] = valueSetsState;
   const [selectedPopCriteria, setSelectedPopCriteria] = useState<Group>();
   const [importDialogState, setImportDialogState] = useState<any>({
     open: false,
@@ -255,12 +249,13 @@ const TestCaseList = (props: TestCaseListProps) => {
     if (validTestCases && validTestCases.length > 0 && cqmMeasure) {
       setExecuting(true);
       try {
+        // calculation service needs to be changed: currently it is using QI Core calaculation service
         const calculationOutput: CalculationOutput<any> =
           await calculation.current.calculateTestCases(
             measure,
             validTestCases,
             cqmMeasure,
-            valueSets
+            cqmMeasure.value_sets
           );
         setCalculationOutput(calculationOutput);
       } catch (error) {
@@ -385,7 +380,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                         canEdit={canEdit}
                         executionResults={executionResults}
                         deleteTestCase={deleteTestCase}
-                        measure={measure}
+                        exportTestCase={null}
                       />
                     </>
                   )}
