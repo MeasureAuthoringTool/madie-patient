@@ -23,19 +23,18 @@ const DateTimeInterval = ({
 }: DateTimeIntervalProps) => {
   return (
     <div>
-      <h5 tw="text-blue-800 mb-2">Time Range</h5>
       <FormControl>
         <div tw="flex flex-row gap-8">
           <DateTimeField
             disabled={!canEdit}
             label={`${label} - Start`}
-            handlDateTimeChange={handleStartDateTimeChange}
+            handleDateTimeChange={handleStartDateTimeChange}
             dateTimeValue={startDateTime}
           />
           <DateTimeField
             disabled={!canEdit}
             label={`${label} - End`}
-            handlDateTimeChange={handleEndDateTimeChange}
+            handleDateTimeChange={handleEndDateTimeChange}
             dateTimeValue={endDateTime}
           />
         </div>

@@ -18,6 +18,7 @@ import useTestCaseServiceApi, {
   TestCaseServiceApi,
 } from "../../../../../../api/useTestCaseServiceApi";
 import { act } from "react-dom/test-utils";
+import * as Formik from "formik";
 
 const serviceConfig: ServiceConfig = {
   testCaseService: {
@@ -368,14 +369,44 @@ jest.mock("@madie/madie-util", () => ({
   },
 }));
 screen.debug(undefined, Infinity);
+
+const qdmPatient = {
+  qdmVersion: "5.6",
+  dataElements: testDataElements,
+  _id: "609d979fb789028849ab8dd3",
+  birthDatetime: "1985-01-01T08:00:00.000+00:00",
+  extendedData: null,
+};
+
 describe("ElementsSection allows card opening and closing", () => {
   screen.debug(undefined, Infinity);
+
+  const useFormikContextMock = jest.spyOn(Formik, "useFormikContext");
+  beforeEach(() => {
+    useFormikContextMock.mockReturnValue({
+      setFieldValue: jest.fn(),
+      setFieldTouched: jest.fn(),
+      values: {
+        json: JSON.stringify(qdmPatient),
+      },
+    } as unknown as never);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
   CQMConversionMock.mockImplementation(() => {
     return useCqmConversionServiceMockResolved;
   });
   // need to mock measureStore, and the results from retrieve categories
-  const { findByTestId, getByTestId, queryByText } = screen;
+  const {
+    findByTestId,
+    getByTestId,
+    queryByText,
+    findAllByPlaceholderText,
+    getByDisplayValue,
+  } = screen;
   test("should open and close a data element card manual close selection", async () => {
     render(<ElementsSection />);
     const elementSection = await findByTestId("elements-section");
@@ -451,5 +482,88 @@ describe("ElementsSection allows card opening and closing", () => {
     await waitFor(() => {
       expect(queryByText("Negation Rationale")).toBeInTheDocument();
     });
+  });
+
+  test("Click Encounter: Performed brings up Timing component", async () => {
+    render(<ElementsSection />);
+    const elementSection = await findByTestId("elements-section");
+    expect(elementSection).toBeInTheDocument();
+
+    const encounterTab = await findByTestId("elements-tab-encounter");
+    expect(encounterTab).toBeInTheDocument();
+    act(() => {
+      userEvent.click(encounterTab);
+    });
+
+    const encounterButton = await findByTestId(
+      "data-type-Encounter, Performed: Emergency Department Visit"
+    );
+    expect(encounterButton).toBeInTheDocument();
+    act(() => {
+      userEvent.click(encounterButton);
+    });
+
+    const relevantStartLabel = await findByTestId("relevant-period-start");
+    expect(relevantStartLabel).toBeInTheDocument();
+    const relevantEndLabel = await findByTestId("relevant-period-end");
+    expect(relevantEndLabel).toBeInTheDocument();
+    const authorDateTimeLabel = getByTestId("author-date-time");
+    expect(authorDateTimeLabel).toBeInTheDocument();
+  });
+
+  test("test Timing component change values", async () => {
+    render(<ElementsSection />);
+    const elementSection = await findByTestId("elements-section");
+    expect(elementSection).toBeInTheDocument();
+
+    const encounterTab = await findByTestId("elements-tab-encounter");
+    expect(encounterTab).toBeInTheDocument();
+    act(() => {
+      userEvent.click(encounterTab);
+    });
+
+    const encounterButton = await findByTestId(
+      "data-type-Encounter, Performed: Emergency Department Visit"
+    );
+    expect(encounterButton).toBeInTheDocument();
+    act(() => {
+      userEvent.click(encounterButton);
+    });
+
+    const relevantStartLabel = await findByTestId("relevant-period-start");
+    expect(relevantStartLabel).toBeInTheDocument();
+    const relevantEndLabel = await findByTestId("relevant-period-end");
+    expect(relevantEndLabel).toBeInTheDocument();
+    const authorDateTimeLabel = getByTestId("author-date-time");
+    expect(authorDateTimeLabel).toBeInTheDocument();
+
+    const datetimeInputs = await findAllByPlaceholderText(
+      "MM/DD/YYYY hh:mm aa"
+    );
+    expect(datetimeInputs.length).toBe(3);
+
+    //change start date time:
+    userEvent.click(datetimeInputs[0]);
+    userEvent.keyboard("11-12-1972 1:12 AM"); // keyboard type in your date
+    userEvent.tab(); // you need 2 tab presses to register
+    userEvent.tab();
+    const startDateTimeValue = getByDisplayValue("11/12/1972 01:12 AM");
+    expect(startDateTimeValue).toBeInTheDocument();
+
+    //change end date time:
+    userEvent.click(datetimeInputs[1]);
+    userEvent.keyboard("11-13-1972 1:12 AM"); // keyboard type in your date
+    userEvent.tab(); // you need 2 tab presses to register
+    userEvent.tab();
+    const endDateTimeValue = getByDisplayValue("11/13/1972 01:12 AM");
+    expect(endDateTimeValue).toBeInTheDocument();
+
+    //change author date time:
+    userEvent.click(datetimeInputs[2]);
+    userEvent.keyboard("11-14-1972 1:12 AM"); // keyboard type in your date
+    userEvent.tab(); // you need 2 tab presses to register
+    userEvent.tab();
+    const authorrDateTimeValue = getByDisplayValue("11/14/1972 01:12 AM");
+    expect(authorrDateTimeValue).toBeInTheDocument();
   });
 });
