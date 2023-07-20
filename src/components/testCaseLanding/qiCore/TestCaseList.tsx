@@ -27,6 +27,7 @@ import UseTestCases from "../common/Hooks/UseTestCases";
 import UseToast from "../common/Hooks/UseToast";
 import getModelFamily from "../../../util/measureModelHelpers";
 import FileSaver from "file-saver";
+import moment from "moment";
 
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
@@ -272,6 +273,8 @@ const TestCaseList = (props: TestCaseListProps) => {
 
     if (validTestCases && validTestCases.length > 0 && measureBundle) {
       setExecuting(true);
+      const start = Date.now();
+      let end;
       try {
         const calculationOutput: CalculationOutput<any> =
           await calculation.current.calculateTestCases(
@@ -280,6 +283,19 @@ const TestCaseList = (props: TestCaseListProps) => {
             measureBundle,
             valueSets
           );
+        if (calculationOutput) {
+          end = Date.now();
+        }
+        const startMoment = moment(start);
+        const endMoment = moment(end);
+        const diff = endMoment.diff(startMoment);
+        const diffDuration = moment.duration(diff);
+        // eslint-disable-next-line no-console
+        console.debug("Minutes:", diffDuration.minutes());
+        // eslint-disable-next-line no-console
+        console.debug("Seconds:", diffDuration.seconds());
+        // eslint-disable-next-line no-console
+        console.debug("Milliseconds:", diffDuration.milliseconds());
         setCalculationOutput(calculationOutput);
       } catch (error) {
         console.error("calculateTestCases: error.message = " + error.message);
