@@ -290,8 +290,11 @@ const TestCaseList = (props: TestCaseListProps) => {
         const endMoment = moment(end);
         const diff = endMoment.diff(startMoment);
         const diffDuration = moment.duration(diff);
+        // eslint-disable-next-line no-console
         console.debug("Minutes:", diffDuration.minutes());
+        // eslint-disable-next-line no-console
         console.debug("Seconds:", diffDuration.seconds());
+        // eslint-disable-next-line no-console
         console.debug("Milliseconds:", diffDuration.milliseconds());
         setCalculationOutput(calculationOutput);
       } catch (error) {
