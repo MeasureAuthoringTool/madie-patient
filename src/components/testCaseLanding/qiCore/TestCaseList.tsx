@@ -290,9 +290,9 @@ const TestCaseList = (props: TestCaseListProps) => {
         const endMoment = moment(end);
         const diff = endMoment.diff(startMoment);
         const diffDuration = moment.duration(diff);
-        console.log("Minutes:", diffDuration.minutes());
-        console.log("Seconds:", diffDuration.seconds());
-        console.log("Milliseconds:", diffDuration.milliseconds());
+        console.debug("Minutes:", diffDuration.minutes());
+        console.debug("Seconds:", diffDuration.seconds());
+        console.debug("Milliseconds:", diffDuration.milliseconds());
         setCalculationOutput(calculationOutput);
       } catch (error) {
         console.error("calculateTestCases: error.message = " + error.message);
