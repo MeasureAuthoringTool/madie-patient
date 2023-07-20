@@ -8,11 +8,6 @@ export interface QdmExecutionContextHolder {
     cqmMeasure: CqmMeasure,
     setCqmMeasure: (cqmMeasure: CqmMeasure) => void
   ];
-  valueSetsState: [
-    valueSets: ValueSet[],
-    setValueSets: (valueSets: ValueSet[]) => void
-  ];
-
   executionContextReady: boolean;
   executing: boolean;
   setExecuting: (executing: boolean) => void;

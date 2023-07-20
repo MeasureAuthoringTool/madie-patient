@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import tw from "twin.macro";
+import "twin.macro";
 import "styled-components/macro";
 import * as _ from "lodash";
 import { Group, TestCase, MeasureErrorType } from "@madie/madie-models";
@@ -25,8 +25,9 @@ import {
 import TestCaseTable from "../common/TestCaseTable";
 import UseTestCases from "../common/Hooks/UseTestCases";
 import UseToast from "../common/Hooks/UseToast";
-
-const TH = tw.th`p-3 border-b text-left text-sm font-bold capitalize`;
+import getModelFamily from "../../../util/measureModelHelpers";
+import FileSaver from "file-saver";
+import moment from "moment";
 
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
@@ -77,6 +78,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     toastMessage,
     setToastMessage,
     toastType,
+    setToastType,
     onToastClose,
   } = UseToast();
 
@@ -108,7 +110,7 @@ const TestCaseList = (props: TestCaseListProps) => {
   const [importDialogState, setImportDialogState] = useState<any>({
     open: false,
   });
-
+  const abortController = useRef(null);
   const [createOpen, setCreateOpen] = useState<boolean>(false);
 
   useEffect(() => {
@@ -227,6 +229,31 @@ const TestCaseList = (props: TestCaseListProps) => {
       });
   };
 
+  const exportTestCase = async (selectedTestCase: TestCase) => {
+    try {
+      abortController.current = new AbortController();
+      const { ecqmTitle, model, version } = measure ?? {};
+      const exportData = await testCaseService?.current.exportTestCase(
+        measure?.id,
+        selectedTestCase.id,
+        abortController.current.signal
+      );
+      FileSaver.saveAs(
+        exportData,
+        `${ecqmTitle}-v${version}-${getModelFamily(model)}-TestCases.zip`
+      );
+      setToastOpen(true);
+      setToastType("success");
+      setToastMessage("Test case exported successfully");
+    } catch (err) {
+      setToastOpen(true);
+      setToastType("danger");
+      setToastMessage(
+        `Unable to export test case ${selectedTestCase?.title}. Please try again and contact the Help Desk if the problem persists.`
+      );
+    }
+  };
+
   const handleClose = () => {
     setCreateOpen(false);
   };
@@ -246,6 +273,8 @@ const TestCaseList = (props: TestCaseListProps) => {
 
     if (validTestCases && validTestCases.length > 0 && measureBundle) {
       setExecuting(true);
+      const start = Date.now();
+      let end;
       try {
         const calculationOutput: CalculationOutput<any> =
           await calculation.current.calculateTestCases(
@@ -254,6 +283,19 @@ const TestCaseList = (props: TestCaseListProps) => {
             measureBundle,
             valueSets
           );
+        if (calculationOutput) {
+          end = Date.now();
+        }
+        const startMoment = moment(start);
+        const endMoment = moment(end);
+        const diff = endMoment.diff(startMoment);
+        const diffDuration = moment.duration(diff);
+        // eslint-disable-next-line no-console
+        console.debug("Minutes:", diffDuration.minutes());
+        // eslint-disable-next-line no-console
+        console.debug("Seconds:", diffDuration.seconds());
+        // eslint-disable-next-line no-console
+        console.debug("Milliseconds:", diffDuration.milliseconds());
         setCalculationOutput(calculationOutput);
       } catch (error) {
         console.error("calculateTestCases: error.message = " + error.message);
@@ -376,7 +418,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                         canEdit={canEdit}
                         executionResults={executionResults}
                         deleteTestCase={deleteTestCase}
-                        measure={measure}
+                        exportTestCase={exportTestCase}
                       />
                     </>
                   )}
