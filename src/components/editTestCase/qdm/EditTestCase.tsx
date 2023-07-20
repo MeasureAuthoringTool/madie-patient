@@ -10,6 +10,7 @@ import {
   PopulationExpectedValue,
   Group,
   GroupPopulation,
+  MeasureErrorType,
 } from "@madie/madie-models";
 import "../qiCore/EditTestCase.scss";
 import {
@@ -79,7 +80,8 @@ const EditTestCase = () => {
   const qdmCalculation = useRef(qdmCalculationService());
   const testCaseService = useRef(useTestCaseServiceApi());
 
-  const { cqmMeasureState } = useQdmExecutionContext();
+  const { cqmMeasureState, executionContextReady, executing, setExecuting } =
+    useQdmExecutionContext();
 
   const [cqmMeasure] = cqmMeasureState;
 
@@ -230,6 +232,7 @@ const EditTestCase = () => {
   }, [measureId, id, measure?.groups, navigate]);
 
   const calculateQdmTestCases = async () => {
+    setExecuting(true);
     try {
       const calculationOutput =
         await qdmCalculation.current.calculateQdmTestCases(
@@ -243,6 +246,8 @@ const EditTestCase = () => {
         );
     } catch (error) {
       showToast("Error while calculating QDM test cases", "danger");
+    } finally {
+      setExecuting(false);
     }
   };
 
@@ -324,7 +329,15 @@ const EditTestCase = () => {
               variant="primary"
               data-testid="qdm-test-case-run-button"
               onClick={calculateQdmTestCases}
-              disabled={!canEdit}
+              disabled={
+                !!measure?.cqlErrors ||
+                _.isEmpty(measure?.groups) ||
+                measure?.errors?.includes(
+                  MeasureErrorType.MISMATCH_CQL_POPULATION_RETURN_TYPES
+                ) ||
+                !executionContextReady ||
+                executing
+              }
             >
               Run Test
             </Button>
