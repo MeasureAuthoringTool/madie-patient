@@ -6,6 +6,8 @@ import InputAdornment from "@mui/material/InputAdornment";
 import EventIcon from "@mui/icons-material/Event";
 import { useFormikContext } from "formik";
 
+import Identifier from "../../../../../common/Identifier/Identifier";
+
 import { QDMPatient, DataElement } from "cqm-models";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -54,6 +56,7 @@ const DemographicsSection = ({ canEdit }) => {
     useState<DataElement>();
   const [livingStatusDataElement, setLivingStatusDataElement] =
     useState<DataElement>();
+  const [identifier, setIdentifier] = useState<{value,namingSystem}>({value:"hello",namingSystem:"123"})
 
   const selectOptions = (options) => {
     return [
@@ -383,6 +386,11 @@ const DemographicsSection = ({ canEdit }) => {
                 ></Select>
               </FormControl>
             </div>
+            <Identifier
+            handleChange={setIdentifier}
+            canEdit={true}
+            identifier={identifier}
+            />
           </div>
         }
       />
