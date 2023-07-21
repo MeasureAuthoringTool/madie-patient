@@ -253,6 +253,30 @@ const TestCaseList = (props: TestCaseListProps) => {
     }
   };
 
+  const exportTestCases = async () => {
+    const textFile = new Blob([JSON.stringify("")], {
+      type: "application/json",
+    });
+    const url = window.URL.createObjectURL(textFile);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute(
+      "download",
+      measure.ecqmTitle +
+        "-v" +
+        measure.version +
+        "-" +
+        getModelFamily(measure.model) +
+        "-TestCases.zip"
+    );
+    document.body.appendChild(link);
+    link.click();
+    setToastOpen(true);
+    setToastType("success");
+    setToastMessage("Test cases exported successfully");
+    document.body.removeChild(link);
+  };
+
   const handleClose = () => {
     setCreateOpen(false);
   };
@@ -375,6 +399,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                 testCasePassFailStats={testCasePassFailStats}
                 coveragePercentage={coveragePercentage}
                 validTestCases={testCases?.filter((tc) => tc.validResource)}
+                exportTestCases={exportTestCases}
               />
             </div>
             <CreateNewTestCaseDialog open={createOpen} onClose={handleClose} />

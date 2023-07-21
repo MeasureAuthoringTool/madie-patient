@@ -21,6 +21,7 @@ export interface NavTabProps {
   testCasePassFailStats: TestCasesPassingDetailsProps;
   coveragePercentage: number;
   validTestCases: TestCase[];
+  exportTestCases: () => void;
 }
 
 const defaultStyle = {
@@ -50,6 +51,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     testCasePassFailStats,
     coveragePercentage,
     validTestCases,
+    exportTestCases,
   } = props;
 
   const featureFlags = useFeatureFlags();
@@ -174,6 +176,15 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
               />
             )}
           </Box>
+        </div>
+        <div style={{ margin: "0 6px 0 26px" }}>
+          <Button
+            disabled={!canEdit}
+            onClick={exportTestCases}
+            data-testid="export-test-cases-button"
+          >
+            Export Test Cases
+          </Button>
         </div>
       </div>
     </div>

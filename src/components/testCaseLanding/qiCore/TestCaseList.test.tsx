@@ -1212,6 +1212,27 @@ describe("TestCaseList component", () => {
       ).toBeInTheDocument();
     });
   });
+
+  it("should render Export Test Cases button and export test cases successfully", async () => {
+    window.URL.createObjectURL = jest.fn().mockImplementationOnce(() => {});
+    const { getByTestId } = renderTestCaseListComponent();
+
+    const codeCoverageTabs = await screen.findByTestId("code-coverage-tabs");
+    expect(codeCoverageTabs).toBeInTheDocument();
+    const passingTab = await screen.findByTestId("passing-tab");
+    expect(passingTab).toBeInTheDocument();
+    const testCaseList = await screen.findByTestId("test-case-tbl");
+    expect(testCaseList).toBeInTheDocument();
+
+    const exportTestCasesButton = getByTestId("export-test-cases-button");
+    fireEvent.click(exportTestCasesButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Test cases exported successfully")
+      ).toBeInTheDocument();
+    });
+  });
 });
 
 describe("retrieve coverage value from HTML coverage", () => {
