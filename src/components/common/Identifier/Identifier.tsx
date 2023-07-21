@@ -2,7 +2,6 @@ import React from "react";
 import { TextField } from "@madie/madie-design-system/dist/react/";
 import "twin.macro";
 import "styled-components/macro";
-import ComponentHeader from "../ComponentHeader/ComponentHeader";
 
 export interface IdentifierProps {
   handleChange: Function;
@@ -25,9 +24,7 @@ const Identifier = ({
 }: IdentifierProps) => {
   return (
     <div>
-      <ComponentHeader
-        title="Identifier"
-        children={
+       <h4 className="header">{"Identifier"}</h4>
     <div tw="flex flex-row">
       
       <div tw="w-72 mr-4">
@@ -66,7 +63,7 @@ const Identifier = ({
           }}
         />
       </div>
-    </div>}/>
+    </div>
     </div>
   );
 };
