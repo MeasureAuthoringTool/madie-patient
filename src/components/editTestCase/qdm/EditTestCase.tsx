@@ -41,6 +41,7 @@ import { QDMPatient } from "cqm-models";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
+import StatusHandler from "../../statusHandler/StatusHandler";
 
 const EditTestCase = () => {
   useDocumentTitle("MADiE Edit Measure Edit Test Case");
@@ -91,6 +92,10 @@ const EditTestCase = () => {
   const [currentTestCase, setCurrentTestCase] = useState<TestCase>(null);
   const [qdmPatient, setQdmPatient] = useState<QDMPatient>();
   const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
+  const [qdmExecutionErrors, setQdmExecutionErrors] = useState<Array<string>>(
+    []
+  );
+
   dayjs.extend(utc);
   dayjs.utc().format(); // utc format
 
@@ -245,6 +250,7 @@ const EditTestCase = () => {
           "success"
         );
     } catch (error) {
+      setQdmExecutionErrors((prevState) => [...prevState, `${error.message}`]);
       showToast("Error while calculating QDM test cases", "danger");
     } finally {
       setExecuting(false);
@@ -266,6 +272,13 @@ const EditTestCase = () => {
 
   return (
     <>
+      {qdmExecutionErrors && qdmExecutionErrors.length > 0 && (
+        <StatusHandler
+          error={true}
+          errorMessages={qdmExecutionErrors}
+          testDataId="test_case_execution_errors"
+        />
+      )}
       <FormikProvider value={formik}>
         <EditTestCaseBreadCrumbs
           testCase={currentTestCase}
