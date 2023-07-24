@@ -10,6 +10,7 @@ import { CqmMeasure, ValueSet } from "cqm-models";
 import useCqmConversionService from "../../../api/CqmModelConversionService";
 import useTerminologyServiceApi from "../../../api/useTerminologyServiceApi";
 import { QdmExecutionContextProvider } from "./QdmExecutionContext";
+import _ from "lodash";
 
 const TestCaseRoutes = () => {
   const [errors, setErrors] = useState<Array<string>>([]);
@@ -73,6 +74,12 @@ const TestCaseRoutes = () => {
         setErrors((prevState) => [...prevState, err.message]);
       });
   };
+
+  useEffect(() => {
+    setExecutionContextReady(
+      !!cqmMeasure && !_.isEmpty(cqmMeasure?.value_sets) && !!measure
+    );
+  }, [cqmMeasure, measure, valueSets]);
 
   return (
     <QdmExecutionContextProvider
