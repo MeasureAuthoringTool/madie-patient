@@ -1214,7 +1214,6 @@ describe("TestCaseList component", () => {
   });
 
   it("should render Export Test Cases button and export test cases successfully", async () => {
-    window.URL.createObjectURL = jest.fn().mockImplementationOnce(() => {});
     const { getByTestId } = renderTestCaseListComponent();
 
     const codeCoverageTabs = await screen.findByTestId("code-coverage-tabs");
