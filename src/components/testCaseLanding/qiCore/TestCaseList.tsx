@@ -254,16 +254,27 @@ const TestCaseList = (props: TestCaseListProps) => {
   };
 
   const exportTestCases = async () => {
-    const exportData = "";
-    FileSaver.saveAs(
-      exportData,
-      `${measure.ecqmTitle}-v${measure.version}-${getModelFamily(
-        measure.model
-      )}-TestCases.zip`
-    );
-    setToastOpen(true);
-    setToastType("success");
-    setToastMessage("Test cases exported successfully");
+    try {
+      abortController.current = new AbortController();
+      const { ecqmTitle, model, version } = measure ?? {};
+      const exportData = await testCaseService?.current.exportTestCases(
+        measure?.id,
+        abortController.current.signal
+      );
+      FileSaver.saveAs(
+        exportData,
+        `${ecqmTitle}-v${version}-${getModelFamily(model)}-TestCases.zip`
+      );
+      setToastOpen(true);
+      setToastType("success");
+      setToastMessage("Test cases exported successfully");
+    } catch (err) {
+      setToastOpen(true);
+      setToastType("danger");
+      setToastMessage(
+        `Unable to export test cases for ${measure?.measureName}. Please try again and contact the Help Desk if the problem persists.`
+      );
+    }
   };
 
   const handleClose = () => {
