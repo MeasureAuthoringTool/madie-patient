@@ -255,27 +255,16 @@ const TestCaseList = (props: TestCaseListProps) => {
   };
 
   const exportTestCases = async () => {
-    const textFile = new Blob([JSON.stringify("")], {
-      type: "application/json",
-    });
-    const url = window.URL.createObjectURL(textFile);
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute(
-      "download",
-      measure.ecqmTitle +
-        "-v" +
-        measure.version +
-        "-" +
-        getModelFamily(measure.model) +
-        "-TestCases.zip"
+    const exportData = "";
+    FileSaver.saveAs(
+      exportData,
+      `${measure.ecqmTitle}-v${measure.version}-${getModelFamily(
+        measure.model
+      )}-TestCases.zip`
     );
-    document.body.appendChild(link);
-    link.click();
     setToastOpen(true);
     setToastType("success");
     setToastMessage("Test cases exported successfully");
-    document.body.removeChild(link);
   };
 
   const handleClose = () => {
