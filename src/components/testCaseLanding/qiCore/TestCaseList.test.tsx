@@ -434,6 +434,11 @@ const useTestCaseServiceMockResolved = {
       type: "application/json",
     })
   ),
+  exportTestCases: jest.fn().mockResolvedValue(
+    new Blob([JSON.stringify("exported test cases data")], {
+      type: "application/json",
+    })
+  ),
 } as unknown as TestCaseServiceApi;
 
 // mocking measureService
@@ -1214,6 +1219,9 @@ describe("TestCaseList component", () => {
   });
 
   it("should render Export Test Cases button and export test cases successfully", async () => {
+    window.URL.createObjectURL = jest
+      .fn()
+      .mockReturnValueOnce("http://fileurl");
     const { getByTestId } = renderTestCaseListComponent();
 
     const codeCoverageTabs = await screen.findByTestId("code-coverage-tabs");
@@ -1229,6 +1237,39 @@ describe("TestCaseList component", () => {
     await waitFor(() => {
       expect(
         screen.getByText("Test cases exported successfully")
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("should throw exceptions when exporting bulk test cases", async () => {
+    useTestCaseServiceMock.mockImplementation(() => {
+      return {
+        getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
+        getTestCaseSeriesForMeasure: jest
+          .fn()
+          .mockResolvedValue(["Series 1", "Series 2"]),
+        exportTestCases: jest
+          .fn()
+          .mockRejectedValueOnce(new Error("error exporting bulk test cases")),
+      } as unknown as TestCaseServiceApi;
+    });
+    const { getByTestId } = renderTestCaseListComponent();
+
+    const codeCoverageTabs = await screen.findByTestId("code-coverage-tabs");
+    expect(codeCoverageTabs).toBeInTheDocument();
+    const passingTab = await screen.findByTestId("passing-tab");
+    expect(passingTab).toBeInTheDocument();
+    const testCaseList = await screen.findByTestId("test-case-tbl");
+    expect(testCaseList).toBeInTheDocument();
+
+    const exportTestCasesButton = getByTestId("export-test-cases-button");
+    fireEvent.click(exportTestCasesButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Unable to export test cases for measureName. Please try again and contact the Help Desk if the problem persists."
+        )
       ).toBeInTheDocument();
     });
   });
