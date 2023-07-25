@@ -258,8 +258,13 @@ const TestCaseList = (props: TestCaseListProps) => {
     try {
       abortController.current = new AbortController();
       const { ecqmTitle, model, version } = measure ?? {};
+      const testCaseIds: string[] = [];
+      measure?.testCases?.forEach((testCase) => {
+        testCaseIds.push(testCase.id);
+      });
       const exportData = await testCaseService?.current.exportTestCases(
         measure?.id,
+        testCaseIds,
         abortController.current.signal
       );
       FileSaver.saveAs(

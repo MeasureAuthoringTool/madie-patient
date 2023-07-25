@@ -142,13 +142,18 @@ export class TestCaseServiceApi {
     return response.data;
   }
 
-  async exportTestCases(measureId: string, signal): Promise<Blob> {
-    const response = await axios.get(
+  async exportTestCases(
+    measureId: string,
+    testCaseIds: string[],
+    signal
+  ): Promise<Blob> {
+    const response = await axios.put(
       `${this.baseUrl}/measures/${measureId}/test-cases/exports`,
       {
         headers: {
           Authorization: `Bearer ${this.getAccessToken()}`,
         },
+        data: testCaseIds,
         responseType: "blob",
         signal,
       }
