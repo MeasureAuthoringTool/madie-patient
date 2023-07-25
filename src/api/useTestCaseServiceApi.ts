@@ -142,6 +142,25 @@ export class TestCaseServiceApi {
     return response.data;
   }
 
+  async exportTestCases(
+    measureId: string,
+    testCaseIds: string[],
+    signal
+  ): Promise<Blob> {
+    const response = await axios.put(
+      `${this.baseUrl}/measures/${measureId}/test-cases/exports`,
+      testCaseIds,
+      {
+        headers: {
+          Authorization: `Bearer ${this.getAccessToken()}`,
+        },
+        responseType: "blob",
+        signal,
+      }
+    );
+    return response.data;
+  }
+
   async validateTestCaseBundle(bundle: any) {
     try {
       const response = await axios.post<HapiOperationOutcome>(
