@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Close } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
-import { DataElement } from "cqm-models";
 import { useFormikContext } from "formik";
 import {
   SKIP_ATTRIBUTES,
@@ -12,7 +11,7 @@ import {
 import Codes from "./Codes/Codes";
 import { useQdmExecutionContext } from "../../../../../../routes/qdm/QdmExecutionContext";
 import SubNavigationTabs from "./SubNavigationTabs";
-import cqmModels from "cqm-models";
+import cqmModels, { DataElement } from "cqm-models";
 import "./DataElementsCard.scss";
 import * as _ from "lodash";
 import AttributeSection from "./attributes/AttributeSection";
