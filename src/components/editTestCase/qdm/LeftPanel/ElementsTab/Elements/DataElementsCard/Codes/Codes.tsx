@@ -7,7 +7,7 @@ interface Chip {
   value?: String;
 }
 interface CodesProps {
-  attributeChipList: Array<Chip>;
+  attributeChipList?: Array<Chip>;
 }
 
 const Codes = ({ attributeChipList = [] }: CodesProps) => {
