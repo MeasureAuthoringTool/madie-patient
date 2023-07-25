@@ -43,8 +43,6 @@ describe("QuantityInterval Component", () => {
       />
     );
     expect(screen.getByText("Interval<Quantity>")).toBeInTheDocument();
-    expect(screen.getAllByText("Value").length).toBe(2);
-    expect(screen.getAllByText("Unit").length).toBe(2);
 
     expect(screen.getByTestId("quantity-value-field-low")).toBeInTheDocument();
     const inputLow = screen.getByTestId(

@@ -62,7 +62,7 @@ describe("Quantity Component", () => {
     expect(quantityUnitInput).toBeInTheDocument();
   });
 
-  test("Test hange of value", () => {
+  test("Test change of value", () => {
     const handleChange = jest.fn();
     render(
       <Quantity
@@ -141,6 +141,30 @@ describe("Quantity Component", () => {
     });
     fireEvent.click(screen.getAllByRole("option")[1]);
     expect(input.value).toEqual("B bel");
+  });
+
+  test("test change unit to empty string", async () => {
+    const handleChange = jest.fn();
+    render(
+      <Quantity
+        quantityUnit={testValue}
+        handleQuantityUnitChange={handleChange}
+        canEdit={true}
+        quantityValue={0}
+        handleQuantityValueChange={handleChange}
+        options={options}
+        label="test"
+      />
+    );
+    const autocomplete = screen.getByTestId("quantity-unit-dropdown-test");
+    const input = within(autocomplete).getByRole("combobox");
+    autocomplete.click();
+    autocomplete.focus();
+    fireEvent.change(input, { target: { value: "" } });
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(input.value).toEqual("");
   });
 
   test("should render No Options when input is invalid", async () => {

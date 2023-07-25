@@ -31,7 +31,7 @@ const Quantity = ({
         <TextField
           value={quantityValue}
           disabled={!canEdit}
-          label="Value"
+          placeholder="value"
           id={`quantity-value-field-${label}`}
           data-testid={`quantity-value-field-${label}`}
           inputProps={{
@@ -47,11 +47,10 @@ const Quantity = ({
       <div tw="w-56">
         <AutoComplete
           id={`quantity-unit-dropdown-${label}`}
-          label="Unit"
           disabled={!canEdit}
           options={options.map((option) => option.code + " " + option.name)}
           data-testid={`quantity-unit-dropdown-${label}`}
-          placeholder="Search"
+          placeholder="unit"
           onChange={(event, newValue) => {
             if (newValue) {
               const find = options.find(
