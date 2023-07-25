@@ -5,6 +5,7 @@ import {
   Model,
   PopulationType,
 } from "@madie/madie-models";
+import { MemoryRouter } from "react-router-dom";
 import { describe, expect, test } from "@jest/globals";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
@@ -17,6 +18,19 @@ import useCqmConversionService, {
 import useTestCaseServiceApi, {
   TestCaseServiceApi,
 } from "../../../../../../api/useTestCaseServiceApi";
+import {
+  ApiContextProvider,
+  ServiceConfig,
+} from "../../../../../../api/ServiceContext";
+import { QdmExecutionContextProvider } from "../../../../../routes/qdm/QdmExecutionContext";
+import {
+  useFormik,
+  FormikProvider,
+  FormikValues,
+  FormikContextType,
+} from "formik";
+import * as Formik from "formik";
+
 import { act } from "react-dom/test-utils";
 
 const serviceConfig: ServiceConfig = {
@@ -91,6 +105,295 @@ define "Initial Population":
       union ["Encounter, Order": "Closed Head and Facial Trauma"] //Encounter
       union ["Encounter, Recommended": "Dementia"] //Encounter
 `;
+const testCaseJson = {
+  qdmVersion: "5.6",
+  dataElements: [
+    {
+      admissionSource: {
+        code: "10725009",
+        system: "2.16.840.1.113883.6.96",
+        display: "Benign hypertension (disorder)",
+        version: null,
+      },
+      authorDatetime: "2012-04-05T08:00:00.000+00:00",
+      clazz: null,
+      codeListId: "2.16.840.1.113883.3.464.1003.101.12.1010",
+      dataElementCodes: [
+        {
+          code: "4525004",
+          system: "2.16.840.1.113883.6.96",
+          version: null,
+          display: null,
+        },
+      ],
+      description: "Encounter, Performed: Emergency Department Visit",
+      diagnoses: [
+        {
+          qdmVersion: "5.6",
+          _type: "QDM::DiagnosisComponent",
+          code: {
+            code: "10725009",
+            system: "2.16.840.1.113883.6.96",
+            version: null,
+            display: "Benign hypertension (disorder)",
+          },
+          presentOnAdmissionIndicator: null,
+          rank: null,
+        },
+        {
+          qdmVersion: "5.6",
+          _type: "QDM::DiagnosisComponent",
+          code: {
+            code: "10725009",
+            system: "2.16.840.1.113883.6.96",
+            version: null,
+            display: "Benign hypertension (disorder)",
+          },
+          presentOnAdmissionIndicator: {
+            code: "4525004",
+            system: "2.16.840.1.113883.6.96",
+            version: null,
+            display: "Emergency department patient visit (procedure)",
+          },
+          rank: 1,
+        },
+      ],
+      dischargeDisposition: null,
+      facilityLocations: [
+        {
+          qdmVersion: "5.6",
+          _type: "QDM::FacilityLocation",
+          code: {
+            code: "10725009",
+            system: "2.16.840.1.113883.6.96",
+            version: null,
+            display: "Benign hypertension (disorder)",
+          },
+          locationPeriod: {
+            low: "2012-07-19T08:00:00.000+00:00",
+            high: "2012-07-19T08:15:00.000+00:00",
+            lowClosed: true,
+            highClosed: true,
+          },
+        },
+      ],
+      hqmfOid: "2.16.840.1.113883.10.20.28.4.5",
+      id: "624c6561d226360000a3d231",
+      lengthOfStay: {
+        value: 12,
+        unit: "hours",
+      },
+      participant: [
+        {
+          hqmfOid: "2.16.840.1.113883.10.20.28.4.136",
+          id: "sd23wde54re",
+          identifier: {
+            namingSystem: "CPT",
+            qdmVersion: "5.6",
+            value: "TEST-11",
+            _type: "QDM::Identifier",
+          },
+          qdmVersion: "5.6",
+          qrdaOid: "2.16.840.1.113883.10.20.24.3.161",
+          _type: "QDM::PatientEntity",
+        },
+      ],
+      priority: null,
+      qdmCategory: "encounter",
+      qdmStatus: "performed",
+      qdmTitle: "Encounter, Performed",
+      qdmVersion: "5.6",
+      relatedTo: ["624c6575d226360000a3d249"],
+      relevantPeriod: {
+        low: "2012-04-05T08:00:00.000Z",
+        high: "2012-04-05T08:15:00.000Z",
+        lowClosed: true,
+        highClosed: true,
+      },
+      _type: "QDM::EncounterPerformed",
+    },
+    {
+      admissionSource: null,
+      authorDatetime: "2012-04-05T08:00:00.000+00:00",
+      clazz: null,
+      codeListId: "2.16.840.1.113883.3.464.1003.101.12.1010",
+      dataElementCodes: [
+        {
+          code: "4525004",
+          system: "2.16.840.1.113883.6.96",
+          version: null,
+          display: null,
+        },
+      ],
+      description: "Encounter, Performed: Emergency Department Visit",
+      diagnoses: [],
+      dischargeDisposition: null,
+      facilityLocations: [],
+      hqmfOid: "2.16.840.1.113883.10.20.28.4.5",
+      id: "624c6575d226360000a3d249",
+      lengthOfStay: null,
+      priority: null,
+      qdmCategory: "encounter",
+      qdmStatus: "performed",
+      qdmTitle: "Encounter, Performed",
+      qdmVersion: "5.6",
+      relatedTo: ["624c6561d226360000a3d231"],
+      relevantPeriod: {
+        low: "2012-04-05T08:00:00.000Z",
+        high: "2012-04-05T08:15:00.000Z",
+        lowClosed: true,
+        highClosed: true,
+      },
+      _type: "QDM::EncounterPerformed",
+    },
+    {
+      codeListId: "2.16.840.1.114222.4.11.3591",
+      dataElementCodes: [
+        {
+          code: "1",
+          system: "2.16.840.1.113883.3.221.5",
+          version: null,
+          display: null,
+        },
+      ],
+      description: "Patient Characteristic Payer: Payer",
+      hqmfOid: "2.16.840.1.113883.10.20.28.4.58",
+      id: "64b851fc88fe62000007f384",
+      qdmCategory: "patient_characteristic",
+      qdmStatus: "payer",
+      qdmTitle: "Patient Characteristic Payer",
+      qdmVersion: "5.6",
+      relevantPeriod: {
+        low: "2012-07-19T08:00:00.000Z",
+        high: "2012-07-19T08:15:00.000Z",
+        lowClosed: true,
+        highClosed: true,
+      },
+      _type: "QDM::PatientCharacteristicPayer",
+    },
+    {
+      codeListId: "2.16.840.1.113762.1.4.1",
+      dataElementCodes: [
+        {
+          code: "F",
+          system: "2.16.840.1.113883.5.1",
+          version: null,
+          display: "Female",
+        },
+      ],
+      description: "Patient Characteristic Sex: ONCAdministrativeSex",
+      hqmfOid: "2.16.840.1.113883.10.20.28.4.55",
+      id: "6217d4b4f074ce3d0ee74031",
+      qdmCategory: "patient_characteristic",
+      qdmStatus: "gender",
+      qdmTitle: "Patient Characteristic Sex",
+      qdmVersion: "5.6",
+      _type: "QDM::PatientCharacteristicSex",
+    },
+    {
+      birthDatetime: "1965-01-01T08:00:00.000+00:00",
+      codeListId: null,
+      dataElementCodes: [],
+      description: null,
+      hqmfOid: "2.16.840.1.113883.10.20.28.4.54",
+      id: "64b8521888fe62000007f390",
+      qdmCategory: "patient_characteristic",
+      qdmStatus: "birthdate",
+      qdmTitle: "Patient Characteristic Birthdate",
+      qdmVersion: "5.6",
+      _type: "QDM::PatientCharacteristicBirthdate",
+    },
+    {
+      codeListId: "2.16.840.1.114222.4.11.836",
+      dataElementCodes: [
+        {
+          code: "1002-5",
+          system: "2.16.840.1.113883.6.238",
+          version: null,
+          display: "American Indian or Alaska Native",
+        },
+      ],
+      description: "Patient Characteristic Race: Race",
+      hqmfOid: "2.16.840.1.113883.10.20.28.4.59",
+      id: "6217d4b4f074ce3d0ee74033",
+      qdmCategory: "patient_characteristic",
+      qdmStatus: "race",
+      qdmTitle: "Patient Characteristic Race",
+      qdmVersion: "5.6",
+      _type: "QDM::PatientCharacteristicRace",
+    },
+    {
+      codeListId: "2.16.840.1.114222.4.11.837",
+      dataElementCodes: [
+        {
+          code: "2135-2",
+          system: "2.16.840.1.113883.6.238",
+          version: null,
+          display: "Hispanic or Latino",
+        },
+      ],
+      description: "Patient Characteristic Ethnicity: Ethnicity",
+      hqmfOid: "2.16.840.1.113883.10.20.28.4.56",
+      id: "6217d4b4f074ce3d0ee74032",
+      qdmCategory: "patient_characteristic",
+      qdmStatus: "ethnicity",
+      qdmTitle: "Patient Characteristic Ethnicity",
+      qdmVersion: "5.6",
+      _type: "QDM::PatientCharacteristicEthnicity",
+    },
+    {
+      dataElementCodes: [],
+      _id: "64b979f5cfaef900004340fc",
+      qdmTitle: "Patient Characteristic Birthdate",
+      hqmfOid: "2.16.840.1.113883.10.20.28.4.54",
+      qdmCategory: "patient_characteristic",
+      qdmStatus: "birthdate",
+      qdmVersion: "5.6",
+      _type: "QDM::PatientCharacteristicBirthdate",
+      id: "64b979f5cfaef900004340fc",
+      birthDatetime: "2023-01-31T19:16:21.000+00:00",
+    },
+    {
+      dataElementCodes: [
+        {
+          code: "1002-5",
+          system: "2.16.840.1.113883.6.238",
+          version: "1.2",
+          display: "American Indian or Alaska Native",
+        },
+      ],
+      _id: "64b979eacfaef90000434093",
+      qdmTitle: "Patient Characteristic Race",
+      hqmfOid: "2.16.840.1.113883.10.20.28.4.59",
+      qdmCategory: "patient_characteristic",
+      qdmStatus: "race",
+      qdmVersion: "5.6",
+      _type: "QDM::PatientCharacteristicRace",
+      id: "64b979eacfaef90000434093",
+    },
+    {
+      dataElementCodes: [
+        {
+          code: "F",
+          system: "2.16.840.1.113883.5.1",
+          version: "2022-11",
+          display: "Female",
+        },
+      ],
+      _id: "64b979eacfaef90000434095",
+      qdmTitle: "Patient Characteristic Sex",
+      hqmfOid: "2.16.840.1.113883.10.20.28.4.55",
+      qdmCategory: "patient_characteristic",
+      qdmStatus: "gender",
+      qdmVersion: "5.6",
+      _type: "QDM::PatientCharacteristicSex",
+      id: "64b979eacfaef90000434095",
+    },
+  ],
+  _id: "64b979eacfaef90000434099",
+  birthDatetime: "2023-01-31T19:16:21.063+00:00",
+};
+
 const mockMeasure = {
   id: "testmeasureid",
   scoring: MeasureScoring.COHORT,
@@ -113,7 +416,14 @@ const mockMeasure = {
     },
   ],
 } as Measure;
-
+const valueSets = [] as ValueSet[];
+const measure = mockMeasure;
+const setValueSets = jest.fn();
+const setMeasure = jest.fn();
+const setCqmMeasure = jest.fn;
+const getAccessToken = jest.fn();
+let cqmConversionService = new CqmConversionService("url", getAccessToken);
+const cqmMeasure = cqmConversionService.convertToCqmMeasure(mockMeasure);
 jest.mock("../../../../../../api/CqmModelConversionService");
 const CQMConversionMock =
   useCqmConversionService as jest.Mock<TestCaseServiceApi>;
@@ -332,6 +642,36 @@ const testDataElements = [
   },
 ];
 
+//@ts-ignore
+const mockFormik: FormikContextType<any> = {
+  values: {
+    json: testCaseJson,
+  },
+};
+
+const renderElementsSectionComponent = () => {
+  return render(
+    <MemoryRouter>
+      <ApiContextProvider value={serviceConfig}>
+        <FormikProvider value={mockFormik}>
+          <QdmExecutionContextProvider
+            value={{
+              measureState: [measure, setMeasure],
+              cqmMeasureState: [cqmMeasure, setCqmMeasure],
+              valueSetsState: [valueSets, setValueSets],
+              executionContextReady: true,
+              executing: false,
+              setExecuting: jest.fn(),
+            }}
+          >
+            <ElementsSection />
+          </QdmExecutionContextProvider>
+        </FormikProvider>
+      </ApiContextProvider>
+    </MemoryRouter>
+  );
+};
+
 const useCqmConversionServiceMockResolved = {
   fetchSourceDataCriteria: jest.fn().mockResolvedValue(testDataElements),
 } as unknown as TestCaseServiceApi;
@@ -377,7 +717,7 @@ describe("ElementsSection allows card opening and closing", () => {
   // need to mock measureStore, and the results from retrieve categories
   const { findByTestId, getByTestId, queryByText } = screen;
   test("should open and close a data element card manual close selection", async () => {
-    render(<ElementsSection />);
+    await waitFor(() => renderElementsSectionComponent());
     const elementSection = await findByTestId("elements-section");
     expect(elementSection).toBeInTheDocument();
     //  navigate to adverse event
@@ -410,7 +750,7 @@ describe("ElementsSection allows card opening and closing", () => {
   });
 
   test("should open and close a data element card manual close selection", async () => {
-    render(<ElementsSection />);
+    await waitFor(() => renderElementsSectionComponent());
     const elementSection = await findByTestId("elements-section");
     expect(elementSection).toBeInTheDocument();
     const adverseEventTab = screen.getByTestId("elements-tab-adverse_event");

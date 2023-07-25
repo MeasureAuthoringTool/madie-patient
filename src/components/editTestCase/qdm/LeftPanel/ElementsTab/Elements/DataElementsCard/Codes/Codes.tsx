@@ -1,10 +1,22 @@
 import React from "react";
-import AttributeChipList from '../AttributeChipList'
+import AttributeChipList from "../AttributeChipList";
 
-const Codes = () => {
+interface Chip {
+  title: String;
+  name?: String;
+  value?: String;
+}
+interface CodesProps {
+  attributeChipList: Array<Chip>;
+}
+
+const Codes = ({ attributeChipList = [] }: CodesProps) => {
+  const items = attributeChipList.map((chip) => ({
+    text: `${chip.title}: ${chip.value}`,
+  }));
   return (
     <div id="codes" data-testId="codes-section">
-      <AttributeChipList items={[ "test", "test", "test1", "test really really really long one here"]}/>
+      <AttributeChipList items={items} />
       {/* uncomment later, use test data to get feel */}
       {/* <CodeSystemSelector
               canEdit={true}
