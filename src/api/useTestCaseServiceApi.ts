@@ -149,11 +149,11 @@ export class TestCaseServiceApi {
   ): Promise<Blob> {
     const response = await axios.put(
       `${this.baseUrl}/measures/${measureId}/test-cases/exports`,
+      testCaseIds,
       {
         headers: {
           Authorization: `Bearer ${this.getAccessToken()}`,
         },
-        data: testCaseIds,
         responseType: "blob",
         signal,
       }
