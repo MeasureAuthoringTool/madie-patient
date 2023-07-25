@@ -1,9 +1,10 @@
-import React from 'react';
+import React from "react";
 
 const Attributes = () => {
-    return <div id="attributes" data-testId="attributes-section">
-    {/* uncomment later, use test data to get feel */}
-    {/* <CodeSystemSelector
+  return (
+    <div id="attributes" data-testId="attributes-section">
+      {/* uncomment later, use test data to get feel */}
+      {/* <CodeSystemSelector
             canEdit={true}
             codeSystemProps={{
               label: "Code System",
@@ -13,8 +14,9 @@ const Attributes = () => {
               helperText: "",
             }}
           /> */}
-    {/* chips live here*/}
-  </div>
-}
+      {/* chips live here*/}
+    </div>
+  );
+};
 
 export default Attributes;
