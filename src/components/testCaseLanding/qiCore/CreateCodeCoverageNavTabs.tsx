@@ -8,6 +8,8 @@ import { Measure, MeasureErrorType, TestCase } from "@madie/madie-models";
 import useExecutionContext from "../../routes/qiCore/useExecutionContext";
 import { TestCasesPassingDetailsProps } from "../common/interfaces";
 import { useFeatureFlags } from "@madie/madie-util";
+import "twin.macro";
+import "styled-components/macro";
 
 export interface NavTabProps {
   activeTab: string;
@@ -17,7 +19,7 @@ export interface NavTabProps {
   measure: Measure;
   createNewTestCase: (value: string) => void;
   executeTestCases: (value: string) => void;
-  onImportTestCases?: () => void;
+  onImportTestCasesFromBonnie?: () => void;
   testCasePassFailStats: TestCasesPassingDetailsProps;
   coveragePercentage: number;
   validTestCases: TestCase[];
@@ -47,7 +49,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     createNewTestCase,
     measure,
     executeTestCases,
-    onImportTestCases,
+    onImportTestCasesFromBonnie,
     testCasePassFailStats,
     coveragePercentage,
     validTestCases,
@@ -112,23 +114,37 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           value="coverage"
         />
       </Tabs>
+      {/*<div>*/}
+      {/*  <Button*/}
+      {/*    onClick={() => {*/}
+      {/*      // if (onImportTestCases) {*/}
+      {/*      //   onImportTestCases();*/}
+      {/*      // }*/}
+      {/*    }}*/}
+      {/*    disabled={!canEdit}*/}
+      {/*    data-testid="import-test-cases-button"*/}
+      {/*  >*/}
+      {/*    <FileUploadIcon style={{ margin: "0 5px 0 -2px" }} fontSize="small" />*/}
+      {/*    Import Test Cases*/}
+      {/*  </Button>*/}
+      {/*</div>*/}
       <div style={{ margin: "6px 0 0 auto", display: "flex" }}>
         {featureFlags?.importTestCases && (
           <div>
             <Button
               onClick={() => {
-                if (onImportTestCases) {
-                  onImportTestCases();
+                if (onImportTestCasesFromBonnie) {
+                  onImportTestCasesFromBonnie();
                 }
               }}
               disabled={!canEdit}
-              data-testid="show-import-test-cases-button"
+              data-testid="import-test-cases-from-bonnie-button"
             >
               <FileUploadIcon
                 style={{ margin: "0 5px 0 -2px" }}
                 fontSize="small"
               />
-              Import Test Cases
+              Import From Bonnie
             </Button>
           </div>
         )}

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import TestCaseImportDialog from "./TestCaseImportDialog";
+import TestCaseImportFromBonnieDialog from "./TestCaseImportFromBonnieDialog";
 import { Measure } from "@madie/madie-models";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
@@ -50,14 +50,14 @@ jest.mock("@madie/madie-util", () => ({
   },
 }));
 
-describe("TestCaseImportDialog", () => {
+describe("TestCaseImportFromBonnieDialog", () => {
   it("should render nothing when open is false", () => {
     const open = false;
     const handleClose = jest.fn();
     const onImport = jest.fn();
 
     render(
-      <TestCaseImportDialog
+      <TestCaseImportFromBonnieDialog
         open={open}
         handleClose={handleClose}
         onImport={onImport}
@@ -73,7 +73,7 @@ describe("TestCaseImportDialog", () => {
     const onImport = jest.fn();
 
     render(
-      <TestCaseImportDialog
+      <TestCaseImportFromBonnieDialog
         open={open}
         handleClose={handleClose}
         onImport={onImport}
@@ -92,7 +92,7 @@ describe("TestCaseImportDialog", () => {
     const onImport = jest.fn();
 
     render(
-      <TestCaseImportDialog
+      <TestCaseImportFromBonnieDialog
         open={open}
         handleClose={handleClose}
         onImport={onImport}
@@ -135,7 +135,7 @@ describe("TestCaseImportDialog", () => {
     (readImportFile as jest.Mock).mockResolvedValueOnce(bonnieJson);
 
     render(
-      <TestCaseImportDialog
+      <TestCaseImportFromBonnieDialog
         open={open}
         handleClose={handleClose}
         onImport={onImport}
@@ -183,7 +183,7 @@ describe("TestCaseImportDialog", () => {
     mockedAxios.post.mockReset().mockRejectedValue(new Error("BAD THINGS"));
 
     render(
-      <TestCaseImportDialog
+      <TestCaseImportFromBonnieDialog
         open={open}
         handleClose={handleClose}
         onImport={onImport}
@@ -235,7 +235,7 @@ describe("TestCaseImportDialog", () => {
     (readImportFile as jest.Mock).mockResolvedValueOnce(null);
 
     render(
-      <TestCaseImportDialog
+      <TestCaseImportFromBonnieDialog
         open={open}
         handleClose={handleClose}
         onImport={onImport}
@@ -291,7 +291,7 @@ describe("TestCaseImportDialog", () => {
     (readImportFile as jest.Mock).mockResolvedValueOnce([]);
 
     render(
-      <TestCaseImportDialog
+      <TestCaseImportFromBonnieDialog
         open={open}
         handleClose={handleClose}
         onImport={onImport}
@@ -350,7 +350,7 @@ describe("TestCaseImportDialog", () => {
     });
 
     render(
-      <TestCaseImportDialog
+      <TestCaseImportFromBonnieDialog
         open={open}
         handleClose={handleClose}
         onImport={onImport}
@@ -402,7 +402,7 @@ describe("TestCaseImportDialog", () => {
     (readImportFile as jest.Mock).mockRejectedValueOnce("INVALID FILE!");
 
     render(
-      <TestCaseImportDialog
+      <TestCaseImportFromBonnieDialog
         open={open}
         handleClose={handleClose}
         onImport={onImport}
@@ -445,7 +445,7 @@ describe("TestCaseImportDialog", () => {
     mockedAxios.post.mockReset().mockResolvedValue({ data: scanResult });
 
     render(
-      <TestCaseImportDialog
+      <TestCaseImportFromBonnieDialog
         open={open}
         handleClose={handleClose}
         onImport={onImport}
