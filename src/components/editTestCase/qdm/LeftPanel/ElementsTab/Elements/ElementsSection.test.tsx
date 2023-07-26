@@ -645,7 +645,7 @@ const testDataElements = [
 //@ts-ignore
 const mockFormik: FormikContextType<any> = {
   values: {
-    json: testCaseJson,
+    json: JSON.stringify(testCaseJson),
   },
 };
 
