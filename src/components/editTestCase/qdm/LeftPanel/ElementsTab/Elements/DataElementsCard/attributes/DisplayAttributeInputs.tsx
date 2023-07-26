@@ -5,7 +5,7 @@ import { DateField } from "@madie/madie-design-system/dist/react";
 import { Button } from "@mui/material";
 
 interface DisplayAttributeInputsProps {
-  attributeType?:any;
+  attributeType?:string;
   onChange:(e)=>void;
 }
 
@@ -18,12 +18,12 @@ const displayAttributeInput=()=>{
     
         switch(attributeType){
           case "Date":
-            return <div><DateField
+            return <DateField
             label="Date"
             value={""}
             handleDateChange={(e) => console.log(e)}
-            /><Button>+</Button></div>
-          default:
+            />
+          default: 
             return null;
         }
         
@@ -34,8 +34,11 @@ const displayAttributeInput=()=>{
 
 
 
-  return (
-    displayAttributeInput()
+      return (<div>
+      {displayAttributeInput()}
+      {attributeType?<Button>+</Button>:""}
+      
+      </div>
   );
 };
 
