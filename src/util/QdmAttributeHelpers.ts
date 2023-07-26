@@ -132,25 +132,28 @@ export const stringifyValue = (value, topLevel = false) => {
     } else {
       return moment.utc(currentDate.toJSDate()).format("L LT");
     }
-  } else if (value.schema) {
-    let attrStrings = [];
-    let attrString = "";
-    value.schema.eachPath((path) => {
-      if (_.without(SKIP_ATTRIBUTES, "id").includes(path)) {
-        return attrStrings.push(
-          _.startCase(path) + ": " + stringifyValue(value[path])
-        );
-      }
-      attrString = attrStrings.join(", ");
-      if (value._type && value._type !== "QDM::Identifier") {
-        attrString = `[${value._type.replace("QDM::", "")}] ${attrString}`;
-      }
-      if (!topLevel) {
-        attrString = `{ ${attrString} }`;
-      }
-      return attrString;
-    });
-  } else if (value.high || value.low) {
+  }
+  // this block is currently unused but should be uncommented when the dataTypes are tested
+  // else if (value.schema) {
+  //   let attrStrings = [];
+  //   let attrString = "";
+  //   value.schema.eachPath((path) => {
+  //     if (_.without(SKIP_ATTRIBUTES, "id").includes(path)) {
+  //       return attrStrings.push(
+  //         _.startCase(path) + ": " + stringifyValue(value[path])
+  //       );
+  //     }
+  //     attrString = attrStrings.join(", ");
+  //     if (value._type && value._type !== "QDM::Identifier") {
+  //       attrString = `[${value._type.replace("QDM::", "")}] ${attrString}`;
+  //     }
+  //     if (!topLevel) {
+  //       attrString = `{ ${attrString} }`;
+  //     }
+  //     return attrString;
+  //   });
+  // }
+  else if (value.high || value.low) {
     let lowString = value.low ? stringifyValue(value.low) : "null";
     let highString = value.high ? stringifyValue(value.high) : "null";
     return `${lowString} - ${highString}`;
