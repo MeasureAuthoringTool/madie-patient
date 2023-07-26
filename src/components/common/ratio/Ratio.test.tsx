@@ -32,10 +32,10 @@ describe("Ratio Component", () => {
     render(
       <Ratio
         label="Ratio"
-        lowQuantity={1}
-        lowQuantityUnit={testValue1}
-        highQuantity={100}
-        highQuantityUnit={testValue2}
+        numeratorQuantity={1}
+        numeratorQuantityUnit={testValue1}
+        denominatorQuantity={100}
+        denominatorQuantityUnit={testValue2}
         canEdit={true}
       />
     );
@@ -68,10 +68,10 @@ describe("Ratio Component", () => {
     render(
       <Ratio
         label="Ratio"
-        lowQuantity={1}
-        lowQuantityUnit={testValue1}
-        highQuantity={100}
-        highQuantityUnit={testValue2}
+        numeratorQuantity={1}
+        numeratorQuantityUnit={testValue1}
+        denominatorQuantity={100}
+        denominatorQuantityUnit={testValue2}
         canEdit={true}
       />
     );
@@ -104,10 +104,10 @@ describe("Ratio Component", () => {
     render(
       <Ratio
         label="Ratio"
-        lowQuantity={1}
-        lowQuantityUnit={testValue1}
-        highQuantity={100}
-        highQuantityUnit={testValue2}
+        numeratorQuantity={1}
+        numeratorQuantityUnit={testValue1}
+        denominatorQuantity={100}
+        denominatorQuantityUnit={testValue2}
         canEdit={true}
       />
     );

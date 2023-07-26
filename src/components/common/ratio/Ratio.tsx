@@ -4,28 +4,30 @@ import "styled-components/macro";
 import * as ucum from "@lhncbc/ucum-lhc";
 import Quantity from "../quantity/Quantity";
 
-interface QuantityIntervalProps {
+interface RatioProps {
   label: string;
-  lowQuantity: number;
-  lowQuantityUnit: any;
-  highQuantity: number;
-  highQuantityUnit: any;
+  numeratorQuantity: number;
+  numeratorQuantityUnit: any;
+  denominatorQuantity: number;
+  denominatorQuantityUnit: any;
   canEdit: boolean;
 }
 
 const Ratio = ({
   label,
-  lowQuantity,
-  lowQuantityUnit,
-  highQuantity,
-  highQuantityUnit,
+  numeratorQuantity,
+  numeratorQuantityUnit,
+  denominatorQuantity,
+  denominatorQuantityUnit,
   canEdit,
-}: QuantityIntervalProps) => {
+}: RatioProps) => {
   const [ucumOptions, setUcumOptions] = useState([]);
   const [ucumUnits, setUcumUnits] = useState([]);
 
-  const [currentLowQuantity, setCurrentLowQuantity] = useState(lowQuantity);
-  const [currentHighQuantity, setCurrentHighQuantity] = useState(highQuantity);
+  const [currentNumeratorQuantity, setCurrentNumeratorQuantity] =
+    useState(numeratorQuantity);
+  const [currentDenominatorQuantity, setCurrentDenominatorQuantity] =
+    useState(denominatorQuantity);
 
   const buildUcumUnits = useCallback(() => {
     const options = [];
@@ -58,17 +60,17 @@ const Ratio = ({
     }
   }, [ucum, ucumUnits]);
 
-  const handleLowQuantityChange = (newValue) => {
-    setCurrentLowQuantity(newValue);
+  const handleNumeratorQuantityChange = (newValue) => {
+    setCurrentNumeratorQuantity(newValue);
   };
 
-  const handleLowQuantityUnitChange = (newValue) => {};
+  const handleNumeratorQuantityUnitChange = (newValue) => {};
 
-  const handleHighQuantityChange = (newValue) => {
-    setCurrentHighQuantity(newValue);
+  const handleDenominatorQuantityChange = (newValue) => {
+    setCurrentDenominatorQuantity(newValue);
   };
 
-  const handleHighQuantityUnitChange = (newValue) => {};
+  const handleDenominatorQuantityUnitChange = (newValue) => {};
 
   return (
     <>
@@ -76,10 +78,10 @@ const Ratio = ({
       <div tw="flex flex-row flex-wrap gap-4">
         <div tw="flex flex-col w-80">
           <Quantity
-            quantityValue={currentLowQuantity}
-            handleQuantityValueChange={handleLowQuantityChange}
-            quantityUnit={lowQuantityUnit}
-            handleQuantityUnitChange={handleLowQuantityUnitChange}
+            quantityValue={currentNumeratorQuantity}
+            handleQuantityValueChange={handleNumeratorQuantityChange}
+            quantityUnit={numeratorQuantityUnit}
+            handleQuantityUnitChange={handleNumeratorQuantityUnitChange}
             options={ucumOptions}
             canEdit={canEdit}
             label={label}
@@ -88,10 +90,10 @@ const Ratio = ({
         <div style={{ paddingTop: "30px" }}>:</div>
         <div tw="flex flex-col w-80">
           <Quantity
-            quantityValue={currentHighQuantity}
-            handleQuantityValueChange={handleHighQuantityChange}
-            quantityUnit={highQuantityUnit}
-            handleQuantityUnitChange={handleHighQuantityUnitChange}
+            quantityValue={currentDenominatorQuantity}
+            handleQuantityValueChange={handleDenominatorQuantityChange}
+            quantityUnit={denominatorQuantityUnit}
+            handleQuantityUnitChange={handleDenominatorQuantityUnitChange}
             options={ucumOptions}
             canEdit={canEdit}
             label={label}
