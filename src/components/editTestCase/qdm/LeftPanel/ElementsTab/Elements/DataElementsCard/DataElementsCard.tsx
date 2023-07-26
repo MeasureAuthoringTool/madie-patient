@@ -9,7 +9,6 @@ import {
   PRIMARY_TIMING_ATTRIBUTES,
 } from "../../../../../../../util/QdmAttributeHelpers";
 import Codes from "./Codes/Codes";
-import { useQdmExecutionContext } from "../../../../../../routes/qdm/QdmExecutionContext";
 import SubNavigationTabs from "./SubNavigationTabs";
 import cqmModels, { DataElement } from "cqm-models";
 import "./DataElementsCard.scss";
@@ -33,15 +32,13 @@ const DataElementsCard = (props: {
   // https://ecqi.healthit.gov/mcw/2020/qdm-attribute/negationrationale.html  (list of all categories that use negation rationale)
   const formik: any = useFormikContext();
   // from here we know the type, we need to go through the dataElements to matchTypes
-  const { cqmMeasureState } = useQdmExecutionContext();
   // attributes section
   const [displayAttributes, setDisplayAttributes] = useState([]);
   // codes section
   const [codesChips, setCodesChips] = useState([]);
   useEffect(() => {
-    if (formik.values?.json && selectedDataElement && cqmMeasureState?.[0]) {
+    if (formik.values?.json && selectedDataElement) {
       const codesChips = [];
-      const { source_data_criteria } = cqmMeasureState[0];
       let patient = null;
       patient = JSON.parse(formik.values.json);
       const displayAttributes = [];
@@ -52,10 +49,6 @@ const DataElementsCard = (props: {
       const matchingDataElements = dataElements.filter(
         (el) => el._type === qdmType
       );
-      const dataElementModels = source_data_criteria.filter(
-        (dataElement) => dataElement.id !== selectedDataElement.id
-      );
-      source_data_criteria.models = dataElementModels;
       const mappedEls = matchingDataElements.map((el) => new getModel(el));
       mappedEls.forEach((el) => {
         const primaryTimingAttributes = [];
@@ -128,7 +121,7 @@ const DataElementsCard = (props: {
       setCodesChips([]);
       setDisplayAttributes([]);
     }
-  }, [formik.values.json, selectedDataElement, cqmMeasureState]);
+  }, [formik.values.json, selectedDataElement]);
   // centralize state one level up so we can conditionally render our child component
   return (
     <div className="data-elements-card" data-testid="data-element-card">
