@@ -3,16 +3,24 @@ import { DataElement } from "cqm-models";
 import * as _ from "lodash";
 import { DateField } from "@madie/madie-design-system/dist/react";
 import { Button } from "@mui/material";
+import { SettingsApplicationsRounded } from "@mui/icons-material";
 
 interface DisplayAttributeInputsProps {
   attributeType?:string;
-  onChange:(e)=>void;
+  onChange?:(e)=>void;
+  onInputAdd:Function;
 }
 
 const DisplayAttributeInputs = ({
-  attributeType
+  attributeType,
+  onInputAdd
 }: DisplayAttributeInputsProps) => {
-  
+    const [attibuteValue, setAttibuteValue] = useState();
+
+const plusClick = e =>{
+    e.preventDefault()
+    onInputAdd(attibuteValue)
+}
 
 const displayAttributeInput=()=>{
     
@@ -21,7 +29,7 @@ const displayAttributeInput=()=>{
             return <DateField
             label="Date"
             value={""}
-            handleDateChange={(e) => console.log(e)}
+            handleDateChange={(e) => setAttibuteValue(e)}
             />
           default: 
             return null;
@@ -36,7 +44,7 @@ const displayAttributeInput=()=>{
 
       return (<div>
       {displayAttributeInput()}
-      {attributeType?<Button>+</Button>:""}
+      {attributeType?<Button onClick={plusClick}>+</Button>:""}
       
       </div>
   );

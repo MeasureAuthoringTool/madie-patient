@@ -72,7 +72,7 @@ const DataElementsCard = (props: {
         <AttributeSection
           selectedDataElement={selectedDataElement}
           onAddClicked={(attribute, type,attributeValue) => {
-            // Todo: update the Patient with the selected attribute data
+            console.log(`Attribute: ${attribute}, Type: ${type}, Value: ${attributeValue}`)
           }}
         />
       )}

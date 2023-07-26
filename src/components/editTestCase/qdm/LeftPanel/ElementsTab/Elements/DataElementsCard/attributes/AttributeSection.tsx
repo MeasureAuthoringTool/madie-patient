@@ -23,7 +23,6 @@ const AttributeSection = ({
 }: AttributeSectionProps) => {
   const [attributes, setAttributes] = useState([]);
   const [types, setTypes] = useState([]);
-  const [attibuteValue, setAttibuteValue] = useState([]);
 
   const formik = useFormik({
     initialValues: {
@@ -73,6 +72,9 @@ const AttributeSection = ({
       formik.setFieldValue("type", null);
     }
   };
+  const onInputAdd=(e)=>{
+    onAddClicked(formik.values.attribute.displayName, formik.values.type, e)
+  }
 
 
 
@@ -96,7 +98,7 @@ const AttributeSection = ({
           disabled: _.isEmpty(types),
         }}
       />
-      <DisplayAttributeInputs attributeType={formik.values.type} onChange={()=>console.log("hello")}/>
+      <DisplayAttributeInputs attributeType={formik.values.type} onInputAdd={onInputAdd} />
       </div>
     </form>
   );
