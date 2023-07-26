@@ -6,7 +6,6 @@ import {
   SKIP_ATTRIBUTES,
   getDisplayFromId,
   stringifyValue,
-  PRIMARY_TIMING_ATTRIBUTES,
 } from "../../../../../../../util/QdmAttributeHelpers";
 import Codes from "./Codes/Codes";
 import SubNavigationTabs from "./SubNavigationTabs";
@@ -51,13 +50,6 @@ const DataElementsCard = (props: {
       );
       const mappedEls = matchingDataElements.map((el) => new getModel(el));
       mappedEls.forEach((el) => {
-        const primaryTimingAttributes = [];
-        PRIMARY_TIMING_ATTRIBUTES.forEach((attribute) => {
-          if (el[attribute]) {
-            primaryTimingAttributes.push(attribute);
-          }
-        });
-        // find primary timing attribute
         el.schema.eachPath((path, info) => {
           if (!SKIP_ATTRIBUTES.includes(path) && el[path]) {
             if (info.instance === "Array") {
