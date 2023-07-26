@@ -100,13 +100,17 @@ export const stringifyValue = (value, topLevel = false) => {
   else if (!isNaN(Date.parse(value))) {
     const parsedDate = Date.parse(value);
     const resultDate = new Date(parsedDate);
-    const year = resultDate.getFullYear() || null;
-    const month = resultDate.getMonth() || null;
-    const day = resultDate.getDay() || null;
-    const hours = resultDate.getHours() || null;
-    const minutes = resultDate.getMinutes() || null;
-    const seconds = resultDate.getSeconds() || null;
-    const ms = resultDate.getMilliseconds() || null;
+    const year = resultDate.getUTCFullYear() || null;
+    const month = resultDate.getMonth() ? resultDate.getMonth() + 1 : null;
+    const day = resultDate.getDay() ? resultDate.getDay() + 1 : null;
+    const hours = resultDate.getUTCHours() || null;
+    const minutes = resultDate.getUTCMinutes() || null;
+    const seconds = resultDate.getUTCSeconds() || null;
+    const ms = resultDate.getUTCMilliseconds() || null;
+    const timeZoneOffset = resultDate.getTimezoneOffset()
+      ? resultDate.getTimezoneOffset() / 60
+      : null;
+
     const currentDate = new DateTime(
       year,
       month,
@@ -114,7 +118,8 @@ export const stringifyValue = (value, topLevel = false) => {
       hours,
       minutes,
       seconds,
-      ms
+      ms,
+      timeZoneOffset
     );
     if (currentDate.isTime()) {
       return moment(
@@ -161,7 +166,7 @@ export const stringifyValue = (value, topLevel = false) => {
     return value.toString();
   }
 };
-
+// sourceDataCriteria is really just a list of elements
 export const getDisplayFromId = (sourceDataCriteria, id) => {
   for (let i = 0; i < sourceDataCriteria.length; i++) {
     const dataElement = sourceDataCriteria[i];
@@ -174,7 +179,6 @@ export const getDisplayFromId = (sourceDataCriteria, id) => {
       });
       const primaryTimingAttribute = primaryTimingAttributes[0];
       const timing = dataElement[primaryTimingAttribute];
-
       const description = `${dataElement.description}`;
       return { description: description, timing: timing };
     }
