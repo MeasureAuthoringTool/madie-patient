@@ -232,9 +232,9 @@ const TestCaseList = (props: TestCaseListProps) => {
     try {
       abortController.current = new AbortController();
       const { ecqmTitle, model, version } = measure ?? {};
-      const exportData = await testCaseService?.current.exportTestCase(
+      const exportData = await testCaseService?.current.exportTestCases(
         measure?.id,
-        selectedTestCase.id,
+        [selectedTestCase.id],
         abortController.current.signal
       );
       FileSaver.saveAs(
