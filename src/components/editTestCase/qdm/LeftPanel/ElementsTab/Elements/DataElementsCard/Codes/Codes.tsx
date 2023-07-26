@@ -15,7 +15,7 @@ const Codes = ({ attributeChipList = [] }: CodesProps) => {
     text: `${chip.title}: ${chip.value}`,
   }));
   return (
-    <div id="codes" data-testId="codes-section">
+    <div id="codes" data-testid="codes-section">
       <AttributeChipList items={items} />
       {/* uncomment later, use test data to get feel */}
       {/* <CodeSystemSelector
