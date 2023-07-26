@@ -28,10 +28,10 @@ const AttributeSection = ({
     initialValues: {
       attribute: null,
       type: "",
-      attributeValue:""
+      attributeValue: "",
     },
     onSubmit: (values) => {
-      onAddClicked(values.attribute, values.type,values.attributeValue);
+      onAddClicked(values.attribute, values.type, values.attributeValue);
     },
   });
 
@@ -72,33 +72,34 @@ const AttributeSection = ({
       formik.setFieldValue("type", null);
     }
   };
-  const onInputAdd=(e)=>{
-    onAddClicked(formik.values.attribute.displayName, formik.values.type, e)
-  }
-
-
+  const onInputAdd = (e) => {
+    onAddClicked(formik.values.attribute.displayName, formik.values.type, e);
+  };
 
   return (
     <form id="add-attribute-form" onSubmit={formik.handleSubmit}>
       <div>
-      <AttributeSelector
-        canEdit={true}
-        attributeProps={{
-          label: "Attribute",
-          options: attributes.map((attr) => attr.displayName),
-          required: true,
-          value: formik.values.attribute?.displayName ?? "",
-          onChange: handleAttributeChange,
-        }}
-        attributeTypeProps={{
-          label: "Type",
-          options: types,
-          required: false,
-          ...formik.getFieldProps("type"),
-          disabled: _.isEmpty(types),
-        }}
-      />
-      <DisplayAttributeInputs attributeType={formik.values.type} onInputAdd={onInputAdd} />
+        <AttributeSelector
+          canEdit={true}
+          attributeProps={{
+            label: "Attribute",
+            options: attributes.map((attr) => attr.displayName),
+            required: true,
+            value: formik.values.attribute?.displayName ?? "",
+            onChange: handleAttributeChange,
+          }}
+          attributeTypeProps={{
+            label: "Type",
+            options: types,
+            required: false,
+            ...formik.getFieldProps("type"),
+            disabled: _.isEmpty(types),
+          }}
+        />
+        <DisplayAttributeInputs
+          attributeType={formik.values.type}
+          onInputAdd={onInputAdd}
+        />
       </div>
     </form>
   );

@@ -71,8 +71,10 @@ const DataElementsCard = (props: {
       {cardActiveTab === "attributes" && (
         <AttributeSection
           selectedDataElement={selectedDataElement}
-          onAddClicked={(attribute, type,attributeValue) => {
-            console.log(`Attribute: ${attribute}, Type: ${type}, Value: ${attributeValue}`)
+          onAddClicked={(attribute, type, attributeValue) => {
+            console.log(
+              `Attribute: ${attribute}, Type: ${type}, Value: ${attributeValue}`
+            );
           }}
         />
       )}

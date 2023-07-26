@@ -6,47 +6,42 @@ import { Button } from "@mui/material";
 import { SettingsApplicationsRounded } from "@mui/icons-material";
 
 interface DisplayAttributeInputsProps {
-  attributeType?:string;
-  onChange?:(e)=>void;
-  onInputAdd:Function;
+  attributeType?: string;
+  onChange?: (e) => void;
+  onInputAdd: Function;
 }
 
 const DisplayAttributeInputs = ({
   attributeType,
-  onInputAdd
+  onInputAdd,
 }: DisplayAttributeInputsProps) => {
-    const [attibuteValue, setAttibuteValue] = useState();
+  const [attibuteValue, setAttibuteValue] = useState();
 
-const plusClick = e =>{
-    e.preventDefault()
-    onInputAdd(attibuteValue)
-}
+  const plusClick = (e) => {
+    e.preventDefault();
+    onInputAdd(attibuteValue);
+  };
 
-const displayAttributeInput=()=>{
-    
-        switch(attributeType){
-          case "Date":
-            return <DateField
+  const displayAttributeInput = () => {
+    switch (attributeType) {
+      case "Date":
+        return (
+          <DateField
             label="Date"
             value={""}
             handleDateChange={(e) => setAttibuteValue(e)}
-            />
-          default: 
-            return null;
-        }
-        
-      }
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
-
-
-
-
-
-      return (<div>
+  return (
+    <div>
       {displayAttributeInput()}
-      {attributeType?<Button onClick={plusClick}>+</Button>:""}
-      
-      </div>
+      {attributeType ? <Button onClick={plusClick}>+</Button> : ""}
+    </div>
   );
 };
 
