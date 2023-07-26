@@ -71,7 +71,7 @@ const DataElementsCard = (props: {
       {cardActiveTab === "attributes" && (
         <AttributeSection
           selectedDataElement={selectedDataElement}
-          onAddClicked={(attribute, type) => {
+          onAddClicked={(attribute, type,attributeValue) => {
             // Todo: update the Patient with the selected attribute data
           }}
         />

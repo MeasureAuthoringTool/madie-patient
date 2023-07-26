@@ -7,10 +7,14 @@ import {
   SKIP_ATTRIBUTES,
 } from "../../../../../../../../util/QdmAttributeHelpers";
 import { useFormik } from "formik";
+import DisplayAttributeInputs from "./DisplayAttributeInputs";
+import DateTimeInterval from "../../../../../../../common/dateTimeInterval/DateTimeInterval";
+import { DateField } from "@madie/madie-design-system/dist/react";
+import { Button } from "@mui/material";
 
 interface AttributeSectionProps {
   selectedDataElement: DataElement;
-  onAddClicked?: (attribute, type) => void;
+  onAddClicked?: (attribute, type, attributeValue) => void;
 }
 
 const AttributeSection = ({
@@ -19,14 +23,16 @@ const AttributeSection = ({
 }: AttributeSectionProps) => {
   const [attributes, setAttributes] = useState([]);
   const [types, setTypes] = useState([]);
+  const [attibuteValue, setAttibuteValue] = useState([]);
 
   const formik = useFormik({
     initialValues: {
       attribute: null,
       type: "",
+      attributeValue:""
     },
     onSubmit: (values) => {
-      onAddClicked(values.attribute, values.type);
+      onAddClicked(values.attribute, values.type,values.attributeValue);
     },
   });
 
@@ -68,8 +74,11 @@ const AttributeSection = ({
     }
   };
 
+
+
   return (
     <form id="add-attribute-form" onSubmit={formik.handleSubmit}>
+      <div>
       <AttributeSelector
         canEdit={true}
         attributeProps={{
@@ -87,6 +96,8 @@ const AttributeSection = ({
           disabled: _.isEmpty(types),
         }}
       />
+      <DisplayAttributeInputs attributeType={formik.values.type} onChange={()=>console.log("hello")}/>
+      </div>
     </form>
   );
 };
