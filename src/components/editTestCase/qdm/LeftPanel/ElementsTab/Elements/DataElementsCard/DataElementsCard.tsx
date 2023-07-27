@@ -28,8 +28,7 @@ const DataElementsCard = (props: {
 
 
   const attributeAddition = (attribute, type, attributeValue) => {
-    console.log({[attribute]:attributeValue.toString()})
-    let selectedData2 = {...selectedDataElement, [attribute.toLowerCase()]:attributeValue.toString()};
+    let selectedData2 = {...selectedDataElement, [attribute.toLowerCase()]:attributeValue};
     console.log(selectedData2)
 
 
