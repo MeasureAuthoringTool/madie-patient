@@ -39,6 +39,7 @@ import {
 } from "../../../util/CalculationTestHelpers";
 import { ExecutionContextProvider } from "../../routes/qiCore/ExecutionContext";
 import { checkUserCanEdit, useFeatureFlags } from "@madie/madie-util";
+import axios from "axios";
 
 const serviceConfig: ServiceConfig = {
   testCaseService: {
@@ -1212,7 +1213,50 @@ describe("TestCaseList component", () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          `Unable to export test case ${testCases[0]?.title}. Please try again and contact the Help Desk if the problem persists.`
+          `Unable to export test cases for ${measure?.measureName}. Please try again and contact the Help Desk if the problem persists.`
+        )
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("should throw 404 error while exporting a test case", async () => {
+    const error = {
+      response: {
+        status: 404,
+      },
+    };
+
+    useTestCaseServiceMock.mockImplementation(() => {
+      return {
+        getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
+        getTestCaseSeriesForMeasure: jest
+          .fn()
+          .mockResolvedValue(["Series 1", "Series 2"]),
+        exportTestCases: jest.fn().mockRejectedValue(error),
+      } as unknown as TestCaseServiceApi;
+    });
+    window.URL.createObjectURL = jest
+      .fn()
+      .mockReturnValueOnce("http://fileurl");
+
+    renderTestCaseListComponent();
+
+    await waitFor(() => {
+      const selectButton = screen.getByTestId(
+        `select-action-${testCases[0].id}`
+      );
+      expect(selectButton).toBeInTheDocument();
+      fireEvent.click(selectButton);
+    });
+    const exportButton = screen.getByTestId(
+      `export-test-case-${testCases[0].id}`
+    );
+    fireEvent.click(exportButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Test Case(s) are empty or contain errors. Please update your Test Case(s) and export again."
         )
       ).toBeInTheDocument();
     });
@@ -1237,6 +1281,45 @@ describe("TestCaseList component", () => {
     await waitFor(() => {
       expect(
         screen.getByText("Test cases exported successfully")
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("should render Export Test Cases button and export partial test cases successfully", async () => {
+    useTestCaseServiceMock.mockImplementation(() => {
+      return {
+        getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
+        getTestCaseSeriesForMeasure: jest
+          .fn()
+          .mockResolvedValue(["Series 1", "Series 2"]),
+        exportTestCases: jest.fn().mockResolvedValue({
+          body: new Blob([JSON.stringify("exported test data")], {
+            type: "application/json",
+          }),
+          status: 206,
+        }),
+      } as unknown as TestCaseServiceApi;
+    });
+    window.URL.createObjectURL = jest
+      .fn()
+      .mockReturnValueOnce("http://fileurl");
+    const { getByTestId } = renderTestCaseListComponent();
+
+    const codeCoverageTabs = await screen.findByTestId("code-coverage-tabs");
+    expect(codeCoverageTabs).toBeInTheDocument();
+    const passingTab = await screen.findByTestId("passing-tab");
+    expect(passingTab).toBeInTheDocument();
+    const testCaseList = await screen.findByTestId("test-case-tbl");
+    expect(testCaseList).toBeInTheDocument();
+
+    const exportTestCasesButton = getByTestId("export-test-cases-button");
+    fireEvent.click(exportTestCasesButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Test Case Export has successfully been generated. Some Test Cases were invalid and could not be exported."
+        )
       ).toBeInTheDocument();
     });
   });
@@ -1269,6 +1352,43 @@ describe("TestCaseList component", () => {
       expect(
         screen.getByText(
           "Unable to export test cases for measureName. Please try again and contact the Help Desk if the problem persists."
+        )
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("should throw 404 exception when exporting bulk test cases", async () => {
+    const error = {
+      response: {
+        status: 404,
+      },
+    };
+
+    useTestCaseServiceMock.mockImplementation(() => {
+      return {
+        getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
+        getTestCaseSeriesForMeasure: jest
+          .fn()
+          .mockResolvedValue(["Series 1", "Series 2"]),
+        exportTestCases: jest.fn().mockRejectedValueOnce(error),
+      } as unknown as TestCaseServiceApi;
+    });
+    const { getByTestId } = renderTestCaseListComponent();
+
+    const codeCoverageTabs = await screen.findByTestId("code-coverage-tabs");
+    expect(codeCoverageTabs).toBeInTheDocument();
+    const passingTab = await screen.findByTestId("passing-tab");
+    expect(passingTab).toBeInTheDocument();
+    const testCaseList = await screen.findByTestId("test-case-tbl");
+    expect(testCaseList).toBeInTheDocument();
+
+    const exportTestCasesButton = getByTestId("export-test-cases-button");
+    fireEvent.click(exportTestCasesButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Test Case(s) are empty or contain errors. Please update your Test Case(s) and export again."
         )
       ).toBeInTheDocument();
     });
