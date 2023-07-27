@@ -26,6 +26,15 @@ const DataElementsCard = (props: {
     selectedDataElement?.hasOwnProperty("negationRationale");
   // https://ecqi.healthit.gov/mcw/2020/qdm-attribute/negationrationale.html  (list of all categories that use negation rationale)
 
+
+  const attributeAddition = (attribute, type, attributeValue) => {
+    console.log({[attribute]:attributeValue.toString()})
+    let selectedData2 = {...selectedDataElement, [attribute.toLowerCase()]:attributeValue.toString()};
+    console.log(selectedData2)
+
+
+  };
+
   // centralize state one level up so we can conditionally render our child component
   return (
     <div className="data-elements-card" data-testid="data-element-card">
@@ -72,9 +81,7 @@ const DataElementsCard = (props: {
         <AttributeSection
           selectedDataElement={selectedDataElement}
           onAddClicked={(attribute, type, attributeValue) => {
-            console.log(
-              `Attribute: ${attribute}, Type: ${type}, Value: ${attributeValue}`
-            );
+            attributeAddition(attribute, type, attributeValue)
           }}
         />
       )}
