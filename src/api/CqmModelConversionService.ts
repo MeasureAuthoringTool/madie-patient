@@ -110,8 +110,33 @@ export class CqmConversionService {
     cqmMeasure.calculate_sdes = false;
     const populationSets: PopulationSet[] =
       this.buildCqmPopulationSets(measure);
+    cqmMeasure.measure_period = this.measurePeriodData(
+      this.convertDateToCustomFormat(measure.measurementPeriodStart),
+      this.convertDateToCustomFormat(measure.measurementPeriodEnd)
+    );
     cqmMeasure.population_sets = populationSets;
     return cqmMeasure;
+  }
+
+  private measurePeriodData(startDate: string, endDate: string) {
+    return {
+      low: {
+        value: startDate,
+      },
+      high: {
+        value: endDate,
+      },
+    };
+  }
+
+  private convertDateToCustomFormat(inputDate) {
+    const dateObj = new Date(inputDate);
+    const year = dateObj.getFullYear().toString();
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const day = String(dateObj.getDate()).padStart(2, "0");
+    const hours = String(dateObj.getHours()).padStart(2, "0");
+    const minutes = String(dateObj.getMinutes()).padStart(2, "0");
+    return `${year}${month}${day}${hours}${minutes}`;
   }
 
   private buildCqmPopulationSets = (measure: Measure) => {

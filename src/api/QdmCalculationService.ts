@@ -9,8 +9,6 @@ export class QdmCalculationService {
     // Example options; includes directive to produce pretty statement results.
     const options = {
       doPretty: true,
-      effectiveDate: "201201010000", //default value till we get measure_period
-      effectiveEnd: "201212312359", //default value till we get measure_period
     };
 
     const calculationResults = await Calculator.calculate(
