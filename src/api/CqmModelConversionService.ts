@@ -12,6 +12,7 @@ import {
   DataElement,
   StatementDependency,
   PopulationSet,
+  MeasurePeriod,
 } from "cqm-models";
 import { ServiceConfig } from "./ServiceContext";
 import useServiceConfig from "./useServiceConfig";
@@ -118,7 +119,7 @@ export class CqmConversionService {
     return cqmMeasure;
   }
 
-  private measurePeriodData(startDate: string, endDate: string) {
+  private measurePeriodData(startDate: string, endDate: string): MeasurePeriod {
     return {
       low: {
         value: startDate,
@@ -129,8 +130,8 @@ export class CqmConversionService {
     };
   }
 
-  private convertDateToCustomFormat(inputDate) {
-    const dateObj = new Date(inputDate);
+  private convertDateToCustomFormat(measurementPeriodDate: Date) {
+    const dateObj = new Date(measurementPeriodDate);
     const year = dateObj.getFullYear().toString();
     const month = String(dateObj.getMonth() + 1).padStart(2, "0");
     const day = String(dateObj.getDate()).padStart(2, "0");
