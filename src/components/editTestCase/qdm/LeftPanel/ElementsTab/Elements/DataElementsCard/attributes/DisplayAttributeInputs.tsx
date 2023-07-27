@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { DataElement } from "cqm-models";
+import { DataElement, CQL } from "cqm-models";
 import * as _ from "lodash";
 import { DateField } from "@madie/madie-design-system/dist/react";
 import { Button } from "@mui/material";
+import { DateTime } from "cql-execution";
 import { SettingsApplicationsRounded } from "@mui/icons-material";
+import dayjs from "dayjs";
+
 
 interface DisplayAttributeInputsProps {
   attributeType?: string;
@@ -29,7 +32,14 @@ const DisplayAttributeInputs = ({
           <DateField
             label="Date"
             value={""}
-            handleDateChange={(e) => setAttibuteValue(e)}
+            handleDateChange={(e) => {
+                const newDate = dayjs.utc(e);
+                const newCQLDate: CQL.Date = new CQL.Date(
+                    newDate.year(),
+                    newDate.month() + 1,
+                    newDate.date()
+                );
+                setAttibuteValue(newCQLDate)}}
           />
         );
       default:
