@@ -7,7 +7,6 @@ import { DateTime } from "cql-execution";
 import { SettingsApplicationsRounded } from "@mui/icons-material";
 import dayjs from "dayjs";
 
-
 interface DisplayAttributeInputsProps {
   attributeType?: string;
   onChange?: (e) => void;
@@ -33,13 +32,14 @@ const DisplayAttributeInputs = ({
             label="Date"
             value={""}
             handleDateChange={(e) => {
-                const newDate = dayjs.utc(e);
-                const newCQLDate: CQL.Date = new CQL.Date(
-                    newDate.year(),
-                    newDate.month() + 1,
-                    newDate.date()
-                );
-                setAttibuteValue(newCQLDate)}}
+              const newDate = dayjs.utc(e);
+              const newCQLDate: CQL.Date = new CQL.Date(
+                newDate.year(),
+                newDate.month() + 1,
+                newDate.date()
+              );
+              setAttibuteValue(newCQLDate);
+            }}
           />
         );
       default:
