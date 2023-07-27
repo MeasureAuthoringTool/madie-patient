@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import { DataElement, CQL } from "cqm-models";
 import * as _ from "lodash";
 import { DateField } from "@madie/madie-design-system/dist/react";
-import { Button } from "@mui/material";
+import { Button, IconButton } from "@mui/material";
 import { DateTime } from "cql-execution";
-import { SettingsApplicationsRounded } from "@mui/icons-material";
+import { SettingsApplicationsRounded } from "@mui/icons-material"
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import dayjs from "dayjs";
+import "./DisplayAttributeInputs.scss"
 
 interface DisplayAttributeInputsProps {
   attributeType?: string;
@@ -31,6 +33,7 @@ const DisplayAttributeInputs = ({
           <DateField
             label="Date"
             value={""}
+            data-testid="date-input"
             handleDateChange={(e) => {
               const newDate = dayjs.utc(e);
               const newCQLDate: CQL.Date = new CQL.Date(
@@ -50,7 +53,10 @@ const DisplayAttributeInputs = ({
   return (
     <div>
       {displayAttributeInput()}
-      {attributeType ? <Button onClick={plusClick}>+</Button> : ""}
+      {attributeType ? <IconButton  className="add-value-icon"  onClick={plusClick}>
+        <AddCircleOutlineIcon sx={{color: "#0073c8"}} />
+      </IconButton> : ""}
+      
     </div>
   );
 };
