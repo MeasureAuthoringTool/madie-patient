@@ -9,6 +9,7 @@ const RightPanel = ({
   canEdit,
   groupPopulations,
   errors,
+  executionRun = false,
   onChange,
   measureName,
   birthDateTime,
@@ -34,6 +35,7 @@ const RightPanel = ({
             groupPopulations={groupPopulations}
             onChange={onChange}
             errors={errors}
+            executionRun={executionRun}
             birthDateTime={birthDateTime}
           />
         )}

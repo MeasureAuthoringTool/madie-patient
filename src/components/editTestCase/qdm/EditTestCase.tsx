@@ -22,7 +22,7 @@ import { Allotment } from "allotment";
 import RightPanel from "./RightPanel/RightPanel";
 import LeftPanel from "./LeftPanel/LeftPanel";
 import EditTestCaseBreadCrumbs from "./EditTestCaseBreadCrumbs";
-import { useNavigate, useParams } from "react-router-dom";
+import { json, useNavigate, useParams } from "react-router-dom";
 import useTestCaseServiceApi from "../../../api/useTestCaseServiceApi";
 import { useFormik, FormikProvider } from "formik";
 import { QDMPatientSchemaValidator } from "./QDMPatientSchemaValidator";
@@ -40,6 +40,19 @@ import { QDMPatient } from "cqm-models";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
+import { JSONPath } from "jsonpath-plus";
+
+enum PopulationType {
+  IPP = "initialPopulation",
+  DENOM = "denominator",
+  DENEX = "denominator-exclusion",
+  DENEXCEP = "denominator-exception",
+  NUMER = "numerator",
+  NUMEX = "numerator-exclusion",
+  MSRPOPL = "measure-population",
+  MSRPOPLEX = "measure-population-exclusion",
+  OBSERV = "measure-observation",
+}
 
 const EditTestCase = () => {
   useDocumentTitle("MADiE Edit Measure Edit Test Case");
@@ -236,12 +249,53 @@ const EditTestCase = () => {
           cqmMeasure,
           JSON.parse(currentTestCase?.json)
         );
+
+      //find the population_sets
+
+      var populationSets = JSONPath({
+        path: "$.population_sets[*].population_set_id",
+        json: cqmMeasure,
+      });
+
+      populationSets.forEach((pop) => {
+        var results = JSONPath({
+          path: `$..${pop}`,
+          json: calculationOutput,
+        });
+        let populationMap = new Map<String, number>();
+        let groupsMap = new Map<String, Map<String, number>>();
+
+        Object.entries(PopulationType).forEach((value, key) => {
+          //value is one of IPP, DENOM, NUMER, etc...
+          //Set's an entry = IPP & numeric value from results
+          populationMap.set(value[1], eval(`results[0].${value[0]}`));
+        });
+
+        groupsMap.set("" + pop, populationMap);
+
+        currentTestCase.groupPopulations.forEach((value) => {
+          if (value.groupId === pop) {
+            value.populationValues.forEach((population) => {
+              //console.log(`Group Population Values for ${value.groupId}`, JSON.stringify(population.name, null, 2));
+              //Look up population
+
+              population.actual = groupsMap.get(pop).get(population.name);
+            });
+          }
+        });
+      });
+
+      //need to get a true/false value onto the groupPopulations
+      // setPopulationGroupResults(
+      //   executionResults[0].detailedResults as DetailedPopulationGroupResult[]
+      // );
       calculationOutput &&
         showToast(
           "Calculation was successful, output is printed in the console",
           "success"
         );
     } catch (error) {
+      console.error("Error", error);
       showToast("Error while calculating QDM test cases", "danger");
     }
   };
@@ -277,6 +331,7 @@ const EditTestCase = () => {
                 <RightPanel
                   canEdit={canEdit}
                   groupPopulations={currentTestCase?.groupPopulations}
+                  executionRun={true}
                   errors={formik.errors.groupPopulations}
                   onChange={(
                     groupPopulations,

@@ -95,7 +95,7 @@ const TestCasePopulation = ({
           ) : (
             <pre data-testid={`test-population-${population.name}-actual`}>
               {" "}
-              -
+              _
             </pre>
           )}
         </td>
