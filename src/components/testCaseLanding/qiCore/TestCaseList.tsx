@@ -233,9 +233,9 @@ const TestCaseList = (props: TestCaseListProps) => {
     try {
       abortController.current = new AbortController();
       const { ecqmTitle, model, version } = measure ?? {};
-      const exportData = await testCaseService?.current.exportTestCase(
+      const exportData = await testCaseService?.current.exportTestCases(
         measure?.id,
-        selectedTestCase.id,
+        [selectedTestCase.id],
         abortController.current.signal
       );
       FileSaver.saveAs(
@@ -250,6 +250,35 @@ const TestCaseList = (props: TestCaseListProps) => {
       setToastType("danger");
       setToastMessage(
         `Unable to export test case ${selectedTestCase?.title}. Please try again and contact the Help Desk if the problem persists.`
+      );
+    }
+  };
+
+  const exportTestCases = async () => {
+    try {
+      abortController.current = new AbortController();
+      const { ecqmTitle, model, version } = measure ?? {};
+      const testCaseIds: string[] = [];
+      measure?.testCases?.forEach((testCase) => {
+        testCaseIds.push(testCase.id);
+      });
+      const exportData = await testCaseService?.current.exportTestCases(
+        measure?.id,
+        testCaseIds,
+        abortController.current.signal
+      );
+      FileSaver.saveAs(
+        exportData,
+        `${ecqmTitle}-v${version}-${getModelFamily(model)}-TestCases.zip`
+      );
+      setToastOpen(true);
+      setToastType("success");
+      setToastMessage("Test cases exported successfully");
+    } catch (err) {
+      setToastOpen(true);
+      setToastType("danger");
+      setToastMessage(
+        `Unable to export test cases for ${measure?.measureName}. Please try again and contact the Help Desk if the problem persists.`
       );
     }
   };
@@ -391,6 +420,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                 testCasePassFailStats={testCasePassFailStats}
                 coveragePercentage={coveragePercentage}
                 validTestCases={testCases?.filter((tc) => tc.validResource)}
+                exportTestCases={exportTestCases}
               />
             </div>
             <CreateNewTestCaseDialog open={createOpen} onClose={handleClose} />
