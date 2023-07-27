@@ -10,6 +10,7 @@ import {
   PopulationExpectedValue,
   Group,
   GroupPopulation,
+  MeasureErrorType,
 } from "@madie/madie-models";
 import "../qiCore/EditTestCase.scss";
 import {
@@ -40,6 +41,7 @@ import { QDMPatient } from "cqm-models";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
+import StatusHandler from "../../statusHandler/StatusHandler";
 import { JSONPath } from "jsonpath-plus";
 
 enum PopulationType {
@@ -92,7 +94,8 @@ const EditTestCase = () => {
   const qdmCalculation = useRef(qdmCalculationService());
   const testCaseService = useRef(useTestCaseServiceApi());
 
-  const { cqmMeasureState } = useQdmExecutionContext();
+  const { cqmMeasureState, executionContextReady, executing, setExecuting } =
+    useQdmExecutionContext();
 
   const [cqmMeasure] = cqmMeasureState;
 
@@ -102,6 +105,10 @@ const EditTestCase = () => {
   const [currentTestCase, setCurrentTestCase] = useState<TestCase>(null);
   const [qdmPatient, setQdmPatient] = useState<QDMPatient>();
   const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
+  const [qdmExecutionErrors, setQdmExecutionErrors] = useState<Array<string>>(
+    []
+  );
+
   dayjs.extend(utc);
   dayjs.utc().format(); // utc format
 
@@ -243,6 +250,7 @@ const EditTestCase = () => {
   }, [measureId, id, measure?.groups, navigate]);
 
   const calculateQdmTestCases = async () => {
+    setExecuting(true);
     try {
       const calculationOutput =
         await qdmCalculation.current.calculateQdmTestCases(
@@ -295,8 +303,10 @@ const EditTestCase = () => {
           "success"
         );
     } catch (error) {
-      console.error("Error", error);
+      setQdmExecutionErrors((prevState) => [...prevState, `${error.message}`]);
       showToast("Error while calculating QDM test cases", "danger");
+    } finally {
+      setExecuting(false);
     }
   };
 
@@ -315,6 +325,13 @@ const EditTestCase = () => {
 
   return (
     <>
+      {qdmExecutionErrors && qdmExecutionErrors.length > 0 && (
+        <StatusHandler
+          error={true}
+          errorMessages={qdmExecutionErrors}
+          testDataId="test_case_execution_errors"
+        />
+      )}
       <FormikProvider value={formik}>
         <EditTestCaseBreadCrumbs
           testCase={currentTestCase}
@@ -379,7 +396,15 @@ const EditTestCase = () => {
               variant="primary"
               data-testid="qdm-test-case-run-button"
               onClick={calculateQdmTestCases}
-              disabled={!canEdit}
+              disabled={
+                !!measure?.cqlErrors ||
+                _.isEmpty(measure?.groups) ||
+                measure?.errors?.includes(
+                  MeasureErrorType.MISMATCH_CQL_POPULATION_RETURN_TYPES
+                ) ||
+                !executionContextReady ||
+                executing
+              }
             >
               Run Test
             </Button>
