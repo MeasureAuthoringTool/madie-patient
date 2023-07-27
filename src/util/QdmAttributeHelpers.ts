@@ -110,7 +110,6 @@ export const stringifyValue = (value, topLevel = false) => {
     const timeZoneOffset = resultDate.getTimezoneOffset()
       ? resultDate.getTimezoneOffset() / 60
       : null;
-
     const currentDate = new DateTime(
       year,
       month,
