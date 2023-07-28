@@ -1,35 +1,114 @@
-import React from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   AutoComplete,
   TextField,
 } from "@madie/madie-design-system/dist/react/";
 import "twin.macro";
 import "styled-components/macro";
+import { CQL } from "cqm-models";
+import * as ucum from "@lhncbc/ucum-lhc";
 
 export interface QuantityProps {
-  quantityValue: number;
-  quantityUnit: any;
-  handleQuantityValueChange: Function;
-  handleQuantityUnitChange: Function;
-  options?: any;
+  quantity: CQL.Quantity;
+  handleQuantityChange?: Function;
   canEdit: boolean;
   label: string;
 }
 
+export interface UcumOption {
+  label: string;
+  value: ucum;
+}
+
 const Quantity = ({
-  quantityValue,
-  quantityUnit,
-  handleQuantityValueChange,
-  handleQuantityUnitChange,
-  options,
+  quantity,
+  handleQuantityChange,
   canEdit,
   label,
 }: QuantityProps) => {
+  const [ucumOptions, setUcumOptions] = useState([]);
+  const [ucumUnits, setUcumUnits] = useState([]);
+
+  const buildUcumUnits = useCallback(() => {
+    const options = [];
+
+    for (const [key, value] of Object.entries(ucumUnits)) {
+      const current = value;
+      const { csCode_, guidance_, name_ } = current;
+      const option = {
+        code: csCode_,
+        guidance: guidance_,
+        name: name_,
+        system: "https://clinicaltables.nlm.nih.gov/",
+      };
+      options.push(option);
+    }
+    setUcumOptions(options);
+  }, [ucumUnits, setUcumOptions]);
+
+  useEffect(() => {
+    if (ucumUnits) {
+      buildUcumUnits();
+    }
+  }, [ucumUnits, buildUcumUnits]);
+
+  useEffect(() => {
+    if (!ucumUnits.length) {
+      ucum.UcumLhcUtils.getInstance();
+      const unitCodes = ucum.UnitTables.getInstance().unitCodes_;
+      setUcumUnits(unitCodes);
+    }
+  }, [ucum, ucumUnits]);
+
+  const [currentQuantity, setCurrentQuantity] =
+    useState<CQL.Quantity>(quantity);
+  const [currentUnit, setCurrentUnit] = useState<UcumOption>(null);
+
+  const findUnitOptionFromCQLQuantity = (value) => {
+    const option: ucum = ucumOptions?.find((option) => option.code === value);
+    if (option) {
+      const optionWithLabel = {
+        label: option.code + " " + option.name,
+        value: option,
+      };
+      return optionWithLabel;
+    }
+    return null;
+  };
+
+  useEffect(() => {
+    if (currentQuantity && currentQuantity.unit && ucumOptions?.length > 0) {
+      const unit = findUnitOptionFromCQLQuantity(currentQuantity.unit);
+      if (unit) {
+        setCurrentUnit(unit);
+      }
+    }
+  }, [ucumOptions]);
+
+  const handleQuantityValueChange = (newValue) => {
+    const newQuantity: CQL.Quantity = {
+      value: newValue,
+      unit: currentQuantity.unit,
+    };
+    setCurrentQuantity(newQuantity);
+    handleQuantityChange(newQuantity);
+  };
+
+  const handleQuantityUnitChange = (newValue) => {
+    const newQuantity: CQL.Quantity = {
+      value: currentQuantity ? currentQuantity.value : 0,
+      unit: newValue.value?.code,
+    };
+    setCurrentQuantity(newQuantity);
+    setCurrentUnit(newValue);
+    handleQuantityChange(newQuantity);
+  };
+
   return (
     <div tw="flex flex-row">
       <div tw="w-28">
         <TextField
-          value={quantityValue}
+          value={quantity.value}
           disabled={!canEdit}
           placeholder="value"
           id={`quantity-value-field-${label}`}
@@ -48,12 +127,12 @@ const Quantity = ({
         <AutoComplete
           id={`quantity-unit-dropdown-${label}`}
           disabled={!canEdit}
-          options={options.map((option) => option.code + " " + option.name)}
+          options={ucumOptions.map((option) => option.code + " " + option.name)}
           data-testid={`quantity-unit-dropdown-${label}`}
           placeholder="unit"
           onChange={(event, newValue) => {
             if (newValue) {
-              const find = options.find(
+              const find = ucumOptions.find(
                 (option) => option.code + " " + option.name === newValue
               );
               const transformedResult = {
@@ -65,7 +144,7 @@ const Quantity = ({
               handleQuantityUnitChange("");
             }
           }}
-          value={quantityUnit.label}
+          value={currentUnit?.label}
         />
       </div>
     </div>
