@@ -122,7 +122,7 @@ export class CqmConversionService {
     const populationSets: PopulationSet[] = measure.groups.map((group, i) => ({
       id: group.id,
       title: "Population Criteria Section",
-      population_set_id: group.id, //`PopulationSet_${i + 1}`,
+      population_set_id: group.id,
       populations: this.generateCqmPopulations(
         group.populations,
         measure.cqlLibraryName
