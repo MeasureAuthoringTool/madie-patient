@@ -239,7 +239,7 @@ const TestCaseList = (props: TestCaseListProps) => {
         abortController.current.signal
       );
       FileSaver.saveAs(
-        exportData,
+        exportData.data,
         `${ecqmTitle}-v${version}-${getModelFamily(model)}-TestCases.zip`
       );
       setToastOpen(true);
