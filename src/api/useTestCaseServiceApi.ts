@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import useServiceConfig from "./useServiceConfig";
 import { ServiceConfig } from "./ServiceContext";
 import { HapiOperationOutcome, TestCase } from "@madie/madie-models";
@@ -128,8 +128,8 @@ export class TestCaseServiceApi {
     measureId: string,
     testCaseIds: string[],
     signal
-  ): Promise<Blob> {
-    const response = await axios.put(
+  ): Promise<AxiosResponse> {
+    return await axios.put(
       `${this.baseUrl}/measures/${measureId}/test-cases/exports`,
       testCaseIds,
       {
@@ -140,7 +140,6 @@ export class TestCaseServiceApi {
         signal,
       }
     );
-    return response.data;
   }
 
   async validateTestCaseBundle(bundle: any) {
