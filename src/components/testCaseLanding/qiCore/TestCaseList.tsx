@@ -28,6 +28,7 @@ import UseToast from "../common/Hooks/UseToast";
 import getModelFamily from "../../../util/measureModelHelpers";
 import FileSaver from "file-saver";
 import moment from "moment";
+import TestCaseImportDialog from "../common/import/TestCaseImportDialog";
 
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
@@ -111,6 +112,9 @@ const TestCaseList = (props: TestCaseListProps) => {
     useState<any>({
       open: false,
     });
+  const [importDialogState, setImportDialogState] = useState<any>({
+    open: false,
+  });
   const abortController = useRef(null);
   const [createOpen, setCreateOpen] = useState<boolean>(false);
 
@@ -360,6 +364,10 @@ const TestCaseList = (props: TestCaseListProps) => {
     }
   };
 
+  const onTestCaseImport = async (testCases: TestCase[]) => {
+    // Todo in https://jira.cms.gov/browse/MAT-5925
+  };
+
   return (
     <div
       tw="grid lg:grid-cols-6 gap-4 mx-8 my-6 shadow-lg rounded-md border border-slate bg-white"
@@ -406,6 +414,15 @@ const TestCaseList = (props: TestCaseListProps) => {
                   ]);
                   setImportFromBonnieDialogState({
                     ...importFromBonnieDialogState,
+                    open: true,
+                  });
+                }}
+                onImportTestCases={() => {
+                  setErrors((prevState) => [
+                    ...prevState?.filter((e) => e !== IMPORT_ERROR),
+                  ]);
+                  setImportDialogState({
+                    ...importDialogState,
                     open: true,
                   });
                 }}
@@ -474,6 +491,16 @@ const TestCaseList = (props: TestCaseListProps) => {
           <Typography color="inherit">{loadingState.message}</Typography>
         </div>
       )}
+      <TestCaseImportDialog
+        dialogOpen={importDialogState.open}
+        onImport={onTestCaseImport}
+        handleClose={() =>
+          setImportDialogState({
+            ...importDialogState,
+            open: false,
+          })
+        }
+      />
       <TestCaseImportFromBonnieDialog
         open={importFromBonnieDialogState.open}
         onImport={onTestCaseImportFromBonnie}
