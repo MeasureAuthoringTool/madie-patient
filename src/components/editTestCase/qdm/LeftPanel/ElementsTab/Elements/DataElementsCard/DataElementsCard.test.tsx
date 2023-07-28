@@ -926,7 +926,7 @@ const renderDataElementsCard = (
 
 describe("DataElementsCard", () => {
   const { findByText } = screen;
-  test("", async () => {
+  test("DataElementsCard renders codes", async () => {
     await waitFor(() =>
       renderDataElementsCard("codes", jest.fn, dataEl[0], jest.fn())
     );
@@ -934,6 +934,14 @@ describe("DataElementsCard", () => {
       "Admission Source: 2.16.840.1.113883.6.96 : 10725009"
     );
     expect(codesChip).toBeInTheDocument();
-    // const elementSection = await findByTestId("elements-section");
+  });
+  test("DataElementsCards renders nothing", async () => {
+    await waitFor(() =>
+      renderDataElementsCard("codes", jest.fn, {}, jest.fn())
+    );
+    const codesChip = await findByText(
+      "Admission Source: 2.16.840.1.113883.6.96 : 10725009"
+    );
+    expect(codesChip).not.toBeInTheDocument();
   });
 });
