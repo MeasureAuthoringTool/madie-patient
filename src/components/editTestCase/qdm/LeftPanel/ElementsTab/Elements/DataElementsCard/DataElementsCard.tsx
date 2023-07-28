@@ -10,8 +10,8 @@ import Codes from "./Codes/Codes";
 import SubNavigationTabs from "./SubNavigationTabs";
 import cqmModels, { DataElement } from "cqm-models";
 import "./DataElementsCard.scss";
+import AttributesSection from "./Attributes/AttributeSection";
 import * as _ from "lodash";
-import AttributeSection from "./Attributes/AttributeSection";
 
 const DataElementsCard = (props: {
   cardActiveTab: string;
@@ -150,7 +150,7 @@ const DataElementsCard = (props: {
       />
       {cardActiveTab === "codes" && <Codes attributeChipList={codesChips} />}
       {cardActiveTab === "attributes" && (
-        <AttributeSection
+        <AttributesSection
           attributeChipList={displayAttributes}
           selectedDataElement={localSelectedDataElement}
           onAddClicked={(attribute, type) => {
