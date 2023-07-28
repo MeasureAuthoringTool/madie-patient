@@ -23,7 +23,7 @@ import { Allotment } from "allotment";
 import RightPanel from "./RightPanel/RightPanel";
 import LeftPanel from "./LeftPanel/LeftPanel";
 import EditTestCaseBreadCrumbs from "./EditTestCaseBreadCrumbs";
-import { json, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useTestCaseServiceApi from "../../../api/useTestCaseServiceApi";
 import { useFormik, FormikProvider } from "formik";
 import { QDMPatientSchemaValidator } from "./QDMPatientSchemaValidator";
@@ -101,6 +101,7 @@ const EditTestCase = () => {
 
   const navigate = useNavigate();
   const { measureId, id } = useParams();
+  const [executionRun, setExecutionRun] = useState<boolean>(false);
 
   const [currentTestCase, setCurrentTestCase] = useState<TestCase>(null);
   const [qdmPatient, setQdmPatient] = useState<QDMPatient>();
@@ -298,6 +299,7 @@ const EditTestCase = () => {
           "Calculation was successful, output is printed in the console",
           "success"
         );
+      setExecutionRun(true);
     } catch (error) {
       setQdmExecutionErrors((prevState) => [...prevState, `${error.message}`]);
       showToast("Error while calculating QDM test cases", "danger");
@@ -344,7 +346,7 @@ const EditTestCase = () => {
                 <RightPanel
                   canEdit={canEdit}
                   groupPopulations={currentTestCase?.groupPopulations}
-                  executionRun={true}
+                  executionRun={executionRun}
                   errors={formik.errors.groupPopulations}
                   onChange={(
                     groupPopulations,
