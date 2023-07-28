@@ -11,6 +11,7 @@ import SubNavigationTabs from "./SubNavigationTabs";
 import cqmModels, { DataElement } from "cqm-models";
 import "./DataElementsCard.scss";
 import AttributeSection from "./attributes/AttributeSection";
+import { useQdmExecutionContext } from "../../../../../../routes/qdm/QdmExecutionContext";
 import * as _ from "lodash";
 
 const DataElementsCard = (props: {
@@ -25,6 +26,23 @@ const DataElementsCard = (props: {
     selectedDataElement,
     setSelectedDataElement,
   } = props;
+
+  const [codeSystemMap, setCodeSystemMap] = useState(null);
+  const { cqmMeasureState } = useQdmExecutionContext();
+  useEffect(() => {
+    const valueSets = cqmMeasureState?.[0]?.value_sets;
+    if (valueSets) {
+      const codeSystemMap = {};
+      valueSets.forEach((valueSet) => {
+        valueSet.concepts.forEach((concept) => {
+          codeSystemMap[concept.code_system_oid] = {
+            code_system_name: concept.code_system_name,
+          };
+        });
+      });
+      setCodeSystemMap(codeSystemMap);
+    }
+  }, [cqmMeasureState]);
   const negationRationale =
     selectedDataElement?.hasOwnProperty("negationRationale");
   // https://ecqi.healthit.gov/mcw/2020/qdm-attribute/negationrationale.html  (list of all categories that use negation rationale)
@@ -36,7 +54,7 @@ const DataElementsCard = (props: {
   const [localSelectedDataElement, setLocalSelectedDataElement] =
     useState(null);
   useEffect(() => {
-    if (selectedDataElement) {
+    if (selectedDataElement && codeSystemMap && !localSelectedDataElement) {
       const displayAttributes = [];
       const codesChips = [];
       const qdmType = selectedDataElement?._type; // match against for attributes
@@ -86,6 +104,8 @@ const DataElementsCard = (props: {
               value: value,
             });
           } else if (modeledEl[path] instanceof cqmModels.CQL.Code) {
+            const value = modeledEl[path];
+            value.title = codeSystemMap[value.system].code_system_name;
             codesChips.push({
               name: path,
               title: _.startCase(path),
@@ -106,7 +126,7 @@ const DataElementsCard = (props: {
       setCodesChips([]);
       setDisplayAttributes([]);
     }
-  }, [selectedDataElement]);
+  }, [selectedDataElement && localSelectedDataElement, codeSystemMap]);
   // centralize state one level up so we can conditionally render our child component
   return (
     <div className="data-elements-card" data-testid="data-element-card">

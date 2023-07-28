@@ -93,7 +93,7 @@ export const stringifyValue = (value, topLevel = false) => {
     return "null";
   }
   if (value instanceof cqmModels.CQL.Code) {
-    return `${value.system} : ${value.code}`;
+    return `${value.title} : ${value.code}`;
   }
   // good
   // it's some kind of date
