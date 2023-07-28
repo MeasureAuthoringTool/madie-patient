@@ -11,7 +11,7 @@ import SubNavigationTabs from "./SubNavigationTabs";
 import cqmModels, { DataElement } from "cqm-models";
 import "./DataElementsCard.scss";
 import * as _ from "lodash";
-import AttributeSection from "./attributes/AttributeSection";
+import AttributeSection from "./Attributes/AttributeSection";
 
 const DataElementsCard = (props: {
   cardActiveTab: string;
