@@ -925,23 +925,26 @@ const renderDataElementsCard = (
 };
 
 describe("DataElementsCard", () => {
-  const { findByText } = screen;
+  const { findByText, queryByText } = screen;
   test("DataElementsCard renders codes", async () => {
     await waitFor(() =>
       renderDataElementsCard("codes", jest.fn, dataEl[0], jest.fn())
     );
-    const codesChip = await findByText(
+    const codesChip = await queryByText(
       "Admission Source: 2.16.840.1.113883.6.96 : 10725009"
     );
     expect(codesChip).toBeInTheDocument();
   });
   test("DataElementsCards renders nothing", async () => {
     await waitFor(() =>
-      renderDataElementsCard("codes", jest.fn, {}, jest.fn())
+      renderDataElementsCard("codes", jest.fn, testDataElements[0], jest.fn())
     );
-    const codesChip = await findByText(
-      "Admission Source: 2.16.840.1.113883.6.96 : 10725009"
-    );
-    expect(codesChip).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.queryByText(
+          "Admission Source: 2.16.840.1.113883.6.96 : 10725009"
+        )
+      ).not.toBeInTheDocument();
+    });
   });
 });
