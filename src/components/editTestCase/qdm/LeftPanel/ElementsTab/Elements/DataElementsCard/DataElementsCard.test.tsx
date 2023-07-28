@@ -1,32 +1,16 @@
 import React from "react";
-import {
-  Measure,
-  MeasureScoring,
-  Model,
-  PopulationType,
-} from "@madie/madie-models";
+import { Measure } from "@madie/madie-models";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, test } from "@jest/globals";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import userEvent from "@testing-library/user-event";
-import { mockCqlWithAllCategoriesPresent } from "../../../../mockCql";
 import DataElementsCard from "../DataElementsCard/DataElementsCard";
-import useCqmConversionService, {
-  CqmConversionService,
-} from "../../../../../../../api/CqmModelConversionService";
-import useTestCaseServiceApi, {
-  TestCaseServiceApi,
-} from "../../../../../../../api/useTestCaseServiceApi";
 import {
   ApiContextProvider,
   ServiceConfig,
 } from "../../../../../../../api/ServiceContext";
 import { QdmExecutionContextProvider } from "../../../../../../routes/qdm/QdmExecutionContext";
 import { FormikProvider, FormikContextType } from "formik";
-import * as Formik from "formik";
-
-import { act } from "react-dom/test-utils";
 
 const serviceConfig: ServiceConfig = {
   testCaseService: {

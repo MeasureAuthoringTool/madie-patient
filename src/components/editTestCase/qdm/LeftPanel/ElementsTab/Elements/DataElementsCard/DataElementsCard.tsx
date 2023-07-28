@@ -54,7 +54,7 @@ const DataElementsCard = (props: {
   const [localSelectedDataElement, setLocalSelectedDataElement] =
     useState(null);
   useEffect(() => {
-    if (selectedDataElement && codeSystemMap && !localSelectedDataElement) {
+    if (selectedDataElement && codeSystemMap) {
       const displayAttributes = [];
       const codesChips = [];
       const qdmType = selectedDataElement?._type; // match against for attributes
@@ -122,11 +122,8 @@ const DataElementsCard = (props: {
       });
       setDisplayAttributes(displayAttributes);
       setCodesChips(codesChips);
-    } else {
-      setCodesChips([]);
-      setDisplayAttributes([]);
     }
-  }, [selectedDataElement && localSelectedDataElement, codeSystemMap]);
+  }, [!!selectedDataElement, !!codeSystemMap]);
   // centralize state one level up so we can conditionally render our child component
   return (
     <div className="data-elements-card" data-testid="data-element-card">
