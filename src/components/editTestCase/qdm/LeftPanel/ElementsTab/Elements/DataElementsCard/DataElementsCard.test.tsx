@@ -925,19 +925,29 @@ const renderDataElementsCard = (
 };
 
 describe("DataElementsCard", () => {
-  const { findByText, queryByText } = screen;
+  const { queryByText } = screen;
+  test("DataElementsCards renders length of stay", async () => {
+    await waitFor(() =>
+      renderDataElementsCard("attributes", jest.fn, dataEl[0], jest.fn)
+    );
+    await waitFor(() => {
+      expect(queryByText("Length Of Stay: 12 'hours'")).toBeInTheDocument();
+    });
+  });
+
   test("DataElementsCard renders codes", async () => {
     await waitFor(() =>
-      renderDataElementsCard("codes", jest.fn, dataEl[0], jest.fn())
+      renderDataElementsCard("codes", jest.fn, dataEl[0], jest.fn)
     );
     const codesChip = await queryByText(
       "Admission Source: 2.16.840.1.113883.6.96 : 10725009"
     );
     expect(codesChip).toBeInTheDocument();
   });
+
   test("DataElementsCards renders nothing", async () => {
     await waitFor(() =>
-      renderDataElementsCard("codes", jest.fn, testDataElements[0], jest.fn())
+      renderDataElementsCard("codes", jest.fn, testDataElements[0], jest.fn)
     );
     await waitFor(() => {
       expect(
