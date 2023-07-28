@@ -293,10 +293,6 @@ const EditTestCase = () => {
         });
       });
 
-      //need to get a true/false value onto the groupPopulations
-      // setPopulationGroupResults(
-      //   executionResults[0].detailedResults as DetailedPopulationGroupResult[]
-      // );
       calculationOutput &&
         showToast(
           "Calculation was successful, output is printed in the console",
