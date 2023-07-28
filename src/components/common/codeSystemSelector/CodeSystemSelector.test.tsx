@@ -5,41 +5,60 @@ import userEvent from "@testing-library/user-event";
 
 const options = [
   {
-    system: "http://snomed.info/sct",
+    display_name: "Encounter Inpatient",
     version: "2023-03",
-    concept: [
+    concepts: [
       {
         code: "183452005",
-        display: "Snomed Emergency hospital admission (procedure)",
+        code_system_name: "SNOMEDCT",
+        code_system_oid: "1.2.3",
+        code_system_version: "2023-03",
+        display_name: "Snomed Emergency hospital admission (procedure)",
       },
-      {
-        code: "32485007",
-        display: "Snomed Hospital admission (procedure)",
-      },
-    ],
-  },
-  {
-    system: "http://ionic.info/sct",
-    version: "2023-03",
-    concept: [
       {
         code: "183452005",
-        display: "Ionic Emergency hospital admission (procedure)",
+        code_system_name: "SNOMEDCT",
+        code_system_oid: "1.2.3",
+        code_system_version: "2023-03",
+        display_name: "Snomed Emergency hospital admission (procedure)",
       },
       {
-        code: "32485007",
-        display: "Ionic Hospital admission (procedure)",
-      },
-      {
-        code: "8715000",
-        display: "Ionic Hospital admission, elective (procedure)",
+        code: "183452005",
+        code_system_name: "IONIC",
+        code_system_oid: "1.2.3",
+        code_system_version: "2023-03",
+        display_name: "Snomed Emergency hospital admission (procedure)",
       },
     ],
+    oid: "1.2.3",
   },
   {
-    system: "Custom",
-    version: "Custom",
-    concept: [{ code: "Custom", display: "Custom" }],
+    display_name: "Diabetes",
+    version: "2023-03",
+    concepts: [
+      {
+        code: "183452005",
+        code_system_name: "SNOMEDCT",
+        code_system_oid: "1.2.3",
+        code_system_version: "2023-03",
+        display_name: "Snomed Emergency hospital admission (procedure)",
+      },
+      {
+        code: "183452005",
+        code_system_name: "SNOMEDCT",
+        code_system_oid: "1.2.3",
+        code_system_version: "2023-03",
+        display_name: "Snomed Emergency hospital admission (procedure)",
+      },
+      {
+        code: "183452005",
+        code_system_name: "IONIC",
+        code_system_oid: "1.2.3",
+        code_system_version: "2023-03",
+        display_name: "Snomed Emergency hospital admission (procedure)",
+      },
+    ],
+    oid: "1.2.3",
   },
 ];
 
@@ -74,8 +93,8 @@ describe("CodeSystemSelector Component", () => {
     expect(renderedOptionsForCodeSystem).toHaveLength(4); // including '-'
 
     // This click will not update the value as onChange is not handled, but it helps in closing the Meunitems
-    userEvent.click(renderedOptionsForCodeSystem[1]);
-    expect(codeSystemSelectInput.value).toBe("http://snomed.info/sct");
+    userEvent.click(renderedOptionsForCodeSystem[2]);
+    expect(codeSystemSelectInput.value).toBe("SNOMEDCT");
 
     const codeSelect = screen.getByTestId("code-select");
     const codeSelectDropdown = within(codeSelect).getByRole(
@@ -129,7 +148,7 @@ describe("CodeSystemSelector Component", () => {
     userEvent.click(codeSelectDropdown);
 
     const renderedOptionsForCodeSystem = await screen.findAllByRole("option");
-    expect(renderedOptionsForCodeSystem).toHaveLength(4); // including '-'
+    expect(renderedOptionsForCodeSystem).toHaveLength(3); // including '-'
   });
 
   it("Should render custom options when custom is selected", async () => {
@@ -156,7 +175,7 @@ describe("CodeSystemSelector Component", () => {
     expect(renderedOptionsForCode).toHaveLength(4); // including '-'
 
     // This click will not update the value as onChange is not handled, but it helps in closing the Meunitems
-    userEvent.click(renderedOptionsForCode[3]);
+    userEvent.click(renderedOptionsForCode[1]);
 
     const codeCustom = screen.getByTestId("custom-input-code");
     expect(codeCustom).toBeInTheDocument();

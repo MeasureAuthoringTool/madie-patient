@@ -27,6 +27,7 @@ import UseTestCases from "../common/Hooks/UseTestCases";
 import UseToast from "../common/Hooks/UseToast";
 import getModelFamily from "../../../util/measureModelHelpers";
 import FileSaver from "file-saver";
+import moment from "moment";
 
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
@@ -232,9 +233,9 @@ const TestCaseList = (props: TestCaseListProps) => {
     try {
       abortController.current = new AbortController();
       const { ecqmTitle, model, version } = measure ?? {};
-      const exportData = await testCaseService?.current.exportTestCase(
+      const exportData = await testCaseService?.current.exportTestCases(
         measure?.id,
-        selectedTestCase.id,
+        [selectedTestCase.id],
         abortController.current.signal
       );
       FileSaver.saveAs(
@@ -245,11 +246,64 @@ const TestCaseList = (props: TestCaseListProps) => {
       setToastType("success");
       setToastMessage("Test case exported successfully");
     } catch (err) {
-      setToastOpen(true);
-      setToastType("danger");
-      setToastMessage(
-        `Unable to export test case ${selectedTestCase?.title}. Please try again and contact the Help Desk if the problem persists.`
+      if (err?.response?.status == 404) {
+        setToastOpen(true);
+        setToastType("danger");
+        setToastMessage(
+          "Test Case(s) are empty or contain errors. Please update your Test Case(s) and export again."
+        );
+      } else {
+        setToastOpen(true);
+        setToastType("danger");
+        setToastMessage(
+          `Unable to export test cases for ${measure?.measureName}. Please try again and contact the Help Desk if the problem persists.`
+        );
+      }
+    }
+  };
+
+  const exportTestCases = async () => {
+    try {
+      abortController.current = new AbortController();
+      const { ecqmTitle, model, version } = measure ?? {};
+      const testCaseIds: string[] = [];
+      measure?.testCases?.forEach((testCase) => {
+        testCaseIds.push(testCase.id);
+      });
+      const exportData = await testCaseService?.current.exportTestCases(
+        measure?.id,
+        testCaseIds,
+        abortController.current.signal
       );
+      FileSaver.saveAs(
+        exportData.data,
+        `${ecqmTitle}-v${version}-${getModelFamily(model)}-TestCases.zip`
+      );
+      if (exportData.status == 206) {
+        setToastOpen(true);
+        setToastType("warning");
+        setToastMessage(
+          "Test Case Export has successfully been generated. Some Test Cases were invalid and could not be exported."
+        );
+      } else {
+        setToastOpen(true);
+        setToastType("success");
+        setToastMessage("Test cases exported successfully");
+      }
+    } catch (err) {
+      if (err?.response?.status == 404) {
+        setToastOpen(true);
+        setToastType("danger");
+        setToastMessage(
+          "Test Case(s) are empty or contain errors. Please update your Test Case(s) and export again."
+        );
+      } else {
+        setToastOpen(true);
+        setToastType("danger");
+        setToastMessage(
+          `Unable to export test cases for ${measure?.measureName}. Please try again and contact the Help Desk if the problem persists.`
+        );
+      }
     }
   };
 
@@ -272,6 +326,8 @@ const TestCaseList = (props: TestCaseListProps) => {
 
     if (validTestCases && validTestCases.length > 0 && measureBundle) {
       setExecuting(true);
+      const start = Date.now();
+      let end;
       try {
         const calculationOutput: CalculationOutput<any> =
           await calculation.current.calculateTestCases(
@@ -280,6 +336,19 @@ const TestCaseList = (props: TestCaseListProps) => {
             measureBundle,
             valueSets
           );
+        if (calculationOutput) {
+          end = Date.now();
+        }
+        const startMoment = moment(start);
+        const endMoment = moment(end);
+        const diff = endMoment.diff(startMoment);
+        const diffDuration = moment.duration(diff);
+        // eslint-disable-next-line no-console
+        console.debug("Minutes:", diffDuration.minutes());
+        // eslint-disable-next-line no-console
+        console.debug("Seconds:", diffDuration.seconds());
+        // eslint-disable-next-line no-console
+        console.debug("Milliseconds:", diffDuration.milliseconds());
         setCalculationOutput(calculationOutput);
       } catch (error) {
         console.error("calculateTestCases: error.message = " + error.message);
@@ -375,6 +444,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                 testCasePassFailStats={testCasePassFailStats}
                 coveragePercentage={coveragePercentage}
                 validTestCases={testCases?.filter((tc) => tc.validResource)}
+                exportTestCases={exportTestCases}
               />
             </div>
             <CreateNewTestCaseDialog open={createOpen} onClose={handleClose} />
