@@ -41,6 +41,7 @@ import { QDMPatient } from "cqm-models";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
+import StatusHandler from "../../statusHandler/StatusHandler";
 import { JSONPath } from "jsonpath-plus";
 
 enum PopulationType {
@@ -54,7 +55,6 @@ enum PopulationType {
   MSRPOPLEX = "measure-population-exclusion",
   OBSERV = "measure-observation",
 }
-import StatusHandler from "../../statusHandler/StatusHandler";
 
 const EditTestCase = () => {
   useDocumentTitle("MADiE Edit Measure Edit Test Case");
