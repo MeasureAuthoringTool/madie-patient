@@ -51,16 +51,16 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
                 response = await testCaseService.current.scanImportFile(
                   fileContent
                 );
+                if (response.valid) {
+                  setUploadedFile(importedZip[0]);
+                  // process fileContent and setTestCases
+                } else {
+                  showErrorToast(response.error.defaultMessage);
+                }
               } catch (error) {
                 showErrorToast(
                   "An error occurred while validating the import file. Please try again or reach out to the Help Desk."
                 );
-              }
-              if (response.valid) {
-                setUploadedFile(importedZip[0]);
-                // process fileContent and setTestCases
-              } else {
-                showErrorToast(response.error.defaultMessage);
               }
             });
         }
