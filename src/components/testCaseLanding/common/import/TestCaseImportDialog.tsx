@@ -1,19 +1,11 @@
-import Dialog from "@mui/material/Dialog";
 import React, { useCallback, useRef, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
-import {
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-} from "@mui/material";
 import {
   Button,
   Toast,
   MadieDialog,
 } from "@madie/madie-design-system/dist/react";
-import CloseIcon from "@mui/icons-material/Close";
 import FolderZipOutlinedIcon from "@mui/icons-material/FolderZipOutlined";
 import { useDropzone } from "react-dropzone";
 import "./TestCaseImportDialog.css";
