@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Close } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
-import { useFormikContext } from "formik";
 import {
   SKIP_ATTRIBUTES,
   getDisplayFromId,
@@ -29,83 +28,77 @@ const DataElementsCard = (props: {
   const negationRationale =
     selectedDataElement?.hasOwnProperty("negationRationale");
   // https://ecqi.healthit.gov/mcw/2020/qdm-attribute/negationrationale.html  (list of all categories that use negation rationale)
-  const formik: any = useFormikContext();
   // from here we know the type, we need to go through the dataElements to matchTypes
   // attributes section
   const [displayAttributes, setDisplayAttributes] = useState([]);
   // codes section
   const [codesChips, setCodesChips] = useState([]);
+  const [localSelectedDataElement, setLocalSelectedDataElement] =
+    useState(null);
   useEffect(() => {
-    if (formik.values?.json && selectedDataElement) {
-      const codesChips = [];
-      let patient = null;
-      patient = JSON.parse(formik.values.json);
+    if (selectedDataElement) {
       const displayAttributes = [];
+      const codesChips = [];
       const qdmType = selectedDataElement?._type; // match against for attributes
       const model = qdmType.split("QDM::")[1];
       const getModel = cqmModels[model];
-      const dataElements = patient.dataElements; //
-      const matchingDataElements = dataElements.filter(
-        (el) => el._type === qdmType
-      );
-      const mappedEls = matchingDataElements.map((el) => new getModel(el));
-      mappedEls.forEach((el) => {
-        el.schema.eachPath((path, info) => {
-          if (!SKIP_ATTRIBUTES.includes(path) && el[path]) {
-            if (info.instance === "Array") {
-              el[path].forEach((elem, index) => {
-                if (path == "relatedTo") {
-                  let id = elem;
-                  const display = getDisplayFromId(dataElements, id);
-                  let value = `${stringifyValue(
-                    display?.description,
-                    true
-                  )} ${stringifyValue(display?.timing, true)}}`;
-                  displayAttributes.push({
-                    name: path,
-                    title: _.startCase(path),
-                    value: value,
-                    isArrayValue: true,
-                    index: index,
-                  });
-                } else {
-                  displayAttributes.push({
-                    name: path,
-                    title: _.startCase(path),
-                    // this is wrong.
-                    value: stringifyValue(el[path], true),
-                    isArrayValue: true,
-                    index: index,
-                  });
-                }
-              });
-            } else if (path === "relatedTo") {
-              const id = el[path];
-              const display = getDisplayFromId(dataElements, id);
-              const value = `${stringifyValue(
-                display.description,
-                true
-              )} ${stringifyValue(display.timing, true)}`;
-              displayAttributes.push({
-                name: path,
-                title: _.startCase(path),
-                value: value,
-              });
-            } else if (el[path] instanceof cqmModels.CQL.Code) {
-              codesChips.push({
-                name: path,
-                title: _.startCase(path),
-                value: stringifyValue(el[path], true),
-              });
-            } else {
-              displayAttributes.push({
-                name: path,
-                title: _.startCase(path),
-                value: stringifyValue(el[path], true),
-              });
-            }
+      const modeledEl = new getModel(selectedDataElement);
+      setLocalSelectedDataElement(modeledEl);
+      modeledEl.schema.eachPath((path, info) => {
+        if (!SKIP_ATTRIBUTES.includes(path) && modeledEl[path]) {
+          if (info.instance === "Array") {
+            modeledEl[path].forEach((elem, index) => {
+              if (path == "relatedTo") {
+                let id = elem;
+                const display = getDisplayFromId(modeledEl, id);
+                let value = `${stringifyValue(
+                  display?.description,
+                  true
+                )} ${stringifyValue(display?.timing, true)}}`;
+                displayAttributes.push({
+                  name: path,
+                  title: _.startCase(path),
+                  value: value,
+                  isArrayValue: true,
+                  index: index,
+                });
+              } else {
+                displayAttributes.push({
+                  name: path,
+                  title: _.startCase(path),
+                  // this is wrong.
+                  value: stringifyValue(modeledEl[path], true),
+                  isArrayValue: true,
+                  index: index,
+                });
+              }
+            });
+          } else if (path === "relatedTo") {
+            const id = modeledEl[path];
+            const display = getDisplayFromId(modeledEl, id);
+            const value = `${stringifyValue(
+              display.description,
+              true
+            )} ${stringifyValue(display.timing, true)}`;
+            displayAttributes.push({
+              name: path,
+              title: _.startCase(path),
+              value: value,
+            });
+          } else if (modeledEl[path] instanceof cqmModels.CQL.Code) {
+            codesChips.push({
+              name: path,
+              title: _.startCase(path),
+              value: stringifyValue(modeledEl[path], true),
+            });
+          } else {
+            displayAttributes.push({
+              name: path,
+              title: _.startCase(path),
+              value: stringifyValue(modeledEl[path], true),
+            });
           }
-        });
+        }
       });
       setDisplayAttributes(displayAttributes);
       setCodesChips(codesChips);
@@ -113,7 +106,7 @@ const DataElementsCard = (props: {
       setCodesChips([]);
       setDisplayAttributes([]);
     }
-  }, [formik.values.json, selectedDataElement]);
+  }, [selectedDataElement]);
   // centralize state one level up so we can conditionally render our child component
   return (
     <div className="data-elements-card" data-testid="data-element-card">
@@ -159,7 +152,7 @@ const DataElementsCard = (props: {
       {cardActiveTab === "attributes" && (
         <AttributeSection
           attributeChipList={displayAttributes}
-          selectedDataElement={selectedDataElement}
+          selectedDataElement={localSelectedDataElement}
           onAddClicked={(attribute, type) => {
             // Todo: update the Patient with the selected attribute data
           }}

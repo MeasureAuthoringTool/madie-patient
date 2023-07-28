@@ -101,7 +101,6 @@ export const stringifyValue = (value, topLevel = false) => {
     const parsedDate = Date.parse(value);
     const resultDate = new Date(parsedDate);
     const year = resultDate.getUTCFullYear() || null;
-
     const month = resultDate.getUTCMonth()
       ? resultDate.getUTCMonth() + 1
       : null;
@@ -112,7 +111,9 @@ export const stringifyValue = (value, topLevel = false) => {
     const seconds = resultDate.getUTCSeconds() || null;
     const ms = resultDate.getUTCMilliseconds() || null;
     // if we decide to convert it based off of locale to user.
-    // const timeZoneOffset = resultDate.getTimezoneOffset() ? (resultDate.getTimezoneOffset()): null;
+    const timeZoneOffset = resultDate.getTimezoneOffset()
+      ? resultDate.getTimezoneOffset() / 60
+      : null;
     const currentDate = new DateTime(
       year,
       month,
@@ -121,7 +122,7 @@ export const stringifyValue = (value, topLevel = false) => {
       minutes,
       seconds,
       ms,
-      0
+      timeZoneOffset
     );
 
     if (currentDate.isTime()) {

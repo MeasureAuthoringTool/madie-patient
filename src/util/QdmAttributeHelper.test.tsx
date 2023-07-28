@@ -10,7 +10,7 @@ describe("StringifyValue", () => {
     expect(stringifyValue(code)).toBe(`${code.system} : ${code.code}`);
   });
   test("stringify value stringifies dates that are DateTime", () => {
-    expect(stringifyValue("2012-04-05T08:15:00.000Z")).toBe(
+    expect(stringifyValue("2012-04-05T08:15:00.000")).toBe(
       "04/05/2012 8:15 AM"
     );
   });
@@ -20,8 +20,8 @@ describe("StringifyValue", () => {
   test("stringifyValue stringifies interval strings", () => {
     expect(
       stringifyValue({
-        low: "2012-04-05T08:00:00.000Z",
-        high: "2012-04-05T08:15:00.000Z",
+        low: "2012-04-05T08:00:00.000",
+        high: "2012-04-05T08:15:00.000",
         lowClosed: true,
         highClosed: true,
       })
