@@ -12,6 +12,7 @@ import {
   DataElement,
   StatementDependency,
   PopulationSet,
+  MeasurePeriod,
 } from "cqm-models";
 import { ServiceConfig } from "./ServiceContext";
 import useServiceConfig from "./useServiceConfig";
@@ -110,8 +111,33 @@ export class CqmConversionService {
     cqmMeasure.calculate_sdes = false;
     const populationSets: PopulationSet[] =
       this.buildCqmPopulationSets(measure);
+    cqmMeasure.measure_period = this.measurePeriodData(
+      this.convertDateToCustomFormat(measure.measurementPeriodStart),
+      this.convertDateToCustomFormat(measure.measurementPeriodEnd)
+    );
     cqmMeasure.population_sets = populationSets;
     return cqmMeasure;
+  }
+
+  private measurePeriodData(startDate: string, endDate: string): MeasurePeriod {
+    return {
+      low: {
+        value: startDate,
+      },
+      high: {
+        value: endDate,
+      },
+    };
+  }
+
+  private convertDateToCustomFormat(measurementPeriodDate: Date) {
+    const dateObj = new Date(measurementPeriodDate);
+    const year = dateObj.getUTCFullYear().toString();
+    const month = String(dateObj.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(dateObj.getUTCDate()).padStart(2, "0");
+    const hours = String(dateObj.getUTCHours()).padStart(2, "0");
+    const minutes = String(dateObj.getUTCMinutes()).padStart(2, "0");
+    return `${year}${month}${day}${hours}${minutes}`;
   }
 
   private buildCqmPopulationSets = (measure: Measure) => {
