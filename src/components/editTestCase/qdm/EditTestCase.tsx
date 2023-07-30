@@ -285,9 +285,7 @@ const EditTestCase = () => {
         currentTestCase.groupPopulations.forEach((value) => {
           if (value.groupId === pop) {
             value.populationValues.forEach((population) => {
-              //console.log(`Group Population Values for ${value.groupId}`, JSON.stringify(population.name, null, 2));
               //Look up population
-
               population.actual = groupsMap.get(pop).get(population.name);
             });
           }
