@@ -10,7 +10,7 @@ import * as ucum from "@lhncbc/ucum-lhc";
 
 export interface QuantityProps {
   quantity: CQL.Quantity;
-  handleQuantityChange?: Function;
+  onQuantityChange: Function;
   canEdit: boolean;
   label: string;
 }
@@ -20,9 +20,9 @@ export interface UcumOption {
   value: ucum;
 }
 
-const Quantity = ({
+const QuantityInput = ({
   quantity,
-  handleQuantityChange,
+  onQuantityChange,
   canEdit,
   label,
 }: QuantityProps) => {
@@ -91,7 +91,7 @@ const Quantity = ({
       unit: currentQuantity.unit,
     };
     setCurrentQuantity(newQuantity);
-    handleQuantityChange(newQuantity);
+    onQuantityChange(newQuantity);
   };
 
   const handleQuantityUnitChange = (newValue) => {
@@ -101,7 +101,7 @@ const Quantity = ({
     };
     setCurrentQuantity(newQuantity);
     setCurrentUnit(newValue);
-    handleQuantityChange(newQuantity);
+    onQuantityChange(newQuantity);
   };
 
   return (
@@ -151,4 +151,4 @@ const Quantity = ({
   );
 };
 
-export default Quantity;
+export default QuantityInput;

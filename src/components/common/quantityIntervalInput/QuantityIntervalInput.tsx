@@ -1,32 +1,28 @@
-import React, { useState } from "react";
+import React from "react";
 import "twin.macro";
 import "styled-components/macro";
-import Quantity from "../quantity/Quantity";
+import Quantity from "../quantityInput/QuantityInput";
 import { CQL } from "cqm-models";
 
 interface QuantityIntervalProps {
   label: string;
-  lowQuantity: CQL.Quantity;
-  highQuantity: CQL.Quantity;
+  quantityInterval: CQL.Interval;
+  onQuantityIntervalChange: Function;
   canEdit: boolean;
 }
 
-const QuantityInterval = ({
+const QuantityIntervalInput = ({
   label,
-  lowQuantity,
-  highQuantity,
+  quantityInterval,
+  onQuantityIntervalChange,
   canEdit,
 }: QuantityIntervalProps) => {
-  const [currentLowQuantity, setCurrentLowQuantity] =
-    useState<CQL.Quantity>(lowQuantity);
-  const [currentHighQuantity, setCurrentHighQuantity] =
-    useState<CQL.Quantity>(highQuantity);
-
   const handleLowQuantityChange = (newValue) => {
-    setCurrentLowQuantity(newValue);
+    onQuantityIntervalChange({ ...quantityInterval, low: newValue });
   };
+
   const handleHighQuantityChange = (newValue) => {
-    setCurrentHighQuantity(newValue);
+    onQuantityIntervalChange({ ...quantityInterval, high: newValue });
   };
 
   return (
@@ -36,8 +32,8 @@ const QuantityInterval = ({
         <div tw="flex flex-col w-80">
           <h5 tw="text-blue-800 mb-2">Low</h5>
           <Quantity
-            quantity={currentLowQuantity}
-            handleQuantityChange={handleLowQuantityChange}
+            quantity={quantityInterval.low}
+            onQuantityChange={handleLowQuantityChange}
             canEdit={canEdit}
             label="low"
           />
@@ -46,8 +42,8 @@ const QuantityInterval = ({
         <div tw="flex flex-col w-80">
           <h5 tw="text-blue-800 mb-2">High</h5>
           <Quantity
-            quantity={currentHighQuantity}
-            handleQuantityChange={handleHighQuantityChange}
+            quantity={quantityInterval.high}
+            onQuantityChange={handleHighQuantityChange}
             canEdit={canEdit}
             label="high"
           />
@@ -57,4 +53,4 @@ const QuantityInterval = ({
   );
 };
 
-export default QuantityInterval;
+export default QuantityIntervalInput;

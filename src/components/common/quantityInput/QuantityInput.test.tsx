@@ -1,10 +1,10 @@
 import React from "react";
 import { render, screen, within, fireEvent } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
-import Quantity from "./Quantity";
+import QuantityInput from "./QuantityInput";
 import { CQL } from "cqm-models";
 
-describe("Quantity Component", () => {
+describe("QuantityInput Component", () => {
   const testValue = {
     label: "mg milligram",
     value: {
@@ -26,7 +26,9 @@ describe("Quantity Component", () => {
   };
 
   test("Should render quantity component", () => {
-    render(<Quantity canEdit={true} quantity={testQuantity} label="low" />);
+    render(
+      <QuantityInput canEdit={true} quantity={testQuantity} label="low" />
+    );
 
     const quantityValue = screen.getByTestId("quantity-value-field-low");
     expect(quantityValue).toBeInTheDocument();
@@ -42,10 +44,10 @@ describe("Quantity Component", () => {
   test("Test change of value", () => {
     const handleQuantityChange = jest.fn();
     render(
-      <Quantity
+      <QuantityInput
         canEdit={true}
         quantity={testQuantity}
-        handleQuantityChange={handleQuantityChange}
+        onQuantityChange={handleQuantityChange}
         label="low"
       />
     );
@@ -67,7 +69,9 @@ describe("Quantity Component", () => {
 
   test.skip("Should render quantity unit field with selected option", async () => {
     const handleChange = jest.fn();
-    render(<Quantity canEdit={true} quantity={testQuantity} label="high" />);
+    render(
+      <QuantityInput canEdit={true} quantity={testQuantity} label="high" />
+    );
     await act(async () => {
       const quantityAutoComplete = await screen.findByTestId(
         "quantity-unit-dropdown-high"
@@ -82,11 +86,11 @@ describe("Quantity Component", () => {
   test("Should render ucum options on click", async () => {
     const handleQuantityChange = jest.fn();
     render(
-      <Quantity
+      <QuantityInput
         canEdit={true}
         quantity={testQuantity2}
         label="test"
-        handleQuantityChange={handleQuantityChange}
+        onQuantityChange={handleQuantityChange}
       />
     );
     const autocomplete = screen.getByTestId("quantity-unit-dropdown-test");
@@ -104,7 +108,9 @@ describe("Quantity Component", () => {
   });
 
   test("test change unit to empty string", async () => {
-    render(<Quantity canEdit={true} quantity={testQuantity} label="test" />);
+    render(
+      <QuantityInput canEdit={true} quantity={testQuantity} label="test" />
+    );
     const autocomplete = screen.getByTestId("quantity-unit-dropdown-test");
     const input = within(autocomplete).getByRole(
       "combobox"
@@ -119,7 +125,9 @@ describe("Quantity Component", () => {
   });
 
   test("should render No Options when input is invalid", async () => {
-    render(<Quantity canEdit={true} quantity={testQuantity} label="test" />);
+    render(
+      <QuantityInput canEdit={true} quantity={testQuantity} label="test" />
+    );
     const autocomplete = screen.getByTestId("quantity-unit-dropdown-test");
     const input = within(autocomplete).getByRole("combobox");
     autocomplete.click();
