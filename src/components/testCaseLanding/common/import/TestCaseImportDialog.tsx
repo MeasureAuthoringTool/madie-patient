@@ -46,40 +46,38 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
     let isValidImport = true;
     zip.loadAsync(importedZip[0]).then((content) => {
       Object.keys(content.files).forEach((filename) => {
-        if (filename !== "README.txt") {
-          try {
-            zip
-              .file(filename)
-              .async("string")
-              .then(async (fileContent) => {
-                let response: ScanValidationDto;
-                try {
-                  response = await testCaseService.current.scanImportFile(
-                    fileContent
-                  );
-                } catch (error) {
-                  isValidImport = false;
-                  setUploadingFileSpinner(false);
-                  showErrorToast(
-                    "An error occurred while uploading the file. Please try again or reach out to the helpdesk"
-                  );
-                  return;
-                }
-                if (!response.valid) {
-                  isValidImport = false;
-                  setUploadingFileSpinner(false);
-                  showErrorToast(response.error.defaultMessage);
-                } else {
-                  // processing fileContent and adding it to the state setTestCases
-                }
-              });
-          } catch (error) {
-            isValidImport = false;
-            setUploadingFileSpinner(false);
-            showErrorToast(
-              "An error occurred while uploading the file. Please try again or reach out to the helpdesk"
-            );
-          }
+        try {
+          zip
+            .file(filename)
+            .async("string")
+            .then(async (fileContent) => {
+              let response: ScanValidationDto;
+              try {
+                response = await testCaseService.current.scanImportFile(
+                  fileContent
+                );
+              } catch (error) {
+                isValidImport = false;
+                setUploadingFileSpinner(false);
+                showErrorToast(
+                  "An error occurred while uploading the file. Please try again or reach out to the helpdesk"
+                );
+                return;
+              }
+              if (!response.valid) {
+                isValidImport = false;
+                setUploadingFileSpinner(false);
+                showErrorToast(response.error.defaultMessage);
+              } else {
+                // processing fileContent and adding it to the state setTestCases
+              }
+            });
+        } catch (error) {
+          isValidImport = false;
+          setUploadingFileSpinner(false);
+          showErrorToast(
+            "An error occurred while uploading the file. Please try again or reach out to the helpdesk"
+          );
         }
       });
       if (isValidImport) {
