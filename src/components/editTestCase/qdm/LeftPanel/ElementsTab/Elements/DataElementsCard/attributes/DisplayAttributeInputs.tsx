@@ -4,10 +4,10 @@ import * as _ from "lodash";
 import { DateField } from "@madie/madie-design-system/dist/react";
 import { Button, IconButton } from "@mui/material";
 import { DateTime } from "cql-execution";
-import { SettingsApplicationsRounded } from "@mui/icons-material"
+import { SettingsApplicationsRounded } from "@mui/icons-material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import dayjs from "dayjs";
-import "./DisplayAttributeInputs.scss"
+import "./DisplayAttributeInputs.scss";
 
 interface DisplayAttributeInputsProps {
   attributeType?: string;
@@ -53,10 +53,13 @@ const DisplayAttributeInputs = ({
   return (
     <div>
       {displayAttributeInput()}
-      {attributeType ? <IconButton  className="add-value-icon"  onClick={plusClick}>
-        <AddCircleOutlineIcon sx={{color: "#0073c8"}} />
-      </IconButton> : ""}
-      
+      {attributeType ? (
+        <IconButton className="add-value-icon" onClick={plusClick}>
+          <AddCircleOutlineIcon sx={{ color: "#0073c8" }} />
+        </IconButton>
+      ) : (
+        ""
+      )}
     </div>
   );
 };

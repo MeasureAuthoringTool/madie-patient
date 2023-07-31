@@ -12,8 +12,8 @@ import AttributeSection from "./attributes/AttributeSection";
 
 const applyAttribute = (attribute, type, attributeValue, dataElement) => {
   //TODO: Investigate if cloneDeep result is sufficient for execution (updating the field drops all the sets/gets from the dataElement)
-  const updatedDataElement=_.cloneDeep(dataElement)
-  updatedDataElement[_.camelCase(attribute)]= attributeValue
+  const updatedDataElement = _.cloneDeep(dataElement);
+  updatedDataElement[_.camelCase(attribute)] = attributeValue;
   return updatedDataElement;
 };
 
@@ -32,12 +32,11 @@ const DataElementsCard = (props: {
   const negationRationale =
     selectedDataElement?.hasOwnProperty("negationRationale");
   // https://ecqi.healthit.gov/mcw/2020/qdm-attribute/negationrationale.html  (list of all categories that use negation rationale)
-  const [localDataElement, setLocalDataElement] = useState<DataElement>(selectedDataElement);
+  const [localDataElement, setLocalDataElement] =
+    useState<DataElement>(selectedDataElement);
   useEffect(() => {
-    setLocalDataElement(selectedDataElement)
+    setLocalDataElement(selectedDataElement);
   }, [selectedDataElement]);
-
-
 
   // centralize state one level up so we can conditionally render our child component
   return (
@@ -85,8 +84,13 @@ const DataElementsCard = (props: {
         <AttributeSection
           selectedDataElement={localDataElement}
           onAddClicked={(attribute, type, attributeValue) => {
-            const updatedDataElement = applyAttribute(attribute, type, attributeValue, localDataElement);
-            setLocalDataElement(updatedDataElement)
+            const updatedDataElement = applyAttribute(
+              attribute,
+              type,
+              attributeValue,
+              localDataElement
+            );
+            setLocalDataElement(updatedDataElement);
           }}
         />
       )}
