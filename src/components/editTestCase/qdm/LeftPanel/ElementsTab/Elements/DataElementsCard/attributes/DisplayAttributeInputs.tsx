@@ -19,11 +19,11 @@ const DisplayAttributeInputs = ({
   attributeType,
   onInputAdd,
 }: DisplayAttributeInputsProps) => {
-  const [attibuteValue, setAttibuteValue] = useState();
+  const [attributeValue, setAttributeValue] = useState();
 
   const plusClick = (e) => {
     e.preventDefault();
-    onInputAdd(attibuteValue);
+    onInputAdd(attributeValue);
   };
 
   const displayAttributeInput = () => {
@@ -41,7 +41,7 @@ const DisplayAttributeInputs = ({
                 newDate.month() + 1,
                 newDate.date()
               );
-              setAttibuteValue(newCQLDate);
+              setAttributeValue(newCQLDate);
             }}
           />
         );
