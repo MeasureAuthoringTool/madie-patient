@@ -7,16 +7,27 @@ import {
   SKIP_ATTRIBUTES,
 } from "../../../../../../../../util/QdmAttributeHelpers";
 import { useFormik } from "formik";
+import AttributeChipList from "../AttributeChipList";
 
+interface Chip {
+  title: String;
+  name?: String;
+  value?: String;
+}
 interface AttributeSectionProps {
   selectedDataElement: DataElement;
   onAddClicked?: (attribute, type) => void;
+  attributeChipList: Array<Chip>;
 }
 
 const AttributeSection = ({
+  attributeChipList = [],
   selectedDataElement,
   onAddClicked,
 }: AttributeSectionProps) => {
+  const mappedAttributeList = attributeChipList.map((chip) => ({
+    text: `${chip.title}: ${chip.value}`,
+  }));
   const [attributes, setAttributes] = useState([]);
   const [types, setTypes] = useState([]);
 
@@ -67,7 +78,6 @@ const AttributeSection = ({
       formik.setFieldValue("type", null);
     }
   };
-
   return (
     <form id="add-attribute-form" onSubmit={formik.handleSubmit}>
       <AttributeSelector
@@ -87,6 +97,7 @@ const AttributeSection = ({
           disabled: _.isEmpty(types),
         }}
       />
+      <AttributeChipList items={mappedAttributeList} />
     </form>
   );
 };

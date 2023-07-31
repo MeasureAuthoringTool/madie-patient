@@ -1,3 +1,8 @@
+import moment from "moment";
+import cqmModels from "cqm-models";
+import * as _ from "lodash";
+import { DateTime } from "cql-execution";
+
 export const PRIMARY_TIMING_ATTRIBUTES = [
   "relevantPeriod",
   "relevantDatetime",
@@ -80,4 +85,107 @@ export const determineAttributeTypeList = (path, info) => {
     else return ["???"];
   // TODO: Handle situation of unknown type better.
   else return [info.instance];
+};
+
+// from https://github.com/MeasureAuthoringTool/bonnie/blob/master/app/assets/javascripts/views/patient_builder/data_criteria_attribute_display.js.coffee
+export const stringifyValue = (value, topLevel = false) => {
+  if (!value) {
+    return "null";
+  }
+  if (value instanceof cqmModels.CQL.Code) {
+    return `${value.title} : ${value.code}`;
+  }
+  // good
+  // it's some kind of date
+  else if (!isNaN(Date.parse(value))) {
+    const parsedDate = Date.parse(value);
+    const resultDate = new Date(parsedDate);
+    const year = resultDate.getUTCFullYear() || null;
+    const month = resultDate.getUTCMonth()
+      ? resultDate.getUTCMonth() + 1
+      : null;
+    const day = resultDate.getUTCDay() ? resultDate.getUTCDay() + 1 : null;
+
+    const hours = resultDate.getUTCHours() || null;
+    const minutes = resultDate.getUTCMinutes() || null;
+    const seconds = resultDate.getUTCSeconds() || null;
+    const ms = resultDate.getUTCMilliseconds() || null;
+    // if we decide to convert it based off of locale to user.
+    const timeZoneOffset = resultDate.getTimezoneOffset()
+      ? resultDate.getTimezoneOffset() / 60
+      : null;
+    const currentDate = new DateTime(
+      year,
+      month,
+      day,
+      hours,
+      minutes,
+      seconds,
+      ms,
+      timeZoneOffset
+    );
+
+    if (currentDate.isTime()) {
+      return moment(
+        new Date(
+          2012,
+          1,
+          1,
+          currentDate.hour,
+          currentDate.minute,
+          currentDate.second
+        )
+      ).format("LT");
+    } else if (currentDate.isDate) {
+      return moment.utc(currentDate.toJSDate()).format("L");
+    } else {
+      return moment.utc(currentDate.toJSDate()).format("L LT");
+    }
+  }
+  // this block is currently unused but should be uncommented when the dataTypes are tested
+  // else if (value.schema) {
+  //   let attrStrings = [];
+  //   let attrString = "";
+  //   value.schema.eachPath((path) => {
+  //     if (_.without(SKIP_ATTRIBUTES, "id").includes(path)) {
+  //       return attrStrings.push(
+  //         _.startCase(path) + ": " + stringifyValue(value[path])
+  //       );
+  //     }
+  //     attrString = attrStrings.join(", ");
+  //     if (value._type && value._type !== "QDM::Identifier") {
+  //       attrString = `[${value._type.replace("QDM::", "")}] ${attrString}`;
+  //     }
+  //     if (!topLevel) {
+  //       attrString = `{ ${attrString} }`;
+  //     }
+  //     return attrString;
+  //   });
+  // }
+  else if (value.high || value.low) {
+    let lowString = value.low ? stringifyValue(value.low) : "null";
+    let highString = value.high ? stringifyValue(value.high) : "null";
+    return `${lowString} - ${highString}`;
+  } else {
+    return value.toString();
+  }
+};
+// sourceDataCriteria is really just a list of elements
+export const getDisplayFromId = (sourceDataCriteria, id) => {
+  for (let i = 0; i < sourceDataCriteria.length; i++) {
+    const dataElement = sourceDataCriteria[i];
+    if (dataElement.id === id) {
+      const primaryTimingAttributes = [];
+      PRIMARY_TIMING_ATTRIBUTES.forEach((attribute) => {
+        if (dataElement[attribute]) {
+          primaryTimingAttributes.push(attribute);
+        }
+      });
+      const primaryTimingAttribute = primaryTimingAttributes[0];
+      const timing = dataElement[primaryTimingAttribute];
+      const description = `${dataElement.description}`;
+      return { description: description, timing: timing };
+    }
+  }
+  return null;
 };

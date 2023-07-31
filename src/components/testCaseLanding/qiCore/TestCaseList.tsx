@@ -238,24 +238,32 @@ const TestCaseList = (props: TestCaseListProps) => {
     try {
       abortController.current = new AbortController();
       const { ecqmTitle, model, version } = measure ?? {};
-      const exportData = await testCaseService?.current.exportTestCase(
+      const exportData = await testCaseService?.current.exportTestCases(
         measure?.id,
-        selectedTestCase.id,
+        [selectedTestCase.id],
         abortController.current.signal
       );
       FileSaver.saveAs(
-        exportData,
+        exportData.data,
         `${ecqmTitle}-v${version}-${getModelFamily(model)}-TestCases.zip`
       );
       setToastOpen(true);
       setToastType("success");
       setToastMessage("Test case exported successfully");
     } catch (err) {
-      setToastOpen(true);
-      setToastType("danger");
-      setToastMessage(
-        `Unable to export test case ${selectedTestCase?.title}. Please try again and contact the Help Desk if the problem persists.`
-      );
+      if (err?.response?.status == 404) {
+        setToastOpen(true);
+        setToastType("danger");
+        setToastMessage(
+          "Test Case(s) are empty or contain errors. Please update your Test Case(s) and export again."
+        );
+      } else {
+        setToastOpen(true);
+        setToastType("danger");
+        setToastMessage(
+          `Unable to export test cases for ${measure?.measureName}. Please try again and contact the Help Desk if the problem persists.`
+        );
+      }
     }
   };
 
@@ -273,18 +281,34 @@ const TestCaseList = (props: TestCaseListProps) => {
         abortController.current.signal
       );
       FileSaver.saveAs(
-        exportData,
+        exportData.data,
         `${ecqmTitle}-v${version}-${getModelFamily(model)}-TestCases.zip`
       );
-      setToastOpen(true);
-      setToastType("success");
-      setToastMessage("Test cases exported successfully");
+      if (exportData.status == 206) {
+        setToastOpen(true);
+        setToastType("warning");
+        setToastMessage(
+          "Test Case Export has successfully been generated. Some Test Cases were invalid and could not be exported."
+        );
+      } else {
+        setToastOpen(true);
+        setToastType("success");
+        setToastMessage("Test cases exported successfully");
+      }
     } catch (err) {
-      setToastOpen(true);
-      setToastType("danger");
-      setToastMessage(
-        `Unable to export test cases for ${measure?.measureName}. Please try again and contact the Help Desk if the problem persists.`
-      );
+      if (err?.response?.status == 404) {
+        setToastOpen(true);
+        setToastType("danger");
+        setToastMessage(
+          "Test Case(s) are empty or contain errors. Please update your Test Case(s) and export again."
+        );
+      } else {
+        setToastOpen(true);
+        setToastType("danger");
+        setToastMessage(
+          `Unable to export test cases for ${measure?.measureName}. Please try again and contact the Help Desk if the problem persists.`
+        );
+      }
     }
   };
 

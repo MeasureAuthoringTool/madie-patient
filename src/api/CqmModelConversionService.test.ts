@@ -32,7 +32,7 @@ describe("CqmConversionService", () => {
 
   beforeEach(() => {
     group = {
-      id: null,
+      id: "ABC",
       scoring: "Continuous Variable",
       populations: [
         {
@@ -141,7 +141,7 @@ describe("CqmConversionService", () => {
 
     //populations
     expect(populationSets.length).toEqual(1);
-    expect(populationSets[0].population_set_id).toEqual("PopulationSet_1");
+    expect(populationSets[0].population_set_id).toEqual("ABC");
     expect(populationSets[0].title).toEqual("Population Criteria Section");
     expect(populationSets[0].populations).toHaveProperty("IPP");
     expect(populationSets[0].populations).toHaveProperty("MSRPOPL");
