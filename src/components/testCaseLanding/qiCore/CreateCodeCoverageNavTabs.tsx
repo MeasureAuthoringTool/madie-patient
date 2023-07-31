@@ -179,7 +179,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
         </div>
         <div style={{ margin: "0 6px 0 26px" }}>
           <Button
-            disabled={!canEdit}
+            disabled={false}
             onClick={exportTestCases}
             data-testid="export-test-cases-button"
           >

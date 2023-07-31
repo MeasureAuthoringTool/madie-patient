@@ -1,37 +1,16 @@
 import React from "react";
-import {
-  Measure,
-  MeasureScoring,
-  Model,
-  PopulationType,
-} from "@madie/madie-models";
+import { Measure } from "@madie/madie-models";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, test } from "@jest/globals";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import userEvent from "@testing-library/user-event";
-import { mockCqlWithAllCategoriesPresent } from "../../../mockCql";
-import ElementsSection from "./ElementsSection";
-import useCqmConversionService, {
-  CqmConversionService,
-} from "../../../../../../api/CqmModelConversionService";
-import useTestCaseServiceApi, {
-  TestCaseServiceApi,
-} from "../../../../../../api/useTestCaseServiceApi";
+import DataElementsCard from "../DataElementsCard/DataElementsCard";
 import {
   ApiContextProvider,
   ServiceConfig,
-} from "../../../../../../api/ServiceContext";
-import { QdmExecutionContextProvider } from "../../../../../routes/qdm/QdmExecutionContext";
-import {
-  useFormik,
-  FormikProvider,
-  FormikValues,
-  FormikContextType,
-} from "formik";
-import * as Formik from "formik";
-
-import { act } from "react-dom/test-utils";
+} from "../../../../../../../api/ServiceContext";
+import { QdmExecutionContextProvider } from "../../../../../../routes/qdm/QdmExecutionContext";
+import { FormikProvider, FormikContextType } from "formik";
 
 const serviceConfig: ServiceConfig = {
   testCaseService: {
@@ -45,66 +24,6 @@ const serviceConfig: ServiceConfig = {
   },
 };
 
-const testCQL = `library QDMMeasureLib2 version '0.0.000'
-
-using QDM version '5.6'
-
-codesystem "Test": 'urn:oid:2.16.840.1.113883.6.1'
-codesystem "LOINC": 'urn:oid:2.16.840.1.113883.6.1'
-
-
-valueset "Emergency Department Visit": 'urn:oid:2.16.840.1.113883.3.117.1.7.1.292'
-valueset "Encounter Inpatient": 'urn:oid:2.16.840.1.113883.3.666.5.307'
-valueset "Ethnicity": 'urn:oid:2.16.840.1.114222.4.11.837'
-valueset "Observation Services": 'urn:oid:2.16.840.1.113762.1.4.1111.143'
-valueset "ONC Administrative Sex": 'urn:oid:2.16.840.1.113762.1.4.1'
-valueset "Payer": 'urn:oid:2.16.840.1.114222.4.11.3591'
-valueset "Race": 'urn:oid:2.16.840.1.114222.4.11.836'
-valueset "Active Bleeding or Bleeding Diathesis (Excluding Menses)": 'urn:oid:2.16.840.1.113883.3.3157.4036'
-valueset "Active Peptic Ulcer": 'urn:oid:2.16.840.1.113883.3.3157.4031'
-valueset "Adverse reaction to thrombolytics": 'urn:oid:2.16.840.1.113762.1.4.1170.6'
-valueset "Allergy to thrombolytics": 'urn:oid:2.16.840.1.113762.1.4.1170.5'
-valueset "Anticoagulant Medications, Oral": 'urn:oid:2.16.840.1.113883.3.3157.4045'
-valueset "Aortic Dissection and Rupture": 'urn:oid:2.16.840.1.113883.3.3157.4028'
-valueset "birth date": 'urn:oid:2.16.840.1.113883.3.560.100.4'
-valueset "Cardiopulmonary Arrest": 'urn:oid:2.16.840.1.113883.3.3157.4048'
-valueset "Cerebral Vascular Lesion": 'urn:oid:2.16.840.1.113883.3.3157.4025'
-valueset "Closed Head and Facial Trauma": 'urn:oid:2.16.840.1.113883.3.3157.4026'
-valueset "Dementia": 'urn:oid:2.16.840.1.113883.3.3157.4043'
-valueset "Discharge To Acute Care Facility": 'urn:oid:2.16.840.1.113883.3.117.1.7.1.87'
-
-code "Birth date": '21112-8' from "LOINC" display 'Birth date'
-
-parameter "Measurement Period" Interval<DateTime>
-
-context Patient
-
-define "SDE Ethnicity":
-  ["Patient Characteristic Ethnicity": "Ethnicity"]
-
-define "SDE Payer":
-  ["Patient Characteristic Payer": "Payer"]
-
-define "SDE Race":
-  ["Patient Characteristic Race": "Race"]
-
-define "SDE Sex":
-  ["Patient Characteristic Sex": "ONC Administrative Sex"]
-
-
-define "Initial Population":
-  ["Adverse Event": "Encounter Inpatient"] //Adverse Event
-      union ["Allergy/Intolerance": "Observation Services"] //Allergy
-      union ["Assessment, Order": "Active Bleeding or Bleeding Diathesis (Excluding Menses)"] //Assessment
-      union ["Assessment, Performed": "Active Peptic Ulcer"] //Assessment
-      union ["Assessment, Recommended": "Adverse reaction to thrombolytics"] //Assessment
-      union ["Diagnosis": "Allergy to thrombolytics"] //Condition
-      union ["Device, Order": "Cardiopulmonary Arrest"] //Device
-      union ["Diagnostic Study, Order": "Cerebral Vascular Lesion"] //Diagnostic Study
-      union ["Encounter, Performed": "Emergency Department Visit"] //Encounter
-      union ["Encounter, Order": "Closed Head and Facial Trauma"] //Encounter
-      union ["Encounter, Recommended": "Dementia"] //Encounter
-`;
 const testCaseJson = {
   qdmVersion: "5.6",
   dataElements: [
@@ -394,39 +313,292 @@ const testCaseJson = {
   birthDatetime: "2023-01-31T19:16:21.063+00:00",
 };
 
-const mockMeasure = {
-  id: "testmeasureid",
-  scoring: MeasureScoring.COHORT,
-  model: Model.QDM_5_6,
-  createdBy: "testUserOwner",
-  patientBasis: true,
-  cql: mockCqlWithAllCategoriesPresent,
-  groups: [
-    {
-      id: "test_groupId",
-      scoring: MeasureScoring.COHORT,
-      populations: [
-        {
-          id: "308d2af8-9650-49c0-a454-14a85163d9f9",
-          name: PopulationType.INITIAL_POPULATION,
-          definition: "IP",
-        },
-      ],
-      populationBasis: "true",
+const dataEl = [
+  {
+    admissionSource: {
+      code: "10725009",
+      system: "2.16.840.1.113883.6.96",
+      display: "Benign hypertension (disorder)",
+      version: null,
     },
-  ],
-} as Measure;
-const valueSets = [] as ValueSet[];
-const measure = mockMeasure;
-const setValueSets = jest.fn();
-const setMeasure = jest.fn();
-const setCqmMeasure = jest.fn;
-const getAccessToken = jest.fn();
-let cqmConversionService = new CqmConversionService("url", getAccessToken);
-const cqmMeasure = cqmConversionService.convertToCqmMeasure(mockMeasure);
-jest.mock("../../../../../../api/CqmModelConversionService");
-const CQMConversionMock =
-  useCqmConversionService as jest.Mock<TestCaseServiceApi>;
+    authorDatetime: "2012-04-05T08:00:00.000+00:00",
+    clazz: null,
+    codeListId: "2.16.840.1.113883.3.464.1003.101.12.1010",
+    dataElementCodes: [
+      {
+        code: "4525004",
+        system: "2.16.840.1.113883.6.96",
+        version: null,
+        display: null,
+      },
+    ],
+    description: "Encounter, Performed: Emergency Department Visit",
+    diagnoses: [
+      {
+        qdmVersion: "5.6",
+        _type: "QDM::DiagnosisComponent",
+        code: {
+          code: "10725009",
+          system: "2.16.840.1.113883.6.96",
+          version: null,
+          display: "Benign hypertension (disorder)",
+        },
+        presentOnAdmissionIndicator: null,
+        rank: null,
+      },
+      {
+        qdmVersion: "5.6",
+        _type: "QDM::DiagnosisComponent",
+        code: {
+          code: "10725009",
+          system: "2.16.840.1.113883.6.96",
+          version: null,
+          display: "Benign hypertension (disorder)",
+        },
+        presentOnAdmissionIndicator: {
+          code: "4525004",
+          system: "2.16.840.1.113883.6.96",
+          version: null,
+          display: "Emergency department patient visit (procedure)",
+        },
+        rank: 1,
+      },
+    ],
+    dischargeDisposition: null,
+    facilityLocations: [
+      {
+        qdmVersion: "5.6",
+        _type: "QDM::FacilityLocation",
+        code: {
+          code: "10725009",
+          system: "2.16.840.1.113883.6.96",
+          version: null,
+          display: "Benign hypertension (disorder)",
+        },
+        locationPeriod: {
+          low: "2012-07-19T08:00:00.000+00:00",
+          high: "2012-07-19T08:15:00.000+00:00",
+          lowClosed: true,
+          highClosed: true,
+        },
+      },
+    ],
+    hqmfOid: "2.16.840.1.113883.10.20.28.4.5",
+    id: "624c6561d226360000a3d231",
+    lengthOfStay: {
+      value: 12,
+      unit: "hours",
+    },
+    participant: [
+      {
+        hqmfOid: "2.16.840.1.113883.10.20.28.4.136",
+        id: "sd23wde54re",
+        identifier: {
+          namingSystem: "CPT",
+          qdmVersion: "5.6",
+          value: "TEST-11",
+          _type: "QDM::Identifier",
+        },
+        qdmVersion: "5.6",
+        qrdaOid: "2.16.840.1.113883.10.20.24.3.161",
+        _type: "QDM::PatientEntity",
+        _id: "64c176cd6483d90000a8e032",
+      },
+    ],
+    priority: null,
+    qdmCategory: "encounter",
+    qdmStatus: "performed",
+    qdmTitle: "Encounter, Performed",
+    qdmVersion: "5.6",
+    relatedTo: ["624c6575d226360000a3d249"],
+    relevantPeriod: {
+      low: "2012-04-05T08:00:00.000Z",
+      high: "2012-04-05T08:15:00.000Z",
+      lowClosed: true,
+      highClosed: true,
+    },
+    _type: "QDM::EncounterPerformed",
+    _id: "64c176cd6483d90000a8e02d",
+  },
+  {
+    admissionSource: null,
+    authorDatetime: "2012-04-05T08:00:00.000+00:00",
+    clazz: null,
+    codeListId: "2.16.840.1.113883.3.464.1003.101.12.1010",
+    dataElementCodes: [
+      {
+        code: "4525004",
+        system: "2.16.840.1.113883.6.96",
+        version: null,
+        display: null,
+      },
+    ],
+    description: "Encounter, Performed: Emergency Department Visit",
+    diagnoses: [],
+    dischargeDisposition: null,
+    facilityLocations: [],
+    hqmfOid: "2.16.840.1.113883.10.20.28.4.5",
+    id: "624c6575d226360000a3d249",
+    lengthOfStay: null,
+    priority: null,
+    qdmCategory: "encounter",
+    qdmStatus: "performed",
+    qdmTitle: "Encounter, Performed",
+    qdmVersion: "5.6",
+    relatedTo: ["624c6561d226360000a3d231"],
+    relevantPeriod: {
+      low: "2012-04-05T08:00:00.000Z",
+      high: "2012-04-05T08:15:00.000Z",
+      lowClosed: true,
+      highClosed: true,
+    },
+    _type: "QDM::EncounterPerformed",
+    _id: "64c176cd6483d90000a8e034",
+  },
+  {
+    codeListId: "2.16.840.1.114222.4.11.3591",
+    dataElementCodes: [
+      {
+        code: "1",
+        system: "2.16.840.1.113883.3.221.5",
+        version: null,
+        display: null,
+      },
+    ],
+    description: "Patient Characteristic Payer: Payer",
+    hqmfOid: "2.16.840.1.113883.10.20.28.4.58",
+    id: "64b851fc88fe62000007f384",
+    qdmCategory: "patient_characteristic",
+    qdmStatus: "payer",
+    qdmTitle: "Patient Characteristic Payer",
+    qdmVersion: "5.6",
+    relevantPeriod: {
+      low: "2012-07-19T08:00:00.000Z",
+      high: "2012-07-19T08:15:00.000Z",
+      lowClosed: true,
+      highClosed: true,
+    },
+    _type: "QDM::PatientCharacteristicPayer",
+  },
+  {
+    codeListId: "2.16.840.1.113762.1.4.1",
+    dataElementCodes: [
+      {
+        code: "F",
+        system: "2.16.840.1.113883.5.1",
+        version: null,
+        display: "Female",
+      },
+    ],
+    description: "Patient Characteristic Sex: ONCAdministrativeSex",
+    hqmfOid: "2.16.840.1.113883.10.20.28.4.55",
+    id: "6217d4b4f074ce3d0ee74031",
+    qdmCategory: "patient_characteristic",
+    qdmStatus: "gender",
+    qdmTitle: "Patient Characteristic Sex",
+    qdmVersion: "5.6",
+    _type: "QDM::PatientCharacteristicSex",
+  },
+  {
+    birthDatetime: "1965-01-01T08:00:00.000+00:00",
+    codeListId: null,
+    dataElementCodes: [],
+    description: null,
+    hqmfOid: "2.16.840.1.113883.10.20.28.4.54",
+    id: "64b8521888fe62000007f390",
+    qdmCategory: "patient_characteristic",
+    qdmStatus: "birthdate",
+    qdmTitle: "Patient Characteristic Birthdate",
+    qdmVersion: "5.6",
+    _type: "QDM::PatientCharacteristicBirthdate",
+  },
+  {
+    codeListId: "2.16.840.1.114222.4.11.836",
+    dataElementCodes: [
+      {
+        code: "1002-5",
+        system: "2.16.840.1.113883.6.238",
+        version: null,
+        display: "American Indian or Alaska Native",
+      },
+    ],
+    description: "Patient Characteristic Race: Race",
+    hqmfOid: "2.16.840.1.113883.10.20.28.4.59",
+    id: "6217d4b4f074ce3d0ee74033",
+    qdmCategory: "patient_characteristic",
+    qdmStatus: "race",
+    qdmTitle: "Patient Characteristic Race",
+    qdmVersion: "5.6",
+    _type: "QDM::PatientCharacteristicRace",
+  },
+  {
+    codeListId: "2.16.840.1.114222.4.11.837",
+    dataElementCodes: [
+      {
+        code: "2135-2",
+        system: "2.16.840.1.113883.6.238",
+        version: null,
+        display: "Hispanic or Latino",
+      },
+    ],
+    description: "Patient Characteristic Ethnicity: Ethnicity",
+    hqmfOid: "2.16.840.1.113883.10.20.28.4.56",
+    id: "6217d4b4f074ce3d0ee74032",
+    qdmCategory: "patient_characteristic",
+    qdmStatus: "ethnicity",
+    qdmTitle: "Patient Characteristic Ethnicity",
+    qdmVersion: "5.6",
+    _type: "QDM::PatientCharacteristicEthnicity",
+  },
+  {
+    dataElementCodes: [],
+    _id: "64b979f5cfaef900004340fc",
+    qdmTitle: "Patient Characteristic Birthdate",
+    hqmfOid: "2.16.840.1.113883.10.20.28.4.54",
+    qdmCategory: "patient_characteristic",
+    qdmStatus: "birthdate",
+    qdmVersion: "5.6",
+    _type: "QDM::PatientCharacteristicBirthdate",
+    id: "64b979f5cfaef900004340fc",
+    birthDatetime: "2023-01-31T19:16:21.000+00:00",
+  },
+  {
+    dataElementCodes: [
+      {
+        code: "1002-5",
+        system: "2.16.840.1.113883.6.238",
+        version: "1.2",
+        display: "American Indian or Alaska Native",
+      },
+    ],
+    _id: "64b979eacfaef90000434093",
+    qdmTitle: "Patient Characteristic Race",
+    hqmfOid: "2.16.840.1.113883.10.20.28.4.59",
+    qdmCategory: "patient_characteristic",
+    qdmStatus: "race",
+    qdmVersion: "5.6",
+    _type: "QDM::PatientCharacteristicRace",
+    id: "64b979eacfaef90000434093",
+  },
+  {
+    dataElementCodes: [
+      {
+        code: "F",
+        system: "2.16.840.1.113883.5.1",
+        version: "2022-11",
+        display: "Female",
+      },
+    ],
+    _id: "64b979eacfaef90000434095",
+    qdmTitle: "Patient Characteristic Sex",
+    hqmfOid: "2.16.840.1.113883.10.20.28.4.55",
+    qdmCategory: "patient_characteristic",
+    qdmStatus: "gender",
+    qdmVersion: "5.6",
+    _type: "QDM::PatientCharacteristicSex",
+    id: "64b979eacfaef90000434095",
+  },
+];
 const testDataElements = [
   {
     dataElementCodes: [],
@@ -649,147 +821,84 @@ const mockFormik: FormikContextType<any> = {
   },
 };
 
-const renderElementsSectionComponent = () => {
+const testValueSets = [
+  {
+    oid: "2.16.840.1.113883.3.117.1.7.1.292",
+    version: "N/A",
+    concepts: [
+      {
+        code: "4525004",
+        code_system_oid: "2.16.840.1.113883.6.96",
+        code_system_name: "SNOMEDCT",
+        code_system_version: "2023-03",
+        display_name: "Emergency department patient visit (procedure)",
+      },
+    ],
+    display_name: "Emergency Department Visit",
+  },
+];
+
+const renderDataElementsCard = (
+  activeTab,
+  setCardActiveTab,
+  selectedDataElement,
+  setSelectedDataElement
+) => {
   return render(
     <MemoryRouter>
       <ApiContextProvider value={serviceConfig}>
-        <FormikProvider value={mockFormik}>
-          <QdmExecutionContextProvider
-            value={{
-              measureState: [measure, setMeasure],
-              cqmMeasureState: [cqmMeasure, setCqmMeasure],
-              valueSetsState: [valueSets, setValueSets],
-              executionContextReady: true,
-              executing: false,
-              setExecuting: jest.fn(),
-            }}
-          >
-            <ElementsSection />
-          </QdmExecutionContextProvider>
-        </FormikProvider>
+        <QdmExecutionContextProvider
+          value={{
+            measureState: [{} as Measure, jest.fn],
+            cqmMeasureState: [{ value_sets: testValueSets }, jest.fn],
+            executionContextReady: true,
+            executing: false,
+            setExecuting: jest.fn(),
+          }}
+        >
+          <FormikProvider value={mockFormik}>
+            <DataElementsCard
+              cardActiveTab={activeTab}
+              setCardActiveTab={setCardActiveTab}
+              selectedDataElement={selectedDataElement}
+              setSelectedDataElement={setSelectedDataElement}
+            />
+          </FormikProvider>
+        </QdmExecutionContextProvider>
       </ApiContextProvider>
     </MemoryRouter>
   );
 };
 
-const useCqmConversionServiceMockResolved = {
-  fetchSourceDataCriteria: jest.fn().mockResolvedValue(testDataElements),
-} as unknown as TestCaseServiceApi;
-let mockApplyDefaults = false;
-
-jest.mock("@madie/madie-util", () => ({
-  useDocumentTitle: jest.fn(),
-  useFeatureFlags: () => {
-    return { applyDefaults: mockApplyDefaults };
-  },
-  measureStore: {
-    updateMeasure: jest.fn((measure) => measure),
-    state: jest.fn().mockImplementation(() => mockMeasure),
-    initialState: null,
-    subscribe: (set) => {
-      set(mockMeasure);
-      return { unsubscribe: () => null };
-    },
-    unsubscribe: () => null,
-  },
-  useOktaTokens: jest.fn(() => ({
-    getAccessToken: () => "test.jwt",
-  })),
-  checkUserCanEdit: jest.fn(() => {
-    return true;
-  }),
-  routeHandlerStore: {
-    subscribe: (set) => {
-      return { unsubscribe: () => null };
-    },
-    updateRouteHandlerState: () => null,
-    state: { canTravel: false, pendingPath: "" },
-    initialState: { canTravel: false, pendingPath: "" },
-  },
-}));
-screen.debug(undefined, Infinity);
-describe("ElementsSection allows card opening and closing", () => {
-  screen.debug(undefined, Infinity);
-
-  CQMConversionMock.mockImplementation(() => {
-    return useCqmConversionServiceMockResolved;
-  });
-  // need to mock measureStore, and the results from retrieve categories
-  const { findByTestId, getByTestId, queryByText } = screen;
-  test("should open and close a data element card manual close selection", async () => {
-    await waitFor(() => renderElementsSectionComponent());
-    const elementSection = await findByTestId("elements-section");
-    expect(elementSection).toBeInTheDocument();
-    //  navigate to adverse event
-    const adverseEventTab = screen.getByTestId("elements-tab-adverse_event");
-    expect(adverseEventTab).toBeInTheDocument();
-    act(() => {
-      userEvent.click(adverseEventTab);
-    });
-    expect(adverseEventTab).toHaveAttribute("aria-selected", "true");
-    const adverseEventDataType = screen.getByTestId(
-      "data-type-Adverse Event: Encounter Inpatient"
+describe("DataElementsCard", () => {
+  const { queryByText } = screen;
+  test("DataElementsCards renders length of stay", async () => {
+    await waitFor(() =>
+      renderDataElementsCard("attributes", jest.fn, dataEl[0], jest.fn)
     );
-
-    expect(adverseEventDataType).toBeInTheDocument();
-    act(() => {
-      fireEvent.click(adverseEventDataType);
-    });
-
     await waitFor(() => {
-      expect(getByTestId("data-element-card")).toBeInTheDocument();
-    });
-    const closeButton = getByTestId("close-element-card");
-    expect(closeButton).toBeInTheDocument();
-    act(() => {
-      fireEvent.click(closeButton);
-    });
-    await waitFor(() => {
-      expect(queryByText("Timing")).not.toBeInTheDocument();
+      expect(queryByText("Length Of Stay: 12 'hours'")).toBeInTheDocument();
     });
   });
 
-  test("should open and close a data element card manual close selection", async () => {
-    await waitFor(() => renderElementsSectionComponent());
-    const elementSection = await findByTestId("elements-section");
-    expect(elementSection).toBeInTheDocument();
-    const adverseEventTab = screen.getByTestId("elements-tab-adverse_event");
-    expect(adverseEventTab).toBeInTheDocument();
-    act(() => {
-      userEvent.click(adverseEventTab);
-    });
-    expect(adverseEventTab).toHaveAttribute("aria-selected", "true");
-    const adverseEventDataType = screen.getByTestId(
-      "data-type-Adverse Event: Encounter Inpatient"
+  test("DataElementsCard renders codes", async () => {
+    await waitFor(() =>
+      renderDataElementsCard("codes", jest.fn, dataEl[0], jest.fn)
     );
-
-    expect(adverseEventDataType).toBeInTheDocument();
-    act(() => {
-      fireEvent.click(adverseEventDataType);
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("data-element-card")).toBeInTheDocument();
-    });
-    await waitFor(() => {
-      expect(queryByText("Negation Rationale")).not.toBeInTheDocument();
-    });
-    const deviceTab = screen.getByTestId("elements-tab-device");
-    expect(deviceTab).toBeInTheDocument();
-    act(() => {
-      userEvent.click(deviceTab);
-    });
-    await waitFor(() => {
-      expect(queryByText("Timing")).not.toBeInTheDocument();
-    });
-    const deviceDataType = screen.getByTestId(
-      "data-type-Device, Order: Cardiopulmonary Arrest"
+    const codesChip = await queryByText(
+      "Admission Source: SNOMEDCT : 10725009"
     );
-    act(() => {
-      fireEvent.click(deviceDataType);
-    });
+    expect(codesChip).toBeInTheDocument();
+  });
+
+  test("DataElementsCards renders nothing", async () => {
+    await waitFor(() =>
+      renderDataElementsCard("codes", jest.fn, testDataElements[0], jest.fn)
+    );
     await waitFor(() => {
-      expect(queryByText("Negation Rationale")).toBeInTheDocument();
+      expect(
+        screen.queryByText("Admission Source: SNOMEDCT : 10725009")
+      ).not.toBeInTheDocument();
     });
   });
 });

@@ -1,14 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Close } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
-import { DataElement } from "cqm-models";
-
+import {
+  SKIP_ATTRIBUTES,
+  getDisplayFromId,
+  stringifyValue,
+} from "../../../../../../../util/QdmAttributeHelpers";
 import Codes from "./Codes/Codes";
 import SubNavigationTabs from "./SubNavigationTabs";
-
+import cqmModels, { DataElement } from "cqm-models";
 import "./DataElementsCard.scss";
-import * as _ from "lodash";
 import AttributeSection from "./attributes/AttributeSection";
+import { useQdmExecutionContext } from "../../../../../../routes/qdm/QdmExecutionContext";
+import * as _ from "lodash";
 
 const applyAttribute = (attribute, type, attributeValue, dataElement) => {
   //TODO: Investigate if cloneDeep result is sufficient for execution (updating the field drops all the sets/gets from the dataElement)
@@ -29,15 +33,105 @@ const DataElementsCard = (props: {
     selectedDataElement,
     setSelectedDataElement,
   } = props;
+
+  const [codeSystemMap, setCodeSystemMap] = useState(null);
+  const { cqmMeasureState } = useQdmExecutionContext();
+  useEffect(() => {
+    const valueSets = cqmMeasureState?.[0]?.value_sets;
+    if (valueSets) {
+      const codeSystemMap = {};
+      valueSets.forEach((valueSet) => {
+        valueSet.concepts.forEach((concept) => {
+          codeSystemMap[concept.code_system_oid] = {
+            code_system_name: concept.code_system_name,
+          };
+        });
+      });
+      setCodeSystemMap(codeSystemMap);
+    }
+  }, [cqmMeasureState]);
   const negationRationale =
     selectedDataElement?.hasOwnProperty("negationRationale");
   // https://ecqi.healthit.gov/mcw/2020/qdm-attribute/negationrationale.html  (list of all categories that use negation rationale)
-  const [localDataElement, setLocalDataElement] =
-    useState<DataElement>(selectedDataElement);
-  useEffect(() => {
-    setLocalDataElement(selectedDataElement);
-  }, [selectedDataElement]);
 
+  // from here we know the type, we need to go through the dataElements to matchTypes
+  // attributes section
+  const [displayAttributes, setDisplayAttributes] = useState([]);
+  // codes section
+  const [codesChips, setCodesChips] = useState([]);
+  const [localSelectedDataElement, setLocalSelectedDataElement] =
+    useState(null);
+  useEffect(() => {
+    if (selectedDataElement && codeSystemMap) {
+      const displayAttributes = [];
+      const codesChips = [];
+      const qdmType = selectedDataElement?._type; // match against for attributes
+      const model = qdmType.split("QDM::")[1];
+      const getModel = cqmModels[model];
+      const modeledEl = new getModel(selectedDataElement);
+      setLocalSelectedDataElement(modeledEl);
+      modeledEl.schema.eachPath((path, info) => {
+        if (!SKIP_ATTRIBUTES.includes(path) && modeledEl[path]) {
+          if (info.instance === "Array") {
+            modeledEl[path].forEach((elem, index) => {
+              if (path == "relatedTo") {
+                let id = elem;
+                const display = getDisplayFromId(modeledEl, id);
+                let value = `${stringifyValue(
+                  display?.description,
+                  true
+                )} ${stringifyValue(display?.timing, true)}}`;
+                displayAttributes.push({
+                  name: path,
+                  title: _.startCase(path),
+                  value: value,
+                  isArrayValue: true,
+                  index: index,
+                });
+              } else {
+                displayAttributes.push({
+                  name: path,
+                  title: _.startCase(path),
+                  // this is wrong.
+                  value: stringifyValue(modeledEl[path], true),
+                  isArrayValue: true,
+                  index: index,
+                });
+              }
+            });
+          } else if (path === "relatedTo") {
+            const id = modeledEl[path];
+            const display = getDisplayFromId(modeledEl, id);
+            const value = `${stringifyValue(
+              display.description,
+              true
+            )} ${stringifyValue(display.timing, true)}`;
+            displayAttributes.push({
+              name: path,
+              title: _.startCase(path),
+              value: value,
+            });
+          } else if (modeledEl[path] instanceof cqmModels.CQL.Code) {
+            const value = modeledEl[path];
+            value.title = codeSystemMap[value.system].code_system_name;
+            codesChips.push({
+              name: path,
+              title: _.startCase(path),
+              value: stringifyValue(modeledEl[path], true),
+            });
+          } else {
+            displayAttributes.push({
+              name: path,
+              title: _.startCase(path),
+              value: stringifyValue(modeledEl[path], true),
+            });
+          }
+        }
+      });
+      setDisplayAttributes(displayAttributes);
+      setCodesChips(codesChips);
+    }
+  }, [!!selectedDataElement, !!codeSystemMap]);
   // centralize state one level up so we can conditionally render our child component
   return (
     <div className="data-elements-card" data-testid="data-element-card">
@@ -79,10 +173,11 @@ const DataElementsCard = (props: {
         activeTab={cardActiveTab}
         setActiveTab={setCardActiveTab}
       />
-      {cardActiveTab === "codes" && <Codes />}
+      {cardActiveTab === "codes" && <Codes attributeChipList={codesChips} />}
       {cardActiveTab === "attributes" && (
         <AttributeSection
-          selectedDataElement={localDataElement}
+          attributeChipList={displayAttributes}
+          selectedDataElement={localSelectedDataElement}
           onAddClicked={(attribute, type, attributeValue) => {
             const updatedDataElement = applyAttribute(
               attribute,

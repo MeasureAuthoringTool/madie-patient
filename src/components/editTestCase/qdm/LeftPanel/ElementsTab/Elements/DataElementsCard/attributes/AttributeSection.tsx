@@ -11,16 +11,27 @@ import DisplayAttributeInputs from "./DisplayAttributeInputs";
 import DateTimeInterval from "../../../../../../../common/dateTimeInterval/DateTimeInterval";
 import { DateField } from "@madie/madie-design-system/dist/react";
 import { Button } from "@mui/material";
+import AttributeChipList from "../AttributeChipList";
 
+interface Chip {
+  title: String;
+  name?: String;
+  value?: String;
+}
 interface AttributeSectionProps {
   selectedDataElement: DataElement;
   onAddClicked?: (attribute, type, attributeValue) => void;
+  attributeChipList: Array<Chip>;
 }
 
 const AttributeSection = ({
+  attributeChipList = [],
   selectedDataElement,
   onAddClicked,
 }: AttributeSectionProps) => {
+  const mappedAttributeList = attributeChipList.map((chip) => ({
+    text: `${chip.title}: ${chip.value}`,
+  }));
   const [attributes, setAttributes] = useState([]);
   const [types, setTypes] = useState([]);
 
@@ -75,32 +86,30 @@ const AttributeSection = ({
   const onInputAdd = (e) => {
     onAddClicked(formik.values.attribute.displayName, formik.values.type, e);
   };
-
   return (
     <form id="add-attribute-form" onSubmit={formik.handleSubmit}>
-      <div>
-        <AttributeSelector
-          canEdit={true}
-          attributeProps={{
-            label: "Attribute",
-            options: attributes.map((attr) => attr.displayName),
-            required: true,
-            value: formik.values.attribute?.displayName ?? "",
-            onChange: handleAttributeChange,
-          }}
-          attributeTypeProps={{
-            label: "Type",
-            options: types,
-            required: false,
-            ...formik.getFieldProps("type"),
-            disabled: _.isEmpty(types),
-          }}
-        />
-        <DisplayAttributeInputs
+      <AttributeSelector
+        canEdit={true}
+        attributeProps={{
+          label: "Attribute",
+          options: attributes.map((attr) => attr.displayName),
+          required: true,
+          value: formik.values.attribute?.displayName ?? "",
+          onChange: handleAttributeChange,
+        }}
+        attributeTypeProps={{
+          label: "Type",
+          options: types,
+          required: false,
+          ...formik.getFieldProps("type"),
+          disabled: _.isEmpty(types),
+        }}
+      />
+      <AttributeChipList items={mappedAttributeList} />
+      <DisplayAttributeInputs
           attributeType={formik.values.type}
           onInputAdd={onInputAdd}
         />
-      </div>
     </form>
   );
 };
