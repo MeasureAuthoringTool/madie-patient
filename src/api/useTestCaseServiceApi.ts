@@ -3,7 +3,7 @@ import useServiceConfig from "./useServiceConfig";
 import { ServiceConfig } from "./ServiceContext";
 import { HapiOperationOutcome, TestCase } from "@madie/madie-models";
 import { useOktaTokens } from "@madie/madie-util";
-import { ScanValidationDto } from "./models/ScanValidationDto";
+import {ObjectError, ScanValidationDto} from "./models/ScanValidationDto";
 import { addValues } from "../util/DefaultValueProcessor";
 
 export class TestCaseServiceApi {
