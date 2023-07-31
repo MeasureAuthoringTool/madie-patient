@@ -14,9 +14,12 @@ import useTestCaseServiceApi from "../../../../api/useTestCaseServiceApi";
 import { ScanValidationDto } from "../../../../api/models/ScanValidationDto";
 import JSZip from "jszip";
 import prettyBytes from "pretty-bytes";
+import CloseIcon from "@mui/icons-material/Close";
+import { CircularProgress } from "@mui/material";
 
 const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
   const [uploadedFile, setUploadedFile] = useState(null);
+  const [uploadingFileSpinner, setUploadingFileSpinner] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [testCases, setTestCases] = useState([]);
   const testCaseService = useRef(useTestCaseServiceApi());
@@ -37,34 +40,52 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
   };
 
   const onDrop = useCallback(async (importedZip) => {
-    setErrorMessage(() => null);
+    removeUploadedFile();
+    setUploadingFileSpinner(true);
     const zip = new JSZip();
+    let isValidImport = true;
     zip.loadAsync(importedZip[0]).then((content) => {
       Object.keys(content.files).forEach((filename) => {
         if (filename !== "README.txt") {
-          zip
-            .file(filename)
-            .async("string")
-            .then(async (fileContent) => {
-              let response: ScanValidationDto;
-              try {
-                response = await testCaseService.current.scanImportFile(
-                  fileContent
-                );
-                if (response.valid) {
-                  setUploadedFile(importedZip[0]);
-                  // process fileContent and setTestCases
-                } else {
-                  showErrorToast(response.error.defaultMessage);
+          try {
+            zip
+              .file(filename)
+              .async("string")
+              .then(async (fileContent) => {
+                let response: ScanValidationDto;
+                try {
+                  response = await testCaseService.current.scanImportFile(
+                    fileContent
+                  );
+                } catch (error) {
+                  isValidImport = false;
+                  setUploadingFileSpinner(false);
+                  showErrorToast(
+                    "An error occurred while uploading the file. Please try again or reach out to the helpdesk"
+                  );
+                  return;
                 }
-              } catch (error) {
-                showErrorToast(
-                  "An error occurred while validating the import file. Please try again or reach out to the Help Desk."
-                );
-              }
-            });
+                if (!response.valid) {
+                  isValidImport = false;
+                  setUploadingFileSpinner(false);
+                  showErrorToast(response.error.defaultMessage);
+                } else {
+                  // processing fileContent and adding it to the state setTestCases
+                }
+              });
+          } catch (error) {
+            isValidImport = false;
+            setUploadingFileSpinner(false);
+            showErrorToast(
+              "An error occurred while uploading the file. Please try again or reach out to the helpdesk"
+            );
+          }
         }
       });
+      if (isValidImport) {
+        setUploadingFileSpinner(false);
+        setUploadedFile(importedZip[0]);
+      }
     });
   }, []);
 
@@ -93,12 +114,22 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
               <span tw="text-green-550">Complete</span>
             </small>
           </div>
+          <div tw="absolute right-28 border-l-2">
+            <CloseIcon tw="ml-2" onClick={removeUploadedFile}></CloseIcon>
+          </div>
         </div>
       </div>
     );
   };
 
+  const removeUploadedFile = () => {
+    setUploadedFile(null);
+    setErrorMessage(null);
+    setTestCases([]);
+  };
+
   const onClose = () => {
+    setUploadingFileSpinner(false);
     setUploadedFile(null);
     setErrorMessage(null);
     setTestCases([]);
@@ -153,6 +184,16 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
           <span tw="pt-3">(.zip)</span>
         </div>
         {uploadedFile && renderFileContent()}
+        {uploadingFileSpinner && (
+          <div
+            tw="flex border border-l-4 mt-5 mx-16 mb-1"
+            data-testid="test-case-preview-header"
+          >
+            <div tw="flex items-center ml-80 my-4">
+              <CircularProgress size={32} />
+            </div>
+          </div>
+        )}
       </div>
       <Toast
         toastKey="import-tests-toast"

@@ -141,8 +141,8 @@ describe("TestCaseImportDialog", () => {
     const inputEl = screen.getByTestId("file-drop-input");
     userEvent.upload(inputEl, finalZip);
 
-    await waitFor(() => {
-      const importBtn = screen.getByRole("button", { name: "Import" });
+    await waitFor(async () => {
+      const importBtn = await screen.getByRole("button", { name: "Import" });
       expect(importBtn).toBeEnabled();
       userEvent.click(importBtn);
       expect(onImport).toHaveBeenCalled();
@@ -172,14 +172,16 @@ describe("TestCaseImportDialog", () => {
       />
     );
 
-    const inputEl = screen.getByTestId("file-drop-input"); // getByTestId because input is hidden
+    const inputEl = screen.getByTestId("file-drop-input");
     userEvent.upload(inputEl, finalZip);
 
-    expect(
-      await screen.findByText(
-        "An error occurred while validating the import file. Please try again or reach out to the Help Desk."
-      )
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "An error occurred while uploading the file. Please try again or reach out to the helpdesk"
+        )
+      ).toBeInTheDocument();
+    });
   });
 
   it("displays error when scan validation returns invalid file", async () => {
