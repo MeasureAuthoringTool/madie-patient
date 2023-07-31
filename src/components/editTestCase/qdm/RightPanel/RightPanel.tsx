@@ -8,6 +8,7 @@ import DetailsSection from "./DetailsTab/DetailsSection";
 const RightPanel = ({
   canEdit,
   groupPopulations,
+  executionRun,
   errors,
   onChange,
   measureName,
@@ -34,6 +35,7 @@ const RightPanel = ({
             groupPopulations={groupPopulations}
             onChange={onChange}
             errors={errors}
+            executionRun={executionRun}
             birthDateTime={birthDateTime}
           />
         )}
