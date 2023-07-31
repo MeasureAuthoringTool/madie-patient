@@ -60,7 +60,7 @@ const DataElementsCard = (props: {
   // codes section
   const [codesChips, setCodesChips] = useState([]);
   const [localSelectedDataElement, setLocalSelectedDataElement] =
-    useState(null);
+    useState(selectedDataElement);
   useEffect(() => {
     if (selectedDataElement && codeSystemMap) {
       const displayAttributes = [];
@@ -138,15 +138,15 @@ const DataElementsCard = (props: {
       <div className="heading-row">
         <div className="text-container">
           <div className="title">
-            {localDataElement.qdmStatus
-              ? _.capitalize(localDataElement.qdmStatus)
-              : localDataElement.qdmTitle}
+            {localSelectedDataElement.qdmStatus
+              ? _.capitalize(localSelectedDataElement.qdmStatus)
+              : localSelectedDataElement.qdmTitle}
             :&nbsp;
           </div>
           <div className="sub-text">
-            {localDataElement.description.substring(
-              localDataElement.description.indexOf(":") + 2,
-              localDataElement.description.length
+            {localSelectedDataElement.description.substring(
+              localSelectedDataElement.description.indexOf(":") + 2,
+              localSelectedDataElement.description.length
             )}
           </div>
         </div>
@@ -183,9 +183,9 @@ const DataElementsCard = (props: {
               attribute,
               type,
               attributeValue,
-              localDataElement
+              localSelectedDataElement
             );
-            setLocalDataElement(updatedDataElement);
+            setLocalSelectedDataElement(updatedDataElement);
           }}
         />
       )}

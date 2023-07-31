@@ -47,7 +47,7 @@ const AttributeSection = ({
   });
 
   useEffect(() => {
-    if (selectedDataElement) {
+    if (selectedDataElement && selectedDataElement.schema) {
       const nextAttributes = [];
       selectedDataElement.schema.eachPath((path, info) => {
         if (!SKIP_ATTRIBUTES.includes(path)) {
@@ -107,9 +107,9 @@ const AttributeSection = ({
       />
       <AttributeChipList items={mappedAttributeList} />
       <DisplayAttributeInputs
-          attributeType={formik.values.type}
-          onInputAdd={onInputAdd}
-        />
+        attributeType={formik.values.type}
+        onInputAdd={onInputAdd}
+      />
     </form>
   );
 };
