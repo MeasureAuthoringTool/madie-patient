@@ -1,0 +1,20 @@
+.chip-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  column-gap: 8px;
+  margin-top: 25px;
+  row-gap: 10px;
+
+  > .chip-body {
+    background-color: #0073c8;
+    color: #fff;
+    border-radius: 24px;
+    padding: 3px 12px 3px 12px;
+    font-family: Rubik, sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+  }
+}
