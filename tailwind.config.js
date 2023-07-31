@@ -137,6 +137,9 @@ module.exports = {
       fontFamily: {
         rubik: ["Rubik"],
       },
+      spacing: {
+        68: "17rem",
+      },
     },
   },
   variants: {
