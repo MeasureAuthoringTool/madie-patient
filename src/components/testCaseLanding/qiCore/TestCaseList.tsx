@@ -491,16 +491,18 @@ const TestCaseList = (props: TestCaseListProps) => {
           <Typography color="inherit">{loadingState.message}</Typography>
         </div>
       )}
-      <TestCaseImportDialog
-        dialogOpen={importDialogState.open}
-        onImport={onTestCaseImport}
-        handleClose={() =>
-          setImportDialogState({
-            ...importDialogState,
-            open: false,
-          })
-        }
-      />
+      {importDialogState.open && (
+        <TestCaseImportDialog
+          dialogOpen={importDialogState.open}
+          onImport={onTestCaseImport}
+          handleClose={() =>
+            setImportDialogState({
+              ...importDialogState,
+              open: false,
+            })
+          }
+        />
+      )}
       <TestCaseImportFromBonnieDialog
         open={importFromBonnieDialogState.open}
         onImport={onTestCaseImportFromBonnie}

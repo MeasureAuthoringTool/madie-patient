@@ -1273,6 +1273,24 @@ describe("TestCaseList component", () => {
       ).toBeInTheDocument();
     });
   });
+
+  it("should display import test case button", async () => {
+    renderTestCaseListComponent();
+    const importButton = await screen.findByRole("button", {
+      name: /Import Test Cases/i,
+    });
+    expect(importButton).toBeInTheDocument();
+    expect(importButton).toBeEnabled();
+  });
+
+  it("should disable import test case button for unauthorized users", async () => {
+    (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => false);
+    renderTestCaseListComponent();
+    const importButton = await screen.findByRole("button", {
+      name: /Import Test Cases/i,
+    });
+    expect(importButton).toBeDisabled();
+  });
 });
 
 describe("retrieve coverage value from HTML coverage", () => {
