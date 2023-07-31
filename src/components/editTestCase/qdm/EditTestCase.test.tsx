@@ -408,6 +408,19 @@ describe("EditTestCase QDM Component", () => {
 
     expect(getByRole("button", { name: "Save" })).toBeDisabled();
     expect(getByRole("button", { name: "Discard Changes" })).toBeDisabled();
+
+    userEvent.click(runTestCaseButton);
+  });
+
+  it("should render qdm edit test case component along with action buttons", async () => {
+    await waitFor(() => renderEditTestCaseComponent());
+    const runTestCaseButton = await getByRole("button", {
+      name: "Run Test",
+    });
+    expect(runTestCaseButton).toBeInTheDocument();
+
+    expect(getByRole("button", { name: "Save" })).toBeDisabled();
+    expect(getByRole("button", { name: "Discard Changes" })).toBeDisabled();
   });
 
   it("should render group populations from DB", async () => {
