@@ -74,8 +74,6 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
                   ...prevState,
                   JSON.parse(fileContent),
                 ]);
-                setUploadingFileSpinner(false);
-                setUploadedFile(importedZip[0]);
               }
             });
         } catch (error) {
