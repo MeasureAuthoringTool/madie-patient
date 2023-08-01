@@ -44,6 +44,7 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
     removeUploadedFile();
     setUploadingFileSpinner(true);
     const zip = new JSZip();
+    let isValidImport = true;
     zip.loadAsync(importedZip[0]).then((content) => {
       Object.keys(content.files).forEach((filename) => {
         try {
@@ -57,12 +58,14 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
                   fileContent
                 );
               } catch (error) {
+                isValidImport = false;
                 setUploadingFileSpinner(false);
                 showErrorToast(
                   "An error occurred while uploading the file. Please try again or reach out to the helpdesk"
                 );
               }
               if (!response.valid) {
+                isValidImport = false;
                 setUploadingFileSpinner(false);
                 showErrorToast(response.error.defaultMessage);
               } else {
@@ -76,10 +79,15 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
               }
             });
         } catch (error) {
+          isValidImport = false;
           setUploadingFileSpinner(false);
           showErrorToast(
             "An error occurred while uploading the file. Please try again or reach out to the helpdesk"
           );
+        }
+        if (isValidImport) {
+          setUploadingFileSpinner(false);
+          setUploadedFile(importedZip[0]);
         }
       });
     });
