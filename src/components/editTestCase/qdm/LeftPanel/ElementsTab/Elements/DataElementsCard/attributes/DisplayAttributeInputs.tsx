@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { DataElement, CQL } from "cqm-models";
+import React, { useState } from "react";
+import { CQL } from "cqm-models";
 import * as _ from "lodash";
 import { DateField } from "@madie/madie-design-system/dist/react";
-import { Button, IconButton } from "@mui/material";
-import { DateTime } from "cql-execution";
-import { SettingsApplicationsRounded } from "@mui/icons-material";
+import { IconButton } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import dayjs from "dayjs";
+import IntegerInput from "../../../../../../../common/IntegerInput/IntegerInput";
 import "./DisplayAttributeInputs.scss";
 
 interface DisplayAttributeInputsProps {
@@ -19,7 +18,7 @@ const DisplayAttributeInputs = ({
   attributeType,
   onInputAdd,
 }: DisplayAttributeInputsProps) => {
-  const [attributeValue, setAttributeValue] = useState();
+  const [attributeValue, setAttributeValue] = useState(null);
 
   const plusClick = (e) => {
     e.preventDefault();
@@ -45,6 +44,15 @@ const DisplayAttributeInputs = ({
             }}
           />
         );
+      case "Integer":
+        return (
+          <IntegerInput
+            intValue={attributeValue}
+            canEdit={true}
+            handleChange={(val) => setAttributeValue(parseInt(val))}
+            label="Integer"
+          />
+        );
       default:
         return null;
     }
@@ -52,7 +60,7 @@ const DisplayAttributeInputs = ({
 
   return (
     <div>
-      {displayAttributeInput()}
+      <div style={{ display: "inline-block" }}>{displayAttributeInput()}</div>
       {attributeType ? (
         <IconButton className="add-value-icon" onClick={plusClick}>
           <AddCircleOutlineIcon sx={{ color: "#0073c8" }} />

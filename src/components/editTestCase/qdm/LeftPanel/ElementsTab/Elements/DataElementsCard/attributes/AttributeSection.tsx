@@ -8,9 +8,6 @@ import {
 } from "../../../../../../../../util/QdmAttributeHelpers";
 import { useFormik } from "formik";
 import DisplayAttributeInputs from "./DisplayAttributeInputs";
-import DateTimeInterval from "../../../../../../../common/dateTimeInterval/DateTimeInterval";
-import { DateField } from "@madie/madie-design-system/dist/react";
-import { Button } from "@mui/material";
 import AttributeChipList from "../AttributeChipList";
 
 interface Chip {
