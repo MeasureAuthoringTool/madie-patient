@@ -388,7 +388,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     }
   };
 
-  const onTestCaseImport = async (testCases: TestCase[]) => {
+  const onTestCaseImport = async (testCaseBundles: any) => {
     // Todo in https://jira.cms.gov/browse/MAT-5925
   };
 

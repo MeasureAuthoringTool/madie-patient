@@ -16,12 +16,13 @@ import JSZip from "jszip";
 import prettyBytes from "pretty-bytes";
 import CloseIcon from "@mui/icons-material/Close";
 import { CircularProgress } from "@mui/material";
+import { IMPORT_ERROR } from "../../qiCore/TestCaseList";
 
 const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
   const [uploadedFile, setUploadedFile] = useState(null);
   const [uploadingFileSpinner, setUploadingFileSpinner] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
-  const [testCases, setTestCases] = useState([]);
+  const [testCaseBundles, setTestCaseBundles] = useState([]);
   const testCaseService = useRef(useTestCaseServiceApi());
 
   // Toast utilities
@@ -43,7 +44,6 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
     removeUploadedFile();
     setUploadingFileSpinner(true);
     const zip = new JSZip();
-    let isValidImport = true;
     zip.loadAsync(importedZip[0]).then((content) => {
       Object.keys(content.files).forEach((filename) => {
         try {
@@ -57,33 +57,31 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
                   fileContent
                 );
               } catch (error) {
-                isValidImport = false;
                 setUploadingFileSpinner(false);
                 showErrorToast(
                   "An error occurred while uploading the file. Please try again or reach out to the helpdesk"
                 );
-                return;
               }
               if (!response.valid) {
-                isValidImport = false;
                 setUploadingFileSpinner(false);
                 showErrorToast(response.error.defaultMessage);
               } else {
-                // processing fileContent and adding it to the state setTestCases
+                // Todo processing fileContent for any errors https://jira.cms.gov/browse/MAT-5935
+                setTestCaseBundles((prevState) => [
+                  ...prevState,
+                  JSON.parse(fileContent),
+                ]);
+                setUploadingFileSpinner(false);
+                setUploadedFile(importedZip[0]);
               }
             });
         } catch (error) {
-          isValidImport = false;
           setUploadingFileSpinner(false);
           showErrorToast(
             "An error occurred while uploading the file. Please try again or reach out to the helpdesk"
           );
         }
       });
-      if (isValidImport) {
-        setUploadingFileSpinner(false);
-        setUploadedFile(importedZip[0]);
-      }
     });
   }, []);
 
@@ -97,7 +95,7 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
     },
   });
 
-  const renderFileContent = () => {
+  const renderUploadedFileStatus = () => {
     return (
       <div
         tw="flex border border-l-4 mt-5 mx-16 mb-1"
@@ -123,14 +121,14 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
   const removeUploadedFile = () => {
     setUploadedFile(null);
     setErrorMessage(null);
-    setTestCases([]);
+    setTestCaseBundles([]);
   };
 
   const onClose = () => {
     setUploadingFileSpinner(false);
     setUploadedFile(null);
     setErrorMessage(null);
-    setTestCases([]);
+    setTestCaseBundles([]);
     handleClose();
   };
 
@@ -140,7 +138,7 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
       dialogProps={{
         onClose,
         open: dialogOpen,
-        onSubmit: onImport(testCases),
+        onSubmit: onImport(testCaseBundles),
         maxWidth: "md",
         fullWidth: true,
       }}
@@ -181,7 +179,7 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
           </Button>
           <span tw="pt-3">(.zip)</span>
         </div>
-        {uploadedFile && renderFileContent()}
+        {uploadedFile && renderUploadedFileStatus()}
         {uploadingFileSpinner && (
           <div
             tw="flex border border-l-4 mt-5 mx-16 mb-1"
