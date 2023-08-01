@@ -14,6 +14,13 @@ import AttributeSection from "./attributes/AttributeSection";
 import { useQdmExecutionContext } from "../../../../../../routes/qdm/QdmExecutionContext";
 import * as _ from "lodash";
 
+const applyAttribute = (attribute, type, attributeValue, dataElement) => {
+  //TODO: Investigate if cloneDeep result is sufficient for execution (updating the field drops all the sets/gets from the dataElement)
+  const updatedDataElement = _.cloneDeep(dataElement);
+  updatedDataElement[_.camelCase(attribute)] = attributeValue;
+  return updatedDataElement;
+};
+
 const DataElementsCard = (props: {
   cardActiveTab: string;
   setCardActiveTab: Function;
@@ -46,13 +53,14 @@ const DataElementsCard = (props: {
   const negationRationale =
     selectedDataElement?.hasOwnProperty("negationRationale");
   // https://ecqi.healthit.gov/mcw/2020/qdm-attribute/negationrationale.html  (list of all categories that use negation rationale)
+
   // from here we know the type, we need to go through the dataElements to matchTypes
   // attributes section
   const [displayAttributes, setDisplayAttributes] = useState([]);
   // codes section
   const [codesChips, setCodesChips] = useState([]);
   const [localSelectedDataElement, setLocalSelectedDataElement] =
-    useState(null);
+    useState(selectedDataElement);
   useEffect(() => {
     if (selectedDataElement && codeSystemMap) {
       const displayAttributes = [];
@@ -130,15 +138,15 @@ const DataElementsCard = (props: {
       <div className="heading-row">
         <div className="text-container">
           <div className="title">
-            {selectedDataElement.qdmStatus
-              ? _.capitalize(selectedDataElement.qdmStatus)
-              : selectedDataElement.qdmTitle}
+            {localSelectedDataElement.qdmStatus
+              ? _.capitalize(localSelectedDataElement.qdmStatus)
+              : localSelectedDataElement.qdmTitle}
             :&nbsp;
           </div>
           <div className="sub-text">
-            {selectedDataElement.description.substring(
-              selectedDataElement.description.indexOf(":") + 2,
-              selectedDataElement.description.length
+            {localSelectedDataElement.description.substring(
+              localSelectedDataElement.description.indexOf(":") + 2,
+              localSelectedDataElement.description.length
             )}
           </div>
         </div>
@@ -170,8 +178,14 @@ const DataElementsCard = (props: {
         <AttributeSection
           attributeChipList={displayAttributes}
           selectedDataElement={localSelectedDataElement}
-          onAddClicked={(attribute, type) => {
-            // Todo: update the Patient with the selected attribute data
+          onAddClicked={(attribute, type, attributeValue) => {
+            const updatedDataElement = applyAttribute(
+              attribute,
+              type,
+              attributeValue,
+              localSelectedDataElement
+            );
+            setLocalSelectedDataElement(updatedDataElement);
           }}
         />
       )}
