@@ -9,8 +9,6 @@ export class QdmCalculationService {
     // Example options; includes directive to produce pretty statement results.
     const options = {
       doPretty: true,
-      effectiveDate: "201201010000", //default value till we get measure_period
-      effectiveEnd: "201212312359", //default value till we get measure_period
     };
 
     const calculationResults = await Calculator.calculate(
@@ -19,7 +17,6 @@ export class QdmCalculationService {
       cqmMeasure.value_sets,
       options
     );
-
     // eslint-disable-next-line no-console
     console.log("cqm execution calculation results", calculationResults);
     return calculationResults;

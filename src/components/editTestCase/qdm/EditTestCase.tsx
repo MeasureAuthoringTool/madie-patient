@@ -42,6 +42,19 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
 import StatusHandler from "../../statusHandler/StatusHandler";
+import { JSONPath } from "jsonpath-plus";
+
+enum PopulationType {
+  IPP = "initialPopulation",
+  DENOM = "denominator",
+  DENEX = "denominator-exclusion",
+  DENEXCEP = "denominator-exception",
+  NUMER = "numerator",
+  NUMEX = "numerator-exclusion",
+  MSRPOPL = "measure-population",
+  MSRPOPLEX = "measure-population-exclusion",
+  OBSERV = "measure-observation",
+}
 
 const EditTestCase = () => {
   useDocumentTitle("MADiE Edit Measure Edit Test Case");
@@ -88,6 +101,7 @@ const EditTestCase = () => {
 
   const navigate = useNavigate();
   const { measureId, id } = useParams();
+  const [executionRun, setExecutionRun] = useState<boolean>(false);
 
   const [currentTestCase, setCurrentTestCase] = useState<TestCase>(null);
   const [qdmPatient, setQdmPatient] = useState<QDMPatient>();
@@ -244,11 +258,46 @@ const EditTestCase = () => {
           cqmMeasure,
           JSON.parse(currentTestCase?.json)
         );
+
+      //find the population_sets
+
+      var populationSets = JSONPath({
+        path: "$.population_sets[*].population_set_id",
+        json: cqmMeasure,
+      });
+
+      populationSets.forEach((pop) => {
+        var results = JSONPath({
+          path: `$..${pop}`,
+          json: calculationOutput,
+        });
+        let populationMap = new Map<String, number>();
+        let groupsMap = new Map<String, Map<String, number>>();
+
+        Object.entries(PopulationType).forEach((value, key) => {
+          //value is one of IPP, DENOM, NUMER, etc...
+          //Set's an entry = IPP & numeric value from results
+          populationMap.set(value[1], eval(`results[0].${value[0]}`));
+        });
+
+        groupsMap.set("" + pop, populationMap);
+
+        currentTestCase.groupPopulations.forEach((value) => {
+          if (value.groupId === pop) {
+            value.populationValues.forEach((population) => {
+              //Look up population
+              population.actual = groupsMap.get(pop).get(population.name);
+            });
+          }
+        });
+      });
+
       calculationOutput &&
         showToast(
           "Calculation was successful, output is printed in the console",
           "success"
         );
+      setExecutionRun(true);
     } catch (error) {
       setQdmExecutionErrors((prevState) => [...prevState, `${error.message}`]);
       showToast("Error while calculating QDM test cases", "danger");
@@ -295,6 +344,7 @@ const EditTestCase = () => {
                 <RightPanel
                   canEdit={canEdit}
                   groupPopulations={currentTestCase?.groupPopulations}
+                  executionRun={executionRun}
                   errors={formik.errors.groupPopulations}
                   onChange={(
                     groupPopulations,
