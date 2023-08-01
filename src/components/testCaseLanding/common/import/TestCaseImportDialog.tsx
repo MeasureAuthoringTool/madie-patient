@@ -69,7 +69,6 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
                 setUploadingFileSpinner(false);
                 showErrorToast(response.error.defaultMessage);
               } else {
-                // Todo processing fileContent for any errors https://jira.cms.gov/browse/MAT-5935
                 setTestCaseBundles((prevState) => [
                   ...prevState,
                   JSON.parse(fileContent),
