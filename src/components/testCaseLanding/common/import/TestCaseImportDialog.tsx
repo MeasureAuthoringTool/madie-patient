@@ -63,6 +63,7 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
                 showErrorToast(
                   "An error occurred while uploading the file. Please try again or reach out to the helpdesk"
                 );
+                return;
               }
               if (!response.valid) {
                 isValidImport = false;
