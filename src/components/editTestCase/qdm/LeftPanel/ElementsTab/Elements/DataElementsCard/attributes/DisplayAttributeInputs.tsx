@@ -47,7 +47,7 @@ const DisplayAttributeInputs = ({
       case "Integer":
         return (
           <IntegerInput
-            intValue={attributeValue}
+            intValue={null}
             canEdit={true}
             handleChange={(val) => setAttributeValue(parseInt(val))}
             label="Integer"
