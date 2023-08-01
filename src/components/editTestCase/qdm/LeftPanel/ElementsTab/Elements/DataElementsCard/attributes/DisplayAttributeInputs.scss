@@ -1,7 +1,12 @@
+.attributes-display-container {
+  display: flex;
+}
+.attribute-model {
+  padding: 6px;
+  margin-bottom: 10px;
+}
 .add-value-icon {
-  color: #0073c8;
-  position: absolute;
-  top: 8px;
-  left: 3px;
-  display: "inline-block";
+  padding: 6px;
+  margin-top: 24px;
+  align-items: end;
 }

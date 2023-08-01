@@ -59,16 +59,20 @@ const DisplayAttributeInputs = ({
   };
 
   return (
-    <div>
-      <div style={{ display: "inline-block" }}>{displayAttributeInput()}</div>
-      {attributeType ? (
-        <IconButton className="add-value-icon" onClick={plusClick}>
-          <AddCircleOutlineIcon sx={{ color: "#0073c8" }} />
-        </IconButton>
-      ) : (
-        ""
-      )}
-    </div>
+    <>
+      <div className="attributes-display-container">
+        <div className="attribute-model"> {displayAttributeInput()}</div>
+        <div className="add-value-icon">
+          {attributeType ? (
+            <IconButton onClick={plusClick}>
+              <AddCircleOutlineIcon sx={{ color: "#0073c8" }} />
+            </IconButton>
+          ) : (
+            ""
+          )}
+        </div>
+      </div>
+    </>
   );
 };
 
