@@ -7,6 +7,10 @@ import {
   SKIP_ATTRIBUTES,
 } from "../../../../../../../../util/QdmAttributeHelpers";
 import { useFormik } from "formik";
+import DisplayAttributeInputs from "./DisplayAttributeInputs";
+import DateTimeInterval from "../../../../../../../common/dateTimeInterval/DateTimeInterval";
+import { DateField } from "@madie/madie-design-system/dist/react";
+import { Button } from "@mui/material";
 import AttributeChipList from "../AttributeChipList";
 
 interface Chip {
@@ -16,7 +20,7 @@ interface Chip {
 }
 interface AttributeSectionProps {
   selectedDataElement: DataElement;
-  onAddClicked?: (attribute, type) => void;
+  onAddClicked?: (attribute, type, attributeValue) => void;
   attributeChipList: Array<Chip>;
 }
 
@@ -35,14 +39,15 @@ const AttributeSection = ({
     initialValues: {
       attribute: null,
       type: "",
+      attributeValue: "",
     },
     onSubmit: (values) => {
-      onAddClicked(values.attribute, values.type);
+      onAddClicked(values.attribute, values.type, values.attributeValue);
     },
   });
 
   useEffect(() => {
-    if (selectedDataElement) {
+    if (selectedDataElement && selectedDataElement.schema) {
       const nextAttributes = [];
       selectedDataElement.schema.eachPath((path, info) => {
         if (!SKIP_ATTRIBUTES.includes(path)) {
@@ -78,6 +83,9 @@ const AttributeSection = ({
       formik.setFieldValue("type", null);
     }
   };
+  const onInputAdd = (e) => {
+    onAddClicked(formik.values.attribute.displayName, formik.values.type, e);
+  };
   return (
     <form id="add-attribute-form" onSubmit={formik.handleSubmit}>
       <AttributeSelector
@@ -98,6 +106,10 @@ const AttributeSection = ({
         }}
       />
       <AttributeChipList items={mappedAttributeList} />
+      <DisplayAttributeInputs
+        attributeType={formik.values.type}
+        onInputAdd={onInputAdd}
+      />
     </form>
   );
 };
