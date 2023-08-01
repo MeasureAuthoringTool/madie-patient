@@ -25,9 +25,16 @@ describe("QuantityInput Component", () => {
     unit: "",
   };
 
+  const onQuantityChange = jest.fn();
+
   test("Should render quantity component", () => {
     render(
-      <QuantityInput canEdit={true} quantity={testQuantity} label="low" />
+      <QuantityInput
+        canEdit={true}
+        quantity={testQuantity}
+        label="low"
+        onQuantityChange={onQuantityChange}
+      />
     );
 
     const quantityValue = screen.getByTestId("quantity-value-field-low");
@@ -70,7 +77,12 @@ describe("QuantityInput Component", () => {
   test.skip("Should render quantity unit field with selected option", async () => {
     const handleChange = jest.fn();
     render(
-      <QuantityInput canEdit={true} quantity={testQuantity} label="high" />
+      <QuantityInput
+        canEdit={true}
+        quantity={testQuantity}
+        label="high"
+        onQuantityChange={onQuantityChange}
+      />
     );
     await act(async () => {
       const quantityAutoComplete = await screen.findByTestId(
@@ -95,7 +107,7 @@ describe("QuantityInput Component", () => {
     );
     const autocomplete = screen.getByTestId("quantity-unit-dropdown-test");
     const input = within(autocomplete).getByRole(
-      "combobox"
+      `combobox`
     ) as HTMLInputElement;
     autocomplete.click();
     autocomplete.focus();
@@ -109,7 +121,12 @@ describe("QuantityInput Component", () => {
 
   test("test change unit to empty string", async () => {
     render(
-      <QuantityInput canEdit={true} quantity={testQuantity} label="test" />
+      <QuantityInput
+        canEdit={true}
+        quantity={testQuantity}
+        label="test"
+        onQuantityChange={onQuantityChange}
+      />
     );
     const autocomplete = screen.getByTestId("quantity-unit-dropdown-test");
     const input = within(autocomplete).getByRole(
@@ -126,7 +143,12 @@ describe("QuantityInput Component", () => {
 
   test("should render No Options when input is invalid", async () => {
     render(
-      <QuantityInput canEdit={true} quantity={testQuantity} label="test" />
+      <QuantityInput
+        canEdit={true}
+        quantity={testQuantity}
+        label="test"
+        onQuantityChange={onQuantityChange}
+      />
     );
     const autocomplete = screen.getByTestId("quantity-unit-dropdown-test");
     const input = within(autocomplete).getByRole("combobox");

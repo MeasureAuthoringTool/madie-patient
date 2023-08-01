@@ -49,18 +49,18 @@ describe("QuantityIntervalInput Component", () => {
 
     expect(screen.getByTestId("quantity-value-field-low")).toBeInTheDocument();
     const inputLow = screen.getByTestId(
-      "quantity-value-input-low"
+      `quantity-value-input-low`
     ) as HTMLInputElement;
     expect(inputLow.value).toBe("1");
     const autocomplete1 = screen.getByTestId("quantity-unit-dropdown-low");
     const unitInputLow = within(autocomplete1).getByRole(
-      "combobox"
+      `combobox`
     ) as HTMLInputElement;
     expect(unitInputLow.value).not.toBeNull();
 
     expect(screen.getByTestId("quantity-value-field-high")).toBeInTheDocument();
     const inputHigh = screen.getByTestId(
-      "quantity-value-input-high"
+      `quantity-value-input-high`
     ) as HTMLInputElement;
     expect(inputHigh.value).toBe("100");
     const autocomplete2 = screen.getByTestId("quantity-unit-dropdown-high");
