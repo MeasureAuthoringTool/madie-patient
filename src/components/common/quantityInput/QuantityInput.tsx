@@ -133,7 +133,7 @@ const QuantityInput = ({
           onChange={(event, newValue) => {
             if (newValue) {
               const find = ucumOptions.find(
-                (option) => option.code + " " + option.name === newValue
+                (option) => option.code + ` ` + option.name === newValue
               );
               const transformedResult = {
                 label: newValue,

@@ -53,7 +53,7 @@ describe("RatioInput Component", () => {
     const valuefieldDiv = screen.getAllByTestId("quantity-value-input-Ratio");
     expect(valuefieldDiv.length).toBe(2);
     const valueInput = screen.getAllByTestId(
-      "quantity-value-input-Ratio"
+      `quantity-value-input-Ratio`
     ) as HTMLInputElement[];
     expect(valueInput[0].value).toBe("1");
     expect(valueInput[1].value).toBe("100");
@@ -65,7 +65,7 @@ describe("RatioInput Component", () => {
     ) as HTMLInputElement;
     expect(unitInputLow.value).not.toBeNull();
     const unitInputHigh = within(autocomplete[1]).getByRole(
-      "combobox"
+      `combobox`
     ) as HTMLInputElement;
     expect(unitInputHigh.value).not.toBeNull();
   });
