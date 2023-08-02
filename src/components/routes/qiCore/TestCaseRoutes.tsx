@@ -119,7 +119,7 @@ const TestCaseRoutes = () => {
           testDataId="execution_context_loading_errors"
         />
       )}
-      {importWarnings.length > 0 && (
+      {importWarnings && importWarnings.length > 0 && (
         <StatusHandler importWarnings={importWarnings} />
       )}
       <Routes>

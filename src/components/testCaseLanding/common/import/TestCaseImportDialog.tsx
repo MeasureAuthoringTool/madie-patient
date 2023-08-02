@@ -43,6 +43,8 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
     setToastMessage(message);
   };
 
+
+  // Todo if folder has 2 files, do not proceed
   const onDrop = useCallback(async (importedZip) => {
     removeUploadedFile();
     setUploadingFileSpinner(true);

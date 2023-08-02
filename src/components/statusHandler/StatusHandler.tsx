@@ -58,10 +58,11 @@ const StatusHandler = ({
       }
     }
     // todo Rohit list is not bulleted
-    if (importWarnings.length > 0) {
+    if (importWarnings && importWarnings.length > 0) {
       const failedImports = importWarnings.filter((warnings) => {
         if (!warnings.successful) return warnings;
       });
+      const successfulImports = importWarnings.length - failedImports.length;
       return (
         <div id="status-handler">
           <MadieAlert
@@ -69,15 +70,14 @@ const StatusHandler = ({
             content={
               <div aria-live="polite" role="alert" data-testid={testDataId}>
                 <p>
-                  ({importWarnings.length}) test cases were imported. The
-                  following ({failedImports.length}) test case(s) could not be
-                  imported. Please ensure that your formatting is correct and
-                  try again.
+                  ({successfulImports}) test cases were imported. The following
+                  ({failedImports.length}) test case(s) could not be imported.
+                  Please ensure that your formatting is correct and try again.
                 </p>
                 <ul tw="list-disc">
                   {failedImports.map((failedImport) => {
                     return (
-                      <li data-testid="generic-fail-text-list">
+                      <li data-testid="failed-test-cases">
                         {failedImport.patientId} <br />
                         Reason : {failedImport.message}
                       </li>
