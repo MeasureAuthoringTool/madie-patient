@@ -20,7 +20,12 @@ function getDataElementClass(dataElement) {
   return cqmModels[model];
 }
 
-const applyAttribute = (attribute, type, attributeValue, dataElement) => {
+export const applyAttribute = (
+  attribute,
+  type,
+  attributeValue,
+  dataElement
+) => {
   const modelClass = getDataElementClass(dataElement);
   const updatedDataElement = new modelClass(dataElement);
   updatedDataElement[_.camelCase(attribute)] = attributeValue;
