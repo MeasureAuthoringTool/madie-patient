@@ -18,7 +18,7 @@ const IntegerInput = ({
 }: IntegerProps) => {
   return (
     <div tw="flex flex-row">
-      <div tw="w-28">
+      <div tw="w-32">
         <TextField
           value={intValue}
           disabled={!canEdit}
