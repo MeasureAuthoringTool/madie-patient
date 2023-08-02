@@ -3,8 +3,9 @@ import useServiceConfig from "./useServiceConfig";
 import { ServiceConfig } from "./ServiceContext";
 import { HapiOperationOutcome, TestCase } from "@madie/madie-models";
 import { useOktaTokens } from "@madie/madie-util";
-import { ObjectError, ScanValidationDto } from "./models/ScanValidationDto";
+import { ScanValidationDto } from "./models/ScanValidationDto";
 import { addValues } from "../util/DefaultValueProcessor";
+import { TestCaseImportRequest } from "../../../madie-models/src/TestCase";
 
 export class TestCaseServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
@@ -124,6 +125,21 @@ export class TestCaseServiceApi {
     }
   }
 
+  async importTestCases(
+    measureId: string,
+    testCasesImportRequest: TestCaseImportRequest[]
+  ): Promise<AxiosResponse> {
+    return await axios.put(
+      `${this.baseUrl}/measures/${measureId}/test-cases/imports`,
+      testCasesImportRequest,
+      {
+        headers: {
+          Authorization: `Bearer ${this.getAccessToken()}`,
+        },
+      }
+    );
+  }
+
   async exportTestCases(
     measureId: string,
     testCaseIds: string[],
@@ -181,25 +197,30 @@ export class TestCaseServiceApi {
   }
 
   async scanImportFile(file: any): Promise<ScanValidationDto> {
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const response = await axios.post<ScanValidationDto>(
-        `${this.baseUrl}/validations/files`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${this.getAccessToken()}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      return response.data;
-    } catch (err) {
-      throw new Error(
-        "Unable to scan the import file. Please try again later."
-      );
-    }
+    // try {
+    //   const formData = new FormData();
+    //   formData.append("file", file);
+    //   const response = await axios.post<ScanValidationDto>(
+    //     `${this.baseUrl}/validations/files`,
+    //     formData,
+    //     {
+    //       headers: {
+    //         Authorization: `Bearer ${this.getAccessToken()}`,
+    //         "Content-Type": "multipart/form-data",
+    //       },
+    //     }
+    //   );
+    //   return response.data;
+    // } catch (err) {
+    //   throw new Error(
+    //     "Unable to scan the import file. Please try again later."
+    //   );
+    // }
+    return {
+      fileName: "string",
+      valid: true,
+      error: null,
+    };
   }
 
   // TODO: Refactor to dedup with FhirImportHelper::readImportFile

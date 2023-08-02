@@ -1,6 +1,7 @@
 import { PopulationType, TestCase } from "@madie/madie-models";
 
 export const nonBoolTestCaseFixture: TestCase = {
+  patientId: "",
   id: "631f98927e7cb7651b971d1d",
   name: null,
   executionStatus: undefined,
@@ -54,5 +55,5 @@ export const nonBoolTestCaseFixture: TestCase = {
       ],
       stratificationValues: undefined,
     },
-  ],
+  ]
 };

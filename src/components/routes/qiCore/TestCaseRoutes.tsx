@@ -11,6 +11,7 @@ import useMeasureServiceApi from "../../../api/useMeasureServiceApi";
 import * as _ from "lodash";
 import StatusHandler from "../../statusHandler/StatusHandler";
 import { Measure, MeasureErrorType } from "@madie/madie-models";
+import { TestCaseImportOutcome } from "../../../../../madie-models/src/TestCase";
 
 export const CQL_RETURN_TYPES_MISMATCH_ERROR =
   "One or more Population Criteria has a mismatch with CQL return types. Test Cases cannot be executed until this is resolved.";
@@ -19,6 +20,9 @@ const TestCaseRoutes = () => {
   const [measureBundle, setMeasureBundle] = useState<Bundle>();
   const [valueSets, setValueSets] = useState<ValueSet[]>();
   const [errors, setErrors] = useState<Array<string>>([]);
+  const [importWarnings, setImportWarnings] = useState<TestCaseImportOutcome[]>(
+    []
+  );
   const [executionContextReady, setExecutionContextReady] = useState<boolean>();
   const [executing, setExecuting] = useState<boolean>();
   const [lastMeasure, setLastMeasure] = useState<any>();
@@ -115,11 +119,20 @@ const TestCaseRoutes = () => {
           testDataId="execution_context_loading_errors"
         />
       )}
+      {importWarnings.length > 0 && (
+        <StatusHandler importWarnings={importWarnings} />
+      )}
       <Routes>
         <Route path="/measures/:measureId/edit/test-cases">
           <Route
             index
-            element={<TestCaseLanding errors={errors} setErrors={setErrors} />}
+            element={
+              <TestCaseLanding
+                errors={errors}
+                setErrors={setErrors}
+                setWarnings={setImportWarnings}
+              />
+            }
           />
           <Route
             path=":id"

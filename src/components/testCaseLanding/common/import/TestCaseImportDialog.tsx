@@ -16,13 +16,16 @@ import JSZip from "jszip";
 import prettyBytes from "pretty-bytes";
 import CloseIcon from "@mui/icons-material/Close";
 import { CircularProgress } from "@mui/material";
-import { IMPORT_ERROR } from "../../qiCore/TestCaseList";
+import { TestCaseImportRequest } from "../../../../../../madie-models/src/TestCase";
+import validator from "validator";
 
 const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
   const [uploadedFile, setUploadedFile] = useState(null);
   const [uploadingFileSpinner, setUploadingFileSpinner] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
-  const [testCaseBundles, setTestCaseBundles] = useState([]);
+  const [testCaseImportRequest, setTestCaseImportRequest] = useState<
+    TestCaseImportRequest[]
+  >([]);
   const testCaseService = useRef(useTestCaseServiceApi());
 
   // Toast utilities
@@ -43,52 +46,66 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
   const onDrop = useCallback(async (importedZip) => {
     removeUploadedFile();
     setUploadingFileSpinner(true);
-    const zip = new JSZip();
-    let isValidImport = true;
-    zip.loadAsync(importedZip[0]).then((content) => {
-      Object.keys(content.files).forEach((filename) => {
-        try {
-          zip
-            .file(filename)
-            .async("string")
-            .then(async (fileContent) => {
-              let response: ScanValidationDto;
-              try {
-                response = await testCaseService.current.scanImportFile(
-                  fileContent
-                );
-              } catch (error) {
-                isValidImport = false;
-                setUploadingFileSpinner(false);
-                showErrorToast(
-                  "An error occurred while uploading the file. Please try again or reach out to the helpdesk"
-                );
-                return;
+    let response: ScanValidationDto;
+    try {
+      response = await testCaseService.current.scanImportFile(importedZip);
+    } catch (error) {
+      setUploadingFileSpinner(false);
+      showErrorToast(
+        "An error occurred while uploading the file. Please try again or reach out to the helpdesk"
+      );
+      return;
+    }
+    if (!response.valid) {
+      setUploadingFileSpinner(false);
+      showErrorToast(response.error.defaultMessage);
+    } else {
+      const zip = new JSZip();
+      const filesMap = [...testCaseImportRequest];
+
+      // fileNames are filtered out based on Zip file name followed with a valid UUID followed by json file
+      let fileNames = [];
+      zip
+        .loadAsync(importedZip[0])
+        .then((content) => {
+          fileNames = _.filter(
+            _.keys(content.files).map((v) => {
+              const oFileName = importedZip[0].name
+                .replace(".zip", "")
+                .split(" ")[0];
+
+              if (v.startsWith(oFileName)) {
+                const foldernameSplit = v.split("/");
+                if (
+                  validator.isUUID(foldernameSplit[1]) &&
+                  v.endsWith(".json")
+                ) {
+                  return v;
+                }
               }
-              if (!response.valid) {
-                isValidImport = false;
-                setUploadingFileSpinner(false);
-                showErrorToast(response.error.defaultMessage);
-              } else {
-                setTestCaseBundles((prevState) => [
-                  ...prevState,
-                  JSON.parse(fileContent),
-                ]);
-              }
-            });
-        } catch (error) {
-          isValidImport = false;
-          setUploadingFileSpinner(false);
-          showErrorToast(
-            "An error occurred while uploading the file. Please try again or reach out to the helpdesk"
+            }),
+            (v) => !!v
           );
-        }
-        if (isValidImport) {
+          return Promise.all(
+            fileNames.map((filename) => zip.file(filename).async("string"))
+          );
+        })
+        .then((values) => {
+          _.forEach(values, (val, i) => {
+            const fileName = _.split(fileNames[i], "/")[1];
+            filesMap.push({
+              patientId: fileName,
+              json: val,
+            });
+          });
+          setTestCaseImportRequest(filesMap);
           setUploadingFileSpinner(false);
           setUploadedFile(importedZip[0]);
-        }
-      });
-    });
+        })
+        .catch(() => {
+          setErrorMessage("Error uploading zip file");
+        });
+    }
   }, []);
 
   const { getRootProps, getInputProps, open } = useDropzone({
@@ -113,7 +130,11 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
             <small tw="block">{uploadedFile.name}</small>
             <small tw="block">
               {prettyBytes(uploadedFile.size)} -{" "}
-              <span tw="text-green-550">Complete</span>
+              {errorMessage ? (
+                <span tw="text-green-550">Failed</span>
+              ) : (
+                <span tw="text-green-550">Complete</span>
+              )}
             </small>
           </div>
           <div tw="absolute right-28 border-l-2">
@@ -127,14 +148,14 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
   const removeUploadedFile = () => {
     setUploadedFile(null);
     setErrorMessage(null);
-    setTestCaseBundles([]);
+    setTestCaseImportRequest([]);
   };
 
   const onClose = () => {
     setUploadingFileSpinner(false);
     setUploadedFile(null);
     setErrorMessage(null);
-    setTestCaseBundles([]);
+    setTestCaseImportRequest([]);
     handleClose();
   };
 
@@ -144,7 +165,6 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
       dialogProps={{
         onClose,
         open: dialogOpen,
-        onSubmit: onImport(testCaseBundles),
         maxWidth: "md",
         fullWidth: true,
       }}
@@ -157,8 +177,9 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
         variant: "cyan",
         type: "submit",
         "data-testid": "test-case-import-import-btn",
-        disabled: _.isNil(uploadedFile),
+        disabled: _.isNil(uploadedFile) || !_.isEmpty(errorMessage),
         continueText: "Import",
+        onClick: () => onImport(testCaseImportRequest),
       }}
     >
       <small>

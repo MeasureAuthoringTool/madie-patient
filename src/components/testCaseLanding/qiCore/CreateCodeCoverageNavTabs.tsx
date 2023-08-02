@@ -112,11 +112,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
       <div tw="flex flex-wrap space-x-4 justify-end h-10">
         <Button
           variant="outline"
-          onClick={() => {
-            if (onImportTestCases) {
-              onImportTestCases();
-            }
-          }}
+          onClick={onImportTestCases}
           disabled={!canEdit}
           data-testid="import-test-cases-button"
         >

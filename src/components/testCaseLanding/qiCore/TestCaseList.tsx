@@ -27,7 +27,10 @@ import UseTestCases from "../common/Hooks/UseTestCases";
 import UseToast from "../common/Hooks/UseToast";
 import getModelFamily from "../../../util/measureModelHelpers";
 import FileSaver from "file-saver";
-import moment from "moment";
+import {
+  TestCaseImportRequest,
+  TestCaseImportOutcome,
+} from "../../../../../madie-models/src/TestCase";
 import TestCaseImportDialog from "../common/import/TestCaseImportDialog";
 
 export const IMPORT_ERROR =
@@ -60,7 +63,7 @@ export const getCoverageValueFromHtml = (
 };
 
 const TestCaseList = (props: TestCaseListProps) => {
-  const { setErrors } = props;
+  const { setErrors, setWarnings } = props;
   const { measureId } = useParams<{ measureId: string }>();
   const {
     testCases,
@@ -112,9 +115,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     useState<any>({
       open: false,
     });
-  const [importDialogState, setImportDialogState] = useState<any>({
-    open: false,
-  });
+  const [openImportDialog, setOpenImportDialog] = useState<boolean>(false);
   const abortController = useRef(null);
   const [createOpen, setCreateOpen] = useState<boolean>(false);
 
@@ -388,9 +389,45 @@ const TestCaseList = (props: TestCaseListProps) => {
     }
   };
 
-  const onTestCaseImport = async (testCaseBundles: any) => {
-    // Todo in https://jira.cms.gov/browse/MAT-5925
+  const onTestCaseImport = async (
+    testCaseImportRequest: TestCaseImportRequest[]
+  ) => {
+    setOpenImportDialog(false);
+    setLoadingState(() => ({
+      loading: true,
+      message: "Importing Test Cases...",
+    }));
+
+    try {
+      if (_.isEmpty(testCaseImportRequest)) {
+        setToastOpen(true);
+        setToastType("error");
+        setToastMessage("Cannot import an empty zip file");
+      } else {
+        const response = await testCaseService.current.importTestCases(
+          measureId,
+          testCaseImportRequest
+        );
+        const testCaseImportOutcome: TestCaseImportOutcome[] = response.data;
+        const failedToImport = testCaseImportOutcome.find(
+          (outcome) => outcome.successful === false
+        );
+        if (failedToImport) {
+          setWarnings(testCaseImportOutcome);
+        } else {
+          setToastOpen(true);
+          setToastType("success");
+          setToastMessage("Test cases exported successfully");
+        }
+        retrieveTestCases();
+      }
+    } catch (error) {
+      setErrors((prevState) => [...prevState, IMPORT_ERROR]);
+    } finally {
+      setLoadingState({ loading: false, message: "" });
+    }
   };
+
 
   return (
     <div
@@ -445,10 +482,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                   setErrors((prevState) => [
                     ...prevState?.filter((e) => e !== IMPORT_ERROR),
                   ]);
-                  setImportDialogState({
-                    ...importDialogState,
-                    open: true,
-                  });
+                  setOpenImportDialog(true);
                 }}
                 testCasePassFailStats={testCasePassFailStats}
                 coveragePercentage={coveragePercentage}
@@ -515,16 +549,11 @@ const TestCaseList = (props: TestCaseListProps) => {
           <Typography color="inherit">{loadingState.message}</Typography>
         </div>
       )}
-      {importDialogState.open && (
+      {openImportDialog && (
         <TestCaseImportDialog
-          dialogOpen={importDialogState.open}
+          dialogOpen={openImportDialog}
           onImport={onTestCaseImport}
-          handleClose={() =>
-            setImportDialogState({
-              ...importDialogState,
-              open: false,
-            })
-          }
+          handleClose={() => setOpenImportDialog(false)}
         />
       )}
       <TestCaseImportFromBonnieDialog
