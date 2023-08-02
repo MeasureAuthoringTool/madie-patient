@@ -8,6 +8,7 @@ import { SettingsApplicationsRounded } from "@mui/icons-material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import dayjs from "dayjs";
 import "./DisplayAttributeInputs.scss";
+import RatioInput from "../../../../../../../common/ratioInput/RatioInput";
 
 interface DisplayAttributeInputsProps {
   attributeType?: string;
@@ -20,6 +21,10 @@ const DisplayAttributeInputs = ({
   onInputAdd,
 }: DisplayAttributeInputsProps) => {
   const [attributeValue, setAttributeValue] = useState();
+  const [currentRatio, setCurrentRatio] = useState<CQL.Ratio>({
+    numerator: {},
+    denominator: {},
+  });
 
   const plusClick = (e) => {
     e.preventDefault();
@@ -43,6 +48,19 @@ const DisplayAttributeInputs = ({
               );
               setAttributeValue(newCQLDate);
             }}
+          />
+        );
+      case "Ratio":
+        return (
+          <RatioInput
+            label="Ratio"
+            ratio={currentRatio}
+            data-testid="ratio-input"
+            onRatioChange={(newCQLRatio) => {
+              setCurrentRatio(newCQLRatio);
+              setAttributeValue(newCQLRatio);
+            }}
+            canEdit={true}
           />
         );
       default:

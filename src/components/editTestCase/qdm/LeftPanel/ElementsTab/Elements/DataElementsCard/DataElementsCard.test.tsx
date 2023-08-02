@@ -2,7 +2,7 @@ import React from "react";
 import { Measure } from "@madie/madie-models";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, test } from "@jest/globals";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import DataElementsCard from "../DataElementsCard/DataElementsCard";
 import {
@@ -11,6 +11,7 @@ import {
 } from "../../../../../../../api/ServiceContext";
 import { QdmExecutionContextProvider } from "../../../../../../routes/qdm/QdmExecutionContext";
 import { FormikProvider, FormikContextType } from "formik";
+import userEvent from "@testing-library/user-event";
 
 const serviceConfig: ServiceConfig = {
   testCaseService: {
@@ -899,6 +900,43 @@ describe("DataElementsCard", () => {
       expect(
         screen.queryByText("Admission Source: SNOMEDCT : 10725009")
       ).not.toBeInTheDocument();
+    });
+  });
+
+  test("DataElementsCard renders attributes", async () => {
+    await waitFor(() =>
+      renderDataElementsCard(
+        "attributes",
+        jest.fn,
+        testDataElements[7],
+        jest.fn
+      )
+    );
+    const dataElementCard = screen.getByTestId("data-element-card");
+    expect(dataElementCard).toBeInTheDocument();
+    const attributeSelect = screen.getByTestId("attribute-select");
+    const attributeSelectDropdown = within(attributeSelect).getByRole(
+      "button"
+    ) as HTMLInputElement;
+    userEvent.click(attributeSelectDropdown);
+    //attribute option list show
+    expect(screen.getByTestId("option-Reason")).toBeInTheDocument();
+    expect(screen.getByTestId("option-Method")).toBeInTheDocument();
+    const resultOption = screen.getByTestId("option-Result");
+    expect(resultOption).toBeInTheDocument();
+    expect(screen.getByTestId("option-Interpretation")).toBeInTheDocument();
+    expect(screen.getByTestId("option-Components")).toBeInTheDocument();
+    expect(screen.getByTestId("option-Related To")).toBeInTheDocument();
+    expect(screen.getByTestId("option-Performer")).toBeInTheDocument();
+
+    userEvent.click(attributeSelectDropdown);
+    const closeBtn = screen.getByTestId("close-element-card");
+    expect(closeBtn).toBeInTheDocument();
+    userEvent.click(closeBtn);
+    await waitFor(() => {
+      setTimeout(() => {
+        expect(dataElementCard).not.toBeInTheDocument();
+      }, 500);
     });
   });
 });
