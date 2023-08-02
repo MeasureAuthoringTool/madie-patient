@@ -20,7 +20,7 @@ const DisplayAttributeInputs = ({
 }: DisplayAttributeInputsProps) => {
   const [attributeValue, setAttributeValue] = useState(null);
 
-  const plusClick = (e) => {
+  const handleAttributeChange = (e) => {
     e.preventDefault();
     onInputAdd(attributeValue);
   };
@@ -64,7 +64,7 @@ const DisplayAttributeInputs = ({
         <div className="attribute-model"> {displayAttributeInput()}</div>
         <div className="add-value-icon">
           {attributeType ? (
-            <IconButton onClick={plusClick}>
+            <IconButton onClick={handleAttributeChange}>
               <AddCircleOutlineIcon sx={{ color: "#0073c8" }} />
             </IconButton>
           ) : (
