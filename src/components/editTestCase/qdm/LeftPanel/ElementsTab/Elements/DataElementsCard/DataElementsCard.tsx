@@ -13,6 +13,7 @@ import "./DataElementsCard.scss";
 import AttributeSection from "./attributes/AttributeSection";
 import { useQdmExecutionContext } from "../../../../../../routes/qdm/QdmExecutionContext";
 import * as _ from "lodash";
+import { useFormikContext } from "formik";
 
 function getDataElementClass(dataElement) {
   const qdmType = dataElement?._type; // match against for attributes
@@ -54,6 +55,16 @@ const DataElementsCard = (props: {
   const [codesChips, setCodesChips] = useState([]);
   const [localSelectedDataElement, setLocalSelectedDataElement] =
     useState(selectedDataElement);
+  const [dataElements, setDataElements] = useState(null);
+  const formik: any = useFormikContext();
+  // data elements are required for relatedTo.
+  useEffect(() => {
+    let patient = null;
+    if (formik.values?.json) {
+      patient = JSON.parse(formik.values.json);
+      setDataElements(patient.dataElements);
+    }
+  }, [formik.values.json]);
 
   useEffect(() => {
     const valueSets = cqmMeasureState?.[0]?.value_sets;
@@ -61,14 +72,13 @@ const DataElementsCard = (props: {
       const codeSystemMap = {};
       valueSets.forEach((valueSet) => {
         valueSet.concepts.forEach((concept) => {
-          codeSystemMap[concept.code_system_oid] = {
-            code_system_name: concept.code_system_name,
-          };
+          codeSystemMap[concept.code_system_oid] = concept.code_system_name;
         });
       });
       setCodeSystemMap(codeSystemMap);
     }
   }, [cqmMeasureState]);
+
   const negationRationale =
     selectedDataElement?.hasOwnProperty("negationRationale");
   // https://ecqi.healthit.gov/mcw/2020/qdm-attribute/negationrationale.html  (list of all categories that use negation rationale)
@@ -78,24 +88,25 @@ const DataElementsCard = (props: {
   }, [selectedDataElement]);
 
   useEffect(() => {
-    if (localSelectedDataElement && codeSystemMap) {
-      const displayAttributes = [];
-      const codesChips = [];
-
+    if (selectedDataElement && codeSystemMap && dataElements) {
       const dataElementClass = getDataElementClass(localSelectedDataElement);
       const modeledEl = new dataElementClass(localSelectedDataElement);
-
+      const displayAttributes = [];
+      const codesChips = [];
+      setLocalSelectedDataElement(modeledEl);
       modeledEl.schema.eachPath((path, info) => {
         if (!SKIP_ATTRIBUTES.includes(path) && modeledEl[path]) {
           if (info.instance === "Array") {
+            // 4 instances
             modeledEl[path].forEach((elem, index) => {
+              // works
               if (path == "relatedTo") {
                 let id = elem;
-                const display = getDisplayFromId(modeledEl, id);
+                const display = getDisplayFromId(dataElements, id);
                 let value = `${stringifyValue(
                   display?.description,
                   true
-                )} ${stringifyValue(display?.timing, true)}}`;
+                )} ${stringifyValue(display?.timing, true, codeSystemMap)}}`;
                 displayAttributes.push({
                   name: path,
                   title: _.startCase(path),
@@ -107,8 +118,8 @@ const DataElementsCard = (props: {
                 displayAttributes.push({
                   name: path,
                   title: _.startCase(path),
-                  // this is wrong.
-                  value: stringifyValue(modeledEl[path], true),
+                  // this is wrong
+                  value: stringifyValue(modeledEl[path], true, codeSystemMap),
                   isArrayValue: true,
                   index: index,
                 });
@@ -116,7 +127,7 @@ const DataElementsCard = (props: {
             });
           } else if (path === "relatedTo") {
             const id = modeledEl[path];
-            const display = getDisplayFromId(modeledEl, id);
+            const display = getDisplayFromId(dataElements, id);
             const value = `${stringifyValue(
               display.description,
               true
@@ -127,18 +138,16 @@ const DataElementsCard = (props: {
               value: value,
             });
           } else if (modeledEl[path] instanceof cqmModels.CQL.Code) {
-            const value = modeledEl[path];
-            value.title = codeSystemMap[value.system].code_system_name;
             codesChips.push({
               name: path,
               title: _.startCase(path),
-              value: stringifyValue(modeledEl[path], true),
+              value: stringifyValue(modeledEl[path], true, codeSystemMap),
             });
           } else {
             displayAttributes.push({
               name: path,
               title: _.startCase(path),
-              value: stringifyValue(modeledEl[path], true),
+              value: stringifyValue(modeledEl[path], true, codeSystemMap),
             });
           }
         }
@@ -146,7 +155,7 @@ const DataElementsCard = (props: {
       setDisplayAttributes(displayAttributes);
       setCodesChips(codesChips);
     }
-  }, [localSelectedDataElement, !!codeSystemMap]);
+  }, [!!selectedDataElement, !!codeSystemMap, !!dataElements]);
   // centralize state one level up so we can conditionally render our child component
   return (
     <div className="data-elements-card" data-testid="data-element-card">
@@ -158,12 +167,14 @@ const DataElementsCard = (props: {
               : localSelectedDataElement.qdmTitle}
             :&nbsp;
           </div>
-          <div className="sub-text">
-            {localSelectedDataElement.description.substring(
-              localSelectedDataElement.description.indexOf(":") + 2,
-              localSelectedDataElement.description.length
-            )}
-          </div>
+          {selectedDataElement.description && (
+            <div className="sub-text">
+              {selectedDataElement.description.substring(
+                selectedDataElement.description.indexOf(":") + 2,
+                selectedDataElement.description.length
+              )}
+            </div>
+          )}
         </div>
         <IconButton
           className="close-icon-button"
