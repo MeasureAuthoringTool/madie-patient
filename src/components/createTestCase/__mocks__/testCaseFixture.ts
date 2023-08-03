@@ -1,6 +1,7 @@
 import { MeasureScoring, PopulationType, TestCase } from "@madie/madie-models";
 
 export const testCaseFixture: TestCase = {
+  patientId: "",
   id: "623cacffe74613783378c17c",
   executionStatus: "false",
   name: "Initial Population",

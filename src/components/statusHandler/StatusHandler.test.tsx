@@ -1,7 +1,7 @@
 import * as React from "react";
-import { describe, expect, test } from "@jest/globals";
 import { render, screen } from "@testing-library/react";
 import StatusHandler from "./StatusHandler";
+import { TestCaseImportOutcome } from "../../../../madie-models/src/TestCase";
 
 describe("StatusHandler Component", () => {
   const { getByTestId, queryByTestId, getByText } = screen;
@@ -52,5 +52,28 @@ describe("StatusHandler Component", () => {
     expect(getByTestId("generic-fail-text-list")).toBeInTheDocument();
     expect(getByText("test error 1")).toBeInTheDocument();
     expect(getByText("test error 2")).toBeInTheDocument();
+  });
+
+  it("Should display import warning alert", () => {
+    const importWarnings: TestCaseImportOutcome[] = [
+      {
+        patientId: "test.patientId",
+        message: "Error while processing Test Case Json.",
+        successful: false,
+      },
+      {
+        patientId: "test.patientId2",
+        message: "Patient Id is not found",
+        successful: false,
+      },
+    ];
+    render(<StatusHandler importWarnings={importWarnings} />);
+    expect(screen.getAllByTestId("failed-test-cases")).toHaveLength(2);
+  });
+
+  it("Should not display import warning alert", () => {
+    const importWarnings: TestCaseImportOutcome[] = [];
+    render(<StatusHandler importWarnings={importWarnings} />);
+    expect(screen.queryByTestId("failed-test-cases")).toBeNull();
   });
 });

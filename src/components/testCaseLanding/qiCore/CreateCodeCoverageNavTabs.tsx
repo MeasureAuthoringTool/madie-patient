@@ -8,6 +8,8 @@ import { Measure, MeasureErrorType, TestCase } from "@madie/madie-models";
 import useExecutionContext from "../../routes/qiCore/useExecutionContext";
 import { TestCasesPassingDetailsProps } from "../common/interfaces";
 import { useFeatureFlags } from "@madie/madie-util";
+import "twin.macro";
+import "styled-components/macro";
 
 export interface NavTabProps {
   activeTab: string;
@@ -17,6 +19,7 @@ export interface NavTabProps {
   measure: Measure;
   createNewTestCase: (value: string) => void;
   executeTestCases: (value: string) => void;
+  onImportTestCasesFromBonnie?: () => void;
   onImportTestCases?: () => void;
   testCasePassFailStats: TestCasesPassingDetailsProps;
   coveragePercentage: number;
@@ -26,8 +29,8 @@ export interface NavTabProps {
 
 const defaultStyle = {
   padding: "0px 10px",
-  height: "90px",
-  minHeight: "90px",
+  height: "80px",
+  minHeight: "80px",
   textTransform: "none",
   marginRight: "36px",
   "&:focus": {
@@ -47,6 +50,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     createNewTestCase,
     measure,
     executeTestCases,
+    onImportTestCasesFromBonnie,
     onImportTestCases,
     testCasePassFailStats,
     coveragePercentage,
@@ -77,14 +81,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        flexGrow: 1,
-        alignItems: "center",
-      }}
-    >
+    <div tw="flex justify-between items-center">
       <Tabs
         value={activeTab}
         onChange={(e, v) => {
@@ -112,80 +109,81 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           value="coverage"
         />
       </Tabs>
-      <div style={{ margin: "6px 0 0 auto", display: "flex" }}>
+      <div tw="flex flex-wrap space-x-4 justify-end h-10">
+        <Button
+          variant="outline"
+          onClick={onImportTestCases}
+          disabled={!canEdit}
+          data-testid="import-test-cases-button"
+        >
+          <FileUploadIcon style={{ margin: "0 5px 0 -2px" }} fontSize="small" />
+          Import Test Cases
+        </Button>
         {featureFlags?.importTestCases && (
-          <div>
-            <Button
-              onClick={() => {
-                if (onImportTestCases) {
-                  onImportTestCases();
-                }
-              }}
-              disabled={!canEdit}
-              data-testid="show-import-test-cases-button"
-            >
-              <FileUploadIcon
-                style={{ margin: "0 5px 0 -2px" }}
-                fontSize="small"
-              />
-              Import Test Cases
-            </Button>
-          </div>
-        )}
-        <div style={{ margin: "0 6px 0 26px" }}>
           <Button
-            disabled={!canEdit}
-            onClick={createNewTestCase}
-            data-testid="create-new-test-case-button"
-          >
-            <AddIcon style={{ margin: "0 5px 0 -2px" }} fontSize="small" />
-            New Test Case
-          </Button>
-        </div>
-        <div style={{ margin: "0 6px 0 26px" }}>
-          <Box sx={{ position: "relative" }}>
-            <Button
-              variant="cyan"
-              disabled={
-                !!measure?.cqlErrors ||
-                measure?.errors?.includes(
-                  MeasureErrorType.MISMATCH_CQL_POPULATION_RETURN_TYPES
-                ) ||
-                _.isNil(measure?.groups) ||
-                measure?.groups.length === 0 ||
-                !executionContextReady ||
-                executing ||
-                _.isEmpty(validTestCases)
+            onClick={() => {
+              if (onImportTestCasesFromBonnie) {
+                onImportTestCasesFromBonnie();
               }
-              onClick={executeTestCases}
-              data-testid="execute-test-cases-button"
-            >
-              Run Test Cases
-            </Button>
-            {executing && (
-              <CircularProgress
-                size={24}
-                sx={{
-                  color: "#209FA6",
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  marginTop: "-5px",
-                  marginLeft: "-12px",
-                }}
-              />
-            )}
-          </Box>
-        </div>
-        <div style={{ margin: "0 6px 0 26px" }}>
-          <Button
-            disabled={false}
-            onClick={exportTestCases}
-            data-testid="export-test-cases-button"
+            }}
+            disabled={!canEdit}
+            data-testid="import-test-cases-from-bonnie-button"
           >
-            Export Test Cases
+            <FileUploadIcon
+              style={{ margin: "0 5px 0 -2px" }}
+              fontSize="small"
+            />
+            Import From Bonnie
           </Button>
-        </div>
+        )}
+        <Button
+          disabled={!canEdit}
+          onClick={createNewTestCase}
+          data-testid="create-new-test-case-button"
+        >
+          <AddIcon style={{ margin: "0 5px 0 -2px" }} fontSize="small" />
+          New Test Case
+        </Button>
+        <Box sx={{ position: "relative" }}>
+          <Button
+            variant="cyan"
+            disabled={
+              !!measure?.cqlErrors ||
+              measure?.errors?.includes(
+                MeasureErrorType.MISMATCH_CQL_POPULATION_RETURN_TYPES
+              ) ||
+              _.isNil(measure?.groups) ||
+              measure?.groups.length === 0 ||
+              !executionContextReady ||
+              executing ||
+              _.isEmpty(validTestCases)
+            }
+            onClick={executeTestCases}
+            data-testid="execute-test-cases-button"
+          >
+            Run Test Cases
+          </Button>
+          {executing && (
+            <CircularProgress
+              size={24}
+              sx={{
+                color: "#209FA6",
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                marginTop: "-5px",
+                marginLeft: "-12px",
+              }}
+            />
+          )}
+        </Box>
+        <Button
+          disabled={!canEdit}
+          onClick={exportTestCases}
+          data-testid="export-test-cases-button"
+        >
+          Export Test Cases
+        </Button>
       </div>
     </div>
   );
