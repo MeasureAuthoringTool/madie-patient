@@ -47,5 +47,5 @@ export const testCaseFixture: TestCase = {
         },
       ],
     },
-  ]
+  ],
 };

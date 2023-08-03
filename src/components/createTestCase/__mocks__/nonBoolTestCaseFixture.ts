@@ -55,5 +55,5 @@ export const nonBoolTestCaseFixture: TestCase = {
       ],
       stratificationValues: undefined,
     },
-  ]
+  ],
 };
