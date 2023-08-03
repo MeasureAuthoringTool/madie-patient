@@ -2,7 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import * as _ from "lodash";
-import { Group, TestCase, MeasureErrorType } from "@madie/madie-models";
+import {
+  Group,
+  TestCase,
+  MeasureErrorType,
+  TestCaseImportRequest,
+  TestCaseImportOutcome,
+} from "@madie/madie-models";
 import { useParams } from "react-router-dom";
 import calculationService from "../../../api/CalculationService";
 import {
@@ -27,10 +33,6 @@ import UseTestCases from "../common/Hooks/UseTestCases";
 import UseToast from "../common/Hooks/UseToast";
 import getModelFamily from "../../../util/measureModelHelpers";
 import FileSaver from "file-saver";
-import {
-  TestCaseImportRequest,
-  TestCaseImportOutcome,
-} from "../../../../../madie-models/src/TestCase";
 import TestCaseImportDialog from "../common/import/TestCaseImportDialog";
 
 export const IMPORT_ERROR =

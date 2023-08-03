@@ -10,8 +10,11 @@ import { ExecutionContextProvider } from "./ExecutionContext";
 import useMeasureServiceApi from "../../../api/useMeasureServiceApi";
 import * as _ from "lodash";
 import StatusHandler from "../../statusHandler/StatusHandler";
-import { Measure, MeasureErrorType } from "@madie/madie-models";
-import { TestCaseImportOutcome } from "../../../../../madie-models/src/TestCase";
+import {
+  Measure,
+  MeasureErrorType,
+  TestCaseImportOutcome,
+} from "@madie/madie-models";
 
 export const CQL_RETURN_TYPES_MISMATCH_ERROR =
   "One or more Population Criteria has a mismatch with CQL return types. Test Cases cannot be executed until this is resolved.";

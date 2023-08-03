@@ -1,11 +1,14 @@
 import axios, { AxiosResponse } from "axios";
 import useServiceConfig from "./useServiceConfig";
 import { ServiceConfig } from "./ServiceContext";
-import { HapiOperationOutcome, TestCase } from "@madie/madie-models";
+import {
+  HapiOperationOutcome,
+  TestCase,
+  TestCaseImportRequest,
+} from "@madie/madie-models";
 import { useOktaTokens } from "@madie/madie-util";
 import { ScanValidationDto } from "./models/ScanValidationDto";
 import { addValues } from "../util/DefaultValueProcessor";
-import { TestCaseImportRequest } from "../../../madie-models/src/TestCase";
 
 export class TestCaseServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}

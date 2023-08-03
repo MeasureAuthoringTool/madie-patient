@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction } from "react";
-import { TestCaseImportOutcome } from "../../../../../madie-models/src/TestCase";
+import { TestCaseImportOutcome } from "@madie/madie-models";
 
 export interface TestCasesPassingDetailsProps {
   passPercentage: number;
