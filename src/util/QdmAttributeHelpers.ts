@@ -149,8 +149,6 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
     const schema = value?.[0]?.schema ? value?.[0]?.schema : value.schema; // catches diagnoses, facilityLocations != Participant
     schema.eachPath((path) => {
       if (!_.without(SKIP_ATTRIBUTES, "id").includes(path)) {
-        // console.log('value root: path', path, value)
-        console.log("what were passing up: path", path, value?.[0]?.[path]);
         const valueToStringify = value?.[0]?.[path];
         attrStrings.push(
           _.startCase(path) +
