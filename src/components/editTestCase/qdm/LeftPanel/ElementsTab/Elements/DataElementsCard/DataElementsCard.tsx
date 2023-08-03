@@ -13,6 +13,7 @@ import "./DataElementsCard.scss";
 import AttributeSection from "./attributes/AttributeSection";
 import { useQdmExecutionContext } from "../../../../../../routes/qdm/QdmExecutionContext";
 import * as _ from "lodash";
+import Timing from "./timing/Timing";
 
 const applyAttribute = (attribute, type, attributeValue, dataElement) => {
   //TODO: Investigate if cloneDeep result is sufficient for execution (updating the field drops all the sets/gets from the dataElement)
@@ -165,7 +166,10 @@ const DataElementsCard = (props: {
       </div>
       {/* heading row end */}
       <div className="timing">
-        <h4>Timing</h4>
+        <Timing
+          canEdit={true}
+          selectedDataElement={localSelectedDataElement}
+        ></Timing>
       </div>
       {/* Govern our navigation for codes/att/negation */}
       <SubNavigationTabs
