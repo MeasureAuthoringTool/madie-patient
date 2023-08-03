@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { DataElement, CQL } from "cqm-models";
+import React, { useState } from "react";
+import { CQL } from "cqm-models";
 import * as _ from "lodash";
 import {
   DateField,
   DateTimeField,
 } from "@madie/madie-design-system/dist/react";
-import { Button, IconButton } from "@mui/material";
+import { IconButton } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import dayjs from "dayjs";
+import IntegerInput from "../../../../../../../common/IntegerInput/IntegerInput";
 import "./DisplayAttributeInputs.scss";
 const cql = require("cql-execution");
 
@@ -21,9 +22,9 @@ const DisplayAttributeInputs = ({
   attributeType,
   onInputAdd,
 }: DisplayAttributeInputsProps) => {
-  const [attributeValue, setAttributeValue] = useState();
+  const [attributeValue, setAttributeValue] = useState(null);
 
-  const plusClick = (e) => {
+  const handleAttributeChange = (e) => {
     e.preventDefault();
     onInputAdd(attributeValue);
   };
@@ -63,7 +64,14 @@ const DisplayAttributeInputs = ({
               );
               setAttributeValue(newCQLDateTime);
             }}
-            value={""}
+            value={null}
+      case "Integer":
+        return (
+          <IntegerInput
+            intValue={null}
+            canEdit={true}
+            handleChange={(val) => setAttributeValue(parseInt(val))}
+            label="Integer"
           />
         );
       default:
@@ -72,16 +80,20 @@ const DisplayAttributeInputs = ({
   };
 
   return (
-    <div>
-      {displayAttributeInput()}
-      {attributeType ? (
-        <IconButton className="add-value-icon" onClick={plusClick}>
-          <AddCircleOutlineIcon sx={{ color: "#0073c8" }} />
-        </IconButton>
-      ) : (
-        ""
-      )}
-    </div>
+    <>
+      <div className="attributes-display-container">
+        <div className="attribute-model"> {displayAttributeInput()}</div>
+        <div className="add-value-icon">
+          {attributeType ? (
+            <IconButton onClick={handleAttributeChange}>
+              <AddCircleOutlineIcon sx={{ color: "#0073c8" }} />
+            </IconButton>
+          ) : (
+            ""
+          )}
+        </div>
+      </div>
+    </>
   );
 };
 
