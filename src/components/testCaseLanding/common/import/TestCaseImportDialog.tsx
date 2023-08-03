@@ -43,9 +43,6 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
     setToastMessage(message);
   };
 
-  // Todo if folder has 2 files, do not proceed
-  // Todo if there is no folder, we are ignoring the json
-  // Todo After creating zip what if users change zip file name ?
   const onDrop = useCallback(async (acceptedFiles, fileRejections) => {
     removeUploadedFile();
     if (!_.isEmpty(fileRejections)) {
