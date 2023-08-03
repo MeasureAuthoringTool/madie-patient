@@ -99,7 +99,7 @@ jest.mock("@madie/madie-util", () => ({
 
 let importingTestCases = [];
 jest.mock(
-  "../common/import/TestCaseImportDialog",
+  "../common/import/TestCaseImportFromBonnieDialog",
   () =>
     ({ open, handleClose, onImport }) => {
       return open ? (
@@ -988,7 +988,7 @@ describe("TestCaseList component", () => {
     expect(screen.getByTestId("sr-div")).toBeInTheDocument();
   });
 
-  it("should hide the button for import test cases when feature is disabled", async () => {
+  it("should hide the button for import test cases from bonnie when feature is disabled", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
       importTestCases: false,
@@ -996,12 +996,12 @@ describe("TestCaseList component", () => {
 
     renderTestCaseListComponent();
     const importBtn = await screen.queryByRole("button", {
-      name: /import test cases/i,
+      name: /Import From Bonnie/i,
     });
     expect(importBtn).not.toBeInTheDocument();
   });
 
-  it("should have a disabled button for import test cases when feature is enabled but user cannot edit", async () => {
+  it("should have a disabled button for import test cases from bonnie when feature is enabled but user cannot edit", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => false);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
       importTestCases: true,
@@ -1009,7 +1009,7 @@ describe("TestCaseList component", () => {
 
     renderTestCaseListComponent();
     const importBtn = await screen.findByRole("button", {
-      name: /import test cases/i,
+      name: /Import From Bonnie/i,
     });
     expect(importBtn).toBeInTheDocument();
     expect(importBtn).toBeDisabled();
@@ -1023,7 +1023,7 @@ describe("TestCaseList component", () => {
 
     renderTestCaseListComponent();
     const importBtn = await screen.findByRole("button", {
-      name: /import test cases/i,
+      name: /Import From Bonnie/i,
     });
     expect(importBtn).toBeInTheDocument();
     await waitFor(() => expect(importBtn).not.toBeDisabled());
@@ -1042,7 +1042,7 @@ describe("TestCaseList component", () => {
 
     renderTestCaseListComponent();
     const showImportBtn = await screen.findByRole("button", {
-      name: /import test cases/i,
+      name: /Import From Bonnie/i,
     });
     expect(showImportBtn).toBeInTheDocument();
     await waitFor(() => expect(showImportBtn).not.toBeDisabled());
@@ -1086,7 +1086,7 @@ describe("TestCaseList component", () => {
 
     renderTestCaseListComponent();
     const showImportBtn = await screen.findByRole("button", {
-      name: /import test cases/i,
+      name: /Import From Bonnie/i,
     });
     await waitFor(() => expect(showImportBtn).not.toBeDisabled());
     userEvent.click(showImportBtn);
@@ -1116,7 +1116,7 @@ describe("TestCaseList component", () => {
     });
     renderTestCaseListComponent([IMPORT_ERROR]);
     const showImportBtn = await screen.findByRole("button", {
-      name: /import test cases/i,
+      name: /Import From Bonnie/i,
     });
     expect(showImportBtn).toBeInTheDocument();
     await waitFor(() => expect(showImportBtn).not.toBeDisabled());
@@ -1355,6 +1355,36 @@ describe("TestCaseList component", () => {
         )
       ).toBeInTheDocument();
     });
+  });
+
+  it("should display import test case button", async () => {
+    renderTestCaseListComponent();
+    const importButton = await screen.findByRole("button", {
+      name: /Import Test Cases/i,
+    });
+    expect(importButton).toBeInTheDocument();
+    expect(importButton).toBeEnabled();
+  });
+
+  it("should disable import test case button for unauthorized users", async () => {
+    (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => false);
+    renderTestCaseListComponent();
+    const importButton = await screen.findByRole("button", {
+      name: /Import Test Cases/i,
+    });
+    expect(importButton).toBeDisabled();
+  });
+
+  it("should succesfully import test cases", async () => {
+    renderTestCaseListComponent();
+    const importButton = await screen.findByRole("button", {
+      name: /Import Test Cases/i,
+    });
+    expect(importButton).toBeInTheDocument();
+    expect(importButton).toBeEnabled();
+
+    userEvent.click(importButton);
+    expect(screen.getByText("Test Case Import")).toBeInTheDocument();
   });
 
   it("should throw 404 exception when exporting bulk test cases", async () => {

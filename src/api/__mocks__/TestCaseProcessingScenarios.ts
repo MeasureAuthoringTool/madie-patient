@@ -64,6 +64,7 @@ export const ContinuousVariableBoolean: TestCaseProcessingScenario = {
   ],
   testCase: {
     id: "638a0dbf1b05491a43ce8a17",
+    patientId: "",
     name: null,
     title: "TC1",
     series: "",
@@ -882,6 +883,7 @@ export const ContinuousVariableBooleanFail: TestCaseProcessingScenario = {
   ],
   testCase: {
     id: "638a0dbf1b05491a43ce8a17",
+    patientId: "",
     name: null,
     title: "TC1",
     series: "",
@@ -1697,6 +1699,7 @@ export const ContinuousVariable_Encounter_Pass: TestCaseProcessingScenario = {
   ],
   testCase: {
     id: "638a0dbf1b05491a43ce8a17",
+    patientId: "",
     name: null,
     title: "TC1",
     series: "",
@@ -2544,6 +2547,7 @@ export const ContinuousVariable_Encounter_Fail: TestCaseProcessingScenario = {
   ],
   testCase: {
     id: "638a0dbf1b05491a43ce8a17",
+    patientId: "",
     name: null,
     title: "TC1",
     series: "",
@@ -3417,6 +3421,7 @@ export const Ratio_Boolean_SingleIP_DenObs_NumObs_Pass: TestCaseProcessingScenar
     ],
     testCase: {
       id: "63879d521b05491a43ce8a14",
+      patientId: "",
       name: null,
       title: "TC1",
       series: "",
@@ -4343,6 +4348,7 @@ export const Ratio_Encounter_SingleIP_DenObs_NumObs_Pass: TestCaseProcessingScen
     ],
     testCase: {
       id: "63879d521b05491a43ce8a14",
+      patientId: "",
       name: null,
       title: "TC1",
       series: "",

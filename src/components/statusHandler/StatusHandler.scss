@@ -28,7 +28,18 @@
     }
     > ul {
       list-style-position: inside;
-      list-style: disc;
+      list-style: disc !important;
+      > li::marker {
+        font-size: 2px;
+      }
     }
+  }
+}
+
+ul {
+  list-style: disc !important;
+  list-style-position: inside !important;
+  > li::marker {
+    font-size: 1rem;
   }
 }
