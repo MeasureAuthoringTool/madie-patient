@@ -43,8 +43,9 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
     setToastMessage(message);
   };
 
-
   // Todo if folder has 2 files, do not proceed
+  // Todo if there is no folder, we are ignoring the json
+  // Todo After creating zip what if users chagne zip file name ?
   const onDrop = useCallback(async (importedZip) => {
     removeUploadedFile();
     setUploadingFileSpinner(true);
@@ -65,24 +66,36 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
       const zip = new JSZip();
       const filesMap = [...testCaseImportRequest];
 
-      // fileNames are filtered out based on Zip file name followed with a valid UUID followed by json file
       let fileNames = [];
+      const parentFolderName = importedZip[0].name
+        .replace(".zip", "")
+        .split(" ")[0];
       zip
         .loadAsync(importedZip[0])
         .then((content) => {
+          // Filtering out all the fileNames that are valid, based on following format
+          // Format => Zip file name followed with a valid UUID followed by json file extension
+          // Ex: CMS136FHIR-v0.0.000-FHIR4-TestCases/a648e724-ce72-4cac-b0a7-3c4d52784f73/CMS136FHIR-v0.0.000-tcseries-tctitle001.json
           fileNames = _.filter(
-            _.keys(content.files).map((v) => {
-              const oFileName = importedZip[0].name
-                .replace(".zip", "")
-                .split(" ")[0];
-
-              if (v.startsWith(oFileName)) {
-                const foldernameSplit = v.split("/");
+            _.keys(content.files).map((fileName) => {
+              // file compressed from MAC has a parentFolderName and also contains several other hidden files
+              if (fileName.startsWith(parentFolderName)) {
+                const folderNameSplit = fileName.split("/");
                 if (
-                  validator.isUUID(foldernameSplit[1]) &&
-                  v.endsWith(".json")
+                  validator.isUUID(folderNameSplit[1]) &&
+                  fileName.endsWith(".json")
                 ) {
-                  return v;
+                  return fileName;
+                }
+              } else {
+                // Zip downloaded from MADiE doesn't have a parentFolderName
+                // Ex: a648e724-ce72-4cac-b0a7-3c4d52784f73/CMS136FHIR-v0.0.000-tcseries-tctitle001.json
+                const folderNameSplit = fileName.split("/");
+                if (
+                  validator.isUUID(folderNameSplit[0]) &&
+                  fileName.endsWith(".json")
+                ) {
+                  return fileName;
                 }
               }
             }),
@@ -94,15 +107,27 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
         })
         .then((values) => {
           _.forEach(values, (val, i) => {
-            const fileName = _.split(fileNames[i], "/")[1];
+            let patientId;
+            if (fileNames[i].startsWith(parentFolderName)) {
+              patientId = _.split(fileNames[i], "/")[1];
+            } else {
+              patientId = _.split(fileNames[i], "/")[0];
+            }
+
             filesMap.push({
-              patientId: fileName,
+              patientId: patientId,
               json: val,
             });
           });
-          setTestCaseImportRequest(filesMap);
-          setUploadingFileSpinner(false);
+          if (_.isEmpty(filesMap)) {
+            setErrorMessage(
+              "Unable to find any valid test case json. Please make sure the format is accurate"
+            );
+          } else {
+            setTestCaseImportRequest(filesMap);
+          }
           setUploadedFile(importedZip[0]);
+          setUploadingFileSpinner(false);
         })
         .catch(() => {
           setErrorMessage("Error uploading zip file");
@@ -120,6 +145,7 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
     },
   });
 
+  // Todo closeIcon is moving around when screen size changes
   const renderUploadedFileStatus = () => {
     return (
       <div
@@ -133,7 +159,7 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
             <small tw="block">
               {prettyBytes(uploadedFile.size)} -{" "}
               {errorMessage ? (
-                <span tw="text-green-550">Failed</span>
+                <span tw="text-red">Failed</span>
               ) : (
                 <span tw="text-green-550">Complete</span>
               )}
@@ -188,9 +214,6 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
         Newly uploaded test cases will replace existing test cases that have
         matching IDs.
       </small>
-      <div data-testid="test-case-import-error-div">
-        {errorMessage && <span>{errorMessage}</span>}
-      </div>
       <div data-testid="test-case-import-content-div">
         <div
           data-testid="file-drop-div"
@@ -219,6 +242,12 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
             </div>
           </div>
         )}
+      </div>
+      <div
+        tw="flex items-center ml-20"
+        data-testid="test-case-import-error-div"
+      >
+        {errorMessage && <small tw="text-red">{errorMessage}</small>}
       </div>
       <Toast
         toastKey="import-tests-toast"

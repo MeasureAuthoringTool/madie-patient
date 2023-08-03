@@ -399,35 +399,28 @@ const TestCaseList = (props: TestCaseListProps) => {
     }));
 
     try {
-      if (_.isEmpty(testCaseImportRequest)) {
-        setToastOpen(true);
-        setToastType("error");
-        setToastMessage("Cannot import an empty zip file");
+      const response = await testCaseService.current.importTestCases(
+        measureId,
+        testCaseImportRequest
+      );
+      const testCaseImportOutcome: TestCaseImportOutcome[] = response.data;
+      const failedToImport = testCaseImportOutcome.find(
+        (outcome) => outcome.successful === false
+      );
+      if (failedToImport) {
+        setWarnings(testCaseImportOutcome);
       } else {
-        const response = await testCaseService.current.importTestCases(
-          measureId,
-          testCaseImportRequest
-        );
-        const testCaseImportOutcome: TestCaseImportOutcome[] = response.data;
-        const failedToImport = testCaseImportOutcome.find(
-          (outcome) => outcome.successful === false
-        );
-        if (failedToImport) {
-          setWarnings(testCaseImportOutcome);
-        } else {
-          setToastOpen(true);
-          setToastType("success");
-          setToastMessage("Test cases exported successfully");
-        }
-        retrieveTestCases();
+        setToastOpen(true);
+        setToastType("success");
+        setToastMessage("Test cases exported successfully");
       }
+      retrieveTestCases();
     } catch (error) {
       setErrors((prevState) => [...prevState, IMPORT_ERROR]);
     } finally {
       setLoadingState({ loading: false, message: "" });
     }
   };
-
 
   return (
     <div
