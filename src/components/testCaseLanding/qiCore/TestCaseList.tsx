@@ -392,6 +392,7 @@ const TestCaseList = (props: TestCaseListProps) => {
   const onTestCaseImport = async (
     testCaseImportRequest: TestCaseImportRequest[]
   ) => {
+    setWarnings(null);
     setOpenImportDialog(false);
     setLoadingState(() => ({
       loading: true,
@@ -412,7 +413,7 @@ const TestCaseList = (props: TestCaseListProps) => {
       } else {
         setToastOpen(true);
         setToastType("success");
-        setToastMessage("Test cases exported successfully");
+        setToastMessage("Test cases imported successfully");
       }
       retrieveTestCases();
     } catch (error) {

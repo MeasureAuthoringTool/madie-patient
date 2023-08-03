@@ -57,7 +57,6 @@ const StatusHandler = ({
         );
       }
     }
-    // todo Rohit list is not bulleted
     if (importWarnings && importWarnings.length > 0) {
       const failedImports = importWarnings.filter((warnings) => {
         if (!warnings.successful) return warnings;
@@ -69,17 +68,18 @@ const StatusHandler = ({
             type="warning"
             content={
               <div aria-live="polite" role="alert" data-testid={testDataId}>
-                <p>
-                  ({successfulImports}) test cases were imported. The following
-                  ({failedImports.length}) test case(s) could not be imported.
-                  Please ensure that your formatting is correct and try again.
-                </p>
-                <ul tw="list-disc">
+                <h6>
+                  ({successfulImports}) test case(s) were imported. The
+                  following ({failedImports.length}) test case(s) could not be
+                  imported. Please ensure that your formatting is correct and
+                  try again.
+                </h6>
+                <ul>
                   {failedImports.map((failedImport) => {
                     return (
                       <li data-testid="failed-test-cases">
                         {failedImport.patientId} <br />
-                        Reason : {failedImport.message}
+                        <span tw="ml-4">Reason : {failedImport.message}</span>
                       </li>
                     );
                   })}

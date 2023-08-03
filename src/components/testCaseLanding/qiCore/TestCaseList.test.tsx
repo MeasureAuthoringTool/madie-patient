@@ -1375,6 +1375,18 @@ describe("TestCaseList component", () => {
     expect(importButton).toBeDisabled();
   });
 
+  it("should succesfully import test cases", async () => {
+    renderTestCaseListComponent();
+    const importButton = await screen.findByRole("button", {
+      name: /Import Test Cases/i,
+    });
+    expect(importButton).toBeInTheDocument();
+    expect(importButton).toBeEnabled();
+
+    userEvent.click(importButton);
+    expect(screen.getByText("Test Case Import")).toBeInTheDocument();
+  });
+
   it("should throw 404 exception when exporting bulk test cases", async () => {
     const error = {
       response: {

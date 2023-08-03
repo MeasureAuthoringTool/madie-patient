@@ -69,8 +69,7 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
         showErrorToast(response.error.defaultMessage);
       } else {
         const zip = new JSZip();
-        const filesMap = [...testCaseImportRequest];
-
+        const filesMap = [];
         let fileNames = [];
         const parentFolderName = acceptedFiles[0].name
           .replace(".zip", "")
@@ -124,6 +123,7 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
                 json: val,
               });
             });
+
             if (_.isEmpty(filesMap)) {
               setErrorMessage(
                 "Unable to find any valid test case json. Please make sure the format is accurate"
@@ -145,34 +145,35 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
   const { getRootProps, getInputProps, open } = useDropzone({
     onDrop,
     noClick: true,
+    noDrag: false,
     maxFiles: 1,
-    multiple: false,
     accept: {
       "application/zip": [".zip"],
     },
   });
 
-  // Todo Rohit closeIcon is moving around when screen size changes
   const renderUploadedFileStatus = () => {
     return (
       <div
         tw="flex border border-l-4 mt-5 mx-16 mb-1"
         data-testid="test-case-preview-header"
       >
-        <div tw="flex items-center">
-          <FolderZipOutlinedIcon tw="m-4 text-lg" />
-          <div tw="ml-1 ">
-            <small tw="block">{uploadedFile.name}</small>
-            <small tw="block">
-              {prettyBytes(uploadedFile.size)} -{" "}
-              {errorMessage ? (
-                <span tw="text-red">Failed</span>
-              ) : (
-                <span tw="text-green-550">Complete</span>
-              )}
-            </small>
+        <div tw="flex items-center justify-between w-full">
+          <div tw="flex items-center">
+            <FolderZipOutlinedIcon tw="m-4 text-lg" />
+            <div tw="ml-1 ">
+              <small tw="block">{uploadedFile.name}</small>
+              <small tw="block">
+                {prettyBytes(uploadedFile.size)} -{" "}
+                {errorMessage ? (
+                  <span tw="text-red">Failed</span>
+                ) : (
+                  <span tw="text-green-550">Complete</span>
+                )}
+              </small>
+            </div>
           </div>
-          <div tw="absolute right-28 border-l-2">
+          <div tw="mx-2 border-l-2">
             <CloseIcon tw="ml-2" onClick={removeUploadedFile}></CloseIcon>
           </div>
         </div>
