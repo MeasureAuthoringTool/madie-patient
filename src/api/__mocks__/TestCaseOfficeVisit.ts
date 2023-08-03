@@ -1,6 +1,7 @@
 import { MeasureScoring, PopulationType, TestCase } from "@madie/madie-models";
 
 export const testCaseOfficeVisit: TestCase = {
+  patientId: "",
   id: "623cFfaK34613783378c17c",
   executionStatus: null,
   validResource: true,
