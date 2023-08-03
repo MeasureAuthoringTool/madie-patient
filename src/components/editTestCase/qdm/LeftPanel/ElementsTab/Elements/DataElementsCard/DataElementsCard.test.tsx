@@ -4,7 +4,10 @@ import { MemoryRouter } from "react-router-dom";
 import { describe, expect, test } from "@jest/globals";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import DataElementsCard from "../DataElementsCard/DataElementsCard";
+import DataElementsCard, {
+  applyAttribute,
+} from "../DataElementsCard/DataElementsCard";
+import { CQL } from "cqm-models";
 import {
   ApiContextProvider,
   ServiceConfig,
@@ -900,5 +903,21 @@ describe("DataElementsCard", () => {
         screen.queryByText("Admission Source: SNOMEDCT : 10725009")
       ).not.toBeInTheDocument();
     });
+  });
+});
+
+describe("applyAttribute function", () => {
+  it("should add a result of date type", () => {
+    const cqlDate: CQL.Date = new CQL.Date(2023, 4, 22);
+    const dataElement = dataEl[0] as any;
+    expect(dataElement.result).toBeFalsy();
+    const updatedElement = applyAttribute(
+      "Result",
+      "Date",
+      cqlDate,
+      dataElement
+    );
+    expect(updatedElement.result).toEqual(cqlDate);
+    expect(dataElement === updatedElement).toBeFalsy();
   });
 });
