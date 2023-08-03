@@ -194,6 +194,49 @@ describe("AttributeSection", () => {
     expect(dateInput).toBeInTheDocument();
     expect(dateInput2).toBeInTheDocument();
   });
+
+  it("DateTime selection shows date input", async () => {
+    const assessmentElement: AssessmentPerformed = new AssessmentPerformed();
+    const { container } = render(
+      <AttributeSection selectedDataElement={assessmentElement} />
+    );
+
+    const attributeSelectBtn = screen.getByRole("button", {
+      name: "Attribute Select Attribute",
+    });
+    expect(attributeSelectBtn).toBeInTheDocument();
+
+    userEvent.click(attributeSelectBtn);
+
+    const attributeSelect = await screen.findByRole("listbox");
+    const attributeOptions = within(attributeSelect).getAllByRole("option");
+    expect(attributeOptions).toHaveLength(7);
+
+    userEvent.click(within(attributeSelect).getByText(/result/i));
+    const attributeInput = within(attributeSelectBtn.parentElement).getByRole(
+      "textbox",
+      { hidden: true }
+    );
+    expect(attributeInput).toBeInTheDocument();
+    expect(attributeInput).toHaveValue("Result");
+    const typeSelectBtn = await screen.findByRole("button", {
+      name: /type/i,
+    });
+    expect(typeSelectBtn).toBeInTheDocument();
+    userEvent.click(typeSelectBtn);
+    const typeSelect = await screen.findByRole("listbox");
+    expect(typeSelect).toBeInTheDocument();
+    const typeOptions = within(typeSelect).getAllByRole("option");
+    expect(typeOptions.length).toEqual(9);
+    userEvent.click(within(typeSelect).getByText("DateTime"));
+    const dateTimeInput = await screen.findByPlaceholderText(
+      "MM/DD/YYYY hh:mm aa"
+    );
+    const dateTimeInput2 = await screen.findByTestId("CalendarIcon");
+    expect(dateTimeInput).toBeInTheDocument();
+    expect(dateTimeInput2).toBeInTheDocument();
+  });
+
   it("Clicking the plus button calls works", async () => {
     const assessmentElement: AssessmentPerformed = new AssessmentPerformed();
     const onAddClicked = jest.fn();

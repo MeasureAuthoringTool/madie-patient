@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { DataElement, CQL } from "cqm-models";
 import * as _ from "lodash";
-import { DateField } from "@madie/madie-design-system/dist/react";
+import {
+  DateField,
+  DateTimeField,
+} from "@madie/madie-design-system/dist/react";
 import { Button, IconButton } from "@mui/material";
-import { DateTime } from "cql-execution";
-import { SettingsApplicationsRounded } from "@mui/icons-material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import dayjs from "dayjs";
 import "./DisplayAttributeInputs.scss";
+const cql = require("cql-execution");
 
 interface DisplayAttributeInputsProps {
   attributeType?: string;
@@ -43,6 +45,25 @@ const DisplayAttributeInputs = ({
               );
               setAttributeValue(newCQLDate);
             }}
+          />
+        );
+      case "DateTime":
+        return (
+          <DateTimeField
+            label="DateTime"
+            handleDateTimeChange={(e) => {
+              const newDateTime = dayjs.utc(e);
+              const newCQLDateTime: CQL.Date = new CQL.DateTime(
+                newDateTime.year(),
+                newDateTime.month() + 1,
+                newDateTime.date(),
+                newDateTime.get("hour"),
+                newDateTime.get("minute"),
+                0
+              );
+              setAttributeValue(newCQLDateTime);
+            }}
+            value={""}
           />
         );
       default:
