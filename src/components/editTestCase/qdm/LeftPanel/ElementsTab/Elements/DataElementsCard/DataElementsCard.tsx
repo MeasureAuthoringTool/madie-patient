@@ -65,7 +65,6 @@ const DataElementsCard = (props: {
       setDataElements(patient.dataElements);
     }
   }, [formik.values.json]);
-
   useEffect(() => {
     const valueSets = cqmMeasureState?.[0]?.value_sets;
     if (valueSets) {
@@ -82,11 +81,9 @@ const DataElementsCard = (props: {
   const negationRationale =
     selectedDataElement?.hasOwnProperty("negationRationale");
   // https://ecqi.healthit.gov/mcw/2020/qdm-attribute/negationrationale.html  (list of all categories that use negation rationale)
-
   useEffect(() => {
     setLocalSelectedDataElement(selectedDataElement);
   }, [selectedDataElement]);
-
   useEffect(() => {
     if (selectedDataElement && codeSystemMap && dataElements) {
       const dataElementClass = getDataElementClass(localSelectedDataElement);
