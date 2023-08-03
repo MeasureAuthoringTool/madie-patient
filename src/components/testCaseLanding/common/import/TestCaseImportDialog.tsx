@@ -7,7 +7,7 @@ import {
   MadieDialog,
 } from "@madie/madie-design-system/dist/react";
 import FolderZipOutlinedIcon from "@mui/icons-material/FolderZipOutlined";
-import { useDropzone } from "react-dropzone";
+import { FileRejection, useDropzone } from "react-dropzone";
 import "./TestCaseImportDialog.css";
 import * as _ from "lodash";
 import useTestCaseServiceApi from "../../../../api/useTestCaseServiceApi";
@@ -45,95 +45,102 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
 
   // Todo if folder has 2 files, do not proceed
   // Todo if there is no folder, we are ignoring the json
-  // Todo After creating zip what if users chagne zip file name ?
-  const onDrop = useCallback(async (importedZip) => {
-    removeUploadedFile();
-    setUploadingFileSpinner(true);
-    let response: ScanValidationDto;
-    try {
-      response = await testCaseService.current.scanImportFile(importedZip);
-    } catch (error) {
-      setUploadingFileSpinner(false);
-      showErrorToast(
-        "An error occurred while uploading the file. Please try again or reach out to the helpdesk"
-      );
-      return;
-    }
-    if (!response.valid) {
-      setUploadingFileSpinner(false);
-      showErrorToast(response.error.defaultMessage);
-    } else {
-      const zip = new JSZip();
-      const filesMap = [...testCaseImportRequest];
+  // Todo After creating zip what if users change zip file name ?
+  const onDrop = useCallback(
+    async (acceptedFiles, fileRejections) => {
+      removeUploadedFile();
+      if (!_.isEmpty(fileRejections)) {
+        setErrorMessage(fileRejections[0].errors[0].message);
+        return;
+      }
+      setUploadingFileSpinner(true);
+      let response: ScanValidationDto;
+      try {
+        response = await testCaseService.current.scanImportFile(acceptedFiles);
+      } catch (error) {
+        setUploadingFileSpinner(false);
+        showErrorToast(
+          "An error occurred while uploading the file. Please try again or reach out to the helpdesk"
+        );
+        return;
+      }
+      if (!response.valid) {
+        setUploadingFileSpinner(false);
+        showErrorToast(response.error.defaultMessage);
+      } else {
+        const zip = new JSZip();
+        const filesMap = [...testCaseImportRequest];
 
-      let fileNames = [];
-      const parentFolderName = importedZip[0].name
-        .replace(".zip", "")
-        .split(" ")[0];
-      zip
-        .loadAsync(importedZip[0])
-        .then((content) => {
-          // Filtering out all the fileNames that are valid, based on following format
-          // Format => Zip file name followed with a valid UUID followed by json file extension
-          // Ex: CMS136FHIR-v0.0.000-FHIR4-TestCases/a648e724-ce72-4cac-b0a7-3c4d52784f73/CMS136FHIR-v0.0.000-tcseries-tctitle001.json
-          fileNames = _.filter(
-            _.keys(content.files).map((fileName) => {
-              // file compressed from MAC has a parentFolderName and also contains several other hidden files
-              if (fileName.startsWith(parentFolderName)) {
-                const folderNameSplit = fileName.split("/");
-                if (
-                  validator.isUUID(folderNameSplit[1]) &&
-                  fileName.endsWith(".json")
-                ) {
-                  return fileName;
+        let fileNames = [];
+        const parentFolderName = acceptedFiles[0].name
+          .replace(".zip", "")
+          .split(" ")[0];
+        zip
+          .loadAsync(acceptedFiles[0])
+          .then((content) => {
+            // Filtering out all the fileNames that are valid, based on following format
+            // Format => Zip file name followed with a valid UUID followed by json file extension
+            // Ex: CMS136FHIR-v0.0.000-FHIR4-TestCases/a648e724-ce72-4cac-b0a7-3c4d52784f73/CMS136FHIR-v0.0.000-tcseries-tctitle001.json
+            fileNames = _.filter(
+              _.keys(content.files).map((fileName) => {
+                // file compressed from MAC has a parentFolderName and also contains several other hidden files
+                if (fileName.startsWith(parentFolderName)) {
+                  const folderNameSplit = fileName.split("/");
+                  if (
+                    validator.isUUID(folderNameSplit[1]) &&
+                    fileName.endsWith(".json")
+                  ) {
+                    return fileName;
+                  }
+                } else {
+                  // Zip downloaded from MADiE doesn't have a parentFolderName
+                  // Ex: a648e724-ce72-4cac-b0a7-3c4d52784f73/CMS136FHIR-v0.0.000-tcseries-tctitle001.json
+                  const folderNameSplit = fileName.split("/");
+                  if (
+                    validator.isUUID(folderNameSplit[0]) &&
+                    fileName.endsWith(".json")
+                  ) {
+                    return fileName;
+                  }
                 }
-              } else {
-                // Zip downloaded from MADiE doesn't have a parentFolderName
-                // Ex: a648e724-ce72-4cac-b0a7-3c4d52784f73/CMS136FHIR-v0.0.000-tcseries-tctitle001.json
-                const folderNameSplit = fileName.split("/");
-                if (
-                  validator.isUUID(folderNameSplit[0]) &&
-                  fileName.endsWith(".json")
-                ) {
-                  return fileName;
-                }
-              }
-            }),
-            (v) => !!v
-          );
-          return Promise.all(
-            fileNames.map((filename) => zip.file(filename).async("string"))
-          );
-        })
-        .then((values) => {
-          _.forEach(values, (val, i) => {
-            let patientId;
-            if (fileNames[i].startsWith(parentFolderName)) {
-              patientId = _.split(fileNames[i], "/")[1];
-            } else {
-              patientId = _.split(fileNames[i], "/")[0];
-            }
-
-            filesMap.push({
-              patientId: patientId,
-              json: val,
-            });
-          });
-          if (_.isEmpty(filesMap)) {
-            setErrorMessage(
-              "Unable to find any valid test case json. Please make sure the format is accurate"
+              }),
+              (v) => !!v
             );
-          } else {
-            setTestCaseImportRequest(filesMap);
-          }
-          setUploadedFile(importedZip[0]);
-          setUploadingFileSpinner(false);
-        })
-        .catch(() => {
-          setErrorMessage("Error uploading zip file");
-        });
-    }
-  }, []);
+            return Promise.all(
+              fileNames.map((filename) => zip.file(filename).async("string"))
+            );
+          })
+          .then((values) => {
+            _.forEach(values, (val, i) => {
+              let patientId;
+              if (fileNames[i].startsWith(parentFolderName)) {
+                patientId = _.split(fileNames[i], "/")[1];
+              } else {
+                patientId = _.split(fileNames[i], "/")[0];
+              }
+
+              filesMap.push({
+                patientId: patientId,
+                json: val,
+              });
+            });
+            if (_.isEmpty(filesMap)) {
+              setErrorMessage(
+                "Unable to find any valid test case json. Please make sure the format is accurate"
+              );
+            } else {
+              setTestCaseImportRequest(filesMap);
+            }
+            setUploadedFile(acceptedFiles[0]);
+            setUploadingFileSpinner(false);
+          })
+          .catch(() => {
+            setErrorMessage("Error uploading zip file");
+          });
+      }
+    },
+    [testCaseImportRequest]
+  );
 
   const { getRootProps, getInputProps, open } = useDropzone({
     onDrop,
@@ -145,7 +152,7 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
     },
   });
 
-  // Todo closeIcon is moving around when screen size changes
+  // Todo Rohit closeIcon is moving around when screen size changes
   const renderUploadedFileStatus = () => {
     return (
       <div
