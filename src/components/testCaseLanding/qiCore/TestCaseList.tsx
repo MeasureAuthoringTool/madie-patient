@@ -407,15 +407,19 @@ const TestCaseList = (props: TestCaseListProps) => {
         testCaseImportRequest
       );
       const testCaseImportOutcome: TestCaseImportOutcome[] = response.data;
-      const failedToImport = testCaseImportOutcome.find(
-        (outcome) => outcome.successful === false
-      );
-      if (failedToImport) {
+      const failedImports = testCaseImportOutcome.filter((outcome) => {
+        if (!outcome.successful) return outcome;
+      });
+      if (failedImports && failedImports.length > 0) {
         setWarnings(testCaseImportOutcome);
       } else {
+        const successfulImports =
+          testCaseImportOutcome.length - failedImports.length;
         setToastOpen(true);
         setToastType("success");
-        setToastMessage("Test cases imported successfully");
+        setToastMessage(
+          `(${successfulImports}) Test cases imported successfully`
+        );
       }
       retrieveTestCases();
     } catch (error) {
