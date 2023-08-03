@@ -200,30 +200,25 @@ export class TestCaseServiceApi {
   }
 
   async scanImportFile(file: any): Promise<ScanValidationDto> {
-    // try {
-    //   const formData = new FormData();
-    //   formData.append("file", file);
-    //   const response = await axios.post<ScanValidationDto>(
-    //     `${this.baseUrl}/validations/files`,
-    //     formData,
-    //     {
-    //       headers: {
-    //         Authorization: `Bearer ${this.getAccessToken()}`,
-    //         "Content-Type": "multipart/form-data",
-    //       },
-    //     }
-    //   );
-    //   return response.data;
-    // } catch (err) {
-    //   throw new Error(
-    //     "Unable to scan the import file. Please try again later."
-    //   );
-    // }
-    return {
-      fileName: "string",
-      valid: true,
-      error: null,
-    };
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await axios.post<ScanValidationDto>(
+        `${this.baseUrl}/validations/files`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return response.data;
+    } catch (err) {
+      throw new Error(
+        "Unable to scan the import file. Please try again later."
+      );
+    }
   }
 
   // TODO: Refactor to dedup with FhirImportHelper::readImportFile
