@@ -65,6 +65,8 @@ const DisplayAttributeInputs = ({
               setAttributeValue(newCQLDateTime);
             }}
             value={null}
+          />
+        );
       case "Integer":
         return (
           <IntegerInput
