@@ -1,7 +1,11 @@
 import axios, { AxiosResponse } from "axios";
 import useServiceConfig from "./useServiceConfig";
 import { ServiceConfig } from "./ServiceContext";
-import { HapiOperationOutcome, TestCase } from "@madie/madie-models";
+import {
+  HapiOperationOutcome,
+  TestCase,
+  TestCaseImportRequest,
+} from "@madie/madie-models";
 import { useOktaTokens } from "@madie/madie-util";
 import { ScanValidationDto } from "./models/ScanValidationDto";
 import { addValues } from "../util/DefaultValueProcessor";
@@ -122,6 +126,21 @@ export class TestCaseServiceApi {
       const message = `Unable to delete test case`;
       throw new Error(message);
     }
+  }
+
+  async importTestCases(
+    measureId: string,
+    testCasesImportRequest: TestCaseImportRequest[]
+  ): Promise<AxiosResponse> {
+    return await axios.put(
+      `${this.baseUrl}/measures/${measureId}/test-cases/imports`,
+      testCasesImportRequest,
+      {
+        headers: {
+          Authorization: `Bearer ${this.getAccessToken()}`,
+        },
+      }
+    );
   }
 
   async exportTestCases(

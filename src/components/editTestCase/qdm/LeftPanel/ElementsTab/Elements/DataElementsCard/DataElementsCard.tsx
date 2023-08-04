@@ -14,9 +14,20 @@ import AttributeSection from "./attributes/AttributeSection";
 import { useQdmExecutionContext } from "../../../../../../routes/qdm/QdmExecutionContext";
 import * as _ from "lodash";
 
-const applyAttribute = (attribute, type, attributeValue, dataElement) => {
-  //TODO: Investigate if cloneDeep result is sufficient for execution (updating the field drops all the sets/gets from the dataElement)
-  const updatedDataElement = _.cloneDeep(dataElement);
+function getDataElementClass(dataElement) {
+  const qdmType = dataElement?._type; // match against for attributes
+  const model = qdmType.split("QDM::")[1];
+  return cqmModels[model];
+}
+
+export const applyAttribute = (
+  attribute,
+  type,
+  attributeValue,
+  dataElement
+) => {
+  const modelClass = getDataElementClass(dataElement);
+  const updatedDataElement = new modelClass(dataElement);
   updatedDataElement[_.camelCase(attribute)] = attributeValue;
   return updatedDataElement;
 };
@@ -36,6 +47,14 @@ const DataElementsCard = (props: {
 
   const [codeSystemMap, setCodeSystemMap] = useState(null);
   const { cqmMeasureState } = useQdmExecutionContext();
+  // from here we know the type, we need to go through the dataElements to matchTypes
+  // attributes section
+  const [displayAttributes, setDisplayAttributes] = useState([]);
+  // codes section
+  const [codesChips, setCodesChips] = useState([]);
+  const [localSelectedDataElement, setLocalSelectedDataElement] =
+    useState(selectedDataElement);
+
   useEffect(() => {
     const valueSets = cqmMeasureState?.[0]?.value_sets;
     if (valueSets) {
@@ -54,22 +73,18 @@ const DataElementsCard = (props: {
     selectedDataElement?.hasOwnProperty("negationRationale");
   // https://ecqi.healthit.gov/mcw/2020/qdm-attribute/negationrationale.html  (list of all categories that use negation rationale)
 
-  // from here we know the type, we need to go through the dataElements to matchTypes
-  // attributes section
-  const [displayAttributes, setDisplayAttributes] = useState([]);
-  // codes section
-  const [codesChips, setCodesChips] = useState([]);
-  const [localSelectedDataElement, setLocalSelectedDataElement] =
-    useState(selectedDataElement);
   useEffect(() => {
-    if (selectedDataElement && codeSystemMap) {
+    setLocalSelectedDataElement(selectedDataElement);
+  }, [selectedDataElement]);
+
+  useEffect(() => {
+    if (localSelectedDataElement && codeSystemMap) {
       const displayAttributes = [];
       const codesChips = [];
-      const qdmType = selectedDataElement?._type; // match against for attributes
-      const model = qdmType.split("QDM::")[1];
-      const getModel = cqmModels[model];
-      const modeledEl = new getModel(selectedDataElement);
-      setLocalSelectedDataElement(modeledEl);
+
+      const dataElementClass = getDataElementClass(localSelectedDataElement);
+      const modeledEl = new dataElementClass(localSelectedDataElement);
+
       modeledEl.schema.eachPath((path, info) => {
         if (!SKIP_ATTRIBUTES.includes(path) && modeledEl[path]) {
           if (info.instance === "Array") {
@@ -131,7 +146,7 @@ const DataElementsCard = (props: {
       setDisplayAttributes(displayAttributes);
       setCodesChips(codesChips);
     }
-  }, [!!selectedDataElement, !!codeSystemMap]);
+  }, [localSelectedDataElement, !!codeSystemMap]);
   // centralize state one level up so we can conditionally render our child component
   return (
     <div className="data-elements-card" data-testid="data-element-card">

@@ -51,6 +51,7 @@ module.exports = {
         400: "#3adb73",
         500: "#1dd65e",
         DEFAULT: "#1dd65e",
+        550: "#54A12A",
         600: "#15b85e",
         700: "#0e9a5b",
         800: "#097c53",
@@ -135,6 +136,9 @@ module.exports = {
       },
       fontFamily: {
         rubik: ["Rubik"],
+      },
+      spacing: {
+        68: "17rem",
       },
     },
   },

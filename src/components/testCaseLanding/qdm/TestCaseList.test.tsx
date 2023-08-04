@@ -98,7 +98,7 @@ jest.mock("@madie/madie-util", () => ({
 
 let importingTestCases = [];
 jest.mock(
-  "../common/import/TestCaseImportDialog",
+  "../common/import/TestCaseImportFromBonnieDialog",
   () =>
     ({ open, handleClose, onImport }) => {
       return open ? (
