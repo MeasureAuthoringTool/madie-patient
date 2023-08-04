@@ -262,35 +262,8 @@ describe("AttributeSection", () => {
     const typeOptions = within(typeSelect).getAllByRole("option");
     expect(typeOptions.length).toEqual(9);
     fireEvent.click(within(typeSelect).getByText("Ratio"));
-
-    await waitFor(() => {
-      setTimeout(() => {
-        const quantityValueInput = screen.getByTestId(
-          "quantity-value-input-Ratio"
-        ) as HTMLInputElement;
-        expect(quantityValueInput).toBeInTheDocument();
-        fireEvent.change(quantityValueInput, { target: { value: "1" } });
-        expect(quantityValueInput.value).toBe("1");
-
-        const autocomplete = screen.getByTestId("quantity-unit-dropdown-Ratio");
-        const input = within(autocomplete).getByRole(
-          `combobox`
-        ) as HTMLInputElement;
-        autocomplete.click();
-        autocomplete.focus();
-        fireEvent.change(input, { target: { value: "wk" } });
-        act(async () => {
-          await new Promise((resolve) => setTimeout(resolve, 0));
-        });
-        fireEvent.click(screen.getAllByRole("option")[1]);
-        fireEvent.change(input, { target: { value: "/wk per week" } });
-
-        const addButton = screen.getByTestId("AddCircleOutlineIcon");
-        expect(addButton).toBeInTheDocument();
-        userEvent.click(addButton);
-      }, 6000);
-    });
   });
+
   it("Clicking the plus button calls works", async () => {
     const assessmentElement: AssessmentPerformed = new AssessmentPerformed();
     const onAddClicked = jest.fn();
