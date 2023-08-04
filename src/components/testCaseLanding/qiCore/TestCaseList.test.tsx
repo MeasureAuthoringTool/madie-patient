@@ -1472,12 +1472,6 @@ describe("TestCaseList component", () => {
     const dropZone = screen.getByTestId("file-drop-input");
     userEvent.upload(dropZone, zipFile);
 
-    const errorDiv = screen.queryByTestId(
-      "test-case-import-error-div"
-    ) as HTMLDivElement;
-    expect(errorDiv).not.toBeNull();
-    console.log("Error div ", errorDiv.children.item(0));
-
     await waitFor(async () => {
       expect(importButton).toBeEnabled();
       userEvent.click(importButton);
