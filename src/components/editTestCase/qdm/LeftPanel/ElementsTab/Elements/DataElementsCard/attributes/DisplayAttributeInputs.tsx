@@ -73,6 +73,19 @@ const DisplayAttributeInputs = ({
             label="Integer"
           />
         );
+      case "Ratio":
+        return (
+          <RatioInput
+            label="Ratio"
+            ratio={currentRatio}
+            data-testid="ratio-input"
+            onRatioChange={(newCQLRatio) => {
+              setCurrentRatio(newCQLRatio);
+              setAttributeValue(newCQLRatio);
+            }}
+            canEdit={true}
+          />
+        );
       default:
         return null;
     }
