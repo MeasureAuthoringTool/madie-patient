@@ -26,7 +26,6 @@ import {
   PopulationType,
   TestCase,
   TestCaseImportOutcome,
-  TestCaseImportRequest,
 } from "@madie/madie-models";
 import useTestCaseServiceApi, {
   TestCaseServiceApi,
