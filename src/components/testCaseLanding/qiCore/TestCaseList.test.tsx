@@ -39,12 +39,15 @@ import {
   getExampleValueSet,
 } from "../../../util/CalculationTestHelpers";
 import { ExecutionContextProvider } from "../../routes/qiCore/ExecutionContext";
+// @ts-ignore
 import { checkUserCanEdit, useFeatureFlags } from "@madie/madie-util";
-import axios from "axios";
 import { ScanValidationDto } from "../../../api/models/ScanValidationDto";
+// @ts-ignore
 import JSZip from "jszip";
+import { createZipFile } from "../common/import/TestCaseImportDialog.test";
 
 const serviceConfig: ServiceConfig = {
+  elmTranslationService: { baseUrl: "base.url" },
   testCaseService: {
     baseUrl: "base.url",
   },
@@ -461,6 +464,7 @@ const setMeasure = jest.fn();
 const setMeasureBundle = jest.fn();
 const setValueSets = jest.fn();
 const setError = jest.fn();
+const setWarnings = jest.fn();
 
 // Test Case import related
 const jsonBundle = JSON.stringify({
@@ -474,7 +478,7 @@ const jsonBundle = JSON.stringify({
   ],
 });
 
-const scanResult: ScanValidationDto = {
+const mockScanResult: ScanValidationDto = {
   fileName: "testcaseExample.json",
   valid: true,
   error: null,
@@ -482,38 +486,6 @@ const scanResult: ScanValidationDto = {
 
 const patientId1 = "8cdd6a96-732f-41da-9902-d680ca68157c";
 const patientId2 = "a648e724-ce72-4cac-b0a7-3c4d52784f73";
-const defaultFileName = "testcaseExample.json";
-
-const createZipFile = async (
-  patientIds: string[],
-  jsonBundle?: string[],
-  jsonFileName?: string[],
-  zipFileName = "CMS136FHIR-v0.0.000-FHIR4-TestCases"
-) => {
-  try {
-    const zip = new JSZip();
-    const parentFolder = zip.folder(zipFileName);
-
-    patientIds.forEach((patientId, index) => {
-      const subFolderEntry = parentFolder.folder(patientId);
-      subFolderEntry.file(
-        jsonFileName ? jsonFileName[index] : defaultFileName,
-        jsonBundle[index]
-      );
-    });
-
-    const zipContent = await zip.generateAsync({ type: "nodebuffer" });
-    const blob = new Blob([zipContent], { type: "application/zip" });
-    return new File([blob], "CMS136FHIR-v0.0.000-FHIR4-TestCases", {
-      type: "application/zip",
-    });
-  } catch (error) {
-    throw error;
-  }
-};
-
-jest.mock("axios");
-const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe("TestCaseList component", () => {
   beforeEach(() => {
@@ -555,7 +527,11 @@ describe("TestCaseList component", () => {
               setExecuting: jest.fn(),
             }}
           >
-            <TestCaseList errors={errors} setErrors={setError} />
+            <TestCaseList
+              errors={errors}
+              setErrors={setError}
+              setWarnings={setWarnings}
+            />
           </ExecutionContextProvider>
         </ApiContextProvider>
       </MemoryRouter>
@@ -1413,72 +1389,6 @@ describe("TestCaseList component", () => {
     });
   });
 
-  it("should display import test case button", async () => {
-    renderTestCaseListComponent();
-    const importButton = await screen.findByRole("button", {
-      name: /Import Test Cases/i,
-    });
-    expect(importButton).toBeInTheDocument();
-    expect(importButton).toBeEnabled();
-  });
-
-  it("should disable import test case button for unauthorized users", async () => {
-    (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => false);
-    renderTestCaseListComponent();
-    const importButton = await screen.findByRole("button", {
-      name: /Import Test Cases/i,
-    });
-    expect(importButton).toBeDisabled();
-  });
-
-  it.skip("should succesfully import test cases", async () => {
-    const zipFile = await createZipFile(
-      [patientId1, patientId2],
-      [jsonBundle, jsonBundle]
-    );
-
-    const mockedOutcome: TestCaseImportOutcome[] = [
-      {
-        patientId: patientId1,
-        message: null,
-        successful: true,
-      },
-      {
-        patientId: patientId2,
-        message: null,
-        successful: true,
-      },
-    ];
-
-    mockedAxios.post.mockReset().mockResolvedValue({ data: scanResult });
-    mockedAxios.put.mockReset().mockResolvedValue({ data: mockedOutcome });
-
-    renderTestCaseListComponent();
-    // on test case list page
-    const importTestCasesButton = await screen.findByRole("button", {
-      name: /Import Test Cases/i,
-    });
-    expect(importTestCasesButton).toBeInTheDocument();
-    expect(importTestCasesButton).toBeEnabled();
-    userEvent.click(importTestCasesButton);
-
-    expect(screen.getByText("Test Case Import")).toBeInTheDocument();
-    // on Import Dialog
-    const importButton = await screen.findByRole("button", {
-      name: /Import/i,
-    });
-    expect(importButton).toBeDisabled();
-
-    const dropZone = screen.getByTestId("file-drop-input");
-    userEvent.upload(dropZone, zipFile);
-
-    await waitFor(async () => {
-      expect(importButton).toBeEnabled();
-      userEvent.click(importButton);
-      expect(screen.getByText("(2) Test cases imported successfully"));
-    });
-  });
-
   it("should throw 404 exception when exporting bulk test cases", async () => {
     const error = {
       response: {
@@ -1513,6 +1423,179 @@ describe("TestCaseList component", () => {
           "Test Case(s) are empty or contain errors. Please update your Test Case(s) and export again."
         )
       ).toBeInTheDocument();
+    });
+  });
+
+  it("should display import test case button", async () => {
+    renderTestCaseListComponent();
+    const importButton = await screen.findByRole("button", {
+      name: /Import Test Cases/i,
+    });
+    expect(importButton).toBeInTheDocument();
+    expect(importButton).toBeEnabled();
+  });
+
+  it("should disable import test case button for unauthorized users", async () => {
+    (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => false);
+    renderTestCaseListComponent();
+    const importButton = await screen.findByRole("button", {
+      name: /Import Test Cases/i,
+    });
+    expect(importButton).toBeDisabled();
+  });
+
+  it("should succesfully import test cases", async () => {
+    const zipFile = await createZipFile(
+      [patientId1, patientId2],
+      [jsonBundle, jsonBundle]
+    );
+
+    const mockedOutcome: TestCaseImportOutcome[] = [
+      {
+        patientId: patientId1,
+        message: null,
+        successful: true,
+      },
+      {
+        patientId: patientId2,
+        message: null,
+        successful: true,
+      },
+    ];
+
+    useTestCaseServiceMock.mockImplementation(() => {
+      return {
+        getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
+        getTestCaseSeriesForMeasure: jest
+          .fn()
+          .mockResolvedValue(["Series 1", "Series 2"]),
+        scanImportFile: jest.fn().mockResolvedValue(mockScanResult),
+        importTestCases: jest.fn().mockResolvedValue({ data: mockedOutcome }),
+      } as unknown as TestCaseServiceApi;
+    });
+
+    renderTestCaseListComponent();
+    // on test case list page
+    const importTestCasesButton = await screen.findByRole("button", {
+      name: /Import Test Cases/i,
+    });
+    expect(importTestCasesButton).toBeInTheDocument();
+    expect(importTestCasesButton).toBeEnabled();
+    userEvent.click(importTestCasesButton);
+
+    expect(screen.getByText("Test Case Import")).toBeInTheDocument();
+    // on Import Dialog
+    const importButton = await screen.findByRole("button", {
+      name: /Import/i,
+    });
+    expect(importButton).toBeDisabled();
+
+    const dropZone = screen.getByTestId("file-drop-input");
+    userEvent.upload(dropZone, zipFile);
+
+    await waitFor(async () => {
+      expect(importButton).toBeEnabled();
+      userEvent.click(importButton);
+      expect(screen.getByText("(2) Test cases imported successfully"));
+    });
+  });
+
+  it("should throw import error message when failed to import test cases", async () => {
+    const zipFile = await createZipFile(
+      [patientId1, patientId2],
+      [jsonBundle, jsonBundle]
+    );
+
+    useTestCaseServiceMock.mockImplementation(() => {
+      return {
+        getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
+        getTestCaseSeriesForMeasure: jest
+          .fn()
+          .mockResolvedValue(["Series 1", "Series 2"]),
+        scanImportFile: jest.fn().mockResolvedValue(mockScanResult),
+        importTestCases: jest.fn().mockRejectedValue({}),
+      } as unknown as TestCaseServiceApi;
+    });
+
+    renderTestCaseListComponent();
+    // on test case list page
+    const importTestCasesButton = await screen.findByRole("button", {
+      name: /Import Test Cases/i,
+    });
+    expect(importTestCasesButton).toBeInTheDocument();
+    expect(importTestCasesButton).toBeEnabled();
+    userEvent.click(importTestCasesButton);
+
+    expect(screen.getByText("Test Case Import")).toBeInTheDocument();
+    // on Import Dialog
+    const importButton = await screen.findByRole("button", {
+      name: /Import/i,
+    });
+    expect(importButton).toBeDisabled();
+
+    const dropZone = screen.getByTestId("file-drop-input");
+    userEvent.upload(dropZone, zipFile);
+
+    await waitFor(async () => {
+      expect(importButton).toBeEnabled();
+      userEvent.click(importButton);
+      expect(setError).toHaveBeenCalled();
+    });
+  });
+
+  it("should should display warnings if one or more test cases were not imported", async () => {
+    const zipFile = await createZipFile(
+      [patientId1, patientId2],
+      [jsonBundle, jsonBundle]
+    );
+
+    const mockedOutcome: TestCaseImportOutcome[] = [
+      {
+        patientId: patientId1,
+        message: "Malformed Json",
+        successful: false,
+      },
+      {
+        patientId: patientId2,
+        message: null,
+        successful: true,
+      },
+    ];
+
+    useTestCaseServiceMock.mockImplementation(() => {
+      return {
+        getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
+        getTestCaseSeriesForMeasure: jest
+          .fn()
+          .mockResolvedValue(["Series 1", "Series 2"]),
+        scanImportFile: jest.fn().mockResolvedValue(mockScanResult),
+        importTestCases: jest.fn().mockResolvedValue({ data: mockedOutcome }),
+      } as unknown as TestCaseServiceApi;
+    });
+
+    renderTestCaseListComponent();
+    // on test case list page
+    const importTestCasesButton = await screen.findByRole("button", {
+      name: /Import Test Cases/i,
+    });
+    expect(importTestCasesButton).toBeInTheDocument();
+    expect(importTestCasesButton).toBeEnabled();
+    userEvent.click(importTestCasesButton);
+
+    expect(screen.getByText("Test Case Import")).toBeInTheDocument();
+    // on Import Dialog
+    const importButton = await screen.findByRole("button", {
+      name: /Import/i,
+    });
+    expect(importButton).toBeDisabled();
+
+    const dropZone = screen.getByTestId("file-drop-input");
+    userEvent.upload(dropZone, zipFile);
+
+    await waitFor(async () => {
+      expect(importButton).toBeEnabled();
+      userEvent.click(importButton);
+      expect(setWarnings).toHaveBeenCalledWith(mockedOutcome);
     });
   });
 });
