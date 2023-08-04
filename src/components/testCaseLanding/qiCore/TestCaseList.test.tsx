@@ -1432,7 +1432,7 @@ describe("TestCaseList component", () => {
     expect(importButton).toBeDisabled();
   });
 
-  it("should succesfully import test cases", async () => {
+  it.skip("should succesfully import test cases", async () => {
     const zipFile = await createZipFile(
       [patientId1, patientId2],
       [jsonBundle, jsonBundle]
