@@ -16,7 +16,7 @@ import CreateNewTestCaseDialog from "../../createTestCase/CreateNewTestCaseDialo
 import { MadieSpinner, Toast } from "@madie/madie-design-system/dist/react";
 import TestCaseListSideBarNav from "../common/TestCaseListSideBarNav";
 import Typography from "@mui/material/Typography";
-import TestCaseImportDialog from "../common/import/TestCaseImportDialog";
+import TestCaseImportFromBonnieDialog from "../common/import/TestCaseImportFromBonnieDialog";
 import {
   TestCasesPassingDetailsProps,
   TestCaseListProps,
@@ -414,7 +414,7 @@ const TestCaseList = (props: TestCaseListProps) => {
           <Typography color="inherit">{loadingState.message}</Typography>
         </div>
       )}
-      <TestCaseImportDialog
+      <TestCaseImportFromBonnieDialog
         open={importDialogState.open}
         onImport={onTestCaseImport}
         handleClose={() =>
