@@ -219,6 +219,11 @@ export class TestCaseServiceApi {
         "Unable to scan the import file. Please try again later."
       );
     }
+    // return {
+    //   fileName: "string",
+    //   valid: true,
+    //   error: null,
+    // };
   }
 
   // TODO: Refactor to dedup with FhirImportHelper::readImportFile

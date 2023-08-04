@@ -6,7 +6,7 @@ import { ScanValidationDto } from "../../../../api/models/ScanValidationDto";
 import TestCaseImportDialog from "./TestCaseImportDialog";
 // @ts-ignore
 import JSZip from "jszip";
-import { Measure } from "@madie/madie-models";
+import { Measure, TestCaseImportRequest } from "@madie/madie-models";
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -39,32 +39,88 @@ jest.mock("@madie/madie-util", () => ({
   },
 }));
 
-const mockedTestCases = {
-  id: "62c6c617e59fac0e20e02a03",
-  title: "Dr",
-  series: "Evil",
-  description: "",
-  createdAt: "2023-02-03T12:21:14.449Z",
-  json: "Example Json",
+const handleClose = jest.fn();
+const onImport = jest.fn();
+
+const jsonBundle = JSON.stringify({
+  resourceType: "Bundle",
+  id: "test.id",
+  entry: [
+    {
+      resourceType: "Patient",
+      id: "a648e724-ce72-4cac-b0a7-3c4d52784f73",
+    },
+  ],
+});
+
+const scanResult: ScanValidationDto = {
+  fileName: "testcaseExample.json",
+  valid: true,
+  error: null,
 };
 
-const createZipFile = async (patientId, fileName, data) => {
-  const parentFolderName = "CMS136FHIR-v0.0.000-FHIR4-TestCases";
-  const zip = new JSZip();
-  const subFolder = zip.folder(`${parentFolderName}/${patientId}`);
-  subFolder?.file(fileName, data);
-  return zip.generateAsync({ type: "blob" });
+const patientId1 = "8cdd6a96-732f-41da-9902-d680ca68157c";
+const patientId2 = "a648e724-ce72-4cac-b0a7-3c4d52784f73";
+const defaultFileName = "testcaseExample.json";
+
+const createZipFile = async (
+  patientIds: string[],
+  jsonBundle?: string[],
+  jsonFileName?: string[],
+  zipFileName = "CMS136FHIR-v0.0.000-FHIR4-TestCases"
+) => {
+  try {
+    const zip = new JSZip();
+    const parentFolder = zip.folder(zipFileName);
+
+    patientIds.forEach((patientId, index) => {
+      const subFolderEntry = parentFolder.folder(patientId);
+      subFolderEntry.file(
+        jsonFileName ? jsonFileName[index] : defaultFileName,
+        jsonBundle[index]
+      );
+    });
+
+    const zipContent = await zip.generateAsync({ type: "nodebuffer" });
+    const blob = new Blob([zipContent], { type: "application/zip" });
+    return new File([blob], "CMS136FHIR-v0.0.000-FHIR4-TestCases", {
+      type: "application/zip",
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+const createZipFileWithNoParentFolder = async (
+  patientIds: string[],
+  jsonBundle?: string[],
+  jsonFileName?: string[]
+) => {
+  try {
+    const zip = new JSZip();
+    patientIds.forEach((patientId, index) => {
+      const subFolderEntry = zip.folder(patientId);
+      subFolderEntry.file(
+        jsonFileName ? jsonFileName[index] : defaultFileName,
+        jsonBundle[index]
+      );
+    });
+
+    const zipContent = await zip.generateAsync({ type: "nodebuffer" });
+    const blob = new Blob([zipContent], { type: "application/zip" });
+    return new File([blob], "CMS136FHIR-v0.0.000-FHIR4-TestCases", {
+      type: "application/zip",
+    });
+  } catch (error) {
+    throw error;
+  }
 };
 
 describe("TestCaseImportDialog", () => {
   it("should render nothing when open is false", () => {
-    const open = false;
-    const handleClose = jest.fn();
-    const onImport = jest.fn();
-
     render(
       <TestCaseImportDialog
-        dialogOpen={open}
+        dialogOpen={false}
         handleClose={handleClose}
         onImport={onImport}
       />
@@ -74,13 +130,9 @@ describe("TestCaseImportDialog", () => {
   });
 
   it("should render when open is true", () => {
-    const open = true;
-    const handleClose = jest.fn();
-    const onImport = jest.fn();
-
     render(
       <TestCaseImportDialog
-        dialogOpen={open}
+        dialogOpen={true}
         handleClose={handleClose}
         onImport={onImport}
       />
@@ -98,13 +150,9 @@ describe("TestCaseImportDialog", () => {
   });
 
   it("should call handleClose when Cancel button is clicked", () => {
-    const open = true;
-    const handleClose = jest.fn();
-    const onImport = jest.fn();
-
     render(
       <TestCaseImportDialog
-        dialogOpen={open}
+        dialogOpen={true}
         handleClose={handleClose}
         onImport={onImport}
       />
@@ -117,86 +165,65 @@ describe("TestCaseImportDialog", () => {
     expect(handleClose).toHaveBeenCalled();
   });
 
-  it.skip("should preview a valid file", async () => {
-    const open = true;
-    const handleClose = jest.fn();
-    const onImport = jest.fn();
-    const fileName = "testcaseExample.json";
-    const jsonString = JSON.stringify({
-      resourceType: "Bundle",
-      id: "test.id",
-      entry: [
-        {
-          resourceType: "Patient",
-          id: "a648e724-ce72-4cac-b0a7-3c4d52784f73",
-        },
-      ],
-    });
+  it("should preview a valid file", async () => {
+    const expectedOutCome: TestCaseImportRequest[] = [
+      {
+        patientId: patientId1,
+        json: jsonBundle,
+      },
+      {
+        patientId: patientId2,
+        json: jsonBundle,
+      },
+    ];
 
-    // @ts-ignore
-    let finalZip = await createZipFile(
-      "a648e724-ce72-4cac-b0a7-3c4d52784f73",
-      fileName,
-      jsonString
+    const zipFile = await createZipFile(
+      [patientId1, patientId2],
+      [jsonBundle, jsonBundle]
     );
-
-    finalZip = {
-      acceptedFiles: [finalZip],
-      fileRejections: [],
-    };
-
-    const scanResult: ScanValidationDto = {
-      fileName: "testcaseExample.json",
-      valid: true,
-      error: null,
-    };
 
     mockedAxios.post.mockReset().mockResolvedValue({ data: scanResult });
 
     render(
       <TestCaseImportDialog
-        dialogOpen={open}
+        dialogOpen={true}
         handleClose={handleClose}
         onImport={onImport}
       />
     );
 
-    const inputEl = screen.getByTestId("file-drop-input");
-    userEvent.upload(inputEl, testFile);
+    const dropZone = screen.getByTestId("file-drop-input");
+    userEvent.upload(dropZone, zipFile);
 
     await waitFor(async () => {
       const importBtn = await screen.getByRole("button", { name: "Import" });
       expect(importBtn).toBeEnabled();
       userEvent.click(importBtn);
-      expect(onImport).toHaveBeenCalled();
+      expect(onImport).toHaveBeenCalledWith(expectedOutCome);
+      expect(screen.getByTestId("test-case-preview-header")).toHaveTextContent(
+        "Complete"
+      );
     });
   });
 
-  it.skip("should show error message when file scan validation call fails", async () => {
-    const open = true;
-    const handleClose = jest.fn();
-    const onImport = jest.fn();
-    const fileName = "testcaseExample.json";
-
-    const zip = new JSZip();
-    zip.file(fileName, JSON.stringify(mockedTestCases));
-    const finalZip = await zip.generateAsync({
-      type: "blob",
-      name: "TestCaseExport.zip",
-    });
+  it("should show error message when file scan validation call fails", async () => {
+    const zipFile = await createZipFile(
+      [patientId1, patientId2],
+      [jsonBundle, jsonBundle]
+    );
 
     mockedAxios.post.mockReset().mockRejectedValue(new Error("BAD THINGS"));
 
     render(
       <TestCaseImportDialog
-        dialogOpen={open}
+        dialogOpen={true}
         handleClose={handleClose}
         onImport={onImport}
       />
     );
 
-    const inputEl = screen.getByTestId("file-drop-input");
-    userEvent.upload(inputEl, finalZip);
+    const dropZone = screen.getByTestId("file-drop-input");
+    userEvent.upload(dropZone, zipFile);
 
     await waitFor(() => {
       expect(
@@ -207,18 +234,11 @@ describe("TestCaseImportDialog", () => {
     });
   });
 
-  it.skip("displays error when scan validation returns invalid file", async () => {
-    const open = true;
-    const handleClose = jest.fn();
-    const onImport = jest.fn();
-    const fileName = "testcaseExample.json";
-
-    const zip = new JSZip();
-    zip.file(fileName, JSON.stringify(mockedTestCases));
-    const finalZip = await zip.generateAsync({
-      type: "blob",
-      name: "TestCaseExport.zip",
-    });
+  it("displays error when scan validation returns invalid file", async () => {
+    const zipFile = await createZipFile(
+      [patientId1, patientId2],
+      [jsonBundle, jsonBundle]
+    );
 
     const scanResult: ScanValidationDto = {
       fileName: "testcaseExample.json",
@@ -233,21 +253,200 @@ describe("TestCaseImportDialog", () => {
 
     render(
       <TestCaseImportDialog
-        dialogOpen={open}
+        dialogOpen={true}
         handleClose={handleClose}
         onImport={onImport}
       />
     );
 
-    const inputEl = screen.getByTestId("file-drop-input");
-    userEvent.upload(inputEl, finalZip);
+    const dropZone = screen.getByTestId("file-drop-input");
+    userEvent.upload(dropZone, zipFile);
 
     await waitFor(() => {
       screen.getByText("BAD THINGS HAPPENED");
     });
-    expect(screen.queryByText(/Test Cases from File/i)).not.toBeInTheDocument();
-    // close toast
     userEvent.click(screen.getByTestId("close-toast-button"));
     expect(screen.queryByText(/BAD THINGS HAPPENED/i)).not.toBeInTheDocument();
+  });
+
+  it("Should display error message when file is rejected", async () => {
+    const nonZipFile = new File(
+      ["value"],
+      "CMS136FHIR-v0.0.000-FHIR4-TestCases",
+      {
+        type: "application/json",
+      }
+    );
+
+    mockedAxios.post.mockReset().mockResolvedValue({ data: scanResult });
+
+    render(
+      <TestCaseImportDialog
+        dialogOpen={true}
+        handleClose={handleClose}
+        onImport={onImport}
+      />
+    );
+
+    const dropZone = screen.getByTestId("file-drop-input");
+    userEvent.upload(dropZone, nonZipFile);
+
+    await waitFor(async () => {
+      const importBtn = await screen.getByRole("button", { name: "Import" });
+      expect(importBtn).toBeDisabled();
+      expect(
+        screen.getByTestId("test-case-import-error-div")
+      ).toHaveTextContent("File type must be application/zip,.zip");
+    });
+  });
+
+  it("Should ignore folders that are not a valid UUID", async () => {
+    const expectedOutCome: TestCaseImportRequest[] = [
+      {
+        patientId: patientId2,
+        json: jsonBundle,
+      },
+    ];
+
+    const zipFile = await createZipFile(
+      ["patientId1", patientId2],
+      [jsonBundle, jsonBundle]
+    );
+
+    mockedAxios.post.mockReset().mockResolvedValue({ data: scanResult });
+
+    render(
+      <TestCaseImportDialog
+        dialogOpen={true}
+        handleClose={handleClose}
+        onImport={onImport}
+      />
+    );
+
+    const dropZone = screen.getByTestId("file-drop-input");
+    userEvent.upload(dropZone, zipFile);
+
+    await waitFor(async () => {
+      const importBtn = await screen.getByRole("button", { name: "Import" });
+      expect(importBtn).toBeEnabled();
+      userEvent.click(importBtn);
+      expect(onImport).toHaveBeenCalledWith(expectedOutCome);
+      expect(screen.getByTestId("test-case-preview-header")).toHaveTextContent(
+        "Complete"
+      );
+    });
+  });
+
+  it("Should ignore files that are not json", async () => {
+    const expectedOutCome: TestCaseImportRequest[] = [
+      {
+        patientId: patientId2,
+        json: jsonBundle,
+      },
+    ];
+
+    const zipFile = await createZipFile(
+      [patientId1, patientId2],
+      [jsonBundle, jsonBundle],
+      ["notAJsonFileName.txt", defaultFileName]
+    );
+
+    mockedAxios.post.mockReset().mockResolvedValue({ data: scanResult });
+
+    render(
+      <TestCaseImportDialog
+        dialogOpen={true}
+        handleClose={handleClose}
+        onImport={onImport}
+      />
+    );
+
+    const dropZone = screen.getByTestId("file-drop-input");
+    userEvent.upload(dropZone, zipFile);
+
+    await waitFor(async () => {
+      const importBtn = await screen.getByRole("button", { name: "Import" });
+      expect(importBtn).toBeEnabled();
+      userEvent.click(importBtn);
+      expect(onImport).toHaveBeenCalledWith(expectedOutCome);
+      expect(screen.getByTestId("test-case-preview-header")).toHaveTextContent(
+        "Complete"
+      );
+    });
+  });
+
+  it("Should display Failed status for file upload, if the zip doesn't contain any valid Json files", async () => {
+    const zipFile = await createZipFile(
+      [patientId1, patientId2],
+      [jsonBundle, jsonBundle],
+      ["notAJsonFileName.txt", "ReadMe.txt"]
+    );
+
+    mockedAxios.post.mockReset().mockResolvedValue({ data: scanResult });
+
+    render(
+      <TestCaseImportDialog
+        dialogOpen={true}
+        handleClose={handleClose}
+        onImport={onImport}
+      />
+    );
+
+    const dropZone = screen.getByTestId("file-drop-input");
+    userEvent.upload(dropZone, zipFile);
+
+    await waitFor(async () => {
+      const importBtn = await screen.getByRole("button", { name: "Import" });
+      expect(importBtn).toBeDisabled();
+      expect(screen.getByTestId("test-case-preview-header")).toHaveTextContent(
+        "Failed"
+      );
+      expect(
+        screen.getByTestId("test-case-import-error-div")
+      ).toHaveTextContent(
+        "Unable to find any valid test case json. Please make sure the format is accurate"
+      );
+    });
+  });
+
+  it("Should preview as a valid file, if the parent folder is not found", async () => {
+    const expectedOutCome: TestCaseImportRequest[] = [
+      {
+        patientId: patientId1,
+        json: jsonBundle,
+      },
+      {
+        patientId: patientId2,
+        json: jsonBundle,
+      },
+    ];
+
+    const zipFile = await createZipFileWithNoParentFolder(
+      [patientId1, patientId2],
+      [jsonBundle, jsonBundle]
+    );
+
+    mockedAxios.post.mockReset().mockResolvedValue({ data: scanResult });
+
+    render(
+      <TestCaseImportDialog
+        dialogOpen={true}
+        handleClose={handleClose}
+        onImport={onImport}
+      />
+    );
+
+    const dropZone = screen.getByTestId("file-drop-input");
+    userEvent.upload(dropZone, zipFile);
+
+    await waitFor(async () => {
+      const importBtn = await screen.getByRole("button", { name: "Import" });
+      expect(importBtn).toBeEnabled();
+      userEvent.click(importBtn);
+      expect(onImport).toHaveBeenCalledWith(expectedOutCome);
+      expect(screen.getByTestId("test-case-preview-header")).toHaveTextContent(
+        "Complete"
+      );
+    });
   });
 });
