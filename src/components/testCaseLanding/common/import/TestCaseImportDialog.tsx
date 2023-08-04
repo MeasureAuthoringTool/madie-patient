@@ -52,7 +52,7 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
     setUploadingFileSpinner(true);
     let response: ScanValidationDto;
     try {
-      response = await testCaseService.current.scanImportFile(acceptedFiles);
+      response = await testCaseService.current.scanImportFile(acceptedFiles[0]);
     } catch (error) {
       setUploadingFileSpinner(false);
       showErrorToast(

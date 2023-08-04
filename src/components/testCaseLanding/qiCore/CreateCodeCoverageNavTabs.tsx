@@ -178,7 +178,6 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           )}
         </Box>
         <Button
-          disabled={!canEdit}
           onClick={exportTestCases}
           data-testid="export-test-cases-button"
         >
