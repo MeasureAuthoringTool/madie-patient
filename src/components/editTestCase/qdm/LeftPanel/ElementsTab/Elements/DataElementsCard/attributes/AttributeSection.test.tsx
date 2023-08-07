@@ -1,9 +1,32 @@
 import React from "react";
-import { fireEvent, render, screen, within } from "@testing-library/react";
+
+import {
+  render,
+  screen,
+  within,
+  fireEvent,
+  waitFor,
+} from "@testing-library/react";
+
 import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
 import AttributeSection from "./AttributeSection";
 import { EncounterOrder, AssessmentPerformed } from "cqm-models";
+import { act } from "react-dom/test-utils";
+
+jest.mock("dayjs", () => ({
+  extend: jest.fn(),
+  utc: jest.fn((...args) => {
+    const dayjs = jest.requireActual("dayjs");
+    dayjs.extend(jest.requireActual("dayjs/plugin/utc"));
+
+    return dayjs.utc(
+      args.filter((arg) => arg).length > 0 ? args : "01/01/2023"
+    );
+  }),
+  startOf: jest.fn().mockReturnThis(),
+}));
+const onAddClicked = jest.fn();
 
 describe("AttributeSection", () => {
   it("should render two empty dropdowns when null selectedDataElement is provided", () => {
@@ -158,7 +181,10 @@ describe("AttributeSection", () => {
   it("date selection shows date input", async () => {
     const assessmentElement: AssessmentPerformed = new AssessmentPerformed();
     const { container } = render(
-      <AttributeSection selectedDataElement={assessmentElement} />
+      <AttributeSection
+        selectedDataElement={assessmentElement}
+        onAddClicked={onAddClicked}
+      />
     );
 
     const attributeSelectBtn = screen.getByRole("button", {
@@ -193,9 +219,16 @@ describe("AttributeSection", () => {
     const dateInput2 = await screen.findByTestId("CalendarIcon");
     expect(dateInput).toBeInTheDocument();
     expect(dateInput2).toBeInTheDocument();
-  });
 
-  it("DateTime selection shows date input", async () => {
+    fireEvent.change(dateInput, { target: { value: "01/01/2023" } });
+    expect(dateInput.value).toBe("01/01/2023");
+
+    const addButton = screen.getByTestId("AddCircleOutlineIcon");
+    expect(addButton).toBeInTheDocument();
+    userEvent.click(addButton);
+  });
+  
+  it("shows RatioInput on selecting the Ratio type", async () => {
     const assessmentElement: AssessmentPerformed = new AssessmentPerformed();
     const { container } = render(
       <AttributeSection selectedDataElement={assessmentElement} />
@@ -228,15 +261,51 @@ describe("AttributeSection", () => {
     expect(typeSelect).toBeInTheDocument();
     const typeOptions = within(typeSelect).getAllByRole("option");
     expect(typeOptions.length).toEqual(9);
-    userEvent.click(within(typeSelect).getByText("DateTime"));
+    fireEvent.click(within(typeSelect).getByText("Ratio"));
+  });
+        
+          it("DateTime selection shows date input", async () => {
+ const assessmentElement: AssessmentPerformed = new AssessmentPerformed();
+    const { container } = render(
+      <AttributeSection selectedDataElement={assessmentElement} />
+    );
+
+    const attributeSelectBtn = screen.getByRole("button", {
+      name: "Attribute Select Attribute",
+    });
+    expect(attributeSelectBtn).toBeInTheDocument();
+
+    userEvent.click(attributeSelectBtn);
+
+    const attributeSelect = await screen.findByRole("listbox");
+    const attributeOptions = within(attributeSelect).getAllByRole("option");
+    expect(attributeOptions).toHaveLength(7);
+
+    userEvent.click(within(attributeSelect).getByText(/result/i));
+    const attributeInput = within(attributeSelectBtn.parentElement).getByRole(
+      "textbox",
+      { hidden: true }
+    );
+    expect(attributeInput).toBeInTheDocument();
+    expect(attributeInput).toHaveValue("Result");
+    const typeSelectBtn = await screen.findByRole("button", {
+      name: /type/i,
+    });
+    expect(typeSelectBtn).toBeInTheDocument();
+    userEvent.click(typeSelectBtn);
+    const typeSelect = await screen.findByRole("listbox");
+    expect(typeSelect).toBeInTheDocument();
+    const typeOptions = within(typeSelect).getAllByRole("option");
+    expect(typeOptions.length).toEqual(9);
+             userEvent.click(within(typeSelect).getByText("DateTime"));
     const dateTimeInput = await screen.findByPlaceholderText(
       "MM/DD/YYYY hh:mm aa"
     );
     const dateTimeInput2 = await screen.findByTestId("CalendarIcon");
     expect(dateTimeInput).toBeInTheDocument();
     expect(dateTimeInput2).toBeInTheDocument();
-  });
-
+          });
+          
   it("Clicking the plus button calls works", async () => {
     const assessmentElement: AssessmentPerformed = new AssessmentPerformed();
     const onAddClicked = jest.fn();

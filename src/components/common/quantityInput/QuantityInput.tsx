@@ -97,7 +97,7 @@ const QuantityInput = ({
   const handleQuantityUnitChange = (newValue) => {
     const newQuantity: CQL.Quantity = {
       value: currentQuantity ? currentQuantity.value : 0,
-      unit: newValue.value?.code,
+      unit: newValue.value?.name,
     };
     setCurrentQuantity(newQuantity);
     setCurrentUnit(newValue);
