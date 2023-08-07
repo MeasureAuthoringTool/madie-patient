@@ -44,7 +44,34 @@ import { checkUserCanEdit, useFeatureFlags } from "@madie/madie-util";
 import { ScanValidationDto } from "../../../api/models/ScanValidationDto";
 // @ts-ignore
 import JSZip from "jszip";
-import { createZipFile } from "../common/import/TestCaseImportDialog.test";
+
+const createZipFile = async (
+  patientIds: string[],
+  jsonBundle?: string[],
+  jsonFileName?: string[],
+  zipFileName = "CMS136FHIR-v0.0.000-FHIR4-TestCases"
+) => {
+  try {
+    const zip = new JSZip();
+    const parentFolder = zip.folder(zipFileName);
+
+    patientIds.forEach((patientId, index) => {
+      const subFolderEntry = parentFolder.folder(patientId);
+      subFolderEntry.file(
+        jsonFileName ? jsonFileName[index] : "testcaseExample.json",
+        jsonBundle[index]
+      );
+    });
+
+    const zipContent = await zip.generateAsync({ type: "nodebuffer" });
+    const blob = new Blob([zipContent], { type: "application/zip" });
+    return new File([blob], "CMS136FHIR-v0.0.000-FHIR4-TestCases", {
+      type: "application/zip",
+    });
+  } catch (error) {
+    throw error;
+  }
+};
 
 const serviceConfig: ServiceConfig = {
   elmTranslationService: { baseUrl: "base.url" },

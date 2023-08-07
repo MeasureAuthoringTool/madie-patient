@@ -63,7 +63,7 @@ const patientId1 = "8cdd6a96-732f-41da-9902-d680ca68157c";
 const patientId2 = "a648e724-ce72-4cac-b0a7-3c4d52784f73";
 const defaultFileName = "testcaseExample.json";
 
-export const createZipFile = async (
+const createZipFile = async (
   patientIds: string[],
   jsonBundle?: string[],
   jsonFileName?: string[],
