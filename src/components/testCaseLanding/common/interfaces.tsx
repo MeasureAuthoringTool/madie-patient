@@ -1,4 +1,5 @@
 import React, { Dispatch, SetStateAction } from "react";
+import { TestCaseImportOutcome } from "@madie/madie-models";
 
 export interface TestCasesPassingDetailsProps {
   passPercentage: number;
@@ -8,4 +9,5 @@ export interface TestCasesPassingDetailsProps {
 export interface TestCaseListProps {
   errors: Array<string>;
   setErrors: Dispatch<SetStateAction<Array<string>>>;
+  setWarnings?: Dispatch<SetStateAction<TestCaseImportOutcome[]>>;
 }

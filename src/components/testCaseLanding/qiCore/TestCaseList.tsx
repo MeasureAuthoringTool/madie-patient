@@ -2,7 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import * as _ from "lodash";
-import { Group, TestCase, MeasureErrorType } from "@madie/madie-models";
+import {
+  Group,
+  TestCase,
+  MeasureErrorType,
+  TestCaseImportRequest,
+  TestCaseImportOutcome,
+} from "@madie/madie-models";
 import { useParams } from "react-router-dom";
 import calculationService from "../../../api/CalculationService";
 import {
@@ -17,7 +23,7 @@ import CreateNewTestCaseDialog from "../../createTestCase/CreateNewTestCaseDialo
 import { MadieSpinner, Toast } from "@madie/madie-design-system/dist/react";
 import TestCaseListSideBarNav from "../common/TestCaseListSideBarNav";
 import Typography from "@mui/material/Typography";
-import TestCaseImportDialog from "../common/import/TestCaseImportDialog";
+import TestCaseImportFromBonnieDialog from "../common/import/TestCaseImportFromBonnieDialog";
 import {
   TestCasesPassingDetailsProps,
   TestCaseListProps,
@@ -27,7 +33,7 @@ import UseTestCases from "../common/Hooks/UseTestCases";
 import UseToast from "../common/Hooks/UseToast";
 import getModelFamily from "../../../util/measureModelHelpers";
 import FileSaver from "file-saver";
-import moment from "moment";
+import TestCaseImportDialog from "../common/import/TestCaseImportDialog";
 
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
@@ -59,7 +65,7 @@ export const getCoverageValueFromHtml = (
 };
 
 const TestCaseList = (props: TestCaseListProps) => {
-  const { setErrors } = props;
+  const { setErrors, setWarnings } = props;
   const { measureId } = useParams<{ measureId: string }>();
   const {
     testCases,
@@ -107,9 +113,11 @@ const TestCaseList = (props: TestCaseListProps) => {
   const [measureBundle] = bundleState;
   const [valueSets] = valueSetsState;
   const [selectedPopCriteria, setSelectedPopCriteria] = useState<Group>();
-  const [importDialogState, setImportDialogState] = useState<any>({
-    open: false,
-  });
+  const [importFromBonnieDialogState, setImportFromBonnieDialogState] =
+    useState<any>({
+      open: false,
+    });
+  const [openImportDialog, setOpenImportDialog] = useState<boolean>(false);
   const abortController = useRef(null);
   const [createOpen, setCreateOpen] = useState<boolean>(false);
 
@@ -326,8 +334,6 @@ const TestCaseList = (props: TestCaseListProps) => {
 
     if (validTestCases && validTestCases.length > 0 && measureBundle) {
       setExecuting(true);
-      const start = Date.now();
-      let end;
       try {
         const calculationOutput: CalculationOutput<any> =
           await calculation.current.calculateTestCases(
@@ -336,19 +342,6 @@ const TestCaseList = (props: TestCaseListProps) => {
             measureBundle,
             valueSets
           );
-        if (calculationOutput) {
-          end = Date.now();
-        }
-        const startMoment = moment(start);
-        const endMoment = moment(end);
-        const diff = endMoment.diff(startMoment);
-        const diffDuration = moment.duration(diff);
-        // eslint-disable-next-line no-console
-        console.debug("Minutes:", diffDuration.minutes());
-        // eslint-disable-next-line no-console
-        console.debug("Seconds:", diffDuration.seconds());
-        // eslint-disable-next-line no-console
-        console.debug("Milliseconds:", diffDuration.milliseconds());
         setCalculationOutput(calculationOutput);
       } catch (error) {
         console.error("calculateTestCases: error.message = " + error.message);
@@ -378,8 +371,11 @@ const TestCaseList = (props: TestCaseListProps) => {
   const readerString = generateSRString(testCases);
   const executionResultLength = Object.keys(executionResults).length;
 
-  const onTestCaseImport = async (testCases: TestCase[]) => {
-    setImportDialogState({ ...importDialogState, open: false });
+  const onTestCaseImportFromBonnie = async (testCases: TestCase[]) => {
+    setImportFromBonnieDialogState({
+      ...importFromBonnieDialogState,
+      open: false,
+    });
     setLoadingState(() => ({
       loading: true,
       message: "Importing Test Cases...",
@@ -387,6 +383,44 @@ const TestCaseList = (props: TestCaseListProps) => {
 
     try {
       await testCaseService.current.createTestCases(measureId, testCases);
+      retrieveTestCases();
+    } catch (error) {
+      setErrors((prevState) => [...prevState, IMPORT_ERROR]);
+    } finally {
+      setLoadingState({ loading: false, message: "" });
+    }
+  };
+
+  const onTestCaseImport = async (
+    testCaseImportRequest: TestCaseImportRequest[]
+  ) => {
+    setWarnings(null);
+    setOpenImportDialog(false);
+    setLoadingState(() => ({
+      loading: true,
+      message: "Importing Test Cases...",
+    }));
+
+    try {
+      const response = await testCaseService.current.importTestCases(
+        measureId,
+        testCaseImportRequest
+      );
+      const testCaseImportOutcome: TestCaseImportOutcome[] = response.data;
+      const failedImports = testCaseImportOutcome.filter((outcome) => {
+        if (!outcome.successful) return outcome;
+      });
+      if (failedImports && failedImports.length > 0) {
+        setWarnings(testCaseImportOutcome);
+      } else {
+        const successfulImports =
+          testCaseImportOutcome.length - failedImports.length;
+        setToastOpen(true);
+        setToastType("success");
+        setToastMessage(
+          `(${successfulImports}) Test cases imported successfully`
+        );
+      }
       retrieveTestCases();
     } catch (error) {
       setErrors((prevState) => [...prevState, IMPORT_ERROR]);
@@ -435,11 +469,20 @@ const TestCaseList = (props: TestCaseListProps) => {
                 measure={measure}
                 createNewTestCase={createNewTestCase}
                 executeTestCases={executeTestCases}
+                onImportTestCasesFromBonnie={() => {
+                  setErrors((prevState) => [
+                    ...prevState?.filter((e) => e !== IMPORT_ERROR),
+                  ]);
+                  setImportFromBonnieDialogState({
+                    ...importFromBonnieDialogState,
+                    open: true,
+                  });
+                }}
                 onImportTestCases={() => {
                   setErrors((prevState) => [
                     ...prevState?.filter((e) => e !== IMPORT_ERROR),
                   ]);
-                  setImportDialogState({ ...importDialogState, open: true });
+                  setOpenImportDialog(true);
                 }}
                 testCasePassFailStats={testCasePassFailStats}
                 coveragePercentage={coveragePercentage}
@@ -506,11 +549,21 @@ const TestCaseList = (props: TestCaseListProps) => {
           <Typography color="inherit">{loadingState.message}</Typography>
         </div>
       )}
-      <TestCaseImportDialog
-        open={importDialogState.open}
-        onImport={onTestCaseImport}
+      {openImportDialog && (
+        <TestCaseImportDialog
+          dialogOpen={openImportDialog}
+          onImport={onTestCaseImport}
+          handleClose={() => setOpenImportDialog(false)}
+        />
+      )}
+      <TestCaseImportFromBonnieDialog
+        open={importFromBonnieDialogState.open}
+        onImport={onTestCaseImportFromBonnie}
         handleClose={() =>
-          setImportDialogState({ ...importDialogState, open: false })
+          setImportFromBonnieDialogState({
+            ...importFromBonnieDialogState,
+            open: false,
+          })
         }
       />
     </div>
