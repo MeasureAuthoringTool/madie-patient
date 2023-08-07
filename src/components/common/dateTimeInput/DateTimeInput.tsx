@@ -39,18 +39,12 @@ const DateTimeInterval = ({
   };
 
   return (
-    <div>
-      <FormControl>
-        <div tw="flex flex-row gap-8">
-          <DateTimeField
-            disabled={!canEdit}
-            label={`${label}`}
-            handleDateTimeChange={handleDateTimeChange}
-            dateTimeValue={dateTime}
-          />
-        </div>
-      </FormControl>
-    </div>
+    <DateTimeField
+      disabled={!canEdit}
+      label={`${label}`}
+      handleDateTimeChange={handleDateTimeChange}
+      dateTimeValue={dateTime}
+    />
   );
 };
 
