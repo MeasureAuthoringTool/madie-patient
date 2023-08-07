@@ -2,13 +2,7 @@ import React from "react";
 import { Measure } from "@madie/madie-models";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, test } from "@jest/globals";
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  within,
-} from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import DataElementsCard, {
   applyAttribute,
@@ -20,7 +14,6 @@ import {
 } from "../../../../../../../api/ServiceContext";
 import { QdmExecutionContextProvider } from "../../../../../../routes/qdm/QdmExecutionContext";
 import { FormikProvider, FormikContextType } from "formik";
-import userEvent from "@testing-library/user-event";
 
 const serviceConfig: ServiceConfig = {
   testCaseService: {
