@@ -2,6 +2,9 @@ import { stringifyValue, getDisplayFromId } from "./QdmAttributeHelpers";
 import cqmModels from "cqm-models";
 
 describe("StringifyValue", () => {
+  test("stringify value stringifies a number to a string without thinking it's a date", () => {
+    expect(stringifyValue(1)).toBe("1");
+  });
   test("stringify value stringifies null value", () => {
     expect(stringifyValue(null)).toBe("null");
   });

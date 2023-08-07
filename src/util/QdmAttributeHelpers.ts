@@ -96,8 +96,8 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
     const title = codeSystemMap[value.system];
     return `${title} : ${value.code}`;
   }
-  // it's some kind of date
-  else if (!isNaN(Date.parse(value))) {
+  // typeof number parses to a date. Check to make sure it's not a number.
+  else if (!typeof "number" && !isNaN(Date.parse(value))) {
     const parsedDate = Date.parse(value);
     const resultDate = new Date(parsedDate);
     const year = resultDate.getUTCFullYear() || null;
