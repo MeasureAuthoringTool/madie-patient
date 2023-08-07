@@ -2,7 +2,7 @@ import React from "react";
 import { Measure } from "@madie/madie-models";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, test } from "@jest/globals";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import DataElementsCard, {
   applyAttribute,
