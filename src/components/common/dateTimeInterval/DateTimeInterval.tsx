@@ -3,40 +3,56 @@ import { DateTimeField } from "@madie/madie-design-system/dist/react";
 import { FormControl } from "@mui/material";
 import "twin.macro";
 import "styled-components/macro";
+import { CQL } from "cqm-models";
+import { getCQLDateTime } from "../dateTimeInput/DateTimeInput";
 
 interface DateTimeIntervalProps {
   label: string;
-  startDateTime: object;
-  handleStartDateTimeChange: Function;
-  endDateTime: object;
-  handleEndDateTimeChange: Function;
+  dateTimeInterval: CQL.DateTimeInterval;
+  onDateTimeIntervalChange: Function;
   canEdit: boolean;
+  attributeName: string;
 }
 
 const DateTimeInterval = ({
   label,
-  startDateTime,
-  handleStartDateTimeChange,
-  endDateTime,
-  handleEndDateTimeChange,
+  dateTimeInterval,
+  onDateTimeIntervalChange,
   canEdit,
+  attributeName,
 }: DateTimeIntervalProps) => {
+  const handleStartDateTimeChange = (newValue) => {
+    const startDateTime = getCQLDateTime(newValue);
+    onDateTimeIntervalChange(
+      {
+        ...dateTimeInterval,
+        low: startDateTime,
+      },
+      attributeName
+    );
+  };
+  const handleEndDateTimeChange = (newValue) => {
+    const endDateTime = getCQLDateTime(newValue);
+    onDateTimeIntervalChange(
+      { ...dateTimeInterval, high: endDateTime },
+      attributeName
+    );
+  };
   return (
     <div>
-      <h5 tw="text-blue-800 mb-2">Time Range</h5>
       <FormControl>
         <div tw="flex flex-row gap-8">
           <DateTimeField
             disabled={!canEdit}
             label={`${label} - Start`}
-            handlDateTimeChange={handleStartDateTimeChange}
-            dateTimeValue={startDateTime}
+            handleDateTimeChange={handleStartDateTimeChange}
+            dateTimeValue={dateTimeInterval?.low}
           />
           <DateTimeField
             disabled={!canEdit}
             label={`${label} - End`}
-            handlDateTimeChange={handleEndDateTimeChange}
-            dateTimeValue={endDateTime}
+            handleDateTimeChange={handleEndDateTimeChange}
+            dateTimeValue={dateTimeInterval?.high}
           />
         </div>
       </FormControl>
