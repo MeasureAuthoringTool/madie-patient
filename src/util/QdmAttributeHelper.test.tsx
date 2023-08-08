@@ -2,13 +2,29 @@ import { stringifyValue, getDisplayFromId } from "./QdmAttributeHelpers";
 import cqmModels from "cqm-models";
 
 describe("StringifyValue", () => {
+  test("stringify value stringifies a number to a string without thinking it's a date", () => {
+    expect(stringifyValue(1)).toBe("1");
+  });
   test("stringify value stringifies null value", () => {
     expect(stringifyValue(null)).toBe("null");
   });
   test("stringify value stringifies Code  value", () => {
-    const code = new cqmModels.CQL.Code("code", "system", "version");
+    const codeSystem = {
+      "2.16.840.1.113883.6.96": "SNOMEDCT",
+      "2.16.840.1.113883.6.238": "CDCREC",
+      "2.16.840.1.113883.5.1": "AdministrativeGender",
+      "2.16.840.1.113883.3.221.5": "SOP",
+      "2.16.840.1.113883.6.90": "ICD10CM",
+      "2.16.840.1.113883.6.88": "RXNORM",
+      "2.16.840.1.113883.6.1": "LOINC",
+    };
+    const code = new cqmModels.CQL.Code(
+      "10725009",
+      "2.16.840.1.113883.6.96",
+      null
+    );
     code.title = "title";
-    expect(stringifyValue(code)).toBe(`title : ${code.code}`);
+    expect(stringifyValue(code, false, codeSystem)).toBe("SNOMEDCT : 10725009");
   });
   test("stringify value stringifies dates that are DateTime", () => {
     expect(stringifyValue("2012-04-05T08:15:00.000")).toBe(
