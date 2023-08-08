@@ -5,6 +5,7 @@ import "ace-builds/src-noconflict/mode-json";
 
 export interface EditorPropsType {
   value: string;
+  height: string;
   onChange?: (value: string) => void;
   parseDebounceTime?: number;
   inboundAnnotations?: Ace.Annotation[];
@@ -25,6 +26,7 @@ const setCommandEnabled = (editor, name, enabled) => {
 };
 
 const Editor = ({
+  height,
   value,
   onChange,
   parseDebounceTime = 1500,
@@ -63,41 +65,42 @@ const Editor = ({
   });
 
   return (
-    <>
-      <div data-testid="test-case-json-editor">
-        <AceEditor
-          value={value}
-          ref={aceRef}
-          onChange={(value) => {
-            onChange(value);
-          }}
-          onLoad={(aceEditor: Ace.Editor) => {
-            if (setEditor) {
-              setEditor(aceEditor);
-            }
-          }}
-          mode="json" // Temporary value of mode to prevent a dynamic search request.
-          theme="monokai"
-          name="ace-editor-wrapper"
-          enableBasicAutocompletion={true}
-          width="100%"
-          height="calc(100vh - 135px)"
-          showPrintMargin={true}
-          showGutter={true}
-          setOptions={{
-            enableBasicAutocompletion: true,
-            enableLiveAutocompletion: true,
-            enableSnippets: true,
-            showLineNumbers: true,
-            tabSize: 2,
-            autoScrollEditorIntoView: true,
-          }}
-          editorProps={{ $blockScrolling: true }}
-          readOnly={readOnly}
-          wrapEnabled={true}
-        />
-      </div>
-    </>
+    <div data-testid="test-case-json-editor"
+    style={{ height: 'inherit'}}
+    >
+    <AceEditor
+      value={value}
+      ref={aceRef}
+      onChange={(value) => {
+        onChange(value);
+      }}
+      onLoad={(aceEditor: Ace.Editor) => {
+        aceEditor.setOption("autoScrollEditorIntoView", true);
+        if (setEditor) {
+          setEditor(aceEditor);
+        }
+      }}
+      mode="json" // Temporary value of mode to prevent a dynamic search request.
+      theme="monokai"
+      name="ace-editor-wrapper"
+      enableBasicAutocompletion={true}
+      width="100%"
+      height={height}
+      showPrintMargin={true}
+      showGutter={true}
+      setOptions={{
+        enableBasicAutocompletion: true,
+        enableLiveAutocompletion: true,
+        enableSnippets: true,
+        showLineNumbers: true,
+        tabSize: 2,
+        autoScrollEditorIntoView: true,
+      }}
+      editorProps={{ $blockScrolling: true }}
+      readOnly={readOnly}
+      wrapEnabled={true}
+    />
+    </div>
   );
 };
 
