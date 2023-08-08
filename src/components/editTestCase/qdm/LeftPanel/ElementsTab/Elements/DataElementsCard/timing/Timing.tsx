@@ -11,7 +11,9 @@ const Timing = ({ canEdit, selectedDataElement }) => {
     useState<CQL.DateTimeInterval>(null);
 
   const handleChange = (newValue, attributeName) => {
-    setCurrentInterval(newValue);
+    if (attributeName.includes("Period")) {
+      setCurrentInterval(newValue);
+    }
     selectedDataElement[attributeName] = newValue;
   };
 
