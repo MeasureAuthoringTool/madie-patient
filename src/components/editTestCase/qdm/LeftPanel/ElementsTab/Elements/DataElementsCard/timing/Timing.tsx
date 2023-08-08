@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { DateTimeField } from "@madie/madie-design-system/dist/react";
+import DateTimeInput from "../../../../../../../common/dateTimeInput/DateTimeInput";
 import DateTimeInterval from "../../../../../../../common/dateTimeInterval/DateTimeInterval";
 import { CQL } from "cqm-models";
 import "./Timing.scss";
@@ -36,12 +36,13 @@ const Timing = ({ canEdit, selectedDataElement }) => {
         } else if (timingAttr.instance == "DateTime") {
           displayTimingArray.push(
             <div style={{ paddingRight: "30px" }}>
-              <DateTimeField
-                disabled={!canEdit}
+              <DateTimeInput
                 label={_.startCase(timingAttr.path)}
-                handleDateTimeChange={handleChange}
-                dateTimeValue={selectedDataElement.get(timingAttr.path)}
-              />
+                canEdit={canEdit}
+                dateTime={selectedDataElement.get(timingAttr.path)}
+                onDateTimeChange={handleChange}
+                attributeName={timingAttr.path}
+              ></DateTimeInput>
             </div>
           );
         }

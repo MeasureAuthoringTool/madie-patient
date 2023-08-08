@@ -32,6 +32,7 @@ describe("DateTimeInterval Field Component", () => {
         dateTimeInterval={testDateTimeInterval}
         onDateTimeIntervalChange={onDateTimeIntervalChange}
         canEdit={false}
+        attributeName="relevantPeriod"
       />
     );
 
@@ -51,6 +52,7 @@ describe("DateTimeInterval Field Component", () => {
         dateTimeInterval={testDateTimeInterval}
         onDateTimeIntervalChange={onDateTimeIntervalChange}
         canEdit={false}
+        attributeName="relevantPeriod"
       />
     );
 
@@ -65,13 +67,13 @@ describe("DateTimeInterval Field Component", () => {
     expect(inputEnd).toBeInTheDocument();
 
     fireEvent.change(inputStart, { target: { value: "04/17/2023 08:00 AM" } });
-    fireEvent.change(inputEnd, { target: { value: "09/17/2022 03:30 PM" } });
+    fireEvent.change(inputEnd, { target: { value: "09/17/2022 05:30 PM" } });
     await (() => {
       expect(
         screen.getByDisplayValue("04/17/2023 08:00 AM")
       ).toBeInTheDocument();
       expect(
-        screen.getByDisplayValue("09/17/2022 03:30 PM")
+        screen.getByDisplayValue("09/17/2022 05:30 PM")
       ).toBeInTheDocument();
     });
   });

@@ -5,6 +5,7 @@ import "twin.macro";
 import "styled-components/macro";
 import { CQL } from "cqm-models";
 import dayjs from "dayjs";
+import { getCQLDateTime } from "../dateTimeInput/DateTimeInput";
 
 interface DateTimeIntervalProps {
   label: string;
@@ -21,20 +22,6 @@ const DateTimeInterval = ({
   canEdit,
   attributeName,
 }: DateTimeIntervalProps) => {
-  const getCQLDateTime = (value) => {
-    const newDateTime = dayjs.utc(value);
-    const newCQLDateTime: CQL.DateTime = new CQL.DateTime(
-      newDateTime.year(),
-      newDateTime.month() + 1,
-      newDateTime.date(),
-      newDateTime.hour(),
-      newDateTime.minute(),
-      newDateTime.second(),
-      0,
-      0
-    );
-    return newCQLDateTime;
-  };
   const handleStartDateTimeChange = (newValue) => {
     const startDateTime = getCQLDateTime(newValue);
     onDateTimeIntervalChange(
