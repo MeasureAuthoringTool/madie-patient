@@ -4,7 +4,6 @@ import { FormControl } from "@mui/material";
 import "twin.macro";
 import "styled-components/macro";
 import { CQL } from "cqm-models";
-import dayjs from "dayjs";
 import { getCQLDateTime } from "../dateTimeInput/DateTimeInput";
 
 interface DateTimeIntervalProps {
