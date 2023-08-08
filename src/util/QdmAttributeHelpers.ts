@@ -88,16 +88,16 @@ export const determineAttributeTypeList = (path, info) => {
 };
 
 // from https://github.com/MeasureAuthoringTool/bonnie/blob/master/app/assets/javascripts/views/patient_builder/data_criteria_attribute_display.js.coffee
-export const stringifyValue = (value, topLevel = false) => {
+export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
   if (!value) {
     return "null";
   }
   if (value instanceof cqmModels.CQL.Code) {
-    return `${value.title} : ${value.code}`;
+    const title = codeSystemMap[value.system];
+    return `${title} : ${value.code}`;
   }
-  // good
-  // it's some kind of date
-  else if (!isNaN(Date.parse(value))) {
+  // typeof number parses to a date. Check to make sure it's not a number.
+  else if (typeof value !== "number" && !isNaN(Date.parse(value))) {
     const parsedDate = Date.parse(value);
     const resultDate = new Date(parsedDate);
     const year = resultDate.getUTCFullYear() || null;
@@ -143,26 +143,29 @@ export const stringifyValue = (value, topLevel = false) => {
     }
   }
   // this block is currently unused but should be uncommented when the dataTypes are tested
-  // else if (value.schema) {
-  //   let attrStrings = [];
-  //   let attrString = "";
-  //   value.schema.eachPath((path) => {
-  //     if (_.without(SKIP_ATTRIBUTES, "id").includes(path)) {
-  //       return attrStrings.push(
-  //         _.startCase(path) + ": " + stringifyValue(value[path])
-  //       );
-  //     }
-  //     attrString = attrStrings.join(", ");
-  //     if (value._type && value._type !== "QDM::Identifier") {
-  //       attrString = `[${value._type.replace("QDM::", "")}] ${attrString}`;
-  //     }
-  //     if (!topLevel) {
-  //       attrString = `{ ${attrString} }`;
-  //     }
-  //     return attrString;
-  //   });
-  // }
-  else if (value.high || value.low) {
+  else if (value?.[0]?.schema || value.schema) {
+    let attrStrings = [];
+    let attrString = "";
+    const schema = value?.[0]?.schema ? value?.[0]?.schema : value.schema; // catches diagnoses, facilityLocations != Participant
+    schema.eachPath((path) => {
+      if (!_.without(SKIP_ATTRIBUTES, "id").includes(path)) {
+        const valueToStringify = value?.[0]?.[path];
+        attrStrings.push(
+          _.startCase(path) +
+            ": " +
+            stringifyValue(valueToStringify, false, codeSystemMap)
+        );
+      }
+    });
+    attrString = attrStrings.join(", ");
+    if (value?.[0]?._type && value?.[0]?._type !== "QDM::Identifier") {
+      attrString = `[${value?.[0]?._type.replace("QDM::", "")}] ${attrString}`;
+    }
+    if (!topLevel) {
+      attrString = `{ ${attrString} }`;
+    }
+    return attrString;
+  } else if (value.high || value.low) {
     let lowString = value.low ? stringifyValue(value.low) : "null";
     let highString = value.high ? stringifyValue(value.high) : "null";
     return `${lowString} - ${highString}`;
