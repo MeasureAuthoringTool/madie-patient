@@ -222,6 +222,18 @@ const EditTestCase = (props: EditTestCaseProps) => {
     series: [],
   });
   const [editor, setEditor] = useState<Ace.Editor>(null);
+  function resizeEditor() {
+    // hack to force Ace to resize as it doesn't seem to be responsive
+    setTimeout(() => {
+      editor?.resize(true);
+    }, 500);
+  }
+  // we need this to fire on initial load because it doesn't know about allotment's client width
+  useEffect(() => {
+    if (editor) {
+      resizeEditor();
+    }
+  }, [editor]);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
   const [populationGroupResults, setPopulationGroupResults] =
     useState<DetailedPopulationGroupResult[]>();
@@ -245,12 +257,11 @@ const EditTestCase = (props: EditTestCaseProps) => {
   const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
   const { updateMeasure } = measureStore;
   const load = useRef(0);
-  // const canEdit = checkUserCanEdit(
-  //   measure?.measureSet?.owner,
-  //   measure?.measureSet?.acls,
-  //   measure?.measureMetaData?.draft
-  // );
-  const canEdit = true;
+  const canEdit = checkUserCanEdit(
+    measure?.measureSet?.owner,
+    measure?.measureSet?.acls,
+    measure?.measureMetaData?.draft
+  );
 
   const formik = useFormik({
     initialValues: { ...INITIAL_VALUES },
@@ -674,13 +685,6 @@ const EditTestCase = (props: EditTestCaseProps) => {
       : !isEmptyTestCaseJsonString(editorVal);
   }
 
-  function resizeEditor() {
-    // hack to force Ace to resize as it doesn't seem to be responsive
-    setTimeout(() => {
-      editor?.resize(true);
-    }, 500);
-  }
-
   const hasErrorSeverity = (validationErrors) => {
     return (
       validationErrors.filter(
@@ -738,7 +742,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
       });
   };
 
-  const ref = React.useRef(null);
+  const allotmentRef = useRef(null);
 
   return (
     <TestCaseForm
@@ -748,11 +752,12 @@ const EditTestCase = (props: EditTestCaseProps) => {
     >
       <div className="allotment-wrapper">
         <Allotment
-          defaultSizes={[200, 200, 30]}
+          minSize={10}
+          ref={allotmentRef}
+          defaultSizes={[200, 200, 10]}
           vertical={false}
           onDragEnd={resizeEditor}
         >
-          {/* <Allotment defaultSizes={[200, 150]} vertical={false}> */}
           <Allotment.Pane>
             <div className="left-panel">
               <Editor
@@ -772,10 +777,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
               />
               {activeTab === "measurecql" &&
                 (!measure?.cqlErrors ? (
-                  <div
-                    data-testid="test-case-cql-editor"
-                    // style={{height: 'inherit'}}
-                  >
+                  <div data-testid="test-case-cql-editor">
                     <MadieEditor
                       value={measure?.cql}
                       height="652px"
@@ -965,17 +967,14 @@ const EditTestCase = (props: EditTestCaseProps) => {
             <div className="validation-panel">
               {showValidationErrors ? (
                 <aside
-                  // tw="w-80 h-[500px] flex flex-col"
                   tw="w-full h-full flex flex-col"
                   data-testid="open-json-validation-errors-aside"
                 >
                   <button
-                    // tw="w-full text-lg text-center"
                     data-testid="hide-json-validation-errors-button"
                     onClick={() => {
                       setShowValidationErrors((prevState) => {
-                        resizeEditor();
-
+                        allotmentRef.current.resize([200, 200, 10]);
                         return !prevState;
                       });
                     }}
@@ -1031,14 +1030,13 @@ const EditTestCase = (props: EditTestCaseProps) => {
               ) : (
                 <aside
                   tw="h-full w-full"
-                  // button
-                  // tw="w-10 h-[500px] overflow-x-hidden"
                   data-testid="closed-json-validation-errors-aside"
                 >
                   <ValidationErrorsButton
                     data-testid="show-json-validation-errors-button"
                     onClick={() =>
                       setShowValidationErrors((prevState) => {
+                        allotmentRef.current.resize([200, 200, 50]);
                         resizeEditor();
                         return !prevState;
                       })
@@ -1058,7 +1056,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
           </Allotment.Pane>
         </Allotment>
 
-        <div tw="h-24 bg-gray-75 w-full sticky bottom-0 left-0 z-10">
+        <div tw="h-24 bg-gray-75 w-full sticky bottom-0 left-0 z-40">
           <div tw="flex items-center">
             <div tw="w-1/2 flex items-center px-2">
               {canEdit && <FileUploader onFileImport={updateTestCaseJson} />}
