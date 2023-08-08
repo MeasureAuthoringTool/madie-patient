@@ -11,6 +11,7 @@ interface DateTimeIntervalProps {
   dateTimeInterval: CQL.DateTimeInterval;
   onDateTimeIntervalChange: Function;
   canEdit: boolean;
+  attributeName: string;
 }
 
 const DateTimeInterval = ({
@@ -18,6 +19,7 @@ const DateTimeInterval = ({
   dateTimeInterval,
   onDateTimeIntervalChange,
   canEdit,
+  attributeName,
 }: DateTimeIntervalProps) => {
   const getCQLDateTime = (value) => {
     const newDateTime = dayjs.utc(value);
@@ -35,14 +37,20 @@ const DateTimeInterval = ({
   };
   const handleStartDateTimeChange = (newValue) => {
     const startDateTime = getCQLDateTime(newValue);
-    onDateTimeIntervalChange({
-      ...dateTimeInterval,
-      low: startDateTime,
-    });
+    onDateTimeIntervalChange(
+      {
+        ...dateTimeInterval,
+        low: startDateTime,
+      },
+      attributeName
+    );
   };
   const handleEndDateTimeChange = (newValue) => {
     const endDateTime = getCQLDateTime(newValue);
-    onDateTimeIntervalChange({ ...dateTimeInterval, high: endDateTime });
+    onDateTimeIntervalChange(
+      { ...dateTimeInterval, high: endDateTime },
+      attributeName
+    );
   };
   return (
     <div>

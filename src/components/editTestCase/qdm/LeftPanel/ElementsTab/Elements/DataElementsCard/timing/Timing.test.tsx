@@ -60,10 +60,11 @@ describe("Timing", () => {
     expect(screen.getByTestId("relevant-period-end")).toBeInTheDocument();
     expect(screen.queryByText("Relevant Period - Start")).toBeInTheDocument();
     expect(screen.queryByText("Relevant Period - End")).toBeInTheDocument();
-    expect(screen.getByTestId("relevant-date-time")).toBeInTheDocument();
-    expect(screen.queryByText("Relevant Date/Time")).toBeInTheDocument();
-    expect(screen.getByTestId("author-date-time")).toBeInTheDocument();
-    expect(screen.queryByText("Author Date/Time")).toBeInTheDocument();
+    expect(screen.getByTestId("relevant-datetime")).toBeInTheDocument();
+    expect(screen.queryByText("Relevant Datetime")).toBeInTheDocument();
+
+    expect(screen.getByTestId("author-datetime")).toBeInTheDocument();
+    expect(screen.queryByText("Author Datetime")).toBeInTheDocument();
   });
 
   it("should render prevalencePeriod for Symptom DataElement", () => {
@@ -107,13 +108,13 @@ describe("Timing", () => {
     expect(screen.queryByText("Relevant Period - Start")).toBeInTheDocument();
     expect(screen.queryByText("Relevant Period - End")).toBeInTheDocument();
 
-    expect(screen.getByTestId("relevant-date-time")).toBeInTheDocument();
-    expect(screen.queryByText("Relevant Date/Time")).toBeInTheDocument();
-    expect(screen.getByTestId("author-date-time")).toBeInTheDocument();
-    expect(screen.queryByText("Author Date/Time")).toBeInTheDocument();
+    expect(screen.getByTestId("relevant-datetime")).toBeInTheDocument();
+    expect(screen.queryByText("Relevant Datetime")).toBeInTheDocument();
+    expect(screen.getByTestId("author-datetime")).toBeInTheDocument();
+    expect(screen.queryByText("Author Datetime")).toBeInTheDocument();
 
-    expect(screen.getByTestId("result-date-time")).toBeInTheDocument();
-    expect(screen.queryByText("Result Date/Time")).toBeInTheDocument();
+    expect(screen.getByTestId("result-datetime")).toBeInTheDocument();
+    expect(screen.queryByText("Result Datetime")).toBeInTheDocument();
   });
 
   it("should handle prevalencePeriod change for Symptom DataElement", () => {

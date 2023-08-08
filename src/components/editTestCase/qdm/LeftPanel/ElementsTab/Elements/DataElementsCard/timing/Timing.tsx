@@ -3,112 +3,50 @@ import { DateTimeField } from "@madie/madie-design-system/dist/react";
 import DateTimeInterval from "../../../../../../../common/dateTimeInterval/DateTimeInterval";
 import { CQL } from "cqm-models";
 import "./Timing.scss";
+import { PRIMARY_TIMING_ATTRIBUTES } from "../../../../../../../../util/QdmAttributeHelpers";
+import * as _ from "lodash";
 
 const Timing = ({ canEdit, selectedDataElement }) => {
-  const [currentRelevantPeriod, setCurrentRelevantPeriod] =
-    useState<CQL.DateTimeInterval>();
-  const [currentPrevalencePeriod, setCurrentPrevalencePeriod] =
-    useState<CQL.DateTimeInterval>();
-  const [currentParticipationPeriod, setCurrentParticipationPeriod] =
-    useState<CQL.DateTimeInterval>();
+  const [currentInterval, setCurrentInterval] =
+    useState<CQL.DateTimeInterval>(null);
 
-  const handleRelevantPeriodChange = (newValue) => {
-    setCurrentRelevantPeriod(newValue);
+  const handleChange = (newValue, attributeName) => {
+    setCurrentInterval(newValue);
+    selectedDataElement[attributeName] = newValue;
   };
-
-  const handlePrevalencePeriodChange = (newValue) => {
-    setCurrentPrevalencePeriod(newValue);
-  };
-
-  const handleParticipationPeriodChange = (newValue) => {
-    setCurrentParticipationPeriod(newValue);
-  };
-
-  const handleRelevantDateTimeChange = (newValue) => {};
-
-  const handleAuthorDateTimeChange = (newValue) => {};
-
-  const handleResultDateTimeChange = (newValue) => {};
 
   const displayTiming = () => {
     const displayTimingArray = [];
 
-    if (selectedDataElement?.schema?.paths?.relevantPeriod) {
-      displayTimingArray.push(
-        <div style={{ paddingRight: "24px" }}>
-          <DateTimeInterval
-            label="Relevant Period"
-            dateTimeInterval={currentRelevantPeriod}
-            onDateTimeIntervalChange={handleRelevantPeriodChange}
-            canEdit={canEdit}
-          ></DateTimeInterval>
-        </div>
-      );
+    for (const attr of PRIMARY_TIMING_ATTRIBUTES) {
+      const timingAttr = selectedDataElement?.schema?.paths?.[attr];
+      if (timingAttr) {
+        if (timingAttr.instance == "Interval") {
+          displayTimingArray.push(
+            <div style={{ paddingRight: "30px", paddingBottom: "12px" }}>
+              <DateTimeInterval
+                label={_.startCase(timingAttr.path)}
+                dateTimeInterval={currentInterval}
+                onDateTimeIntervalChange={handleChange}
+                canEdit={canEdit}
+                attributeName={timingAttr.path}
+              />
+            </div>
+          );
+        } else if (timingAttr.instance == "DateTime") {
+          displayTimingArray.push(
+            <div style={{ paddingRight: "30px" }}>
+              <DateTimeField
+                disabled={!canEdit}
+                label={_.startCase(timingAttr.path)}
+                handleDateTimeChange={handleChange}
+                dateTimeValue={selectedDataElement.get(timingAttr.path)}
+              />
+            </div>
+          );
+        }
+      }
     }
-
-    if (selectedDataElement?.schema?.paths?.authorDatetime) {
-      displayTimingArray.push(
-        <div style={{ paddingRight: "24px" }}>
-          <DateTimeField
-            disabled={!canEdit}
-            label={`Author Date/Time`}
-            handleDateTimeChange={handleAuthorDateTimeChange}
-            dateTimeValue=""
-          ></DateTimeField>
-        </div>
-      );
-    }
-
-    if (selectedDataElement?.schema?.paths?.relevantDatetime) {
-      displayTimingArray.push(
-        <div style={{ paddingTop: "12px", paddingRight: "24px" }}>
-          <DateTimeField
-            disabled={!canEdit}
-            label={`Relevant Date/Time`}
-            handleDateTimeChange={handleRelevantDateTimeChange}
-            dateTimeValue=""
-          ></DateTimeField>
-        </div>
-      );
-    }
-
-    if (selectedDataElement?.schema?.paths?.resultDatetime) {
-      displayTimingArray.push(
-        <div style={{ paddingTop: "12px", paddingRight: "24px" }}>
-          <DateTimeField
-            disabled={!canEdit}
-            label={`Result Date/Time`}
-            handleDateTimeChange={handleResultDateTimeChange}
-            dateTimeValue=""
-          ></DateTimeField>
-        </div>
-      );
-    }
-
-    if (selectedDataElement?.schema?.paths?.prevalencePeriod) {
-      displayTimingArray.push(
-        <div style={{ paddingRight: "24px" }}>
-          <DateTimeInterval
-            label="Prevalence Period"
-            dateTimeInterval={currentPrevalencePeriod}
-            onDateTimeIntervalChange={handlePrevalencePeriodChange}
-            canEdit={canEdit}
-          ></DateTimeInterval>
-        </div>
-      );
-    }
-
-    if (selectedDataElement?.schema?.paths?.participationPeriod) {
-      displayTimingArray.push(
-        <DateTimeInterval
-          label="Participation Period"
-          dateTimeInterval={currentParticipationPeriod}
-          onDateTimeIntervalChange={handleParticipationPeriodChange}
-          canEdit={canEdit}
-        ></DateTimeInterval>
-      );
-    }
-
     return displayTimingArray;
   };
 
