@@ -12,7 +12,7 @@ export interface QuantityProps {
   quantity: CQL.Quantity;
   onQuantityChange: Function;
   canEdit: boolean;
-  label: string;
+  label?: string;
 }
 
 export interface UcumOption {
@@ -24,7 +24,7 @@ const QuantityInput = ({
   quantity,
   onQuantityChange,
   canEdit,
-  label,
+  label = "Quantity",
 }: QuantityProps) => {
   const [ucumOptions, setUcumOptions] = useState([]);
   const [ucumUnits, setUcumUnits] = useState([]);
@@ -111,6 +111,7 @@ const QuantityInput = ({
           value={quantity.value}
           disabled={!canEdit}
           placeholder="value"
+          label={label}
           id={`quantity-value-field-${label}`}
           data-testid={`quantity-value-field-${label}`}
           inputProps={{

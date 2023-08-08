@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import IntegerInput from "../../../../../../../common/IntegerInput/IntegerInput";
 import "./DisplayAttributeInputs.scss";
 import RatioInput from "../../../../../../../common/ratioInput/RatioInput";
+import QuantityInput from "../../../../../../../common/quantityInput/QuantityInput";
 
 interface DisplayAttributeInputsProps {
   attributeType?: string;
@@ -71,6 +72,15 @@ const DisplayAttributeInputs = ({
             canEdit={true}
             handleChange={(val) => setAttributeValue(parseInt(val))}
             label="Integer"
+          />
+        );
+
+      case "Quantity":
+        return (
+          <QuantityInput
+            quantity={{}}
+            onQuantityChange={(val) => setAttributeValue(val)}
+            canEdit={true}
           />
         );
       default:
