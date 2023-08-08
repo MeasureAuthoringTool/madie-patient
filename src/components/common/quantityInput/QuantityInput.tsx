@@ -128,6 +128,7 @@ const QuantityInput = ({
         <AutoComplete
           id={`quantity-unit-dropdown-${label}`}
           disabled={!canEdit}
+          label={"Unit"}
           options={ucumOptions.map((option) => option.code + " " + option.name)}
           data-testid={`quantity-unit-dropdown-${label}`}
           placeholder="unit"
