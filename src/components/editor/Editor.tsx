@@ -76,7 +76,10 @@ const Editor = ({
         onLoad={(aceEditor: Ace.Editor) => {
           if (setEditor) {
             setEditor(aceEditor);
-            setOuterEditor(aceEditor);
+            // setEditor used to be a passed variable, but somehow became a local one. This seems unintended, but will not be modifying for now.
+            if (setOuterEditor) {
+              setOuterEditor(aceEditor);
+            }
           }
         }}
         mode="json" // Temporary value of mode to prevent a dynamic search request.
