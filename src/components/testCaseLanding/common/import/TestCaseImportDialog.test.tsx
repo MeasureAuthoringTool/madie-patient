@@ -296,7 +296,9 @@ describe("TestCaseImportDialog", () => {
       expect(importBtn).toBeDisabled();
       expect(
         screen.getByTestId("test-case-import-error-div")
-      ).toHaveTextContent("File type must be application/zip,.zip");
+      ).toHaveTextContent(
+        "The import file must be a zip file. No Test Cases can be imported."
+      );
     });
   });
 
@@ -375,10 +377,21 @@ describe("TestCaseImportDialog", () => {
     });
   });
 
-  it("Should display Failed status for file upload, if the zip doesn't contain any valid Json files", async () => {
+  it("Should send a blank file if folder is empty", async () => {
+    const expectedOutCome: TestCaseImportRequest[] = [
+      {
+        patientId: patientId1,
+        json: jsonBundle,
+      },
+      {
+        patientId: patientId2,
+        json: "",
+      },
+    ];
+
     const zipFile = await createZipFile(
       [patientId1, patientId2],
-      [jsonBundle, jsonBundle],
+      [jsonBundle, ""],
       ["notAJsonFileName.txt", "ReadMe.txt"]
     );
 
@@ -397,14 +410,53 @@ describe("TestCaseImportDialog", () => {
 
     await waitFor(async () => {
       const importBtn = await screen.getByRole("button", { name: "Import" });
-      expect(importBtn).toBeDisabled();
+      expect(importBtn).toBeEnabled();
+      userEvent.click(importBtn);
+      expect(onImport).toHaveBeenCalledWith(expectedOutCome);
       expect(screen.getByTestId("test-case-preview-header")).toHaveTextContent(
-        "Failed"
+        "Complete"
       );
-      expect(
-        screen.getByTestId("test-case-import-error-div")
-      ).toHaveTextContent(
-        "Unable to find any valid test case json. Please make sure the format is accurate"
+    });
+  });
+
+  it("Should filter blank files for populated json", async () => {
+    const expectedOutCome: TestCaseImportRequest[] = [
+      {
+        patientId: patientId1,
+        json: jsonBundle,
+      },
+      {
+        patientId: patientId2,
+        json: jsonBundle,
+      },
+    ];
+
+    const zipFile = await createZipFile(
+      [patientId1, patientId2, patientId2],
+      [jsonBundle, "", jsonBundle],
+      ["notAJsonFileName.txt", "ReadMe.txt"]
+    );
+
+    mockedAxios.post.mockReset().mockResolvedValue({ data: scanResult });
+
+    render(
+      <TestCaseImportDialog
+        dialogOpen={true}
+        handleClose={handleClose}
+        onImport={onImport}
+      />
+    );
+
+    const dropZone = screen.getByTestId("file-drop-input");
+    userEvent.upload(dropZone, zipFile);
+
+    await waitFor(async () => {
+      const importBtn = await screen.getByRole("button", { name: "Import" });
+      expect(importBtn).toBeEnabled();
+      userEvent.click(importBtn);
+      expect(onImport).toHaveBeenCalledWith(expectedOutCome);
+      expect(screen.getByTestId("test-case-preview-header")).toHaveTextContent(
+        "Complete"
       );
     });
   });
