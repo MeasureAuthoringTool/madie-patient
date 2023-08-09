@@ -33,7 +33,7 @@ describe("CqmConversionService", () => {
                 s: {
                   r: "15",
                   s: [
-                    { value: ["", "define ", '"SDE Ethnicity"', ":\n  "] },
+                    { value: 'define "SDE Ethnicity" :\n' },
                     {
                       r: "14",
                       s: [

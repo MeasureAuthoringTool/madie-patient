@@ -17,11 +17,8 @@ export class QdmCalculationService {
       cqmMeasure.value_sets,
       options
     );
-    // for debug purposes
-    if (localStorage.getItem("madieDebug")) {
-      // eslint-disable-next-line no-console
-      console.log("cqm execution calculation results", calculationResults);
-    }
+    // eslint-disable-next-line no-console
+    console.log("cqm execution calculation results", calculationResults);
     return calculationResults;
   }
 }

@@ -37,11 +37,9 @@ export const parse = (elmJson) => {
 
   definitions.forEach((definition) => {
     const annotation = definition.annotation;
-    if (annotation) {
-      const node = parseNode(annotation, localIdToTypeMap);
-      node["define_name"] = definition.name;
-      ret.statements.push(node);
-    }
+    const node = parseNode(annotation, localIdToTypeMap);
+    node["define_name"] = definition.name;
+    ret.statements.push(node);
   });
   return ret;
 };
