@@ -392,7 +392,7 @@ describe("TestCaseImportDialog", () => {
     const zipFile = await createZipFile(
       [patientId1, patientId2],
       [jsonBundle, ""],
-      ["notAJsonFileName.txt", "ReadMe.txt"]
+      [defaultFileName, "ReadMe.txt"]
     );
 
     mockedAxios.post.mockReset().mockResolvedValue({ data: scanResult });
