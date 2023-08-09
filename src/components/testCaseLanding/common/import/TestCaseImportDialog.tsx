@@ -46,9 +46,21 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
   const onDrop = useCallback(async (acceptedFiles, fileRejections) => {
     removeUploadedFile();
     if (!_.isEmpty(fileRejections)) {
-      setErrorMessage(
-        "The import file must be a zip file. No Test Cases can be imported."
-      );
+      fileRejections.forEach((file) => {
+        file.errors.forEach((err) => {
+          if (err.code === "file-too-large") {
+            setErrorMessage(
+              "The Import file is too large. No Test Cases can be imported."
+            );
+          }
+
+          if (err.code === "file-invalid-type") {
+            setErrorMessage(
+              "The import file must be a zip file. No Test Cases can be imported."
+            );
+          }
+        });
+      });
       return;
     }
     setUploadingFileSpinner(true);
@@ -80,31 +92,30 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
           // Ex: CMS136FHIR-v0.0.000-FHIR4-TestCases/a648e724-ce72-4cac-b0a7-3c4d52784f73/CMS136FHIR-v0.0.000-tcseries-tctitle001.json
           fileNames = _.filter(
             _.keys(content.files).map((fileName) => {
-              if (!fileName.startsWith("__MACOSX")) {
-                // file compressed from MAC has a parentFolderName and also contains several other hidden files
-                if (fileName.startsWith(parentFolderName)) {
-                  const folderNameSplit = fileName.split("/");
-                  if (
-                    validator.isUUID(folderNameSplit[1]) &&
-                    (fileName.endsWith(".json") || folderNameSplit.length === 3)
-                  ) {
-                    // Insert a blank file for each directory so that we can return an appropriate error message
-                    if (content.files[fileName].dir) {
-                      content.file(fileName, "");
-                    }
+              // file compressed from MAC has a parentFolderName and also contains several other hidden files
+              if (fileName.startsWith(parentFolderName)) {
+                const folderNameSplit = fileName.split("/");
+                if (validator.isUUID(folderNameSplit[1])) {
+                  if (fileName.endsWith(".json")) {
                     return fileName;
                   }
-                } else {
-                  // Zip downloaded from MADiE doesn't have a parentFolderName
-                  // Ex: a648e724-ce72-4cac-b0a7-3c4d52784f73/CMS136FHIR-v0.0.000-tcseries-tctitle001.json
-                  const folderNameSplit = fileName.split("/");
-                  if (
-                    validator.isUUID(folderNameSplit[0]) &&
-                    (fileName.endsWith(".json") || folderNameSplit.length === 3)
-                  ) {
-                    if (content.files[fileName].dir) {
-                      content.file(fileName, "");
-                    }
+                  // Insert a blank file for each directory so that we can return an appropriate error message
+                  else if (content.files[fileName].dir) {
+                    content.file(fileName, "");
+                    return fileName;
+                  }
+                }
+              } else {
+                // Zip downloaded from MADiE doesn't have a parentFolderName
+                // Ex: a648e724-ce72-4cac-b0a7-3c4d52784f73/CMS136FHIR-v0.0.000-tcseries-tctitle001.json
+                const folderNameSplit = fileName.split("/");
+                if (validator.isUUID(folderNameSplit[0])) {
+                  if (fileName.endsWith(".json")) {
+                    return fileName;
+                  }
+                  // Insert a blank file for each directory so that we can return an appropriate error message
+                  else if (content.files[fileName].dir) {
+                    content.file(fileName, "");
                     return fileName;
                   }
                 }
