@@ -13,6 +13,7 @@ import "./DataElementsCard.scss";
 import AttributeSection from "./attributes/AttributeSection";
 import { useQdmExecutionContext } from "../../../../../../routes/qdm/QdmExecutionContext";
 import * as _ from "lodash";
+import Timing from "./timing/Timing";
 import { useFormikContext } from "formik";
 
 function getDataElementClass(dataElement) {
@@ -207,7 +208,10 @@ const DataElementsCard = (props: {
       </div>
       {/* heading row end */}
       <div className="timing">
-        <h4>Timing</h4>
+        <Timing
+          canEdit={true}
+          selectedDataElement={localSelectedDataElement}
+        ></Timing>
       </div>
       {/* Govern our navigation for codes/att/negation */}
       <SubNavigationTabs

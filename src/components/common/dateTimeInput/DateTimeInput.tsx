@@ -1,6 +1,5 @@
 import React from "react";
 import { DateTimeField } from "@madie/madie-design-system/dist/react";
-import { FormControl } from "@mui/material";
 import dayjs from "dayjs";
 import { CQL } from "cqm-models";
 
@@ -27,7 +26,7 @@ interface DateTimeInputProps {
   attributeName: string;
 }
 
-const DateTimeInterval = ({
+const DateTimeInput = ({
   label,
   dateTime,
   onDateTimeChange,
@@ -48,4 +47,4 @@ const DateTimeInterval = ({
   );
 };
 
-export default DateTimeInterval;
+export default DateTimeInput;

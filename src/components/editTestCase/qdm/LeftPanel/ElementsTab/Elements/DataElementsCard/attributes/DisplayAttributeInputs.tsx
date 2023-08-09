@@ -12,6 +12,7 @@ import IntegerInput from "../../../../../../../common/IntegerInput/IntegerInput"
 import "./DisplayAttributeInputs.scss";
 const cql = require("cql-execution");
 import RatioInput from "../../../../../../../common/ratioInput/RatioInput";
+import DecimalInput from "../../../../../../../common/DecimalInput/DecimalInput";
 
 interface DisplayAttributeInputsProps {
   attributeType?: string;
@@ -94,6 +95,14 @@ const DisplayAttributeInputs = ({
             canEdit={true}
             handleChange={(val) => setAttributeValue(parseInt(val))}
             label="Integer"
+          />
+        );
+      case "Decimal":
+        return (
+          <DecimalInput
+            value={null}
+            handleChange={(val) => setAttributeValue(parseFloat(val))}
+            canEdit={true}
           />
         );
       default:

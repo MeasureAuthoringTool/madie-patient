@@ -425,4 +425,40 @@ describe("AttributeSection", () => {
     fireEvent.change(integerField, { target: { value: "10" } });
     expect(integerField.value).toBe("10");
   });
+
+  it("shows DecimalInput on selecting the Decimal type", async () => {
+    const assessmentElement: AssessmentPerformed = new AssessmentPerformed();
+    const { container } = render(
+      <AttributeSection selectedDataElement={assessmentElement} />
+    );
+
+    const attributeSelectBtn = screen.getByRole("button", {
+      name: "Attribute Select Attribute",
+    });
+    expect(attributeSelectBtn).toBeInTheDocument();
+
+    userEvent.click(attributeSelectBtn);
+
+    const attributeSelect = await screen.findByRole("listbox");
+    const attributeOptions = within(attributeSelect).getAllByRole("option");
+    expect(attributeOptions).toHaveLength(7);
+
+    userEvent.click(within(attributeSelect).getByText(/result/i));
+    const attributeInput = within(attributeSelectBtn.parentElement).getByRole(
+      "textbox",
+      { hidden: true }
+    );
+    expect(attributeInput).toBeInTheDocument();
+    expect(attributeInput).toHaveValue("Result");
+    const typeSelectBtn = await screen.findByRole("button", {
+      name: /type/i,
+    });
+    expect(typeSelectBtn).toBeInTheDocument();
+    userEvent.click(typeSelectBtn);
+    const typeSelect = await screen.findByRole("listbox");
+    expect(typeSelect).toBeInTheDocument();
+    const typeOptions = within(typeSelect).getAllByRole("option");
+    expect(typeOptions.length).toEqual(9);
+    fireEvent.click(within(typeSelect).getByText("Decimal"));
+  });
 });
