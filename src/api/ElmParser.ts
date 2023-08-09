@@ -1,73 +1,48 @@
 import { JSONPath } from "jsonpath-plus";
 
-class TextObj {
-  text: string;
-}
-class ChildObj {
-  children: any[] = [];
-
-  node_type: string;
-  ref_id: string;
-}
-class StatementObj {
-  children: ChildObj[] = [];
-  define_name: string;
-}
-class AnnotationObj {
-  statements: StatementObj[] = [];
-  identifier: any = {};
+type Identifier = {
+  id: string;
+  version: string;
+};
+// statements is an array of nodes
+// identifier is an object that contains "id, Version" pairs
+class Annotation {
+  statements = [];
+  identifier: Identifier;
 }
 export const parse = (elmJson) => {
-  //This is what MITRE Cql Parser (ruby) returns
-  //  Statements is an array of nodes
-  // identifier is an object that contains "Id,Version" pairs for
-
-  const ret: AnnotationObj = new AnnotationObj();
-  const localid_to_type_map = {};
-  let nodes = [];
+  const ret: Annotation = new Annotation();
+  const localIdToTypeMap = {};
 
   ["expression", "operand", "suchThat"].forEach((element) => {
-    //use a css selector to find all "field"s with either localId, xsi, or type
-    //nodes = elmJson.css(field + '[localId][xsi|type]')
-    //  * search for all nodes that contain "element, localID and type"
+    // Search for all nodes that contain "element, localId and type"
     const path = `$.[?(@.${element})].[?(@.localId && @.type)]`;
-    const newNodes = JSONPath({ path: path, json: elmJson });
-    nodes.push(...newNodes);
+    const nodes = JSONPath({ path: path, json: elmJson });
     nodes.forEach((node) => {
-      localid_to_type_map[node["localId"]] = node["type"];
+      localIdToTypeMap[node["localId"]] = node["type"];
     });
   });
 
-  //extract library identifier data
-  ret.identifier.id = JSONPath({
-    path: "$.library.identifier.id",
-    json: elmJson,
-  })[0];
-  ret.identifier.version = JSONPath({
-    path: "$.library.identifier.version",
-    json: elmJson,
-  })[0];
+  //extract library identifier & version
+  ret.identifier = {
+    id: elmJson.library?.identifier.id,
+    version: elmJson.library?.identifier.version,
+  } as Identifier;
+
   //all the define statements including functions
   const definitions = JSONPath({
     path: "$.library.statements.def.[?(@.annotation)]",
     json: elmJson,
   });
 
-  let index: number = 0;
   definitions.forEach((definition) => {
     const annotation = definition.annotation;
     if (annotation) {
-      ret.statements[0] = new StatementObj();
-      ret.statements[0].children[index] = new ChildObj();
-
-      parse_node(
-        annotation,
-        ret.statements[0].children[index++],
-        localid_to_type_map
-      );
+      const node = parseNode(annotation, localIdToTypeMap);
+      node["define_name"] = definition.name;
+      ret.statements.push(node);
     }
   });
-
   return ret;
 };
 
@@ -82,38 +57,31 @@ function removeNewlines(str) {
   return str;
 }
 
-function parse_node(node: any, output: ChildObj, localid_to_type_map: any) {
+function parseNode(node, localIdToTypeMap) {
+  let parsedNode = { children: [] };
   Object.keys(node).forEach((key) => {
-    const childIdx = output.children.push(new ChildObj()) - 1;
-    if (!!node[key] && typeof node[key] === "object") {
-      if (node["r"]) {
-        let node_type = localid_to_type_map[node["r"]];
-        if (node_type != undefined) {
-          output.children[childIdx].node_type = node_type;
-        }
-        output.children[childIdx].ref_id = node["r"];
+    const child = node[key];
+    if (!child || key == "t" || typeof child === "string") return;
+    if (child.value) {
+      const text = Array.isArray(child.value)
+        ? child.value.join(" ")
+        : child.value;
+      parsedNode.children.push({ children: [{ text: removeNewlines(text) }] });
+    } else {
+      let nodeType;
+      if (child?.r) {
+        nodeType = localIdToTypeMap[child.r];
       }
-      const result: any = parse_node(
-        node[key],
-        output.children[childIdx],
-        localid_to_type_map
-      );
-      if (node[key].value) {
-        node[key].value.forEach((value) => {
-          if (value) {
-            let textObj = new TextObj();
-            textObj.text = removeNewlines(value);
-            output.children[childIdx].children.push(textObj);
-          }
-        });
+      node = parseNode(child, localIdToTypeMap);
+      if (nodeType) {
+        node.node_type = nodeType;
       }
-    }
-    if (
-      typeof output.children[childIdx].children === undefined ||
-      output.children[childIdx].children.length === 0
-    ) {
-      const removed = output.children.pop();
+      if (child.r) {
+        node.ref_id = child.r;
+      }
+      parsedNode.children.push(node);
     }
   });
+  return parsedNode;
 }
 export default { parse };

@@ -1,5 +1,6 @@
 import { Calculator } from "cqm-execution";
-import { CqmMeasure, ValueSet } from "cqm-models";
+import { CqmMeasure } from "cqm-models";
+import * as _ from "lodash";
 
 export class QdmCalculationService {
   async calculateQdmTestCases(cqmMeasure: CqmMeasure, patientJson) {
@@ -17,8 +18,11 @@ export class QdmCalculationService {
       cqmMeasure.value_sets,
       options
     );
-    // eslint-disable-next-line no-console
-    console.log("cqm execution calculation results", calculationResults);
+    // set onto window for any environment debug purposes
+    if (localStorage.getItem("madieDebug") || (window as any).madieDebug) {
+      // eslint-disable-next-line no-console
+      console.log("cqm execution calculation results", calculationResults);
+    }
     return calculationResults;
   }
 }
