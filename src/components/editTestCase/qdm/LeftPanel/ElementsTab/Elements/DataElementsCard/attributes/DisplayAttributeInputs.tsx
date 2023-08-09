@@ -10,7 +10,6 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import dayjs from "dayjs";
 import IntegerInput from "../../../../../../../common/IntegerInput/IntegerInput";
 import "./DisplayAttributeInputs.scss";
-const cql = require("cql-execution");
 import RatioInput from "../../../../../../../common/ratioInput/RatioInput";
 import DecimalInput from "../../../../../../../common/DecimalInput/DecimalInput";
 

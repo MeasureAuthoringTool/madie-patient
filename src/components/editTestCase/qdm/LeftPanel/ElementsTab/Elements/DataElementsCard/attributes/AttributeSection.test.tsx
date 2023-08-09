@@ -296,6 +296,7 @@ describe("AttributeSection", () => {
       <AttributeSection
         selectedDataElement={assessmentElement}
         attributeChipList={[]}
+        onAddClicked={onAddClicked}
       />
     );
 
@@ -333,6 +334,14 @@ describe("AttributeSection", () => {
     const dateTimeInput2 = await screen.findByTestId("CalendarIcon");
     expect(dateTimeInput).toBeInTheDocument();
     expect(dateTimeInput2).toBeInTheDocument();
+    fireEvent.change(dateTimeInput, {
+      target: { value: "01/01/2023 12:00 AM" },
+    });
+    expect(dateTimeInput.value).toBe("01/01/2023 12:00 AM");
+
+    const addButton = screen.getByTestId("AddCircleOutlineIcon");
+    expect(addButton).toBeInTheDocument();
+    userEvent.click(addButton);
   });
 
   it("Clicking the plus button calls works", async () => {
