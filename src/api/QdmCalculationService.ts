@@ -1,6 +1,5 @@
 import { Calculator } from "cqm-execution";
 import { CqmMeasure } from "cqm-models";
-import * as _ from "lodash";
 
 export class QdmCalculationService {
   async calculateQdmTestCases(cqmMeasure: CqmMeasure, patientJson) {
