@@ -7,6 +7,7 @@ import "twin.macro";
 import "styled-components/macro";
 import { CQL } from "cqm-models";
 import * as ucum from "@lhncbc/ucum-lhc";
+import "./QuantityInput.scss";
 
 export interface QuantityProps {
   quantity: CQL.Quantity;
@@ -97,7 +98,7 @@ const QuantityInput = ({
   const handleQuantityUnitChange = (newValue) => {
     const newQuantity: CQL.Quantity = {
       value: currentQuantity ? currentQuantity.value : 0,
-      unit: newValue.value?.name,
+      unit: newValue.value?.code,
     };
     setCurrentQuantity(newQuantity);
     setCurrentUnit(newValue);
@@ -118,6 +119,18 @@ const QuantityInput = ({
             "data-testid": `quantity-value-input-${label}`,
             "aria-describedby": `quantity-value-input-helper-text-${label}`,
             required: true,
+          }}
+          onKeyPress={(e) => {
+            if (
+              (!Number(e.key) &&
+                e.key != "0" &&
+                e.key != "." &&
+                e.key != "-") ||
+              (e.target.value.length > 0 && e.key == "-") ||
+              (e.target.value.includes(".") && e.key == ".")
+            ) {
+              e.preventDefault();
+            }
           }}
           onChange={(event) => {
             handleQuantityValueChange(event.target.value);

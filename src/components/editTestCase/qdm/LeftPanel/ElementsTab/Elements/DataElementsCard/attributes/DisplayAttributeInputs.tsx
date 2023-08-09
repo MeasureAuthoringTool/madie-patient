@@ -81,7 +81,6 @@ const DisplayAttributeInputs = ({
           <QuantityInput
             quantity={{}}
             onQuantityChange={(val) => {
-              console.log(val);
               setAttributeValue(new CQL.Quantity(val.value, val.unit));
             }}
             canEdit={true}
