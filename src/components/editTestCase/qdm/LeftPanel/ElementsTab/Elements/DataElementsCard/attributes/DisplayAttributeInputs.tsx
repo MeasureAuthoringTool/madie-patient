@@ -9,6 +9,7 @@ import IntegerInput from "../../../../../../../common/IntegerInput/IntegerInput"
 import "./DisplayAttributeInputs.scss";
 import RatioInput from "../../../../../../../common/ratioInput/RatioInput";
 import QuantityInput from "../../../../../../../common/quantityInput/QuantityInput";
+import DecimalInput from "../../../../../../../common/DecimalInput/DecimalInput";
 
 interface DisplayAttributeInputsProps {
   attributeType?: string;
@@ -83,6 +84,14 @@ const DisplayAttributeInputs = ({
               console.log(val);
               setAttributeValue(new CQL.Quantity(val.value, val.unit));
             }}
+            canEdit={true}
+          />
+        );
+      case "Decimal":
+        return (
+          <DecimalInput
+            value={null}
+            handleChange={(val) => setAttributeValue(parseFloat(val))}
             canEdit={true}
           />
         );
