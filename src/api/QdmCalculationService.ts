@@ -17,8 +17,8 @@ export class QdmCalculationService {
       cqmMeasure.value_sets,
       options
     );
-    // set onto window for any environment debug purposes
-    if (localStorage.getItem("madieDebug") || (window as any).madieDebug) {
+    // for debug purposes
+    if (localStorage.getItem("madieDebug")) {
       // eslint-disable-next-line no-console
       console.log("cqm execution calculation results", calculationResults);
     }
