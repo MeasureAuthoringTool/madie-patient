@@ -483,15 +483,94 @@ describe("TestCaseRoutes", () => {
       userEvent.click(createBtn);
     });
 
+    expect(await screen.findByTestId("server-error-alerts")).toBeTruthy();
+    // findBy* queries shouldn't need to be wrapped in waitFor (they already are),
+    // but if removed from the next line, the suite sill fail with the following errors:
+    //   TypeError: Cannot read properties of null (reading 'createEvent')
+    //   Jest worker encountered 4 child process exceptions, exceeding retry limit
     await waitFor(() => {
-      expect(screen.findByTestId("server-error-alerts")).toBeTruthy();
       expect(
         screen.findByText(
           "An error occurred while creating the test case: Unable to create new test case"
         )
       ).toBeTruthy();
-      expect(screen.getByTestId("close-error-button")).toBeTruthy();
     });
+    expect(await screen.findByTestId("close-error-button")).toBeTruthy();
+  });
+
+  it("should display duplicate test case name error", async () => {
+    const errorMessage = "duplicate test case name";
+    jest.useFakeTimers("modern");
+    mockedAxios.get.mockImplementation((args) => {
+      if (args && args.endsWith("series")) {
+        return Promise.resolve({ data: ["SeriesA"] });
+      } else if (args && args.endsWith("test-cases")) {
+        return Promise.resolve({
+          data: [
+            {
+              id: "id1",
+              title: "TC1",
+              description: "Desc1",
+              series: null,
+              status: null,
+            },
+          ],
+        });
+      } else if (args?.endsWith("/bundle")) {
+        return Promise.resolve({ data: measureBundle });
+      } else if (args?.endsWith("/value-sets/searches")) {
+        return Promise.resolve({ data: [valueSets] });
+      }
+    });
+
+    render(
+      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases"]}>
+        <ApiContextProvider value={serviceConfig}>
+          <TestCaseRoutes />
+        </ApiContextProvider>
+      </MemoryRouter>
+    );
+
+    const testCaseTitle = await screen.findByText("TC1");
+    expect(testCaseTitle).toBeInTheDocument();
+
+    const newBtn = screen.getByRole("button", { name: "New Test Case" });
+    // await act(async () => {
+    userEvent.click(newBtn);
+    // });
+    const createTestCaseDialog = await screen.findByTestId(
+      "create-test-case-dialog"
+    );
+    expect(createTestCaseDialog).toBeInTheDocument();
+
+    const testcaseTitle = await screen.findByTestId(
+      "create-test-case-title-input"
+    );
+    expect(testcaseTitle).toBeInTheDocument();
+
+    userEvent.type(testcaseTitle, "TC1");
+    await waitFor(() => {
+      expect(testcaseTitle).toHaveValue("TC1");
+    });
+
+    mockedAxios.post.mockRejectedValue({
+      response: {
+        status: 400,
+        data: {
+          message: errorMessage,
+        },
+      },
+    });
+
+    const createBtn = screen.getByRole("button", { name: "Save" });
+    await act(async () => {
+      userEvent.click(createBtn);
+    });
+
+    expect(await screen.findByTestId("server-error-alerts")).toBeTruthy();
+    expect(
+      await screen.findByText(errorMessage, { exact: false })
+    ).toBeTruthy();
   });
 
   it("should display value sets error", async () => {
