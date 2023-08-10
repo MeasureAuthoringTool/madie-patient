@@ -59,16 +59,7 @@ const DisplayAttributeInputs = ({
             dateTime={null}
             attributeName="DateTime"
             onDateTimeChange={(e) => {
-              const newDateTime = dayjs.utc(e);
-              const newCQLDateTime: CQL.Date = new CQL.DateTime(
-                newDateTime.year(),
-                newDateTime.month() + 1,
-                newDateTime.date(),
-                newDateTime.get("hour"),
-                newDateTime.get("minute"),
-                0
-              );
-              setAttributeValue(newCQLDateTime);
+              setAttributeValue(e);
             }}
           />
         );
