@@ -55,20 +55,19 @@ describe("QuantityInput Component", () => {
         canEdit={true}
         quantity={testQuantity}
         onQuantityChange={handleQuantityChange}
-        label="low"
       />
     );
 
-    const quantityValue = screen.getByTestId("quantity-value-field-low");
+    const quantityValue = screen.getByTestId("quantity-value-field-Quantity");
     expect(quantityValue).toBeInTheDocument();
     const quantityValueInput = screen.getByTestId(
-      "quantity-value-input-low"
+      "quantity-value-input-Quantity"
     ) as HTMLInputElement;
     expect(quantityValueInput).toBeInTheDocument();
     expect(quantityValueInput.value).toBe("0");
     fireEvent.change(quantityValueInput, { target: { value: "10" } });
 
-    const quantityUnit = screen.getByTestId("quantity-unit-dropdown-low");
+    const quantityUnit = screen.getByTestId("quantity-unit-dropdown-Quantity");
     expect(quantityUnit).toBeInTheDocument();
     const quantityUnitInput = screen.getByRole("combobox");
     expect(quantityUnitInput).toBeInTheDocument();
