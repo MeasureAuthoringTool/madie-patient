@@ -26,12 +26,6 @@ import { parse } from "./ElmParser";
 import { ElmDependencyFinder } from "./elmDependencyFinder/ElmDependencyFinder";
 import { v4 as uuidv4 } from "uuid";
 
-interface StatementReference {
-  library_name: String;
-  statement_name: String;
-  hqmf_id?: String;
-}
-
 export class CqmConversionService {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
 
@@ -82,7 +76,7 @@ export class CqmConversionService {
     cqmMeasure.main_cql_library = measure.cqlLibraryName;
     cqmMeasure.measure_scoring = measure.scoring;
     cqmMeasure.hqmf_set_id = measure.measureSetId;
-    cqmMeasure.calculation_method = cqmMeasure.patientBasis
+    cqmMeasure.calculation_method = measure.patientBasis
       ? CalculationMethod.PATIENT
       : CalculationMethod.EPISODE_OF_CARE;
     cqmMeasure.composite = false; // for now
