@@ -1,5 +1,5 @@
 import { Calculator } from "cqm-execution";
-import { CqmMeasure, ValueSet } from "cqm-models";
+import { CqmMeasure } from "cqm-models";
 
 export class QdmCalculationService {
   async calculateQdmTestCases(cqmMeasure: CqmMeasure, patientJson) {
