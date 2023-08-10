@@ -13,6 +13,7 @@ import userEvent from "@testing-library/user-event";
 import AttributeSection from "./AttributeSection";
 import { EncounterOrder, AssessmentPerformed } from "cqm-models";
 import { act } from "react-dom/test-utils";
+import AttributeChipList from "../AttributeChipList";
 
 jest.mock("dayjs", () => ({
   extend: jest.fn(),
@@ -299,7 +300,7 @@ describe("AttributeSection", () => {
         onAddClicked={onAddClicked}
       />
     );
-
+    const dateTimeVal = { value: "01/01/2023 12:00 AM" };
     const attributeSelectBtn = screen.getByRole("button", {
       name: "Attribute Select Attribute",
     });
@@ -335,7 +336,7 @@ describe("AttributeSection", () => {
     expect(dateTimeInput).toBeInTheDocument();
     expect(dateTimeInput2).toBeInTheDocument();
     fireEvent.change(dateTimeInput, {
-      target: { value: "01/01/2023 12:00 AM" },
+      target: dateTimeVal,
     });
     expect(dateTimeInput.value).toBe("01/01/2023 12:00 AM");
 

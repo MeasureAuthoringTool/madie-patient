@@ -1,10 +1,7 @@
 import React, { useState } from "react";
 import { CQL } from "cqm-models";
 import * as _ from "lodash";
-import {
-  DateField,
-  DateTimeField,
-} from "@madie/madie-design-system/dist/react";
+import { DateField } from "@madie/madie-design-system/dist/react";
 import { IconButton } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import dayjs from "dayjs";
@@ -12,6 +9,7 @@ import IntegerInput from "../../../../../../../common/IntegerInput/IntegerInput"
 import "./DisplayAttributeInputs.scss";
 import RatioInput from "../../../../../../../common/ratioInput/RatioInput";
 import DecimalInput from "../../../../../../../common/DecimalInput/DecimalInput";
+import DateTimeInput from "../../../../../../../common/dateTimeInput/DateTimeInput";
 
 interface DisplayAttributeInputsProps {
   attributeType?: string;
@@ -55,9 +53,12 @@ const DisplayAttributeInputs = ({
         );
       case "DateTime":
         return (
-          <DateTimeField
+          <DateTimeInput
             label="DateTime"
-            handleDateTimeChange={(e) => {
+            canEdit={true}
+            dateTime={null}
+            attributeName="DateTime"
+            onDateTimeChange={(e) => {
               const newDateTime = dayjs.utc(e);
               const newCQLDateTime: CQL.Date = new CQL.DateTime(
                 newDateTime.year(),
@@ -69,7 +70,6 @@ const DisplayAttributeInputs = ({
               );
               setAttributeValue(newCQLDateTime);
             }}
-            value={null}
           />
         );
 
