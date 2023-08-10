@@ -23,7 +23,6 @@ const DecimalInput = ({
         <TextField
           value={value}
           disabled={!canEdit}
-          type="number"
           min="0"
           label={label}
           placeholder={`Enter ${label}`}

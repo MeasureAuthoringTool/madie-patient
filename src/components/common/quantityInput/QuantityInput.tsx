@@ -119,6 +119,7 @@ const QuantityInput = ({
             "aria-describedby": `quantity-value-input-helper-text-${label}`,
             required: true,
           }}
+          type="number"
           onKeyPress={(e) => {
             if (
               (!Number(e.key) &&

@@ -3,6 +3,7 @@ import { render, screen, within, fireEvent } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import QuantityInput from "./QuantityInput";
 import { CQL } from "cqm-models";
+import userEvent from "@testing-library/user-event";
 
 describe("QuantityInput Component", () => {
   const testValue = {
@@ -23,6 +24,10 @@ describe("QuantityInput Component", () => {
   const testQuantity2: CQL.Quantity = {
     value: 0,
     unit: "",
+  };
+  const testQuantity3: CQL.Quantity = {
+    value: null,
+    unit: testValue.value.code,
   };
 
   const onQuantityChange = jest.fn();
@@ -158,5 +163,35 @@ describe("QuantityInput Component", () => {
       await new Promise((resolve) => setTimeout(resolve, 0));
     });
     expect(screen.getByText("No options")).toBeInTheDocument();
+  });
+
+  test("should ignore - and non-number keys, number field behavior expexted", async () => {
+    const onQuantityChange = jest.fn();
+    render(
+      <QuantityInput
+        canEdit={true}
+        quantity={testQuantity3}
+        label="test"
+        onQuantityChange={onQuantityChange}
+      />
+    );
+    const quantityField = screen.getByTestId("quantity-value-field-test");
+    expect(quantityField).toBeInTheDocument();
+    const quantityFieldInput = screen.getByTestId(
+      "quantity-value-input-test"
+    ) as HTMLInputElement;
+    expect(quantityFieldInput).toBeInTheDocument();
+    expect(quantityFieldInput.value).toBe("");
+    expect(onQuantityChange).not.toBeCalled();
+    userEvent.type(quantityFieldInput, "-1-");
+    await expect(onQuantityChange).toHaveBeenNthCalledWith(1, {
+      unit: "mg",
+      value: "-1",
+    });
+    userEvent.type(quantityFieldInput, "2.5/...-");
+    await expect(onQuantityChange).toHaveBeenNthCalledWith(5, {
+      unit: "mg",
+      value: "2.5",
+    });
   });
 });
