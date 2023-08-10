@@ -10,7 +10,6 @@ describe("QDM CalculationService Tests", () => {
   });
 
   it("basic test case execution with mock data", async () => {
-    localStorage.setItem("madieDebug", "true");
     const qdmCalculationResults =
       await qdmCalculationService.calculateQdmTestCases(
         cqmMeasure,
