@@ -10,6 +10,7 @@ import "./DisplayAttributeInputs.scss";
 import RatioInput from "../../../../../../../common/ratioInput/RatioInput";
 import QuantityInput from "../../../../../../../common/quantityInput/QuantityInput";
 import DecimalInput from "../../../../../../../common/DecimalInput/DecimalInput";
+import DateTimeInput from "../../../../../../../common/dateTimeInput/DateTimeInput";
 
 interface DisplayAttributeInputsProps {
   attributeType?: string;
@@ -48,6 +49,18 @@ const DisplayAttributeInputs = ({
                 newDate.date()
               );
               setAttributeValue(newCQLDate);
+            }}
+          />
+        );
+      case "DateTime":
+        return (
+          <DateTimeInput
+            label="DateTime"
+            canEdit={true}
+            dateTime={null}
+            attributeName="DateTime"
+            onDateTimeChange={(e) => {
+              setAttributeValue(e);
             }}
           />
         );
