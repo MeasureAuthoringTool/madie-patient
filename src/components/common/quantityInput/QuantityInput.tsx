@@ -7,7 +7,6 @@ import "twin.macro";
 import "styled-components/macro";
 import { CQL } from "cqm-models";
 import * as ucum from "@lhncbc/ucum-lhc";
-import "./QuantityInput.scss";
 
 export interface QuantityProps {
   quantity: CQL.Quantity;
