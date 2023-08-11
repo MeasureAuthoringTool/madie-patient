@@ -511,7 +511,10 @@ describe("AttributeSection", () => {
   it("shows Quantity on selecting the Quantity type", async () => {
     const assessmentElement: AssessmentPerformed = new AssessmentPerformed();
     const { container } = render(
-      <AttributeSection selectedDataElement={assessmentElement} />
+      <AttributeSection
+        selectedDataElement={assessmentElement}
+        onAddClicked={onAddClicked}
+      />
     );
 
     const attributeSelectBtn = screen.getByRole("button", {
