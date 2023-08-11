@@ -1,4 +1,3 @@
-import { Calculator } from "cqm-execution";
 import cqmMeasure from "../mockdata/qdm/CMS108/cqm_measure.json";
 import patientJson from "../mockdata/qdm/testCasePatient.json";
 import { QdmCalculationService } from "./QdmCalculationService";
