@@ -26,7 +26,7 @@ import {
 import useTestCaseServiceApi from "../../../api/useTestCaseServiceApi";
 import Editor from "../../editor/Editor";
 import { TestCaseValidator } from "../../../validators/TestCaseValidator";
-import { sanitizeUserInput } from "../../../util/Utils";
+import { MadieError, sanitizeUserInput } from "../../../util/Utils";
 import TestCaseSeries from "../../createTestCase/TestCaseSeries";
 import * as _ from "lodash";
 import { Ace } from "ace-builds";
@@ -446,10 +446,18 @@ const EditTestCase = (props: EditTestCaseProps) => {
 
       handleTestCaseResponse(updatedTestCase, "update");
     } catch (error) {
-      setAlert(() => ({
-        status: "error",
-        message: "An error occurred while updating the test case.",
-      }));
+      setAlert(() => {
+        if (error instanceof MadieError) {
+          return {
+            status: "error",
+            message: error.message,
+          };
+        }
+        return {
+          status: "error",
+          message: "An error occurred while updating the test case.",
+        };
+      });
       setErrors([...errors, "An error occurred while updating the test case."]);
     }
   };
@@ -609,12 +617,15 @@ const EditTestCase = (props: EditTestCaseProps) => {
     );
   }
 
+  // TODO: What's the diff between this function and "handleHapiOutcome"?
+  // do we need both?
   function hasValidHapiOutcome(testCase: TestCase) {
     return (
-      (_.isNil(testCase.hapiOperationOutcome) ||
-        testCase.hapiOperationOutcome.code === 200 ||
+      // Consider valid if no hapi outcome. Most likely the editor is empty.
+      _.isNil(testCase.hapiOperationOutcome) ||
+      ((testCase.hapiOperationOutcome.code === 200 ||
         testCase.hapiOperationOutcome.code === 201) &&
-      isHapiOutcomeIssueCodeInformational(testCase?.hapiOperationOutcome)
+        isHapiOutcomeIssueCodeInformational(testCase?.hapiOperationOutcome))
     );
   }
 

@@ -18,7 +18,7 @@ interface Chip {
 interface AttributeSectionProps {
   selectedDataElement: DataElement;
   onAddClicked?: (attribute, type, attributeValue) => void;
-  attributeChipList: Array<Chip>;
+  attributeChipList?: Array<Chip>;
 }
 
 const AttributeSection = ({

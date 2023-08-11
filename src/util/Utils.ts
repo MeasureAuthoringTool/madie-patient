@@ -32,3 +32,9 @@ export const isTestCasePopulationObservation = (
     population.name === PopulationType.DENOMINATOR_OBSERVATION
   );
 };
+
+export class MadieError extends Error {
+  constructor(message: string) {
+    super(message);
+  }
+}

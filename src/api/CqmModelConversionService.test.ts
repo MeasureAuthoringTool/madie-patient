@@ -1,4 +1,9 @@
-import { Group, Measure, PopulationType } from "@madie/madie-models";
+import {
+  AggregateFunctionType,
+  Group,
+  Measure,
+  PopulationType,
+} from "@madie/madie-models";
 import axios from "axios";
 import { DataCriteria } from "./models/DataCriteria";
 import { CqmConversionService } from "./CqmModelConversionService";
@@ -54,13 +59,11 @@ describe("CqmConversionService", () => {
       scoringUnit: "",
       stratifications: [
         {
-          association: "initialPopulation",
           cqlDefinition: "Initial Population",
           description: "",
           id: "strat-1",
         },
         {
-          association: "initialPopulation",
           cqlDefinition: "Initial Population",
           description: "",
           id: "strat-2",
@@ -68,7 +71,7 @@ describe("CqmConversionService", () => {
       ],
       measureObservations: [
         {
-          aggregateMethod: "Average",
+          aggregateMethod: AggregateFunctionType.AVERAGE,
           criteriaReference: "id-2",
           definition: "test",
           description: "",
