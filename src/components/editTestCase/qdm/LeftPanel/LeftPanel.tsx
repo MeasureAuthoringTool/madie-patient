@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import LeftPanelNavTabs from "./LeftPanelNavTabs";
 import ElementsTab from "./ElementsTab/ElementsTab";
+import { QdmPatientProvider } from "../../../../util/QdmPatientContext";
+import { useFormikContext } from "formik";
 
 const LeftPanel = (props: { canEdit: boolean }) => {
   const [activeTab, setActiveTab] = useState<string>("elements");
@@ -10,7 +12,9 @@ const LeftPanel = (props: { canEdit: boolean }) => {
         <LeftPanelNavTabs activeTab={activeTab} setActiveTab={setActiveTab} />
       </div>
       <div className="panel-content">
-        {activeTab === "elements" && <ElementsTab canEdit={props.canEdit} />}
+        <QdmPatientProvider>
+          {activeTab === "elements" && <ElementsTab canEdit={props.canEdit} />}
+        </QdmPatientProvider>
       </div>
     </div>
   );

@@ -15,6 +15,7 @@ import { useQdmExecutionContext } from "../../../../../../routes/qdm/QdmExecutio
 import * as _ from "lodash";
 import Timing from "./timing/Timing";
 import { useFormikContext } from "formik";
+import Button from "@mui/material/Button";
 
 function getDataElementClass(dataElement) {
   const qdmType = dataElement?._type; // match against for attributes
@@ -39,12 +40,14 @@ const DataElementsCard = (props: {
   setCardActiveTab: Function;
   selectedDataElement: DataElement;
   setSelectedDataElement: Function;
+  onChange?: (changedDataElement: DataElement) => void;
 }) => {
   const {
     cardActiveTab,
     setCardActiveTab,
     selectedDataElement,
     setSelectedDataElement,
+    onChange,
   } = props;
 
   const [codeSystemMap, setCodeSystemMap] = useState(null);
@@ -63,7 +66,10 @@ const DataElementsCard = (props: {
     let patient = null;
     if (formik.values?.json) {
       patient = JSON.parse(formik.values.json);
+      console.log("got patient: ", patient);
       setDataElements(patient.dataElements);
+    } else {
+      console.log("no json!");
     }
   }, [formik.values.json]);
   useEffect(() => {
@@ -169,6 +175,11 @@ const DataElementsCard = (props: {
       });
       setDisplayAttributes(displayAttributes);
       setCodesChips(codesChips);
+    } else {
+      console.log("landed here...something is missing...");
+      console.log("localSelectedDataElement: ", localSelectedDataElement);
+      console.log("codeSystemMap: ", codeSystemMap);
+      console.log("dataElements: ", dataElements);
     }
   }, [localSelectedDataElement, codeSystemMap, dataElements]);
   // centralize state one level up so we can conditionally render our child component
@@ -225,18 +236,27 @@ const DataElementsCard = (props: {
           attributeChipList={displayAttributes}
           selectedDataElement={localSelectedDataElement}
           onAddClicked={(attribute, type, attributeValue) => {
+            console.log(`attribute [${attribute}];; type [${type}];; attributeValue: `, attributeValue);
             const updatedDataElement = applyAttribute(
               attribute,
               type,
               attributeValue,
               localSelectedDataElement
             );
+            console.log("updatedDataElement: ", updatedDataElement);
             setLocalSelectedDataElement(updatedDataElement);
+            if (onChange) {
+              onChange(updatedDataElement);
+            }
           }}
         />
       )}
       {/* uncomment later when we do something with it */}
       {/* {activeTab === 'negation_rationale' && <NegationRationale />} */}
+      <Button onClick={() => {
+        console.log("cqmMeasureState: ",  cqmMeasureState);
+        console.log("formik.values: ", formik.values);
+      }}>Debug</Button>
     </div>
   );
 };

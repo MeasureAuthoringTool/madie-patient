@@ -176,12 +176,14 @@ const DemographicsSection = ({ canEdit }) => {
   };
 
   const handleEthnicityChange = (event) => {
+    console.log("existing ethnicity element: ", ethnicityDataElement);
     const newEthnicityDataElement: DataElement = getEthnicityDataElement(
       event.target.value
     );
     setEthnicityDataElement(newEthnicityDataElement);
     const patient = generateNewQdmPatient(newEthnicityDataElement, "ethnicity");
     setQdmPatient(patient);
+    console.log("new ethnicity element: ", newEthnicityDataElement);
     formik.setFieldValue("json", JSON.stringify(patient));
   };
 

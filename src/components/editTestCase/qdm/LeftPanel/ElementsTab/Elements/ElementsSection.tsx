@@ -10,6 +10,9 @@ import DataElementsList from "./DataElementsList";
 import DataElementsCard from "./DataElementsCard/DataElementsCard";
 import "./ElementsSection.scss";
 import "./DataElementsList.scss";
+import { useQdmPatient } from "../../../../../../util/QdmPatientContext";
+import Button from "@mui/material/Button";
+import * as _ from "lodash";
 
 const ElementsSection = () => {
   const cqmService = useRef(useCqmConversionService());
@@ -23,6 +26,8 @@ const ElementsSection = () => {
 
   const [categories, setCategories] = useState([]);
   const [dataElements, setDataElements] = useState<DataElement[]>([]);
+  const { state } = useQdmPatient();
+  const { patient } = state;
 
   const retrieveCategories = useCallback(() => {
     cqmService.current.fetchSourceDataCriteria(measure.cql).then((r) => {
@@ -100,6 +105,21 @@ const ElementsSection = () => {
               />
             </div>
           )}
+          <div>
+            <table>
+              <th>
+                <td>Element/Data Type/Value Set</td>
+                <td>Timing</td>
+                <td>Codes</td>
+                <td>Actions</td>
+              </th>
+              <tbody>
+              </tbody>
+            </table>
+            <div>
+              { _.isNil(patient) ? "nil" : JSON.stringify(patient)}
+            </div>
+          </div>
         </div>
       }
     />
