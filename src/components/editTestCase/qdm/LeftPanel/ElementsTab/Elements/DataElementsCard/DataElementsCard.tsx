@@ -56,7 +56,7 @@ const DataElementsCard = (props: {
     useState(null);
   const [displayAttributes, setDisplayAttributes] = useState([]);
   const [codesChips, setCodesChips] = useState([]);
-  const [dataElements, setDataElements] = useState(null);
+  const [dataElements, setDataElements] = useState([]);
   const formik: any = useFormikContext();
   // data elements are required for relatedTo.
   useEffect(() => {
@@ -89,12 +89,9 @@ const DataElementsCard = (props: {
   }, [selectedDataElement, getDataElementClass, setLocalSelectedDataElement]);
 
   useEffect(() => {
-    if (localSelectedDataElement && codeSystemMap && dataElements) {
-      // const dataElementClass = getDataElementClass(localSelectedDataElement);
-      // const modeledEl = new dataElementClass(localSelectedDataElement);
+    if (localSelectedDataElement && codeSystemMap) {
       const displayAttributes = [];
       const codesChips = [];
-      // setLocalSelectedDataElement(modeledEl);
       localSelectedDataElement.schema.eachPath((path, info) => {
         if (!SKIP_ATTRIBUTES.includes(path) && localSelectedDataElement[path]) {
           if (info.instance === "Array") {
