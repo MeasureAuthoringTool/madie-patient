@@ -28,8 +28,12 @@ export const applyAttribute = (
   attributeValue,
   dataElement
 ) => {
+  console.log(dataElement);
   const modelClass = getDataElementClass(dataElement);
+  console.log(modelClass)
   const updatedDataElement = new modelClass(dataElement);
+  console.log(updatedDataElement)
+  console.log(attribute, attributeValue)
   updatedDataElement[_.camelCase(attribute)] = attributeValue;
   return updatedDataElement;
 };
@@ -145,6 +149,7 @@ const DataElementsCard = (props: {
           } else if (
             localSelectedDataElement[path] instanceof cqmModels.CQL.Code
           ) {
+            console.log("here")
             codesChips.push({
               name: path,
               title: _.startCase(path),
@@ -155,6 +160,7 @@ const DataElementsCard = (props: {
               ),
             });
           } else {
+            console.log("here")
             displayAttributes.push({
               name: path,
               title: _.startCase(path),
