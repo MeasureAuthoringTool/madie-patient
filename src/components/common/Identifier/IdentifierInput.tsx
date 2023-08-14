@@ -13,7 +13,7 @@ export interface IdentifierProps {
   identifier: { namingSystem: string; value: string };
 }
 
-const Identifier = ({
+const IdentifierInput = ({
   handleChange,
   canEdit,
   namingLabel = "Value Set / Direct Reference Code",
@@ -75,4 +75,4 @@ const Identifier = ({
   );
 };
 
-export default Identifier;
+export default IdentifierInput;

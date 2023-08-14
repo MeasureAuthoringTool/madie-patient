@@ -1,5 +1,6 @@
 import React from "react";
-import Identifier from "../../../../../../../common/Identifier/Identifier";
+import IdentifierInput from "../../../../../../../common/Identifier/IdentifierInput";
+import { Identifier } from "cqm-models";
 
 const DisplayMultipleAttributeInputs = ({
   setAttributeValue,
@@ -9,9 +10,13 @@ const DisplayMultipleAttributeInputs = ({
   return (
     <>
       {attributeType ? (
-        <Identifier
+        <IdentifierInput
           handleChange={(val) => {
-            setAttributeValue(val);
+            const identifierObject = new Identifier(val);
+            setAttributeValue((attributeValue) => ({
+              ...attributeValue,
+              ["identifier"]: identifierObject,
+            }));
           }}
           canEdit={true}
           identifier={{

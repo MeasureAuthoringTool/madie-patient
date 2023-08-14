@@ -33,7 +33,7 @@ export const applyAttribute = (
   const pathInfo = updatedDataElement.schema.paths[_.camelCase(attribute)];
   if (pathInfo?.instance === "Array") {
     const test = new PatientEntity();
-    test.identifier = new Identifier(attributeValue);
+    test.identifier = attributeValue?.identifier;
     updatedDataElement[_.camelCase(attribute)] = test;
   } else {
     updatedDataElement[_.camelCase(attribute)] = attributeValue;
