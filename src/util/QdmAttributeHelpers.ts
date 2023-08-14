@@ -87,13 +87,6 @@ export const determineAttributeTypeList = (path, info) => {
   else return [info.instance];
 };
 
-// const getDay = (value) => {
-//   if (value.getUTCDay){
-//     return value.getUTCDay();
-//   }
-//   if ()
-// }
-
 // from https://github.com/MeasureAuthoringTool/bonnie/blob/master/app/assets/javascripts/views/patient_builder/data_criteria_attribute_display.js.coffee
 export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
   if (!value) {
@@ -121,9 +114,6 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
     const timeZoneOffset = resultDate.getTimezoneOffset()
       ? resultDate.getTimezoneOffset() / 60
       : null;
-    // if we've got a dateTime string in UTC
-    // if (value.isTime){
-    // } we may need to do something unique for time later.
     if (value.isDate) {
       day = value.day + 1;
     }
