@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen, within, fireEvent } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
-import Identifier from "./Identifier";
+import Identifier from "./IdentifierInput";
 import userEvent from "@testing-library/user-event";
 
 describe("Identifier Component", () => {
