@@ -8,7 +8,7 @@ import {
 } from "../../../../../../../util/QdmAttributeHelpers";
 import Codes from "./Codes/Codes";
 import SubNavigationTabs from "./SubNavigationTabs";
-import cqmModels, { DataElement } from "cqm-models";
+import cqmModels, { DataElement, Identifier, PatientEntity } from "cqm-models";
 import "./DataElementsCard.scss";
 import AttributeSection from "./attributes/AttributeSection";
 import { useQdmExecutionContext } from "../../../../../../routes/qdm/QdmExecutionContext";
@@ -30,11 +30,15 @@ export const applyAttribute = (
 ) => {
   console.log(dataElement);
   const modelClass = getDataElementClass(dataElement);
-  console.log(modelClass)
   const updatedDataElement = new modelClass(dataElement);
-  console.log(updatedDataElement)
-  console.log(attribute, attributeValue)
-  updatedDataElement[_.camelCase(attribute)] = attributeValue;
+  const pathInfo = updatedDataElement.schema.paths[_.camelCase(attribute)]
+  if(pathInfo.instance === "Array"){
+    const test = new PatientEntity()
+    test.identifier=new Identifier(attributeValue)
+    updatedDataElement[_.camelCase(attribute)] = test
+  }else{
+    updatedDataElement[_.camelCase(attribute)] = attributeValue;
+  }
   return updatedDataElement;
 };
 
@@ -146,7 +150,6 @@ const DataElementsCard = (props: {
           } else if (
             localSelectedDataElement[path] instanceof cqmModels.CQL.Code
           ) {
-            console.log("here")
             codesChips.push({
               name: path,
               title: _.startCase(path),
@@ -157,7 +160,6 @@ const DataElementsCard = (props: {
               ),
             });
           } else {
-            console.log("here")
             displayAttributes.push({
               name: path,
               title: _.startCase(path),
