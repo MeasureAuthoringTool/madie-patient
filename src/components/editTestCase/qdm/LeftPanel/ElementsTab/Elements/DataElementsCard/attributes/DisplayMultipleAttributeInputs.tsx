@@ -13,17 +13,14 @@ const DisplayMultipleAttributeInputs = ({
         <IdentifierInput
           handleChange={(val) => {
             const identifierObject = new Identifier(val);
-            setAttributeValue((attributeValue) => ({
-              ...attributeValue,
-              ["identifier"]: identifierObject,
-            }));
+            setAttributeValue(identifierObject);
           }}
           canEdit={true}
           identifier={{
             namingSystem: attributeValue?.namingSystem
-              ? attributeValue.namingSystem
+              ? attributeValue?.namingSystem
               : null,
-            value: attributeValue?.value ? attributeValue.value : null,
+            value: attributeValue?.value ? attributeValue?.value : null,
           }}
         />
       ) : (
