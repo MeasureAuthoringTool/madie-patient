@@ -87,6 +87,13 @@ export const determineAttributeTypeList = (path, info) => {
   else return [info.instance];
 };
 
+// const getDay = (value) => {
+//   if (value.getUTCDay){
+//     return value.getUTCDay();
+//   }
+//   if ()
+// }
+
 // from https://github.com/MeasureAuthoringTool/bonnie/blob/master/app/assets/javascripts/views/patient_builder/data_criteria_attribute_display.js.coffee
 export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
   if (!value) {
@@ -100,12 +107,12 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
   else if (typeof value !== "number" && !isNaN(Date.parse(value))) {
     const parsedDate = Date.parse(value);
     const resultDate = new Date(parsedDate);
+    // treat date differently
     const year = resultDate.getUTCFullYear() || null;
     const month = resultDate.getUTCMonth()
       ? resultDate.getUTCMonth() + 1
       : null;
-    const day = resultDate.getUTCDay() ? resultDate.getUTCDay() + 1 : null;
-
+    let day = resultDate.getUTCDay() ? resultDate.getUTCDay() + 1 : null; // this works only for utc strings
     const hours = resultDate.getUTCHours() || null;
     const minutes = resultDate.getUTCMinutes() || null;
     const seconds = resultDate.getUTCSeconds() || null;
@@ -114,6 +121,15 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
     const timeZoneOffset = resultDate.getTimezoneOffset()
       ? resultDate.getTimezoneOffset() / 60
       : null;
+    // if we've got a dateTime string in UTC
+    // if (value.isTime){
+    // } we may need to do something unique for time later.
+    if (value.isDate) {
+      day = value.day + 1;
+    }
+    if (value.isDateTime) {
+      day = value.day;
+    }
     const currentDate = new DateTime(
       year,
       month,
@@ -124,7 +140,6 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
       ms,
       timeZoneOffset
     );
-
     if (currentDate.isTime()) {
       return moment(
         new Date(
@@ -136,7 +151,7 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
           currentDate.second
         )
       ).format("LT");
-    } else if (currentDate.isDate) {
+    } else if (value.isDate) {
       return moment.utc(currentDate.toJSDate()).format("L");
     } else {
       return moment.utc(currentDate.toJSDate()).format("L LT");
