@@ -104,7 +104,6 @@ const AttributeSection = ({
       />
       <AttributeChipList items={mappedAttributeList} />
       <DisplayAttributeInputs
-        attributeName={formik.values?.attribute?.displayName}
         attributeType={formik.values.type}
         onInputAdd={onInputAdd}
       />
