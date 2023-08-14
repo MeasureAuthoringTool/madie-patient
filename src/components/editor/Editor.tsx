@@ -5,6 +5,7 @@ import "ace-builds/src-noconflict/mode-json";
 
 export interface EditorPropsType {
   value: string;
+  height: string;
   onChange?: (value: string) => void;
   parseDebounceTime?: number;
   inboundAnnotations?: Ace.Annotation[];
@@ -25,11 +26,13 @@ const setCommandEnabled = (editor, name, enabled) => {
 };
 
 const Editor = ({
+  height,
   value,
   onChange,
   parseDebounceTime = 1500,
   inboundAnnotations,
   readOnly,
+  setEditor: setOuterEditor,
 }: EditorPropsType) => {
   const [editor, setEditor] = useState<Ace.Editor>();
   const aceRef = useRef<AceEditor>(null);
@@ -63,41 +66,43 @@ const Editor = ({
   });
 
   return (
-    <>
-      <div data-testid="test-case-json-editor">
-        <AceEditor
-          value={value}
-          ref={aceRef}
-          onChange={(value) => {
-            onChange(value);
-          }}
-          onLoad={(aceEditor: Ace.Editor) => {
-            if (setEditor) {
-              setEditor(aceEditor);
+    <div data-testid="test-case-json-editor" style={{ height: "inherit" }}>
+      <AceEditor
+        value={value}
+        ref={aceRef}
+        onChange={(value) => {
+          onChange(value);
+        }}
+        onLoad={(aceEditor: Ace.Editor) => {
+          if (setEditor) {
+            setEditor(aceEditor);
+            // setEditor used to be a passed variable, but somehow became a local one. This seems unintended, but will not be modifying for now.
+            if (setOuterEditor) {
+              setOuterEditor(aceEditor);
             }
-          }}
-          mode="json" // Temporary value of mode to prevent a dynamic search request.
-          theme="monokai"
-          name="ace-editor-wrapper"
-          enableBasicAutocompletion={true}
-          width="100%"
-          height="calc(100vh - 135px)"
-          showPrintMargin={true}
-          showGutter={true}
-          setOptions={{
-            enableBasicAutocompletion: true,
-            enableLiveAutocompletion: true,
-            enableSnippets: true,
-            showLineNumbers: true,
-            tabSize: 2,
-            autoScrollEditorIntoView: true,
-          }}
-          editorProps={{ $blockScrolling: true }}
-          readOnly={readOnly}
-          wrapEnabled={true}
-        />
-      </div>
-    </>
+          }
+        }}
+        mode="json" // Temporary value of mode to prevent a dynamic search request.
+        theme="monokai"
+        name="ace-editor-wrapper"
+        enableBasicAutocompletion={true}
+        width="100%"
+        height={height}
+        showPrintMargin={true}
+        showGutter={true}
+        setOptions={{
+          enableBasicAutocompletion: true,
+          enableLiveAutocompletion: true,
+          enableSnippets: true,
+          showLineNumbers: true,
+          tabSize: 2,
+          autoScrollEditorIntoView: true,
+        }}
+        editorProps={{ $blockScrolling: true }}
+        readOnly={readOnly}
+        wrapEnabled={true}
+      />
+    </div>
   );
 };
 

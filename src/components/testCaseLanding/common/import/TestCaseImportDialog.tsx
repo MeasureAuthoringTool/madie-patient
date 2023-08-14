@@ -46,7 +46,21 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
   const onDrop = useCallback(async (acceptedFiles, fileRejections) => {
     removeUploadedFile();
     if (!_.isEmpty(fileRejections)) {
-      setErrorMessage(fileRejections[0].errors[0].message);
+      fileRejections.forEach((file) => {
+        file.errors.forEach((err) => {
+          if (err.code === "file-too-large") {
+            setErrorMessage(
+              "The Import file is too large. No Test Cases can be imported."
+            );
+          }
+
+          if (err.code === "file-invalid-type") {
+            setErrorMessage(
+              "The import file must be a zip file. No Test Cases can be imported."
+            );
+          }
+        });
+      });
       return;
     }
     setUploadingFileSpinner(true);
@@ -81,21 +95,29 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
               // file compressed from MAC has a parentFolderName and also contains several other hidden files
               if (fileName.startsWith(parentFolderName)) {
                 const folderNameSplit = fileName.split("/");
-                if (
-                  validator.isUUID(folderNameSplit[1]) &&
-                  fileName.endsWith(".json")
-                ) {
-                  return fileName;
+                if (validator.isUUID(folderNameSplit[1])) {
+                  if (fileName.endsWith(".json")) {
+                    return fileName;
+                  }
+                  // Insert a blank file for each directory so that we can return an appropriate error message
+                  else if (content.files[fileName].dir) {
+                    content.file(fileName, "");
+                    return fileName;
+                  }
                 }
               } else {
                 // Zip downloaded from MADiE doesn't have a parentFolderName
                 // Ex: a648e724-ce72-4cac-b0a7-3c4d52784f73/CMS136FHIR-v0.0.000-tcseries-tctitle001.json
                 const folderNameSplit = fileName.split("/");
-                if (
-                  validator.isUUID(folderNameSplit[0]) &&
-                  fileName.endsWith(".json")
-                ) {
-                  return fileName;
+                if (validator.isUUID(folderNameSplit[0])) {
+                  if (fileName.endsWith(".json")) {
+                    return fileName;
+                  }
+                  // Insert a blank file for each directory so that we can return an appropriate error message
+                  else if (content.files[fileName].dir) {
+                    content.file(fileName, "");
+                    return fileName;
+                  }
                 }
               }
             }),
@@ -114,10 +136,33 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
               patientId = _.split(fileNames[i], "/")[0];
             }
 
-            filesMap.push({
-              patientId: patientId,
-              json: val,
+            // check for an existing file in the directory
+            var existingFile = filesMap.filter((file) => {
+              if (file.patientId === patientId) {
+                return true;
+              }
             });
+
+            // replace the blank file with the new file
+            if (existingFile.length > 0) {
+              if (val.length > 0) {
+                if (existingFile[0].json.length === 0) {
+                  filesMap.splice(
+                    filesMap.findIndex((file) => file.patientId === patientId),
+                    1
+                  );
+                }
+                filesMap.push({
+                  patientId: patientId,
+                  json: val,
+                });
+              }
+            } else {
+              filesMap.push({
+                patientId: patientId,
+                json: val,
+              });
+            }
           });
 
           if (_.isEmpty(filesMap)) {

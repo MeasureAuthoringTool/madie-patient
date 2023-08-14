@@ -53,6 +53,7 @@ import { MadieEditor } from "@madie/madie-editor";
 import CreateTestCaseNavTabs from "../../createTestCase/CreateTestCaseNavTabs";
 import ExpectedActual from "../../createTestCase/RightPanel/ExpectedActual/ExpectedActual";
 import "./EditTestCase.scss";
+import "allotment/dist/style.css";
 import CalculationResults from "../../createTestCase/calculationResults/CalculationResults";
 import {
   Button,
@@ -66,6 +67,8 @@ import TextArea from "../../createTestCase/TextArea";
 import FileUploader from "../../fileUploader/FileUploader";
 import { ScanValidationDto } from "../../../api/models/ScanValidationDto";
 import { Bundle } from "fhir/r4";
+import { Allotment } from "allotment";
+// import '../qdm/EditTestCase.scss'
 
 const TestCaseForm = tw.form`m-3`;
 const ValidationErrorsButton = tw.button`
@@ -219,6 +222,18 @@ const EditTestCase = (props: EditTestCaseProps) => {
     series: [],
   });
   const [editor, setEditor] = useState<Ace.Editor>(null);
+  function resizeEditor() {
+    // hack to force Ace to resize as it doesn't seem to be responsive
+    setTimeout(() => {
+      editor?.resize(true);
+    }, 500);
+  }
+  // we need this to fire on initial load because it doesn't know about allotment's client width
+  useEffect(() => {
+    if (editor) {
+      resizeEditor();
+    }
+  }, [editor]);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
   const [populationGroupResults, setPopulationGroupResults] =
     useState<DetailedPopulationGroupResult[]>();
@@ -681,13 +696,6 @@ const EditTestCase = (props: EditTestCaseProps) => {
       : !isEmptyTestCaseJsonString(editorVal);
   }
 
-  function resizeEditor() {
-    // hack to force Ace to resize as it doesn't seem to be responsive
-    setTimeout(() => {
-      editor?.resize(true);
-    }, 500);
-  }
-
   const hasErrorSeverity = (validationErrors) => {
     return (
       validationErrors.filter(
@@ -745,293 +753,321 @@ const EditTestCase = (props: EditTestCaseProps) => {
       });
   };
 
+  const allotmentRef = useRef(null);
+
   return (
     <TestCaseForm
       data-testid="create-test-case-form"
+      id="edit-test-case-qi-core"
       onSubmit={formik.handleSubmit}
     >
-      <div tw="flex flex-wrap shadow-lg mx-5 my-6 rounded-md border border-slate bg-white">
-        <div
-          tw="flex-none sm:w-full md:w-6/12 lg:w-6/12"
-          style={{ marginTop: 44 }}
+      <div className="allotment-wrapper">
+        <Allotment
+          minSize={10}
+          ref={allotmentRef}
+          defaultSizes={[200, 200, 10]}
+          vertical={false}
+          onDragEnd={resizeEditor}
         >
-          <Editor
-            onChange={(val: string) => setEditorVal(val)}
-            value={editorVal}
-            setEditor={setEditor}
-            readOnly={!canEdit || _.isNil(testCase)}
-          />
-        </div>
-        {/* pseudo divider */}
-        <div style={{ width: "17px", background: "#DDDDDD" }}></div>
-        <div tw="flex-auto sm:w-full md:w-1/12 lg:w-3/12">
-          <CreateTestCaseNavTabs
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-          />
-          {activeTab === "measurecql" &&
-            (!measure?.cqlErrors ? (
-              <div data-testid="test-case-cql-editor">
-                <MadieEditor
-                  value={measure?.cql}
-                  height="calc(100vh - 135px)"
-                  readOnly={true}
-                  validationsEnabled={false}
-                />
-              </div>
-            ) : (
-              <div data-testid="test-case-cql-has-errors-message">
-                An error exists with the measure CQL, please review the CQL
-                Editor tab
-              </div>
-            ))}
-          {activeTab === "highlighting" && !executing && (
-            <CalculationResults
-              calculationResults={populationGroupResults}
-              calculationErrors={calculationErrors}
-            />
-          )}
-          {activeTab === "highlighting" && executing && (
-            <div style={{ display: "flex", justifyContent: "center" }}>
-              <MadieSpinner style={{ height: 50, width: 50 }} />
+          <Allotment.Pane>
+            <div className="left-panel">
+              <Editor
+                onChange={(val: string) => setEditorVal(val)}
+                value={editorVal}
+                setEditor={setEditor}
+                readOnly={!canEdit || _.isNil(testCase)}
+                height="652px"
+              />
             </div>
-          )}
-          {activeTab === "expectoractual" && (
-            <ExpectedActual
-              canEdit={canEdit}
-              groupPopulations={groupPopulations}
-              executionRun={!_.isNil(populationGroupResults)}
-              errors={formik.errors.groupPopulations}
-              onChange={(
-                groupPopulations,
-                changedGroupId,
-                changedPopulation
-              ) => {
-                const stratOutput = triggerPopChanges(
-                  groupPopulations,
-                  changedGroupId,
-                  changedPopulation,
-                  measure?.groups
-                );
-                formik.setFieldValue(
-                  "groupPopulations",
-                  stratOutput as GroupPopulation[]
-                );
-              }}
-              onStratificationChange={(
-                groupPopulations,
-                changedGroupId,
-                changedStratification
-              ) => {
-                const stratOutput = triggerPopChanges(
-                  groupPopulations,
-                  changedGroupId,
-                  changedStratification,
-                  measure?.groups
-                );
-                formik.setFieldValue(
-                  "groupPopulations",
-                  stratOutput as GroupPopulation[]
-                );
-              }}
-            />
-          )}
-          {/*
+          </Allotment.Pane>
+          <Allotment.Pane>
+            <div className="right-panel">
+              <CreateTestCaseNavTabs
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+              />
+              {activeTab === "measurecql" &&
+                (!measure?.cqlErrors ? (
+                  <div data-testid="test-case-cql-editor">
+                    <MadieEditor
+                      value={measure?.cql}
+                      height="652px"
+                      readOnly={true}
+                      validationsEnabled={false}
+                    />
+                  </div>
+                ) : (
+                  <div data-testid="test-case-cql-has-errors-message">
+                    An error exists with the measure CQL, please review the CQL
+                    Editor tab
+                  </div>
+                ))}
+              {activeTab === "highlighting" && (
+                <div className="panel-content">
+                  {executing ? (
+                    <div style={{ display: "flex", justifyContent: "center" }}>
+                      <MadieSpinner style={{ height: 50, width: 50 }} />
+                    </div>
+                  ) : (
+                    <CalculationResults
+                      calculationResults={populationGroupResults}
+                      calculationErrors={calculationErrors}
+                    />
+                  )}
+                </div>
+              )}
+              {activeTab === "expectoractual" && (
+                <div className="panel-content">
+                  <ExpectedActual
+                    canEdit={canEdit}
+                    groupPopulations={groupPopulations}
+                    executionRun={!_.isNil(populationGroupResults)}
+                    errors={formik.errors.groupPopulations}
+                    onChange={(
+                      groupPopulations,
+                      changedGroupId,
+                      changedPopulation
+                    ) => {
+                      const stratOutput = triggerPopChanges(
+                        groupPopulations,
+                        changedGroupId,
+                        changedPopulation,
+                        measure?.groups
+                      );
+                      formik.setFieldValue(
+                        "groupPopulations",
+                        stratOutput as GroupPopulation[]
+                      );
+                    }}
+                    onStratificationChange={(
+                      groupPopulations,
+                      changedGroupId,
+                      changedStratification
+                    ) => {
+                      const stratOutput = triggerPopChanges(
+                        groupPopulations,
+                        changedGroupId,
+                        changedStratification,
+                        measure?.groups
+                      );
+                      formik.setFieldValue(
+                        "groupPopulations",
+                        stratOutput as GroupPopulation[]
+                      );
+                    }}
+                  />
+                </div>
+              )}
+              {/*
             Independent views should be their own components when possible
             This will allow for independent unit testing and help render performance.
            */}
 
-          {activeTab === "details" && (
-            <>
-              {alert &&
-                (testCaseAlertToast ? (
-                  <MadieAlert
-                    type={alert?.status}
-                    content={alert?.message}
-                    alertProps={{
-                      "data-testid": "create-test-case-alert",
-                    }}
-                    closeButtonProps={{
-                      "data-testid": "close-create-test-case-alert",
-                    }}
-                  />
-                ) : (
-                  <Alert
-                    status={alert?.status}
-                    role="alert"
-                    aria-label="Create Alert"
-                    data-testid="create-test-case-alert"
-                  >
-                    {alert?.message}
-                    <button
-                      data-testid="close-create-test-case-alert"
-                      type="button"
-                      tw="box-content h-4 p-1 ml-3 mb-1.5"
-                      data-bs-dismiss="alert"
-                      aria-label="Close Alert"
-                      onClick={() => setAlert(null)}
-                    >
-                      <FontAwesomeIcon icon={faTimes} />
-                    </button>
-                  </Alert>
-                ))}
+              {activeTab === "details" && (
+                <div className="panel-content">
+                  {alert &&
+                    (testCaseAlertToast ? (
+                      <MadieAlert
+                        type={alert?.status}
+                        content={alert?.message}
+                        alertProps={{
+                          "data-testid": "create-test-case-alert",
+                        }}
+                        closeButtonProps={{
+                          "data-testid": "close-create-test-case-alert",
+                        }}
+                      />
+                    ) : (
+                      <Alert
+                        status={alert?.status}
+                        role="alert"
+                        aria-label="Create Alert"
+                        data-testid="create-test-case-alert"
+                      >
+                        {alert?.message}
+                        <button
+                          data-testid="close-create-test-case-alert"
+                          type="button"
+                          tw="box-content h-4 p-1 ml-3 mb-1.5"
+                          data-bs-dismiss="alert"
+                          aria-label="Close Alert"
+                          onClick={() => setAlert(null)}
+                        >
+                          <FontAwesomeIcon icon={faTimes} />
+                        </button>
+                      </Alert>
+                    ))}
 
-              {/* TODO Replace with re-usable form component
+                  {/* TODO Replace with re-usable form component
                label, input, and error => single input control component */}
 
-              <div tw="flex flex-col flex-wrap p-5 w-9/12">
-                <TextField
-                  placeholder="Test Case Title"
-                  required
-                  disabled={!canEdit}
-                  label="Title"
-                  id="test-case-title"
-                  inputProps={{
-                    "data-testid": "test-case-title",
-                    "aria-describedby": "title-helper-text",
-                  }}
-                  helperText={formikErrorHandler("title")}
-                  size="small"
-                  error={formik.touched.title && Boolean(formik.errors.title)}
-                  {...formik.getFieldProps("title")}
-                />
-                <div tw="mt-4">
-                  <TextArea
-                    placeholder="Test Case Description"
-                    id="test-case-description"
-                    data-testid="edit-test-case-description"
-                    disabled={!canEdit}
-                    {...formik.getFieldProps("description")}
-                    label="Description"
-                    required={false}
-                    inputProps={{
-                      "data-testid": "test-case-description",
-                      "aria-describedby": "description-helper-text",
-                    }}
-                    onChange={formik.handleChange}
-                    value={formik.values.description}
-                    error={
-                      formik.touched.description &&
-                      Boolean(formik.errors.description)
-                    }
-                    helperText={formikErrorHandler("description")}
-                  />
-                </div>
-
-                <div
-                  tw="-mt-5"
-                  style={{
-                    marginTop: 10,
-                  }}
-                >
-                  <label
-                    htmlFor="test-case-series"
-                    tw="text-gray-980"
-                    style={{
-                      fontFamily: "Rubik",
-                      fontSize: "14px",
-                      textTransform: "capitalize",
-                    }}
-                  >
-                    Group
-                  </label>
-                  <TestCaseSeries
-                    disabled={!canEdit}
-                    value={formik.values.series}
-                    onChange={(nextValue) =>
-                      formik.setFieldValue("series", nextValue)
-                    }
-                    seriesOptions={seriesState.series}
-                    sx={testCaseSeriesStyles}
-                  />
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-        {showValidationErrors ? (
-          <aside
-            tw="w-80 h-[500px] flex flex-col"
-            data-testid="open-json-validation-errors-aside"
-          >
-            <button
-              tw="w-full text-lg text-center"
-              data-testid="hide-json-validation-errors-button"
-              onClick={() => {
-                setShowValidationErrors((prevState) => {
-                  resizeEditor();
-                  return !prevState;
-                });
-              }}
-            >
-              <StyledIcon
-                icon={faExclamationCircle}
-                errorSeverity={severityOfValidationErrors(validationErrors)}
-              />
-              Validation Errors
-            </button>
-
-            <div
-              tw="h-full flex flex-col overflow-y-scroll"
-              data-testid="json-validation-errors-list"
-            >
-              {validationErrors && validationErrors.length > 0 ? (
-                validationErrors
-                  .filter(
-                    (error) => /^information/.exec(error?.severity) === null
-                  )
-                  .map((error) => {
-                    return (
-                      <ValidationAlertCard
-                        key={error.key}
-                        status={
-                          error.diagnostics.includes("Meta.profile")
-                            ? "meta"
-                            : error.severity
-                            ? error.severity
-                            : "error"
+                  <div tw="flex flex-col flex-wrap p-5 w-9/12">
+                    <TextField
+                      placeholder="Test Case Title"
+                      required
+                      disabled={!canEdit}
+                      label="Title"
+                      id="test-case-title"
+                      inputProps={{
+                        "data-testid": "test-case-title",
+                        "aria-describedby": "title-helper-text",
+                      }}
+                      helperText={formikErrorHandler("title")}
+                      size="small"
+                      error={
+                        formik.touched.title && Boolean(formik.errors.title)
+                      }
+                      {...formik.getFieldProps("title")}
+                    />
+                    <div tw="mt-4">
+                      <TextArea
+                        placeholder="Test Case Description"
+                        id="test-case-description"
+                        data-testid="edit-test-case-description"
+                        disabled={!canEdit}
+                        {...formik.getFieldProps("description")}
+                        label="Description"
+                        required={false}
+                        inputProps={{
+                          "data-testid": "test-case-description",
+                          "aria-describedby": "description-helper-text",
+                        }}
+                        onChange={formik.handleChange}
+                        value={formik.values.description}
+                        error={
+                          formik.touched.description &&
+                          Boolean(formik.errors.description)
                         }
+                        helperText={formikErrorHandler("description")}
+                      />
+                    </div>
+
+                    <div
+                      tw="-mt-5"
+                      style={{
+                        marginTop: 10,
+                      }}
+                    >
+                      <label
+                        htmlFor="test-case-series"
+                        tw="text-gray-980"
+                        style={{
+                          fontFamily: "Rubik",
+                          fontSize: "14px",
+                          textTransform: "capitalize",
+                        }}
                       >
-                        {error.diagnostics.includes("Meta.profile")
-                          ? "Meta.profile: "
-                          : error.severity
-                          ? error.severity.charAt(0).toUpperCase() +
-                            error.severity.slice(1) +
-                            ": "
-                          : ""}
-                        {error.diagnostics}
-                      </ValidationAlertCard>
-                    );
-                  })
-              ) : (
-                <span>Nothing to see here!</span>
+                        Group
+                      </label>
+                      <TestCaseSeries
+                        disabled={!canEdit}
+                        value={formik.values.series}
+                        onChange={(nextValue) =>
+                          formik.setFieldValue("series", nextValue)
+                        }
+                        seriesOptions={seriesState.series}
+                        sx={testCaseSeriesStyles}
+                      />
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
-          </aside>
-        ) : (
-          <aside
-            tw="w-10 h-[500px] overflow-x-hidden"
-            data-testid="closed-json-validation-errors-aside"
-          >
-            <ValidationErrorsButton
-              data-testid="show-json-validation-errors-button"
-              onClick={() =>
-                setShowValidationErrors((prevState) => {
-                  resizeEditor();
-                  return !prevState;
-                })
-              }
-            >
-              <StyledIcon
-                icon={faExclamationCircle}
-                errorSeverity={severityOfValidationErrors(validationErrors)}
-              />
-              Validation Errors
-            </ValidationErrorsButton>
-          </aside>
-        )}
+          </Allotment.Pane>
+          <Allotment.Pane>
+            <div className="validation-panel">
+              {showValidationErrors ? (
+                <aside
+                  tw="w-full h-full flex flex-col"
+                  data-testid="open-json-validation-errors-aside"
+                >
+                  <button
+                    data-testid="hide-json-validation-errors-button"
+                    onClick={() => {
+                      setShowValidationErrors((prevState) => {
+                        allotmentRef.current.resize([200, 200, 10]);
+                        return !prevState;
+                      });
+                    }}
+                  >
+                    <StyledIcon
+                      icon={faExclamationCircle}
+                      errorSeverity={severityOfValidationErrors(
+                        validationErrors
+                      )}
+                    />
+                    Validation Errors
+                  </button>
 
-        <div tw="h-24 bg-gray-75 w-full sticky bottom-0 left-0 z-10">
+                  <div
+                    tw="h-full flex flex-col overflow-y-scroll"
+                    data-testid="json-validation-errors-list"
+                    className="validation-content"
+                  >
+                    {validationErrors && validationErrors.length > 0 ? (
+                      validationErrors
+                        .filter(
+                          (error) =>
+                            /^information/.exec(error?.severity) === null
+                        )
+                        .map((error) => {
+                          return (
+                            <ValidationAlertCard
+                              key={error.key}
+                              status={
+                                error.diagnostics.includes("Meta.profile")
+                                  ? "meta"
+                                  : error.severity
+                                  ? error.severity
+                                  : "error"
+                              }
+                            >
+                              {error.diagnostics.includes("Meta.profile")
+                                ? "Meta.profile: "
+                                : error.severity
+                                ? error.severity.charAt(0).toUpperCase() +
+                                  error.severity.slice(1) +
+                                  ": "
+                                : ""}
+                              {error.diagnostics}
+                            </ValidationAlertCard>
+                          );
+                        })
+                    ) : (
+                      <span>Nothing to see here!</span>
+                    )}
+                  </div>
+                </aside>
+              ) : (
+                <aside
+                  tw="h-full w-full"
+                  data-testid="closed-json-validation-errors-aside"
+                >
+                  <ValidationErrorsButton
+                    data-testid="show-json-validation-errors-button"
+                    onClick={() =>
+                      setShowValidationErrors((prevState) => {
+                        allotmentRef.current.resize([200, 200, 50]);
+                        resizeEditor();
+                        return !prevState;
+                      })
+                    }
+                  >
+                    <StyledIcon
+                      icon={faExclamationCircle}
+                      errorSeverity={severityOfValidationErrors(
+                        validationErrors
+                      )}
+                    />
+                    Validation Errors
+                  </ValidationErrorsButton>
+                </aside>
+              )}
+            </div>
+          </Allotment.Pane>
+        </Allotment>
+
+        <div tw="h-24 bg-gray-75 w-full sticky bottom-0 left-0 z-40">
           <div tw="flex items-center">
             <div tw="w-1/2 flex items-center px-2">
               {canEdit && <FileUploader onFileImport={updateTestCaseJson} />}
