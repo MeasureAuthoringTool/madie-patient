@@ -30,7 +30,6 @@ export const applyAttribute = (
 ) => {
   const modelClass = getDataElementClass(dataElement);
   const updatedDataElement = new modelClass(dataElement);
-  const pathInfo = updatedDataElement.schema.paths[_.camelCase(attribute)];
   updatedDataElement[_.camelCase(attribute)] = attributeValue;
   return updatedDataElement;
 };
