@@ -171,6 +171,12 @@ const setMeasure = jest.fn();
 const setMeasureBundle = jest.fn();
 const setValueSets = jest.fn();
 const setError = jest.fn();
+// Need this for our drag windows to work
+global.ResizeObserver = jest.fn().mockImplementation(() => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn(),
+}));
 
 const renderWithRouter = (
   initialEntries = [],
