@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import DemographicsSection from "./Demographics/DemographicsSection";
 import ElementsSection from "./Elements/ElementsSection";
 import {
@@ -12,18 +12,30 @@ import { QDMPatient } from "cqm-models";
 const ElementsTab = ({ canEdit }) => {
   const { state, dispatch } = useQdmPatient();
   const formik: any = useFormikContext();
+  const lastJsonRef = useRef(null);
 
   useEffect(() => {
-    if (!_.isEmpty(formik.values?.title) && _.isNil(state.patient)) {
-      const patient = formik.values.json
-        ? JSON.parse(formik.values.json)
-        : new QDMPatient();
+    if (
+      !_.isEmpty(formik.values.json) &&
+      (_.isNil(lastJsonRef.current) ||
+        formik.values.json !== lastJsonRef.current)
+    ) {
+      lastJsonRef.current = formik.values.json;
+      const patient = new QDMPatient(JSON.parse(formik.values.json));
       dispatch({
-        action: PatientActionType.LOAD_PATIENT,
+        type: PatientActionType.LOAD_PATIENT,
         payload: patient,
       });
     }
-  }, [formik.values?.json, formik.values?.title]);
+  }, [dispatch, formik.values.json]);
+
+  useEffect(() => {
+    const patientStr = JSON.stringify(state?.patient);
+    if (state.patient && formik.values && patientStr !== formik?.values?.json) {
+      lastJsonRef.current = patientStr;
+      formik.setFieldValue("json", patientStr);
+    }
+  }, [state]);
 
   return (
     <>

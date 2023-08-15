@@ -14,14 +14,8 @@ import AttributeSection from "./attributes/AttributeSection";
 import { useQdmExecutionContext } from "../../../../../../routes/qdm/QdmExecutionContext";
 import * as _ from "lodash";
 import Timing from "./timing/Timing";
-import { useFormikContext } from "formik";
-import Button from "@mui/material/Button";
-
-function getDataElementClass(dataElement) {
-  const qdmType = dataElement?._type; // match against for attributes
-  const model = qdmType.split("QDM::")[1];
-  return cqmModels[model];
-}
+import { getDataElementClass } from "../../../../../../../util/DataElementHelper";
+import { useQdmPatient } from "../../../../../../../util/QdmPatientContext";
 
 export const applyAttribute = (
   attribute,
@@ -60,18 +54,14 @@ const DataElementsCard = (props: {
   const [displayAttributes, setDisplayAttributes] = useState([]);
   const [codesChips, setCodesChips] = useState([]);
   const [dataElements, setDataElements] = useState([]);
-  const formik: any = useFormikContext();
-  // data elements are required for relatedTo.
+  const { patient } = useQdmPatient()?.state;
+  // // data elements are required for relatedTo.
   useEffect(() => {
-    let patient = null;
-    if (formik.values?.json) {
-      patient = JSON.parse(formik.values.json);
-      console.log("got patient: ", patient);
-      setDataElements(patient.dataElements);
-    } else {
-      console.log("no json!");
-    }
-  }, [formik.values.json]);
+    patient?.dataElements
+      ? setDataElements(patient.dataElements)
+      : setDataElements([]);
+  }, [patient?.dataElements]);
+
   useEffect(() => {
     const valueSets = cqmMeasureState?.[0]?.value_sets;
     if (valueSets) {
@@ -172,11 +162,6 @@ const DataElementsCard = (props: {
       });
       setDisplayAttributes(displayAttributes);
       setCodesChips(codesChips);
-    } else {
-      console.log("landed here...something is missing...");
-      console.log("localSelectedDataElement: ", localSelectedDataElement);
-      console.log("codeSystemMap: ", codeSystemMap);
-      console.log("dataElements: ", dataElements);
     }
   }, [localSelectedDataElement, codeSystemMap, dataElements]);
   // centralize state one level up so we can conditionally render our child component
@@ -233,14 +218,12 @@ const DataElementsCard = (props: {
           attributeChipList={displayAttributes}
           selectedDataElement={localSelectedDataElement}
           onAddClicked={(attribute, type, attributeValue) => {
-            console.log(`attribute [${attribute}];; type [${type}];; attributeValue: `, attributeValue);
             const updatedDataElement = applyAttribute(
               attribute,
               type,
               attributeValue,
               localSelectedDataElement
             );
-            console.log("updatedDataElement: ", updatedDataElement);
             setLocalSelectedDataElement(updatedDataElement);
             if (onChange) {
               onChange(updatedDataElement);
@@ -250,10 +233,6 @@ const DataElementsCard = (props: {
       )}
       {/* uncomment later when we do something with it */}
       {/* {activeTab === 'negation_rationale' && <NegationRationale />} */}
-      <Button onClick={() => {
-        console.log("cqmMeasureState: ",  cqmMeasureState);
-        console.log("formik.values: ", formik.values);
-      }}>Debug</Button>
     </div>
   );
 };

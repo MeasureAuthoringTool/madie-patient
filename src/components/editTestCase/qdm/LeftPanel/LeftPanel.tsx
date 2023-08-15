@@ -6,6 +6,8 @@ import { useFormikContext } from "formik";
 
 const LeftPanel = (props: { canEdit: boolean }) => {
   const [activeTab, setActiveTab] = useState<string>("elements");
+  const formik: any = useFormikContext();
+
   return (
     <div className="left-panel">
       <div className="tab-container">
@@ -14,6 +16,7 @@ const LeftPanel = (props: { canEdit: boolean }) => {
       <div className="panel-content">
         <QdmPatientProvider>
           {activeTab === "elements" && <ElementsTab canEdit={props.canEdit} />}
+          {activeTab === "json" && <p>{formik.values?.json}</p>}
         </QdmPatientProvider>
       </div>
     </div>

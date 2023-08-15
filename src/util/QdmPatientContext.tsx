@@ -1,6 +1,7 @@
 import * as React from "react";
-import { QDMPatient, DataElement } from "cqm-models";
-import { useFormik, useFormikContext } from "formik";
+import { QDMPatient } from "cqm-models";
+import { useFormikContext } from "formik";
+import * as _ from "lodash";
 
 export interface QdmPatientContextType {
   state: { patient: QDMPatient };
@@ -21,23 +22,47 @@ export interface QdmPatientAction {
 
 const QdmPatientContext = React.createContext<QdmPatientContextType>(null);
 
+/**
+ * TODO: consider moving QDMPatient state into formik and the reducer logic into a helper function
+ * TODO: look at possible optimization to reduce number of dispatch calls due to changes with input components - do not
+ *  invoke dispatch until input value is valid
+ * @param state
+ * @param action
+ */
 function patientReducer(state, action: QdmPatientAction) {
   switch (action.type) {
     case PatientActionType.LOAD_PATIENT: {
-      return { patient: action.payload };
-      // return { patient: JSON.parse(action.payload) as QDMPatient };
+      return { ...state, patient: action.payload };
     }
     case PatientActionType.ADD_DATA_ELEMENT: {
-      // TODO: fill this in
-      return state;
+      let patient = _.isNil(state.patient) ? new QDMPatient() : state.patient;
+      if (patient.dataElements) {
+        patient.dataElements.push({ ...action.payload });
+      } else {
+        patient.dataElements = [{ ...action.payload }];
+      }
+      return { ...state, patient };
     }
     case PatientActionType.REMOVE_DATA_ELEMENT: {
-      // TODO: fill this in
-      return state;
+      let patient = _.isNil(state.patient) ? new QDMPatient() : state.patient;
+      if (patient.dataElements) {
+        patient.dataElements = patient.dataElements.filter(
+          (dataElement) => dataElement?.id !== action.payload.id
+        );
+      }
+      return { ...state, patient };
     }
     case PatientActionType.MODIFY_DATA_ELEMENT: {
-      // TODO: fill this in
-      return state;
+      let patient = _.isNil(state.patient) ? new QDMPatient() : state.patient;
+      if (patient.dataElements) {
+        patient.dataElements = patient.dataElements.map((dataElement) => {
+          if (dataElement.id === action.payload.id) {
+            return action.payload;
+          }
+          return dataElement;
+        });
+      }
+      return { ...state, patient };
     }
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);
@@ -46,14 +71,14 @@ function patientReducer(state, action: QdmPatientAction) {
 }
 
 function QdmPatientProvider({ children }) {
-  const [state, dispatch] = React.useReducer(patientReducer, { patient: new QDMPatient() });
+  const [state, dispatch] = React.useReducer(patientReducer, {
+    patient: null,
+  });
   // NOTE: you *might* need to memoize this value
   // Learn more in http://kcd.im/optimize-context
+  // tod: decide if we want to directly update formik inside this context
   const formik = useFormikContext();
-  const foo = () => {
-    console.log("foo!", formik);
-  };
-  const value = { state, dispatch, foo };
+  const value = { state, dispatch };
   return (
     <QdmPatientContext.Provider value={value}>
       {children}

@@ -10,9 +10,15 @@ import DataElementsList from "./DataElementsList";
 import DataElementsCard from "./DataElementsCard/DataElementsCard";
 import "./ElementsSection.scss";
 import "./DataElementsList.scss";
-import { useQdmPatient } from "../../../../../../util/QdmPatientContext";
-import Button from "@mui/material/Button";
-import * as _ from "lodash";
+import {
+  PatientActionType,
+  useQdmPatient,
+} from "../../../../../../util/QdmPatientContext";
+import DataElementsTable from "./DataElementsTable";
+import {
+  filterDataElements,
+  getDataElementClass,
+} from "../../../../../../util/DataElementHelper";
 
 const ElementsSection = () => {
   const cqmService = useRef(useCqmConversionService());
@@ -26,7 +32,7 @@ const ElementsSection = () => {
 
   const [categories, setCategories] = useState([]);
   const [dataElements, setDataElements] = useState<DataElement[]>([]);
-  const { state } = useQdmPatient();
+  const { state, dispatch } = useQdmPatient();
   const { patient } = state;
 
   const retrieveCategories = useCallback(() => {
@@ -43,17 +49,6 @@ const ElementsSection = () => {
     }
   }, [measure?.cql]);
 
-  // This looks to be implemented to avoid demographics clashing
-  const findDataElements = (category: string): DataElement[] => {
-    const elements: DataElement[] = dataElements?.filter(
-      (element) =>
-        element.qdmCategory === category &&
-        element.qdmStatus !== "ethnicity" &&
-        element.qdmStatus !== "race" &&
-        element.qdmStatus !== "gender"
-    );
-    return elements;
-  };
   const [activeTab, setActiveTab] = useState(""); // OnChange we need to remove our focused element
   const [cardActiveTab, setCardActiveTab] = useState("codes"); // sub tabs in card
 
@@ -63,7 +58,7 @@ const ElementsSection = () => {
 
   useEffect(() => {
     if (activeTab) {
-      setAvailableDataElements(findDataElements(activeTab));
+      setAvailableDataElements(filterDataElements(dataElements, activeTab));
     }
   }, [activeTab]);
   // whenever we update the active tab, we want to blank the selectedDataElement
@@ -71,6 +66,17 @@ const ElementsSection = () => {
     setSelectedDataElement(null);
     setActiveTab(v);
   };
+
+  const handleAddDataElement = (dataElement) => {
+    const modelClass = getDataElementClass(dataElement);
+    const newDataElement = new modelClass(dataElement);
+    setSelectedDataElement(newDataElement);
+    dispatch({
+      type: PatientActionType.ADD_DATA_ELEMENT,
+      payload: newDataElement,
+    });
+  };
+
   // we retain state up here so we can use it to generate the other components.
   return (
     <ElementSection
@@ -92,6 +98,12 @@ const ElementsSection = () => {
                 setSelectedDataElement={setSelectedDataElement}
                 cardActiveTab={cardActiveTab}
                 setCardActiveTab={setCardActiveTab}
+                onChange={(changedDataElement) => {
+                  dispatch({
+                    type: PatientActionType.MODIFY_DATA_ELEMENT,
+                    payload: changedDataElement,
+                  });
+                }}
               />
             )}
           </div>
@@ -101,25 +113,14 @@ const ElementsSection = () => {
               {/* @ts-ignore-line */}
               <DataElementsList
                 availableDataElements={availableDataElements}
-                setSelectedDataElement={setSelectedDataElement}
+                setSelectedDataElement={handleAddDataElement}
               />
             </div>
           )}
-          <div>
-            <table>
-              <th>
-                <td>Element/Data Type/Value Set</td>
-                <td>Timing</td>
-                <td>Codes</td>
-                <td>Actions</td>
-              </th>
-              <tbody>
-              </tbody>
-            </table>
-            <div>
-              { _.isNil(patient) ? "nil" : JSON.stringify(patient)}
-            </div>
-          </div>
+          <DataElementsTable
+            dataElements={filterDataElements(patient?.dataElements)}
+            onView={(dataElement) => setSelectedDataElement(dataElement)}
+          />
         </div>
       }
     />
