@@ -52,7 +52,7 @@ const CodeInput = ({
       );
       handleChange(cqlCode);
     }
-  }, [selectedCodeSystemName, customCode]);
+  }, [selectedCodeSystemName, customCode, handleChange]);
 
   const handleValueSetChange = (event) => {
     const oid = event.target.value;
