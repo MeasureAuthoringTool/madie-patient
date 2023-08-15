@@ -4,7 +4,7 @@ import "twin.macro";
 import "styled-components/macro";
 
 export interface IdentifierProps {
-  handleChange: Function;
+  onIdentifierChange: Function;
   canEdit: boolean;
   namingLabel?: string;
   namingPlaceholder?: string;
@@ -13,8 +13,8 @@ export interface IdentifierProps {
   identifier: { namingSystem: string; value: string };
 }
 
-const Identifier = ({
-  handleChange,
+const IdentifierInput = ({
+  onIdentifierChange,
   canEdit,
   namingLabel = "Value Set / Direct Reference Code",
   namingPlaceholder = "Naming System",
@@ -22,6 +22,20 @@ const Identifier = ({
   //idenfifier is an object of {namingSystem,value}
   identifier,
 }: IdentifierProps) => {
+  const handleNamingSystemChange = (e) => {
+    onIdentifierChange({
+      namingSystem: e.target.value,
+      value: identifier.value,
+    });
+  };
+
+  const handleValueChange = (e) => {
+    onIdentifierChange({
+      value: e.target.value,
+      namingSystem: identifier.namingSystem,
+    });
+  };
+
   return (
     <div>
       <h4 className="header" tw="text-blue-800">
@@ -41,12 +55,7 @@ const Identifier = ({
               "aria-describedby": `identifier-input-field-helper-text-${namingPlaceholder}`,
               required: true,
             }}
-            onChange={(e) => {
-              handleChange({
-                namingSystem: e.target.value,
-                value: identifier.value,
-              });
-            }}
+            onChange={(e) => handleNamingSystemChange(e)}
           />
         </div>
         <div tw="w-28">
@@ -62,12 +71,7 @@ const Identifier = ({
               "aria-describedby": `identifier-value-input-field-helper-text-${valueLabel}`,
               required: true,
             }}
-            onChange={(e) => {
-              handleChange({
-                value: e.target.value,
-                namingSystem: identifier.namingSystem,
-              });
-            }}
+            onChange={(e) => handleValueChange(e)}
           />
         </div>
       </div>
@@ -75,4 +79,4 @@ const Identifier = ({
   );
 };
 
-export default Identifier;
+export default IdentifierInput;
