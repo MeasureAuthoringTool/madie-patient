@@ -99,6 +99,8 @@ const DisplayAttributeInputs = ({
             onQuantityChange={(val) => {
               if (val.unit && val.value) {
                 setAttributeValue(new CQL.Quantity(val.value, val.unit));
+              } else if (val.unit == null || val.value == null) {
+                setAttributeValue(null);
               }
             }}
             canEdit={true}
