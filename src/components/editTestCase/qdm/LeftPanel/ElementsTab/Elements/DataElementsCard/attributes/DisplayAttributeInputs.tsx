@@ -10,6 +10,7 @@ import "./DisplayAttributeInputs.scss";
 import RatioInput from "../../../../../../../common/ratioInput/RatioInput";
 import DecimalInput from "../../../../../../../common/DecimalInput/DecimalInput";
 import DateTimeInput from "../../../../../../../common/dateTimeInput/DateTimeInput";
+import DisplayMultipleAttributeInputs from "./DisplayMultipleAttributeInputs";
 
 interface DisplayAttributeInputsProps {
   attributeType?: string;
@@ -93,6 +94,18 @@ const DisplayAttributeInputs = ({
             value={null}
             handleChange={(val) => setAttributeValue(parseFloat(val))}
             canEdit={true}
+          />
+        );
+      case "PatientEntity":
+      case "CarePartner":
+      case "Location":
+      case "Practitioner":
+      case "Organization":
+        return (
+          <DisplayMultipleAttributeInputs
+            setAttributeValue={setAttributeValue}
+            attributeValue={attributeValue}
+            attributeType={attributeType}
           />
         );
       default:

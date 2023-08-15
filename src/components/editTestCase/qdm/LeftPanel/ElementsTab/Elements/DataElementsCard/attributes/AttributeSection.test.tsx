@@ -199,6 +199,20 @@ describe("AttributeSection", () => {
     const typeSelect = await screen.findByRole("listbox");
     const typeOptions = within(typeSelect).getAllByRole("option");
     expect(typeOptions.length).toEqual(6);
+    userEvent.click(within(typeSelect).getByText("Practitioner"));
+    const identifierNamingSystemField = await screen.getByTestId(
+      "identifier-input-field-Naming System"
+    );
+    expect(identifierNamingSystemField).toBeInTheDocument();
+    fireEvent.change(identifierNamingSystemField, { target: { value: "10" } });
+    expect(identifierNamingSystemField.value).toBe("10");
+
+    const identifierValueField = await screen.getByTestId(
+      "identifier-value-input-field-Value"
+    );
+    expect(identifierValueField).toBeInTheDocument();
+    fireEvent.change(identifierValueField, { target: { value: "90" } });
+    expect(identifierValueField.value).toBe("90");
   });
 
   it("date selection shows date input", async () => {
