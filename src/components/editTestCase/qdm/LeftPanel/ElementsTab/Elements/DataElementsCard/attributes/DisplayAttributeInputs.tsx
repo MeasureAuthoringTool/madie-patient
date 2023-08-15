@@ -73,7 +73,9 @@ const DisplayAttributeInputs = ({
             data-testid="ratio-input"
             onRatioChange={(newCQLRatio) => {
               setCurrentRatio(newCQLRatio);
-              setAttributeValue(newCQLRatio);
+              if (newCQLRatio.numerator.unit && newCQLRatio.denominator.unit) {
+                setAttributeValue(newCQLRatio);
+              }
             }}
             canEdit={true}
           />
@@ -94,7 +96,9 @@ const DisplayAttributeInputs = ({
           <QuantityInput
             quantity={{}}
             onQuantityChange={(val) => {
-              setAttributeValue(new CQL.Quantity(val.value, val.unit));
+              if (val.unit) {
+                setAttributeValue(new CQL.Quantity(val.value, val.unit));
+              }
             }}
             canEdit={true}
           />
