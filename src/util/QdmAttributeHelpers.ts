@@ -111,11 +111,12 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
     const seconds = resultDate.getUTCSeconds() || null;
     const ms = resultDate.getUTCMilliseconds() || null;
     // if we decide to convert it based off of locale to user.
-    const timeZoneOffset = resultDate.getTimezoneOffset()
+    let timeZoneOffset = resultDate.getTimezoneOffset()
       ? resultDate.getTimezoneOffset() / 60
       : null;
     if (value.isDate) {
-      day = value.day + 1;
+      day = value.day;
+      timeZoneOffset = 0;
     }
     if (value.isDateTime) {
       day = value.day;
