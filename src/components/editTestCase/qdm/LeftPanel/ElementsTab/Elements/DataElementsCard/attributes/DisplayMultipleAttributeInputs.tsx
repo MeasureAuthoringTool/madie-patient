@@ -11,7 +11,7 @@ const DisplayMultipleAttributeInputs = ({
     <>
       {attributeType ? (
         <IdentifierInput
-          handleChange={(val) => {
+          onIdentifierChange={(val) => {
             const identifierObject = new Identifier(val);
             setAttributeValue(identifierObject);
           }}

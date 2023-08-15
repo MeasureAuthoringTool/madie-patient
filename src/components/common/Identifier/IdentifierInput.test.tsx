@@ -6,10 +6,10 @@ import userEvent from "@testing-library/user-event";
 
 describe("Identifier Component", () => {
   test("Should render Identifier component", () => {
-    const handleChange = jest.fn();
+    const onIdentifierChange = jest.fn();
     render(
       <Identifier
-        handleChange={handleChange}
+        onIdentifierChange={onIdentifierChange}
         canEdit={true}
         identifier={{ namingSystem: "ID", value: "123" }}
         namingLabel="Test1"
@@ -27,10 +27,10 @@ describe("Identifier Component", () => {
   });
 
   test("Test change of value", () => {
-    const handleChange = jest.fn();
+    const onIdentifierChange = jest.fn();
     const { rerender } = render(
       <Identifier
-        handleChange={handleChange}
+        onIdentifierChange={onIdentifierChange}
         canEdit={true}
         identifier={{ namingSystem: "ID", value: "123" }}
       />
@@ -46,7 +46,7 @@ describe("Identifier Component", () => {
     fireEvent.change(identifierFieldInput, { target: { value: "10" } });
     rerender(
       <Identifier
-        handleChange={handleChange}
+        onIdentifierChange={onIdentifierChange}
         canEdit={true}
         identifier={{ namingSystem: "ID", value: "10" }}
       />
