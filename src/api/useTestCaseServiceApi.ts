@@ -9,6 +9,7 @@ import {
 import { useOktaTokens } from "@madie/madie-util";
 import { ScanValidationDto } from "./models/ScanValidationDto";
 import { addValues } from "../util/DefaultValueProcessor";
+import { MadieError } from "../util/Utils";
 
 export class TestCaseServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
@@ -26,6 +27,9 @@ export class TestCaseServiceApi {
       );
       return response.data;
     } catch (err) {
+      if (err?.response?.status === 400) {
+        throw new Error(err.response.data.message);
+      }
       const message = `Unable to create new test case`;
       throw new Error(message);
     }
@@ -106,6 +110,9 @@ export class TestCaseServiceApi {
       );
       return response.data;
     } catch (err) {
+      if (err?.response?.status === 400) {
+        throw new MadieError(err.response.data.message);
+      }
       const message = `Unable to update test case`;
       throw new Error(message);
     }

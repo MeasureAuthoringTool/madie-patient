@@ -8,6 +8,8 @@ import IntegerInput from "../../../../../../../common/IntegerInput/IntegerInput"
 import "./DisplayAttributeInputs.scss";
 import RatioInput from "../../../../../../../common/ratioInput/RatioInput";
 import DecimalInput from "../../../../../../../common/DecimalInput/DecimalInput";
+import DateTimeInput from "../../../../../../../common/dateTimeInput/DateTimeInput";
+import DisplayMultipleAttributeInputs from "./DisplayMultipleAttributeInputs";
 import CodeInput from "../../../../../../../common/codeInput/CodeInput";
 import "twin.macro";
 import "styled-components/macro";
@@ -55,6 +57,18 @@ const DisplayAttributeInputs = ({
             }}
           />
         );
+      case "DateTime":
+        return (
+          <DateTimeInput
+            label="DateTime"
+            canEdit={true}
+            dateTime={null}
+            attributeName="DateTime"
+            onDateTimeChange={(e) => {
+              setAttributeValue(e);
+            }}
+          />
+        );
 
       case "Ratio":
         return (
@@ -94,6 +108,18 @@ const DisplayAttributeInputs = ({
             canEdit={true}
             required={false}
             valueSets={cqmMeasure.value_sets}
+          />
+        );
+      case "PatientEntity":
+      case "CarePartner":
+      case "Location":
+      case "Practitioner":
+      case "Organization":
+        return (
+          <DisplayMultipleAttributeInputs
+            setAttributeValue={setAttributeValue}
+            attributeValue={attributeValue}
+            attributeType={attributeType}
           />
         );
       default:
