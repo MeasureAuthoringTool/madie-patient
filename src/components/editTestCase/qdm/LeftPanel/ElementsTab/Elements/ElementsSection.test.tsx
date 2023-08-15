@@ -32,6 +32,7 @@ import {
 import * as Formik from "formik";
 
 import { act } from "react-dom/test-utils";
+import { QdmPatientProvider } from "../../../../../../util/QdmPatientContext";
 
 const serviceConfig: ServiceConfig = {
   testCaseService: {
@@ -664,7 +665,9 @@ const renderElementsSectionComponent = () => {
               setExecuting: jest.fn(),
             }}
           >
-            <ElementsSection />
+            <QdmPatientProvider>
+              <ElementsSection />
+            </QdmPatientProvider>
           </QdmExecutionContextProvider>
         </FormikProvider>
       </ApiContextProvider>
