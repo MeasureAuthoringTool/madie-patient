@@ -49,13 +49,13 @@ const valueSets = [
 ];
 
 describe("CodeInput Component", () => {
-  it("Should render Code Input component with value sets", async () => {
+  it("Should render Code Input component", async () => {
     render(
       <CodeInput
         canEdit={true}
         required={true}
         valueSets={valueSets}
-        handleChange={(value) => "test"}
+        handleChange={jest.fn}
       />
     );
 
@@ -142,8 +142,8 @@ describe("CodeInput Component", () => {
   });
 
   it("Should allow user to enter custom code system and code", async () => {
-    let customCodeSystem = "X.12.34.1";
-    let customCode = "X-11";
+    const customCodeSystem = "X.12.34.1";
+    const customCode = "X-11";
     const verifyCqlCode = jest.fn((cqlCode) => {
       expect(cqlCode.code).toBe(customCode);
       expect(cqlCode.system).toBe(customCodeSystem);

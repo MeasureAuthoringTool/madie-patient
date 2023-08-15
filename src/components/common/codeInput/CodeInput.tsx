@@ -17,7 +17,7 @@ interface Concept {
   display_name: string;
 }
 
-interface CodeSystemProps {
+interface CodeInputProps {
   canEdit: boolean;
   required: boolean;
   handleChange: Function;
@@ -33,7 +33,7 @@ const CodeInput = ({
   required,
   handleChange,
   valueSets,
-}: CodeSystemProps) => {
+}: CodeInputProps) => {
   const [selectedValueSet, setSelectedValueSet] = useState<ValueSet>();
   const [selectedCodeSystemName, setSelectedCodeSystemName] =
     useState<string>();
