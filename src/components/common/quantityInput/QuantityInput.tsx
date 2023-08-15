@@ -120,6 +120,7 @@ const QuantityInput = ({
             required: true,
           }}
           type="number"
+          onWheel={(e) => e.target.blur()}
           onKeyPress={(e) => {
             if (
               (!Number(e.key) &&
