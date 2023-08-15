@@ -50,17 +50,8 @@ describe("StringifyValue", () => {
     expect(stringifyValue(testDateObj)).toBe("01/19/2023");
   });
   test("stringify value stringifies DateTime Objects", () => {
-    const testDateObj = new cqmModels.CQL.DateTime(
-      1999,
-      11,
-      12,
-      11,
-      30,
-      30,
-      0,
-      0
-    );
-    expect(stringifyValue(testDateObj)).toBe("11/12/1999 3:30 AM");
+    const testDateObj = new cqmModels.CQL.DateTime(2023, 8, 22, 10, 5, 0, 0, 0);
+    expect(stringifyValue(testDateObj)).toBe("08/22/2023 3:05 AM");
   });
 });
 
