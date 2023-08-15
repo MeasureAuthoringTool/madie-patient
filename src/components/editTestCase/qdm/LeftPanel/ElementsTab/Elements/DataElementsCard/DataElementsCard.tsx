@@ -8,7 +8,7 @@ import {
 } from "../../../../../../../util/QdmAttributeHelpers";
 import Codes from "./Codes/Codes";
 import SubNavigationTabs from "./SubNavigationTabs";
-import cqmModels, { DataElement, Identifier, PatientEntity } from "cqm-models";
+import cqmModels, { DataElement } from "cqm-models";
 import "./DataElementsCard.scss";
 import AttributeSection from "./attributes/AttributeSection";
 import { useQdmExecutionContext } from "../../../../../../routes/qdm/QdmExecutionContext";
