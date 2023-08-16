@@ -28,22 +28,13 @@ describe("StringifyValue", () => {
   });
 
   test("stringify custom code value", () => {
-    const codeSystem = {
-      "2.16.840.1.113883.6.96": "SNOMEDCT",
-      "2.16.840.1.113883.6.238": "CDCREC",
-      "2.16.840.1.113883.5.1": "AdministrativeGender",
-      "2.16.840.1.113883.3.221.5": "SOP",
-      "2.16.840.1.113883.6.90": "ICD10CM",
-      "2.16.840.1.113883.6.88": "RXNORM",
-      "2.16.840.1.113883.6.1": "LOINC",
-    };
     const code = new cqmModels.CQL.Code(
       "custom-code",
       "custom code system",
       null
     );
     code.title = "title";
-    expect(stringifyValue(code, false, codeSystem)).toBe(
+    expect(stringifyValue(code, false, {})).toBe(
       "custom code system : custom-code"
     );
   });
