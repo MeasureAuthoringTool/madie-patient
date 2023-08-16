@@ -445,4 +445,37 @@ describe("AttributeSection", () => {
     expect(typeOptions.length).toEqual(9);
     fireEvent.click(within(typeSelect).getByText("Decimal"));
   });
+
+  it("renders code component on selecting the code type attribute", async () => {
+    renderAttributeSection(assessmentElement, [], onAddClicked);
+    const attributeSelectBtn = screen.getByRole("button", {
+      name: "Attribute Select Attribute",
+    });
+    userEvent.click(attributeSelectBtn);
+    const attributeSelect = await screen.findByRole("listbox");
+    userEvent.click(within(attributeSelect).getByText(/reason/i));
+    const attributeInput = within(attributeSelectBtn.parentElement).getByRole(
+      "textbox",
+      { hidden: true }
+    );
+    expect(attributeInput).toBeInTheDocument();
+    expect(attributeInput).toHaveValue("Reason");
+    userEvent.click(
+      await screen.findByRole("button", {
+        name: /type/i,
+      })
+    );
+    const typeSelect = await screen.findByRole("listbox");
+    expect(typeSelect).toBeInTheDocument();
+    fireEvent.click(within(typeSelect).getByText("Code"));
+
+    const valueSetSelector = screen.getByTestId("value-set-selector");
+    const valueSetDropdown = within(valueSetSelector).getByRole(
+      "button"
+    ) as HTMLInputElement;
+    userEvent.click(valueSetDropdown);
+    const valueSetOptions = await screen.findAllByRole("option");
+    expect(valueSetOptions).toHaveLength(1);
+    expect(valueSetOptions[0]).toHaveTextContent("Custom Code");
+  });
 });
