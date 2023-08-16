@@ -131,6 +131,7 @@ const CodeInput = ({ canEdit, handleChange, valueSets }: CodeInputProps) => {
         }}
         data-testid={"value-set-selector"}
         disabled={!canEdit}
+        required={true}
         SelectDisplayProps={{
           "aria-required": "true",
         }}
