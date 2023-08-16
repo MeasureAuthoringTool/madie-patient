@@ -31,7 +31,9 @@ const DisplayAttributeInputs = ({
 
   const handleAttributeChange = (e) => {
     e.preventDefault();
-    onInputAdd(attributeValue);
+    if (attributeValue) {
+      onInputAdd(attributeValue);
+    }
   };
 
   const displayAttributeInput = () => {

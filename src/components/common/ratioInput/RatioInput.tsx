@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import Quantity from "../quantityInput/QuantityInput";
@@ -19,21 +19,22 @@ const RatioInput = ({
 }: RatioInputProps) => {
   const [currentRatio, setCurrentRatio] = useState<CQL.Ratio>(ratio);
   const handleNumeratorChange = (newValue) => {
+    setCurrentRatio({ ...currentRatio, numerator: newValue });
     if (newValue) {
-      setCurrentRatio({ ...ratio, numerator: newValue });
-      onRatioChange({ ...ratio, numerator: newValue });
-    } else {
-      onRatioChange(null);
     }
   };
   const handleDenominatorChange = (newValue) => {
+    setCurrentRatio({ ...currentRatio, denominator: newValue });
     if (newValue) {
-      setCurrentRatio({ ...currentRatio, denominator: newValue });
-      onRatioChange({ ...currentRatio, denominator: newValue });
+    }
+  };
+  useEffect(() => {
+    if (currentRatio?.numerator && currentRatio?.denominator) {
+      onRatioChange(currentRatio);
     } else {
       onRatioChange(null);
     }
-  };
+  }, [currentRatio]);
 
   return (
     <>
