@@ -144,89 +144,93 @@ const CodeInput = ({ canEdit, handleChange, valueSets }: CodeInputProps) => {
         }}
         onChange={handleValueSetChange}
       />
-      {isCustom ? (
+      {selectedValueSet && (
         <div tw="flex mt-3">
-          <div tw="w-1/2">
-            <TextField
-              id="custom-code-system"
-              tw="w-full"
-              label="Custom Code System"
-              placeholder="Custom Code System"
-              required={true}
-              disabled={!canEdit}
-              inputProps={{
-                "data-testid": "custom-code-system-input",
-              }}
-              data-testid="custom-code-system"
-              onChange={(event) =>
-                setSelectedCodeSystemName(event.target.value)
-              }
-            />
-          </div>
-          <div tw="w-1/2 pl-3">
-            <TextField
-              id="custom-code"
-              tw="w-full"
-              label="Custom Code"
-              placeholder="Custom Code"
-              required={true}
-              disabled={!canEdit}
-              inputProps={{
-                "data-testid": "custom-code-input",
-              }}
-              data-testid="custom-code"
-              onChange={(event) => setCustomCode(event.target.value)}
-            />
-          </div>
-        </div>
-      ) : (
-        <div tw="flex mt-3">
-          <div tw="w-1/2">
-            <Select
-              placeHolder={{
-                name: "Select Code System",
-                value: "",
-              }}
-              label="Code System"
-              id={"code-system-selector"}
-              inputProps={{
-                "data-testid": "code-system-selector-input",
-              }}
-              data-testid={"code-system-selector"}
-              disabled={!canEdit}
-              required={true}
-              SelectDisplayProps={{
-                "aria-required": "true",
-              }}
-              options={codeSystemMenuOptions()}
-              value={selectedCodeSystemName ? selectedCodeSystemName : ""}
-              onChange={handleCodeSystemChange}
-            />
-          </div>
-          <div tw="w-1/2 pl-3">
-            <Select
-              label="Code"
-              id={"code-selector"}
-              inputProps={{
-                "data-testid": "code-selector-input",
-              }}
-              data-testid={"code-selector"}
-              disabled={!canEdit}
-              required={true}
-              SelectDisplayProps={{
-                "aria-required": "true",
-              }}
-              options={codeMenuOptions}
-              value={selectedCodeConcept ? selectedCodeConcept?.code : ""}
-              renderValue={(value) => {
-                if (value === "") {
-                  return placeHolder("Select Code");
-                }
-                return `${selectedCodeConcept?.code} - ${selectedCodeConcept?.display_name}`;
-              }}
-              onChange={handleCodeChange}
-            />
-          </div>
+          {isCustom ? (
+            <>
+              <div tw="w-1/2">
+                <TextField
+                  id="custom-code-system"
+                  tw="w-full"
+                  label="Custom Code System"
+                  placeholder="Custom Code System"
+                  required={true}
+                  disabled={!canEdit}
+                  inputProps={{
+                    "data-testid": "custom-code-system-input",
+                  }}
+                  data-testid="custom-code-system"
+                  onChange={(event) =>
+                    setSelectedCodeSystemName(event.target.value)
+                  }
+                />
+              </div>
+              <div tw="w-1/2 pl-3">
+                <TextField
+                  id="custom-code"
+                  tw="w-full"
+                  label="Custom Code"
+                  placeholder="Custom Code"
+                  required={true}
+                  disabled={!canEdit}
+                  inputProps={{
+                    "data-testid": "custom-code-input",
+                  }}
+                  data-testid="custom-code"
+                  onChange={(event) => setCustomCode(event.target.value)}
+                />
+              </div>
+            </>
+          ) : (
+            <>
+              <div tw="w-1/2">
+                <Select
+                  placeHolder={{
+                    name: "Select Code System",
+                    value: "",
+                  }}
+                  label="Code System"
+                  id={"code-system-selector"}
+                  inputProps={{
+                    "data-testid": "code-system-selector-input",
+                  }}
+                  data-testid={"code-system-selector"}
+                  disabled={!canEdit}
+                  required={true}
+                  SelectDisplayProps={{
+                    "aria-required": "true",
+                  }}
+                  options={codeSystemMenuOptions()}
+                  value={selectedCodeSystemName ? selectedCodeSystemName : ""}
+                  onChange={handleCodeSystemChange}
+                />
+              </div>
+              <div tw="w-1/2 pl-3">
+                <Select
+                  label="Code"
+                  id={"code-selector"}
+                  inputProps={{
+                    "data-testid": "code-selector-input",
+                  }}
+                  data-testid={"code-selector"}
+                  disabled={!canEdit}
+                  required={true}
+                  SelectDisplayProps={{
+                    "aria-required": "true",
+                  }}
+                  options={codeMenuOptions}
+                  value={selectedCodeConcept ? selectedCodeConcept?.code : ""}
+                  renderValue={(value) => {
+                    if (value === "") {
+                      return placeHolder("Select Code");
+                    }
+                    return `${selectedCodeConcept?.code} - ${selectedCodeConcept?.display_name}`;
+                  }}
+                  onChange={handleCodeChange}
+                />
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>

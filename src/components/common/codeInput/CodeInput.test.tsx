@@ -66,22 +66,13 @@ describe("CodeInput Component", () => {
 
     const valueSetOptions = await screen.findAllByRole("option");
     expect(valueSetOptions).toHaveLength(3);
-
-    const codeSystemInput = screen.getByTestId(
-      "code-system-selector-input"
-    ) as HTMLInputElement;
-    expect(codeSystemInput.value).toBe("");
-    expect(screen.getByTestId("code-system-selector")).toHaveTextContent(
-      "Select Code System"
-    );
-
-    const codeInput = screen.getByTestId(
-      "code-selector-input"
-    ) as HTMLInputElement;
-    expect(codeInput.value).toBe("");
-    expect(screen.getByTestId("code-selector")).toHaveTextContent(
-      "Select Code"
-    );
+    // by default code system and code dropdown is not displayed unless user choose value set
+    expect(
+      screen.queryByTestId("code-system-selector")
+    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("code-selector")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("custom-code-system")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("custom-code")).not.toBeInTheDocument();
   });
 
   it("Should allow user to choose existing code from one of the selected value sets", async () => {
