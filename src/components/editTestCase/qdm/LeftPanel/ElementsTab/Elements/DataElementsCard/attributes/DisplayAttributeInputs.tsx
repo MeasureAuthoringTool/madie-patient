@@ -24,10 +24,10 @@ const DisplayAttributeInputs = ({
   onInputAdd,
 }: DisplayAttributeInputsProps) => {
   const [attributeValue, setAttributeValue] = useState(null);
-  const [currentRatio, setCurrentRatio] = useState<CQL.Ratio>({
+  const currentRatio = {
     numerator: {},
     denominator: {},
-  });
+  };
 
   const handleAttributeChange = (e) => {
     e.preventDefault();
@@ -72,11 +72,8 @@ const DisplayAttributeInputs = ({
             label="Ratio"
             ratio={currentRatio}
             data-testid="ratio-input"
-            onRatioChange={(newCQLRatio) => {
-              setCurrentRatio(newCQLRatio);
-              if (newCQLRatio.numerator.unit && newCQLRatio.denominator.unit) {
-                setAttributeValue(newCQLRatio);
-              }
+            onRatioChange={(val) => {
+              setAttributeValue(val);
             }}
             canEdit={true}
           />
@@ -97,11 +94,7 @@ const DisplayAttributeInputs = ({
           <QuantityInput
             quantity={{}}
             onQuantityChange={(val) => {
-              if (val.unit && val.value) {
-                setAttributeValue(val);
-              } else if (val.unit == null || val.value == null) {
-                setAttributeValue(null);
-              }
+              setAttributeValue(val);
             }}
             canEdit={true}
           />

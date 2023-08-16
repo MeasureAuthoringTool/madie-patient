@@ -64,6 +64,14 @@ const QuantityInput = ({
     useState<CQL.Quantity>(quantity);
   const [currentUnit, setCurrentUnit] = useState<UcumOption>(null);
 
+  useEffect(() => {
+    if (currentQuantity && currentQuantity.value && currentQuantity.unit) {
+      onQuantityChange(currentQuantity);
+    } else {
+      onQuantityChange(null);
+    }
+  }, [currentQuantity]);
+
   const findUnitOptionFromCQLQuantity = (value) => {
     const option: ucum = ucumOptions?.find((option) => option.code === value);
     if (option) {
@@ -91,7 +99,6 @@ const QuantityInput = ({
       unit: currentQuantity.unit,
     };
     setCurrentQuantity(newQuantity);
-    onQuantityChange(newQuantity);
   };
 
   const handleQuantityUnitChange = (newValue) => {
@@ -101,7 +108,6 @@ const QuantityInput = ({
     };
     setCurrentQuantity(newQuantity);
     setCurrentUnit(newValue);
-    onQuantityChange(newQuantity);
   };
 
   return (
