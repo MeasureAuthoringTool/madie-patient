@@ -795,7 +795,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
                     <MadieEditor
                       value={measure?.cql}
                       height="inherit"
-                      readOnly={false}
+                      readOnly={true}
                       validationsEnabled={false}
                     />
                   </div>
