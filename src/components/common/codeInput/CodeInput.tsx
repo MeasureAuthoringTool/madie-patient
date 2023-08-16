@@ -139,7 +139,7 @@ const CodeInput = ({
     <div>
       <Select
         id={"value-set-selector"}
-        label="Value Set / Direct Reference code"
+        label="Value Set / Direct Reference Code"
         inputProps={{
           "data-testid": "value-set-selector-input",
         }}
@@ -152,7 +152,7 @@ const CodeInput = ({
         value={selectedValueSet ? selectedValueSet.oid : ""}
         renderValue={(value) => {
           if (value === "") {
-            return placeHolder("Select Value Set / Direct Reference code");
+            return placeHolder("Select Value Set / Direct Reference Code");
           }
           return selectedValueSet?.display_name;
         }}
@@ -164,8 +164,8 @@ const CodeInput = ({
             <TextField
               id="custom-code-system"
               tw="w-full"
-              label="Custom Code system"
-              placeholder="Custom Code system"
+              label="Custom Code System"
+              placeholder="Custom Code System"
               required={true}
               disabled={!canEdit}
               inputProps={{
