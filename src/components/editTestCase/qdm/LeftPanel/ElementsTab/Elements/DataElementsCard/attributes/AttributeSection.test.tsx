@@ -216,7 +216,7 @@ describe("AttributeSection", () => {
   });
 
   it("date selection shows date input", async () => {
-    const assessmentElement: AssessmentPerformed = new AssessmentPerformed();
+    const assessmentElement = new AssessmentPerformed();
     const { container } = render(
       <AttributeSection
         selectedDataElement={assessmentElement}
@@ -267,7 +267,7 @@ describe("AttributeSection", () => {
   });
 
   it("shows RatioInput on selecting the Ratio type", async () => {
-    const assessmentElement: AssessmentPerformed = new AssessmentPerformed();
+    const assessmentElement = new AssessmentPerformed();
     const { container } = render(
       <AttributeSection
         selectedDataElement={assessmentElement}
@@ -306,7 +306,7 @@ describe("AttributeSection", () => {
   });
 
   it("DateTime selection shows date input", async () => {
-    const assessmentElement: AssessmentPerformed = new AssessmentPerformed();
+    const assessmentElement = new AssessmentPerformed();
     const { container } = render(
       <AttributeSection
         selectedDataElement={assessmentElement}
@@ -360,7 +360,7 @@ describe("AttributeSection", () => {
   });
 
   it("Clicking the plus button calls works", async () => {
-    const assessmentElement: AssessmentPerformed = new AssessmentPerformed();
+    const assessmentElement = new AssessmentPerformed();
     const onAddClicked = jest.fn();
     const { container } = render(
       <AttributeSection
@@ -404,7 +404,7 @@ describe("AttributeSection", () => {
   });
 
   it("shows integer input on selecting the integer type", async () => {
-    const assessmentElement: AssessmentPerformed = new AssessmentPerformed();
+    const assessmentElement = new AssessmentPerformed();
     const { container } = render(
       <AttributeSection
         selectedDataElement={assessmentElement}
@@ -451,7 +451,7 @@ describe("AttributeSection", () => {
   });
 
   it("shows DecimalInput on selecting the Decimal type", async () => {
-    const assessmentElement: AssessmentPerformed = new AssessmentPerformed();
+    const assessmentElement = new AssessmentPerformed();
     const { container } = render(
       <AttributeSection selectedDataElement={assessmentElement} />
     );
@@ -487,7 +487,7 @@ describe("AttributeSection", () => {
   });
 
   it("shows DateTime on selecting the DateTime type", async () => {
-    const assessmentElement: AssessmentPerformed = new AssessmentPerformed();
+    const assessmentElement = new AssessmentPerformed();
     const { container } = render(
       <AttributeSection selectedDataElement={assessmentElement} />
     );
@@ -523,7 +523,7 @@ describe("AttributeSection", () => {
   });
 
   it("shows Quantity on selecting the Quantity type", async () => {
-    const assessmentElement: AssessmentPerformed = new AssessmentPerformed();
+    const assessmentElement = new AssessmentPerformed();
     const { container } = render(
       <AttributeSection
         selectedDataElement={assessmentElement}

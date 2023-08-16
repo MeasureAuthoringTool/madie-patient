@@ -112,11 +112,11 @@ const QuantityInput = ({
           disabled={!canEdit}
           placeholder="value"
           label={label}
-          id={`quantity-value-field-${label}`}
-          data-testid={`quantity-value-field-${label}`}
+          id={`quantity-value-field-${label.toLowerCase()}`}
+          data-testid={`quantity-value-field-${label.toLowerCase()}`}
           inputProps={{
-            "data-testid": `quantity-value-input-${label}`,
-            "aria-describedby": `quantity-value-input-helper-text-${label}`,
+            "data-testid": `quantity-value-input-${label.toLowerCase()}`,
+            "aria-describedby": `quantity-value-input-helper-text-${label.toLowerCase()}`,
             required: true,
           }}
           type="number"
@@ -140,11 +140,11 @@ const QuantityInput = ({
       </div>
       <div tw="w-56">
         <AutoComplete
-          id={`quantity-unit-dropdown-${label}`}
+          id={`quantity-unit-dropdown-${label.toLowerCase()}`}
           disabled={!canEdit}
           label={"Unit"}
           options={ucumOptions.map((option) => option.code + " " + option.name)}
-          data-testid={`quantity-unit-dropdown-${label}`}
+          data-testid={`quantity-unit-dropdown-${label.toLowerCase()}`}
           placeholder="unit"
           onChange={(event, newValue) => {
             if (newValue) {

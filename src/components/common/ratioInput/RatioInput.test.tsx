@@ -52,26 +52,26 @@ describe("RatioInput Component", () => {
     expect(screen.getAllByPlaceholderText("unit").length).toBe(2);
 
     const valuefieldDiv = screen.getAllByTestId(
-      "quantity-value-input-Numerator"
+      "quantity-value-input-numerator"
     );
     valuefieldDiv.push(
-      ...screen.getAllByTestId("quantity-value-input-Denominator")
+      ...screen.getAllByTestId("quantity-value-input-denominator")
     );
     expect(valuefieldDiv.length).toBe(2);
     const valueInputNumerator = screen.getAllByTestId(
-      `quantity-value-input-Numerator`
+      "quantity-value-input-numerator"
     ) as HTMLInputElement[];
     const valueInputDenominator = screen.getAllByTestId(
-      `quantity-value-input-Denominator`
+      "quantity-value-input-denominator"
     ) as HTMLInputElement[];
     expect(valueInputNumerator[0].value).toBe("1");
     expect(valueInputDenominator[0].value).toBe("100");
 
     const autocomplete = screen.getAllByTestId(
-      "quantity-unit-dropdown-Numerator"
+      "quantity-unit-dropdown-numerator"
     );
     autocomplete.push(
-      ...screen.getAllByTestId("quantity-unit-dropdown-Denominator")
+      ...screen.getAllByTestId("quantity-unit-dropdown-denominator")
     );
     expect(autocomplete.length).toBe(2);
     const unitInputLow = within(autocomplete[0]).getByRole(
@@ -100,11 +100,11 @@ describe("RatioInput Component", () => {
     expect(screen.getAllByPlaceholderText("unit").length).toBe(2);
 
     const valueInput = screen.getAllByTestId(
-      "quantity-value-input-Numerator"
+      "quantity-value-input-numerator"
     ) as HTMLInputElement[];
     valueInput.push(
       ...(screen.getAllByTestId(
-        "quantity-value-input-Denominator"
+        "quantity-value-input-denominator"
       ) as HTMLInputElement[])
     );
     expect(valueInput.length).toBe(2);
@@ -138,19 +138,19 @@ describe("RatioInput Component", () => {
     expect(screen.getAllByPlaceholderText("unit").length).toBe(2);
 
     const valueInputNumerator = screen.getAllByTestId(
-      `quantity-value-input-Numerator`
+      "quantity-value-input-numerator"
     ) as HTMLInputElement[];
     const valueInputDenominator = screen.getAllByTestId(
-      `quantity-value-input-Denominator`
+      "quantity-value-input-denominator"
     ) as HTMLInputElement[];
     expect(valueInputNumerator[0].value).toBe("1");
     expect(valueInputDenominator[0].value).toBe("100");
 
     const autocomplete = screen.getAllByTestId(
-      "quantity-unit-dropdown-Numerator"
+      "quantity-unit-dropdown-numerator"
     );
     autocomplete.push(
-      ...screen.getAllByTestId("quantity-unit-dropdown-Denominator")
+      ...screen.getAllByTestId("quantity-unit-dropdown-denominator")
     );
     expect(autocomplete.length).toBe(2);
     const unitInputLow = within(autocomplete[0]).getByRole(

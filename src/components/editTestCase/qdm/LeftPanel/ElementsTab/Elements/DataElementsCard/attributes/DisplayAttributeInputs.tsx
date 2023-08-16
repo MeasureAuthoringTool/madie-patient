@@ -98,7 +98,7 @@ const DisplayAttributeInputs = ({
             quantity={{}}
             onQuantityChange={(val) => {
               if (val.unit && val.value) {
-                setAttributeValue(new CQL.Quantity(val.value, val.unit));
+                setAttributeValue(val);
               } else if (val.unit == null || val.value == null) {
                 setAttributeValue(null);
               }

@@ -32,7 +32,7 @@ const RatioInput = ({
           <Quantity
             quantity={ratio.numerator}
             canEdit={canEdit}
-            label={`Numerator`}
+            label={"Numerator"}
             onQuantityChange={handleNumeratorChange}
           />
         </div>
@@ -41,7 +41,7 @@ const RatioInput = ({
           <Quantity
             quantity={ratio.denominator}
             canEdit={canEdit}
-            label={`Denominator`}
+            label={"Denominator"}
             onQuantityChange={handleDenominatorChange}
           />
         </div>

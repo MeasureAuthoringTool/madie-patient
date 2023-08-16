@@ -63,16 +63,16 @@ describe("QuantityInput Component", () => {
       />
     );
 
-    const quantityValue = screen.getByTestId("quantity-value-field-Quantity");
+    const quantityValue = screen.getByTestId("quantity-value-field-quantity");
     expect(quantityValue).toBeInTheDocument();
     const quantityValueInput = screen.getByTestId(
-      "quantity-value-input-Quantity"
+      "quantity-value-input-quantity"
     ) as HTMLInputElement;
     expect(quantityValueInput).toBeInTheDocument();
     expect(quantityValueInput.value).toBe("0");
     fireEvent.change(quantityValueInput, { target: { value: "10" } });
 
-    const quantityUnit = screen.getByTestId("quantity-unit-dropdown-Quantity");
+    const quantityUnit = screen.getByTestId("quantity-unit-dropdown-quantity");
     expect(quantityUnit).toBeInTheDocument();
     const quantityUnitInput = screen.getByRole("combobox");
     expect(quantityUnitInput).toBeInTheDocument();
@@ -165,7 +165,7 @@ describe("QuantityInput Component", () => {
     expect(screen.getByText("No options")).toBeInTheDocument();
   });
 
-  test("should ignore - and non-number keys, number field behavior expexted", async () => {
+  test("should ignore - and non-quantity-valueber keys, number field behavior expexted", async () => {
     const onQuantityChange = jest.fn();
     render(
       <QuantityInput
