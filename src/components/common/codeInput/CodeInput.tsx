@@ -3,23 +3,14 @@ import "twin.macro";
 import "styled-components/macro";
 import { Select, TextField } from "@madie/madie-design-system/dist/react";
 import { MenuItem } from "@mui/material";
-import { CQL, ValueSet } from "cqm-models";
+import { CQL, ValueSet, Concept } from "cqm-models";
 
 type CodeSystems = {
   [name: string]: string;
 };
 
-interface Concept {
-  code: string;
-  code_system_name: string;
-  code_system_oid: string;
-  code_system_version: string;
-  display_name: string;
-}
-
 interface CodeInputProps {
   canEdit: boolean;
-  required: boolean;
   handleChange: Function;
   valueSets: ValueSet[];
 }
@@ -28,12 +19,7 @@ const placeHolder = (label) => (
   <span style={{ color: "#717171" }}>{label}</span>
 );
 
-const CodeInput = ({
-  canEdit,
-  required,
-  handleChange,
-  valueSets,
-}: CodeInputProps) => {
+const CodeInput = ({ canEdit, handleChange, valueSets }: CodeInputProps) => {
   const [selectedValueSet, setSelectedValueSet] = useState<ValueSet>();
   const [selectedCodeSystemName, setSelectedCodeSystemName] =
     useState<string>();
