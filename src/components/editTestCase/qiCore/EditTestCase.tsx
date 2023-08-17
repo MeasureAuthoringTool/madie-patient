@@ -785,7 +785,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
                   value={editorVal}
                   setEditor={setEditor}
                   readOnly={!canEdit || _.isNil(testCase)}
-                  height="652px"
+                  height="inherit"
                 />
               )}
               {leftPanelActiveTab === "elements" && (
@@ -804,10 +804,13 @@ const EditTestCase = (props: EditTestCaseProps) => {
               />
               {rightPanelActiveTab === "measurecql" &&
                 (!measure?.cqlErrors ? (
-                  <div data-testid="test-case-cql-editor">
+                  <div
+                    data-testid="test-case-cql-editor"
+                    id="test-case-cql-editor"
+                  >
                     <MadieEditor
                       value={measure?.cql}
-                      height="652px"
+                      height="inherit"
                       readOnly={true}
                       validationsEnabled={false}
                     />
@@ -1083,7 +1086,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
           </Allotment.Pane>
         </Allotment>
 
-        <div tw="h-24 bg-gray-75 w-full sticky bottom-0 left-0 z-40">
+        <div tw="bg-gray-75 w-full sticky bottom-0 left-0 z-40">
           <div tw="flex items-center">
             <div tw="w-1/2 flex items-center px-2">
               {canEdit && <FileUploader onFileImport={updateTestCaseJson} />}
