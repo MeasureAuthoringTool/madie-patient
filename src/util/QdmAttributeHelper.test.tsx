@@ -26,11 +26,25 @@ describe("StringifyValue", () => {
     code.title = "title";
     expect(stringifyValue(code, false, codeSystem)).toBe("SNOMEDCT : 10725009");
   });
+
+  test("stringify custom code value", () => {
+    const code = new cqmModels.CQL.Code(
+      "custom-code",
+      "custom code system",
+      null
+    );
+    code.title = "title";
+    expect(stringifyValue(code, false, {})).toBe(
+      "custom code system : custom-code"
+    );
+  });
+
   test("stringify value stringifies dates that are DateTime", () => {
     expect(stringifyValue("2012-04-05T08:15:00.000")).toBe(
       "04/05/2012 8:15 AM"
     );
   });
+
   test("stringify value stringifies a string", () => {
     expect(stringifyValue("alreadyAString")).toBe("alreadyAString");
   });
@@ -49,6 +63,7 @@ describe("StringifyValue", () => {
     const testDateObj = new cqmModels.CQL.Date(2023, 1, 19);
     expect(stringifyValue(testDateObj)).toBe("01/19/2023");
   });
+
   // this isn't working in CI but works locally. 7h off.
   test.skip("stringify value stringifies DateTime Objects", () => {
     const testDateObj = new cqmModels.CQL.DateTime(2023, 8, 22, 10, 5, 0, 0, 0);
