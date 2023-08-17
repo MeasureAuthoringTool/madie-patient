@@ -5,18 +5,21 @@
   > thead {
     background-color: #ededed;
     border-bottom: 1px solid gray;
+
     tr {
       padding-top: 10px;
       padding-bottom: 10px;
 
-      > td {
+      > th {
         margin: 10px;
         padding: 10px;
       }
     }
   }
 
-  tr {
-    border-bottom: 1px solid gray;
+  > tbody {
+    tr {
+      border-bottom: 1px solid gray;
+    }
   }
 }
