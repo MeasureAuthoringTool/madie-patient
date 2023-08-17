@@ -17,18 +17,9 @@ const Codes = ({ attributeChipList = [] }: CodesProps) => {
   return (
     <div id="codes" data-testid="codes-section">
       <AttributeChipList items={items} />
-      {/* uncomment later, use test data to get feel */}
-      {/* <CodeSystemSelector
-              canEdit={true}
-              codeSystemProps={{
-                label: "Code System",
-                options: options,
-                required: false,
-                error: false,
-                helperText: "",
-              }}
-            /> */}
-      {/* chips live here*/}
+      <span data-testid="codes-section-content">
+        Codes section coming soon!
+      </span>
     </div>
   );
 };
