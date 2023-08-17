@@ -77,7 +77,7 @@ function QdmPatientProvider({ children }) {
   // NOTE: you *might* need to memoize this value
   // Learn more in http://kcd.im/optimize-context
   // tod: decide if we want to directly update formik inside this context
-  const formik = useFormikContext();
+  // const formik = useFormikContext();
   const value = { state, dispatch };
   return (
     <QdmPatientContext.Provider value={value}>
