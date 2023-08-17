@@ -795,6 +795,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
               )}
             </div>
           </Allotment.Pane>
+
           <Allotment.Pane>
             <div className="right-panel">
               <CreateTestCaseRightPanelNavTabs
