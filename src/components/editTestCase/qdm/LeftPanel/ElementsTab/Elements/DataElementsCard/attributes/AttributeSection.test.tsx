@@ -447,11 +447,7 @@ describe("AttributeSection", () => {
   });
 
   it("shows DateTime on selecting the DateTime type", async () => {
-    const assessmentElement = new AssessmentPerformed();
-    const { container } = render(
-      <AttributeSection selectedDataElement={assessmentElement} />
-    );
-
+    renderAttributeSection(assessmentElement, [], onAddClicked);
     const attributeSelectBtn = screen.getByRole("button", {
       name: "Attribute Select Attribute",
     });
@@ -464,12 +460,12 @@ describe("AttributeSection", () => {
     expect(attributeOptions).toHaveLength(7);
 
     userEvent.click(within(attributeSelect).getByText(/result/i));
-     const attributeInput = within(attributeSelectBtn.parentElement).getByRole(
+    const attributeInput = within(attributeSelectBtn.parentElement).getByRole(
       "textbox",
       { hidden: true }
     );
     expect(attributeInput).toBeInTheDocument();
-         expect(attributeInput).toHaveValue("Result");
+    expect(attributeInput).toHaveValue("Result");
     const typeSelectBtn = await screen.findByRole("button", {
       name: /type/i,
     });
@@ -483,13 +479,7 @@ describe("AttributeSection", () => {
   });
 
   it("shows Quantity on selecting the Quantity type", async () => {
-    const assessmentElement = new AssessmentPerformed();
-    const { container } = render(
-      <AttributeSection
-        selectedDataElement={assessmentElement}
-        onAddClicked={onAddClicked}
-      />
-    );
+    renderAttributeSection(assessmentElement, [], onAddClicked);
 
     const attributeSelectBtn = screen.getByRole("button", {
       name: "Attribute Select Attribute",
@@ -522,7 +512,7 @@ describe("AttributeSection", () => {
     const addButton = screen.getByTestId("AddCircleOutlineIcon");
     expect(addButton).toBeInTheDocument();
     userEvent.click(addButton);
-        });
+  });
   it("renders code component on selecting the code type attribute", async () => {
     renderAttributeSection(assessmentElement, [], onAddClicked);
     const attributeSelectBtn = screen.getByRole("button", {
