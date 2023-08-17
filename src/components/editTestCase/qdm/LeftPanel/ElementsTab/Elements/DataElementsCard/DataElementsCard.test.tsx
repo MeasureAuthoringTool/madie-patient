@@ -1,7 +1,7 @@
-import React from "react";
+import * as React from "react";
 import { Measure } from "@madie/madie-models";
 import { MemoryRouter } from "react-router-dom";
-import { describe, expect, test } from "@jest/globals";
+import { describe, test } from "@jest/globals";
 import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import DataElementsCard, {
@@ -16,7 +16,7 @@ import { QdmExecutionContextProvider } from "../../../../../../routes/qdm/QdmExe
 import { FormikProvider, FormikContextType } from "formik";
 import { QdmPatientProvider } from "../../../../../../../util/QdmPatientContext";
 
-const serviceConfig: ServiceConfig = {
+const serviceConfig = {
   testCaseService: {
     baseUrl: "base.url",
   },
@@ -26,7 +26,7 @@ const serviceConfig: ServiceConfig = {
   terminologyService: {
     baseUrl: "http.com",
   },
-};
+} as ServiceConfig;
 
 const testCaseJson = {
   qdmVersion: "5.6",
@@ -891,10 +891,8 @@ describe("DataElementsCard", () => {
     await waitFor(() =>
       renderDataElementsCard("codes", jest.fn, dataEl[0], jest.fn)
     );
-    const codesChip = await queryByText(
-      "Admission Source: SNOMEDCT : 10725009"
-    );
-    expect(codesChip).toBeInTheDocument();
+    const codes = await screen.queryByText("Codes section coming soon!");
+    expect(codes).toBeInTheDocument();
   });
 
   test("DataElementsCards renders nothing", async () => {

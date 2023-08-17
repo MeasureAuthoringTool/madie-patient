@@ -43,7 +43,7 @@ const AttributeSelector = ({
   return (
     <div tw="pt-2">
       <div tw="flex">
-        <div tw="flex-initial w-4/12 pr-3">
+        <div tw="flex-initial w-4/12">
           <Select
             placeHolder={{ name: `Select ${attributeProps.label}`, value: "" }}
             {...attributeProps}

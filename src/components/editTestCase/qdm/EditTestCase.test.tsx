@@ -32,7 +32,7 @@ import { ValueSet } from "cqm-models";
 import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
 import { QdmPatientProvider } from "../../../util/QdmPatientContext";
 
-const serviceConfig: ServiceConfig = {
+const serviceConfig = {
   testCaseService: {
     baseUrl: "base.url",
   },
@@ -42,7 +42,7 @@ const serviceConfig: ServiceConfig = {
   terminologyService: {
     baseUrl: "http.com",
   },
-};
+} as ServiceConfig;
 
 const testCaseJson =
   "{\n" +
@@ -213,7 +213,7 @@ jest.mock("react-router-dom", () => ({
 // mocking cqm api
 jest.mock("../../../api/CqmModelConversionService");
 const CQMConversionMock =
-  useCqmConversionService as jest.Mock<TestCaseServiceApi>;
+  useCqmConversionService as unknown as jest.Mock<TestCaseServiceApi>;
 const useCqmConversionServiceMockResolved = {
   fetchSourceDataCriteria: jest.fn().mockResolvedValue([
     {
@@ -322,7 +322,6 @@ const renderEditTestCaseComponent = () => {
           value={{
             measureState: [measure, setMeasure],
             cqmMeasureState: [cqmMeasure, setCqmMeasure],
-            valueSetsState: [valueSets, setValueSets],
             executionContextReady: true,
             executing: false,
             setExecuting: jest.fn(),

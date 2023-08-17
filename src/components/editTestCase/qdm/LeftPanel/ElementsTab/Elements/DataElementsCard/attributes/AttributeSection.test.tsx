@@ -1,19 +1,14 @@
-import React from "react";
+import * as React from "react";
 
-import {
-  render,
-  screen,
-  within,
-  fireEvent,
-  waitFor,
-} from "@testing-library/react";
+import { render, screen, within, fireEvent } from "@testing-library/react";
 
 import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
 import AttributeSection from "./AttributeSection";
 import { EncounterOrder, AssessmentPerformed } from "cqm-models";
-import { act } from "react-dom/test-utils";
-import AttributeChipList from "../AttributeChipList";
+import { MemoryRouter } from "react-router-dom";
+import { QdmExecutionContextProvider } from "../../../../../../../routes/qdm/QdmExecutionContext";
+import { MeasureScoring } from "@madie/madie-models";
 
 jest.mock("dayjs", () => ({
   extend: jest.fn(),
@@ -28,13 +23,45 @@ jest.mock("dayjs", () => ({
   startOf: jest.fn().mockReturnThis(),
 }));
 const onAddClicked = jest.fn();
+const mockCqmMeasure = {
+  id: "id-1",
+  title: "Mock Measure",
+  measure_scoring: MeasureScoring.COHORT,
+  value_sets: [],
+};
 
 describe("AttributeSection", () => {
-  it("should render two empty dropdowns when null selectedDataElement is provided", () => {
-    render(
-      <AttributeSection selectedDataElement={null} attributeChipList={[]} />
-    );
+  let encounterElement;
+  let assessmentElement;
+  beforeEach(() => {
+    encounterElement = new EncounterOrder();
+    assessmentElement = new AssessmentPerformed();
+  });
 
+  const renderAttributeSection = (dataElement, attributeChipList, onAddCb) => {
+    return render(
+      <MemoryRouter>
+        <QdmExecutionContextProvider
+          value={{
+            measureState: [null, jest.fn],
+            cqmMeasureState: [mockCqmMeasure, jest.fn],
+            executionContextReady: true,
+            executing: false,
+            setExecuting: jest.fn(),
+          }}
+        >
+          <AttributeSection
+            selectedDataElement={dataElement}
+            attributeChipList={attributeChipList}
+            onAddClicked={onAddCb}
+          />
+        </QdmExecutionContextProvider>
+      </MemoryRouter>
+    );
+  };
+
+  it("should render two empty dropdowns when null selectedDataElement is provided", () => {
+    renderAttributeSection(null, [], onAddClicked);
     const attributeSelectBtn = screen.getByRole("button", {
       name: "Attribute Select Attribute",
     });
@@ -57,13 +84,7 @@ describe("AttributeSection", () => {
   });
 
   it("should render two empty dropdowns when undefined selectedDataElement is provided", () => {
-    render(
-      <AttributeSection
-        selectedDataElement={undefined}
-        attributeChipList={[]}
-      />
-    );
-
+    renderAttributeSection(undefined, [], onAddClicked);
     const attributeSelectBtn = screen.getByRole("button", {
       name: "Attribute Select Attribute",
     });
@@ -86,14 +107,7 @@ describe("AttributeSection", () => {
   });
 
   it("should render attribute select options when valid selectedDataElement is provided", async () => {
-    const encounterElement: EncounterOrder = new EncounterOrder();
-    render(
-      <AttributeSection
-        selectedDataElement={encounterElement}
-        attributeChipList={[]}
-      />
-    );
-
+    renderAttributeSection(encounterElement, [], onAddClicked);
     const attributeSelectBtn = screen.getByRole("button", {
       name: "Attribute Select Attribute",
     });
@@ -112,14 +126,7 @@ describe("AttributeSection", () => {
   });
 
   it("should auto select type when attribute only has single type option", async () => {
-    const encounterElement: EncounterOrder = new EncounterOrder();
-    render(
-      <AttributeSection
-        selectedDataElement={encounterElement}
-        attributeChipList={[]}
-      />
-    );
-
+    renderAttributeSection(encounterElement, [], onAddClicked);
     const attributeSelectBtn = screen.getByRole("button", {
       name: "Attribute Select Attribute",
     });
@@ -153,14 +160,7 @@ describe("AttributeSection", () => {
   });
 
   it("should render different type select options for different selected attributes", async () => {
-    const encounterElement: EncounterOrder = new EncounterOrder();
-    render(
-      <AttributeSection
-        selectedDataElement={encounterElement}
-        attributeChipList={[]}
-      />
-    );
-
+    renderAttributeSection(encounterElement, [], onAddClicked);
     const attributeSelectBtn = screen.getByRole("button", {
       name: "Attribute Select Attribute",
     });
@@ -199,18 +199,24 @@ describe("AttributeSection", () => {
     const typeSelect = await screen.findByRole("listbox");
     const typeOptions = within(typeSelect).getAllByRole("option");
     expect(typeOptions.length).toEqual(6);
+    userEvent.click(within(typeSelect).getByText("Practitioner"));
+    const identifierNamingSystemField = (await screen.getByTestId(
+      "identifier-input-field-Naming System"
+    )) as HTMLInputElement;
+    expect(identifierNamingSystemField).toBeInTheDocument();
+    fireEvent.change(identifierNamingSystemField, { target: { value: "10" } });
+    expect(identifierNamingSystemField.value).toBe("10");
+
+    const identifierValueField = (await screen.getByTestId(
+      "identifier-value-input-field-Value"
+    )) as HTMLInputElement;
+    expect(identifierValueField).toBeInTheDocument();
+    fireEvent.change(identifierValueField, { target: { value: "90" } });
+    expect(identifierValueField.value).toBe("90");
   });
 
   it("date selection shows date input", async () => {
-    const assessmentElement: AssessmentPerformed = new AssessmentPerformed();
-    const { container } = render(
-      <AttributeSection
-        selectedDataElement={assessmentElement}
-        onAddClicked={onAddClicked}
-        attributeChipList={[]}
-      />
-    );
-
+    renderAttributeSection(assessmentElement, [], onAddClicked);
     const attributeSelectBtn = screen.getByRole("button", {
       name: "Attribute Select Attribute",
     });
@@ -239,7 +245,9 @@ describe("AttributeSection", () => {
     const typeOptions = within(typeSelect).getAllByRole("option");
     expect(typeOptions.length).toEqual(9);
     userEvent.click(within(typeSelect).getByText("Date"));
-    const dateInput = await screen.findByPlaceholderText("MM/DD/YYYY");
+    const dateInput = (await screen.findByPlaceholderText(
+      "MM/DD/YYYY"
+    )) as HTMLInputElement;
     const dateInput2 = await screen.findByTestId("CalendarIcon");
     expect(dateInput).toBeInTheDocument();
     expect(dateInput2).toBeInTheDocument();
@@ -253,14 +261,7 @@ describe("AttributeSection", () => {
   });
 
   it("shows RatioInput on selecting the Ratio type", async () => {
-    const assessmentElement: AssessmentPerformed = new AssessmentPerformed();
-    const { container } = render(
-      <AttributeSection
-        selectedDataElement={assessmentElement}
-        attributeChipList={[]}
-      />
-    );
-
+    renderAttributeSection(assessmentElement, [], onAddClicked);
     const attributeSelectBtn = screen.getByRole("button", {
       name: "Attribute Select Attribute",
     });
@@ -292,14 +293,7 @@ describe("AttributeSection", () => {
   });
 
   it("DateTime selection shows date input", async () => {
-    const assessmentElement: AssessmentPerformed = new AssessmentPerformed();
-    const { container } = render(
-      <AttributeSection
-        selectedDataElement={assessmentElement}
-        attributeChipList={[]}
-        onAddClicked={onAddClicked}
-      />
-    );
+    renderAttributeSection(assessmentElement, [], onAddClicked);
     const dateTimeVal = { value: "01/01/2023 12:00 AM" };
     const attributeSelectBtn = screen.getByRole("button", {
       name: "Attribute Select Attribute",
@@ -329,9 +323,9 @@ describe("AttributeSection", () => {
     const typeOptions = within(typeSelect).getAllByRole("option");
     expect(typeOptions.length).toEqual(9);
     userEvent.click(within(typeSelect).getByText("DateTime"));
-    const dateTimeInput = await screen.findByPlaceholderText(
+    const dateTimeInput = (await screen.findByPlaceholderText(
       "MM/DD/YYYY hh:mm aa"
-    );
+    )) as HTMLInputElement;
     const dateTimeInput2 = await screen.findByTestId("CalendarIcon");
     expect(dateTimeInput).toBeInTheDocument();
     expect(dateTimeInput2).toBeInTheDocument();
@@ -346,16 +340,7 @@ describe("AttributeSection", () => {
   });
 
   it("Clicking the plus button calls works", async () => {
-    const assessmentElement: AssessmentPerformed = new AssessmentPerformed();
-    const onAddClicked = jest.fn();
-    const { container } = render(
-      <AttributeSection
-        selectedDataElement={assessmentElement}
-        onAddClicked={onAddClicked}
-        attributeChipList={[]}
-      />
-    );
-
+    renderAttributeSection(assessmentElement, [], onAddClicked);
     const attributeSelectBtn = screen.getByRole("button", {
       name: "Attribute Select Attribute",
     });
@@ -390,14 +375,7 @@ describe("AttributeSection", () => {
   });
 
   it("shows integer input on selecting the integer type", async () => {
-    const assessmentElement: AssessmentPerformed = new AssessmentPerformed();
-    const { container } = render(
-      <AttributeSection
-        selectedDataElement={assessmentElement}
-        attributeChipList={[]}
-      />
-    );
-
+    renderAttributeSection(assessmentElement, [], onAddClicked);
     const attributeSelectBtn = screen.getByRole("button", {
       name: "Attribute Select Attribute",
     });
@@ -426,9 +404,9 @@ describe("AttributeSection", () => {
     const typeOptions = within(typeSelect).getAllByRole("option");
     expect(typeOptions.length).toEqual(9);
     userEvent.click(within(typeSelect).getByText("Integer"));
-    const integerField = await screen.getByTestId(
+    const integerField = (await screen.getByTestId(
       "integer-input-field-Integer"
-    );
+    )) as HTMLInputElement;
     expect(integerField).toBeInTheDocument();
 
     expect(integerField).toBeInTheDocument();
@@ -437,11 +415,7 @@ describe("AttributeSection", () => {
   });
 
   it("shows DecimalInput on selecting the Decimal type", async () => {
-    const assessmentElement: AssessmentPerformed = new AssessmentPerformed();
-    const { container } = render(
-      <AttributeSection selectedDataElement={assessmentElement} />
-    );
-
+    renderAttributeSection(assessmentElement, [], onAddClicked);
     const attributeSelectBtn = screen.getByRole("button", {
       name: "Attribute Select Attribute",
     });
@@ -470,5 +444,38 @@ describe("AttributeSection", () => {
     const typeOptions = within(typeSelect).getAllByRole("option");
     expect(typeOptions.length).toEqual(9);
     fireEvent.click(within(typeSelect).getByText("Decimal"));
+  });
+
+  it("renders code component on selecting the code type attribute", async () => {
+    renderAttributeSection(assessmentElement, [], onAddClicked);
+    const attributeSelectBtn = screen.getByRole("button", {
+      name: "Attribute Select Attribute",
+    });
+    userEvent.click(attributeSelectBtn);
+    const attributeSelect = await screen.findByRole("listbox");
+    userEvent.click(within(attributeSelect).getByText(/reason/i));
+    const attributeInput = within(attributeSelectBtn.parentElement).getByRole(
+      "textbox",
+      { hidden: true }
+    );
+    expect(attributeInput).toBeInTheDocument();
+    expect(attributeInput).toHaveValue("Reason");
+    userEvent.click(
+      await screen.findByRole("button", {
+        name: /type/i,
+      })
+    );
+    const typeSelect = await screen.findByRole("listbox");
+    expect(typeSelect).toBeInTheDocument();
+    fireEvent.click(within(typeSelect).getByText("Code"));
+
+    const valueSetSelector = screen.getByTestId("value-set-selector");
+    const valueSetDropdown = within(valueSetSelector).getByRole(
+      "button"
+    ) as HTMLInputElement;
+    userEvent.click(valueSetDropdown);
+    const valueSetOptions = await screen.findAllByRole("option");
+    expect(valueSetOptions).toHaveLength(1);
+    expect(valueSetOptions[0]).toHaveTextContent("Custom Code");
   });
 });
