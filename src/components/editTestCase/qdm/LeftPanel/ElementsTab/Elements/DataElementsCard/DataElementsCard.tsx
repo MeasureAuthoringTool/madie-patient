@@ -55,7 +55,6 @@ const DataElementsCard = (props: {
   const [localSelectedDataElement, setLocalSelectedDataElement] =
     useState(null);
   const [displayAttributes, setDisplayAttributes] = useState([]);
-  const [codesChips, setCodesChips] = useState([]);
   const [dataElements, setDataElements] = useState([]);
   const formik: any = useFormikContext();
   // data elements are required for relatedTo.
@@ -91,7 +90,6 @@ const DataElementsCard = (props: {
   useEffect(() => {
     if (localSelectedDataElement && codeSystemMap) {
       const displayAttributes = [];
-      const codesChips = [];
       localSelectedDataElement.schema.eachPath((path, info) => {
         if (!SKIP_ATTRIBUTES.includes(path) && localSelectedDataElement[path]) {
           if (info.instance === "Array") {
@@ -139,18 +137,6 @@ const DataElementsCard = (props: {
               title: _.startCase(path),
               value: value,
             });
-          } else if (
-            localSelectedDataElement[path] instanceof cqmModels.CQL.Code
-          ) {
-            codesChips.push({
-              name: path,
-              title: _.startCase(path),
-              value: stringifyValue(
-                localSelectedDataElement[path],
-                true,
-                codeSystemMap
-              ),
-            });
           } else {
             displayAttributes.push({
               name: path,
@@ -165,7 +151,6 @@ const DataElementsCard = (props: {
         }
       });
       setDisplayAttributes(displayAttributes);
-      setCodesChips(codesChips);
     }
   }, [localSelectedDataElement, codeSystemMap, dataElements]);
   // centralize state one level up so we can conditionally render our child component
@@ -205,10 +190,7 @@ const DataElementsCard = (props: {
       </div>
       {/* heading row end */}
       <div className="timing">
-        <Timing
-          canEdit={true}
-          selectedDataElement={localSelectedDataElement}
-        ></Timing>
+        <Timing canEdit={true} selectedDataElement={localSelectedDataElement} />
       </div>
       {/* Govern our navigation for codes/att/negation */}
       <SubNavigationTabs
@@ -216,7 +198,7 @@ const DataElementsCard = (props: {
         activeTab={cardActiveTab}
         setActiveTab={setCardActiveTab}
       />
-      {cardActiveTab === "codes" && <Codes attributeChipList={codesChips} />}
+      {cardActiveTab === "codes" && <Codes attributeChipList={[]} />}
       {cardActiveTab === "attributes" && (
         <AttributeSection
           attributeChipList={displayAttributes}

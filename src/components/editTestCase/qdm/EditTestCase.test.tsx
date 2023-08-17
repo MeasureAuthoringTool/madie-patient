@@ -5,7 +5,6 @@ import {
   waitFor,
   fireEvent,
   within,
-  // findByTestId,
 } from "@testing-library/react";
 import EditTestCase from "./EditTestCase";
 import {
@@ -16,7 +15,7 @@ import {
   TestCase,
 } from "@madie/madie-models";
 import { act } from "react-dom/test-utils";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
 import { test } from "@jest/globals";
@@ -32,7 +31,7 @@ import useCqmConversionService, {
 import { ValueSet } from "cqm-models";
 import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
 
-const serviceConfig: ServiceConfig = {
+const serviceConfig = {
   testCaseService: {
     baseUrl: "base.url",
   },
@@ -42,7 +41,7 @@ const serviceConfig: ServiceConfig = {
   terminologyService: {
     baseUrl: "http.com",
   },
-};
+} as ServiceConfig;
 
 const testCaseJson =
   "{\n" +
@@ -205,7 +204,7 @@ jest.mock("react-router-dom", () => ({
 // mocking cqm api
 jest.mock("../../../api/CqmModelConversionService");
 const CQMConversionMock =
-  useCqmConversionService as jest.Mock<TestCaseServiceApi>;
+  useCqmConversionService as unknown as jest.Mock<TestCaseServiceApi>;
 const useCqmConversionServiceMockResolved = {
   fetchSourceDataCriteria: jest.fn().mockResolvedValue([
     {
@@ -314,7 +313,6 @@ const renderEditTestCaseComponent = () => {
           value={{
             measureState: [measure, setMeasure],
             cqmMeasureState: [cqmMeasure, setCqmMeasure],
-            valueSetsState: [valueSets, setValueSets],
             executionContextReady: true,
             executing: false,
             setExecuting: jest.fn(),

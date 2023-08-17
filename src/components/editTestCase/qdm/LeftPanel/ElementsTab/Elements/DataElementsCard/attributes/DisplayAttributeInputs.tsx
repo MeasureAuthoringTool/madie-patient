@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { CQL } from "cqm-models";
-import * as _ from "lodash";
 import { DateField } from "@madie/madie-design-system/dist/react";
 import { IconButton } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -12,6 +11,10 @@ import QuantityInput from "../../../../../../../common/quantityInput/QuantityInp
 import DecimalInput from "../../../../../../../common/DecimalInput/DecimalInput";
 import DateTimeInput from "../../../../../../../common/dateTimeInput/DateTimeInput";
 import DisplayMultipleAttributeInputs from "./DisplayMultipleAttributeInputs";
+import CodeInput from "../../../../../../../common/codeInput/CodeInput";
+import "twin.macro";
+import "styled-components/macro";
+import useQdmExecutionContext from "../../../../../../../routes/qdm/useQdmExecutionContext";
 
 interface DisplayAttributeInputsProps {
   attributeType?: string;
@@ -35,6 +38,8 @@ const DisplayAttributeInputs = ({
       onInputAdd(attributeValue);
     }
   };
+  const { cqmMeasureState } = useQdmExecutionContext();
+  const [cqmMeasure] = cqmMeasureState;
 
   const displayAttributeInput = () => {
     switch (attributeType) {
@@ -109,6 +114,14 @@ const DisplayAttributeInputs = ({
             canEdit={true}
           />
         );
+      case "Code":
+        return (
+          <CodeInput
+            handleChange={(val) => setAttributeValue(val)}
+            canEdit={true}
+            valueSets={cqmMeasure.value_sets}
+          />
+        );
       case "PatientEntity":
       case "CarePartner":
       case "Location":
@@ -128,9 +141,9 @@ const DisplayAttributeInputs = ({
 
   return (
     <>
-      <div className="attributes-display-container">
-        <div className="attribute-model"> {displayAttributeInput()}</div>
-        <div className="add-value-icon">
+      <div tw="flex w-3/4">
+        <div tw="flex-grow w-3/4">{displayAttributeInput()}</div>
+        <div tw="flex-grow py-6">
           {attributeType ? (
             <IconButton onClick={handleAttributeChange}>
               <AddCircleOutlineIcon sx={{ color: "#0073c8" }} />
