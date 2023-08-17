@@ -315,6 +315,7 @@ describe("EditTestCase component", () => {
         );
       });
       // make sure editor state updated to have imported bundle contents
+      userEvent.click(screen.getByTestId("json-tab"));
       const editor = screen.getByTestId(
         "test-case-json-editor"
       ) as HTMLInputElement;
@@ -394,6 +395,7 @@ describe("EditTestCase component", () => {
         "/measures/:measureId/edit/test-cases"
       );
 
+      userEvent.click(screen.getByTestId("json-tab"));
       expect(screen.getByTestId("test-case-json-editor")).toBeInTheDocument();
       expect(screen.getByTestId("test-case-cql-editor")).toBeInTheDocument();
       userEvent.click(screen.getByTestId("details-tab"));
@@ -419,6 +421,18 @@ describe("EditTestCase component", () => {
 
       userEvent.click(screen.getByTestId("measurecql-tab"));
       expect(screen.getByTestId("test-case-cql-editor")).toBeInTheDocument();
+    });
+
+    it("Navigating between elements tab and json tab", () => {
+      renderWithRouter(
+        ["/measures/m1234/edit/test-cases"],
+        "/measures/:measureId/edit/test-cases"
+      );
+
+      expect(screen.getByTestId("elements-content")).toBeInTheDocument();
+      expect(screen.getByText("Elements Coming Soon...")).toBeInTheDocument();
+      userEvent.click(screen.getByTestId("json-tab"));
+      expect(screen.getByTestId("test-case-json-editor")).toBeInTheDocument();
     });
 
     it("should edit test case when save button is clicked", async () => {
@@ -504,6 +518,7 @@ describe("EditTestCase component", () => {
         },
       });
 
+      userEvent.click(screen.getByTestId("json-tab"));
       const editor = screen.getByTestId("test-case-json-editor");
       await waitFor(() => expect(editor).toHaveValue(""));
       userEvent.paste(editor, testCaseJson);
@@ -582,6 +597,7 @@ describe("EditTestCase component", () => {
         },
       });
 
+      userEvent.click(screen.getByTestId("json-tab"));
       const editor = screen.getByTestId("test-case-json-editor");
       await waitFor(() => expect(editor).toHaveValue(""));
       userEvent.click(screen.getByTestId("details-tab"));
@@ -979,6 +995,7 @@ describe("EditTestCase component", () => {
       );
       expect(ippExpectedCb).toBeChecked();
 
+      userEvent.click(screen.getByTestId("json-tab"));
       const editor = screen.getByTestId("test-case-json-editor");
       userEvent.paste(editor, testCaseJson);
       expect(editor).toHaveValue(testCaseJson);
@@ -1131,6 +1148,7 @@ describe("EditTestCase component", () => {
       );
       expect(ippExpectedCb).toBeChecked();
 
+      userEvent.click(screen.getByTestId("json-tab"));
       const editor = screen.getByTestId("test-case-json-editor");
       userEvent.paste(editor, testCaseJson);
       expect(editor).toHaveValue(testCaseJson);
@@ -1779,6 +1797,7 @@ describe("EditTestCase component", () => {
         measure
       );
 
+      userEvent.click(screen.getByTestId("json-tab"));
       const data = {
         ...testCase,
         description: testCaseDescription,
@@ -1955,6 +1974,7 @@ describe("EditTestCase component", () => {
         measure
       );
 
+      userEvent.click(screen.getByTestId("json-tab"));
       expect(screen.getByTestId("test-case-json-editor")).toBeInTheDocument();
       expect(
         await screen.findByText(
@@ -1971,6 +1991,7 @@ describe("EditTestCase component", () => {
         measure
       );
 
+      userEvent.click(screen.getByTestId("json-tab"));
       expect(screen.getByTestId("test-case-json-editor")).toBeInTheDocument();
       expect(screen.getByTestId("test-case-cql-editor")).toBeInTheDocument();
       userEvent.click(screen.getByTestId("expectoractual-tab"));
@@ -2063,6 +2084,7 @@ describe("EditTestCase component", () => {
         measure
       );
 
+      userEvent.click(screen.getByTestId("json-tab"));
       const editor = screen.getByTestId("test-case-json-editor");
       userEvent.click(screen.getByTestId("details-tab"));
       await waitFor(
@@ -2093,7 +2115,7 @@ describe("EditTestCase component", () => {
         "/measures/:measureId/edit/test-cases",
         defaultMeasure
       );
-
+      userEvent.click(screen.getByTestId("json-tab"));
       const editor = await screen.getByTestId("test-case-json-editor");
       await userEvent.click(screen.getByTestId("details-tab"));
       await waitFor(
@@ -2487,6 +2509,7 @@ describe("EditTestCase component", () => {
         measure
       );
 
+      userEvent.click(screen.getByTestId("json-tab"));
       const editor = (await screen.getByTestId(
         "test-case-json-editor"
       )) as HTMLInputElement;
@@ -2564,6 +2587,7 @@ describe("EditTestCase component", () => {
         measure
       );
 
+      userEvent.click(screen.getByTestId("json-tab"));
       const editor = (await screen.getByTestId(
         "test-case-json-editor"
       )) as HTMLInputElement;
@@ -2620,6 +2644,7 @@ describe("EditTestCase component", () => {
         measure
       );
 
+      userEvent.click(screen.getByTestId("json-tab"));
       const editor = (await screen.getByTestId(
         "test-case-json-editor"
       )) as HTMLInputElement;
