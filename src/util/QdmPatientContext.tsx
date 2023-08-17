@@ -1,6 +1,5 @@
 import * as React from "react";
 import { QDMPatient } from "cqm-models";
-import { useFormikContext } from "formik";
 import * as _ from "lodash";
 
 export interface QdmPatientContextType {
@@ -29,7 +28,7 @@ const QdmPatientContext = React.createContext<QdmPatientContextType>(null);
  * @param state
  * @param action
  */
-function patientReducer(state, action: QdmPatientAction) {
+export function patientReducer(state, action: QdmPatientAction) {
   switch (action.type) {
     case PatientActionType.LOAD_PATIENT: {
       return { ...state, patient: action.payload };
@@ -74,9 +73,7 @@ function QdmPatientProvider({ children }) {
   const [state, dispatch] = React.useReducer(patientReducer, {
     patient: null,
   });
-  // NOTE: you *might* need to memoize this value
-  // Learn more in http://kcd.im/optimize-context
-  // tod: decide if we want to directly update formik inside this context
+  // todo: decide if we want to directly update formik inside this context
   // const formik = useFormikContext();
   const value = { state, dispatch };
   return (
