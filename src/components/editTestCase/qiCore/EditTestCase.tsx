@@ -50,7 +50,8 @@ import {
 } from "@madie/madie-util";
 import useExecutionContext from "../../routes/qiCore/useExecutionContext";
 import { MadieEditor } from "@madie/madie-editor";
-import CreateTestCaseNavTabs from "../../createTestCase/CreateTestCaseNavTabs";
+import CreateTestCaseRightPanelNavTabs from "../../createTestCase/CreateTestCaseRightPanelNavTabs";
+import CreateTestCaseLeftPanelNavTabs from "../../createTestCase/CreateTestCaseLeftPanelNavTabs";
 import ExpectedActual from "../../createTestCase/RightPanel/ExpectedActual/ExpectedActual";
 import "./EditTestCase.scss";
 import "allotment/dist/style.css";
@@ -238,7 +239,10 @@ const EditTestCase = (props: EditTestCaseProps) => {
   const [populationGroupResults, setPopulationGroupResults] =
     useState<DetailedPopulationGroupResult[]>();
   const [calculationErrors, setCalculationErrors] = useState<AlertProps>();
-  const [activeTab, setActiveTab] = useState<string>("measurecql");
+  const [rightPanelActiveTab, setRightPanelActiveTab] =
+    useState<string>("measurecql");
+  const [leftPanelActiveTab, setLeftPanelActiveTab] =
+    useState<string>("elements");
   const [groupPopulations, setGroupPopulations] = useState<GroupPopulation[]>(
     []
   );
@@ -770,23 +774,34 @@ const EditTestCase = (props: EditTestCaseProps) => {
           onDragEnd={resizeEditor}
         >
           <Allotment.Pane>
-            <div className="left-panel">
-              <Editor
-                onChange={(val: string) => setEditorVal(val)}
-                value={editorVal}
-                setEditor={setEditor}
-                readOnly={!canEdit || _.isNil(testCase)}
-                height="652px"
+            <div className="right-panel">
+              <CreateTestCaseLeftPanelNavTabs
+                leftPanelActiveTab={leftPanelActiveTab}
+                setLeftPanelActiveTab={setLeftPanelActiveTab}
               />
+              {leftPanelActiveTab === "json" && (
+                <Editor
+                  onChange={(val: string) => setEditorVal(val)}
+                  value={editorVal}
+                  setEditor={setEditor}
+                  readOnly={!canEdit || _.isNil(testCase)}
+                  height="652px"
+                />
+              )}
+              {leftPanelActiveTab === "elements" && (
+                <div data-testid="elements-content">
+                  Elements Coming Soon...
+                </div>
+              )}
             </div>
           </Allotment.Pane>
           <Allotment.Pane>
             <div className="right-panel">
-              <CreateTestCaseNavTabs
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
+              <CreateTestCaseRightPanelNavTabs
+                rightPanelActiveTab={rightPanelActiveTab}
+                setRightPanelActiveTab={setRightPanelActiveTab}
               />
-              {activeTab === "measurecql" &&
+              {rightPanelActiveTab === "measurecql" &&
                 (!measure?.cqlErrors ? (
                   <div data-testid="test-case-cql-editor">
                     <MadieEditor
@@ -802,7 +817,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
                     Editor tab
                   </div>
                 ))}
-              {activeTab === "highlighting" && (
+              {rightPanelActiveTab === "highlighting" && (
                 <div className="panel-content">
                   {executing ? (
                     <div style={{ display: "flex", justifyContent: "center" }}>
@@ -816,7 +831,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
                   )}
                 </div>
               )}
-              {activeTab === "expectoractual" && (
+              {rightPanelActiveTab === "expectoractual" && (
                 <div className="panel-content">
                   <ExpectedActual
                     canEdit={canEdit}
@@ -863,7 +878,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
             This will allow for independent unit testing and help render performance.
            */}
 
-              {activeTab === "details" && (
+              {rightPanelActiveTab === "details" && (
                 <div className="panel-content">
                   {alert &&
                     (testCaseAlertToast ? (

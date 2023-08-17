@@ -2,18 +2,18 @@ import React from "react";
 import { Tabs, Tab } from "@madie/madie-design-system/dist/react";
 import "./CreateTestCaseNavTabs.scss";
 export interface NavTabProps {
-  activeTab: string;
-  setActiveTab: (value: string) => void;
+  rightPanelActiveTab: string;
+  setRightPanelActiveTab: (value: string) => void;
 }
 
-export default function CreateTestCaseNavTabs(props: NavTabProps) {
-  const { activeTab, setActiveTab } = props;
+export default function CreateTestCaseRightPanelNavTabs(props: NavTabProps) {
+  const { rightPanelActiveTab, setRightPanelActiveTab } = props;
   return (
     <Tabs
       id="test-case-nav-container"
-      value={activeTab}
+      value={rightPanelActiveTab}
       onChange={(e, v) => {
-        setActiveTab(v);
+        setRightPanelActiveTab(v);
       }}
       type="B"
     >
