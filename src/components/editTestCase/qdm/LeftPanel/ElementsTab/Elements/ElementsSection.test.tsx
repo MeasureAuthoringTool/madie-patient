@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import {
   Measure,
   MeasureScoring,
@@ -6,7 +6,6 @@ import {
   PopulationType,
 } from "@madie/madie-models";
 import { MemoryRouter } from "react-router-dom";
-import { describe, expect, test } from "@jest/globals";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
@@ -23,13 +22,8 @@ import {
   ServiceConfig,
 } from "../../../../../../api/ServiceContext";
 import { QdmExecutionContextProvider } from "../../../../../routes/qdm/QdmExecutionContext";
-import {
-  useFormik,
-  FormikProvider,
-  FormikValues,
-  FormikContextType,
-} from "formik";
-import * as Formik from "formik";
+import { FormikProvider, FormikContextType } from "formik";
+import { ValueSet } from "cqm-models";
 
 import { act } from "react-dom/test-utils";
 import { QdmPatientProvider } from "../../../../../../util/QdmPatientContext";
@@ -43,6 +37,9 @@ const serviceConfig: ServiceConfig = {
   },
   terminologyService: {
     baseUrl: "http.com",
+  },
+  elmTranslationService: {
+    baseUrl: "base.url",
   },
 };
 
@@ -427,7 +424,7 @@ let cqmConversionService = new CqmConversionService("url", getAccessToken);
 const cqmMeasure = cqmConversionService.convertToCqmMeasure(mockMeasure);
 jest.mock("../../../../../../api/CqmModelConversionService");
 const CQMConversionMock =
-  useCqmConversionService as jest.Mock<TestCaseServiceApi>;
+  useCqmConversionService as jest.Mock<CqmConversionService>;
 const testDataElements = [
   {
     dataElementCodes: [],
@@ -710,10 +707,7 @@ jest.mock("@madie/madie-util", () => ({
     initialState: { canTravel: false, pendingPath: "" },
   },
 }));
-screen.debug(undefined, Infinity);
 describe("ElementsSection allows card opening and closing", () => {
-  screen.debug(undefined, Infinity);
-
   CQMConversionMock.mockImplementation(() => {
     return useCqmConversionServiceMockResolved;
   });
@@ -748,7 +742,7 @@ describe("ElementsSection allows card opening and closing", () => {
       fireEvent.click(closeButton);
     });
     await waitFor(() => {
-      expect(queryByText("Timing")).not.toBeInTheDocument();
+      expect(screen.queryByTestId("data-element-card")).not.toBeInTheDocument();
     });
   });
 
@@ -783,7 +777,7 @@ describe("ElementsSection allows card opening and closing", () => {
       userEvent.click(deviceTab);
     });
     await waitFor(() => {
-      expect(queryByText("Timing")).not.toBeInTheDocument();
+      expect(screen.queryByTestId("data-element-card")).not.toBeInTheDocument();
     });
     const deviceDataType = screen.getByTestId(
       "data-type-Device, Order: Cardiopulmonary Arrest"
