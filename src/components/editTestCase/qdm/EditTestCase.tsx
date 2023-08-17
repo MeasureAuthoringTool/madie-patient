@@ -77,7 +77,6 @@ const EditTestCase = () => {
   const [toastOpen, setToastOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>("");
   const [toastType, setToastType] = useState<string>("danger");
-  const [discardTrigger, setDiscardTrigger] = useState<boolean>(false);
   const onToastClose = () => {
     setToastMessage("");
     setToastOpen(false);
@@ -267,14 +266,13 @@ const EditTestCase = () => {
         );
 
       //find the population_sets
-
-      var populationSets = JSONPath({
+      const populationSets = JSONPath({
         path: "$.population_sets[*].population_set_id",
         json: cqmMeasure,
       });
 
       populationSets.forEach((pop) => {
-        var results = JSONPath({
+        const results = JSONPath({
           path: `$..${pop}`,
           json: calculationOutput,
         });

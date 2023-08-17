@@ -62,6 +62,10 @@ const StatusHandler = ({
         if (!warnings.successful) return warnings;
       });
       const successfulImports = importWarnings.length - failedImports.length;
+
+      const successfulImportsWithWarning = importWarnings.filter((warnings) => {
+        if (warnings.successful && warnings.message) return warnings;
+      });
       return (
         <div id="status-handler">
           <MadieAlert
@@ -84,6 +88,26 @@ const StatusHandler = ({
                     );
                   })}
                 </ul>
+                {successfulImportsWithWarning?.length > 0 && (
+                  <div>
+                    <h6>
+                      Following test case(s) were imported succesfully, but The
+                      measure populations do not match the populations in the
+                      import file. No expected values have been set.
+                    </h6>
+                    <ul>
+                      {successfulImportsWithWarning.map(
+                        (successfulImportWithWarning) => {
+                          return (
+                            <li data-testid="success-imports-with-warnings">
+                              {successfulImportWithWarning.patientId}{" "}
+                            </li>
+                          );
+                        }
+                      )}
+                    </ul>
+                  </div>
+                )}
               </div>
             }
             canClose={false}

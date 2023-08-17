@@ -71,6 +71,27 @@ describe("StatusHandler Component", () => {
     expect(screen.getAllByTestId("failed-test-cases")).toHaveLength(2);
   });
 
+  it("Should display import warning alert for successful imports with warnings", () => {
+    const importWarnings: TestCaseImportOutcome[] = [
+      {
+        patientId: "test.patientId",
+        message: "Error while processing Test Case Json.",
+        successful: false,
+      },
+      {
+        patientId: "test.patientId2",
+        message:
+          "The measure populations do not match the populations in the import file. No expected values have been set.",
+        successful: true,
+      },
+    ];
+    render(<StatusHandler importWarnings={importWarnings} />);
+    expect(screen.getAllByTestId("failed-test-cases")).toHaveLength(1);
+    expect(screen.getAllByTestId("success-imports-with-warnings")).toHaveLength(
+      1
+    );
+  });
+
   it("Should not display import warning alert", () => {
     const importWarnings: TestCaseImportOutcome[] = [];
     render(<StatusHandler importWarnings={importWarnings} />);

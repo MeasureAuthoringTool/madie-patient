@@ -408,7 +408,7 @@ const TestCaseList = (props: TestCaseListProps) => {
       );
       const testCaseImportOutcome: TestCaseImportOutcome[] = response.data;
       const failedImports = testCaseImportOutcome.filter((outcome) => {
-        if (!outcome.successful) return outcome;
+        if (outcome.message) return outcome;
       });
       if (failedImports && failedImports.length > 0) {
         setWarnings(testCaseImportOutcome);

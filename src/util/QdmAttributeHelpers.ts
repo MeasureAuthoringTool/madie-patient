@@ -93,7 +93,7 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
     return "null";
   }
   if (value instanceof cqmModels.CQL.Code) {
-    const title = codeSystemMap[value.system];
+    const title = codeSystemMap[value.system] || value.system;
     return `${title} : ${value.code}`;
   }
   // typeof number parses to a date. Check to make sure it's not a number.
