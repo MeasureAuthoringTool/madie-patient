@@ -3,6 +3,7 @@ import { render, screen, within, fireEvent } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import QuantityInput from "./QuantityInput";
 import { CQL } from "cqm-models";
+import userEvent from "@testing-library/user-event";
 
 describe("QuantityInput Component", () => {
   const testValue = {
@@ -23,6 +24,10 @@ describe("QuantityInput Component", () => {
   const testQuantity2: CQL.Quantity = {
     value: 0,
     unit: "",
+  };
+  const testQuantity3: CQL.Quantity = {
+    value: null,
+    unit: testValue.value.code,
   };
 
   const onQuantityChange = jest.fn();
@@ -55,20 +60,19 @@ describe("QuantityInput Component", () => {
         canEdit={true}
         quantity={testQuantity}
         onQuantityChange={handleQuantityChange}
-        label="low"
       />
     );
 
-    const quantityValue = screen.getByTestId("quantity-value-field-low");
+    const quantityValue = screen.getByTestId("quantity-value-field-quantity");
     expect(quantityValue).toBeInTheDocument();
     const quantityValueInput = screen.getByTestId(
-      "quantity-value-input-low"
+      "quantity-value-input-quantity"
     ) as HTMLInputElement;
     expect(quantityValueInput).toBeInTheDocument();
     expect(quantityValueInput.value).toBe("0");
     fireEvent.change(quantityValueInput, { target: { value: "10" } });
 
-    const quantityUnit = screen.getByTestId("quantity-unit-dropdown-low");
+    const quantityUnit = screen.getByTestId("quantity-unit-dropdown-quantity");
     expect(quantityUnit).toBeInTheDocument();
     const quantityUnitInput = screen.getByRole("combobox");
     expect(quantityUnitInput).toBeInTheDocument();
@@ -159,5 +163,35 @@ describe("QuantityInput Component", () => {
       await new Promise((resolve) => setTimeout(resolve, 0));
     });
     expect(screen.getByText("No options")).toBeInTheDocument();
+  });
+
+  test("should ignore - and non-quantity-valueber keys, number field behavior expexted", async () => {
+    const onQuantityChange = jest.fn();
+    render(
+      <QuantityInput
+        canEdit={true}
+        quantity={testQuantity3}
+        label="test"
+        onQuantityChange={onQuantityChange}
+      />
+    );
+    const quantityField = screen.getByTestId("quantity-value-field-test");
+    expect(quantityField).toBeInTheDocument();
+    const quantityFieldInput = screen.getByTestId(
+      "quantity-value-input-test"
+    ) as HTMLInputElement;
+    expect(quantityFieldInput).toBeInTheDocument();
+    expect(quantityFieldInput.value).toBe("");
+    expect(onQuantityChange).toBeCalled();
+    userEvent.type(quantityFieldInput, "-1-");
+    await expect(onQuantityChange).toHaveBeenNthCalledWith(2, {
+      unit: "mg",
+      value: "-1",
+    });
+    userEvent.type(quantityFieldInput, "2.5/...-");
+    await expect(onQuantityChange).toHaveBeenNthCalledWith(6, {
+      unit: "mg",
+      value: "2.5",
+    });
   });
 });

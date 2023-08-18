@@ -102,11 +102,11 @@ const AttributeSection = ({
           disabled: _.isEmpty(types),
         }}
       />
-      <AttributeChipList items={mappedAttributeList} />
       <DisplayAttributeInputs
         attributeType={formik.values.type}
         onInputAdd={onInputAdd}
       />
+      <AttributeChipList items={mappedAttributeList} />
     </form>
   );
 };

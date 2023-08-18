@@ -12,7 +12,7 @@ export interface QuantityProps {
   quantity: CQL.Quantity;
   onQuantityChange: Function;
   canEdit: boolean;
-  label: string;
+  label?: string;
 }
 
 export interface UcumOption {
@@ -24,7 +24,7 @@ const QuantityInput = ({
   quantity,
   onQuantityChange,
   canEdit,
-  label,
+  label = "Quantity",
 }: QuantityProps) => {
   const [ucumOptions, setUcumOptions] = useState([]);
   const [ucumUnits, setUcumUnits] = useState([]);
@@ -64,6 +64,14 @@ const QuantityInput = ({
     useState<CQL.Quantity>(quantity);
   const [currentUnit, setCurrentUnit] = useState<UcumOption>(null);
 
+  useEffect(() => {
+    if (currentQuantity && currentQuantity.value && currentQuantity.unit) {
+      onQuantityChange(currentQuantity);
+    } else {
+      onQuantityChange(null);
+    }
+  }, [currentQuantity]);
+
   const findUnitOptionFromCQLQuantity = (value) => {
     const option: ucum = ucumOptions?.find((option) => option.code === value);
     if (option) {
@@ -91,32 +99,45 @@ const QuantityInput = ({
       unit: currentQuantity.unit,
     };
     setCurrentQuantity(newQuantity);
-    onQuantityChange(newQuantity);
   };
 
   const handleQuantityUnitChange = (newValue) => {
     const newQuantity: CQL.Quantity = {
       value: currentQuantity ? currentQuantity.value : 0,
-      unit: newValue.value?.name,
+      unit: newValue.value?.code,
     };
     setCurrentQuantity(newQuantity);
     setCurrentUnit(newValue);
-    onQuantityChange(newQuantity);
   };
 
   return (
     <div tw="flex flex-row">
       <div tw="w-28">
         <TextField
-          value={quantity.value}
+          value={currentQuantity.value}
           disabled={!canEdit}
           placeholder="value"
-          id={`quantity-value-field-${label}`}
-          data-testid={`quantity-value-field-${label}`}
+          label={label}
+          id={`quantity-value-field-${label.toLowerCase()}`}
+          data-testid={`quantity-value-field-${label.toLowerCase()}`}
           inputProps={{
-            "data-testid": `quantity-value-input-${label}`,
-            "aria-describedby": `quantity-value-input-helper-text-${label}`,
+            "data-testid": `quantity-value-input-${label.toLowerCase()}`,
+            "aria-describedby": `quantity-value-input-helper-text-${label.toLowerCase()}`,
             required: true,
+          }}
+          type="number"
+          onWheel={(e) => e.target.blur()}
+          onKeyPress={(e) => {
+            if (
+              (!Number(e.key) &&
+                e.key != "0" &&
+                e.key != "." &&
+                e.key != "-") ||
+              (e.target.value.length > 0 && e.key == "-") ||
+              (e.target.value.includes(".") && e.key == ".")
+            ) {
+              e.preventDefault();
+            }
           }}
           onChange={(event) => {
             handleQuantityValueChange(event.target.value);
@@ -125,10 +146,11 @@ const QuantityInput = ({
       </div>
       <div tw="w-56">
         <AutoComplete
-          id={`quantity-unit-dropdown-${label}`}
+          id={`quantity-unit-dropdown-${label.toLowerCase()}`}
           disabled={!canEdit}
+          label={"Unit"}
           options={ucumOptions.map((option) => option.code + " " + option.name)}
-          data-testid={`quantity-unit-dropdown-${label}`}
+          data-testid={`quantity-unit-dropdown-${label.toLowerCase()}`}
           placeholder="unit"
           onChange={(event, newValue) => {
             if (newValue) {
