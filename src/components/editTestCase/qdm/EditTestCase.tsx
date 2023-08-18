@@ -261,13 +261,13 @@ const EditTestCase = () => {
 
       //find the population_sets
 
-      var populationSets = JSONPath({
+      const populationSets = JSONPath({
         path: "$.population_sets[*].population_set_id",
         json: cqmMeasure,
       });
 
       populationSets.forEach((pop) => {
-        var results = JSONPath({
+        const results = JSONPath({
           path: `$..${pop}`,
           json: calculationOutput,
         });
