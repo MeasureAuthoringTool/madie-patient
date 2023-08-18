@@ -14,6 +14,7 @@ import {
 } from "../../../../../../../api/ServiceContext";
 import { QdmExecutionContextProvider } from "../../../../../../routes/qdm/QdmExecutionContext";
 import { FormikProvider, FormikContextType } from "formik";
+import { QdmPatientProvider } from "../../../../../../../util/QdmPatientContext";
 
 const serviceConfig = {
   testCaseService: {
@@ -860,12 +861,14 @@ const renderDataElementsCard = (
           }}
         >
           <FormikProvider value={mockFormik}>
-            <DataElementsCard
-              cardActiveTab={activeTab}
-              setCardActiveTab={setCardActiveTab}
-              selectedDataElement={selectedDataElement}
-              setSelectedDataElement={setSelectedDataElement}
-            />
+            <QdmPatientProvider>
+              <DataElementsCard
+                cardActiveTab={activeTab}
+                setCardActiveTab={setCardActiveTab}
+                selectedDataElement={selectedDataElement}
+                setSelectedDataElement={setSelectedDataElement}
+              />
+            </QdmPatientProvider>
           </FormikProvider>
         </QdmExecutionContextProvider>
       </ApiContextProvider>

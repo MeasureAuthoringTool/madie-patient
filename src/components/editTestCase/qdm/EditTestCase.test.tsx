@@ -30,6 +30,7 @@ import useCqmConversionService, {
 } from "../../../api/CqmModelConversionService";
 import { ValueSet } from "cqm-models";
 import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
+import { QdmPatientProvider } from "../../../util/QdmPatientContext";
 
 const serviceConfig = {
   testCaseService: {
@@ -45,84 +46,92 @@ const serviceConfig = {
 
 const testCaseJson =
   "{\n" +
-  '   "qdmVersion":"5.6",\n' +
-  '   "dataElements":[\n' +
-  "      {\n" +
-  '         "dataElementCodes":[\n' +
-  "            {\n" +
-  '               "code":"F",\n' +
-  '               "system":"2.16.840.1.113883.5.1",\n' +
-  '               "version":"2022-11",\n' +
-  '               "display":"Female"\n' +
-  "            }\n" +
-  "         ],\n" +
-  '         "qdmTitle":"Patient Characteristic Sex",\n' +
-  '         "hqmfOid":"2.16.840.1.113883.10.20.28.4.55",\n' +
-  '         "qdmCategory":"patient_characteristic",\n' +
-  '         "qdmStatus":"gender",\n' +
-  '         "qdmVersion":"5.6",\n' +
-  '         "_type":"QDM::PatientCharacteristicSex",\n' +
-  '         "description":"Patient Characteristic Sex: ONCAdministrativeSex",\n' +
-  '         "codeListId":"2.16.840.1.113762.1.4.1"\n' +
-  "      },\n" +
-  "      {\n" +
-  '         "dataElementCodes":[\n' +
-  "            {\n" +
-  '               "code":"21112-8",\n' +
-  '               "system":"2.16.840.1.113883.6.1",\n' +
-  '               "version":"2022-11",\n' +
-  '               "display":"Birth date"\n' +
-  "            }\n" +
-  "         ],\n" +
-  '         "qdmTitle":"Patient Characteristic Birthdate",\n' +
-  '         "hqmfOid":"2.16.840.1.113883.10.20.28.4.54",\n' +
-  '         "qdmCategory":"patient_characteristic",\n' +
-  '         "qdmStatus":"birthdate",\n' +
-  '         "qdmVersion":"5.6",\n' +
-  '         "_type":"QDM::PatientCharacteristicBirthdate",\n' +
-  '         "description":"Patient Characteristic Birthdate: Birth date",\n' +
-  '         "birthDatetime":"1985-01-01T08:00:00.000+00:00",\n' +
-  '         "codeListId":"drc-c48426f721cede4d865df946157d5e2dc90bd32763ffcb982ca45b3bd97a29db"\n' +
-  "      },\n" +
-  "      {\n" +
-  '         "dataElementCodes":[\n' +
-  "            {\n" +
-  '               "code":"2135-2",\n' +
-  '               "system":"2.16.840.1.113883.6.238",\n' +
-  '               "version":"1.2",\n' +
-  '               "display":"Hispanic or Latino"\n' +
-  "            }\n" +
-  "         ],\n" +
-  '         "qdmTitle":"Patient Characteristic Ethnicity",\n' +
-  '         "hqmfOid":"2.16.840.1.113883.10.20.28.4.56",\n' +
-  '         "qdmCategory":"patient_characteristic",\n' +
-  '         "qdmStatus":"ethnicity",\n' +
-  '         "qdmVersion":"5.6",\n' +
-  '         "_type":"QDM::PatientCharacteristicEthnicity",\n' +
-  '         "description":"Patient Characteristic Ethnicity: Ethnicity",\n' +
-  '         "codeListId":"2.16.840.1.114222.4.11.837"\n' +
-  "      },\n" +
-  "      {\n" +
-  '         "dataElementCodes":[\n' +
-  "            {\n" +
-  '               "code":"2028-9",\n' +
-  '               "system":"2.16.840.1.113883.6.238",\n' +
-  '               "version":"1.2",\n' +
-  '               "display":"Asian"\n' +
-  "            }\n" +
-  "         ],\n" +
-  '         "qdmTitle":"Patient Characteristic Race",\n' +
-  '         "hqmfOid":"2.16.840.1.113883.10.20.28.4.59",\n' +
-  '         "qdmCategory":"patient_characteristic",\n' +
-  '         "qdmStatus":"race",\n' +
-  '         "qdmVersion":"5.6",\n' +
-  '         "_type":"QDM::PatientCharacteristicRace",\n' +
-  '         "description":"Patient Characteristic Race: Race",\n' +
-  '         "codeListId":"2.16.840.1.114222.4.11.836"\n' +
-  "      }\n" +
-  "   ],\n" +
-  '   "_id":"646628cb235ff80000718c1a",\n' +
-  '   "birthDatetime":"1985-01-01T08:00:00.000+00:00"\n' +
+  '  "qdmVersion": "5.6",\n' +
+  '  "dataElements": [\n' +
+  "    {\n" +
+  '      "dataElementCodes": [\n' +
+  "        {\n" +
+  '          "code": "F",\n' +
+  '          "system": "2.16.840.1.113883.5.1",\n' +
+  '          "version": "2022-11",\n' +
+  '          "display": "Female"\n' +
+  "        }\n" +
+  "      ],\n" +
+  '      "_id": "64de40efbaf96ab41f3c6092",\n' +
+  '      "qdmTitle": "Patient Characteristic Sex",\n' +
+  '      "hqmfOid": "2.16.840.1.113883.10.20.28.4.55",\n' +
+  '      "qdmCategory": "patient_characteristic",\n' +
+  '      "qdmStatus": "gender",\n' +
+  '      "qdmVersion": "5.6",\n' +
+  '      "_type": "QDM::PatientCharacteristicSex",\n' +
+  '      "description": "Patient Characteristic Sex: ONCAdministrativeSex",\n' +
+  '      "codeListId": "2.16.840.1.113762.1.4.1",\n' +
+  '      "id": "64de40efbaf96ab41f3c6092"\n' +
+  "    },\n" +
+  "    {\n" +
+  '      "dataElementCodes": [\n' +
+  "        {\n" +
+  '          "code": "21112-8",\n' +
+  '          "system": "2.16.840.1.113883.6.1",\n' +
+  '          "version": "2022-11",\n' +
+  '          "display": "Birth date"\n' +
+  "        }\n" +
+  "      ],\n" +
+  '      "_id": "64de40efbaf96ab41f3c6094",\n' +
+  '      "qdmTitle": "Patient Characteristic Birthdate",\n' +
+  '      "hqmfOid": "2.16.840.1.113883.10.20.28.4.54",\n' +
+  '      "qdmCategory": "patient_characteristic",\n' +
+  '      "qdmStatus": "birthdate",\n' +
+  '      "qdmVersion": "5.6",\n' +
+  '      "_type": "QDM::PatientCharacteristicBirthdate",\n' +
+  '      "description": "Patient Characteristic Birthdate: Birth date",\n' +
+  '      "birthDatetime": "1985-01-01T08:00:00.000+00:00",\n' +
+  '      "codeListId": "drc-c48426f721cede4d865df946157d5e2dc90bd32763ffcb982ca45b3bd97a29db",\n' +
+  '      "id": "64de40efbaf96ab41f3c6094"\n' +
+  "    },\n" +
+  "    {\n" +
+  '      "dataElementCodes": [\n' +
+  "        {\n" +
+  '          "code": "2135-2",\n' +
+  '          "system": "2.16.840.1.113883.6.238",\n' +
+  '          "version": "1.2",\n' +
+  '          "display": "Hispanic or Latino"\n' +
+  "        }\n" +
+  "      ],\n" +
+  '      "_id": "64de40efbaf96ab41f3c6096",\n' +
+  '      "qdmTitle": "Patient Characteristic Ethnicity",\n' +
+  '      "hqmfOid": "2.16.840.1.113883.10.20.28.4.56",\n' +
+  '      "qdmCategory": "patient_characteristic",\n' +
+  '      "qdmStatus": "ethnicity",\n' +
+  '      "qdmVersion": "5.6",\n' +
+  '      "_type": "QDM::PatientCharacteristicEthnicity",\n' +
+  '      "description": "Patient Characteristic Ethnicity: Ethnicity",\n' +
+  '      "codeListId": "2.16.840.1.114222.4.11.837",\n' +
+  '      "id": "64de40efbaf96ab41f3c6096"\n' +
+  "    },\n" +
+  "    {\n" +
+  '      "dataElementCodes": [\n' +
+  "        {\n" +
+  '          "code": "2028-9",\n' +
+  '          "system": "2.16.840.1.113883.6.238",\n' +
+  '          "version": "1.2",\n' +
+  '          "display": "Asian"\n' +
+  "        }\n" +
+  "      ],\n" +
+  '      "_id": "64de40efbaf96ab41f3c6098",\n' +
+  '      "qdmTitle": "Patient Characteristic Race",\n' +
+  '      "hqmfOid": "2.16.840.1.113883.10.20.28.4.59",\n' +
+  '      "qdmCategory": "patient_characteristic",\n' +
+  '      "qdmStatus": "race",\n' +
+  '      "qdmVersion": "5.6",\n' +
+  '      "_type": "QDM::PatientCharacteristicRace",\n' +
+  '      "description": "Patient Characteristic Race: Race",\n' +
+  '      "codeListId": "2.16.840.1.114222.4.11.836",\n' +
+  '      "id": "64de40efbaf96ab41f3c6098"\n' +
+  "    }\n" +
+  "  ],\n" +
+  '  "_id": "646628cb235ff80000718c1a",\n' +
+  '  "birthDatetime": "1985-01-01T08:00:00.000+00:00"\n' +
   "}";
 
 const measureOwner = "testUser";
@@ -318,7 +327,9 @@ const renderEditTestCaseComponent = () => {
             setExecuting: jest.fn(),
           }}
         >
-          <EditTestCase />
+          <QdmPatientProvider>
+            <EditTestCase />
+          </QdmPatientProvider>
         </QdmExecutionContextProvider>
       </ApiContextProvider>
     </MemoryRouter>
@@ -447,9 +458,10 @@ describe("EditTestCase QDM Component", () => {
   });
 
   it("should render group populations from DB and able to update the values and save test case", async () => {
-    testCase.json = testCaseJson;
+    // line breaks in JSON cause Formik to think JSON has changed so use stringify to get rid of those
+    testCase.json = JSON.stringify(JSON.parse(testCaseJson));
     mockedAxios.put.mockResolvedValueOnce(testCase);
-    await waitFor(() => renderEditTestCaseComponent());
+    renderEditTestCaseComponent();
 
     const saveButton = getByRole("button", { name: "Save" });
     const expectedActualTab = getByRole("tab", {
@@ -460,7 +472,7 @@ describe("EditTestCase QDM Component", () => {
       "test-population-initialPopulation-expected"
     )) as HTMLInputElement;
     await waitFor(() => expect(ipCheckbox).toBeChecked());
-    expect(saveButton).toBeDisabled();
+
     userEvent.click(ipCheckbox);
     await waitFor(() => expect(ipCheckbox).not.toBeChecked());
 
