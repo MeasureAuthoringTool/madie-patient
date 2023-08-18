@@ -1,0 +1,25 @@
+.data-elements-table {
+  margin-top: 20px;
+  margin-bottom: 20px;
+
+  > thead {
+    background-color: #ededed;
+    border-bottom: 1px solid gray;
+
+    tr {
+      padding-top: 10px;
+      padding-bottom: 10px;
+
+      > th {
+        margin: 10px;
+        padding: 10px;
+      }
+    }
+  }
+
+  > tbody {
+    tr {
+      border-bottom: 1px solid gray;
+    }
+  }
+}

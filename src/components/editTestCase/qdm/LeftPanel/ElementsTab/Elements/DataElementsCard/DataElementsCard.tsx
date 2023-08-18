@@ -14,13 +14,8 @@ import AttributeSection from "./attributes/AttributeSection";
 import { useQdmExecutionContext } from "../../../../../../routes/qdm/QdmExecutionContext";
 import * as _ from "lodash";
 import Timing from "./timing/Timing";
-import { useFormikContext } from "formik";
-
-function getDataElementClass(dataElement) {
-  const qdmType = dataElement?._type; // match against for attributes
-  const model = qdmType.split("QDM::")[1];
-  return cqmModels[model];
-}
+import { getDataElementClass } from "../../../../../../../util/DataElementHelper";
+import { useQdmPatient } from "../../../../../../../util/QdmPatientContext";
 
 export const applyAttribute = (
   attribute,
@@ -39,12 +34,14 @@ const DataElementsCard = (props: {
   setCardActiveTab: Function;
   selectedDataElement: DataElement;
   setSelectedDataElement: Function;
+  onChange?: (changedDataElement: DataElement) => void;
 }) => {
   const {
     cardActiveTab,
     setCardActiveTab,
     selectedDataElement,
     setSelectedDataElement,
+    onChange,
   } = props;
 
   const [codeSystemMap, setCodeSystemMap] = useState(null);
@@ -56,15 +53,14 @@ const DataElementsCard = (props: {
     useState(null);
   const [displayAttributes, setDisplayAttributes] = useState([]);
   const [dataElements, setDataElements] = useState([]);
-  const formik: any = useFormikContext();
-  // data elements are required for relatedTo.
+  const { patient } = useQdmPatient()?.state;
+  // // data elements are required for relatedTo.
   useEffect(() => {
-    let patient = null;
-    if (formik.values?.json) {
-      patient = JSON.parse(formik.values.json);
-      setDataElements(patient.dataElements);
-    }
-  }, [formik.values.json]);
+    patient?.dataElements
+      ? setDataElements(patient.dataElements)
+      : setDataElements([]);
+  }, [patient?.dataElements]);
+
   useEffect(() => {
     const valueSets = cqmMeasureState?.[0]?.value_sets;
     if (valueSets) {
@@ -211,6 +207,9 @@ const DataElementsCard = (props: {
               localSelectedDataElement
             );
             setLocalSelectedDataElement(updatedDataElement);
+            if (onChange) {
+              onChange(updatedDataElement);
+            }
           }}
         />
       )}
