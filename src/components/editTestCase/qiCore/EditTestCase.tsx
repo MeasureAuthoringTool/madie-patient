@@ -236,7 +236,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
     if (editor) {
       resizeEditor();
     }
-  }, [editor, featureFlags?.qiCoreElementsTab]);
+  }, [editor]);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
   const [populationGroupResults, setPopulationGroupResults] =
     useState<DetailedPopulationGroupResult[]>();
