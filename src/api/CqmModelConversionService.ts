@@ -218,7 +218,7 @@ export class CqmConversionService {
       observation_parameter: {
         id: uuidv4(),
         library_name: cqlLibraryName,
-        statement_name: this.getCqmObservationAssocationName(
+        statement_name: this.getCqmObservationAssociationName(
           observation.criteriaReference,
           populations
         ),
@@ -227,7 +227,7 @@ export class CqmConversionService {
     }));
   };
 
-  private getCqmObservationAssocationName = (
+  private getCqmObservationAssociationName = (
     criteriaReference: string,
     populations: Population[]
   ) => {
