@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import Quantity from "../quantityInput/QuantityInput";
@@ -17,12 +17,24 @@ const RatioInput = ({
   onRatioChange,
   canEdit,
 }: RatioInputProps) => {
+  const [currentRatio, setCurrentRatio] = useState<CQL.Ratio>(ratio);
   const handleNumeratorChange = (newValue) => {
-    onRatioChange({ ...ratio, numerator: newValue });
+    setCurrentRatio({ ...currentRatio, numerator: newValue });
+    if (newValue) {
+    }
   };
   const handleDenominatorChange = (newValue) => {
-    onRatioChange({ ...ratio, denominator: newValue });
+    setCurrentRatio({ ...currentRatio, denominator: newValue });
+    if (newValue) {
+    }
   };
+  useEffect(() => {
+    if (currentRatio?.numerator && currentRatio?.denominator) {
+      onRatioChange(currentRatio);
+    } else {
+      onRatioChange(null);
+    }
+  }, [currentRatio]);
 
   return (
     <>
@@ -30,18 +42,18 @@ const RatioInput = ({
       <div tw="flex flex-row flex-wrap gap-4">
         <div tw="flex flex-col w-80">
           <Quantity
-            quantity={ratio.numerator}
+            quantity={currentRatio.numerator}
             canEdit={canEdit}
-            label={label}
+            label={"Numerator"}
             onQuantityChange={handleNumeratorChange}
           />
         </div>
         <div style={{ paddingTop: "30px" }}>:</div>
         <div tw="flex flex-col w-80">
           <Quantity
-            quantity={ratio.denominator}
+            quantity={currentRatio.denominator}
             canEdit={canEdit}
-            label={label}
+            label={"Denominator"}
             onQuantityChange={handleDenominatorChange}
           />
         </div>

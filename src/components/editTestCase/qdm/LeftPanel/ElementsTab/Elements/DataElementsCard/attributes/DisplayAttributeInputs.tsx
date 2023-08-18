@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 import IntegerInput from "../../../../../../../common/IntegerInput/IntegerInput";
 import "./DisplayAttributeInputs.scss";
 import RatioInput from "../../../../../../../common/ratioInput/RatioInput";
+import QuantityInput from "../../../../../../../common/quantityInput/QuantityInput";
 import DecimalInput from "../../../../../../../common/DecimalInput/DecimalInput";
 import DateTimeInput from "../../../../../../../common/dateTimeInput/DateTimeInput";
 import DisplayMultipleAttributeInputs from "./DisplayMultipleAttributeInputs";
@@ -26,14 +27,16 @@ const DisplayAttributeInputs = ({
   onInputAdd,
 }: DisplayAttributeInputsProps) => {
   const [attributeValue, setAttributeValue] = useState(null);
-  const [currentRatio, setCurrentRatio] = useState<CQL.Ratio>({
+  const currentRatio = {
     numerator: {},
     denominator: {},
-  });
+  };
 
   const handleAttributeChange = (e) => {
     e.preventDefault();
-    onInputAdd(attributeValue);
+    if (attributeValue) {
+      onInputAdd(attributeValue);
+    }
   };
   const { cqmMeasureState } = useQdmExecutionContext();
   const [cqmMeasure] = cqmMeasureState;
@@ -76,9 +79,8 @@ const DisplayAttributeInputs = ({
             label="Ratio"
             ratio={currentRatio}
             data-testid="ratio-input"
-            onRatioChange={(newCQLRatio) => {
-              setCurrentRatio(newCQLRatio);
-              setAttributeValue(newCQLRatio);
+            onRatioChange={(val) => {
+              setAttributeValue(val);
             }}
             canEdit={true}
           />
@@ -91,6 +93,17 @@ const DisplayAttributeInputs = ({
             canEdit={true}
             handleChange={(val) => setAttributeValue(parseInt(val))}
             label="Integer"
+          />
+        );
+
+      case "Quantity":
+        return (
+          <QuantityInput
+            quantity={{}}
+            onQuantityChange={(val) => {
+              setAttributeValue(val);
+            }}
+            canEdit={true}
           />
         );
       case "Decimal":
