@@ -38,7 +38,7 @@ import { ExecutionContextProvider } from "../../routes/qiCore/ExecutionContext";
 import { multiGroupMeasureFixture } from "../../createTestCase/__mocks__/multiGroupMeasureFixture";
 import { nonBoolTestCaseFixture } from "../../createTestCase/__mocks__/nonBoolTestCaseFixture";
 import { TestCaseValidator } from "../../../validators/TestCaseValidator";
-import { checkUserCanEdit } from "@madie/madie-util";
+import { checkUserCanEdit, featureFlags } from "@madie/madie-util";
 import { PopulationType as FqmPopulationType } from "fqm-execution/build/types/Enums";
 import { addValues } from "../../../util/DefaultValueProcessor";
 
@@ -95,7 +95,7 @@ jest.mock("@madie/madie-util", () => {
   return {
     useDocumentTitle: jest.fn(),
     useFeatureFlags: () => {
-      return { applyDefaults: mockApplyDefaults };
+      return { applyDefaults: mockApplyDefaults, qiCoreElementsTab: true };
     },
     measureStore: {
       updateMeasure: jest.fn((measure) => measure),

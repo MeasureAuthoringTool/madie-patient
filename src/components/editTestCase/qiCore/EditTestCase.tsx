@@ -47,6 +47,7 @@ import {
   routeHandlerStore,
   useDocumentTitle,
   checkUserCanEdit,
+  useFeatureFlags,
 } from "@madie/madie-util";
 import useExecutionContext from "../../routes/qiCore/useExecutionContext";
 import { MadieEditor } from "@madie/madie-editor";
@@ -184,6 +185,7 @@ export interface EditTestCaseProps {
 const EditTestCase = (props: EditTestCaseProps) => {
   useDocumentTitle("MADiE Edit Measure Edit Test Case");
   const navigate = useNavigate();
+  const featureFlags = useFeatureFlags();
   const { id, measureId } = useParams<
     keyof navigationParams
   >() as navigationParams;
@@ -234,7 +236,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
     if (editor) {
       resizeEditor();
     }
-  }, [editor]);
+  }, [editor, featureFlags?.qiCoreElementsTab]);
   const [showValidationErrors, setShowValidationErrors] = useState(false);
   const [populationGroupResults, setPopulationGroupResults] =
     useState<DetailedPopulationGroupResult[]>();
@@ -774,12 +776,29 @@ const EditTestCase = (props: EditTestCaseProps) => {
           onDragEnd={resizeEditor}
         >
           <Allotment.Pane>
-            <div className="right-panel">
-              <CreateTestCaseLeftPanelNavTabs
-                leftPanelActiveTab={leftPanelActiveTab}
-                setLeftPanelActiveTab={setLeftPanelActiveTab}
-              />
-              {leftPanelActiveTab === "json" && (
+            {featureFlags?.qiCoreElementsTab ? (
+              <div className="right-panel">
+                <CreateTestCaseLeftPanelNavTabs
+                  leftPanelActiveTab={leftPanelActiveTab}
+                  setLeftPanelActiveTab={setLeftPanelActiveTab}
+                />
+                {leftPanelActiveTab === "elements" && (
+                  <div data-testid="elements-content">
+                    Elements Coming Soon...
+                  </div>
+                )}
+                {leftPanelActiveTab === "json" && (
+                  <Editor
+                    onChange={(val: string) => setEditorVal(val)}
+                    value={editorVal}
+                    setEditor={setEditor}
+                    readOnly={!canEdit || _.isNil(testCase)}
+                    height="inherit"
+                  />
+                )}
+              </div>
+            ) : (
+              <div className="left-panel">
                 <Editor
                   onChange={(val: string) => setEditorVal(val)}
                   value={editorVal}
@@ -787,13 +806,8 @@ const EditTestCase = (props: EditTestCaseProps) => {
                   readOnly={!canEdit || _.isNil(testCase)}
                   height="inherit"
                 />
-              )}
-              {leftPanelActiveTab === "elements" && (
-                <div data-testid="elements-content">
-                  Elements Coming Soon...
-                </div>
-              )}
-            </div>
+              </div>
+            )}
           </Allotment.Pane>
 
           <Allotment.Pane>
