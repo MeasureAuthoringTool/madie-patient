@@ -8,6 +8,8 @@ import React, {
 } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useFormik } from "formik";
+import EditTestCaseBreadCrumbs from "../EditTestCaseBreadCrumbs";
+
 import tw, { styled } from "twin.macro";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -761,6 +763,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
       id="edit-test-case-qi-core"
       onSubmit={formik.handleSubmit}
     >
+      <EditTestCaseBreadCrumbs testCase={testCase} measureId={measureId} />
       <div className="allotment-wrapper">
         <Allotment
           minSize={10}

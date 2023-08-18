@@ -22,7 +22,7 @@ import qdmCalculationService from "../../../api/QdmCalculationService";
 import { Allotment } from "allotment";
 import RightPanel from "./RightPanel/RightPanel";
 import LeftPanel from "./LeftPanel/LeftPanel";
-import EditTestCaseBreadCrumbs from "./EditTestCaseBreadCrumbs";
+import EditTestCaseBreadCrumbs from "../EditTestCaseBreadCrumbs";
 import { useNavigate, useParams } from "react-router-dom";
 import useTestCaseServiceApi from "../../../api/useTestCaseServiceApi";
 import { useFormik, FormikProvider } from "formik";
@@ -30,7 +30,7 @@ import { QDMPatientSchemaValidator } from "./QDMPatientSchemaValidator";
 
 import "allotment/dist/style.css";
 import "./EditTestCase.scss";
-import { MadieError, sanitizeUserInput } from "../../../util/Utils";
+import { sanitizeUserInput } from "../../../util/Utils";
 import * as _ from "lodash";
 import "styled-components/macro";
 import {
@@ -77,6 +77,7 @@ const EditTestCase = () => {
   const [toastOpen, setToastOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>("");
   const [toastType, setToastType] = useState<string>("danger");
+  const [discardTrigger, setDiscardTrigger] = useState<boolean>(false);
   const onToastClose = () => {
     setToastMessage("");
     setToastOpen(false);
@@ -162,13 +163,6 @@ const EditTestCase = () => {
       updateMeasureStore(updatedTestCase);
       showToast("Test Case Updated Successfully", "success");
     } catch (error) {
-      if (error instanceof MadieError) {
-        showToast(
-          `Error updating Test Case "${measure.measureName}": ${error.message}`,
-          "danger"
-        );
-        return;
-      }
       showToast(`Error updating Test Case "${measure.measureName}"`, "danger");
     }
   };
@@ -266,13 +260,14 @@ const EditTestCase = () => {
         );
 
       //find the population_sets
-      const populationSets = JSONPath({
+
+      var populationSets = JSONPath({
         path: "$.population_sets[*].population_set_id",
         json: cqmMeasure,
       });
 
       populationSets.forEach((pop) => {
-        const results = JSONPath({
+        var results = JSONPath({
           path: `$..${pop}`,
           json: calculationOutput,
         });
