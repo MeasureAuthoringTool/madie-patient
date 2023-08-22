@@ -30,7 +30,7 @@ import { QDMPatientSchemaValidator } from "./QDMPatientSchemaValidator";
 
 import "allotment/dist/style.css";
 import "./EditTestCase.scss";
-import { sanitizeUserInput } from "../../../util/Utils";
+import { MadieError, sanitizeUserInput } from "../../../util/Utils";
 import * as _ from "lodash";
 import "styled-components/macro";
 import {
@@ -163,6 +163,13 @@ const EditTestCase = () => {
       updateMeasureStore(updatedTestCase);
       showToast("Test Case Updated Successfully", "success");
     } catch (error) {
+      if (error instanceof MadieError) {
+        showToast(
+          `Error updating Test Case "${measure.measureName}": ${error.message}`,
+          "danger"
+        );
+        return;
+      }
       showToast(`Error updating Test Case "${measure.measureName}"`, "danger");
     }
   };
