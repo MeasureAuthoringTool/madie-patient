@@ -3,10 +3,17 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import StringField from "./StringField";
 
 describe("StringField Component", () => {
+  const onStringValueChange = jest.fn();
   it("Should render StringField component ", () => {
-    render(<StringField label="ID" fieldValue="testId" canEdit={true} />);
+    render(
+      <StringField
+        label="ID"
+        fieldValue="testId"
+        canEdit={true}
+        onStringValueChange={onStringValueChange}
+      />
+    );
     screen.debug(undefined, 20000);
-    expect(screen.getByTestId("string-field-label")).toBeInTheDocument();
     expect(screen.getByTestId("string-field-ID")).toBeInTheDocument();
     const input = screen.getByTestId(
       "string-field-ID-input"
@@ -15,9 +22,16 @@ describe("StringField Component", () => {
   });
 
   it("Should change input value ", () => {
-    render(<StringField label="ID" fieldValue="testId" canEdit={true} />);
+    render(
+      <StringField
+        label="ID"
+        fieldValue="testId"
+        canEdit={true}
+        onStringValueChange={onStringValueChange}
+      />
+    );
     screen.debug(undefined, 20000);
-    expect(screen.getByTestId("string-field-label")).toBeInTheDocument();
+
     expect(screen.getByTestId("string-field-ID")).toBeInTheDocument();
     const input = screen.getByTestId(
       "string-field-ID-input"

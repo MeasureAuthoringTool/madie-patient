@@ -12,6 +12,7 @@ export interface StringFieldProps {
   label: string;
   fieldValue: string;
   canEdit: boolean;
+  onStringValueChange: Function;
   required?: boolean;
 }
 
@@ -19,24 +20,22 @@ const StringField = ({
   label,
   fieldValue,
   canEdit,
+  onStringValueChange,
   required = false,
 }: StringFieldProps) => {
   const [field, setField] = useState<string>(fieldValue);
+
+  const handleStringValueChange = (value: string) => {
+    setField(value);
+    onStringValueChange(value);
+  };
   return (
     <div style={{ width: "134px" }}>
       <FormControl>
-        <InputLabel
-          id="string-field-label"
-          data-testid="string-field-label"
-          required={required}
-          sx={labelStyle}
-        >
-          {label}
-        </InputLabel>
         <TextField
           disabled={!canEdit}
-          label={kebabCase(label)}
-          placeholder=""
+          label={label}
+          placeholder={label}
           id={`string-field-${label}`}
           data-testid={`string-field-${label}`}
           inputProps={{
@@ -46,7 +45,7 @@ const StringField = ({
           }}
           size="small"
           onChange={(event) => {
-            setField(event.target.value);
+            handleStringValueChange(event.target.value);
           }}
           value={field}
         />

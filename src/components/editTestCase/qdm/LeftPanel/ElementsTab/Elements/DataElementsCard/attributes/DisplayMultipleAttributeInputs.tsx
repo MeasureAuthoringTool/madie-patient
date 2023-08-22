@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import IdentifierInput from "../../../../../../../common/Identifier/IdentifierInput";
 import { Identifier } from "cqm-models";
+import StringField from "../../../../../../../common/string/StringField";
 
 const DisplayMultipleAttributeInputs = ({
   setAttributeValue,
@@ -10,19 +11,37 @@ const DisplayMultipleAttributeInputs = ({
   return (
     <>
       {attributeType ? (
-        <IdentifierInput
-          onIdentifierChange={(val) => {
-            const identifierObject = new Identifier(val);
-            setAttributeValue(identifierObject);
-          }}
-          canEdit={true}
-          identifier={{
-            namingSystem: attributeValue?.namingSystem
-              ? attributeValue?.namingSystem
-              : null,
-            value: attributeValue?.value ? attributeValue?.value : null,
-          }}
-        />
+        <>
+          <IdentifierInput
+            onIdentifierChange={(val) => {
+              const identifier = new Identifier(val);
+              setAttributeValue((prevValues) => ({
+                ...prevValues,
+                identifier,
+              }));
+            }}
+            canEdit={true}
+            identifier={{
+              namingSystem: attributeValue?.identifier?.namingSystem
+                ? attributeValue?.identifier?.namingSystem
+                : null,
+              value: attributeValue?.identifier?.value
+                ? attributeValue?.identifier?.value
+                : null,
+            }}
+          />
+          <StringField
+            label="Id"
+            canEdit={true}
+            fieldValue=""
+            onStringValueChange={(val) => {
+              setAttributeValue((prevValues) => ({
+                ...prevValues,
+                ["id"]: val,
+              }));
+            }}
+          />
+        </>
       ) : (
         ""
       )}

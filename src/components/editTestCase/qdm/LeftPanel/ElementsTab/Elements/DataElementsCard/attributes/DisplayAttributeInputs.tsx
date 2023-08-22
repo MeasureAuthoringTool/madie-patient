@@ -15,6 +15,7 @@ import CodeInput from "../../../../../../../common/codeInput/CodeInput";
 import "twin.macro";
 import "styled-components/macro";
 import useQdmExecutionContext from "../../../../../../../routes/qdm/useQdmExecutionContext";
+import StringField from "../../../../../../../common/string/StringField";
 
 interface DisplayAttributeInputsProps {
   attributeType?: string;
@@ -132,6 +133,17 @@ const DisplayAttributeInputs = ({
             setAttributeValue={setAttributeValue}
             attributeValue={attributeValue}
             attributeType={attributeType}
+          />
+        );
+      case "String":
+        return (
+          <StringField
+            label="Id"
+            canEdit={true}
+            fieldValue=""
+            onStringValueChange={(val) => {
+              setAttributeValue(val);
+            }}
           />
         );
       default:
