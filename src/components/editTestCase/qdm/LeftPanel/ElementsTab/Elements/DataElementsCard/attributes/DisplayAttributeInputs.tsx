@@ -138,7 +138,7 @@ const DisplayAttributeInputs = ({
       case "String":
         return (
           <StringField
-            label="Id"
+            label="String"
             canEdit={true}
             fieldValue=""
             onStringValueChange={(val) => {
