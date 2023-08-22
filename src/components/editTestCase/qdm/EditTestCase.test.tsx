@@ -31,6 +31,7 @@ import useCqmConversionService, {
 import { ValueSet } from "cqm-models";
 import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
 import { QdmPatientProvider } from "../../../util/QdmPatientContext";
+import { MadieError } from "../../../util/Utils";
 
 const serviceConfig = {
   testCaseService: {
@@ -264,6 +265,15 @@ const useTestCaseServiceMockRejected = {
       error: "error",
     },
   }),
+} as unknown as TestCaseServiceApi;
+const nonUniqNameData: MadieError = new MadieError("Error Msg");
+
+const useTestCaseServiceMockRejectedNonUniqueName = {
+  getTestCase: jest.fn().mockResolvedValue(testCase),
+  getTestCaseSeriesForMeasure: jest
+    .fn()
+    .mockResolvedValue(["Series 1", "Series 2"]),
+  updateTestCase: jest.fn().mockRejectedValueOnce(nonUniqNameData),
 } as unknown as TestCaseServiceApi;
 
 let mockApplyDefaults = false;
@@ -662,7 +672,75 @@ describe("EditTestCase QDM Component", () => {
       );
     });
   });
+  it("test update test case fails with non-unique test name failure toast", async () => {
+    testCase.json = testCaseJson;
+    useTestCaseServiceMock.mockImplementation(() => {
+      return useTestCaseServiceMockRejectedNonUniqueName;
+    });
+    renderEditTestCaseComponent();
+    const saveTestCaseButton = await screen.getByRole("button", {
+      name: "Save",
+    });
 
+    expect(saveTestCaseButton).toBeInTheDocument();
+    const raceInput = screen.getByTestId(
+      "demographics-race-input"
+    ) as HTMLInputElement;
+    expect(raceInput).toBeInTheDocument();
+    expect(raceInput.value).toBe("American Indian or Alaska Native");
+
+    act(() => {
+      fireEvent.change(raceInput, {
+        target: { value: "Asian" },
+      });
+    });
+    expect(raceInput.value).toBe("Asian");
+
+    const genderInput = screen.getByTestId(
+      "demographics-gender-input"
+    ) as HTMLInputElement;
+    expect(genderInput).toBeInTheDocument();
+    expect(genderInput.value).toBe("Female");
+
+    act(() => {
+      fireEvent.change(genderInput, {
+        target: { value: "Male" },
+      });
+    });
+    expect(genderInput.value).toBe("Male");
+
+    const livingStatusInput = screen.getByTestId(
+      "demographics-living-status-input"
+    ) as HTMLInputElement;
+    expect(livingStatusInput).toBeInTheDocument();
+    expect(livingStatusInput.value).toBe("Living");
+
+    act(() => {
+      fireEvent.change(livingStatusInput, {
+        target: { value: "Expired" },
+      });
+    });
+    expect(livingStatusInput.value).toBe("Expired");
+
+    expect(saveTestCaseButton).toBeEnabled();
+    act(() => {
+      userEvent.click(saveTestCaseButton);
+    });
+
+    await waitFor(
+      () => {
+        expect(screen.getByTestId("error-toast")).toHaveTextContent(
+          'Error updating Test Case "undefined": Error Msg'
+        );
+        const closeToastBtn = screen.getByTestId("close-toast-button");
+        userEvent.click(closeToastBtn);
+        expect(
+          screen.queryByText("Error updating Test Case")
+        ).not.toBeInTheDocument();
+      },
+      { timeout: 1500 }
+    );
+  });
   it("test update test case fails with failure toast", async () => {
     testCase.json = testCaseJson;
     useTestCaseServiceMock.mockImplementation(() => {
