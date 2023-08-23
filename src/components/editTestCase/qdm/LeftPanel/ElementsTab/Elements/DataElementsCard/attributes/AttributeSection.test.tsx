@@ -213,6 +213,17 @@ describe("AttributeSection", () => {
     expect(identifierValueField).toBeInTheDocument();
     fireEvent.change(identifierValueField, { target: { value: "90" } });
     expect(identifierValueField.value).toBe("90");
+
+    expect(
+      await screen.getByTestId("string-field-id-input")
+    ).toBeInTheDocument();
+    const input = screen.getByTestId(
+      "string-field-id-input"
+    ) as HTMLInputElement;
+    fireEvent.change(input, {
+      target: { value: "newId" },
+    });
+    expect(input.value).toBe("newId");
   });
 
   it("date selection shows date input", async () => {
