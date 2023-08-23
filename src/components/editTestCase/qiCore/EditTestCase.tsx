@@ -839,7 +839,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
                   </div>
                 ))}
               {rightPanelActiveTab === "highlighting" && (
-                <div className="panel-content">
+                <div className="panel-content" style={{ marginRight: "15px" }}>
                   {executing ? (
                     <div style={{ display: "flex", justifyContent: "center" }}>
                       <MadieSpinner style={{ height: 50, width: 50 }} />
