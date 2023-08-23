@@ -8,7 +8,7 @@ const labelStyle = {
   color: "#125496",
 };
 
-export interface StringFieldProps {
+export interface StringInputProps {
   label: string;
   fieldValue: string;
   canEdit: boolean;
@@ -16,13 +16,13 @@ export interface StringFieldProps {
   required?: boolean;
 }
 
-const StringField = ({
+const StringInput = ({
   label,
   fieldValue,
   canEdit,
   onStringValueChange,
   required = false,
-}: StringFieldProps) => {
+}: StringInputProps) => {
   const [field, setField] = useState<string>(fieldValue);
 
   const handleStringValueChange = (value: string) => {
@@ -56,4 +56,4 @@ const StringField = ({
   );
 };
 
-export default StringField;
+export default StringInput;

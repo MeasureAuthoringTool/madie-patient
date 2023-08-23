@@ -10,12 +10,12 @@ import RatioInput from "../../../../../../../common/ratioInput/RatioInput";
 import QuantityInput from "../../../../../../../common/quantityInput/QuantityInput";
 import DecimalInput from "../../../../../../../common/DecimalInput/DecimalInput";
 import DateTimeInput from "../../../../../../../common/dateTimeInput/DateTimeInput";
-import DisplayMultipleAttributeInputs from "./DisplayMultipleAttributeInputs";
+import QdmEntity from "./QdmEntity";
 import CodeInput from "../../../../../../../common/codeInput/CodeInput";
 import "twin.macro";
 import "styled-components/macro";
 import useQdmExecutionContext from "../../../../../../../routes/qdm/useQdmExecutionContext";
-import StringField from "../../../../../../../common/string/StringField";
+import StringInput from "../../../../../../../common/string/StringInput";
 
 interface DisplayAttributeInputsProps {
   attributeType?: string;
@@ -129,7 +129,7 @@ const DisplayAttributeInputs = ({
       case "Practitioner":
       case "Organization":
         return (
-          <DisplayMultipleAttributeInputs
+          <QdmEntity
             setAttributeValue={setAttributeValue}
             attributeValue={attributeValue}
             attributeType={attributeType}
@@ -137,7 +137,7 @@ const DisplayAttributeInputs = ({
         );
       case "String":
         return (
-          <StringField
+          <StringInput
             label="String"
             canEdit={true}
             fieldValue=""

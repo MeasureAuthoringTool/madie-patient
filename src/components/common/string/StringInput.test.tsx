@@ -1,12 +1,12 @@
 import * as React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import StringField from "./StringField";
+import StringInput from "./StringInput";
 
-describe("StringField Component", () => {
+describe("StringInput Component", () => {
   const onStringValueChange = jest.fn();
-  it("Should render StringField component ", () => {
+  it("Should render StringInput component ", () => {
     render(
-      <StringField
+      <StringInput
         label="ID"
         fieldValue="testId"
         canEdit={true}
@@ -23,7 +23,7 @@ describe("StringField Component", () => {
 
   it("Should change input value ", () => {
     render(
-      <StringField
+      <StringInput
         label="ID"
         fieldValue="testId"
         canEdit={true}

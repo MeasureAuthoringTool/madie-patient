@@ -1,13 +1,9 @@
 import React, { useState } from "react";
 import IdentifierInput from "../../../../../../../common/Identifier/IdentifierInput";
 import { Identifier } from "cqm-models";
-import StringField from "../../../../../../../common/string/StringField";
+import StringInput from "../../../../../../../common/string/StringInput";
 
-const DisplayMultipleAttributeInputs = ({
-  setAttributeValue,
-  attributeValue,
-  attributeType,
-}) => {
+const QdmEntity = ({ setAttributeValue, attributeValue, attributeType }) => {
   return (
     <>
       {attributeType ? (
@@ -30,7 +26,7 @@ const DisplayMultipleAttributeInputs = ({
                 : null,
             }}
           />
-          <StringField
+          <StringInput
             label="Id"
             canEdit={true}
             fieldValue=""
@@ -49,4 +45,4 @@ const DisplayMultipleAttributeInputs = ({
   );
 };
 
-export default DisplayMultipleAttributeInputs;
+export default QdmEntity;
