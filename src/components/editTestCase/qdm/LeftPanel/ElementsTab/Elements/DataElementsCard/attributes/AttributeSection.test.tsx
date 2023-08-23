@@ -215,10 +215,10 @@ describe("AttributeSection", () => {
     expect(identifierValueField.value).toBe("90");
 
     expect(
-      await screen.getByTestId("string-field-Id-input")
+      await screen.getByTestId("string-field-id-input")
     ).toBeInTheDocument();
     const input = screen.getByTestId(
-      "string-field-Id-input"
+      "string-field-id-input"
     ) as HTMLInputElement;
     fireEvent.change(input, {
       target: { value: "newId" },

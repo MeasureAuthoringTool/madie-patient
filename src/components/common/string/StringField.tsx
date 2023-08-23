@@ -36,11 +36,13 @@ const StringField = ({
           disabled={!canEdit}
           label={label}
           placeholder={label}
-          id={`string-field-${label}`}
-          data-testid={`string-field-${label}`}
+          id={`string-field-${kebabCase(label)}`}
+          data-testid={`string-field-${kebabCase(label)}`}
           inputProps={{
-            "data-testid": `string-field-${label}-input`,
-            "aria-describedby": `string-field-${label}input-helper-text`,
+            "data-testid": `string-field-${kebabCase(label)}-input`,
+            "aria-describedby": `string-field-${kebabCase(
+              label
+            )}input-helper-text`,
             required: { required },
           }}
           size="small"

@@ -14,9 +14,9 @@ describe("StringField Component", () => {
       />
     );
     screen.debug(undefined, 20000);
-    expect(screen.getByTestId("string-field-ID")).toBeInTheDocument();
+    expect(screen.getByTestId("string-field-id")).toBeInTheDocument();
     const input = screen.getByTestId(
-      "string-field-ID-input"
+      "string-field-id-input"
     ) as HTMLInputElement;
     expect(input.value).toBe("testId");
   });
@@ -32,9 +32,9 @@ describe("StringField Component", () => {
     );
     screen.debug(undefined, 20000);
 
-    expect(screen.getByTestId("string-field-ID")).toBeInTheDocument();
+    expect(screen.getByTestId("string-field-id")).toBeInTheDocument();
     const input = screen.getByTestId(
-      "string-field-ID-input"
+      "string-field-id-input"
     ) as HTMLInputElement;
     expect(input.value).toBe("testId");
 
