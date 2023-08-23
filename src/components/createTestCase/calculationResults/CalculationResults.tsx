@@ -37,7 +37,7 @@ const CalculationResults = ({
   );
 
   return (
-    <div tw="p-5">
+    <div tw="p-5" style={{ paddingRight: ".25rem" }}>
       {!calculationResults && !calculationErrors && (
         <MadieAlert
           type="info"
