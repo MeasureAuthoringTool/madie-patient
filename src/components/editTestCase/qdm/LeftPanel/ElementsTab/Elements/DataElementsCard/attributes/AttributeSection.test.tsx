@@ -5,7 +5,11 @@ import { render, screen, within, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
 import AttributeSection from "./AttributeSection";
-import { EncounterOrder, AssessmentPerformed } from "cqm-models";
+import {
+  EncounterOrder,
+  AssessmentPerformed,
+  LaboratoryTestPerformed,
+} from "cqm-models";
 import { MemoryRouter } from "react-router-dom";
 import { QdmExecutionContextProvider } from "../../../../../../../routes/qdm/QdmExecutionContext";
 import { MeasureScoring } from "@madie/madie-models";
@@ -337,6 +341,41 @@ describe("AttributeSection", () => {
     const addButton = screen.getByTestId("AddCircleOutlineIcon");
     expect(addButton).toBeInTheDocument();
     userEvent.click(addButton);
+  });
+  it("Interval<Quantity> selection shows Interval<Quantity> input", async () => {
+    renderAttributeSection(new LaboratoryTestPerformed(), [], onAddClicked);
+    const attributeSelectBtn = screen.getByRole("button", {
+      name: "Attribute Select Attribute",
+    });
+    expect(attributeSelectBtn).toBeInTheDocument();
+
+    userEvent.click(attributeSelectBtn);
+
+    const attributeSelect = await screen.findByRole("listbox");
+    const attributeOptions = within(attributeSelect).getAllByRole("option");
+    expect(attributeOptions).toHaveLength(9);
+
+    userEvent.click(within(attributeSelect).getByText(/reference range/i));
+    const attributeInput = within(attributeSelectBtn.parentElement).getByRole(
+      "textbox",
+      { hidden: true }
+    );
+    expect(attributeInput).toBeInTheDocument();
+    expect(attributeInput).toHaveValue("Reference Range");
+    const typeSelectBtn = await screen.findByRole("button", {
+      name: /type/i,
+    });
+    expect(typeSelectBtn).toBeInTheDocument();
+    userEvent.click(typeSelectBtn);
+    const typeSelect = await screen.findByRole("listbox");
+    expect(typeSelect).toBeInTheDocument();
+    const typeOptions = within(typeSelect).getAllByRole("option");
+    expect(typeOptions.length).toEqual(2);
+    userEvent.click(within(typeSelect).getByText("Interval<Quantity>"));
+    const lowInput = await screen.findByTestId("quantity-value-field-low");
+    expect(lowInput).toBeInTheDocument();
+    const highInput = await screen.findByTestId("quantity-value-field-high");
+    expect(highInput).toBeInTheDocument();
   });
 
   it("Clicking the plus button calls works", async () => {

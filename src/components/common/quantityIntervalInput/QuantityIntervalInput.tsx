@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import Quantity from "../quantityInput/QuantityInput";
@@ -17,35 +17,43 @@ const QuantityIntervalInput = ({
   onQuantityIntervalChange,
   canEdit,
 }: QuantityIntervalProps) => {
+  const [currentInterval, setCurrentInterval] =
+    useState<CQL.Ratio>(quantityInterval);
   const handleLowQuantityChange = (newValue) => {
-    onQuantityIntervalChange({ ...quantityInterval, low: newValue });
+    setCurrentInterval({ ...currentInterval, low: newValue });
   };
 
   const handleHighQuantityChange = (newValue) => {
-    onQuantityIntervalChange({ ...quantityInterval, high: newValue });
+    setCurrentInterval({ ...currentInterval, high: newValue });
   };
+
+  useEffect(() => {
+    if (currentInterval?.high && currentInterval?.low) {
+      onQuantityIntervalChange(currentInterval);
+    } else {
+      onQuantityIntervalChange(null);
+    }
+  }, [currentInterval]);
 
   return (
     <>
       <h5 tw="text-blue-800 mb-2">{label}</h5>
       <div tw="flex flex-row flex-wrap gap-4">
         <div tw="flex flex-col w-80">
-          <h5 tw="text-blue-800 mb-2">Low</h5>
           <Quantity
             quantity={quantityInterval.low}
             onQuantityChange={handleLowQuantityChange}
             canEdit={canEdit}
-            label="low"
+            label="Low"
           />
         </div>
 
         <div tw="flex flex-col w-80">
-          <h5 tw="text-blue-800 mb-2">High</h5>
           <Quantity
             quantity={quantityInterval.high}
             onQuantityChange={handleHighQuantityChange}
             canEdit={canEdit}
-            label="high"
+            label="High"
           />
         </div>
       </div>
