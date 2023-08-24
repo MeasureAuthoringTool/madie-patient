@@ -718,9 +718,7 @@ describe("TestCaseList component", () => {
     userEvent.click(continueButton);
 
     const toastMessage = await screen.findByTestId("test-case-list-success");
-    expect(toastMessage).toHaveTextContent(
-      "Test cases successfully deleted"
-    );
+    expect(toastMessage).toHaveTextContent("Test cases successfully deleted");
     expect(screen.queryByTestId("delete-dialog-body")).toBeNull();
   });
 
