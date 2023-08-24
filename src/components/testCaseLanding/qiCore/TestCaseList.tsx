@@ -252,7 +252,7 @@ const TestCaseList = (props: TestCaseListProps) => {
         setOpenDeleteAllTestCasesDialog(false);
         setToastOpen(true);
         setToastType("success");
-        setToastMessage("All Test cases are deleted successfully");
+        setToastMessage("Test cases successfully deleted");
       })
       .catch((err) => {
         setOpenDeleteAllTestCasesDialog(false);
