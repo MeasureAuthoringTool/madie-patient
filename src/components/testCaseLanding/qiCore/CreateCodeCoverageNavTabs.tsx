@@ -2,6 +2,7 @@ import React from "react";
 import { CircularProgress, Box } from "@mui/material";
 import { Button, Tabs, Tab } from "@madie/madie-design-system/dist/react";
 import AddIcon from "@mui/icons-material/Add";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import * as _ from "lodash";
 import { Measure, MeasureErrorType, TestCase } from "@madie/madie-models";
@@ -25,6 +26,7 @@ export interface NavTabProps {
   coveragePercentage: number;
   validTestCases: TestCase[];
   exportTestCases: () => void;
+  onDeleteAllTestCases: () => void;
 }
 
 const defaultStyle = {
@@ -56,6 +58,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     coveragePercentage,
     validTestCases,
     exportTestCases,
+    onDeleteAllTestCases,
   } = props;
 
   const featureFlags = useFeatureFlags();
@@ -110,6 +113,18 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
         />
       </Tabs>
       <div tw="flex flex-wrap space-x-4 justify-end h-10">
+        <Button
+          variant="danger-primary"
+          disabled={!canEdit || measure?.testCases?.length === 0}
+          onClick={onDeleteAllTestCases}
+          data-testid="delete-all-test-cases-button"
+        >
+          <KeyboardArrowRightIcon
+            style={{ margin: "0 5px 0 -2px" }}
+            fontSize="small"
+          />
+          Delete All
+        </Button>
         <Button
           variant="outline"
           onClick={onImportTestCases}
