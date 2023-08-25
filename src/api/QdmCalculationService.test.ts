@@ -11,10 +11,9 @@ describe("QDM CalculationService Tests", () => {
 
   it("basic test case execution with mock data", async () => {
     const qdmCalculationResults =
-      await qdmCalculationService.calculateQdmTestCases(
-        cqmMeasure,
-        patientJson
-      );
+      await qdmCalculationService.calculateQdmTestCases(cqmMeasure, [
+        patientJson,
+      ]);
     expect(qdmCalculationResults).toBeTruthy();
     expect(Object.keys(qdmCalculationResults).length).toBe(1);
     expect(qdmCalculationResults["648c6a89f48905000012a680"]).toBeTruthy();

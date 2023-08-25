@@ -2,7 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 import tw from "twin.macro";
 import "styled-components/macro";
 import * as _ from "lodash";
-import { Group, TestCase, MeasureErrorType } from "@madie/madie-models";
+import {
+  Group,
+  TestCase,
+  MeasureErrorType,
+  PopulationType,
+} from "@madie/madie-models";
 import { useParams } from "react-router-dom";
 import calculationService from "../../../api/CalculationService";
 import {
@@ -25,6 +30,10 @@ import TestCaseTable from "../common/TestCaseTable";
 import UseTestCases from "../common/Hooks/UseTestCases";
 import UseToast from "../common/Hooks/UseToast";
 import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
+import qdmCalculationService, {
+  CqmExecutionResultsByPatient,
+} from "../../../api/QdmCalculationService";
+import { JSONPath } from "jsonpath-plus";
 
 const TH = tw.th`p-3 border-b text-left text-sm font-bold capitalize`;
 
@@ -85,10 +94,11 @@ const TestCaseList = (props: TestCaseListProps) => {
   }>({});
   const { updateMeasure } = measureStore;
   const calculation = useRef(calculationService());
+  const qdmCalculation = useRef(qdmCalculationService());
   const [canEdit, setCanEdit] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("passing");
   const [calculationOutput, setCalculationOutput] =
-    useState<CalculationOutput<any>>();
+    useState<CqmExecutionResultsByPatient>();
   const [executeAllTestCases, setExecuteAllTestCases] =
     useState<boolean>(false);
   const [coverageHTML, setCoverageHTML] = useState<Record<string, string>>();
@@ -171,29 +181,45 @@ const TestCaseList = (props: TestCaseListProps) => {
 
   useEffect(() => {
     const validTestCases = testCases?.filter((tc) => tc.validResource);
-    if (validTestCases && calculationOutput?.results) {
+    if (validTestCases && calculationOutput) {
       // Pull Clause Coverage from coverage HTML
-      setCoveragePercentage(
-        getCoverageValueFromHtml(
-          calculationOutput["groupClauseCoverageHTML"],
-          selectedPopCriteria.id
-        )
-      );
-      setCoverageHTML(
-        removeHtmlCoverageHeader(calculationOutput["groupClauseCoverageHTML"])
-      );
-      const executionResults = calculationOutput.results;
+      // setCoveragePercentage(
+      //   getCoverageValueFromHtml(
+      //     calculationOutput["groupClauseCoverageHTML"],
+      //     selectedPopCriteria.id
+      //   )
+      // );
+      // setCoverageHTML(
+      //   removeHtmlCoverageHeader(calculationOutput["groupClauseCoverageHTML"])
+      // );
+      const executionResults: CqmExecutionResultsByPatient = calculationOutput;
       const nextExecutionResults = {};
-      validTestCases.forEach((testCase, i) => {
-        const detailedResults = executionResults.find(
-          (result) => result.patientId === testCase.id
-        )?.detailedResults;
-        nextExecutionResults[testCase.id] = detailedResults;
 
-        const processedTC = calculationService().processTestCaseResults(
+      const populationSets = JSONPath({
+        path: "$.population_sets[*].population_set_id",
+        json: cqmMeasure,
+      });
+
+      console.log("extracted population sets: ", populationSets);
+      console.log("compared to population criteria: ", measure.groups);
+
+      console.log("searching for results for testCases: ", validTestCases);
+      validTestCases.forEach((testCase, i) => {
+        // const detailedResults = executionResults.find(
+        //   (result) => result.patientId === testCase.id
+        // )?.detailedResults;
+        // nextExecutionResults[testCase.id] = detailedResults;
+        const patient = JSON.parse(testCase.json);
+        console.log(
+          `testCase [${testCase.id}] has patientId: [${patient._id}]`
+        );
+        const patientResults = executionResults[patient._id];
+
+        const processedTC = qdmCalculation.current.processTestCaseResults(
           testCase,
           [selectedPopCriteria],
-          detailedResults as DetailedPopulationGroupResult[]
+          measure,
+          patientResults
         );
         testCase.groupPopulations = processedTC.groupPopulations;
         testCase.executionStatus = processedTC.executionStatus;
@@ -250,13 +276,14 @@ const TestCaseList = (props: TestCaseListProps) => {
       setExecuting(true);
       try {
         // calculation service needs to be changed: currently it is using QI Core calaculation service
-        const calculationOutput: CalculationOutput<any> =
-          await calculation.current.calculateTestCases(
-            measure,
-            validTestCases,
+        const patients = validTestCases.map((tc) => JSON.parse(tc.json));
+        const calculationOutput: CqmExecutionResultsByPatient =
+          await qdmCalculation.current.calculateQdmTestCases(
             cqmMeasure,
-            cqmMeasure.value_sets
+            patients
           );
+
+        console.log("calculationOutput: ", calculationOutput);
         setCalculationOutput(calculationOutput);
       } catch (error) {
         console.error("calculateTestCases: error.message = " + error.message);
