@@ -66,7 +66,10 @@ const Editor = ({
   });
 
   return (
-    <div data-testid="test-case-json-editor" style={{ height: "inherit" }}>
+    <div
+      data-testid="test-case-json-editor"
+      style={{ height: "calc(100% - 64px)" }}
+    >
       <AceEditor
         value={value}
         ref={aceRef}
