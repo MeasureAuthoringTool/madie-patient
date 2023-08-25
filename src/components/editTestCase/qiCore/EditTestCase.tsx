@@ -770,7 +770,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
           onDragEnd={resizeEditor}
         >
           <Allotment.Pane>
-            <div className="left-panel">
+            <div className="left-panel" style={{ height: "calc(100% - 48px)" }}>
               <Editor
                 onChange={(val: string) => setEditorVal(val)}
                 value={editorVal}
