@@ -423,14 +423,16 @@ describe("EditTestCase component", () => {
       expect(screen.getByTestId("test-case-cql-editor")).toBeInTheDocument();
     });
 
-    it.skip("Navigating between elements tab and json tab", () => {
+    it("Navigating between elements tab and json tab", () => {
       renderWithRouter(
         ["/measures/m1234/edit/test-cases"],
         "/measures/:measureId/edit/test-cases"
       );
 
       expect(screen.getByTestId("elements-content")).toBeInTheDocument();
-      expect(screen.getByText("Elements Coming Soon...")).toBeInTheDocument();
+      expect(screen.getByText("Demographics Section")).toBeInTheDocument();
+      expect(screen.getByText("Elements Section")).toBeInTheDocument();
+
       userEvent.click(screen.getByTestId("json-tab"));
       expect(screen.getByTestId("test-case-json-editor")).toBeInTheDocument();
     });
