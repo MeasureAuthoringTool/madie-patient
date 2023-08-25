@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import "./ElementSection.scss";
+import "../components/editTestCase/commonStyles/ElementSection.scss";
 // Tab heading to display weather or not we can see contents
 
 interface ElementSectionProps {

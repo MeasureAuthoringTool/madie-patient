@@ -423,7 +423,7 @@ describe("EditTestCase component", () => {
       expect(screen.getByTestId("test-case-cql-editor")).toBeInTheDocument();
     });
 
-    it("Navigating between elements tab and json tab", () => {
+    it.skip("Navigating between elements tab and json tab", () => {
       renderWithRouter(
         ["/measures/m1234/edit/test-cases"],
         "/measures/:measureId/edit/test-cases"

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import ElementSection from "../../LeftPanel/ElementsTab/ElementSection";
+import ElementSection from "../../../../../util/ElementSection";
 import { useFormikContext } from "formik";
 import { TextField, InputLabel } from "@madie/madie-design-system/dist/react";
 import TextArea from "../../../../createTestCase/TextArea";

@@ -1,5 +1,5 @@
 import React from "react";
-import ElementSection from "../ElementSection";
+import ElementSection from "../../../../../../util/ElementSection";
 
 const DemographicsSection = ({ canEdit }) => {
   return (
