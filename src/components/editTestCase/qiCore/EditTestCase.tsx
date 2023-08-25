@@ -776,7 +776,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
                 value={editorVal}
                 setEditor={setEditor}
                 readOnly={!canEdit || _.isNil(testCase)}
-                height="inherit"
+                height="100%"
               />
             </div>
           </Allotment.Pane>
@@ -791,10 +791,11 @@ const EditTestCase = (props: EditTestCaseProps) => {
                   <div
                     data-testid="test-case-cql-editor"
                     id="test-case-cql-editor"
+                    style={{ height: "calc(100% - 24px)" }}
                   >
                     <MadieEditor
                       value={measure?.cql}
-                      height="inherit"
+                      height="100%"
                       readOnly={true}
                       validationsEnabled={false}
                     />
