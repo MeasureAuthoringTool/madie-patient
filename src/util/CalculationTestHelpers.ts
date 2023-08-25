@@ -141,7 +141,6 @@ export function getStatementRelevanceForPopulationSet(
     populationRelevance["observation_values"] = true;
   }
 
-  // TODO can we assume a single populationSet?
   for (const popSet of populationSet) {
     for (const pop in popSet.populations) {
       populationRelevance[pop] = true;
