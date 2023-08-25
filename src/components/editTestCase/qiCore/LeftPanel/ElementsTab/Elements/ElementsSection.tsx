@@ -4,7 +4,7 @@ import ElementSection from "../../../../../../util/ElementSection";
 const ElementsSection = ({ canEdit }) => {
   return (
     <div>
-      <ElementSection title="Elements" children={<>Demo</>} />
+      <ElementSection title="Elements" children={<>Elements Section</>} />
     </div>
   );
 };
