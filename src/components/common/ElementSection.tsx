@@ -17,7 +17,7 @@ const ElementSection = (props: ElementSectionProps) => {
   return (
     <div
       className="test-case-tab-heading"
-      data-testid={`qdm-${props.title}-sub-heading`}
+      data-testid={`elements-${props.title}-sub-heading`}
     >
       <div
         onClick={() => {
@@ -38,7 +38,7 @@ const ElementSection = (props: ElementSectionProps) => {
 
       <div className={growingDivClass}>
         {open && (
-          <div data-testid={`qdm-header-content-${title}`}>{children}</div>
+          <div data-testid={`elements-header-content-${title}`}>{children}</div>
         )}
       </div>
     </div>

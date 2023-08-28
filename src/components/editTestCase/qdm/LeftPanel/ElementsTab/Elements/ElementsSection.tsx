@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from "react";
 import { uniq } from "lodash";
 import { DataElement } from "cqm-models";
 
-import ElementSection from "../ElementSection";
+import ElementSection from "../../../../../common/ElementSection";
 import DynamicElementTabs from "./DynamicElementTabs";
 import useCqmConversionService from "../../../../../../api/CqmModelConversionService";
 import { measureStore } from "@madie/madie-util";
