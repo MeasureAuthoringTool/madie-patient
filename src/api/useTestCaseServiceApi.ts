@@ -135,6 +135,18 @@ export class TestCaseServiceApi {
     }
   }
 
+  async deleteTestCases(measureId: string, testCaseIds: string[]) {
+    return await axios.delete(
+      `${this.baseUrl}/measures/${measureId}/test-cases`,
+      {
+        data: [...testCaseIds],
+        headers: {
+          Authorization: `Bearer ${this.getAccessToken()}`,
+        },
+      }
+    );
+  }
+
   async importTestCases(
     measureId: string,
     testCasesImportRequest: TestCaseImportRequest[]

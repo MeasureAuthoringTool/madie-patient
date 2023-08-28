@@ -20,7 +20,11 @@ import useExecutionContext from "../../routes/qiCore/useExecutionContext";
 import CreateCodeCoverageNavTabs from "./CreateCodeCoverageNavTabs";
 import CodeCoverageHighlighting from "../common/CodeCoverageHighlighting";
 import CreateNewTestCaseDialog from "../../createTestCase/CreateNewTestCaseDialog";
-import { MadieSpinner, Toast } from "@madie/madie-design-system/dist/react";
+import {
+  MadieDeleteDialog,
+  MadieSpinner,
+  Toast,
+} from "@madie/madie-design-system/dist/react";
 import TestCaseListSideBarNav from "../common/TestCaseListSideBarNav";
 import Typography from "@mui/material/Typography";
 import TestCaseImportFromBonnieDialog from "../common/import/TestCaseImportFromBonnieDialog";
@@ -118,6 +122,8 @@ const TestCaseList = (props: TestCaseListProps) => {
       open: false,
     });
   const [openImportDialog, setOpenImportDialog] = useState<boolean>(false);
+  const [openDeleteAllTestCasesDialog, setOpenDeleteAllTestCasesDialog] =
+    useState<boolean>(false);
   const abortController = useRef(null);
   const [createOpen, setCreateOpen] = useState<boolean>(false);
 
@@ -234,6 +240,23 @@ const TestCaseList = (props: TestCaseListProps) => {
           "deleteTestCaseByTestCaseId: err.message = " + err.message
         );
         setErrors((prevState) => [...prevState, err.message]);
+      });
+  };
+
+  const deleteAllTestCases = () => {
+    const currentTestCaseIds = _.map(measure.testCases, "id");
+    testCaseService.current
+      .deleteTestCases(measureId, currentTestCaseIds)
+      .then(() => {
+        retrieveTestCases();
+        setOpenDeleteAllTestCasesDialog(false);
+        setToastOpen(true);
+        setToastType("success");
+        setToastMessage("Test cases successfully deleted");
+      })
+      .catch((err) => {
+        setOpenDeleteAllTestCasesDialog(false);
+        setErrors((prevState) => [...prevState, err?.response?.data?.message]);
       });
   };
 
@@ -437,12 +460,12 @@ const TestCaseList = (props: TestCaseListProps) => {
       {!loadingState.loading && (
         <>
           <Toast
-            toastKey="population-criteria-toast"
+            toastKey="test-case-list-toast"
             toastType={toastType}
             testId={
               toastType === "danger"
-                ? `population-criteria-error`
-                : `population-criteria-success`
+                ? `test-case-list-error`
+                : `test-case-list-success`
             }
             open={toastOpen}
             message={toastMessage}
@@ -488,6 +511,9 @@ const TestCaseList = (props: TestCaseListProps) => {
                 coveragePercentage={coveragePercentage}
                 validTestCases={testCases?.filter((tc) => tc.validResource)}
                 exportTestCases={exportTestCases}
+                onDeleteAllTestCases={() =>
+                  setOpenDeleteAllTestCasesDialog(true)
+                }
               />
             </div>
             <CreateNewTestCaseDialog open={createOpen} onClose={handleClose} />
@@ -549,6 +575,17 @@ const TestCaseList = (props: TestCaseListProps) => {
           <Typography color="inherit">{loadingState.message}</Typography>
         </div>
       )}
+      <MadieDeleteDialog
+        open={openDeleteAllTestCasesDialog}
+        onContinue={() => {
+          deleteAllTestCases();
+        }}
+        onClose={() => {
+          setOpenDeleteAllTestCasesDialog(false);
+        }}
+        dialogTitle="Delete All Test Cases"
+        name="All Test Cases"
+      />
       {openImportDialog && (
         <TestCaseImportDialog
           dialogOpen={openImportDialog}
