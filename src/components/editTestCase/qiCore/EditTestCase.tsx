@@ -782,10 +782,12 @@ const EditTestCase = (props: EditTestCaseProps) => {
           <Allotment.Pane>
             {featureFlags?.qiCoreElementsTab ? (
               <div className="nav-panel">
-                <CreateTestCaseLeftPanelNavTabs
-                  leftPanelActiveTab={leftPanelActiveTab}
-                  setLeftPanelActiveTab={setLeftPanelActiveTab}
-                />
+                <div className="tab-container">
+                  <CreateTestCaseLeftPanelNavTabs
+                    leftPanelActiveTab={leftPanelActiveTab}
+                    setLeftPanelActiveTab={setLeftPanelActiveTab}
+                  />
+                </div>
 
                 {leftPanelActiveTab === "elements" && (
                   <div className="panel-content">
