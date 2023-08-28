@@ -1,5 +1,5 @@
 import React from "react";
-import ElementSection from "../../../../../../util/ElementSection";
+import ElementSection from "../../../../../common/ElementSection";
 
 const ElementsSection = ({ canEdit }) => {
   return (

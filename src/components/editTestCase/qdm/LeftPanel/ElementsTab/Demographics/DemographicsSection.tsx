@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import ElementSection from "../../../../../../util/ElementSection";
+import ElementSection from "../../../../../common/ElementSection";
 import { Select, InputLabel } from "@madie/madie-design-system/dist/react";
 import FormControl from "@mui/material/FormControl";
 import InputAdornment from "@mui/material/InputAdornment";
