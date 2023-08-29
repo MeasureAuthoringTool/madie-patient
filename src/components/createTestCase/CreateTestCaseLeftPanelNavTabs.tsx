@@ -15,12 +15,12 @@ export default function CreateTestCaseNavTabs(props: NavTabProps) {
       onChange={(e, v) => {
         setLeftPanelActiveTab(v);
       }}
-      type="B"
+      type="D"
     >
       <Tab
         tabIndex={0}
         aria-label="Elements tab panel"
-        type="B"
+        type="D"
         label={`Elements`}
         data-testid="elements-tab"
         value="elements"
@@ -28,7 +28,7 @@ export default function CreateTestCaseNavTabs(props: NavTabProps) {
       <Tab
         tabIndex={0}
         aria-label="JSON tab panel"
-        type="B"
+        type="D"
         label={`JSON`}
         data-testid="json-tab"
         value="json"
