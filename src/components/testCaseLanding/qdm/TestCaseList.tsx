@@ -2,18 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import tw from "twin.macro";
 import "styled-components/macro";
 import * as _ from "lodash";
-import {
-  Group,
-  TestCase,
-  MeasureErrorType,
-  PopulationType,
-} from "@madie/madie-models";
+import { Group, TestCase, MeasureErrorType } from "@madie/madie-models";
 import { useParams } from "react-router-dom";
 import calculationService from "../../../api/CalculationService";
-import {
-  CalculationOutput,
-  DetailedPopulationGroupResult,
-} from "fqm-execution/build/types/Calculator";
+import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calculator";
 import { checkUserCanEdit, measureStore } from "@madie/madie-util";
 import CreateCodeCoverageNavTabs from "./CreateCodeCoverageNavTabs";
 import CodeCoverageHighlighting from "../common/CodeCoverageHighlighting";
@@ -61,7 +53,7 @@ export const getCoverageValueFromHtml = (
   groupId: string
 ): number => {
   const coverageValue = parseInt(
-    coverageHtml[groupId]?.match(coverageHeaderRegex)[1]
+    coverageHtml?.[groupId]?.match(coverageHeaderRegex)[1]
   );
   return isNaN(coverageValue) ? 0 : coverageValue;
 };
@@ -183,36 +175,20 @@ const TestCaseList = (props: TestCaseListProps) => {
     const validTestCases = testCases?.filter((tc) => tc.validResource);
     if (validTestCases && calculationOutput) {
       // Pull Clause Coverage from coverage HTML
-      // setCoveragePercentage(
-      //   getCoverageValueFromHtml(
-      //     calculationOutput["groupClauseCoverageHTML"],
-      //     selectedPopCriteria.id
-      //   )
-      // );
-      // setCoverageHTML(
-      //   removeHtmlCoverageHeader(calculationOutput["groupClauseCoverageHTML"])
-      // );
+      setCoveragePercentage(
+        getCoverageValueFromHtml(
+          calculationOutput["groupClauseCoverageHTML"],
+          selectedPopCriteria.id
+        )
+      );
+      setCoverageHTML(
+        removeHtmlCoverageHeader(calculationOutput["groupClauseCoverageHTML"])
+      );
       const executionResults: CqmExecutionResultsByPatient = calculationOutput;
       const nextExecutionResults = {};
 
-      const populationSets = JSONPath({
-        path: "$.population_sets[*].population_set_id",
-        json: cqmMeasure,
-      });
-
-      console.log("extracted population sets: ", populationSets);
-      console.log("compared to population criteria: ", measure.groups);
-
-      console.log("searching for results for testCases: ", validTestCases);
       validTestCases.forEach((testCase, i) => {
-        // const detailedResults = executionResults.find(
-        //   (result) => result.patientId === testCase.id
-        // )?.detailedResults;
-        // nextExecutionResults[testCase.id] = detailedResults;
         const patient = JSON.parse(testCase.json);
-        console.log(
-          `testCase [${testCase.id}] has patientId: [${patient._id}]`
-        );
         const patientResults = executionResults[patient._id];
 
         const processedTC = qdmCalculation.current.processTestCaseResults(
@@ -283,7 +259,6 @@ const TestCaseList = (props: TestCaseListProps) => {
             patients
           );
 
-        console.log("calculationOutput: ", calculationOutput);
         setCalculationOutput(calculationOutput);
       } catch (error) {
         console.error("calculateTestCases: error.message = " + error.message);

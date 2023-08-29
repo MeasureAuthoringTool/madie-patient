@@ -49,8 +49,11 @@ export class QdmCalculationService {
       cqmMeasure.value_sets,
       options
     );
-    // eslint-disable-next-line no-console
-    console.log("cqm execution calculation results", calculationResults);
+    // set onto window for any environment debug purposes
+    if (localStorage.getItem("madieDebug") || (window as any).madieDebug) {
+      // eslint-disable-next-line no-console
+      console.log("cqm execution calculation results", calculationResults);
+    }
     return calculationResults;
   }
 
@@ -78,7 +81,6 @@ export class QdmCalculationService {
     } else {
       const actualVal = _.isNil(actual) ? 0 : _.toNumber(actual);
       const expectedVal = _.isNil(expected) ? 0 : _.toNumber(expected);
-      console.log(`isValuePass - not patientBased - comparing actual [${actualVal}] to expected [${expectedVal}]..pass: `, actualVal == expectedVal);
       return actualVal == expectedVal;
     }
   }
@@ -96,7 +98,6 @@ export class QdmCalculationService {
             popVal.expected,
             isObs ? false : patientBased
           );
-        console.log(`groupPopulation with ID [${groupPopulation.groupId}] is patient based [${patientBased}] and got groupPass result: `, groupPass);
         return groupPass;
       });
 
@@ -117,7 +118,6 @@ export class QdmCalculationService {
     measure: Measure,
     populationGroupResults: CqmExecutionPatientResultsByPopulationSet
   ) {
-    console.log("process results: ", populationGroupResults);
     if (_.isNil(testCase)) {
       return testCase;
     }
@@ -141,7 +141,6 @@ export class QdmCalculationService {
       }
 
       const results = populationGroupResults[groupId];
-      console.log("got groupResults: ", results);
       let populationMap = new Map<String, number>();
       let groupsMap = new Map<String, Map<String, number>>();
 
