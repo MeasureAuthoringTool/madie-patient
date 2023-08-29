@@ -68,9 +68,9 @@ const TanStackTable = ({ dataElements = [], onView }: MadieTableProps) => {
             className="view-button"
             onClick={(e) => {
               e.preventDefault();
-              onView(el);
+              onView && onView(el);
             }}
-            id=""
+            id={el.id}
           >
             <div>View</div>
             <ExpandMoreIcon />
