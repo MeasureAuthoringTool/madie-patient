@@ -5,8 +5,8 @@ import TimingRow from "./TimingRow";
 
 const TimingCell = ({ element }: { element: DataElement }) => {
   // Periods
-  // relevantPeriod - relP
-  const relevantPeriod = element.get("relevantPeriod");
+  // relevantPeriod - relPc
+  const relevantPeriod = element?.get("relevantPeriod");
   // prevalencePeriod - prevP
   const prevalencePeriod = element.get("prevalencePeriod");
   // participationPeriod - partP

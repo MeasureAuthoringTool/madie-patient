@@ -9,7 +9,10 @@ const CodesRow = ({ code }) => {
 // we care about the codes
 const DataTypeCell = (props: { element: DataElement; codeSystemMap: any }) => {
   const { element, codeSystemMap = {} } = props;
-  const codes = element.get("dataElementCodes");
+  let codes = null;
+  if (element && element.get) {
+    codes = element?.get("dataElementCodes");
+  }
   const [codeList, setCodeList] = useState([]);
 
   //  if we've got a codesystem lookup, we'll map the name

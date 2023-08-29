@@ -48,7 +48,13 @@ const TanStackTable = ({ dataElements = [], onView }: MadieTableProps) => {
     }),
     columnHelper.accessor((row) => row, {
       id: "timing",
-      cell: (info) => <TimingCell element={info.getValue()} />,
+      cell: (info) => {
+        const el = info.getValue();
+        if (el.get) {
+          return <TimingCell element={info.getValue()} />;
+        }
+        return null;
+      },
       header: "Timing",
     }),
 

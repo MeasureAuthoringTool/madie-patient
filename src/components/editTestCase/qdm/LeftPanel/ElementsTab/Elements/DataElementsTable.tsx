@@ -15,6 +15,9 @@ const DataElementsTable = ({
   dataElements,
   onView,
 }: DataElementsTableProps) => {
+  if (!dataElements) {
+    return <div></div>;
+  }
   return <MadieTable dataElements={dataElements} onView={onView} />;
 };
 
