@@ -23,7 +23,7 @@ describe("TabHeadings", () => {
 
   test("Tab Headings display descriptions when clicked on, hides after", async () => {
     const title = "Demographics";
-    const expectedId = `qdm-header-content-${title}`;
+    const expectedId = `elements-header-content-${title}`;
     render(<ElementSection title={title} />);
     const foundTitle = await findByText(title);
     // open

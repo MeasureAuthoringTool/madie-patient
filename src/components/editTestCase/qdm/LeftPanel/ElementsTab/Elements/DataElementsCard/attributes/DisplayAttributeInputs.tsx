@@ -15,6 +15,7 @@ import CodeInput from "../../../../../../../common/codeInput/CodeInput";
 import "twin.macro";
 import "styled-components/macro";
 import useQdmExecutionContext from "../../../../../../../routes/qdm/useQdmExecutionContext";
+import QuantityIntervalInput from "../../../../../../../common/quantityIntervalInput/QuantityIntervalInput";
 import StringInput from "../../../../../../../common/string/StringInput";
 
 interface DisplayAttributeInputsProps {
@@ -31,6 +32,10 @@ const DisplayAttributeInputs = ({
   const currentRatio = {
     numerator: {},
     denominator: {},
+  };
+  const currentQuantityRatio = {
+    low: {},
+    high: {},
   };
 
   const handleAttributeChange = (e) => {
@@ -121,6 +126,17 @@ const DisplayAttributeInputs = ({
             handleChange={(val) => setAttributeValue(val)}
             canEdit={true}
             valueSets={cqmMeasure.value_sets}
+          />
+        );
+      case "Interval<Quantity>":
+        return (
+          <QuantityIntervalInput
+            label={"Quantity Interval"}
+            quantityInterval={currentQuantityRatio}
+            onQuantityIntervalChange={(val) => {
+              setAttributeValue(val);
+            }}
+            canEdit={true}
           />
         );
       case "PatientEntity":

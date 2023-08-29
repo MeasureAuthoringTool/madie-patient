@@ -72,6 +72,7 @@ import FileUploader from "../../fileUploader/FileUploader";
 import { ScanValidationDto } from "../../../api/models/ScanValidationDto";
 import { Bundle } from "fhir/r4";
 import { Allotment } from "allotment";
+import ElementsTab from "./LeftPanel/ElementsTab/ElementsTab";
 // import '../qdm/EditTestCase.scss'
 
 const TestCaseForm = tw.form`m-3`;
@@ -781,13 +782,18 @@ const EditTestCase = (props: EditTestCaseProps) => {
           <Allotment.Pane>
             {featureFlags?.qiCoreElementsTab ? (
               <div className="nav-panel">
-                <CreateTestCaseLeftPanelNavTabs
-                  leftPanelActiveTab={leftPanelActiveTab}
-                  setLeftPanelActiveTab={setLeftPanelActiveTab}
-                />
+                <div className="tab-container">
+                  <CreateTestCaseLeftPanelNavTabs
+                    leftPanelActiveTab={leftPanelActiveTab}
+                    setLeftPanelActiveTab={setLeftPanelActiveTab}
+                  />
+                </div>
+
                 {leftPanelActiveTab === "elements" && (
-                  <div data-testid="elements-content">
-                    Elements Coming Soon...
+                  <div className="panel-content">
+                    <div data-testid="elements-content">
+                      <ElementsTab canEdit={canEdit} />
+                    </div>
                   </div>
                 )}
                 {leftPanelActiveTab === "json" && (
