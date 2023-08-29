@@ -43,9 +43,9 @@ const DataElementsCard = (props: {
     setSelectedDataElement,
     onChange,
   } = props;
-
   const [codeSystemMap, setCodeSystemMap] = useState(null);
   const { cqmMeasureState } = useQdmExecutionContext();
+  const [cqmMeasure] = cqmMeasureState;
   // from here we know the type, we need to go through the dataElements to matchTypes
   // attributes section
   // codes section
@@ -150,6 +150,9 @@ const DataElementsCard = (props: {
     }
   }, [localSelectedDataElement, codeSystemMap, dataElements]);
   // centralize state one level up so we can conditionally render our child component
+
+  const handleCodeChange = () => {};
+
   return (
     <div className="data-elements-card" data-testid="data-element-card">
       <div className="heading-row">
@@ -194,7 +197,16 @@ const DataElementsCard = (props: {
         activeTab={cardActiveTab}
         setActiveTab={setCardActiveTab}
       />
-      {cardActiveTab === "codes" && <Codes attributeChipList={[]} />}
+      {/*Todo Call OnChange with new DataElement info
+      How to get CodeSystem and Codes info ?*/}
+      {cardActiveTab === "codes" && (
+        <Codes
+          attributeChipList={[]}
+          handleCodeChange={handleCodeChange}
+          cqmMeasure={cqmMeasure}
+          selectedDataElement={selectedDataElement}
+        />
+      )}
       {cardActiveTab === "attributes" && (
         <AttributeSection
           attributeChipList={displayAttributes}
