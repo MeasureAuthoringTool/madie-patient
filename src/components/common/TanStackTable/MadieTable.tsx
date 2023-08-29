@@ -33,7 +33,6 @@ const TanStackTable = ({ dataElements = [], onView }: MadieTableProps) => {
           codeSystemMap[concept.code_system_oid] = concept.code_system_name;
         });
       });
-      console.log("codesystem", codeSystemMap);
       setCodeSystemMap(codeSystemMap);
     }
   }, [cqmMeasureState]);
@@ -118,7 +117,8 @@ const TanStackTable = ({ dataElements = [], onView }: MadieTableProps) => {
                       header.column.columnDef.header,
                       header.getContext()
                     )}
-                {header.column.getCanResize() && (
+                {/* add following in if we want to manually resize columns on drag. */}
+                {/* {header.column.getCanResize() && (
                   <div
                     onMouseDown={header.getResizeHandler()}
                     onTouchStart={header.getResizeHandler()}
@@ -126,7 +126,7 @@ const TanStackTable = ({ dataElements = [], onView }: MadieTableProps) => {
                       header.column.getIsResizing() ? "isResizing" : ""
                     }`}
                   ></div>
-                )}
+                )} */}
               </th>
             ))}
           </tr>
