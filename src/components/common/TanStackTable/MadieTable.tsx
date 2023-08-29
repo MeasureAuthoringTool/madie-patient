@@ -36,12 +36,6 @@ const TanStackTable = ({ dataElements = [], onView }: MadieTableProps) => {
       setCodeSystemMap(codeSystemMap);
     }
   }, [cqmMeasureState]);
-  const [data, setData] = useState([]);
-  useEffect(() => {
-    if (dataElements) {
-      setData(dataElements);
-    }
-  }, [dataElements]);
 
   const columns = [
     columnHelper.accessor((row) => row, {
@@ -82,7 +76,7 @@ const TanStackTable = ({ dataElements = [], onView }: MadieTableProps) => {
   ];
 
   const table = useReactTable({
-    data,
+    data: dataElements,
     columns,
     getCoreRowModel: getCoreRowModel(),
     debugTable: true,
