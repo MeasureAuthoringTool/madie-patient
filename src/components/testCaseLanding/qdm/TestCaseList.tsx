@@ -208,7 +208,6 @@ const TestCaseList = (props: TestCaseListProps) => {
         passFailRatio: passFailRatio,
       });
       setTestCases([...testCases]);
-      setExecutionResults(nextExecutionResults);
     }
   }, [calculationOutput, selectedPopCriteria]);
 
@@ -286,7 +285,9 @@ const TestCaseList = (props: TestCaseListProps) => {
     return string;
   };
   const readerString = generateSRString(testCases);
-  const executionResultLength = Object.keys(executionResults).length;
+  const executionResultLength = calculationOutput
+    ? Object.keys(calculationOutput).length
+    : 0;
 
   const onTestCaseImport = async (testCases: TestCase[]) => {
     setImportDialogState({ ...importDialogState, open: false });

@@ -38,6 +38,9 @@ import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContex
 import { checkUserCanEdit, useFeatureFlags } from "@madie/madie-util";
 import { CqmConversionService } from "../../../api/CqmModelConversionService";
 import { ValueSet } from "cqm-models";
+import qdmCalculationService, {
+  QdmCalculationService,
+} from "../../../api/QdmCalculationService";
 
 const serviceConfig: ServiceConfig = {
   testCaseService: {
@@ -182,6 +185,27 @@ const executionResults = {
   },
 };
 
+const qdmExecutionResults = {
+  // patient with id "1"
+  "1": {
+    // group / population set with id "1"
+    "1": {
+      IPP: true,
+      DENOM: false,
+      NUMER: true,
+      episodeResults: {},
+    },
+  },
+  "2": {
+    "2": {
+      IPP: false,
+      DENOM: false,
+      NUMER: false,
+      episodeResults: {},
+    },
+  },
+};
+
 // mock data for list of testCases retrieved from testCaseService
 const testCases = [
   {
@@ -190,6 +214,7 @@ const testCases = [
     title: "WhenAllGood",
     series: "IPP_Pass",
     validResource: true,
+    json: "{}",
     groupPopulations: [
       {
         groupId: "1",
@@ -217,6 +242,7 @@ const testCases = [
     title: "WhenSomethingIsWrong",
     series: "IPP_Fail",
     validResource: true,
+    json: "{}",
     groupPopulations: [
       {
         groupId: "1",
@@ -244,6 +270,7 @@ const testCases = [
     title: "WhenJsonIsInvalid",
     series: "IPP_Fail",
     validResource: false,
+    json: "{}",
     groupPopulations: [
       {
         groupId: "1",
@@ -403,6 +430,10 @@ jest.mock("../../../api/CalculationService");
 const calculationServiceMock =
   calculationService as jest.Mock<CalculationService>;
 
+jest.mock("../../../api/QdmCalculationService");
+const qdmCalculationServiceMock =
+  qdmCalculationService as jest.Mock<QdmCalculationService>;
+
 const mockProcessTestCaseResults = jest
   .fn()
   .mockImplementation((testCase, groups, results) => {
@@ -415,8 +446,16 @@ const mockGetPassingPercentageForTestCases = jest
 const calculationServiceMockResolved = {
   calculateTestCases: jest.fn().mockResolvedValue(executionResults),
   processTestCaseResults: mockProcessTestCaseResults,
+  fakeFunction: jest.fn(),
   getPassingPercentageForTestCases: mockGetPassingPercentageForTestCases,
 } as unknown as CalculationService;
+
+const qdmCalculationServiceMockResolved = {
+  calculateQdmTestCases: jest.fn().mockResolvedValue(qdmExecutionResults),
+  processTestCaseResults: mockProcessTestCaseResults,
+  qdmFakeFunction: jest.fn(),
+  getPassingPercentageForTestCases: mockGetPassingPercentageForTestCases,
+} as unknown as QdmCalculationService;
 
 // mocking testCaseService
 jest.mock("../../../api/useTestCaseServiceApi");
@@ -454,6 +493,9 @@ describe("TestCaseList component", () => {
   beforeEach(() => {
     calculationServiceMock.mockImplementation(() => {
       return calculationServiceMockResolved;
+    });
+    qdmCalculationServiceMock.mockImplementation(() => {
+      return qdmCalculationServiceMockResolved;
     });
     useTestCaseServiceMock.mockImplementation(() => {
       return useTestCaseServiceMockResolved;
@@ -722,12 +764,12 @@ describe("TestCaseList component", () => {
       message: "Unable to calculate test case.",
     };
 
-    const calculationServiceMockRejected = {
+    const qdmCalculationServiceMockRejected = {
       calculateTestCases: jest.fn().mockRejectedValue(error),
-    } as unknown as CalculationService;
+    } as unknown as QdmCalculationService;
 
-    calculationServiceMock.mockImplementation(() => {
-      return calculationServiceMockRejected;
+    qdmCalculationServiceMock.mockImplementation(() => {
+      return qdmCalculationServiceMockRejected;
     });
 
     const { getByTestId } = renderTestCaseListComponent();
@@ -895,7 +937,7 @@ describe("TestCaseList component", () => {
     });
 
     userEvent.click(executeButton);
-    await waitFor(() => expect(screen.getByText("75%")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText("50%")).toBeInTheDocument());
 
     const table = await screen.findByTestId("test-case-tbl");
     const tableRows = table.querySelectorAll("tbody tr");
@@ -940,7 +982,7 @@ describe("TestCaseList component", () => {
     await waitFor(() => expect(executeButton).not.toBeDisabled());
 
     userEvent.click(executeButton);
-    await waitFor(() => expect(screen.getByText("75%")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText("50%")).toBeInTheDocument());
 
     const table = await screen.findByTestId("test-case-tbl");
     const tableRows = table.querySelectorAll("tbody tr");
@@ -976,7 +1018,7 @@ describe("TestCaseList component", () => {
     });
 
     expect(screen.getByText("Passing (2/3)")).toBeInTheDocument();
-    expect(screen.getByText("100%")).toBeInTheDocument();
+    expect(screen.getByText("0%")).toBeInTheDocument();
     expect(screen.getByTestId("sr-div")).toBeInTheDocument();
   });
 
