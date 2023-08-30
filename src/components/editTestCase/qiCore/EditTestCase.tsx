@@ -792,7 +792,11 @@ const EditTestCase = (props: EditTestCaseProps) => {
                 {leftPanelActiveTab === "elements" && (
                   <div className="panel-content">
                     <div data-testid="elements-content">
-                      <ElementsTab canEdit={canEdit} />
+                      <ElementsTab
+                        canEdit={canEdit}
+                        setEditorVal={setEditorVal}
+                        editorVal={editorVal}
+                      />
                     </div>
                   </div>
                 )}

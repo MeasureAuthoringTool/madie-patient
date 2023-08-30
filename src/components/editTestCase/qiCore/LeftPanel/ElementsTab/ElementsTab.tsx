@@ -4,10 +4,14 @@ import ElementsSection from "./Elements/ElementsSection";
 // import DemographicsSection from "./Demographics/DemographicsSection";
 // import ElementsSection from "./Elements/ElementsSection";
 
-const ElementsTab = ({ canEdit }) => {
+const ElementsTab = ({ canEdit, setEditorVal, editorVal }) => {
   return (
     <>
-      <DemographicsSection canEdit={canEdit} />
+      <DemographicsSection
+        canEdit={canEdit}
+        setEditorVal={setEditorVal}
+        editorVal={editorVal}
+      />
       <ElementsSection canEdit={canEdit} />
     </>
   );
