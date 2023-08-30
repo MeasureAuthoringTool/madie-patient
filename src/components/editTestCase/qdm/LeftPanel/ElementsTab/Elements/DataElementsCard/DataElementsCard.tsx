@@ -8,7 +8,7 @@ import {
 } from "../../../../../../../util/QdmAttributeHelpers";
 import Codes from "./Codes/Codes";
 import SubNavigationTabs from "./SubNavigationTabs";
-import cqmModels, { DataElement } from "cqm-models";
+import { DataElement } from "cqm-models";
 import "./DataElementsCard.scss";
 import AttributeSection from "./attributes/AttributeSection";
 import { useQdmExecutionContext } from "../../../../../../routes/qdm/QdmExecutionContext";
@@ -152,6 +152,7 @@ const DataElementsCard = (props: {
   // centralize state one level up so we can conditionally render our child component
 
   const handleCodeChange = (selectedCode) => {
+    // eslint-disable-next-line no-console
     console.log("selectedCode => ", selectedCode);
   };
 
