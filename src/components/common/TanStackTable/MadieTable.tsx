@@ -21,7 +21,7 @@ interface MadieTableProps {
   dataElements?: DataElement[];
   onView?: (dataElement: DataElement) => void;
 }
-const TanStackTable = ({ dataElements = [], onView }: MadieTableProps) => {
+const MadieTable = ({ dataElements = [], onView }: MadieTableProps) => {
   const { cqmMeasureState } = useQdmExecutionContext();
   const [codeSystemMap, setCodeSystemMap] = useState({});
   useEffect(() => {
@@ -66,10 +66,10 @@ const TanStackTable = ({ dataElements = [], onView }: MadieTableProps) => {
         return (
           <button
             className="view-button"
-            onClick={(e) => {
-              e.preventDefault();
-              onView && onView(el);
-            }}
+            // onClick={(e) => {
+            //   e.preventDefault();
+            //   onView && onView(el);
+            // }}
             id={el.id}
           >
             <div>View</div>
@@ -77,7 +77,6 @@ const TanStackTable = ({ dataElements = [], onView }: MadieTableProps) => {
           </button>
         );
       },
-      footer: (info) => info.column.id,
     }),
   ];
 
@@ -149,4 +148,4 @@ const TanStackTable = ({ dataElements = [], onView }: MadieTableProps) => {
   );
 };
 
-export default TanStackTable;
+export default MadieTable;
