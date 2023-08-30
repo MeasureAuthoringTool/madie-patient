@@ -6,6 +6,6 @@ describe("Display Demographics Section", () => {
   it("should display demographics section", () => {
     render(<DemographicsSection canEdit={true} />);
 
-    expect(screen.getByText("Demographics Section")).toBeInTheDocument();
+    expect(screen.getByText("Ethnicity (OMB)")).toBeInTheDocument();
   });
 });

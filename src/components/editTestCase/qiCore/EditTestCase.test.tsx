@@ -41,6 +41,7 @@ import { TestCaseValidator } from "../../../validators/TestCaseValidator";
 import { checkUserCanEdit, featureFlags } from "@madie/madie-util";
 import { PopulationType as FqmPopulationType } from "fqm-execution/build/types/Enums";
 import { addValues } from "../../../util/DefaultValueProcessor";
+import DemographicsSection from "./LeftPanel/ElementsTab/Demographics/DemographicsSection";
 
 //temporary solution (after jest updated to version 27) for error: thrown: "Exceeded timeout of 5000 ms for a test.
 jest.setTimeout(60000);
@@ -423,18 +424,36 @@ describe("EditTestCase component", () => {
       expect(screen.getByTestId("test-case-cql-editor")).toBeInTheDocument();
     });
 
-    it("Navigating between elements tab and json tab", () => {
+    it("Navigating between elements tab and json tab", async () => {
       renderWithRouter(
         ["/measures/m1234/edit/test-cases"],
         "/measures/:measureId/edit/test-cases"
       );
 
       expect(screen.getByTestId("elements-content")).toBeInTheDocument();
-      expect(screen.getByText("Demographics Section")).toBeInTheDocument();
+      const ombLabel = await screen.getByText("Ethnicity (OMB)");
+
+      expect(ombLabel).toBeInTheDocument();
+      const detailLabel = await screen.queryByText("Ethnicity (Detailed)");
+
+      expect(detailLabel).toBeNull();
+
       expect(screen.getByText("Elements Section")).toBeInTheDocument();
 
       userEvent.click(screen.getByTestId("json-tab"));
       expect(screen.getByTestId("test-case-json-editor")).toBeInTheDocument();
+    });
+
+    it.only("Shows 'Ethnicity (Detailed)' selection when Hispanic is chosen", async () => {
+      render(<DemographicsSection canEdit={true} />);
+      const ethnicityOmbSelect = screen.getByTestId(
+        "demographics-ethnicity-select-id"
+      );
+      const selectDropdown = within(ethnicityOmbSelect).getByRole(
+        "button"
+      ) as HTMLInputElement;
+      userEvent.click(selectDropdown);
+      screen.debug();
     });
 
     it("should edit test case when save button is clicked", async () => {
