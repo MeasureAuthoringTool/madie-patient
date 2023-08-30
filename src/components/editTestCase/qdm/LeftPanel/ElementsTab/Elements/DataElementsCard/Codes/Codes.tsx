@@ -33,7 +33,6 @@ const placeHolder = (label) => (
   <span style={{ color: "#717171" }}>{label}</span>
 );
 
-// Get Can Edit, and are these mandatory fields, if so what are ?
 const Codes = ({
   attributeChipList = [],
   handleChange,
@@ -114,7 +113,7 @@ const Codes = ({
     const cqlCode = new CQL.Code(
       code,
       concept.code_system_oid,
-      null, // Will this always be null ?
+      null,
       concept.display_name
     );
     setSavedCode(cqlCode);
