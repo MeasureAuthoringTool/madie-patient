@@ -151,7 +151,9 @@ const DataElementsCard = (props: {
   }, [localSelectedDataElement, codeSystemMap, dataElements]);
   // centralize state one level up so we can conditionally render our child component
 
-  const handleCodeChange = () => {};
+  const handleCodeChange = (selectedCode) => {
+    console.log("selectedCode => ", selectedCode);
+  };
 
   return (
     <div className="data-elements-card" data-testid="data-element-card">
@@ -202,7 +204,7 @@ const DataElementsCard = (props: {
       {cardActiveTab === "codes" && (
         <Codes
           attributeChipList={[]}
-          handleCodeChange={handleCodeChange}
+          handleChange={handleCodeChange}
           cqmMeasure={cqmMeasure}
           selectedDataElement={selectedDataElement}
         />

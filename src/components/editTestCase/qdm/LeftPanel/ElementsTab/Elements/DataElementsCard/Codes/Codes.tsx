@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import AttributeChipList from "../AttributeChipList";
-import { Select } from "@madie/madie-design-system/dist/react";
+import { Select, TextField } from "@madie/madie-design-system/dist/react";
 import { IconButton, MenuItem } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import _ from "lodash";
@@ -12,6 +12,8 @@ import {
   ValueSet,
   Concept,
   CodeSystems,
+  CQL,
+  Code,
 } from "cqm-models";
 
 interface Chip {
@@ -22,29 +24,39 @@ interface Chip {
 
 interface CodesProps {
   attributeChipList?: Array<Chip>;
-  handleCodeChange: Function;
+  handleChange: Function;
   cqmMeasure: CqmMeasure;
   selectedDataElement: DataElement;
 }
 
+const placeHolder = (label) => (
+  <span style={{ color: "#717171" }}>{label}</span>
+);
+
+// Get Can Edit, and are these mandatory fields, if so what are ?
 const Codes = ({
   attributeChipList = [],
-  handleCodeChange,
+  handleChange,
   cqmMeasure,
   selectedDataElement,
 }: CodesProps) => {
-  const [codeMenuOptions, setCodeMenuOptions] = useState<any[]>();
-  const [selectedCodeSystemName, setSelectedCodeSystemName] =
-    useState<string>("");
-  const [selectedCode, setSelectedCode] = useState<string>("");
   const [concepts, setConcepts] = useState<Concept[]>([]);
 
   const [codeSystems, setCodeSystems] = useState<CodeSystems>();
+  const [selectedCodeSystemName, setSelectedCodeSystemName] =
+    useState<string>("");
+
+  const [customCodeSystemName, setCustomCodeSystemName] = useState<string>("");
+  const [customCodeConcept, setCustomCodeConcept] = useState<string>("");
+
+  const [relatedCodeConcepts, setRelatedCodeConcepts] = useState<Concept[]>([]);
+  const [selectedCodeConcept, setSelectedCodeConcept] = useState<Concept>(null);
+
+  const [savedCode, setSavedCode] = useState<Code>(null);
 
   const items = attributeChipList.map((chip) => ({
     text: `${chip.title}: ${chip.value}`,
   }));
-  console.log("cqmMeasure", cqmMeasure);
 
   // filters out the appropriate value set for the selected data element and gets all code concepts
   // Also creates an object for CodeSystems oid as key and display name as value
@@ -63,24 +75,70 @@ const Codes = ({
     }
   }, [cqmMeasure, selectedDataElement]);
 
-  const addNewCode = (e) => {
-    e.preventDefault();
-    handleCodeChange();
+  const getCodeSystemMenuOptions = () => {
+    return [
+      <MenuItem
+        key="Custom"
+        value="Custom"
+        data-testid={`code-system-option-custom`}
+      >
+        Custom
+      </MenuItem>,
+      ...Object.entries(codeSystems).map(([oid, name]) => (
+        <MenuItem
+          key={oid}
+          value={name as string}
+          data-testid={`code-system-option-${name}`}
+        >
+          {name}
+        </MenuItem>
+      )),
+    ];
   };
 
   const handleCodeSystemChange = (event) => {
-    const name = event.target.value;
-    // const concepts = _.omitBy(codeSystemMap, (value) => value === name);
-    //
-    setSelectedCodeSystemName(name);
-    // setCodeMenuOptions(codes);
+    setSelectedCodeConcept(null);
+    const selectedCodeSystemName = event.target.value;
+    setSelectedCodeSystemName(selectedCodeSystemName);
+    const codeConceptsForSelectedCS = _.filter(
+      concepts,
+      (concept) => concept.code_system_name === selectedCodeSystemName
+    );
+    setRelatedCodeConcepts(codeConceptsForSelectedCS);
+  };
+
+  const handleCodeChange = (event) => {
+    const code = event.target.value;
+    const concept = _.find(concepts, (concept) => concept.code === code);
+    setSelectedCodeConcept(concept);
+    const cqlCode = new CQL.Code(
+      code,
+      concept.code_system_oid,
+      null, // Will this always be null ?
+      concept.display_name
+    );
+    setSavedCode(cqlCode);
+  };
+
+  const addNewCode = () => {
+    if (selectedCodeSystemName === "Custom") {
+      const customCqlCode = new CQL.Code(
+        customCodeConcept,
+        customCodeSystemName, // What is the oid for custom CS
+        null,
+        customCodeConcept
+      );
+      handleChange(customCqlCode);
+    } else {
+      handleChange(savedCode);
+    }
   };
 
   return (
     <div id="codes" data-testid="codes-section">
       <AttributeChipList items={items} />
-      <div tw="flex mt-3">
-        <div tw="w-1/2">
+      <div tw="flex md:flex-wrap mt-3">
+        <div tw="w-1/4">
           <Select
             placeHolder={{
               name: "Select Code System",
@@ -92,55 +150,93 @@ const Codes = ({
               "data-testid": "code-system-selector-input",
             }}
             data-testid={"code-system-selector"}
-            // disabled={!canEdit}
-            required={true}
             SelectDisplayProps={{
               "aria-required": "true",
             }}
-            options={
-              !!codeSystems
-                ? Object.entries(codeSystems).map(([oid, name]) => (
-                    <MenuItem
-                      key={oid}
-                      value={name as string}
-                      data-testid={`option-${name}`}
-                    >
-                      {name}
-                    </MenuItem>
-                  ))
-                : []
-            }
+            options={!!codeSystems ? getCodeSystemMenuOptions() : []}
             value={selectedCodeSystemName}
             onChange={handleCodeSystemChange}
           />
         </div>
-        <div tw="w-1/2 pl-3">
-          <Select
-            label="Code"
-            id={"code-selector"}
-            inputProps={{
-              "data-testid": "code-selector-input",
-            }}
-            data-testid={"code-selector"}
-            // disabled={!canEdit}
-            required={true}
-            SelectDisplayProps={{
-              "aria-required": "true",
-            }}
-            options={codeMenuOptions}
-            value={selectedCode}
-            // renderValue={(value) => {
-            //   if (value === "") {
-            //     return placeHolder("Select Code");
-            //   }
-            //   return `${selectedCodeConcept?.code} - ${selectedCodeConcept?.display_name}`;
-            // }}
-            onChange={handleCodeChange}
-          />
-        </div>
-        <div tw="flex-grow py-6">
-          <IconButton onClick={addNewCode}>
-            <AddCircleOutlineIcon />
+        {!_.isEmpty(selectedCodeSystemName) && (
+          <>
+            {selectedCodeSystemName === "Custom" ? (
+              <div tw="flex md:flex-wrap w-1/2">
+                <div tw="w-1/2 pl-3">
+                  <TextField
+                    id="custom-code-system"
+                    tw="w-full"
+                    label="Custom Code System"
+                    placeholder="Custom Code System"
+                    inputProps={{
+                      "data-testid": "custom-code-system-input",
+                    }}
+                    data-testid="custom-code-system"
+                    onChange={(event) =>
+                      setCustomCodeSystemName(event.target.value)
+                    }
+                  />
+                </div>
+                <div tw="w-1/2 pl-3">
+                  <TextField
+                    id="custom-code"
+                    tw="w-full"
+                    label="Custom Code"
+                    placeholder="Custom Code"
+                    inputProps={{
+                      "data-testid": "custom-code-input",
+                    }}
+                    data-testid="custom-code"
+                    onChange={(event) =>
+                      setCustomCodeConcept(event.target.value)
+                    }
+                  />
+                </div>
+              </div>
+            ) : (
+              <div tw="w-1/2 pl-3">
+                <Select
+                  label="Code"
+                  id={"code-selector"}
+                  inputProps={{
+                    "data-testid": "code-selector-input",
+                  }}
+                  data-testid={"code-selector"}
+                  SelectDisplayProps={{
+                    "aria-required": "true",
+                  }}
+                  options={
+                    relatedCodeConcepts
+                      ? relatedCodeConcepts.map((concept) => (
+                          <MenuItem
+                            key={concept.code}
+                            value={concept.code}
+                            data-testid={`code-option-${concept.code}`}
+                          >
+                            {concept.code} - {concept.display_name}
+                          </MenuItem>
+                        ))
+                      : []
+                  }
+                  value={selectedCodeConcept ? selectedCodeConcept.code : ""}
+                  renderValue={(value) => {
+                    if (value === "") {
+                      return placeHolder("Select Code");
+                    }
+                    return `${selectedCodeConcept?.code} - ${selectedCodeConcept?.display_name}`;
+                  }}
+                  onChange={handleCodeChange}
+                />
+              </div>
+            )}
+          </>
+        )}
+        <div tw="w-1/4 py-6">
+          <IconButton
+            data-testid="add-code-concept-button"
+            onClick={addNewCode}
+          >
+            <AddCircleOutlineIcon sx={{ color: "#0073c8" }} />
           </IconButton>
         </div>
       </div>
