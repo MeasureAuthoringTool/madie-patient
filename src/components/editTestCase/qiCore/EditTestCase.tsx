@@ -73,6 +73,7 @@ import { ScanValidationDto } from "../../../api/models/ScanValidationDto";
 import { Bundle } from "fhir/r4";
 import { Allotment } from "allotment";
 import ElementsTab from "./LeftPanel/ElementsTab/ElementsTab";
+import { QiCoreResourceProvider } from "../../../util/QiCorePatientProvider";
 // import '../qdm/EditTestCase.scss'
 
 const TestCaseForm = tw.form`m-3`;
@@ -789,26 +790,28 @@ const EditTestCase = (props: EditTestCaseProps) => {
                   />
                 </div>
 
-                {leftPanelActiveTab === "elements" && (
-                  <div className="panel-content">
-                    <div data-testid="elements-content">
-                      <ElementsTab
-                        canEdit={canEdit}
-                        setEditorVal={setEditorVal}
-                        editorVal={editorVal}
-                      />
+                <QiCoreResourceProvider>
+                  {leftPanelActiveTab === "elements" && (
+                    <div className="panel-content">
+                      <div data-testid="elements-content">
+                        <ElementsTab
+                          canEdit={canEdit}
+                          setEditorVal={setEditorVal}
+                          editorVal={editorVal}
+                        />
+                      </div>
                     </div>
-                  </div>
-                )}
-                {leftPanelActiveTab === "json" && (
-                  <Editor
-                    onChange={(val: string) => setEditorVal(val)}
-                    value={editorVal}
-                    setEditor={setEditor}
-                    readOnly={!canEdit || _.isNil(testCase)}
-                    height="100%"
-                  />
-                )}
+                  )}
+                  {leftPanelActiveTab === "json" && (
+                    <Editor
+                      onChange={(val: string) => setEditorVal(val)}
+                      value={editorVal}
+                      setEditor={setEditor}
+                      readOnly={!canEdit || _.isNil(testCase)}
+                      height="100%"
+                    />
+                  )}
+                </QiCoreResourceProvider>
               </div>
             ) : (
               <div className="left-panel">
