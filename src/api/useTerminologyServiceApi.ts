@@ -1,8 +1,8 @@
 import axios from "axios";
 import useServiceConfig from "./useServiceConfig";
 import { ServiceConfig } from "./ServiceContext";
-import { useOktaTokens, getOidFromString } from "@madie/madie-util";
-import { Bundle, ValueSet, Library } from "fhir/r4";
+import { getOidFromString, useOktaTokens } from "@madie/madie-util";
+import { Bundle, Library, ValueSet } from "fhir/r4";
 import { CqmMeasure } from "cqm-models";
 import * as _ from "lodash";
 
@@ -108,25 +108,25 @@ export class TerminologyServiceApi {
   getValueSetsOIDsFromCqmMeasure(
     cqmMeasure: CqmMeasure
   ): ValueSetSearchParams[] {
-    if (cqmMeasure?.cql_libraries) {
-      return cqmMeasure.cql_libraries
-        .filter((lib) => "valueSets" in lib?.elm?.library)
-        .map((cqlLibrary) => {
-          if (_.isEmpty(cqlLibrary.elm.library.valueSets)) {
-            return [];
-          }
-          return cqlLibrary.elm.library.valueSets.def.map((valueSetDef) => {
-            if (valueSetDef?.id) {
-              if (valueSetDef.id.startsWith("urn:oid:")) {
-                const oid = getOidFromString(valueSetDef.id, "QDM");
-                return { ["oid"]: oid };
-              }
-              return { ["oid"]: valueSetDef?.id };
+    const uniqueOids = new Set();
+    cqmMeasure?.cql_libraries?.forEach((library) => {
+      const valueSetDefs = library?.elm?.library?.valueSets?.def;
+      if (!_.isEmpty(valueSetDefs)) {
+        valueSetDefs.forEach((def) => {
+          if (def?.id) {
+            if (def.id.startsWith("urn:oid:")) {
+              const oid = getOidFromString(def.id, "QDM");
+              uniqueOids.add(oid);
+            } else {
+              uniqueOids.add(def?.id);
             }
-          });
-        })[0];
-    }
-    return [];
+          }
+        });
+      }
+    });
+    return _.map(Array.from(uniqueOids), (id: string) => ({
+      ["oid"]: id,
+    }));
   }
 
   /**

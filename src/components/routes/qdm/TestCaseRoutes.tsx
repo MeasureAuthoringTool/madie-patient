@@ -17,7 +17,6 @@ const TestCaseRoutes = () => {
   const [executionContextReady, setExecutionContextReady] =
     useState<boolean>(true);
   const [executing, setExecuting] = useState<boolean>();
-  const [valueSets, setValueSets] = useState<ValueSet[]>();
   const [cqmMeasure, setCqmMeasure] = useState<CqmMeasure>();
 
   const cqmService = useRef(useCqmConversionService());
@@ -79,7 +78,7 @@ const TestCaseRoutes = () => {
     setExecutionContextReady(
       !!cqmMeasure && !_.isEmpty(cqmMeasure?.value_sets) && !!measure
     );
-  }, [cqmMeasure, measure, valueSets]);
+  }, [cqmMeasure, measure]);
 
   return (
     <QdmExecutionContextProvider
