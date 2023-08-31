@@ -145,10 +145,6 @@ export class QdmCalculationService {
       let populationMap = new Map<String, number>();
       let groupsMap = new Map<String, Map<String, number>>();
 
-      if (_.isNil(testCase?.groupPopulations)) {
-        updatedTestCase.groupPopulations = [];
-      }
-
       Object.entries(CqmPopulationType).forEach((value, key) => {
         //value is one of IPP, DENOM, NUMER, etc...
         //Sets an entry = IPP & numeric value from results

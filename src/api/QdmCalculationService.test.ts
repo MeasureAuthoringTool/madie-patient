@@ -393,13 +393,13 @@ describe("QDM CalculationService Tests", () => {
             },
             {
               id: "g1pop2",
-              name: PopulationType.NUMERATOR,
-              definition: "foo2",
+              name: PopulationType.DENOMINATOR,
+              definition: "foo3",
             },
             {
               id: "g1pop3",
-              name: PopulationType.DENOMINATOR,
-              definition: "foo3",
+              name: PopulationType.NUMERATOR,
+              definition: "foo2",
             },
           ],
           measureGroupTypes: [],
@@ -420,13 +420,13 @@ describe("QDM CalculationService Tests", () => {
               },
               {
                 id: "g1pop2",
-                name: PopulationType.NUMERATOR,
-                definition: "foo2",
+                name: PopulationType.DENOMINATOR,
+                definition: "foo3",
               },
               {
                 id: "g1pop3",
-                name: PopulationType.DENOMINATOR,
-                definition: "foo3",
+                name: PopulationType.NUMERATOR,
+                definition: "foo2",
               },
             ],
             measureGroupTypes: [],
@@ -655,6 +655,61 @@ describe("QDM CalculationService Tests", () => {
             ] as PopulationExpectedValue[],
           },
         ] as GroupPopulation[],
+      };
+      measure.scoring = MeasureScoring.PROPORTION;
+      measure.patientBasis = false;
+
+      const populationGroupResults: CqmExecutionPatientResultsByPopulationSet =
+        {
+          Group1: {
+            IPP: 2,
+            DENOM: 2,
+            NUMER: 1,
+          },
+        };
+
+      const output = calculationService.processTestCaseResults(
+        testCase,
+        measureGroups,
+        measure,
+        populationGroupResults
+      );
+      expect(output).toBeTruthy();
+      expect(output.groupPopulations).toBeTruthy();
+      expect(output.groupPopulations[0].populationValues).toBeTruthy();
+      expect(output.groupPopulations[0].populationValues.length).toEqual(3);
+      expect(output.groupPopulations[0].populationValues[0].name).toEqual(
+        "initialPopulation"
+      );
+      expect(output.groupPopulations[0].populationValues[0].actual).toBe(2);
+      expect(output.groupPopulations[0].populationValues[1].name).toEqual(
+        "denominator"
+      );
+      expect(output.groupPopulations[0].populationValues[1].actual).toBe(2);
+      expect(output.groupPopulations[0].populationValues[2].name).toEqual(
+        "numerator"
+      );
+      expect(output.groupPopulations[0].populationValues[2].actual).toBe(1);
+      expect(output.executionStatus).toEqual(ExecutionStatusType.FAIL);
+    });
+
+    it("should return testCase with mapped group and updated actual values failing non-patientBasis", () => {
+      const testCase: TestCase = {
+        id: "tc1",
+        name: "Test IPP",
+        createdAt: "",
+        createdBy: "",
+        lastModifiedAt: "",
+        lastModifiedBy: "",
+        description: "Test IPP",
+        title: "WhenAllGood",
+        series: "IPP_Pass",
+        validResource: true,
+        hapiOperationOutcome: null,
+        json: "{}",
+        executionStatus: null,
+        patientId: "patient-1a",
+        groupPopulations: null,
       };
       measure.scoring = MeasureScoring.PROPORTION;
       measure.patientBasis = false;
