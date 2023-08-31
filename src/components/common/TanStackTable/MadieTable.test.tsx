@@ -40,8 +40,8 @@ describe("Timing Cell component", () => {
       lowClosed: true,
       highClosed: true,
     };
-    const relevantDatetime = new DateTime(2022, 1, 19, 12, 0, 0, 0);
-    const authorDatetime = new DateTime(2022, 1, 19, 13, 0, 0, 0);
+    const relevantDatetime = new DateTime(2022, 1, 19, 12, 0, 0, 0, 0);
+    const authorDatetime = new DateTime(2022, 1, 19, 13, 0, 0, 0, 0);
     el1.set("authorDatetime", authorDatetime);
     el1.set("relevantDatetime", relevantDatetime);
     el1.set("relevantPeriod", relevantPeriod);
@@ -50,9 +50,9 @@ describe("Timing Cell component", () => {
       "04/05/2021 8:00 AM - 04/05/2023 8:15 AM"
     );
     expect(foundRelevantPeriod).toBeInTheDocument();
-    const foundAuthorDateTime = await findByText("01/19/2022 12:00 PM");
+    const foundAuthorDateTime = await findByText("01/19/2022 5:00 AM");
     expect(foundAuthorDateTime).toBeInTheDocument();
-    const foundRelevantDateTime = await findByText("01/19/2022 11:00 AM");
+    const foundRelevantDateTime = await findByText("01/19/2022 4:00 AM");
     expect(foundRelevantDateTime).toBeInTheDocument();
   });
   test("Timing Cell component renders for Partcipation", async () => {
@@ -87,23 +87,23 @@ describe("Timing Cell component", () => {
   });
   test("Timing Cell component renders for Communication Performed", async () => {
     const el4 = new CommunicationPerformed();
-    const sentDatetime = new DateTime(2009, 8, 14, 5, 0, 0);
-    const receivedDatetime = new DateTime(2010, 1, 15, 5, 0, 0);
+    const sentDatetime = new DateTime(2009, 8, 14, 5, 0, 0, 0, 0);
+    const receivedDatetime = new DateTime(2010, 1, 15, 5, 0, 0, 0, 0);
     el4.set("receivedDatetime", receivedDatetime);
     el4.set("sentDatetime", sentDatetime);
     render(<TimingCell element={el4} />);
-    const foundSentDatetime = await findByText("08/14/2009 5:00 AM");
+    const foundSentDatetime = await findByText("08/13/2009 10:00 PM");
     expect(foundSentDatetime).toBeInTheDocument();
-    const foundReceivedDatetim = await findByText("01/15/2010 4:00 AM");
+    const foundReceivedDatetim = await findByText("01/14/2010 9:00 PM");
     expect(foundReceivedDatetim).toBeInTheDocument();
   });
 
   test("Timing Cell component renders for Procedure Performed", async () => {
     const el5 = new ProcedurePerformed();
-    const incisionDatetime = new DateTime(2013, 8, 14, 5, 0, 0);
+    const incisionDatetime = new DateTime(2013, 8, 14, 5, 0, 0, 0, 0);
     el5.set("incisionDatetime", incisionDatetime);
     render(<TimingCell element={el5} />);
-    const foundIncisionTime = await findByText("08/14/2013 5:00 AM");
+    const foundIncisionTime = await findByText("08/13/2013 10:00 PM");
     expect(foundIncisionTime).toBeInTheDocument();
   });
 
@@ -125,35 +125,35 @@ describe("Timing Cell component", () => {
 
   test("Timing Cell component renders for QDMPatient", async () => {
     const el7 = new QDMPatient();
-    const birthDatetime = new DateTime(2010, 1, 15, 5, 0, 0);
+    const birthDatetime = new DateTime(2010, 1, 15, 5, 0, 0, 0, 0);
     el7.set("birthDatetime", birthDatetime);
     render(<TimingCell element={el7} />);
-    const foundBirthDateTime = await findByText("01/15/2010 4:00 AM");
+    const foundBirthDateTime = await findByText("01/14/2010 9:00 PM");
     expect(foundBirthDateTime).toBeInTheDocument();
   });
 
   test("Timing Cell component renders for Patient Characteristic", async () => {
     const el8 = new PatientCharacteristicExpired();
-    const expiredDatetime = new DateTime(2010, 1, 15, 5, 0, 0);
+    const expiredDatetime = new DateTime(2010, 1, 15, 5, 0, 0, 0, 0);
     el8.set("expiredDatetime", expiredDatetime);
     render(<TimingCell element={el8} />);
-    const foundExpiredDateTime = await findByText("01/15/2010 4:00 AM");
+    const foundExpiredDateTime = await findByText("01/14/2010 9:00 PM");
     expect(foundExpiredDateTime).toBeInTheDocument();
   });
   test("Timing Cell component renders for Diagnostic Study Performed", async () => {
     const el8 = new DiagnosticStudyPerformed();
-    const resultDatetime = new DateTime(2010, 1, 15, 5, 0, 0);
+    const resultDatetime = new DateTime(2010, 1, 15, 5, 0, 0, 0, 0);
     el8.set("resultDatetime", resultDatetime);
     render(<TimingCell element={el8} />);
-    const foundExpiredDateTime = await findByText("01/15/2010 4:00 AM");
+    const foundExpiredDateTime = await findByText("01/14/2010 9:00 PM");
     expect(foundExpiredDateTime).toBeInTheDocument();
   });
   test("Timing Cell component renders for Immunization Order", async () => {
     const el9 = new ImmunizationOrder();
-    const activeDatetime = new DateTime(2010, 1, 15, 5, 0, 0);
+    const activeDatetime = new DateTime(2010, 1, 15, 5, 0, 0, 0, 0);
     el9.set("activeDatetime", activeDatetime);
     render(<TimingCell element={el9} />);
-    const foundActiveDatetime = await findByText("01/15/2010 4:00 AM");
+    const foundActiveDatetime = await findByText("01/14/2010 9:00 PM");
     expect(foundActiveDatetime).toBeInTheDocument();
   });
 });
