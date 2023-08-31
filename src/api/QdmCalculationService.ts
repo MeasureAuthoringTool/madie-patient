@@ -101,6 +101,7 @@ export class QdmCalculationService {
         return groupPass;
       });
 
+      // Todo: check if this logic needs to change for stratifications for QDM
       groupPopulation?.stratificationValues?.every((stratVal) => {
         groupPass =
           groupPass &&
@@ -150,17 +151,17 @@ export class QdmCalculationService {
 
       Object.entries(CqmPopulationType).forEach((value, key) => {
         //value is one of IPP, DENOM, NUMER, etc...
-        //Set's an entry = IPP & numeric value from results
-        populationMap.set(value[1], eval(`results.${value[0]}`));
+        //Sets an entry = IPP & numeric value from results
+        populationMap.set(value[1], results[value[0]]);
       });
-
       groupsMap.set("" + groupId, populationMap);
 
-      testCase.groupPopulations.forEach((value) => {
-        if (value.groupId === groupId) {
-          value.populationValues.forEach((population) => {
+      updatedTestCase.groupPopulations.forEach((groupPop) => {
+        if (groupPop.groupId === groupId) {
+          groupPop.populationValues.forEach((population) => {
             //Look up population
-            population.actual = groupsMap.get(groupId).get(population.name);
+            const value = groupsMap.get(groupId).get(population.name);
+            population.actual = measure.patientBasis ? !!value : value;
           });
         }
       });
