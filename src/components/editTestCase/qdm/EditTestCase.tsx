@@ -263,7 +263,7 @@ const EditTestCase = () => {
       const calculationOutput =
         await qdmCalculation.current.calculateQdmTestCases(
           cqmMeasure,
-          JSON.parse(currentTestCase?.json)
+          JSON.parse(formik.values?.json)
         );
 
       //find the population_sets

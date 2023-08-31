@@ -5,7 +5,7 @@ export class QdmCalculationService {
   async calculateQdmTestCases(cqmMeasure: CqmMeasure, patientJson) {
     let patients = [];
     patients.push(patientJson);
-
+    debugger;
     // Example options; includes directive to produce pretty statement results.
     const options = {
       doPretty: true,

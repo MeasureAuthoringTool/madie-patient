@@ -100,6 +100,7 @@ const ElementsSection = () => {
               cardActiveTab={cardActiveTab}
               setCardActiveTab={setCardActiveTab}
               onChange={(changedDataElement) => {
+                console.log("changedDataElement ", changedDataElement);
                 dispatch({
                   type: PatientActionType.MODIFY_DATA_ELEMENT,
                   payload: changedDataElement,
