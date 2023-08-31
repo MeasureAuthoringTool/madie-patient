@@ -5,33 +5,33 @@ import TimingRow from "./TimingRow";
 
 const TimingCell = ({ element }: { element: DataElement }) => {
   // Periods
-  // relevantPeriod - relPc
+  // relevantPeriod - relP
   const relevantPeriod = element?.get("relevantPeriod");
   // prevalencePeriod - prevP
-  const prevalencePeriod = element.get("prevalencePeriod");
+  const prevalencePeriod = element?.get("prevalencePeriod");
   // participationPeriod - partP
-  const participationPeriod = element.get("participationPeriod");
+  const participationPeriod = element?.get("participationPeriod");
   // locationPeriod - locP
-  const locationPeriod = element.get("locationPeriod");
+  const locationPeriod = element?.get("locationPeriod");
   // Date & Time
   // relevant dateTime - reldT
-  const relevantDateTime = element.get("relevantDateTime");
+  const relevantDatetime = element?.get("relevantDatetime");
   // author dateTime - authdT
-  const authorDateTime = element.get("authorDateTime");
+  const authorDatetime = element?.get("authorDatetime");
   // sent dateTime - sentdT
-  const sentDateTime = element.get("sentDateTime");
+  const sentDatetime = element?.get("sentDatetime");
   // received dateTime - recdT
-  const receivedDateTime = element.get("receivedDateTime");
+  const receivedDatetime = element?.get("receivedDatetime");
   // result dateTime - resdT
-  const resultDateTime = element.get("resultDateTime");
+  const resultDatetime = element?.get("resultDatetime");
   // active dateTime - actdT
-  const activeDateTime = element.get("activeDateTime");
+  const activeDatetime = element?.get("activeDatetime");
   // birth dateTime - bdT
-  const birthDateTime = element.get("birthDateTime");
+  const birthDatetime = element?.get("birthDatetime");
   // expired dateTime - expdT
-  const expiredDateTime = element.get("expiredDateTime");
+  const expiredDatetime = element?.get("expiredDatetime");
   // incision dateTime -incdT
-  const incisionDateTime = element.get("incisionDateTime");
+  const incisionDatetime = element?.get("incisionDatetime");
   // Date
   // statusDate - statD
   return (
@@ -48,32 +48,32 @@ const TimingCell = ({ element }: { element: DataElement }) => {
       {locationPeriod && (
         <TimingRow abbr="LocP" val={stringifyValue(locationPeriod)} />
       )}
-      {relevantDateTime && (
-        <TimingRow abbr="reldT" val={stringifyValue(relevantDateTime)} />
+      {relevantDatetime && (
+        <TimingRow abbr="reldT" val={stringifyValue(relevantDatetime)} />
       )}
-      {authorDateTime && (
-        <TimingRow abbr="authdT" val={stringifyValue(authorDateTime)} />
+      {authorDatetime && (
+        <TimingRow abbr="authdT" val={stringifyValue(authorDatetime)} />
       )}
-      {sentDateTime && (
-        <TimingRow abbr="sentdT" val={stringifyValue(sentDateTime)} />
+      {sentDatetime && (
+        <TimingRow abbr="sentdT" val={stringifyValue(sentDatetime)} />
       )}
-      {receivedDateTime && (
-        <TimingRow abbr="recdT" val={stringifyValue(receivedDateTime)} />
+      {receivedDatetime && (
+        <TimingRow abbr="recdT" val={stringifyValue(receivedDatetime)} />
       )}
-      {resultDateTime && (
-        <TimingRow abbr="resdT" val={stringifyValue(resultDateTime)} />
+      {resultDatetime && (
+        <TimingRow abbr="resdT" val={stringifyValue(resultDatetime)} />
       )}
-      {activeDateTime && (
-        <TimingRow abbr="actdT" val={stringifyValue(activeDateTime)} />
+      {activeDatetime && (
+        <TimingRow abbr="actdT" val={stringifyValue(activeDatetime)} />
       )}
-      {birthDateTime && (
-        <TimingRow abbr="bdT" val={stringifyValue(birthDateTime)} />
+      {birthDatetime && (
+        <TimingRow abbr="bdT" val={stringifyValue(birthDatetime)} />
       )}
-      {expiredDateTime && (
-        <TimingRow abbr="expdT" val={stringifyValue(expiredDateTime)} />
+      {expiredDatetime && (
+        <TimingRow abbr="expdT" val={stringifyValue(expiredDatetime)} />
       )}
-      {incisionDateTime && (
-        <TimingRow abbr="incdT" val={stringifyValue(incisionDateTime)} />
+      {incisionDatetime && (
+        <TimingRow abbr="incdT" val={stringifyValue(incisionDatetime)} />
       )}
     </div>
   );
