@@ -253,7 +253,7 @@ export class CqmConversionService {
     cqlLibraryName: string,
     groupIndex: number
   ) => {
-    return stratifications.map((stratification, i) => ({
+    return stratifications?.map((stratification, i) => ({
       id: uuidv4(),
       hqmf_id: null,
       stratification_id: `PopulationSet_${groupIndex + 1}_Stratification_${

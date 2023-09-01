@@ -190,28 +190,6 @@ const EditTestCase = () => {
     setMeasure(measureCopy);
   }
 
-  // maps measure.group => testcase.groupPopulation
-  // if patient based, then default for expected and actual is false, else null
-  const mapMeasureGroupsToTestCaseGroups = (
-    measureGroup: Group
-  ): GroupPopulation => {
-    return {
-      groupId: measureGroup.id,
-      scoring: measure.scoring,
-      populationBasis: String(measure.patientBasis),
-      stratificationValues: [],
-      populationValues: getPopulationTypesForScoring(measureGroup)?.map(
-        (population: PopulationExpectedValue) => ({
-          name: population.name,
-          expected: measure.patientBasis ? false : null,
-          actual: measure.patientBasis ? false : null,
-          id: population.id,
-          criteriaReference: population.criteriaReference,
-        })
-      ),
-    };
-  };
-
   // Fetches test case based on ID, identifies measure.group converts it to testcase.groupPopulation
   // if the measure.group is not in TC then a new testcase.groupPopulation is added to nextTc
   // and set it to form
@@ -227,7 +205,7 @@ const EditTestCase = () => {
                 (gp) => gp.groupId === group.id
               );
               return _.isNil(existingTestCasePC)
-                ? mapMeasureGroupsToTestCaseGroups(group)
+                ? qdmCalculation.current.mapMeasureGroup(measure, group)
                 : {
                     ...existingTestCasePC,
                   };
@@ -260,14 +238,14 @@ const EditTestCase = () => {
   const calculateQdmTestCases = async () => {
     setExecuting(true);
     try {
+      const patients: any[] = [JSON.parse(currentTestCase?.json)];
       const calculationOutput =
         await qdmCalculation.current.calculateQdmTestCases(
           cqmMeasure,
-          JSON.parse(currentTestCase?.json)
+          patients
         );
 
       //find the population_sets
-
       const populationSets = JSONPath({
         path: "$.population_sets[*].population_set_id",
         json: cqmMeasure,
@@ -308,6 +286,7 @@ const EditTestCase = () => {
     } catch (error) {
       setQdmExecutionErrors((prevState) => [...prevState, `${error.message}`]);
       showToast("Error while calculating QDM test cases", "danger");
+      console.error("Error while calculating QDM test cases:", error);
     } finally {
       setExecuting(false);
     }

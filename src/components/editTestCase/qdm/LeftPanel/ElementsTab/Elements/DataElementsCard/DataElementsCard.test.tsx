@@ -891,8 +891,8 @@ describe("DataElementsCard", () => {
     await waitFor(() =>
       renderDataElementsCard("codes", jest.fn, dataEl[0], jest.fn)
     );
-    const codes = await screen.queryByText("Codes section coming soon!");
-    expect(codes).toBeInTheDocument();
+
+    expect(screen.getByTestId("codes-section")).toBeInTheDocument();
   });
 
   test("DataElementsCards renders nothing", async () => {
