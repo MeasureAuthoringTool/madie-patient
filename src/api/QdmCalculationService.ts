@@ -149,17 +149,13 @@ export class QdmCalculationService {
         //value is one of IPP, DENOM, NUMER, etc...
         //Sets an entry = IPP & numeric value from results
         populationMap.set(value[1], results[value[0]]);
-        console.log(`populationMap.set(${value[1]}, ${results[value[0]]}), using [${value[0]}]`);
       });
       groupsMap.set("" + groupId, populationMap);
-
-
 
       updatedTestCase.groupPopulations.forEach((groupPop) => {
         if (groupPop.groupId === groupId) {
           groupPop.populationValues.forEach((population) => {
             //Look up population
-            console.log("look up result for population: ", population.name);
             const value = groupsMap.get(groupId).get(population.name);
             population.actual = measure.patientBasis ? !!value : value;
           });
