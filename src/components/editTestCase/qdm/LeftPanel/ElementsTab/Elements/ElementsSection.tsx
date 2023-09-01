@@ -14,7 +14,7 @@ import {
   PatientActionType,
   useQdmPatient,
 } from "../../../../../../util/QdmPatientContext";
-import DataElementsTable from "./DataElementsTable";
+import DataElementsTable from "./DataElementsTable/DataElementsTable";
 import {
   filterDataElements,
   getDataElementClass,

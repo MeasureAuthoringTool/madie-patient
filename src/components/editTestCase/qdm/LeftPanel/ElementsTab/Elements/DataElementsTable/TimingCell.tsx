@@ -1,6 +1,6 @@
 import React from "react";
 import { DataElement } from "cqm-models";
-import { stringifyValue } from "../../../util/QdmAttributeHelpers";
+import { stringifyValue } from "../../../../../../../util/QdmAttributeHelpers";
 import TimingRow from "./TimingRow";
 
 const TimingCell = ({ element }: { element: DataElement }) => {

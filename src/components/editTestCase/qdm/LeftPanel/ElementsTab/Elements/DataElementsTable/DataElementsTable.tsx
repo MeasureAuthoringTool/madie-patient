@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import DataTypeCell from "./DataTypeCell";
 import { DataElement } from "cqm-models";
 
-import "./MadieTable.scss";
+import "./DataElementsTable.scss";
 
 import {
   createColumnHelper,
@@ -11,7 +11,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import useQdmExecutionContext from "../../routes/qdm/useQdmExecutionContext";
+import useQdmExecutionContext from "../../../../../../routes/qdm/useQdmExecutionContext";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import TimingCell from "./TimingCell";
 
@@ -20,6 +20,7 @@ const columnHelper = createColumnHelper<DataElement>();
 interface MadieTableProps {
   dataElements?: DataElement[];
   onView?: (dataElement: DataElement) => void;
+  onDelete?: (dataElement: DataElement) => void;
 }
 const MadieTable = ({ dataElements = [], onView }: MadieTableProps) => {
   const { cqmMeasureState } = useQdmExecutionContext();
@@ -51,7 +52,7 @@ const MadieTable = ({ dataElements = [], onView }: MadieTableProps) => {
       cell: (info) => {
         const el = info.getValue();
         if (el.get) {
-          return <TimingCell element={info.getValue()} />;
+          return <TimingCell element={el} />;
         }
         return null;
       },
@@ -99,6 +100,9 @@ const MadieTable = ({ dataElements = [], onView }: MadieTableProps) => {
     },
   });
 
+  if (!dataElements) {
+    return <div />;
+  }
   return (
     <table className="madie-elements-table">
       <thead>

@@ -21,9 +21,9 @@ const DataTypeCell = (props: { element: DataElement; codeSystemMap: any }) => {
       setCodeList(
         codes.map((code) => {
           if (codeSystemMap[code.system]) {
-            return `${codeSystemMap[code.system]} : ${code.system}`;
+            return `${codeSystemMap[code.system]}: ${code.code}`;
           }
-          return code.system;
+          return `${code.system}: ${code.code}`;
         })
       );
     }
@@ -42,7 +42,9 @@ const DataTypeCell = (props: { element: DataElement; codeSystemMap: any }) => {
       <div className="element-type">
         {_.startCase(element?._type.split("QDM::")[1])}
       </div>
-      {codeList.length > 0 && codeList.map((code) => <CodesRow code={code} />)}
+      {codeList.map((code) => (
+        <CodesRow code={code} />
+      ))}{" "}
     </div>
   );
 };
