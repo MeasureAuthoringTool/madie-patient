@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, {useState } from "react";
 import ElementSection from "../../../../../common/ElementSection";
 import FormControl from "@mui/material/FormControl";
 import {
-  Select,
-  InputLabel,
   AutoComplete,
 } from "@madie/madie-design-system/dist/react";
 import {
@@ -11,11 +9,10 @@ import {
   RACE_OMB_CODE_OPTIONS,
   getRaceDataElement,
   matchNameWithUrl,
+  matchUrl,
 } from "./DemographicsSectionConst";
-import { MenuItem as MuiMenuItem, TextField } from "@mui/material";
 import "./DemographicsSection.scss";
 import _ from "lodash";
-import { useQdmPatient } from "../../../../../../util/QdmPatientContext";
 import {
   ResourceActionType,
   useQiCoreResource,
@@ -24,99 +21,104 @@ import {
 const DemographicsSection = ({ canEdit }) => {
   const [ombRaceDataElement, setOmbRaceDataElement] = useState();
   const [detailedRaceDataElement, setDetailedRaceDataElement] = useState();
-  const [multiState, setMultiState] = useState();
   const { state, dispatch } = useQiCoreResource();
   const { resource } = state;
 
   console.log("resource from parent:",resource);
 
-  const decideFunctionToCreateDataElement = (value, name) => {
-    if (name === "raceOMB") {
-      return getRaceDataElement(value, name, RACE_OMB_CODE_OPTIONS);
-    }
-    if (name === "raceDetailed") {
-      return getRaceDataElement(value, name, RACE_DETAILED_CODE_OPTIONS);
+  const createDataElement = (value, name, presentExtensionsInJson) => {
+    const displayNamesPresentInJson = presentExtensionsInJson.map(
+      (extension) => extension.valueCoding.display
+    );
+    const valuesToBeAdded = value.filter(
+      (item) => !displayNamesPresentInJson.includes(item)
+    );
+
+    if (valuesToBeAdded.length > 0) {
+      if (name === "raceOMB") {
+        return getRaceDataElement(
+          valuesToBeAdded[0],
+          name,
+          RACE_OMB_CODE_OPTIONS
+        );
+      }
+      if (name === "raceDetailed") {
+        return getRaceDataElement(
+          valuesToBeAdded[0],
+          name,
+          RACE_DETAILED_CODE_OPTIONS
+        );
+      }
+      return;
     }
 
     //similarly add for ethnicity (only the last paramter of getRaceDataElement function changes)
   };
 
-  const generateExtensionDataElement = (resourceExtensions, name, value) => {
-    const extensions = resourceExtensions?.resource?.extension;
+  const updateResourceExtension = (resourceEntry, name, value) => {
+    const extensions = resourceEntry?.resource?.extension;
     if (extensions) {
-      const matchedExtension = extensions?.map((res) => {
+      const updatedResourceExtensions = extensions?.map((res) => {
         if (res?.url === matchNameWithUrl(name)) {
-          res.extension = [
-            ...res.extension,
-            decideFunctionToCreateDataElement(value, name),
-          ];
+          //need to change name
+          const presentExtensionsInJson = res.extension.filter(
+            (ext) => ext.url === matchUrl(name)
+          );
+          const updatedExtension = createDataElement(
+            value,
+            name,
+            presentExtensionsInJson
+          );
+          if (!_.isNil(updatedExtension)) {
+            res.extension = [...res.extension, updatedExtension];
+          }
         }
         return res;
       });
 
-      resourceExtensions.resource.extension = matchedExtension;
-      return resourceExtensions;
+      resourceEntry.resource.extension = updatedResourceExtensions;
+      return resourceEntry;
     }
-  };
-
-  //////
-  const selectOptions = (options) => {
-    return [
-      options
-        .sort((a, b) =>
-          a.display && b.display
-            ? a.display.localeCompare(b.display)
-            : a.localeCompare(b)
-        )
-        .map((opt, i) => {
-          const { display } = opt || {};
-          const sanitizedString = display
-            ? display.replace(/"/g, "")
-            : opt?.replace(/"/g, "");
-          return (
-            <MuiMenuItem
-              key={`${sanitizedString}-${i}`}
-              value={sanitizedString}
-            >
-              {sanitizedString}
-            </MuiMenuItem>
-          );
-        }),
-    ];
   };
 
   const updateResourceEntries = (name, value) => {
     if (resource !== "Loading...") {
       const resourceEntries = resource;
       if (resourceEntries?.entry && !_.isNil(resourceEntries?.entry)) {
-        const updatedResourceExtension = resourceEntries.entry.map((entry) => {
-          if (entry?.resource?.extension) {
-            return generateExtensionDataElement(entry, name, value);
+        const updatedResourceEntries = resourceEntries.entry.map((entry) => {
+          if (
+            entry?.resource?.extension &&
+            entry.resource?.resourceType === "Patient"
+          ) {
+            return updateResourceExtension(entry, name, value);
           }
           return entry;
         });
 
-        resourceEntries.entry = updatedResourceExtension;
+        resourceEntries.entry = updatedResourceEntries;
         return resourceEntries;
       }
     }
   };
 
-  const handleOmbRaceChange = (event) => {
-    const test = updateResourceEntries(event.target.name, event.target.value);
-    console.log(test);
+  const handleOmbRaceChange = (name, value) => {
+    const updatedResource = updateResourceEntries(name, value);
     dispatch({
-          type: ResourceActionType.ADD_DATA_RESOURCE,
-          payload: test
-        });
-    // setEditorVal(JSON.stringify(test, null, 2));
-    setOmbRaceDataElement(event.target.value);
+      type: ResourceActionType.ADD_DATA_RESOURCE,
+      payload: updatedResource,
+    });
+    setOmbRaceDataElement(value);
   };
 
-  const handleDetailedRaceChange = (event) => {
-    const test = updateResourceEntries(event.target.name, event.target.value);
-    setDetailedRaceDataElement(event.target.value);
+  const handleDetailedRaceChange = (name, value) => {
+    const updatedResource = updateResourceEntries(name, value);
+    dispatch({
+      type: ResourceActionType.ADD_DATA_RESOURCE,
+      payload: updatedResource,
+    });
+    setDetailedRaceDataElement(value);
   };
+
   return (
     <div>
       <ElementSection
@@ -128,52 +130,40 @@ const DemographicsSection = ({ canEdit }) => {
                 <AutoComplete
                   multiple
                   labelId="demographics-race-omb-select-label"
-                  data-testid="demographics-race-omb-input"
+                  data-testid="demographics-race-omb"
+                  inputProps={{
+                    "data-testid": `demographics-race-omb-input`,
+                  }}
                   label="Race (OMB)"
                   name="raceOMB"
-                  // placeholder="-"
+                  id="raceOMB"
                   required={true}
                   disabled={!canEdit}
                   options={RACE_OMB_CODE_OPTIONS.map(
                     (option) => option.display
                   )}
-                  onChange={setMultiState}
-                />
-
-                <Select
-                  labelId="demographics-race-omb-select-label"
-                  id="demographics-race-omb-select-id"
-                  defaultValue="American Indian or Alaska Native"
-                  label="Race (OMB)"
-                  name="raceOMB"
-                  disabled={!canEdit}
-                  inputProps={{
-                    "data-testid": `demographics-race-omb-input`,
-                  }}
-                  value={
-                    ombRaceDataElement ||
-                    "Native Hawaiian or Other Pacific Islander"
+                  onChange={(id, selectedValue) =>
+                    handleOmbRaceChange(id, selectedValue)
                   }
-                  onChange={handleOmbRaceChange}
-                  options={selectOptions(RACE_OMB_CODE_OPTIONS)}
-                ></Select>
+                />
               </FormControl>
 
               <FormControl style={{ minWidth: "300px", maxWidth: "300px" }}>
                 <AutoComplete
                   multiple
                   labelId="demographics-race-detailed-select-label"
-                  id="demographics-race-detailed-select-id"
                   data-testid="demographics-race-detailed-input"
                   label="Race (Detailed)"
                   name="raceDetailed"
-                  // placeholder="-"
+                  id="raceDetailed"
                   required={true}
                   disabled={!canEdit}
                   options={RACE_DETAILED_CODE_OPTIONS.map(
                     (option) => option.display
                   )}
-                  onChange={setMultiState}
+                  onChange={(id, selectedValue) =>
+                    handleDetailedRaceChange(id, selectedValue)
+                  }
                 />
               </FormControl>
             </div>

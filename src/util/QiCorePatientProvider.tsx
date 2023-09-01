@@ -8,7 +8,8 @@ export interface QiCoreResourceContextType {
 
 export enum ResourceActionType {
   LOAD_RESOURCE = "LoadResource",
-  ADD_DATA_RESOURCE = "AddDataElement",
+  ADD_DATA_RESOURCE = "AddDataResource",
+  REMOVE_DATA_RESOURCE = "RemoveDataResource",
 }
 
 export interface QiCoreResourceAction {
