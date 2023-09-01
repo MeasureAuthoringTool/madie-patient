@@ -1,7 +1,6 @@
 import moment from "moment";
 import cqmModels from "cqm-models";
 import * as _ from "lodash";
-import { DateTime } from "cql-execution";
 
 export const PRIMARY_TIMING_ATTRIBUTES = [
   "relevantPeriod",
@@ -98,6 +97,7 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
   }
   // typeof number parses to a date. Check to make sure it's not a number.
   else if (typeof value !== "number" && !isNaN(Date.parse(value))) {
+    // could be a UTC string
     const parsedDate = Date.parse(value);
     const resultDate = new Date(parsedDate);
     // treat date differently
@@ -105,7 +105,7 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
     const month = resultDate.getUTCMonth()
       ? resultDate.getUTCMonth() + 1
       : null;
-    let day = resultDate.getUTCDay() ? resultDate.getUTCDay() + 1 : null; // this works only for utc strings
+    let day = resultDate.getUTCDay() ? resultDate.getUTCDay() + 1 : null; // this works only for utc.. bug point.
     const hours = resultDate.getUTCHours() || null;
     const minutes = resultDate.getUTCMinutes() || null;
     const seconds = resultDate.getUTCSeconds() || null;
@@ -114,14 +114,24 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
     let timeZoneOffset = resultDate.getTimezoneOffset()
       ? resultDate.getTimezoneOffset() / 60
       : null;
-    if (value.isDate) {
+
+    if (
+      value.isDate ||
+      value.isDateTime ||
+      value instanceof cqmModels.CQL.Date ||
+      value.instance
+    ) {
       day = value.day;
-      timeZoneOffset = 0;
     }
-    if (value.isDateTime) {
-      day = value.day;
+    if (
+      value instanceof cqmModels.CQL.DateTime ||
+      value instanceof cqmModels.CQL.Date
+    ) {
+      timeZoneOffset = 0; // bug point.
+    } else {
+      timeZoneOffset = resultDate.getTimezoneOffset() / 60;
     }
-    const currentDate = new DateTime(
+    const currentDate = new cqmModels.CQL.DateTime(
       year,
       month,
       day,
@@ -131,6 +141,7 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
       ms,
       timeZoneOffset
     );
+
     if (currentDate.isTime()) {
       return moment(
         new Date(

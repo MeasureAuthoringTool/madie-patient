@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import DataTypeCell from "./DataTypeCell";
 import { DataElement } from "cqm-models";
 
+import { DateTime } from "cql-execution";
 import "./DataElementsTable.scss";
 
 import {
@@ -16,7 +17,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import TimingCell from "./TimingCell";
 
 const columnHelper = createColumnHelper<DataElement>();
-
+console.log("datetime", DateTime);
 interface MadieTableProps {
   dataElements?: DataElement[];
   onView?: (dataElement: DataElement) => void;
