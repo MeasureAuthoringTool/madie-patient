@@ -1,9 +1,7 @@
-import React, {useState } from "react";
+import React, { useState } from "react";
 import ElementSection from "../../../../../common/ElementSection";
 import FormControl from "@mui/material/FormControl";
-import {
-  AutoComplete,
-} from "@madie/madie-design-system/dist/react";
+import { AutoComplete } from "@madie/madie-design-system/dist/react";
 import {
   RACE_DETAILED_CODE_OPTIONS,
   RACE_OMB_CODE_OPTIONS,
@@ -24,7 +22,7 @@ const DemographicsSection = ({ canEdit }) => {
   const { state, dispatch } = useQiCoreResource();
   const { resource } = state;
 
-  console.log("resource from parent:",resource);
+  //console.log("resource from parent:", resource);
 
   const createDataElement = (value, name, presentExtensionsInJson) => {
     const displayNamesPresentInJson = presentExtensionsInJson.map(
