@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
-import AttributeChipList from "../AttributeChipList";
 import { Select, TextField } from "@madie/madie-design-system/dist/react";
-import { IconButton, MenuItem } from "@mui/material";
+import { IconButton, MenuItem, Chip } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import _ from "lodash";
 import {
@@ -15,6 +14,7 @@ import {
   CQL,
   Code,
 } from "cqm-models";
+import { makeStyles } from "@mui/styles";
 
 interface Chip {
   title: String;
@@ -23,7 +23,6 @@ interface Chip {
 }
 
 interface CodesProps {
-  attributeChipList?: Array<Chip>;
   handleChange: Function;
   cqmMeasure: CqmMeasure;
   selectedDataElement: DataElement;
@@ -33,12 +32,20 @@ const placeHolder = (label) => (
   <span style={{ color: "#717171" }}>{label}</span>
 );
 
+const useStyles = makeStyles({
+  customChips: {
+    background: "#0073c8",
+    color: "#fff",
+    "& .MuiChip-deleteIcon": { color: "#fff" },
+  },
+});
+
 const Codes = ({
-  attributeChipList = [],
   handleChange,
   cqmMeasure,
   selectedDataElement,
 }: CodesProps) => {
+  const classes = useStyles();
   const [concepts, setConcepts] = useState<Concept[]>([]);
 
   const [codeSystems, setCodeSystems] = useState<CodeSystems>();
@@ -53,9 +60,7 @@ const Codes = ({
 
   const [savedCode, setSavedCode] = useState<Code>(null);
 
-  const items = attributeChipList.map((chip) => ({
-    text: `${chip.title}: ${chip.value}`,
-  }));
+  const [chips, setChips] = useState([]);
 
   // filters out the appropriate value set for the selected data element and gets all code concepts
   // Also creates an object for CodeSystems oid as key and display name as value
@@ -73,6 +78,20 @@ const Codes = ({
       setCodeSystems(codeSystems);
     }
   }, [cqmMeasure, selectedDataElement]);
+
+  // In the selected data element, generates a list of chips to be displayed
+  // If a new code is added/deleted, this will handle the display of updated Codes
+  useEffect(() => {
+    if (!_.isEmpty(selectedDataElement?.dataElementCodes)) {
+      const chipsToBeDisplayed = selectedDataElement.dataElementCodes.map(
+        (codes) => ({
+          text: `${codeSystems[codes.system]}: ${codes.code}`,
+          id: `${codeSystems[codes.system]}-${codes.code}`,
+        })
+      );
+      setChips(chipsToBeDisplayed);
+    }
+  }, [codeSystems, selectedDataElement]);
 
   const getCodeSystemMenuOptions = () => {
     return [
@@ -119,6 +138,9 @@ const Codes = ({
     setSavedCode(cqlCode);
   };
 
+  // Todo Check if the codes added are duplicate
+  // Todo add this info to Elements Table
+  // Todo Add a click handler on Chip, if clicked repopulated the inputs to edit
   const addNewCode = () => {
     if (selectedCodeSystemName === "Custom") {
       const customCqlCode = new CQL.Code(
@@ -128,9 +150,21 @@ const Codes = ({
         customCodeConcept
       );
       handleChange(customCqlCode);
+      setSelectedCodeSystemName("");
+      setCustomCodeSystemName("");
+      setCustomCodeConcept("");
     } else {
       handleChange(savedCode);
+      setSelectedCodeSystemName("");
+      setSelectedCodeConcept(null);
     }
+  };
+
+  const handleDeleteCode = (chip) => {
+    const remainingChips = chips.filter((c) => {
+      return c.id != chip.id;
+    });
+    setChips(remainingChips);
   };
 
   const isFormValid = () => {
@@ -146,9 +180,9 @@ const Codes = ({
     return !isValid;
   };
 
+  console.log("chips", chips);
   return (
     <div id="codes" data-testid="codes-section">
-      <AttributeChipList items={items} />
       <div tw="flex md:flex-wrap mt-3">
         <div tw="w-1/4">
           <Select
@@ -252,6 +286,19 @@ const Codes = ({
             <AddCircleOutlineIcon sx={{ color: "#0073c8" }} />
           </IconButton>
         </div>
+      </div>
+      <div tw="flex flex-wrap gap-2">
+        {chips.map((chip) => {
+          return (
+            <Chip
+              id={chip?.id}
+              data-testid={chip?.id}
+              className={classes.customChips}
+              label={chip?.text}
+              onDelete={() => handleDeleteCode(chip)}
+            />
+          );
+        })}
       </div>
     </div>
   );
