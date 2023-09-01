@@ -29,16 +29,13 @@ export const applyAttribute = (
   return updatedDataElement;
 };
 
-export const applyDataElementCodes = (code, dataElement) => {
+const applyDataElementCodes = (code, dataElement) => {
   const modelClass = getDataElementClass(dataElement);
   const updatedDataElement = new modelClass(dataElement);
-  _.isEmpty(updatedDataElement["dataElementCodes"])
-    ? (updatedDataElement["dataElementCodes"] = [code])
-    : (updatedDataElement["dataElementCodes"] = [
-        ...updatedDataElement["dataElementCodes"],
-        code,
-      ]);
-  debugger;
+  updatedDataElement["dataElementCodes"] = [
+    ...updatedDataElement["dataElementCodes"],
+    code,
+  ];
   return updatedDataElement;
 };
 
@@ -214,11 +211,8 @@ const DataElementsCard = (props: {
         activeTab={cardActiveTab}
         setActiveTab={setCardActiveTab}
       />
-      {/*Todo Call OnChange with new DataElement info
-      How to get CodeSystem and Codes info ?*/}
       {cardActiveTab === "codes" && (
         <Codes
-          attributeChipList={[]}
           handleChange={(selectedCode) => {
             const updatedDataElement = applyDataElementCodes(
               selectedCode,
