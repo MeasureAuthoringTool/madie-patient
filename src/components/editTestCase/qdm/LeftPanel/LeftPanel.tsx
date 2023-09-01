@@ -16,7 +16,11 @@ const LeftPanel = (props: { canEdit: boolean }) => {
       <div className="panel-content">
         <QdmPatientProvider>
           {activeTab === "elements" && <ElementsTab canEdit={props.canEdit} />}
-          {activeTab === "json" && <p>{formik.values?.json}</p>}
+          {activeTab === "json" && (
+            <pre>
+              {JSON.stringify(JSON.parse(formik.values?.json), null, 2)}
+            </pre>
+          )}
         </QdmPatientProvider>
       </div>
     </div>
