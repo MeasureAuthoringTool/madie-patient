@@ -16,13 +16,13 @@ import { getPopulationTypesForScoring } from "../util/PopulationsMap";
 export enum CqmPopulationType {
   IPP = "initialPopulation",
   DENOM = "denominator",
-  DENEX = "denominator-exclusion",
-  DENEXCEP = "denominator-exception",
+  DENEX = "denominatorExclusion",
+  DENEXCEP = "denominatorException",
   NUMER = "numerator",
-  NUMEX = "numerator-exclusion",
-  MSRPOPL = "measure-population",
-  MSRPOPLEX = "measure-population-exclusion",
-  OBSERV = "measure-observation",
+  NUMEX = "numeratorExclusion",
+  MSRPOPL = "measurePopulation",
+  MSRPOPLEX = "measurePopulationExclusion",
+  OBSERV = "measureObservation",
 }
 
 export interface CqmExecutionResultsByPatient {
@@ -149,13 +149,17 @@ export class QdmCalculationService {
         //value is one of IPP, DENOM, NUMER, etc...
         //Sets an entry = IPP & numeric value from results
         populationMap.set(value[1], results[value[0]]);
+        console.log(`populationMap.set(${value[1]}, ${results[value[0]]}), using [${value[0]}]`);
       });
       groupsMap.set("" + groupId, populationMap);
+
+
 
       updatedTestCase.groupPopulations.forEach((groupPop) => {
         if (groupPop.groupId === groupId) {
           groupPop.populationValues.forEach((population) => {
             //Look up population
+            console.log("look up result for population: ", population.name);
             const value = groupsMap.get(groupId).get(population.name);
             population.actual = measure.patientBasis ? !!value : value;
           });

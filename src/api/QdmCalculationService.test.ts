@@ -10,9 +10,9 @@ import {
   Measure,
   MeasureScoring,
   PopulationExpectedValue,
+  PopulationType,
   TestCase,
 } from "@madie/madie-models";
-import { PopulationType } from "@madie/madie-models/dist/Population";
 import { ExecutionStatusType } from "./CalculationService";
 
 const localStorageMock = (function () {
@@ -398,8 +398,18 @@ describe("QDM CalculationService Tests", () => {
             },
             {
               id: "g1pop3",
+              name: PopulationType.DENOMINATOR_EXCLUSION,
+              definition: "foo7",
+            },
+            {
+              id: "g1pop4",
               name: PopulationType.NUMERATOR,
               definition: "foo2",
+            },
+            {
+              id: "g1pop5",
+              name: PopulationType.NUMERATOR_EXCLUSION,
+              definition: "foo12",
             },
           ],
           measureGroupTypes: [],
@@ -425,8 +435,18 @@ describe("QDM CalculationService Tests", () => {
               },
               {
                 id: "g1pop3",
+                name: PopulationType.DENOMINATOR_EXCLUSION,
+                definition: "foo7",
+              },
+              {
+                id: "g1pop4",
                 name: PopulationType.NUMERATOR,
                 definition: "foo2",
+              },
+              {
+                id: "g1pop5",
+                name: PopulationType.NUMERATOR_EXCLUSION,
+                definition: "foo12",
               },
             ],
             measureGroupTypes: [],
@@ -496,15 +516,15 @@ describe("QDM CalculationService Tests", () => {
             scoring: MeasureScoring.PROPORTION,
             populationValues: [
               {
-                name: "initialPopulation",
+                name: PopulationType.INITIAL_POPULATION,
                 expected: true,
               },
               {
-                name: "denominator",
+                name: PopulationType.DENOMINATOR,
                 expected: true,
               },
               {
-                name: "numerator",
+                name: PopulationType.NUMERATOR,
                 expected: false,
               },
             ] as PopulationExpectedValue[],
@@ -567,15 +587,15 @@ describe("QDM CalculationService Tests", () => {
             scoring: MeasureScoring.PROPORTION,
             populationValues: [
               {
-                name: "initialPopulation",
+                name: PopulationType.INITIAL_POPULATION,
                 expected: 2,
               },
               {
-                name: "denominator",
+                name: PopulationType.DENOMINATOR,
                 expected: 1,
               },
               {
-                name: "numerator",
+                name: PopulationType.NUMERATOR,
                 expected: 0,
               },
             ] as PopulationExpectedValue[],
@@ -616,6 +636,104 @@ describe("QDM CalculationService Tests", () => {
         "numerator"
       );
       expect(output.groupPopulations[0].populationValues[2].actual).toBe(0);
+      expect(output.executionStatus).toEqual(ExecutionStatusType.PASS);
+    });
+
+    it("should return testCase with updated actual values passing non-patientBasis denex", () => {
+      const testCase: TestCase = {
+        id: "tc1",
+        name: "Test IPP",
+        createdAt: "",
+        createdBy: "",
+        lastModifiedAt: "",
+        lastModifiedBy: "",
+        description: "Test IPP",
+        title: "WhenAllGood",
+        series: "IPP_Pass",
+        validResource: true,
+        hapiOperationOutcome: null,
+        json: "{}",
+        executionStatus: null,
+        patientId: "patient-1a",
+        groupPopulations: [
+          {
+            groupId: "Group1",
+            scoring: MeasureScoring.PROPORTION,
+            populationValues: [
+              {
+                name: PopulationType.INITIAL_POPULATION,
+                expected: 2,
+              },
+              {
+                name: PopulationType.DENOMINATOR,
+                expected: 1,
+              },
+              {
+                name: PopulationType.DENOMINATOR_EXCLUSION,
+                expected: 1,
+              },
+              {
+                name: PopulationType.NUMERATOR,
+                expected: 0,
+              },
+              {
+                name: PopulationType.NUMERATOR_EXCLUSION,
+                expected: 0,
+              },
+            ] as PopulationExpectedValue[],
+          },
+        ] as GroupPopulation[],
+      };
+      measure.scoring = MeasureScoring.PROPORTION;
+      measure.patientBasis = false;
+
+      const populationGroupResults: CqmExecutionPatientResultsByPopulationSet =
+        {
+          Group1: {
+            IPP: 2,
+            DENOM: 1,
+            DENEX: 1,
+            NUMER: 0,
+            NUMEX: 0,
+          },
+        };
+
+      const output = calculationService.processTestCaseResults(
+        testCase,
+        measureGroups,
+        measure,
+        populationGroupResults
+      );
+      expect(output).toBeTruthy();
+      expect(output.groupPopulations).toBeTruthy();
+      expect(output.groupPopulations[0].populationValues).toBeTruthy();
+      expect(output.groupPopulations[0].populationValues.length).toEqual(5);
+
+      expect(output.groupPopulations[0].populationValues[0].name).toEqual(
+        PopulationType.INITIAL_POPULATION
+      );
+      expect(output.groupPopulations[0].populationValues[0].actual).toBe(2);
+
+      expect(output.groupPopulations[0].populationValues[1].name).toEqual(
+        PopulationType.DENOMINATOR
+      );
+      expect(output.groupPopulations[0].populationValues[1].actual).toBe(1);
+
+      expect(output.groupPopulations[0].populationValues[2].name).toEqual(
+        PopulationType.DENOMINATOR_EXCLUSION
+      );
+      expect(output.groupPopulations[0].populationValues[2].actual).toBe(1);
+
+      expect(output.groupPopulations[0].populationValues[3].name).toEqual(
+        PopulationType.NUMERATOR
+      );
+      expect(output.groupPopulations[0].populationValues[3].actual).toBe(0);
+
+      expect(output.groupPopulations[0].populationValues[4].name).toEqual(
+        PopulationType.NUMERATOR_EXCLUSION
+      );
+      expect(output.groupPopulations[0].populationValues[4].actual).toBe(0);
+      expect(output.groupPopulations[0].populationValues[4].expected).toBe(0);
       expect(output.executionStatus).toEqual(ExecutionStatusType.PASS);
     });
 
@@ -732,19 +850,42 @@ describe("QDM CalculationService Tests", () => {
       expect(output).toBeTruthy();
       expect(output.groupPopulations).toBeTruthy();
       expect(output.groupPopulations[0].populationValues).toBeTruthy();
-      expect(output.groupPopulations[0].populationValues.length).toEqual(3);
+      expect(output.groupPopulations[0].populationValues.length).toEqual(5);
+
       expect(output.groupPopulations[0].populationValues[0].name).toEqual(
-        "initialPopulation"
+        PopulationType.INITIAL_POPULATION
       );
       expect(output.groupPopulations[0].populationValues[0].actual).toBe(2);
+
       expect(output.groupPopulations[0].populationValues[1].name).toEqual(
-        "denominator"
+        PopulationType.DENOMINATOR
       );
       expect(output.groupPopulations[0].populationValues[1].actual).toBe(2);
+
       expect(output.groupPopulations[0].populationValues[2].name).toEqual(
-        "numerator"
+        PopulationType.DENOMINATOR_EXCLUSION
       );
-      expect(output.groupPopulations[0].populationValues[2].actual).toBe(1);
+      expect(output.groupPopulations[0].populationValues[2].actual).toBe(
+        undefined
+      );
+      expect(
+        output.groupPopulations[0].populationValues[2].expected
+      ).toBeFalsy();
+
+      expect(output.groupPopulations[0].populationValues[3].name).toEqual(
+        PopulationType.NUMERATOR
+      );
+      expect(output.groupPopulations[0].populationValues[3].actual).toBe(1);
+
+      expect(output.groupPopulations[0].populationValues[4].name).toEqual(
+        PopulationType.NUMERATOR_EXCLUSION
+      );
+      expect(output.groupPopulations[0].populationValues[4].actual).toBe(
+        undefined
+      );
+      expect(
+        output.groupPopulations[0].populationValues[4].expected
+      ).toBeFalsy();
       expect(output.executionStatus).toEqual(ExecutionStatusType.FAIL);
     });
   });
