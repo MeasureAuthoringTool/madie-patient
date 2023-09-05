@@ -97,6 +97,12 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
   }
   // typeof number parses to a date. Check to make sure it's not a number.
   else if (typeof value !== "number" && !isNaN(Date.parse(value))) {
+    if (value instanceof cqmModels.CQL.DateTime) {
+      return moment.utc(value.toJSDate(), true).format("L LT");
+    }
+    if (value instanceof cqmModels.CQL.Date || value.isDate) {
+      return moment.utc(value.toJSDate()).format("L");
+    }
     // could be a UTC string
     const parsedDate = Date.parse(value);
     const resultDate = new Date(parsedDate);
@@ -115,22 +121,6 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
       ? resultDate.getTimezoneOffset() / 60
       : null;
 
-    if (
-      value.isDate ||
-      value.isDateTime ||
-      value instanceof cqmModels.CQL.Date ||
-      value.instance
-    ) {
-      day = value.day;
-    }
-    if (
-      value instanceof cqmModels.CQL.DateTime ||
-      value instanceof cqmModels.CQL.Date
-    ) {
-      timeZoneOffset = 0; // bug point.
-    } else {
-      timeZoneOffset = resultDate.getTimezoneOffset() / 60;
-    }
     const currentDate = new cqmModels.CQL.DateTime(
       year,
       month,
@@ -153,11 +143,8 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
           currentDate.second
         )
       ).format("LT");
-    } else if (value.isDate) {
-      return moment.utc(currentDate.toJSDate()).format("L");
-    } else {
-      return moment.utc(currentDate.toJSDate()).format("L LT");
     }
+    return moment.utc(currentDate.toJSDate()).format("L LT");
   }
   // this block is currently unused but should be uncommented when the dataTypes are tested
   else if (value?.[0]?.schema || value.schema) {

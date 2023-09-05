@@ -75,8 +75,8 @@ describe("Timing Cell component", () => {
   test("Timing Cell component renders for Symptom", async () => {
     const el3 = new Symptom();
     const prevalencePeriod = {
-      low: "2000-04-05T08:00:00.000",
-      high: "2003-04-05T08:15:00.000",
+      low: "2000-04-05T08:00:00.000+0000",
+      high: "2003-04-05T08:15:00.000+0000",
       lowClosed: true,
       highClosed: true,
     };
@@ -112,15 +112,15 @@ describe("Timing Cell component", () => {
   test("Timing Cell component renders for Facility Location", async () => {
     const el6 = new FacilityLocation();
     const locationPeriod = {
-      low: "2007-04-05T08:00:00.000",
-      high: "2008-04-05T08:15:00.000",
+      low: "2007-04-05T08:00:00.000+0000",
+      high: "2008-04-05T08:15:00.000+0000",
       lowClosed: true,
       highClosed: true,
     };
     el6.set("locationPeriod", locationPeriod);
     render(<TimingCell element={el6} />);
     const foundLocationPeriod = await findByText(
-      "04/05/2007 8:00 AM - 04/05/2008 8:15 AM" // 3:00pm and 3:15pm
+      "04/05/2007 8:00 AM - 04/05/2008 8:15 AM"
     );
     expect(foundLocationPeriod).toBeInTheDocument();
   });
