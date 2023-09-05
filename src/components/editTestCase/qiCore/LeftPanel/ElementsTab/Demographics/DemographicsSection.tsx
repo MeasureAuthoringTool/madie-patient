@@ -17,10 +17,35 @@ import {
 } from "../../../../../../util/QiCorePatientProvider";
 
 const DemographicsSection = ({ canEdit }) => {
-  const [ombRaceDataElement, setOmbRaceDataElement] = useState();
-  const [detailedRaceDataElement, setDetailedRaceDataElement] = useState();
   const { state, dispatch } = useQiCoreResource();
   const { resource } = state;
+  const [raceResources, setRaceResources] = useState([]);
+
+  useEffect(() => {
+    if (resource !== "Loading...") {
+      if (resource?.entry && !_.isNil(resource?.entry)) {
+        resource.entry.map((entry) => {
+          if (
+            entry?.resource?.extension &&
+            entry.resource?.resourceType === "Patient"
+          ) {
+            const extensions = entry?.resource?.extension;
+            if (extensions) {
+              extensions?.map((res) => {
+                if (
+                  res?.url ===
+                  "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
+                ) {
+                  setRaceResources(res.extension);
+                }
+                //similarly we can do for ethnicity extensions
+              });
+            }
+          }
+        });
+      }
+    }
+  }, [_.cloneDeep(resource)]);
 
   const createExtension = (value, name, resourceExtensions) => {
     const displayNamesPresentInJson = resourceExtensions
@@ -101,7 +126,6 @@ const DemographicsSection = ({ canEdit }) => {
       type: ResourceActionType.LOAD_RESOURCE,
       payload: updatedResource,
     });
-    setOmbRaceDataElement(value);
   };
 
   const handleDetailedRaceChange = (name, value, reason) => {
@@ -110,7 +134,6 @@ const DemographicsSection = ({ canEdit }) => {
       type: ResourceActionType.LOAD_RESOURCE,
       payload: updatedResource,
     });
-    setDetailedRaceDataElement(value);
   };
 
   return (
@@ -139,6 +162,12 @@ const DemographicsSection = ({ canEdit }) => {
                   onChange={(id, selectedVal, reason, detail) => {
                     handleOmbRaceChange(id, detail?.option, reason);
                   }}
+                  value={
+                    raceResources &&
+                    raceResources
+                      .filter((ext) => ext.url === "ombCategory")
+                      .map((extension) => extension.valueCoding.display)
+                  }
                 />
               </FormControl>
 
@@ -158,6 +187,12 @@ const DemographicsSection = ({ canEdit }) => {
                   onChange={(id, selectedVal, reason, detail) => {
                     handleDetailedRaceChange(id, detail?.option, reason);
                   }}
+                  value={
+                    raceResources &&
+                    raceResources
+                      .filter((ext) => ext.url === "detailed")
+                      .map((extension) => extension.valueCoding.display)
+                  }
                 />
               </FormControl>
             </div>
