@@ -12,6 +12,7 @@ const DataTypeCell = (props: { element: DataElement; codeSystemMap: any }) => {
   let codes = null;
   if (element && element.get) {
     codes = element?.get("dataElementCodes");
+    console.log(codes);
   }
   const [codeList, setCodeList] = useState([]);
 
@@ -20,6 +21,7 @@ const DataTypeCell = (props: { element: DataElement; codeSystemMap: any }) => {
     if (codes) {
       setCodeList(
         codes.map((code) => {
+          console.log("codetests", code);
           if (codeSystemMap[code.system]) {
             return `${codeSystemMap[code.system]}: ${code.code}`;
           }

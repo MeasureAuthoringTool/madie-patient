@@ -6,6 +6,7 @@ import { describe, expect, test } from "@jest/globals";
 import { render, screen, waitFor } from "@testing-library/react";
 
 import DataElementsTable from "./DataElementsTable";
+import DataTypeCell from "./DataTypeCell";
 import TimingRow from "./TimingRow";
 import TimingCell from "./TimingCell";
 
@@ -31,7 +32,7 @@ import {
 
 import { QDMPatient } from "cqm-models/app/assets/javascripts/QDMPatient";
 
-const { DateTime } = CQL;
+const { DateTime, Code } = CQL;
 const { findByText, getByTestId, queryByText } = screen;
 
 const renderDataElementsTable = (dataElements) => {
@@ -51,6 +52,20 @@ const renderDataElementsTable = (dataElements) => {
     </QdmExecutionContextProvider>
   );
 };
+
+describe("DataTypeCell", () => {
+  test("DataType cell renders with a code", async () => {
+    const dataEl = new AssessmentPerformed();
+    const testCode = new Code("code", "system", "version", "display");
+    const codeSystemMap = {
+      system: "DISPLAY",
+    };
+    dataEl.set("dataElementCodes", [testCode]);
+    render(<DataTypeCell element={dataEl} codeSystemMap={codeSystemMap} />);
+    const foundCode = await findByText("DISPLAY: code");
+    expect(foundCode).toBeInTheDocument();
+  });
+});
 
 describe("timingRow component", () => {
   test("TimingRow component renders", async () => {
@@ -185,22 +200,21 @@ describe("Timing Cell component", () => {
     const foundActiveDatetime = await findByText("01/15/2010 5:00 AM");
     expect(foundActiveDatetime).toBeInTheDocument();
   });
-
-  describe("Data Elements Table", () => {
-    test("emtpy table renders", async () => {
-      await waitFor(() => {
-        renderDataElementsTable(null);
-      });
-      expect(getByTestId("empty-table")).toBeInTheDocument();
+});
+describe("Data Elements Table", () => {
+  test("emtpy table renders", async () => {
+    await waitFor(() => {
+      renderDataElementsTable(null);
     });
+    expect(getByTestId("empty-table")).toBeInTheDocument();
+  });
 
-    test("emtpy table renders", async () => {
-      await waitFor(() => {
-        renderDataElementsTable([dataEl[0]]);
-      });
-      await waitFor(() => {
-        expect(queryByText("Encounter Performed")).toBeInTheDocument();
-      });
+  test("emtpy table renders", async () => {
+    await waitFor(() => {
+      renderDataElementsTable([dataEl[0]]);
+    });
+    await waitFor(() => {
+      expect(queryByText("Encounter Performed")).toBeInTheDocument();
     });
   });
 });
