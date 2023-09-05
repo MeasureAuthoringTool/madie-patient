@@ -49,7 +49,7 @@ describe("Timing Cell component", () => {
     el1.set("relevantPeriod", relevantPeriod);
     render(<TimingCell element={el1} />);
     const foundRelevantPeriod = await findByText(
-      "04/05/2021 8:00 AM - 04/05/2023 8:15 AM"
+      "04/05/2022 8:00 AM - 04/05/2023 8:15 AM"
     );
     expect(foundRelevantPeriod).toBeInTheDocument();
     const foundAuthorDateTime = await findByText("01/19/2022 12:00 PM");
