@@ -9,10 +9,12 @@ import DataElementsTable from "./DataElementsTable";
 import TimingRow from "./TimingRow";
 import TimingCell from "./TimingCell";
 
-import { dataEl } from "../DataElementsCard/DataElementsCard.test";
+import {
+  dataEl,
+  testValueSets,
+} from "../DataElementsCard/DataElementsCard.test";
 import { QdmExecutionContextProvider } from "../../../../../../routes/qdm/QdmExecutionContext";
 import { QdmPatientProvider } from "../../../../../../../util/QdmPatientContext";
-import { testValueSets } from "../DataElementsCard/DataElementsCard.test";
 
 import {
   AssessmentPerformed,
