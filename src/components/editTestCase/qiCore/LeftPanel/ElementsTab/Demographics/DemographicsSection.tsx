@@ -33,7 +33,6 @@ const SELECT_ONE_OPTION = (
   </MuiMenuItem>
 );
 const DemographicsSection = ({ canEdit }) => {
-
   const [ombRaceDataElement, setOmbRaceDataElement] = useState();
   const [detailedRaceDataElement, setDetailedRaceDataElement] = useState();
   const { state, dispatch } = useQiCoreResource();
@@ -89,8 +88,8 @@ const DemographicsSection = ({ canEdit }) => {
 
     //similarly add for ethnicity (only the last paramter of getRaceDataElement function changes)
   };
-  const [ombEthnicityDataElement, setOmbEthnicityDataElement] = useState()
-  
+  const [ombEthnicityDataElement, setOmbEthnicityDataElement] = useState();
+
   const [detailedEthnicityDataElement, setDetailedEthnicityDataElement] =
     useState();
   const selectOptions = (options) => {

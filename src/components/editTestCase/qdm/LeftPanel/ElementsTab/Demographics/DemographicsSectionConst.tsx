@@ -85,33 +85,6 @@ export const ETHNICITY_CODE_OPTIONS: DataElementCode[] = [
   },
 ];
 
-export const DETAILED_ETHNICITY_CODE_OPTIONS: DataElementCode[] = [
-  {
-    code: "2137-8",
-    display: "Spaniard",
-    version: "1.2",
-    system: "2.16.840.1.113883.6.238",
-  },
-  {
-    code: "2148-5",
-    display: "Mexican",
-    version: "1.2",
-    system: "2.16.840.1.113883.6.238",
-  },
-  {
-    code: "2155-0",
-    display: "Central American",
-    version: "1.2",
-    system: "2.16.840.1.113883.6.238",
-  },
-  {
-    code: "2165-9",
-    display: "South American",
-    version: "1.2",
-    system: "2.16.840.1.113883.6.238",
-  },
-];
-
 export const LIVING_STATUS_CODE_OPTIONS = ["Living", "Expired"];
 
 export const getBirthDateElement = (value): DataElement => {
