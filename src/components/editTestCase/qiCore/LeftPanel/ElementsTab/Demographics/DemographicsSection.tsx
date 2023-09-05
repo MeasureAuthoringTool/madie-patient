@@ -66,12 +66,10 @@ const DemographicsSection = ({ canEdit }) => {
     }
   }, [_.cloneDeep(resource)]);
 
-
   const createExtension = (value, name, resourceExtensions) => {
     const displayNamesPresentInJson = resourceExtensions
       .filter((ext) => ext.url === matchName(name))
       .map((extension) => extension.valueCoding.display);
-
 
     if (!displayNamesPresentInJson.includes(value)) {
       if (name === "raceOMB") {
@@ -79,6 +77,12 @@ const DemographicsSection = ({ canEdit }) => {
       }
       if (name === "raceDetailed") {
         return getRaceDataElement(value, name, RACE_DETAILED_CODE_OPTIONS);
+      }
+      if (name === "ethnicityOMB") {
+        return getRaceDataElement(value, name, ETHNICITY_CODE_OPTIONS);
+      }
+      if (name === "ethnicityDetailed") {
+        return getRaceDataElement(value, name, ETHNICITY_DETAILED_CODE_OPTIONS);
       }
       return;
     }
@@ -139,6 +143,7 @@ const DemographicsSection = ({ canEdit }) => {
               name,
               res.extension
             );
+
             if (!_.isNil(updatedExtension)) {
               res.extension = [...res.extension, updatedExtension];
             }
@@ -204,7 +209,7 @@ const DemographicsSection = ({ canEdit }) => {
       type: ResourceActionType.LOAD_RESOURCE,
       payload: updatedResource,
     });
-    setDetailedRaceDataElement(value);
+    setDetailedEthnicityDataElement(value);
   };
 
   return (
