@@ -5559,7 +5559,7 @@ export const RACE_DETAILED_CODE_OPTIONS: CodeSystem[] = [
 ];
 
 //can be used for race and ethnicity
-export const matchUrl = (name: string) => {
+export const matchName = (name: string) => {
   if (name.endsWith("OMB")) {
     return "ombCategory";
   }
@@ -5580,7 +5580,7 @@ export const getRaceDataElement = (
 ) => {
   const newCode = getNewCode(code_options, value);
   const pcr = {
-    url: matchUrl(name),
+    url: matchName(name),
     valueCoding: newCode,
   };
   return pcr;

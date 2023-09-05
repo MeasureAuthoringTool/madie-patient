@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ElementSection from "../../../../../common/ElementSection";
 import FormControl from "@mui/material/FormControl";
 import { AutoComplete } from "@madie/madie-design-system/dist/react";
@@ -6,8 +6,8 @@ import {
   RACE_DETAILED_CODE_OPTIONS,
   RACE_OMB_CODE_OPTIONS,
   getRaceDataElement,
+  matchName,
   matchNameWithUrl,
-  matchUrl,
 } from "./DemographicsSectionConst";
 import "./DemographicsSection.scss";
 import _ from "lodash";
@@ -22,12 +22,10 @@ const DemographicsSection = ({ canEdit }) => {
   const { state, dispatch } = useQiCoreResource();
   const { resource } = state;
 
-  //console.log("resource from parent:", resource);
-
-  const createDataElement = (value, name, presentExtensionsInJson) => {
-    const displayNamesPresentInJson = presentExtensionsInJson.map(
-      (extension) => extension.valueCoding.display
-    );
+  const createExtension = (value, name, resourceExtensions) => {
+    const displayNamesPresentInJson = resourceExtensions
+      .filter((ext) => ext.url === matchName(name))
+      .map((extension) => extension.valueCoding.display);
 
     if (!displayNamesPresentInJson.includes(value)) {
       if (name === "raceOMB") {
@@ -42,7 +40,7 @@ const DemographicsSection = ({ canEdit }) => {
     //similarly add for ethnicity (only the last paramter of getRaceDataElement function changes)
   };
 
-  const deleteDataElement = (value, presentExtensionsInJson) => {
+  const deleteExtension = (value, presentExtensionsInJson) => {
     return presentExtensionsInJson.filter(
       (ext) => ext?.valueCoding?.display !== value
     );
@@ -54,17 +52,15 @@ const DemographicsSection = ({ canEdit }) => {
       const updatedResourceExtensions = extensions?.map((res) => {
         if (res?.url === matchNameWithUrl(name)) {
           //need to change name
-          const presentExtensionsInJson = res.extension.filter(
-            (ext) => ext.url === matchUrl(name)
-          );
+
           if (reason === "removeOption") {
-            const updatedExtension = deleteDataElement(value, res.extension);
+            const updatedExtension = deleteExtension(value, res.extension);
             res.extension = updatedExtension;
           } else {
-            const updatedExtension = createDataElement(
+            const updatedExtension = createExtension(
               value,
               name,
-              presentExtensionsInJson
+              res.extension
             );
             if (!_.isNil(updatedExtension)) {
               res.extension = [...res.extension, updatedExtension];
