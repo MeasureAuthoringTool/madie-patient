@@ -4,6 +4,36 @@ export interface CodeSystem {
   display: string;
   definition?: string;
 }
+export const ETHNICITY_CODE_OPTIONS: CodeSystem[] = [
+  {
+    code: "2135-2",
+    display: "Hispanic or Latino",
+    system: "urn:oid:2.16.840.1.113883.6.238",
+  },
+  {
+    code: "2186-5",
+    display: "Not Hispanic or Latino",
+    system: "urn:oid:2.16.840.1.113883.6.238",
+  },
+];
+
+export const ETHNICITY_DETAILED_CODE_OPTIONS: CodeSystem[] = [
+  {
+    code: "2137-8",
+    display: "Spaniard",
+    system: "urn:oid:2.16.840.1.113883.6.238",
+  },
+  {
+    code: "2148-5",
+    display: "Mexican",
+    system: "urn:oid:2.16.840.1.113883.6.238",
+  },
+  {
+    code: "2155-0",
+    display: "Central American",
+    system: "urn:oid:2.16.840.1.113883.6.238",
+  },
+];
 
 export const RACE_OMB_CODE_OPTIONS: CodeSystem[] = [
   {
@@ -5570,7 +5600,9 @@ export const matchNameWithUrl = (name: string) => {
   if (name.startsWith("race")) {
     return "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race";
   }
-  //similarly check for ethnicity
+  if (name.startsWith("ethnicity")) {
+    return "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity";
+  }
 };
 
 export const getRaceDataElement = (
