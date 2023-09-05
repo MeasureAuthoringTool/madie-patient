@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import ElementSection from "../../../../../common/ElementSection";
-import FormControl from "@mui/material/FormControl";
-import { AutoComplete } from "@madie/madie-design-system/dist/react";
+
+import { AutoComplete, Select } from "@madie/madie-design-system/dist/react";
+
 import {
+  ETHNICITY_CODE_OPTIONS,
+  ETHNICITY_DETAILED_CODE_OPTIONS,
   RACE_DETAILED_CODE_OPTIONS,
   RACE_OMB_CODE_OPTIONS,
   getRaceDataElement,
@@ -12,11 +15,29 @@ import {
 import "./DemographicsSection.scss";
 import _ from "lodash";
 import {
+  FormControl,
+  Autocomplete as MUIAutoComplete,
+  MenuItem as MuiMenuItem,
+  Checkbox,
+  TextField,
+} from "@mui/material";
+import "./DemographicsSection.scss";
+
+import { useQdmPatient } from "../../../../../../util/QdmPatientContext";
+
+import {
   ResourceActionType,
   useQiCoreResource,
 } from "../../../../../../util/QiCorePatientProvider";
-
+const SELECT_ONE_OPTION = (
+  <MuiMenuItem key="SelectOne-0" value="Select One">
+    Select One
+  </MuiMenuItem>
+);
 const DemographicsSection = ({ canEdit }) => {
+
+  const [ombRaceDataElement, setOmbRaceDataElement] = useState();
+  const [detailedRaceDataElement, setDetailedRaceDataElement] = useState();
   const { state, dispatch } = useQiCoreResource();
   const { resource } = state;
   const [raceResources, setRaceResources] = useState([]);
@@ -60,11 +81,44 @@ const DemographicsSection = ({ canEdit }) => {
         return getRaceDataElement(value, name, RACE_DETAILED_CODE_OPTIONS);
       }
       return;
+
+
     }
 
     //similarly add for ethnicity (only the last paramter of getRaceDataElement function changes)
   };
-
+  const [ombEthnicityDataElement, setOmbEthnicityDataElement] = useState()
+  
+  const [detailedEthnicityDataElement, setDetailedEthnicityDataElement] =
+    useState();
+  const selectOptions = (options) => {
+    return [
+      options
+        .sort((a, b) =>
+          a.display && b.display
+            ? a.display.localeCompare(b.display)
+            : a.localeCompare(b)
+        )
+        .map((opt, i) => {
+          const { display } = opt || {};
+          const sanitizedString = display
+            ? display.replace(/"/g, "")
+            : opt?.replace(/"/g, "");
+          return (
+            <MuiMenuItem
+              key={`${sanitizedString}-${i}`}
+              value={sanitizedString}
+            >
+              {sanitizedString}
+            </MuiMenuItem>
+          );
+        }),
+    ];
+  };
+  const ethnicityOptions = [
+    SELECT_ONE_OPTION,
+    ...selectOptions(ETHNICITY_CODE_OPTIONS),
+  ];
   const deleteExtension = (value, presentExtensionsInJson) => {
     return presentExtensionsInJson.filter(
       (ext) => ext?.valueCoding?.display !== value
@@ -103,6 +157,7 @@ const DemographicsSection = ({ canEdit }) => {
   const updateResourceEntries = (name, value, reason) => {
     if (resource !== "Loading...") {
       const resourceEntries = resource;
+
       if (resourceEntries?.entry && !_.isNil(resourceEntries?.entry)) {
         const updatedResourceEntries = resourceEntries.entry.map((entry) => {
           if (
@@ -127,13 +182,31 @@ const DemographicsSection = ({ canEdit }) => {
       payload: updatedResource,
     });
   };
+  const [show, setShow] = useState<boolean>(false);
+  const handleOmbEthnicityChange = (event) => {
+    setShow(event.target.value === "Hispanic or Latino");
+    const test = updateResourceEntries(
+      event.target.name,
+      event.target.value,
+      "add"
+    );
 
+    setOmbEthnicityDataElement(event.target.value);
+  };
   const handleDetailedRaceChange = (name, value, reason) => {
     const updatedResource = updateResourceEntries(name, value, reason);
     dispatch({
       type: ResourceActionType.LOAD_RESOURCE,
       payload: updatedResource,
     });
+  };
+  const handleDetailedEthnicityChange = (name, value, reason) => {
+    const updatedResource = updateResourceEntries(name, value, reason);
+    dispatch({
+      type: ResourceActionType.LOAD_RESOURCE,
+      payload: updatedResource,
+    });
+    setDetailedRaceDataElement(value);
   };
 
   return (
@@ -194,6 +267,45 @@ const DemographicsSection = ({ canEdit }) => {
                       .map((extension) => extension.valueCoding.display)
                   }
                 />
+              </FormControl>
+            </div>
+            <div className="demographics-row">
+              <FormControl style={{ minWidth: "250px" }}>
+                <Select
+                  labelId="demographics-ethnicity-omb-select-label"
+                  id="demographics-ethnicity-omb-select-id"
+                  defaultValue="Select One"
+                  label="ethnicity (OMB)"
+                  name="ethnicityOMB"
+                  disabled={!canEdit}
+                  inputProps={{
+                    "data-testid": `demographics-ethnicity-omb-input`,
+                  }}
+                  value={ombEthnicityDataElement}
+                  onChange={handleOmbEthnicityChange}
+                  options={ethnicityOptions}
+                ></Select>
+              </FormControl>
+
+              <FormControl style={{ minWidth: "300px", maxWidth: "300px" }}>
+                {show && (
+                  <AutoComplete
+                    multiple
+                    labelId="demographics-ethnicity-detailed-select-label"
+                    data-testid="demographics-ethnicity-detailed-input"
+                    label="Race (Detailed)"
+                    name="raceDetailed"
+                    id="raceDetailed"
+                    required={true}
+                    disabled={!canEdit}
+                    options={ETHNICITY_DETAILED_CODE_OPTIONS.map(
+                      (option) => option.display
+                    )}
+                    onChange={(id, selectedVal, reason, detail) => {
+                      handleDetailedEthnicityChange(id, detail?.option, reason);
+                    }}
+                  />
+                )}
               </FormControl>
             </div>
           </div>
