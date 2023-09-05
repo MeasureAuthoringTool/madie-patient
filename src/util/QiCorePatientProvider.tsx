@@ -8,8 +8,6 @@ export interface QiCoreResourceContextType {
 
 export enum ResourceActionType {
   LOAD_RESOURCE = "LoadResource",
-  ADD_DATA_RESOURCE = "AddDataResource",
-  REMOVE_DATA_RESOURCE = "RemoveDataResource",
 }
 
 export interface QiCoreResourceAction {
@@ -27,9 +25,6 @@ const QiCoreResourceContext =
 export function resourceReducer(state, action: QiCoreResourceAction) {
   switch (action.type) {
     case ResourceActionType.LOAD_RESOURCE: {
-      return { ...state, resource: action.payload };
-    }
-    case ResourceActionType.ADD_DATA_RESOURCE: {
       return { ...state, resource: action.payload };
     }
     default: {

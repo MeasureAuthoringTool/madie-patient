@@ -28,24 +28,13 @@ const DemographicsSection = ({ canEdit }) => {
     const displayNamesPresentInJson = presentExtensionsInJson.map(
       (extension) => extension.valueCoding.display
     );
-    const valuesToBeAdded = value.filter(
-      (item) => !displayNamesPresentInJson.includes(item)
-    );
 
-    if (valuesToBeAdded.length > 0) {
+    if (!displayNamesPresentInJson.includes(value)) {
       if (name === "raceOMB") {
-        return getRaceDataElement(
-          valuesToBeAdded[0],
-          name,
-          RACE_OMB_CODE_OPTIONS
-        );
+        return getRaceDataElement(value, name, RACE_OMB_CODE_OPTIONS);
       }
       if (name === "raceDetailed") {
-        return getRaceDataElement(
-          valuesToBeAdded[0],
-          name,
-          RACE_DETAILED_CODE_OPTIONS
-        );
+        return getRaceDataElement(value, name, RACE_DETAILED_CODE_OPTIONS);
       }
       return;
     }
@@ -53,7 +42,13 @@ const DemographicsSection = ({ canEdit }) => {
     //similarly add for ethnicity (only the last paramter of getRaceDataElement function changes)
   };
 
-  const updateResourceExtension = (resourceEntry, name, value) => {
+  const deleteDataElement = (value, presentExtensionsInJson) => {
+    return presentExtensionsInJson.filter(
+      (ext) => ext?.valueCoding?.display !== value
+    );
+  };
+
+  const updateResourceExtension = (resourceEntry, name, value, reason) => {
     const extensions = resourceEntry?.resource?.extension;
     if (extensions) {
       const updatedResourceExtensions = extensions?.map((res) => {
@@ -62,13 +57,18 @@ const DemographicsSection = ({ canEdit }) => {
           const presentExtensionsInJson = res.extension.filter(
             (ext) => ext.url === matchUrl(name)
           );
-          const updatedExtension = createDataElement(
-            value,
-            name,
-            presentExtensionsInJson
-          );
-          if (!_.isNil(updatedExtension)) {
-            res.extension = [...res.extension, updatedExtension];
+          if (reason === "removeOption") {
+            const updatedExtension = deleteDataElement(value, res.extension);
+            res.extension = updatedExtension;
+          } else {
+            const updatedExtension = createDataElement(
+              value,
+              name,
+              presentExtensionsInJson
+            );
+            if (!_.isNil(updatedExtension)) {
+              res.extension = [...res.extension, updatedExtension];
+            }
           }
         }
         return res;
@@ -79,7 +79,7 @@ const DemographicsSection = ({ canEdit }) => {
     }
   };
 
-  const updateResourceEntries = (name, value) => {
+  const updateResourceEntries = (name, value, reason) => {
     if (resource !== "Loading...") {
       const resourceEntries = resource;
       if (resourceEntries?.entry && !_.isNil(resourceEntries?.entry)) {
@@ -88,7 +88,7 @@ const DemographicsSection = ({ canEdit }) => {
             entry?.resource?.extension &&
             entry.resource?.resourceType === "Patient"
           ) {
-            return updateResourceExtension(entry, name, value);
+            return updateResourceExtension(entry, name, value, reason);
           }
           return entry;
         });
@@ -99,22 +99,30 @@ const DemographicsSection = ({ canEdit }) => {
     }
   };
 
-  const handleOmbRaceChange = (name, value) => {
-    const updatedResource = updateResourceEntries(name, value);
+  const handleOmbRaceChange = (name, value, reason) => {
+    const updatedResource = updateResourceEntries(name, value, reason);
     dispatch({
-      type: ResourceActionType.ADD_DATA_RESOURCE,
+      type: ResourceActionType.LOAD_RESOURCE,
       payload: updatedResource,
     });
     setOmbRaceDataElement(value);
   };
 
-  const handleDetailedRaceChange = (name, value) => {
-    const updatedResource = updateResourceEntries(name, value);
+  const handleDetailedRaceChange = (name, value, reason) => {
+    const updatedResource = updateResourceEntries(name, value, reason);
     dispatch({
-      type: ResourceActionType.ADD_DATA_RESOURCE,
+      type: ResourceActionType.LOAD_RESOURCE,
       payload: updatedResource,
     });
     setDetailedRaceDataElement(value);
+  };
+
+  const handleRemoveRace = (name, value, reason) => {
+    const updatedResource = updateResourceEntries(name, value, reason);
+    dispatch({
+      type: ResourceActionType.LOAD_RESOURCE,
+      payload: updatedResource,
+    });
   };
 
   return (
@@ -140,9 +148,13 @@ const DemographicsSection = ({ canEdit }) => {
                   options={RACE_OMB_CODE_OPTIONS.map(
                     (option) => option.display
                   )}
-                  onChange={(id, selectedValue) =>
-                    handleOmbRaceChange(id, selectedValue)
-                  }
+                  onChange={(id, selectedVal, reason, detail) => {
+                    if (reason === "removeOption") {
+                      handleRemoveRace(id, detail?.option, reason);
+                    } else {
+                      handleOmbRaceChange(id, detail?.option, reason);
+                    }
+                  }}
                 />
               </FormControl>
 
@@ -159,9 +171,13 @@ const DemographicsSection = ({ canEdit }) => {
                   options={RACE_DETAILED_CODE_OPTIONS.map(
                     (option) => option.display
                   )}
-                  onChange={(id, selectedValue) =>
-                    handleDetailedRaceChange(id, selectedValue)
-                  }
+                  onChange={(id, selectedVal, reason, detail) => {
+                    if (reason === "removeOption") {
+                      handleRemoveRace(id, detail?.option, reason);
+                    } else {
+                      handleDetailedRaceChange(id, detail?.option, reason);
+                    }
+                  }}
                 />
               </FormControl>
             </div>
