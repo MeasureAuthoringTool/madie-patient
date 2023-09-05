@@ -59,6 +59,11 @@ describe("StringifyValue", () => {
     ).toBe("04/05/2012 8:00 AM - 04/05/2012 8:15 AM");
   });
 
+  test("is it just time?", () => {
+    const timeObj = new cqmModels.CQL.DateTime(0, 1, 1, 5, 30, 0);
+    expect(stringifyValue(timeObj)).toBe("05:30:00");
+  });
+
   test("stringify value stringifies Date Objects", () => {
     const testDateObj = new cqmModels.CQL.Date(2023, 1, 19);
     expect(stringifyValue(testDateObj)).toBe("01/19/2023");

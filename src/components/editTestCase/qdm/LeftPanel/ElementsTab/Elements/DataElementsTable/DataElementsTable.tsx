@@ -100,7 +100,7 @@ const MadieTable = ({ dataElements = [], onView }: MadieTableProps) => {
   });
 
   if (!dataElements) {
-    return <div />;
+    return <div data-testid="empty-table" />;
   }
   return (
     <table className="madie-elements-table">

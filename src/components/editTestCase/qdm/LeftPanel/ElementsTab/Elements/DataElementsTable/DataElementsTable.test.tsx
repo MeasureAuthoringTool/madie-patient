@@ -1,11 +1,18 @@
 import React from "react";
+import { Measure } from "@madie/madie-models";
 
 import "@testing-library/jest-dom";
 import { describe, expect, test } from "@jest/globals";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 
+import DataElementsTable from "./DataElementsTable";
 import TimingRow from "./TimingRow";
 import TimingCell from "./TimingCell";
+
+import { dataEl } from "../DataElementsCard/DataElementsCard.test";
+import { QdmExecutionContextProvider } from "../../../../../../routes/qdm/QdmExecutionContext";
+import { QdmPatientProvider } from "../../../../../../../util/QdmPatientContext";
+import { testValueSets } from "../DataElementsCard/DataElementsCard.test";
 
 import {
   AssessmentPerformed,
@@ -23,7 +30,25 @@ import {
 import { QDMPatient } from "cqm-models/app/assets/javascripts/QDMPatient";
 
 const { DateTime } = CQL;
-const { findByText } = screen;
+const { findByText, getByTestId, queryByText } = screen;
+
+const renderDataElementsTable = (dataElements) => {
+  return render(
+    <QdmExecutionContextProvider
+      value={{
+        measureState: [{} as Measure, jest.fn],
+        cqmMeasureState: [{ value_sets: testValueSets }, jest.fn],
+        executionContextReady: true,
+        executing: false,
+        setExecuting: jest.fn(),
+      }}
+    >
+      <QdmPatientProvider>
+        <DataElementsTable dataElements={dataElements} />
+      </QdmPatientProvider>
+    </QdmExecutionContextProvider>
+  );
+};
 
 describe("timingRow component", () => {
   test("TimingRow component renders", async () => {
@@ -157,5 +182,23 @@ describe("Timing Cell component", () => {
     render(<TimingCell element={el10} />);
     const foundActiveDatetime = await findByText("01/15/2010 5:00 AM");
     expect(foundActiveDatetime).toBeInTheDocument();
+  });
+
+  describe("Data Elements Table", () => {
+    test("emtpy table renders", async () => {
+      await waitFor(() => {
+        renderDataElementsTable(null);
+      });
+      expect(getByTestId("empty-table")).toBeInTheDocument();
+    });
+
+    test("emtpy table renders", async () => {
+      await waitFor(() => {
+        renderDataElementsTable([dataEl[0]]);
+      });
+      await waitFor(() => {
+        expect(queryByText("Encounter Performed")).toBeInTheDocument();
+      });
+    });
   });
 });
