@@ -16,12 +16,10 @@ import "./DemographicsSection.scss";
 import _ from "lodash";
 import {
   FormControl,
-  Autocomplete as MUIAutoComplete,
   MenuItem as MuiMenuItem,
   Checkbox,
   TextField,
 } from "@mui/material";
-import "./DemographicsSection.scss";
 
 import { useQdmPatient } from "../../../../../../util/QdmPatientContext";
 
@@ -68,10 +66,12 @@ const DemographicsSection = ({ canEdit }) => {
     }
   }, [_.cloneDeep(resource)]);
 
+
   const createExtension = (value, name, resourceExtensions) => {
     const displayNamesPresentInJson = resourceExtensions
       .filter((ext) => ext.url === matchName(name))
       .map((extension) => extension.valueCoding.display);
+
 
     if (!displayNamesPresentInJson.includes(value)) {
       if (name === "raceOMB") {
@@ -81,8 +81,6 @@ const DemographicsSection = ({ canEdit }) => {
         return getRaceDataElement(value, name, RACE_DETAILED_CODE_OPTIONS);
       }
       return;
-
-
     }
 
     //similarly add for ethnicity (only the last paramter of getRaceDataElement function changes)
@@ -293,9 +291,9 @@ const DemographicsSection = ({ canEdit }) => {
                     multiple
                     labelId="demographics-ethnicity-detailed-select-label"
                     data-testid="demographics-ethnicity-detailed-input"
-                    label="Race (Detailed)"
-                    name="raceDetailed"
-                    id="raceDetailed"
+                    label="Ethnicity (Detailed)"
+                    name="ethnicityDetailed"
+                    id="ethnicityDetailed"
                     required={true}
                     disabled={!canEdit}
                     options={ETHNICITY_DETAILED_CODE_OPTIONS.map(

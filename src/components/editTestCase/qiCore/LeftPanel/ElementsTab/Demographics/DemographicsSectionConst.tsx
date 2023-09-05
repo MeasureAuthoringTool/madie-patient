@@ -5600,7 +5600,6 @@ export const matchNameWithUrl = (name: string) => {
   if (name.startsWith("race")) {
     return "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race";
   }
-
   if (name.startsWith("ethnicity")) {
     return "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity";
   }
