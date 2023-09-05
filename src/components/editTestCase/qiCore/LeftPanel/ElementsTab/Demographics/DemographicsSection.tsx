@@ -117,14 +117,6 @@ const DemographicsSection = ({ canEdit }) => {
     setDetailedRaceDataElement(value);
   };
 
-  const handleRemoveRace = (name, value, reason) => {
-    const updatedResource = updateResourceEntries(name, value, reason);
-    dispatch({
-      type: ResourceActionType.LOAD_RESOURCE,
-      payload: updatedResource,
-    });
-  };
-
   return (
     <div>
       <ElementSection
@@ -149,11 +141,7 @@ const DemographicsSection = ({ canEdit }) => {
                     (option) => option.display
                   )}
                   onChange={(id, selectedVal, reason, detail) => {
-                    if (reason === "removeOption") {
-                      handleRemoveRace(id, detail?.option, reason);
-                    } else {
-                      handleOmbRaceChange(id, detail?.option, reason);
-                    }
+                    handleOmbRaceChange(id, detail?.option, reason);
                   }}
                 />
               </FormControl>
@@ -172,11 +160,7 @@ const DemographicsSection = ({ canEdit }) => {
                     (option) => option.display
                   )}
                   onChange={(id, selectedVal, reason, detail) => {
-                    if (reason === "removeOption") {
-                      handleRemoveRace(id, detail?.option, reason);
-                    } else {
-                      handleDetailedRaceChange(id, detail?.option, reason);
-                    }
+                    handleDetailedRaceChange(id, detail?.option, reason);
                   }}
                 />
               </FormControl>
