@@ -133,7 +133,6 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
     );
 
     if (currentDate.isTime()) {
-      console.log("its time");
       return moment(
         new Date(
           2012,
