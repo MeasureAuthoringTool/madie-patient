@@ -29,6 +29,19 @@ export const applyAttribute = (
   return updatedDataElement;
 };
 
+export const applyDataElementCodes = (code, dataElement) => {
+  const modelClass = getDataElementClass(dataElement);
+  const updatedDataElement = new modelClass(dataElement);
+  _.isEmpty(updatedDataElement["dataElementCodes"])
+    ? (updatedDataElement["dataElementCodes"] = [code])
+    : (updatedDataElement["dataElementCodes"] = [
+        ...updatedDataElement["dataElementCodes"],
+        code,
+      ]);
+  debugger;
+  return updatedDataElement;
+};
+
 const DataElementsCard = (props: {
   cardActiveTab: string;
   setCardActiveTab: Function;
@@ -151,11 +164,6 @@ const DataElementsCard = (props: {
   }, [localSelectedDataElement, codeSystemMap, dataElements]);
   // centralize state one level up so we can conditionally render our child component
 
-  const handleCodeChange = (selectedCode) => {
-    // eslint-disable-next-line no-console
-    console.log("selectedCode => ", selectedCode);
-  };
-
   return (
     <div className="data-elements-card" data-testid="data-element-card">
       <div className="heading-row">
@@ -192,7 +200,13 @@ const DataElementsCard = (props: {
       </div>
       {/* heading row end */}
       <div className="timing">
-        <Timing canEdit={true} selectedDataElement={localSelectedDataElement} />
+        <Timing
+          canEdit={true}
+          updatedDataElement={(updatedDataElement) => {
+            onChange(updatedDataElement);
+          }}
+          selectedDataElement={localSelectedDataElement}
+        />
       </div>
       {/* Govern our navigation for codes/att/negation */}
       <SubNavigationTabs
@@ -205,9 +219,16 @@ const DataElementsCard = (props: {
       {cardActiveTab === "codes" && (
         <Codes
           attributeChipList={[]}
-          handleChange={handleCodeChange}
+          handleChange={(selectedCode) => {
+            const updatedDataElement = applyDataElementCodes(
+              selectedCode,
+              localSelectedDataElement
+            );
+            setLocalSelectedDataElement(updatedDataElement);
+            onChange(updatedDataElement);
+          }}
           cqmMeasure={cqmMeasure}
-          selectedDataElement={selectedDataElement}
+          selectedDataElement={localSelectedDataElement}
         />
       )}
       {cardActiveTab === "attributes" && (

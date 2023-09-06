@@ -61,7 +61,7 @@ const Codes = ({
   // Also creates an object for CodeSystems oid as key and display name as value
   useEffect(() => {
     const currentValueSet: ValueSet[] = _.filter(cqmMeasure?.value_sets, {
-      oid: selectedDataElement.codeListId,
+      oid: selectedDataElement?.codeListId,
     });
     if (!_.isEmpty(currentValueSet)) {
       setConcepts(currentValueSet[0].concepts);
@@ -131,6 +131,19 @@ const Codes = ({
     } else {
       handleChange(savedCode);
     }
+  };
+
+  const isFormValid = () => {
+    let isValid = false;
+    if (!_.isEmpty(selectedCodeSystemName)) {
+      if (selectedCodeSystemName === "Custom") {
+        isValid =
+          !_.isEmpty(customCodeSystemName) && !_.isEmpty(customCodeConcept);
+      } else {
+        isValid = !_.isEmpty(selectedCodeConcept);
+      }
+    }
+    return !isValid;
   };
 
   return (
@@ -232,6 +245,7 @@ const Codes = ({
         )}
         <div tw="w-1/4 py-6">
           <IconButton
+            disabled={isFormValid()}
             data-testid="add-code-concept-button"
             onClick={addNewCode}
           >
