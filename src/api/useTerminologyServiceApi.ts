@@ -14,7 +14,6 @@ type ValueSetSearchParams = {
 
 type ValueSetsSearchCriteria = {
   profile: string;
-  tgt: string;
   includeDraft: boolean;
   valueSetParams: ValueSetSearchParams[];
 };
@@ -28,7 +27,6 @@ export class TerminologyServiceApi {
     }
     const searchCriteria = {
       includeDraft: true, // always true for now
-      tgt: this.getTicketGrantingTicket(),
       valueSetParams: this.getValueSetsOIdsFromBundle(measureBundle),
     } as ValueSetsSearchCriteria;
     if (searchCriteria.valueSetParams.length == 0) {
@@ -68,7 +66,6 @@ export class TerminologyServiceApi {
     }
     const searchCriteria = {
       includeDraft: true, // always true for now
-      tgt: this.getTicketGrantingTicket(),
       valueSetParams: this.getValueSetsOIDsFromCqmMeasure(
         JSON.parse(JSON.stringify(cqmMeasure))
       ),
@@ -170,14 +167,6 @@ export class TerminologyServiceApi {
       return match[0];
     }
     return null;
-  }
-
-  getTicketGrantingTicket(): string {
-    const tgtItem = localStorage.getItem("TGT");
-    if (!tgtItem) {
-      return null;
-    }
-    return JSON.parse(tgtItem).TGT;
   }
 }
 

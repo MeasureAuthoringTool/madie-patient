@@ -28,7 +28,7 @@ const serviceConfig = {
   },
 } as ServiceConfig;
 
-const testCaseJson = {
+export const testCaseJson = {
   qdmVersion: "5.6",
   dataElements: [
     {
@@ -317,7 +317,7 @@ const testCaseJson = {
   birthDatetime: "2023-01-31T19:16:21.063+00:00",
 };
 
-const dataEl = [
+export const dataEl = [
   {
     admissionSource: {
       code: "10725009",
@@ -603,7 +603,7 @@ const dataEl = [
     id: "64b979eacfaef90000434095",
   },
 ];
-const testDataElements = [
+export const testDataElements = [
   {
     dataElementCodes: [],
     _id: "6480f13e91f25700004059bf",
@@ -825,7 +825,7 @@ const mockFormik: FormikContextType<any> = {
   },
 };
 
-const testValueSets = [
+export const testValueSets = [
   {
     oid: "2.16.840.1.113883.3.117.1.7.1.292",
     version: "N/A",
