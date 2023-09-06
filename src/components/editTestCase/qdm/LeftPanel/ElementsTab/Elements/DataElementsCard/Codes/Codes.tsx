@@ -26,6 +26,7 @@ interface CodesProps {
   handleChange: Function;
   cqmMeasure: CqmMeasure;
   selectedDataElement: DataElement;
+  deleteCode: Function;
 }
 
 const placeHolder = (label) => (
@@ -44,6 +45,7 @@ const Codes = ({
   handleChange,
   cqmMeasure,
   selectedDataElement,
+  deleteCode,
 }: CodesProps) => {
   const classes = useStyles();
   const [concepts, setConcepts] = useState<Concept[]>([]);
@@ -84,10 +86,20 @@ const Codes = ({
   useEffect(() => {
     if (!_.isEmpty(selectedDataElement?.dataElementCodes)) {
       const chipsToBeDisplayed = selectedDataElement.dataElementCodes.map(
-        (codes) => ({
-          text: `${codeSystems[codes.system]}: ${codes.code}`,
-          id: `${codeSystems[codes.system]}-${codes.code}`,
-        })
+        (codes) => {
+          const codeSystemDisplayName = codeSystems[codes.system];
+          if (codeSystemDisplayName) {
+            return {
+              text: `${codeSystemDisplayName}: ${codes.code}`,
+              id: `${codeSystemDisplayName}-${codes.code}`,
+            };
+          }
+          // For custom Codes, we directly display what is inputted by user
+          return {
+            text: `${codes.system}: ${codes.code}`,
+            id: `${codes.system}-${codes.code}`,
+          };
+        }
       );
       setChips(chipsToBeDisplayed);
     }
@@ -138,32 +150,43 @@ const Codes = ({
     setSavedCode(cqlCode);
   };
 
-  // Todo Check if the codes added are duplicate
   // Todo add this info to Elements Table
   // Todo Add a click handler on Chip, if clicked repopulated the inputs to edit
+  // Checks if new code is a duplicate based on chip ids.
   const addNewCode = () => {
     if (selectedCodeSystemName === "Custom") {
-      const customCqlCode = new CQL.Code(
-        customCodeConcept,
-        customCodeSystemName, // What is the oid for custom CS
-        null,
-        customCodeConcept
-      );
-      handleChange(customCqlCode);
-      setSelectedCodeSystemName("");
-      setCustomCodeSystemName("");
-      setCustomCodeConcept("");
+      const newCodeId = `${customCodeSystemName}-${customCodeConcept}`;
+      const existingCode = _.filter(chips, _.matches({ id: newCodeId }));
+      if (_.isEmpty(existingCode)) {
+        const customCqlCode = new CQL.Code(
+          customCodeConcept,
+          customCodeSystemName, // What is the oid for custom CS
+          null,
+          customCodeConcept
+        );
+        handleChange(customCqlCode);
+        setSelectedCodeSystemName("");
+        setCustomCodeSystemName("");
+        setCustomCodeConcept("");
+      }
     } else {
-      handleChange(savedCode);
-      setSelectedCodeSystemName("");
-      setSelectedCodeConcept(null);
+      const newCodeId = `${codeSystems[savedCode.system]}-${savedCode.code}`;
+      const existingCode = _.filter(chips, _.matches({ id: newCodeId }));
+      if (_.isEmpty(existingCode)) {
+        handleChange(savedCode);
+        setSelectedCodeSystemName("");
+        setSelectedCodeConcept(null);
+      }
     }
   };
 
+  // Deletes the chip & updates JSON
   const handleDeleteCode = (chip) => {
     const remainingChips = chips.filter((c) => {
-      return c.id != chip.id;
+      return c.id !== chip.id;
     });
+    const codeId = chip.id.split("-")[1];
+    deleteCode(codeId);
     setChips(remainingChips);
   };
 

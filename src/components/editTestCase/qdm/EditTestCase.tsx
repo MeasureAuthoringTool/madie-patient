@@ -305,6 +305,13 @@ const EditTestCase = () => {
     setDiscardDialogOpen(false);
   };
 
+  if (formik.values?.json) {
+    console.log(
+      "json ",
+      JSON.stringify(JSON.parse(formik.values?.json), null, 2)
+    );
+  }
+
   return (
     <>
       {qdmExecutionErrors && qdmExecutionErrors.length > 0 && (

@@ -39,6 +39,18 @@ const applyDataElementCodes = (code, dataElement) => {
   return updatedDataElement;
 };
 
+const deleteDataElementCode = (codeId, dataElement) => {
+  const modelClass = getDataElementClass(dataElement);
+  const updatedDataElement = new modelClass(dataElement);
+  const remainingCodes = updatedDataElement["dataElementCodes"].filter(
+    (dataElementCode) => {
+      return dataElementCode.code != codeId;
+    }
+  );
+  updatedDataElement["dataElementCodes"] = [...remainingCodes];
+  return updatedDataElement;
+};
+
 const DataElementsCard = (props: {
   cardActiveTab: string;
   setCardActiveTab: Function;
@@ -216,6 +228,14 @@ const DataElementsCard = (props: {
           handleChange={(selectedCode) => {
             const updatedDataElement = applyDataElementCodes(
               selectedCode,
+              localSelectedDataElement
+            );
+            setLocalSelectedDataElement(updatedDataElement);
+            onChange(updatedDataElement);
+          }}
+          deleteCode={(codeId) => {
+            const updatedDataElement = deleteDataElementCode(
+              codeId,
               localSelectedDataElement
             );
             setLocalSelectedDataElement(updatedDataElement);
