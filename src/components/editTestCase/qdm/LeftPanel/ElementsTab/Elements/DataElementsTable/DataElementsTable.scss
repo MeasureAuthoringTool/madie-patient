@@ -1,0 +1,171 @@
+$header-size: 14px;
+$header-style: normal;
+$header-weight: 500;
+
+.madie-elements-table {
+  font-family: Rubik, sans-serif;
+  margin-top: 32px;
+  text-align: left;
+
+  .resizer {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 5px;
+    background: rgba(0, 0, 0, 0.5);
+    cursor: col-resize;
+    user-select: none;
+    touch-action: none;
+  }
+
+  .resizer.isResizing {
+    background: blue;
+    opacity: 1;
+  }
+
+  @media (hover: hover) {
+    .resizer {
+      opacity: 0;
+    }
+
+    *:hover > .resizer {
+      opacity: 1;
+    }
+  }
+
+  > thead {
+    background-color: #ededed;
+    border-bottom: solid 1px #cacaca;
+    // maybe overflow here.
+
+    > tr > th {
+      font-size: $header-size;
+      font-style: $header-style;
+      font-weight: $header-weight;
+      padding: 16px;
+      text-align: left;
+      border-bottom: 1px solid #cacaca;
+      background-color: #ededed;
+    }
+
+    > tr > th:first-child {
+      position: sticky !important;
+      left: 0;
+      z-index: 5;
+    }
+
+    > tr > th:last-child {
+      position: sticky !important;
+      right: 0;
+      z-index: 5;
+    }
+  }
+
+  > tbody {
+    tr > td:first-child {
+      position: sticky;
+      left: 0;
+      background-color: #fff;
+      z-index: 5;
+    }
+
+    tr > td:last-child {
+      position: sticky;
+      right: 0;
+      background-color: #fff;
+      z-index: 5;
+    }
+
+    tr > td {
+      padding: 16px;
+      border-bottom: 1px solid #cacaca;
+
+      > .timing-cell-container {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+
+        > .timing-row {
+          font-size: 16px;
+          display: inherit;
+          flex-direction: row;
+          justify-content: flex-start;
+          text-align: left;
+
+          > .abbrev {
+            font-weight: 500;
+          }
+        }
+      }
+
+      > .data-type-container {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+
+        > .element-type,
+        .codes-row {
+          font-size: $header-size;
+        }
+
+        > div {
+          display: flex;
+          flex-direction: row;
+          flex-grow: 1;
+
+          &.header {
+            font-size: $header-size;
+            font-style: $header-style;
+            font-weight: $header-weight;
+
+            > span:nth-of-type(2) {
+              margin-left: 5px;
+              color: #125496;
+            }
+          }
+        }
+      }
+      // all columns aside from first column
+      > .data-type-list {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+
+        > div {
+          display: flex;
+          flex-direction: row;
+          flex-grow: 1;
+        }
+      }
+
+      > .view-button {
+        color: #242424;
+        border: 1px solid #b0b0b0;
+        border-radius: 4px;
+        background: #fff;
+        font-family: Rubik;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 24px;
+        max-height: 40px;
+        max-width: 110px;
+        display: flex;
+        align-items: center;
+
+        > div {
+          border-right: solid 1px #b0b0b0;
+          padding: 8px 16px;
+          flex-direction: row;
+          flex-grow: 1;
+          height: 100%;
+        }
+
+        > svg {
+          margin: 0 6px;
+        }
+      }
+    }
+  }
+}
