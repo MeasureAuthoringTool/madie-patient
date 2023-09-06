@@ -8,36 +8,31 @@ import {
   ETHNICITY_DETAILED_CODE_OPTIONS,
   RACE_DETAILED_CODE_OPTIONS,
   RACE_OMB_CODE_OPTIONS,
-  getRaceDataElement,
-  matchName,
+  createExtension,
+  deleteExtension,
   matchNameWithUrl,
+  updateEthnicityExtension,
 } from "./DemographicsSectionConst";
 import "./DemographicsSection.scss";
 import _ from "lodash";
-import {
-  FormControl,
-  MenuItem as MuiMenuItem,
-  Checkbox,
-  TextField,
-} from "@mui/material";
-
-import { useQdmPatient } from "../../../../../../util/QdmPatientContext";
+import { FormControl, MenuItem as MuiMenuItem } from "@mui/material";
 
 import {
   ResourceActionType,
   useQiCoreResource,
 } from "../../../../../../util/QiCorePatientProvider";
+
 const SELECT_ONE_OPTION = (
   <MuiMenuItem key="SelectOne-0" value="Select One">
     Select One
   </MuiMenuItem>
 );
 const DemographicsSection = ({ canEdit }) => {
-  const [ombRaceDataElement, setOmbRaceDataElement] = useState();
-  const [detailedRaceDataElement, setDetailedRaceDataElement] = useState();
   const { state, dispatch } = useQiCoreResource();
   const { resource } = state;
+  const [show, setShow] = useState<boolean>(false);
   const [raceResources, setRaceResources] = useState([]);
+  const [ethnicityResources, setEthnicityResources] = useState([]);
 
   useEffect(() => {
     if (resource !== "Loading...") {
@@ -56,7 +51,19 @@ const DemographicsSection = ({ canEdit }) => {
                 ) {
                   setRaceResources(res.extension);
                 }
-                //similarly we can do for ethnicity extensions
+                if (
+                  res?.url ===
+                  "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
+                ) {
+                  if (res?.extension) {
+                    const filteredExtensions = res?.extension.filter(
+                      (ext) =>
+                        ext?.valueCoding?.display === "Hispanic or Latino"
+                    );
+                    setShow(filteredExtensions.length > 0 ? true : false);
+                    setEthnicityResources(res.extension);
+                  }
+                }
               });
             }
           }
@@ -65,33 +72,6 @@ const DemographicsSection = ({ canEdit }) => {
     }
   }, [_.cloneDeep(resource)]);
 
-  const createExtension = (value, name, resourceExtensions) => {
-    const displayNamesPresentInJson = resourceExtensions
-      .filter((ext) => ext.url === matchName(name))
-      .map((extension) => extension.valueCoding.display);
-
-    if (!displayNamesPresentInJson.includes(value)) {
-      if (name === "raceOMB") {
-        return getRaceDataElement(value, name, RACE_OMB_CODE_OPTIONS);
-      }
-      if (name === "raceDetailed") {
-        return getRaceDataElement(value, name, RACE_DETAILED_CODE_OPTIONS);
-      }
-      if (name === "ethnicityOMB") {
-        return getRaceDataElement(value, name, ETHNICITY_CODE_OPTIONS);
-      }
-      if (name === "ethnicityDetailed") {
-        return getRaceDataElement(value, name, ETHNICITY_DETAILED_CODE_OPTIONS);
-      }
-      return;
-    }
-
-    //similarly add for ethnicity (only the last paramter of getRaceDataElement function changes)
-  };
-  const [ombEthnicityDataElement, setOmbEthnicityDataElement] = useState();
-
-  const [detailedEthnicityDataElement, setDetailedEthnicityDataElement] =
-    useState();
   const selectOptions = (options) => {
     return [
       options
@@ -116,25 +96,21 @@ const DemographicsSection = ({ canEdit }) => {
         }),
     ];
   };
-  const ethnicityOptions = [
-    SELECT_ONE_OPTION,
-    ...selectOptions(ETHNICITY_CODE_OPTIONS),
-  ];
-  const deleteExtension = (value, presentExtensionsInJson) => {
-    return presentExtensionsInJson.filter(
-      (ext) => ext?.valueCoding?.display !== value
-    );
-  };
 
   const updateResourceExtension = (resourceEntry, name, value, reason) => {
     const extensions = resourceEntry?.resource?.extension;
     if (extensions) {
       const updatedResourceExtensions = extensions?.map((res) => {
         if (res?.url === matchNameWithUrl(name)) {
-          //need to change name
-
           if (reason === "removeOption") {
             const updatedExtension = deleteExtension(value, res.extension);
+            res.extension = updatedExtension;
+          } else if (reason === "updateResource") {
+            const updatedExtension = updateEthnicityExtension(
+              value,
+              name,
+              res.extension
+            );
             res.extension = updatedExtension;
           } else {
             const updatedExtension = createExtension(
@@ -142,7 +118,6 @@ const DemographicsSection = ({ canEdit }) => {
               name,
               res.extension
             );
-
             if (!_.isNil(updatedExtension)) {
               res.extension = [...res.extension, updatedExtension];
             }
@@ -184,17 +159,20 @@ const DemographicsSection = ({ canEdit }) => {
       payload: updatedResource,
     });
   };
-  const [show, setShow] = useState<boolean>(false);
+
   const handleOmbEthnicityChange = (event) => {
     setShow(event.target.value === "Hispanic or Latino");
-    const test = updateResourceEntries(
+    const updatedResource = updateResourceEntries(
       event.target.name,
       event.target.value,
-      "add"
+      "updateResource"
     );
-
-    setOmbEthnicityDataElement(event.target.value);
+    dispatch({
+      type: ResourceActionType.LOAD_RESOURCE,
+      payload: updatedResource,
+    });
   };
+
   const handleDetailedRaceChange = (name, value, reason) => {
     const updatedResource = updateResourceEntries(name, value, reason);
     dispatch({
@@ -202,13 +180,13 @@ const DemographicsSection = ({ canEdit }) => {
       payload: updatedResource,
     });
   };
+
   const handleDetailedEthnicityChange = (name, value, reason) => {
     const updatedResource = updateResourceEntries(name, value, reason);
     dispatch({
       type: ResourceActionType.LOAD_RESOURCE,
       payload: updatedResource,
     });
-    setDetailedEthnicityDataElement(value);
   };
 
   return (
@@ -277,15 +255,24 @@ const DemographicsSection = ({ canEdit }) => {
                   labelId="demographics-ethnicity-omb-select-label"
                   id="demographics-ethnicity-omb-select-id"
                   defaultValue="Select One"
-                  label="ethnicity (OMB)"
+                  label="Ethnicity (OMB)"
                   name="ethnicityOMB"
                   disabled={!canEdit}
                   inputProps={{
                     "data-testid": `demographics-ethnicity-omb-input`,
                   }}
-                  value={ombEthnicityDataElement}
+                  value={
+                    !_.isEmpty(ethnicityResources)
+                      ? ethnicityResources
+                          .filter((ext) => ext?.url === "ombCategory")
+                          .map((extension) => extension?.valueCoding?.display)
+                      : "Select One"
+                  }
                   onChange={handleOmbEthnicityChange}
-                  options={ethnicityOptions}
+                  options={[
+                    SELECT_ONE_OPTION,
+                    ...selectOptions(ETHNICITY_CODE_OPTIONS),
+                  ]}
                 ></Select>
               </FormControl>
 
@@ -303,6 +290,12 @@ const DemographicsSection = ({ canEdit }) => {
                     options={ETHNICITY_DETAILED_CODE_OPTIONS.map(
                       (option) => option.display
                     )}
+                    value={
+                      ethnicityResources &&
+                      ethnicityResources
+                        .filter((ext) => ext.url === "detailed")
+                        .map((extension) => extension.valueCoding.display)
+                    }
                     onChange={(id, selectedVal, reason, detail) => {
                       handleDetailedEthnicityChange(id, detail?.option, reason);
                     }}

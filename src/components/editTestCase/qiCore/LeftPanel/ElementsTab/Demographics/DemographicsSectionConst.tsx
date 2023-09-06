@@ -5588,7 +5588,62 @@ export const RACE_DETAILED_CODE_OPTIONS: CodeSystem[] = [
   },
 ];
 
-//can be used for race and ethnicity
+export const createExtension = (value, name, resourceExtensions) => {
+  const displayNamesPresentInJson = resourceExtensions
+    .filter((ext) => ext.url === matchName(name))
+    .map((extension) => extension.valueCoding.display);
+
+  if (!displayNamesPresentInJson.includes(value)) {
+    if (name === "raceOMB") {
+      return getDataResource(value, name, RACE_OMB_CODE_OPTIONS);
+    }
+    if (name === "raceDetailed") {
+      return getDataResource(value, name, RACE_DETAILED_CODE_OPTIONS);
+    }
+    if (name === "ethnicityOMB") {
+      return getDataResource(value, name, ETHNICITY_CODE_OPTIONS);
+    }
+    if (name === "ethnicityDetailed") {
+      return getDataResource(value, name, ETHNICITY_DETAILED_CODE_OPTIONS);
+    }
+    return;
+  }
+};
+
+export const deleteExtension = (value, presentExtensionsInJson) => {
+  return presentExtensionsInJson.filter(
+    (ext) => ext?.valueCoding?.display !== value
+  );
+};
+
+export const updateEthnicityExtension = (value, name, resourceExtensions) => {
+  if (value === "Not Hispanic or Latino") {
+    const filteredExtensions = resourceExtensions.filter(
+      (resourceExt) =>
+        resourceExt.url !== "ombCategory" &&
+        resourceExt.url !== "detailed" &&
+        resourceExt.url !== "text"
+    );
+    return [
+      ...filteredExtensions,
+      getDataResource(value, name, ETHNICITY_CODE_OPTIONS),
+      { url: "text", valueString: value },
+    ];
+  } else if (value === "Hispanic or Latino") {
+    const filteredExtensions = resourceExtensions.filter(
+      (resourceExt) =>
+        resourceExt.url !== "ombCategory" && resourceExt.url !== "text"
+    );
+    return [
+      ...filteredExtensions,
+      getDataResource(value, name, ETHNICITY_CODE_OPTIONS),
+      { url: "text", valueString: value },
+    ];
+  } else {
+    return [];
+  }
+};
+
 export const matchName = (name: string) => {
   if (name.endsWith("OMB")) {
     return "ombCategory";
@@ -5605,7 +5660,7 @@ export const matchNameWithUrl = (name: string) => {
   }
 };
 
-export const getRaceDataElement = (
+export const getDataResource = (
   value: string,
   name: string,
   code_options: CodeSystem[]
