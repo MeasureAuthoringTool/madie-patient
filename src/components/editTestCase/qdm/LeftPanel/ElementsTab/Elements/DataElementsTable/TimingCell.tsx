@@ -34,6 +34,7 @@ const TimingCell = ({ element }: { element: DataElement }) => {
   const incisionDatetime = element?.get("incisionDatetime");
   // Date
   // statusDate - statD
+  const statusDate = element?.get("statusDate");
   return (
     <div className="timing-cell-container">
       {relevantPeriod && (
@@ -74,6 +75,9 @@ const TimingCell = ({ element }: { element: DataElement }) => {
       )}
       {incisionDatetime && (
         <TimingRow abbr="incdT" val={stringifyValue(incisionDatetime)} />
+      )}
+      {statusDate && (
+        <TimingRow abbr="statD" val={stringifyValue(statusDate)} />
       )}
     </div>
   );
