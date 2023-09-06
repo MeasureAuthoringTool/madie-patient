@@ -218,7 +218,10 @@ const DemographicsSection = ({ canEdit }) => {
                   value={
                     raceResources &&
                     raceResources
-                      .filter((ext) => ext.url === "ombCategory")
+                      .filter(
+                        (ext) =>
+                          ext.url === "ombCategory" && ext?.valueCoding?.display
+                      )
                       .map((extension) => extension.valueCoding.display)
                   }
                 />
@@ -243,7 +246,10 @@ const DemographicsSection = ({ canEdit }) => {
                   value={
                     raceResources &&
                     raceResources
-                      .filter((ext) => ext.url === "detailed")
+                      .filter(
+                        (ext) =>
+                          ext.url === "detailed" && ext?.valueCoding?.display
+                      )
                       .map((extension) => extension.valueCoding.display)
                   }
                 />
@@ -264,7 +270,11 @@ const DemographicsSection = ({ canEdit }) => {
                   value={
                     !_.isEmpty(ethnicityResources)
                       ? ethnicityResources
-                          .filter((ext) => ext?.url === "ombCategory")
+                          .filter(
+                            (ext) =>
+                              ext?.url === "ombCategory" &&
+                              ext?.valueCoding?.display
+                          )
                           .map((extension) => extension?.valueCoding?.display)
                       : "Select One"
                   }
@@ -293,7 +303,10 @@ const DemographicsSection = ({ canEdit }) => {
                     value={
                       ethnicityResources &&
                       ethnicityResources
-                        .filter((ext) => ext.url === "detailed")
+                        .filter(
+                          (ext) =>
+                            ext.url === "detailed" && ext?.valueCoding?.display
+                        )
                         .map((extension) => extension.valueCoding.display)
                     }
                     onChange={(id, selectedVal, reason, detail) => {
