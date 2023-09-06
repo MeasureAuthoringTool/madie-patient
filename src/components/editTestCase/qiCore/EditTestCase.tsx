@@ -345,7 +345,9 @@ const EditTestCase = (props: EditTestCaseProps) => {
 
   const standardizeJson = (testCase) => {
     try {
-      return JSON.stringify(JSON.parse(testCase.json), null, 2);
+      if (JSON.parse(testCase.json)) {
+        return JSON.stringify(JSON.parse(testCase.json), null, 2);
+      }
     } catch (e) {
       return testCase?.json;
     }
@@ -375,7 +377,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
           nextTc.groupPopulations = [];
         }
         resetForm({ values: _.cloneDeep(nextTc) });
-        handleHapiOutcome(tc?.hapiOperationOutcome);
+        handleHapiOutcome(nextTc?.hapiOperationOutcome);
       })
       .catch((error) => {
         if (error.toString().includes("404")) {
