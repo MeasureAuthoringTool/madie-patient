@@ -27,6 +27,7 @@ import {
   PatientCharacteristicExpired,
   ImmunizationOrder,
   DiagnosticStudyPerformed,
+  CareGoal,
   CQL,
 } from "cqm-models";
 
@@ -199,6 +200,14 @@ describe("Timing Cell component", () => {
     render(<TimingCell element={el10} />);
     const foundActiveDatetime = await findByText("01/15/2010 5:00 AM");
     expect(foundActiveDatetime).toBeInTheDocument();
+  });
+  test("Timing Cell component renders for Care Goal, StatusDate", async () => {
+    const el11 = new CareGoal();
+    const statusDate = new DateTime(2010, 1, 15, 5, 0, 0, 0, 0);
+    el11.set("statusDate", statusDate);
+    render(<TimingCell element={el11} />);
+    const foundStatusDate = await findByText("01/15/2010");
+    expect(foundStatusDate).toBeInTheDocument();
   });
 });
 describe("Data Elements Table", () => {
