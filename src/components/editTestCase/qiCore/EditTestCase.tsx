@@ -343,13 +343,22 @@ const EditTestCase = (props: EditTestCaseProps) => {
     });
   }, [formik.dirty, editorVal, testCase?.json]);
 
+  const standardizeJson = (testCase) => {
+    try {
+      return JSON.stringify(JSON.parse(testCase.json), null, 2);
+    } catch (e) {
+      return testCase?.json;
+    }
+  };
+
   const loadTestCase = () => {
     testCaseService.current
       .getTestCase(id, measureId)
       .then((tc: TestCase) => {
-        setTestCase(_.cloneDeep(tc));
-        setEditorVal(tc.json ? tc.json : "");
         const nextTc = _.cloneDeep(tc);
+        nextTc.json = standardizeJson(nextTc);
+        setTestCase(nextTc);
+        setEditorVal(nextTc.json ? nextTc.json : "");
         if (measure && measure.groups) {
           nextTc.groupPopulations = measure.groups.map((group) => {
             const existingGroupPop = tc.groupPopulations?.find(
@@ -448,13 +457,15 @@ const EditTestCase = (props: EditTestCaseProps) => {
         measureId
       );
 
+      const updatedTc = _.cloneDeep(updatedTestCase);
+      updatedTc.json = standardizeJson(updatedTc);
       resetForm({
-        values: _.cloneDeep(updatedTestCase),
+        values: _.cloneDeep(updatedTc),
       });
-      setTestCase(_.cloneDeep(updatedTestCase));
-      setEditorVal(updatedTestCase.json);
+      setTestCase(_.cloneDeep(updatedTc));
+      setEditorVal(updatedTc.json);
 
-      handleTestCaseResponse(updatedTestCase, "update");
+      handleTestCaseResponse(updatedTc, "update");
     } catch (error) {
       setAlert(() => {
         if (error instanceof MadieError) {
