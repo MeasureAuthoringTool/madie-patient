@@ -11,7 +11,7 @@ const DataElementTableCodes = ({
   codeSystemMap;
 }) => {
   return (
-    <div className="text-container">
+    <div tw="text-sm">
       {element.dataElementCodes.map((codes) => {
         return (
           <>
