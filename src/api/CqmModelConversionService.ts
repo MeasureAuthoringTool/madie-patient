@@ -278,7 +278,6 @@ export class CqmConversionService {
     const elmJson = JSON.parse(elm);
     elmJson.library?.valueSets?.def.forEach((valueSet: ValueSet) => {
       valueSet.id = valueSet.id.replace("urn:oid:", "");
-      console.log(elm);
     });
     const cqlLibrary = new CQLLibrary();
     cqlLibrary.library_name = elmJson.library?.identifier.id;
