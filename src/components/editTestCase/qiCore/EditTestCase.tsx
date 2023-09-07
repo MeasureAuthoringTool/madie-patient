@@ -693,6 +693,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
     if (testCase) {
       if (
         _.isNil(testCase?.json) &&
+        !_.isNil(editorVal) &&
         _.isEmpty(editorVal.trim()) &&
         !formik.dirty
       ) {
