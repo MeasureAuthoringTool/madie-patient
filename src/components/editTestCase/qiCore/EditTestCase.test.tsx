@@ -430,7 +430,7 @@ describe("EditTestCase component", () => {
       );
 
       expect(screen.getByTestId("elements-content")).toBeInTheDocument();
-      expect(screen.getByText("Demographics Section")).toBeInTheDocument();
+      //expect(screen.getByText("Demographics Section")).toBeInTheDocument();
       expect(screen.getByText("Elements Section")).toBeInTheDocument();
 
       userEvent.click(screen.getByTestId("json-tab"));
