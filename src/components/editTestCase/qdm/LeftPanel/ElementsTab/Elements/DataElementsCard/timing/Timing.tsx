@@ -6,7 +6,7 @@ import "./Timing.scss";
 import { PRIMARY_TIMING_ATTRIBUTES } from "../../../../../../../../util/QdmAttributeHelpers";
 import * as _ from "lodash";
 
-const Timing = ({ canEdit, updatedDataElement, selectedDataElement }) => {
+const Timing = ({ canEdit, updateDataElement, selectedDataElement }) => {
   const [currentInterval, setCurrentInterval] =
     useState<CQL.DateTimeInterval>(null);
 
@@ -15,7 +15,7 @@ const Timing = ({ canEdit, updatedDataElement, selectedDataElement }) => {
       setCurrentInterval(newValue);
     }
     selectedDataElement[attributeName] = newValue;
-    updatedDataElement(selectedDataElement);
+    updateDataElement(selectedDataElement);
   };
 
   const displayTiming = () => {

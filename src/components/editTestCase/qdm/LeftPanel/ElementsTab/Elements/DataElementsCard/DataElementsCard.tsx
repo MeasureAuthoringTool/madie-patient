@@ -211,7 +211,7 @@ const DataElementsCard = (props: {
       <div className="timing">
         <Timing
           canEdit={true}
-          updatedDataElement={(updatedDataElement) => {
+          updateDataElement={(updatedDataElement) => {
             onChange(updatedDataElement);
           }}
           selectedDataElement={localSelectedDataElement}
