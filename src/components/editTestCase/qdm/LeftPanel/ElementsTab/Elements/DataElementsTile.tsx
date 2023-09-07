@@ -2,7 +2,7 @@ import React from "react";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { DataElement } from "cqm-models";
 import * as _ from "lodash";
-import DataElementTitle from "./DataElementTitle";
+import DataElementTitle from "./dataElementTable/DataElementTitle";
 
 const DataElementsTile = (props: {
   element: DataElement;
