@@ -84,7 +84,7 @@ const Codes = ({
   // In the selected data element, generates a list of chips to be displayed
   // If a new code is added/deleted, this will handle the display of updated Codes
   useEffect(() => {
-    if (!_.isEmpty(selectedDataElement?.dataElementCodes)) {
+    if (!_.isEmpty(selectedDataElement?.dataElementCodes) && codeSystems) {
       const chipsToBeDisplayed = selectedDataElement.dataElementCodes.map(
         (codes) => {
           const codeSystemDisplayName = codeSystems[codes.system];
