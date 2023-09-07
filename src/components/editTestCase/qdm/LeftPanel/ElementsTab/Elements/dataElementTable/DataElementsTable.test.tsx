@@ -13,6 +13,7 @@ import { Measure } from "@madie/madie-models";
 import { FormikContextType, FormikProvider } from "formik";
 import { QdmPatientProvider } from "../../../../../../../util/QdmPatientContext";
 import { testCaseJson } from "../DataElementsCard/DataElementsCard.test";
+import DataElementsCard from "../DataElementsCard/DataElementsCard";
 
 const serviceConfig = {
   testCaseService: {
@@ -52,22 +53,33 @@ const mockFormik: FormikContextType<any> = {
 
 const testDataElements: DataElement[] = [
   {
+    codeListId: "2.16.840.1.113883.3.117.1.7.1.292",
     dataElementCodes: [
       {
         code: "4525004",
         system: "2.16.840.1.113883.6.96",
         version: null,
-        display: "Emergency department patient visit (procedure)",
+        display: "Emergency Department Visit",
       },
     ],
-    _id: "64ad6ac03bdeb0000056a5af",
-    qdmTitle: "Patient DiagnosisComponent",
-    hqmfOid: "2.16.840.1.113883.10.20.28.4.56",
-    qdmCategory: "DiagnosisComponent",
-    qdmStatus: "DiagnosisComponent",
+    description: "Encounter, Performed: Emergency Department Visit",
+    dischargeDisposition: null,
+    hqmfOid: "2.16.840.1.113883.10.20.28.4.5",
+    id: "624c6561d226360000a3d231",
+    priority: null,
+    qdmCategory: "encounter",
+    qdmStatus: "performed",
+    qdmTitle: "Encounter, Performed",
     qdmVersion: "5.6",
-    _type: "QDM::DiagnosisComponent",
-    id: "64ad6ac03bdeb0000056a5af",
+    relatedTo: ["624c6575d226360000a3d249"],
+    relevantPeriod: {
+      low: "2012-04-05T08:00:00.000Z",
+      high: "2012-04-05T08:15:00.000Z",
+      lowClosed: true,
+      highClosed: true,
+    },
+    _type: "QDM::EncounterPerformed",
+    _id: "64c176cd6483d90000a8e02d",
   },
 ];
 
@@ -80,12 +92,7 @@ const renderDataElementsTable = () => {
         <QdmExecutionContextProvider
           value={{
             measureState: [{} as Measure, jest.fn],
-            cqmMeasureState: [
-              {
-                value_sets: testValueSets,
-              },
-              jest.fn,
-            ],
+            cqmMeasureState: [{ value_sets: testValueSets }, jest.fn],
             executionContextReady: true,
             executing: false,
             setExecuting: jest.fn(),
@@ -107,7 +114,7 @@ const renderDataElementsTable = () => {
 
 describe("DataElementsTable Component", () => {
   it("Should display data elements information in the table", async () => {
-    // renderDataElementsTable();
+    renderDataElementsTable();
     expect(screen.getByText("SNOMEDCT-1234")).toBeInTheDocument();
   });
 });
