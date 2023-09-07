@@ -73,6 +73,7 @@ import { ScanValidationDto } from "../../../api/models/ScanValidationDto";
 import { Bundle } from "fhir/r4";
 import { Allotment } from "allotment";
 import ElementsTab from "./LeftPanel/ElementsTab/ElementsTab";
+import { QiCoreResourceProvider } from "../../../util/QiCorePatientProvider";
 // import '../qdm/EditTestCase.scss'
 
 const TestCaseForm = tw.form`m-3`;
@@ -342,13 +343,24 @@ const EditTestCase = (props: EditTestCaseProps) => {
     });
   }, [formik.dirty, editorVal, testCase?.json]);
 
+  const standardizeJson = (testCase) => {
+    try {
+      if (JSON.parse(testCase.json)) {
+        return JSON.stringify(JSON.parse(testCase.json), null, 2);
+      }
+    } catch (e) {
+      return testCase?.json;
+    }
+  };
+
   const loadTestCase = () => {
     testCaseService.current
       .getTestCase(id, measureId)
       .then((tc: TestCase) => {
-        setTestCase(_.cloneDeep(tc));
-        setEditorVal(tc.json ? tc.json : "");
         const nextTc = _.cloneDeep(tc);
+        nextTc.json = standardizeJson(nextTc);
+        setTestCase(nextTc);
+        setEditorVal(nextTc.json ? nextTc.json : "");
         if (measure && measure.groups) {
           nextTc.groupPopulations = measure.groups.map((group) => {
             const existingGroupPop = tc.groupPopulations?.find(
@@ -365,7 +377,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
           nextTc.groupPopulations = [];
         }
         resetForm({ values: _.cloneDeep(nextTc) });
-        handleHapiOutcome(tc?.hapiOperationOutcome);
+        handleHapiOutcome(nextTc?.hapiOperationOutcome);
       })
       .catch((error) => {
         if (error.toString().includes("404")) {
@@ -447,13 +459,15 @@ const EditTestCase = (props: EditTestCaseProps) => {
         measureId
       );
 
+      const updatedTc = _.cloneDeep(updatedTestCase);
+      updatedTc.json = standardizeJson(updatedTc);
       resetForm({
-        values: _.cloneDeep(updatedTestCase),
+        values: _.cloneDeep(updatedTc),
       });
-      setTestCase(_.cloneDeep(updatedTestCase));
-      setEditorVal(updatedTestCase.json);
+      setTestCase(_.cloneDeep(updatedTc));
+      setEditorVal(updatedTc.json);
 
-      handleTestCaseResponse(updatedTestCase, "update");
+      handleTestCaseResponse(updatedTc, "update");
     } catch (error) {
       setAlert(() => {
         if (error instanceof MadieError) {
@@ -679,6 +693,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
     if (testCase) {
       if (
         _.isNil(testCase?.json) &&
+        !_.isNil(editorVal) &&
         _.isEmpty(editorVal.trim()) &&
         !formik.dirty
       ) {
@@ -789,22 +804,28 @@ const EditTestCase = (props: EditTestCaseProps) => {
                   />
                 </div>
 
-                {leftPanelActiveTab === "elements" && (
-                  <div className="panel-content">
-                    <div data-testid="elements-content">
-                      <ElementsTab canEdit={canEdit} />
+                <QiCoreResourceProvider>
+                  {leftPanelActiveTab === "elements" && (
+                    <div className="panel-content">
+                      <div data-testid="elements-content">
+                        <ElementsTab
+                          canEdit={canEdit}
+                          setEditorVal={setEditorVal}
+                          editorVal={editorVal}
+                        />
+                      </div>
                     </div>
-                  </div>
-                )}
-                {leftPanelActiveTab === "json" && (
-                  <Editor
-                    onChange={(val: string) => setEditorVal(val)}
-                    value={editorVal}
-                    setEditor={setEditor}
-                    readOnly={!canEdit || _.isNil(testCase)}
-                    height="100%"
-                  />
-                )}
+                  )}
+                  {leftPanelActiveTab === "json" && (
+                    <Editor
+                      onChange={(val: string) => setEditorVal(val)}
+                      value={editorVal}
+                      setEditor={setEditor}
+                      readOnly={!canEdit || _.isNil(testCase)}
+                      height="100%"
+                    />
+                  )}
+                </QiCoreResourceProvider>
               </div>
             ) : (
               <div className="left-panel">
