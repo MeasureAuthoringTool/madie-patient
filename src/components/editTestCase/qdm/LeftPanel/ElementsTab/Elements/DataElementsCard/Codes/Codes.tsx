@@ -150,7 +150,6 @@ const Codes = ({
     setSavedCode(cqlCode);
   };
 
-  // Todo Add a click handler on Chip, if clicked repopulated the inputs to edit
   // Checks if new code is a duplicate based on chip ids.
   const addNewCode = () => {
     if (selectedCodeSystemName === "Custom") {
