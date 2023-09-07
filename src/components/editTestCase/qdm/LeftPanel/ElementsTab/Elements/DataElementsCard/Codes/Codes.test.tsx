@@ -38,11 +38,12 @@ const cqmMeasure = {
   ],
 };
 
-const selectedDataElement = {
+let selectedDataElement = {
   codeListId: "2.16.840.1.113883.3.666.5.307",
 };
 
 const handleChange = jest.fn();
+const deleteCode = jest.fn();
 
 describe("Codes section", () => {
   it("Should render Codes component with provided props", async () => {
@@ -51,6 +52,7 @@ describe("Codes section", () => {
         cqmMeasure={cqmMeasure}
         handleChange={handleChange}
         selectedDataElement={selectedDataElement}
+        deleteCode={deleteCode}
       />
     );
     expect(screen.getByTestId("codes-section")).toBeInTheDocument();
@@ -73,12 +75,13 @@ describe("Codes section", () => {
     expect(screen.queryByTestId("custom-code")).not.toBeInTheDocument();
   });
 
-  it("Should add code system and code succesfully", async () => {
-    render(
+  it("Should add code system and code succesfully and display chips", async () => {
+    const { rerender } = render(
       <Codes
         cqmMeasure={cqmMeasure}
         handleChange={handleChange}
         selectedDataElement={selectedDataElement}
+        deleteCode={deleteCode}
       />
     );
     expect(screen.getByTestId("codes-section")).toBeInTheDocument();
@@ -123,16 +126,33 @@ describe("Codes section", () => {
       expectedConcept.display_name
     );
     expect(handleChange).toHaveBeenCalledWith(cqlCode);
+
+    const updatedDataElement = {
+      ...selectedDataElement,
+      dataElementCodes: [cqlCode],
+    };
+
+    rerender(
+      <Codes
+        cqmMeasure={cqmMeasure}
+        handleChange={handleChange}
+        selectedDataElement={updatedDataElement}
+        deleteCode={deleteCode}
+      />
+    );
+    // verify chips is added
+    expect(await screen.findByTestId("SNOMEDCT-183452005")).toBeInTheDocument();
   });
 
-  it("Should add a custom code concept", async () => {
+  it("Should add a custom code concept and display chips", async () => {
     const customCodeSystem = "X.12.34.1";
     const customCode = "X-11";
-    render(
+    const { rerender } = render(
       <Codes
         cqmMeasure={cqmMeasure}
         handleChange={handleChange}
         selectedDataElement={selectedDataElement}
+        deleteCode={deleteCode}
       />
     );
     expect(screen.getByTestId("codes-section")).toBeInTheDocument();
@@ -168,5 +188,104 @@ describe("Codes section", () => {
       customCode
     );
     expect(handleChange).toHaveBeenCalledWith(cqlCode);
+
+    const updatedDataElement = {
+      ...selectedDataElement,
+      dataElementCodes: [cqlCode],
+    };
+
+    rerender(
+      <Codes
+        cqmMeasure={cqmMeasure}
+        handleChange={handleChange}
+        selectedDataElement={updatedDataElement}
+        deleteCode={deleteCode}
+      />
+    );
+    // verify chips is added
+    expect(
+      await screen.findByTestId(`${customCodeSystem}-${customCode}`)
+    ).toBeInTheDocument();
+  });
+
+  it("Should delete a newly added code system and code", async () => {
+    const { rerender } = render(
+      <Codes
+        cqmMeasure={cqmMeasure}
+        handleChange={handleChange}
+        selectedDataElement={selectedDataElement}
+        deleteCode={deleteCode}
+      />
+    );
+    expect(screen.getByTestId("codes-section")).toBeInTheDocument();
+
+    // select the code system
+    const codeSystemSelectInput = screen.getByTestId(
+      "code-system-selector-input"
+    ) as HTMLInputElement;
+    expect(codeSystemSelectInput.value).toBe("");
+    const codeSystemSelector = screen.getByTestId("code-system-selector");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    userEvent.click(codeSystemDropdown);
+    const codeSystemOptions = await screen.findAllByTestId(
+      /code-system-option/i
+    );
+    expect(codeSystemOptions).toHaveLength(4);
+    userEvent.click(codeSystemOptions[1]);
+    expect(codeSystemSelectInput.value).toBe("SNOMEDCT");
+
+    // select the code
+    const codeSelectInput = screen.getByTestId(
+      "code-selector-input"
+    ) as HTMLInputElement;
+    expect(codeSelectInput.value).toBe("");
+    const codeSelector = screen.getByTestId("code-selector");
+    const codeDropdown = within(codeSelector).getByRole("button");
+    userEvent.click(codeDropdown);
+    const codeOptions = await screen.findAllByTestId(/code-option/i);
+    expect(codeOptions).toHaveLength(1);
+    expect(codeOptions[0]).toHaveTextContent(
+      "183452005 - Emergency hospital admission (procedure)"
+    );
+    userEvent.click(codeOptions[0]);
+    expect(codeSelectInput.value).toBe("183452005");
+
+    userEvent.click(screen.getByTestId("add-code-concept-button"));
+    const expectedConcept = cqmMeasure.value_sets[0].concepts[0];
+    const cqlCode = new CQL.Code(
+      expectedConcept.code,
+      expectedConcept.code_system_oid,
+      null,
+      expectedConcept.display_name
+    );
+    expect(handleChange).toHaveBeenCalledWith(cqlCode);
+
+    const updatedDataElement = {
+      ...selectedDataElement,
+      dataElementCodes: [cqlCode],
+    };
+
+    rerender(
+      <Codes
+        cqmMeasure={cqmMeasure}
+        handleChange={handleChange}
+        selectedDataElement={updatedDataElement}
+        deleteCode={deleteCode}
+      />
+    );
+    // verify chips is added
+    expect(await screen.findByTestId("SNOMEDCT-183452005")).toBeInTheDocument();
+
+    userEvent.click(screen.getByTestId("CancelIcon"));
+
+    rerender(
+      <Codes
+        cqmMeasure={cqmMeasure}
+        handleChange={handleChange}
+        selectedDataElement={selectedDataElement}
+        deleteCode={deleteCode}
+      />
+    );
+    expect(await screen.queryByTestId("SNOMEDCT-183452005")).toBeNull();
   });
 });

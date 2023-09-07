@@ -150,7 +150,6 @@ const Codes = ({
     setSavedCode(cqlCode);
   };
 
-  // Todo add this info to Elements Table
   // Todo Add a click handler on Chip, if clicked repopulated the inputs to edit
   // Checks if new code is a duplicate based on chip ids.
   const addNewCode = () => {
@@ -203,7 +202,6 @@ const Codes = ({
     return !isValid;
   };
 
-  console.log("chips", chips);
   return (
     <div id="codes" data-testid="codes-section">
       <div tw="flex md:flex-wrap mt-3">
@@ -310,7 +308,7 @@ const Codes = ({
           </IconButton>
         </div>
       </div>
-      <div tw="flex flex-wrap gap-2">
+      <div tw="flex flex-wrap gap-2" id="these are chips">
         {chips.map((chip) => {
           return (
             <Chip
