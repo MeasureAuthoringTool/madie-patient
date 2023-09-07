@@ -327,13 +327,13 @@ export const dataEl = [
     },
     //authorDatetime: "2012-04-05T08:00:00.000+00:00",
     clazz: null,
-    codeListId: "2.16.840.1.113883.3.464.1003.101.12.1010",
+    codeListId: "2.16.840.1.113883.3.117.1.7.1.292",
     dataElementCodes: [
       {
         code: "4525004",
         system: "2.16.840.1.113883.6.96",
         version: null,
-        display: null,
+        display: "Emergency Department Visit",
       },
     ],
     description: "Encounter, Performed: Emergency Department Visit",
