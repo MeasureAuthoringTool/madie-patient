@@ -19,12 +19,14 @@ interface AttributeSectionProps {
   selectedDataElement: DataElement;
   onAddClicked?: (attribute, type, attributeValue) => void;
   attributeChipList?: Array<Chip>;
+  deleteAttributeChip?: (deletedChip) => void;
 }
 
 const AttributeSection = ({
   attributeChipList = [],
   selectedDataElement,
   onAddClicked,
+  deleteAttributeChip,
 }: AttributeSectionProps) => {
   const mappedAttributeList = attributeChipList.map((chip) => ({
     text: `${chip.title}: ${chip.value}`,
@@ -106,7 +108,10 @@ const AttributeSection = ({
         attributeType={formik.values.type}
         onInputAdd={onInputAdd}
       />
-      <AttributeChipList items={mappedAttributeList} />
+      <AttributeChipList
+        items={mappedAttributeList}
+        deleteAttributeChip={deleteAttributeChip}
+      />
     </form>
   );
 };

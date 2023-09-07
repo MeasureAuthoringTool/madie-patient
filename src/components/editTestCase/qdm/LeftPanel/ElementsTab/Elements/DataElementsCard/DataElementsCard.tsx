@@ -151,6 +151,12 @@ const DataElementsCard = (props: {
   }, [localSelectedDataElement, codeSystemMap, dataElements]);
   // centralize state one level up so we can conditionally render our child component
 
+  const deleteAttributeChip = (deletedChip) => {
+    const newAttributes = displayAttributes.slice();
+    newAttributes.splice(deletedChip, 1);
+    setDisplayAttributes(newAttributes);
+  };
+
   const handleCodeChange = (selectedCode) => {
     // eslint-disable-next-line no-console
     console.log("selectedCode => ", selectedCode);
@@ -214,6 +220,7 @@ const DataElementsCard = (props: {
         <AttributeSection
           attributeChipList={displayAttributes}
           selectedDataElement={localSelectedDataElement}
+          deleteAttributeChip={deleteAttributeChip}
           onAddClicked={(attribute, type, attributeValue) => {
             const updatedDataElement = applyAttribute(
               attribute,
