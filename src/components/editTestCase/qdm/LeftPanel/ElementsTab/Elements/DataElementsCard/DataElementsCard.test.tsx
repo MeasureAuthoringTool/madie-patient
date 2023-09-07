@@ -421,6 +421,44 @@ export const dataEl = [
       lowClosed: true,
       highClosed: true,
     },
+    schema: {
+      paths: {
+        performer: {
+          caster: {
+            path: "performer",
+            instance: "AnyEntity",
+            validators: [],
+            getters: [],
+            setters: [],
+            _presplitPath: ["performer"],
+            options: {},
+            _index: null,
+            _arrayPath: "performer.$",
+            _arrayParentPath: "performer",
+          },
+          path: "performer",
+          instance: "Array",
+          validators: [],
+          getters: [],
+          setters: [],
+          _presplitPath: ["performer"],
+          options: {
+            type: [null],
+          },
+          _index: null,
+        },
+        result: {
+          path: "result",
+          instance: "Any",
+          validators: [],
+          getters: [],
+          setters: [],
+          _presplitPath: ["result"],
+          options: {},
+          _index: null,
+        },
+      },
+    },
     _type: "QDM::EncounterPerformed",
     _id: "64c176cd6483d90000a8e02d",
   },
@@ -601,6 +639,23 @@ export const dataEl = [
     qdmVersion: "5.6",
     _type: "QDM::PatientCharacteristicSex",
     id: "64b979eacfaef90000434095",
+  },
+  {
+    dataElementCodes: [],
+    _id: "64f9cb4600acd60000b74732",
+    relatedTo: [],
+    performer: [],
+    qdmTitle: "Assessment, Performed",
+    hqmfOid: "2.16.840.1.113883.10.20.28.4.117",
+    qdmCategory: "assessment",
+    qdmStatus: "performed",
+    qdmVersion: "5.6",
+    _type: "QDM::AssessmentPerformed",
+    id: "64f9cb4600acd60000b74732",
+    components: [],
+    codeListId: "2.16.840.1.113883.3.3157.4031",
+    description: "Assessment, Performed: Active Peptic Ulcer",
+    result: null,
   },
 ];
 export const testDataElements = [
@@ -910,7 +965,7 @@ describe("DataElementsCard", () => {
 describe("applyAttribute function", () => {
   it("should add a result of date type", () => {
     const cqlDate: CQL.Date = new CQL.Date(2023, 4, 22);
-    const dataElement = dataEl[0] as any;
+    const dataElement = dataEl[10] as any;
     expect(dataElement.result).toBeFalsy();
     const updatedElement = applyAttribute(
       "Result",

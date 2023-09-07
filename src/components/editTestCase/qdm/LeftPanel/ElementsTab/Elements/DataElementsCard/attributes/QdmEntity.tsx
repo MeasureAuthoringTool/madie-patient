@@ -1,20 +1,40 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import IdentifierInput from "../../../../../../../common/Identifier/IdentifierInput";
-import { Identifier } from "cqm-models";
+import cqmModels, { Identifier } from "cqm-models";
 import StringInput from "../../../../../../../common/string/StringInput";
+import * as _ from "lodash";
 
 const QdmEntity = ({ setAttributeValue, attributeValue, attributeType }) => {
+  // const [entity, setEntity] = useState(null);
+
+  useEffect(() => {
+    if (attributeType) {
+      console.log("attributeType changed: ", attributeType);
+      const entityClass = cqmModels[attributeType];
+      setAttributeValue(new entityClass());
+      // setEntity(new entityClass());
+    }
+  }, [attributeType]);
+
+  const handleChange = (field, value) => {
+    console.log("attributeType", attributeType);
+    const entityClass = cqmModels[attributeType];
+    if (entityClass && attributeValue) {
+      const nextEntity = new entityClass(attributeValue);
+      nextEntity[field] = value;
+      // setEntity(nextEntity);
+      console.log("returning nextEntity: ", nextEntity);
+      setAttributeValue(nextEntity);
+    }
+  };
+
   return (
     <>
       {attributeType ? (
         <>
           <IdentifierInput
             onIdentifierChange={(val) => {
-              const identifier = new Identifier(val);
-              setAttributeValue((prevValues) => ({
-                ...prevValues,
-                identifier,
-              }));
+              handleChange("identifier", new Identifier(val));
             }}
             canEdit={true}
             identifier={{
@@ -29,12 +49,9 @@ const QdmEntity = ({ setAttributeValue, attributeValue, attributeType }) => {
           <StringInput
             label="Id"
             canEdit={true}
-            fieldValue=""
+            fieldValue={attributeValue?.id}
             onStringValueChange={(val) => {
-              setAttributeValue((prevValues) => ({
-                ...prevValues,
-                ["id"]: val,
-              }));
+              handleChange("id", val);
             }}
           />
         </>

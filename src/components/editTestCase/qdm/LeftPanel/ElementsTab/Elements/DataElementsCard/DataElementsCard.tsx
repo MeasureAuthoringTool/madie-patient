@@ -24,8 +24,30 @@ export const applyAttribute = (
   dataElement
 ) => {
   const modelClass = getDataElementClass(dataElement);
+  console.log("model class: ", modelClass);
   const updatedDataElement = new modelClass(dataElement);
-  updatedDataElement[_.camelCase(attribute)] = attributeValue;
+  const attributePath = _.camelCase(attribute);
+  console.log("schema: ", updatedDataElement.schema);
+  console.log("schema.paths: ", updatedDataElement.schema.paths);
+
+  // console.log("updatedDataElement: ", JSON.stringify(updatedDataElement, null, 2));
+  const pathInfo = updatedDataElement.schema.paths[attributePath];
+  console.log(`pathInfo for attributePath [${attributePath}]: `, pathInfo);
+  if (_.upperCase(pathInfo.instance) === "ARRAY") {
+    if (_.isNil(updatedDataElement[attributePath])) {
+      console.log(`landed here 1, updating attributePath: ${attributePath}`, attributeValue);
+      updatedDataElement[attributePath] = new Array(attributeValue);
+      // } else if (_.isEmpty(updatedDataElement[attributePath])) {
+      //   console.log("landed here 1, updating attributePath: ", attributePath);
+      //   updatedDataElement[attributePath] = [attributeValue];
+    } else {
+      console.log(`landed here 2, updating attributePath: ${attributePath}`, attributeValue);
+      updatedDataElement[attributePath].push(attributeValue);
+    }
+  } else {
+    updatedDataElement[_.camelCase(attribute)] = attributeValue;
+  }
+  console.log("updatedDataElement", updatedDataElement);
   return updatedDataElement;
 };
 
