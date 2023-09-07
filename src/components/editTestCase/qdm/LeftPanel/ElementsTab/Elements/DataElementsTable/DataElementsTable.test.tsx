@@ -1,15 +1,12 @@
-import React from "react";
+import * as React from "react";
 import { Measure } from "@madie/madie-models";
-
 import "@testing-library/jest-dom";
 import { describe, expect, test } from "@jest/globals";
 import { render, screen, waitFor } from "@testing-library/react";
-
 import DataElementsTable from "./DataElementsTable";
 import DataTypeCell from "./DataTypeCell";
 import TimingRow from "./TimingRow";
 import TimingCell from "./TimingCell";
-
 import {
   dataEl,
   testValueSets,
@@ -100,7 +97,7 @@ describe("Timing Cell component", () => {
     const foundRelevantDateTime = await findByText("01/19/2022 1:00 PM");
     expect(foundRelevantDateTime).toBeInTheDocument();
   });
-  test("Timing Cell component renders for Partcipation", async () => {
+  test("Timing Cell component renders for Participation", async () => {
     const el2 = new Participation();
     const participationPeriod = {
       low: new DateTime(2022, 4, 5, 8, 0, 0, 0, 0),
