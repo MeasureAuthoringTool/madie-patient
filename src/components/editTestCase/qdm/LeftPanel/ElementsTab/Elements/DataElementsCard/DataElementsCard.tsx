@@ -28,12 +28,8 @@ export const applyAttribute = (
   const attributePath = _.camelCase(attribute);
 
   const pathInfo = updatedDataElement.schema.paths[attributePath];
-  if (_.upperCase(pathInfo.instance) === "ARRAY") {
-    if (_.isNil(updatedDataElement[attributePath])) {
-      updatedDataElement[attributePath] = new Array(attributeValue);
-    } else {
-      updatedDataElement[attributePath].push(attributeValue);
-    }
+  if (_.upperCase(pathInfo?.instance) === "ARRAY") {
+    updatedDataElement[attributePath].push(attributeValue);
   } else {
     updatedDataElement[_.camelCase(attribute)] = attributeValue;
   }
