@@ -1,3 +1,8 @@
+export const US_CORE_RACE =
+  "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race";
+export const US_CORE_ETHNICITY =
+  "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity";
+
 export interface CodeSystem {
   code: string;
   system: string;
@@ -67,9 +72,28 @@ export const RACE_OMB_CODE_OPTIONS: CodeSystem[] = [
     system: "urn:oid:2.16.840.1.113883.6.238",
   },
 ];
+// http://hl7.org/fhir/R4/valueset-administrative-gender.html
+export const GENDER_CODE_OPTIONS = [
+  {
+    code: "male",
+    display: "Male",
+  },
+  {
+    code: "female",
+    display: "Female",
+  },
+  {
+    code: "other",
+    display: "Other",
+  },
+  {
+    code: "unknown",
+    display: "Unknown",
+  },
+];
 
 // this is just a small array of hardcode options for scope of this story
-// TO DO: call an API to gett all code systems present in the "http://hl7.org/fhir/us/core/STU5.0.1/ValueSet-detailed-race.html"
+// TO DO: call an API to get all code systems present in the "http://hl7.org/fhir/us/core/STU5.0.1/ValueSet-detailed-race.html"
 export const RACE_DETAILED_CODE_OPTIONS: CodeSystem[] = [
   {
     code: "1004-1",
@@ -192,10 +216,10 @@ export const matchName = (name: string) => {
 
 export const matchNameWithUrl = (name: string) => {
   if (name.startsWith("race")) {
-    return "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race";
+    return US_CORE_RACE;
   }
   if (name.startsWith("ethnicity")) {
-    return "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity";
+    return US_CORE_ETHNICITY;
   }
 };
 
@@ -205,19 +229,17 @@ export const getDataResource = (
   code_options: CodeSystem[]
 ) => {
   const newCode = getNewCode(code_options, value);
-  const pcr = {
+  return {
     url: matchName(name),
     valueCoding: newCode,
   };
-  return pcr;
 };
 
 export const getNewCode = (options, selectedValue: string) => {
   const found = options.find((option) => selectedValue === option.display);
-  const newCode = {
+  return {
     code: found?.code,
     system: found?.system,
     display: found?.display,
   };
-  return newCode;
 };

@@ -1,17 +1,23 @@
 import React, { useEffect, useState } from "react";
+import "twin.macro";
+import "styled-components/macro";
+import { Patient } from "fhir/r4";
 import ElementSection from "../../../../../common/ElementSection";
 
 import { AutoComplete, Select } from "@madie/madie-design-system/dist/react";
 
 import {
-  ETHNICITY_CODE_OPTIONS,
-  ETHNICITY_DETAILED_CODE_OPTIONS,
-  RACE_DETAILED_CODE_OPTIONS,
-  RACE_OMB_CODE_OPTIONS,
   createExtension,
   deleteExtension,
   matchNameWithUrl,
   updateEthnicityExtension,
+  ETHNICITY_CODE_OPTIONS,
+  ETHNICITY_DETAILED_CODE_OPTIONS,
+  GENDER_CODE_OPTIONS,
+  RACE_DETAILED_CODE_OPTIONS,
+  RACE_OMB_CODE_OPTIONS,
+  US_CORE_RACE,
+  US_CORE_ETHNICITY,
 } from "./DemographicsSectionConst";
 import "./DemographicsSection.scss";
 import _ from "lodash";
@@ -33,44 +39,37 @@ const DemographicsSection = ({ canEdit }) => {
   const [show, setShow] = useState<boolean>(false);
   const [raceResources, setRaceResources] = useState([]);
   const [ethnicityResources, setEthnicityResources] = useState([]);
+  const [patient, setPatient] = useState<Patient>();
 
   useEffect(() => {
     if (resource !== "Loading...") {
       if (resource?.entry && !_.isNil(resource?.entry)) {
-        resource.entry.map((entry) => {
-          if (
-            entry?.resource?.extension &&
-            entry.resource?.resourceType === "Patient"
-          ) {
-            const extensions = entry?.resource?.extension;
-            if (extensions) {
-              extensions?.map((res) => {
-                if (
-                  res?.url ===
-                  "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race"
-                ) {
-                  setRaceResources(res.extension);
+        const patient = resource.entry.find(
+          (entry) => entry.resource?.resourceType === "Patient"
+        )?.resource;
+        setPatient(patient);
+        if (patient?.extension) {
+          const extensions = patient.extension;
+          if (extensions) {
+            extensions?.forEach((extension) => {
+              if (extension.url === US_CORE_RACE) {
+                setRaceResources(extension.extension);
+              }
+              if (extension.url === US_CORE_ETHNICITY) {
+                if (extension.extension) {
+                  const filteredExtensions = extension.extension.filter(
+                    (ext) => ext.valueCoding?.display === "Hispanic or Latino"
+                  );
+                  setShow(filteredExtensions.length > 0);
+                  setEthnicityResources(extension.extension);
                 }
-                if (
-                  res?.url ===
-                  "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity"
-                ) {
-                  if (res?.extension) {
-                    const filteredExtensions = res?.extension.filter(
-                      (ext) =>
-                        ext?.valueCoding?.display === "Hispanic or Latino"
-                    );
-                    setShow(filteredExtensions.length > 0 ? true : false);
-                    setEthnicityResources(res.extension);
-                  }
-                }
-              });
-            }
+              }
+            });
           }
-        });
+        }
       }
     }
-  }, [_.cloneDeep(resource)]);
+  }, [resource]);
 
   const selectOptions = (options) => {
     return [
@@ -97,92 +96,59 @@ const DemographicsSection = ({ canEdit }) => {
     ];
   };
 
-  const updateResourceExtension = (resourceEntry, name, value, reason) => {
-    const extensions = resourceEntry?.resource?.extension;
+  const updatePatientExtension = (name, value, reason) => {
+    const extensions = patient?.extension;
     if (extensions) {
-      const updatedResourceExtensions = extensions?.map((res) => {
-        if (res?.url === matchNameWithUrl(name)) {
+      patient.extension = extensions?.map((extension) => {
+        if (extension?.url === matchNameWithUrl(name)) {
           if (reason === "removeOption") {
-            const updatedExtension = deleteExtension(value, res.extension);
-            res.extension = updatedExtension;
+            extension.extension = deleteExtension(value, extension.extension);
           } else if (reason === "updateResource") {
-            const updatedExtension = updateEthnicityExtension(
+            extension.extension = updateEthnicityExtension(
               value,
               name,
-              res.extension
+              extension.extension
             );
-            res.extension = updatedExtension;
           } else {
             const updatedExtension = createExtension(
               value,
               name,
-              res.extension
+              extension.extension
             );
             if (!_.isNil(updatedExtension)) {
-              res.extension = [...res.extension, updatedExtension];
+              extension.extension = [...extension.extension, updatedExtension];
             }
           }
         }
-        return res;
+        return extension;
       });
-
-      resourceEntry.resource.extension = updatedResourceExtensions;
-      return resourceEntry;
+      const updatedResource = _.cloneDeep(resource);
+      const patientEntry = updatedResource.entry.find(
+        (entry) => entry.resource?.resourceType === "Patient"
+      );
+      patientEntry.resource = patient;
+      dispatch({
+        type: ResourceActionType.LOAD_RESOURCE,
+        payload: updatedResource,
+      });
     }
-  };
-
-  const updateResourceEntries = (name, value, reason) => {
-    if (resource !== "Loading...") {
-      const resourceEntries = resource;
-
-      if (resourceEntries?.entry && !_.isNil(resourceEntries?.entry)) {
-        const updatedResourceEntries = resourceEntries.entry.map((entry) => {
-          if (
-            entry?.resource?.extension &&
-            entry.resource?.resourceType === "Patient"
-          ) {
-            return updateResourceExtension(entry, name, value, reason);
-          }
-          return entry;
-        });
-
-        resourceEntries.entry = updatedResourceEntries;
-        return resourceEntries;
-      }
-    }
-  };
-
-  const handleOmbRaceChange = (name, value, reason) => {
-    const updatedResource = updateResourceEntries(name, value, reason);
-    dispatch({
-      type: ResourceActionType.LOAD_RESOURCE,
-      payload: updatedResource,
-    });
   };
 
   const handleOmbEthnicityChange = (event) => {
     setShow(event.target.value === "Hispanic or Latino");
-    const updatedResource = updateResourceEntries(
+    updatePatientExtension(
       event.target.name,
       event.target.value,
       "updateResource"
     );
-    dispatch({
-      type: ResourceActionType.LOAD_RESOURCE,
-      payload: updatedResource,
-    });
   };
 
-  const handleDetailedRaceChange = (name, value, reason) => {
-    const updatedResource = updateResourceEntries(name, value, reason);
-    dispatch({
-      type: ResourceActionType.LOAD_RESOURCE,
-      payload: updatedResource,
-    });
-  };
-
-  const handleDetailedEthnicityChange = (name, value, reason) => {
-    const updatedResource = updateResourceEntries(name, value, reason);
+  const handleGenderChange = (gender) => {
+    const updatedResource = _.cloneDeep(resource);
+    const patientEntry = updatedResource.entry.find(
+      (entry) => entry.resource?.resourceType === "Patient"
+    );
+    patientEntry.resource.gender = gender;
     dispatch({
       type: ResourceActionType.LOAD_RESOURCE,
       payload: updatedResource,
@@ -196,7 +162,30 @@ const DemographicsSection = ({ canEdit }) => {
         children={
           <div className="demographics-container">
             <div className="demographics-row">
-              <FormControl style={{ minWidth: "300px", maxWidth: "300px" }}>
+              <FormControl tw={"w-2/4"}>
+                <Select
+                  id="gender-selector"
+                  label="Gender"
+                  name="gender"
+                  disabled={!canEdit}
+                  inputProps={{
+                    "data-testid": "demographics-gender-input",
+                  }}
+                  value={patient?.gender ? patient.gender : "female"}
+                  renderValue={(value) => _.startCase(value)}
+                  onChange={(event) =>
+                    handleGenderChange(_.lowerCase(event.target.value))
+                  }
+                  options={GENDER_CODE_OPTIONS.map(({ code, display }) => (
+                    <MuiMenuItem key={code} value={code}>
+                      {display}
+                    </MuiMenuItem>
+                  ))}
+                />
+              </FormControl>
+            </div>
+            <div className="demographics-row">
+              <FormControl tw={"w-2/4"}>
                 <AutoComplete
                   multiple
                   labelId="demographics-race-omb-select-label"
@@ -207,13 +196,12 @@ const DemographicsSection = ({ canEdit }) => {
                   label="Race (OMB)"
                   name="raceOMB"
                   id="raceOMB"
-                  required={true}
                   disabled={!canEdit}
                   options={RACE_OMB_CODE_OPTIONS.map(
                     (option) => option.display
                   )}
                   onChange={(id, selectedVal, reason, detail) => {
-                    handleOmbRaceChange(id, detail?.option, reason);
+                    updatePatientExtension(id, detail?.option, reason);
                   }}
                   value={
                     raceResources &&
@@ -226,8 +214,7 @@ const DemographicsSection = ({ canEdit }) => {
                   }
                 />
               </FormControl>
-
-              <FormControl style={{ minWidth: "300px", maxWidth: "300px" }}>
+              <FormControl>
                 <AutoComplete
                   multiple
                   labelId="demographics-race-detailed-select-label"
@@ -235,13 +222,12 @@ const DemographicsSection = ({ canEdit }) => {
                   label="Race (Detailed)"
                   name="raceDetailed"
                   id="raceDetailed"
-                  required={true}
                   disabled={!canEdit}
                   options={RACE_DETAILED_CODE_OPTIONS.map(
                     (option) => option.display
                   )}
                   onChange={(id, selectedVal, reason, detail) => {
-                    handleDetailedRaceChange(id, detail?.option, reason);
+                    updatePatientExtension(id, detail?.option, reason);
                   }}
                   value={
                     raceResources &&
@@ -256,7 +242,7 @@ const DemographicsSection = ({ canEdit }) => {
               </FormControl>
             </div>
             <div className="demographics-row">
-              <FormControl style={{ minWidth: "250px" }}>
+              <FormControl tw={"w-2/4"}>
                 <Select
                   labelId="demographics-ethnicity-omb-select-label"
                   id="demographics-ethnicity-omb-select-id"
@@ -273,7 +259,7 @@ const DemographicsSection = ({ canEdit }) => {
                           .filter(
                             (ext) =>
                               ext?.url === "ombCategory" &&
-                              ext?.valueCoding?.display
+                              ext?.valueCoding?.code
                           )
                           .map((extension) => extension?.valueCoding?.display)
                       : "Select One"
@@ -283,10 +269,9 @@ const DemographicsSection = ({ canEdit }) => {
                     SELECT_ONE_OPTION,
                     ...selectOptions(ETHNICITY_CODE_OPTIONS),
                   ]}
-                ></Select>
+                />
               </FormControl>
-
-              <FormControl style={{ minWidth: "300px", maxWidth: "300px" }}>
+              <FormControl>
                 {show && (
                   <AutoComplete
                     multiple
@@ -295,7 +280,6 @@ const DemographicsSection = ({ canEdit }) => {
                     label="Ethnicity (Detailed)"
                     name="ethnicityDetailed"
                     id="ethnicityDetailed"
-                    required={true}
                     disabled={!canEdit}
                     options={ETHNICITY_DETAILED_CODE_OPTIONS.map(
                       (option) => option.display
@@ -309,9 +293,9 @@ const DemographicsSection = ({ canEdit }) => {
                         )
                         .map((extension) => extension.valueCoding.display)
                     }
-                    onChange={(id, selectedVal, reason, detail) => {
-                      handleDetailedEthnicityChange(id, detail?.option, reason);
-                    }}
+                    onChange={(id, selectedVal, reason, detail) =>
+                      updatePatientExtension(id, detail?.option, reason)
+                    }
                   />
                 )}
               </FormControl>

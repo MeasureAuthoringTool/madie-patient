@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import ElementsSection from "./ElementsSection";
 
 describe("Display Elements Section", () => {
