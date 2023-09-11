@@ -31,10 +31,10 @@ const QdmEntity = ({ setAttributeValue, attributeValue, attributeType }) => {
             identifier={{
               namingSystem: attributeValue?.identifier?.namingSystem
                 ? attributeValue?.identifier?.namingSystem
-                : null,
+                : "",
               value: attributeValue?.identifier?.value
                 ? attributeValue?.identifier?.value
-                : null,
+                : "",
             }}
           />
           <StringInput
