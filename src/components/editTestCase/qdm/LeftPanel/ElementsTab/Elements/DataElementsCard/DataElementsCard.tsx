@@ -25,7 +25,14 @@ export const applyAttribute = (
 ) => {
   const modelClass = getDataElementClass(dataElement);
   const updatedDataElement = new modelClass(dataElement);
-  updatedDataElement[_.camelCase(attribute)] = attributeValue;
+  const attributePath = _.camelCase(attribute);
+
+  const pathInfo = updatedDataElement.schema.paths[attributePath];
+  if (_.upperCase(pathInfo?.instance) === "ARRAY") {
+    updatedDataElement[attributePath].push(attributeValue);
+  } else {
+    updatedDataElement[_.camelCase(attribute)] = attributeValue;
+  }
   return updatedDataElement;
 };
 
