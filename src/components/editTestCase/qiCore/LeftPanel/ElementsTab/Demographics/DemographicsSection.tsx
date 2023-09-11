@@ -97,6 +97,16 @@ const DemographicsSection = ({ canEdit }) => {
     ];
   };
 
+  const multiSelectOptions = (options) => {
+    return options
+      .sort((a, b) =>
+        a.display && b.display
+          ? a.display.localeCompare(b.display)
+          : a.localeCompare(b)
+      )
+      .map((opt, i) => opt?.display && opt.display);
+  };
+
   const updateResourceExtension = (resourceEntry, name, value, reason) => {
     const extensions = resourceEntry?.resource?.extension;
     if (extensions) {
@@ -209,9 +219,7 @@ const DemographicsSection = ({ canEdit }) => {
                   id="raceOMB"
                   required={true}
                   disabled={!canEdit}
-                  options={RACE_OMB_CODE_OPTIONS.map(
-                    (option) => option.display
-                  )}
+                  options={multiSelectOptions(RACE_OMB_CODE_OPTIONS)}
                   onChange={(id, selectedVal, reason, detail) => {
                     handleOmbRaceChange(id, detail?.option, reason);
                   }}
@@ -237,9 +245,7 @@ const DemographicsSection = ({ canEdit }) => {
                   id="raceDetailed"
                   required={true}
                   disabled={!canEdit}
-                  options={RACE_DETAILED_CODE_OPTIONS.map(
-                    (option) => option.display
-                  )}
+                  options={multiSelectOptions(RACE_DETAILED_CODE_OPTIONS)}
                   onChange={(id, selectedVal, reason, detail) => {
                     handleDetailedRaceChange(id, detail?.option, reason);
                   }}
@@ -297,8 +303,8 @@ const DemographicsSection = ({ canEdit }) => {
                     id="ethnicityDetailed"
                     required={true}
                     disabled={!canEdit}
-                    options={ETHNICITY_DETAILED_CODE_OPTIONS.map(
-                      (option) => option.display
+                    options={multiSelectOptions(
+                      ETHNICITY_DETAILED_CODE_OPTIONS
                     )}
                     value={
                       ethnicityResources &&
