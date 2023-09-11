@@ -2,7 +2,7 @@ import * as React from "react";
 import { Measure } from "@madie/madie-models";
 import { MemoryRouter } from "react-router-dom";
 import { describe, test } from "@jest/globals";
-import { render, screen, waitFor } from "@testing-library/react";
+import {render, screen, waitFor, within} from "@testing-library/react";
 import "@testing-library/jest-dom";
 import DataElementsCard, {
   applyAttribute,
@@ -15,6 +15,7 @@ import {
 import { QdmExecutionContextProvider } from "../../../../../../routes/qdm/QdmExecutionContext";
 import { FormikProvider, FormikContextType } from "formik";
 import { QdmPatientProvider } from "../../../../../../../util/QdmPatientContext";
+import userEvent from "@testing-library/user-event";
 
 const serviceConfig = {
   testCaseService: {
@@ -842,6 +843,8 @@ export const testValueSets = [
   },
 ];
 
+const mockOnChange = jest.fn();
+
 const renderDataElementsCard = (
   activeTab,
   setCardActiveTab,
@@ -867,6 +870,7 @@ const renderDataElementsCard = (
                 setCardActiveTab={setCardActiveTab}
                 selectedDataElement={selectedDataElement}
                 setSelectedDataElement={setSelectedDataElement}
+                onChange={mockOnChange}
               />
             </QdmPatientProvider>
           </FormikProvider>
@@ -904,6 +908,46 @@ describe("DataElementsCard", () => {
         screen.queryByText("Admission Source: SNOMEDCT : 10725009")
       ).not.toBeInTheDocument();
     });
+  });
+
+  it("Should add new Codes", async () => {
+    renderDataElementsCard("codes", jest.fn, dataEl[0], jest.fn);
+
+    expect(screen.getByTestId("codes-section")).toBeInTheDocument();
+    // select the code system
+    const codeSystemSelectInput = screen.getByTestId(
+      "code-system-selector-input"
+    ) as HTMLInputElement;
+    expect(codeSystemSelectInput.value).toBe("");
+    const codeSystemSelector = screen.getByTestId("code-system-selector");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    userEvent.click(codeSystemDropdown);
+    const codeSystemOptions = await screen.findAllByTestId(
+      /code-system-option/i
+    );
+    expect(codeSystemOptions).toHaveLength(2);
+    userEvent.click(codeSystemOptions[1]);
+    expect(codeSystemSelectInput.value).toBe("SNOMEDCT");
+
+    // select the code
+    const codeSelectInput = screen.getByTestId(
+      "code-selector-input"
+    ) as HTMLInputElement;
+    expect(codeSelectInput.value).toBe("");
+    const codeSelector = screen.getByTestId("code-selector");
+    const codeDropdown = within(codeSelector).getByRole("button");
+    userEvent.click(codeDropdown);
+    const codeOptions = await screen.findAllByTestId(/code-option/i);
+    expect(codeOptions).toHaveLength(1);
+    expect(codeOptions[0]).toHaveTextContent(
+      "4525004 - Emergency department patient visit (procedure)"
+    );
+    userEvent.click(codeOptions[0]);
+    expect(codeSelectInput.value).toBe("4525004");
+
+    userEvent.click(screen.getByTestId("add-code-concept-button"));
+    // verify chips is added
+    expect(await screen.findByTestId("SNOMEDCT-4525004")).toBeInTheDocument();
   });
 });
 
