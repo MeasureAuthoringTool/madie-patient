@@ -69,6 +69,8 @@ const DetailsSection = (props: DetailsSectionProps) => {
             inputProps={{
               "data-testid": "test-case-title",
               "aria-describedby": "title-helper-text",
+              required: true,
+              "aria-required": true,
             }}
             helperText={formikErrorHandler("title")}
             size="small"
