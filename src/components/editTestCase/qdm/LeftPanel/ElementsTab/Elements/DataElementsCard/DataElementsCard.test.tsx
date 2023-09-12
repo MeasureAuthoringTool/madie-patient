@@ -7,7 +7,7 @@ import "@testing-library/jest-dom";
 import DataElementsCard, {
   applyAttribute,
 } from "../DataElementsCard/DataElementsCard";
-import { CQL } from "cqm-models";
+import { CQL, PatientEntity, CarePartner, Identifier } from "cqm-models";
 import {
   ApiContextProvider,
   ServiceConfig,
@@ -421,6 +421,44 @@ export const dataEl = [
       lowClosed: true,
       highClosed: true,
     },
+    schema: {
+      paths: {
+        performer: {
+          caster: {
+            path: "performer",
+            instance: "AnyEntity",
+            validators: [],
+            getters: [],
+            setters: [],
+            _presplitPath: ["performer"],
+            options: {},
+            _index: null,
+            _arrayPath: "performer.$",
+            _arrayParentPath: "performer",
+          },
+          path: "performer",
+          instance: "Array",
+          validators: [],
+          getters: [],
+          setters: [],
+          _presplitPath: ["performer"],
+          options: {
+            type: [null],
+          },
+          _index: null,
+        },
+        result: {
+          path: "result",
+          instance: "Any",
+          validators: [],
+          getters: [],
+          setters: [],
+          _presplitPath: ["result"],
+          options: {},
+          _index: null,
+        },
+      },
+    },
     _type: "QDM::EncounterPerformed",
     _id: "64c176cd6483d90000a8e02d",
   },
@@ -601,6 +639,55 @@ export const dataEl = [
     qdmVersion: "5.6",
     _type: "QDM::PatientCharacteristicSex",
     id: "64b979eacfaef90000434095",
+  },
+  {
+    dataElementCodes: [],
+    _id: "64f9cb4600acd60000b74732",
+    relatedTo: [],
+    performer: [],
+    qdmTitle: "Assessment, Performed",
+    hqmfOid: "2.16.840.1.113883.10.20.28.4.117",
+    qdmCategory: "assessment",
+    qdmStatus: "performed",
+    qdmVersion: "5.6",
+    _type: "QDM::AssessmentPerformed",
+    id: "64f9cb4600acd60000b74732",
+    components: [],
+    codeListId: "2.16.840.1.113883.3.3157.4031",
+    description: "Assessment, Performed: Active Peptic Ulcer",
+    result: null,
+  },
+  {
+    dataElementCodes: [],
+    _id: "64f9cb4600acd60000b74732",
+    relatedTo: [],
+    performer: [
+      {
+        qdmVersion: "5.6",
+        _type: "QDM::PatientEntity",
+        _id: "64fa7f785708322c5dfce804",
+        hqmfOid: "2.16.840.1.113883.10.20.28.4.136",
+        qrdaOid: "2.16.840.1.113883.10.20.24.3.161",
+        id: "PatientEntityID1",
+        identifier: {
+          qdmVersion: "5.6",
+          _type: "QDM::Identifier",
+          namingSystem: "IdentifierNamingSystem1",
+          value: "IdentifierValue1",
+        },
+      },
+    ],
+    qdmTitle: "Assessment, Performed",
+    hqmfOid: "2.16.840.1.113883.10.20.28.4.117",
+    qdmCategory: "assessment",
+    qdmStatus: "performed",
+    qdmVersion: "5.6",
+    _type: "QDM::AssessmentPerformed",
+    id: "64f9cb4600acd60000b74732",
+    components: [],
+    codeListId: "2.16.840.1.113883.3.3157.4031",
+    description: "Assessment, Performed: Active Peptic Ulcer",
+    result: null,
   },
 ];
 export const testDataElements = [
@@ -910,7 +997,7 @@ describe("DataElementsCard", () => {
 describe("applyAttribute function", () => {
   it("should add a result of date type", () => {
     const cqlDate: CQL.Date = new CQL.Date(2023, 4, 22);
-    const dataElement = dataEl[0] as any;
+    const dataElement = dataEl[10] as any;
     expect(dataElement.result).toBeFalsy();
     const updatedElement = applyAttribute(
       "Result",
@@ -920,5 +1007,60 @@ describe("applyAttribute function", () => {
     );
     expect(updatedElement.result).toEqual(cqlDate);
     expect(dataElement === updatedElement).toBeFalsy();
+  });
+
+  it("should add an attribute value for array type when array is empty", () => {
+    const patientEntity: PatientEntity = new PatientEntity();
+    patientEntity.id = "PatientEntityID1";
+    patientEntity.identifier = new Identifier({
+      namingSystem: "IdentifierNamingSystem1",
+      value: "IdentifierValue1",
+    });
+    const dataElement = dataEl[10] as any;
+    expect(dataElement.performer).toBeTruthy();
+    expect(dataElement.performer.length).toEqual(0);
+    const updatedElement = applyAttribute(
+      "Performer",
+      "PatientEntity",
+      patientEntity,
+      dataElement
+    );
+    expect(updatedElement.performer).toBeTruthy();
+    expect(updatedElement.performer.length).toEqual(1);
+    expect(updatedElement.performer[0].id).toEqual("PatientEntityID1");
+    expect(updatedElement.performer[0].identifier).toBeTruthy();
+    expect(updatedElement.performer[0].identifier.value).toEqual(
+      "IdentifierValue1"
+    );
+  });
+
+  it("should add an attribute value for array type when array contains and element", () => {
+    const carePartner: CarePartner = new CarePartner();
+    carePartner.id = "CarePartnerID2";
+    carePartner.identifier = new Identifier({
+      namingSystem: "IdentifierNamingSystem2",
+      value: "IdentifierValue2",
+    });
+    const dataElement = dataEl[11] as any;
+    expect(dataElement.performer).toBeTruthy();
+    expect(dataElement.performer.length).toEqual(1);
+    const updatedElement = applyAttribute(
+      "Performer",
+      "PatientEntity",
+      carePartner,
+      dataElement
+    );
+    expect(updatedElement.performer).toBeTruthy();
+    expect(updatedElement.performer.length).toEqual(2);
+    expect(updatedElement.performer[0].id).toEqual("PatientEntityID1");
+    expect(updatedElement.performer[0].identifier).toBeTruthy();
+    expect(updatedElement.performer[0].identifier.value).toEqual(
+      "IdentifierValue1"
+    );
+    expect(updatedElement.performer[1].id).toEqual("CarePartnerID2");
+    expect(updatedElement.performer[1].identifier).toBeTruthy();
+    expect(updatedElement.performer[1].identifier.value).toEqual(
+      "IdentifierValue2"
+    );
   });
 });
