@@ -39,9 +39,9 @@ const SELECT_ONE_OPTION = (
 const DemographicsSection = ({ canEdit }) => {
   const { state, dispatch } = useQiCoreResource();
   const { resource } = state;
-  const [show, setShow] = useState<boolean>(false);
-  const [raceResources, setRaceResources] = useState([]);
-  const [ethnicityResources, setEthnicityResources] = useState([]);
+  const [isHispanic, setHispanic] = useState<boolean>(false);
+  const [raceExtension, setRaceExtension] = useState([]);
+  const [ethnicityExtension, setEthnicityExtension] = useState([]);
   const [patient, setPatient] = useState<Patient>();
 
   useEffect(() => {
@@ -56,15 +56,15 @@ const DemographicsSection = ({ canEdit }) => {
           if (extensions) {
             extensions?.forEach((extension) => {
               if (extension.url === US_CORE_RACE) {
-                setRaceResources(extension.extension);
+                setRaceExtension(extension.extension);
               }
               if (extension.url === US_CORE_ETHNICITY) {
                 if (extension.extension) {
-                  const filteredExtensions = extension.extension.filter(
+                  const isHispanic = extension.extension.some(
                     (ext) => ext.valueCoding?.display === "Hispanic or Latino"
                   );
-                  setShow(filteredExtensions.length > 0);
-                  setEthnicityResources(extension.extension);
+                  setHispanic(isHispanic);
+                  setEthnicityExtension(extension.extension);
                 }
               }
             });
@@ -113,7 +113,7 @@ const DemographicsSection = ({ canEdit }) => {
   };
 
   const handleOmbEthnicityChange = (event) => {
-    setShow(event.target.value === "Hispanic or Latino");
+    setHispanic(event.target.value === "Hispanic or Latino");
     updatePatientExtension(
       event.target.name,
       event.target.value,
@@ -182,8 +182,8 @@ const DemographicsSection = ({ canEdit }) => {
                     updatePatientExtension(id, detail?.option, reason);
                   }}
                   value={
-                    raceResources &&
-                    raceResources
+                    raceExtension &&
+                    raceExtension
                       .filter(
                         (ext) =>
                           ext.url === "ombCategory" && ext?.valueCoding?.display
@@ -206,8 +206,8 @@ const DemographicsSection = ({ canEdit }) => {
                     updatePatientExtension(id, detail?.option, reason);
                   }}
                   value={
-                    raceResources &&
-                    raceResources
+                    raceExtension &&
+                    raceExtension
                       .filter(
                         (ext) =>
                           ext.url === "detailed" && ext?.valueCoding?.display
@@ -230,8 +230,8 @@ const DemographicsSection = ({ canEdit }) => {
                     "data-testid": `demographics-ethnicity-omb-input`,
                   }}
                   value={
-                    !_.isEmpty(ethnicityResources)
-                      ? ethnicityResources
+                    !_.isEmpty(ethnicityExtension)
+                      ? ethnicityExtension
                           .filter(
                             (ext) =>
                               ext?.url === "ombCategory" &&
@@ -248,7 +248,7 @@ const DemographicsSection = ({ canEdit }) => {
                 />
               </FormControl>
               <FormControl>
-                {show && (
+                {isHispanic && (
                   <AutoComplete
                     multiple
                     labelId="demographics-ethnicity-detailed-select-label"
@@ -261,8 +261,8 @@ const DemographicsSection = ({ canEdit }) => {
                       ETHNICITY_DETAILED_CODE_OPTIONS
                     )}
                     value={
-                      ethnicityResources &&
-                      ethnicityResources
+                      ethnicityExtension &&
+                      ethnicityExtension
                         .filter(
                           (ext) =>
                             ext.url === "detailed" && ext?.valueCoding?.display
