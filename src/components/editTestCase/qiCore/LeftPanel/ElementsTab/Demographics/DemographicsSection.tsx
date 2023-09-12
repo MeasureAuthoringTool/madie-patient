@@ -21,7 +21,7 @@ import {
   RACE_OMB_CODE_OPTIONS,
   US_CORE_RACE,
   US_CORE_ETHNICITY,
-} from "./DemographicsUtils";
+} from "./DemographicUtils";
 import "./DemographicsSection.scss";
 import _ from "lodash";
 import { FormControl, MenuItem as MuiMenuItem } from "@mui/material";
