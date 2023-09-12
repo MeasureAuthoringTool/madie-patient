@@ -2,8 +2,15 @@ import React, { useEffect } from "react";
 import IdentifierInput from "../../../../../../../common/Identifier/IdentifierInput";
 import cqmModels, { Identifier } from "cqm-models";
 import StringInput from "../../../../../../../common/string/StringInput";
+import CodeInput from "../../../../../../../common/codeInput/CodeInput";
+import _ from "lodash";
 
-const QdmEntity = ({ setAttributeValue, attributeValue, attributeType }) => {
+const QdmEntity = ({
+  setAttributeValue,
+  attributeValue,
+  attributeType,
+  valueSets,
+}) => {
   useEffect(() => {
     if (attributeType) {
       setAttributeValue(new cqmModels[attributeType]());
@@ -16,6 +23,37 @@ const QdmEntity = ({ setAttributeValue, attributeValue, attributeType }) => {
       const nextEntity = new entityClass(attributeValue);
       nextEntity[field] = value;
       setAttributeValue(nextEntity);
+    }
+  };
+
+  const test = () => {
+    return ["Role", "Specialty", "Qualification"].map((ele) => {
+      return (
+        <CodeInput
+          handleChange={(val) => handleChange(_.lowerCase(ele), val)}
+          canEdit={true}
+          valueSets={valueSets}
+          required={false}
+          title={ele}
+        />
+      );
+    });
+  };
+
+  const displayQdmEntity = () => {
+    switch (attributeType) {
+      case "Location":
+        return (
+          <CodeInput
+            handleChange={(val) => handleChange("locationType", val)}
+            canEdit={true}
+            valueSets={valueSets}
+            required={false}
+            title={"LocationType"}
+          />
+        );
+      case "Practitioner":
+        return test();
     }
   };
 
@@ -45,6 +83,7 @@ const QdmEntity = ({ setAttributeValue, attributeValue, attributeType }) => {
               handleChange("id", val);
             }}
           />
+          {displayQdmEntity()}
         </>
       ) : (
         ""

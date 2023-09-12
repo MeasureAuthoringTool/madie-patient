@@ -126,6 +126,7 @@ const DisplayAttributeInputs = ({
             handleChange={(val) => setAttributeValue(val)}
             canEdit={true}
             valueSets={cqmMeasure.value_sets}
+            required={false}
           />
         );
       case "Interval<Quantity>":
@@ -149,6 +150,7 @@ const DisplayAttributeInputs = ({
             setAttributeValue={setAttributeValue}
             attributeValue={attributeValue}
             attributeType={attributeType}
+            valueSets={cqmMeasure?.value_sets}
           />
         );
       case "String":
