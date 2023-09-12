@@ -96,6 +96,16 @@ const DemographicsSection = ({ canEdit }) => {
     ];
   };
 
+  const multiSelectOptions = (options) => {
+    return options
+      .sort((a, b) =>
+        a.display && b.display
+          ? a.display.localeCompare(b.display)
+          : a.localeCompare(b)
+      )
+      .map((opt, i) => opt?.display && opt.display);
+  };
+
   const updatePatientExtension = (name, value, reason) => {
     const extensions = patient?.extension;
     if (extensions) {
@@ -197,9 +207,7 @@ const DemographicsSection = ({ canEdit }) => {
                   name="raceOMB"
                   id="raceOMB"
                   disabled={!canEdit}
-                  options={RACE_OMB_CODE_OPTIONS.map(
-                    (option) => option.display
-                  )}
+                  options={multiSelectOptions(RACE_OMB_CODE_OPTIONS)}
                   onChange={(id, selectedVal, reason, detail) => {
                     updatePatientExtension(id, detail?.option, reason);
                   }}
@@ -223,9 +231,7 @@ const DemographicsSection = ({ canEdit }) => {
                   name="raceDetailed"
                   id="raceDetailed"
                   disabled={!canEdit}
-                  options={RACE_DETAILED_CODE_OPTIONS.map(
-                    (option) => option.display
-                  )}
+                  options={multiSelectOptions(RACE_DETAILED_CODE_OPTIONS)}
                   onChange={(id, selectedVal, reason, detail) => {
                     updatePatientExtension(id, detail?.option, reason);
                   }}
@@ -281,8 +287,8 @@ const DemographicsSection = ({ canEdit }) => {
                     name="ethnicityDetailed"
                     id="ethnicityDetailed"
                     disabled={!canEdit}
-                    options={ETHNICITY_DETAILED_CODE_OPTIONS.map(
-                      (option) => option.display
+                    options={multiSelectOptions(
+                      ETHNICITY_DETAILED_CODE_OPTIONS
                     )}
                     value={
                       ethnicityResources &&
