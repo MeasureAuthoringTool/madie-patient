@@ -99,8 +99,8 @@ const DemographicsSection = ({ canEdit }) => {
   const updatePatientExtension = (name, value, reason) => {
     const extensions = patient?.extension;
     if (extensions) {
-      patient.extension = extensions?.map((extension) => {
-        if (extension?.url === matchNameWithUrl(name)) {
+      patient.extension = extensions.map((extension) => {
+        if (extension.url === matchNameWithUrl(name)) {
           if (reason === "removeOption") {
             extension.extension = deleteExtension(value, extension.extension);
           } else if (reason === "updateResource") {
