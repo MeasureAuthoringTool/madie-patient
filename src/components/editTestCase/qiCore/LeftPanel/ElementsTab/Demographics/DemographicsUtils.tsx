@@ -1,3 +1,6 @@
+import { MenuItem } from "@mui/material";
+import React from "react";
+
 export const US_CORE_RACE =
   "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race";
 export const US_CORE_ETHNICITY =
@@ -72,6 +75,7 @@ export const RACE_OMB_CODE_OPTIONS: CodeSystem[] = [
     system: "urn:oid:2.16.840.1.113883.6.238",
   },
 ];
+
 // http://hl7.org/fhir/R4/valueset-administrative-gender.html
 export const GENDER_CODE_OPTIONS = [
   {
@@ -93,7 +97,7 @@ export const GENDER_CODE_OPTIONS = [
 ];
 
 // this is just a small array of hardcode options for scope of this story
-// TO DO: call an API to get all code systems present in the "http://hl7.org/fhir/us/core/STU5.0.1/ValueSet-detailed-race.html"
+// TODO: call an API to get all code systems present in the "http://hl7.org/fhir/us/core/STU5.0.1/ValueSet-detailed-race.html"
 export const RACE_DETAILED_CODE_OPTIONS: CodeSystem[] = [
   {
     code: "1004-1",
@@ -242,4 +246,34 @@ export const getNewCode = (options, selectedValue: string) => {
     system: found?.system,
     display: found?.display,
   };
+};
+
+export const sortOptions = (options) => {
+  return options.sort((a, b) =>
+    a.display && b.display
+      ? a.display.localeCompare(b.display)
+      : a.localeCompare(b)
+  );
+};
+
+//TODO: could this be moved to design systems?
+export const singleSelectOptions = (options) => {
+  return [
+    sortOptions(options).map((opt, i) => {
+      const { display } = opt || {};
+      const sanitizedString = display
+        ? display.replace(/"/g, "")
+        : opt?.replace(/"/g, "");
+      return (
+        <MenuItem key={`${sanitizedString}-${i}`} value={sanitizedString}>
+          {sanitizedString}
+        </MenuItem>
+      );
+    }),
+  ];
+};
+
+//TODO: could this be moved to design systems?
+export const multiSelectOptions = (options) => {
+  return sortOptions(options).map((opt) => opt?.display && opt.display);
 };

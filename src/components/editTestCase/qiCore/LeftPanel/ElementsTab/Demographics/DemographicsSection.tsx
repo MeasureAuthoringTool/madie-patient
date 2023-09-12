@@ -11,6 +11,9 @@ import {
   deleteExtension,
   matchNameWithUrl,
   updateEthnicityExtension,
+  sortOptions,
+  singleSelectOptions,
+  multiSelectOptions,
   ETHNICITY_CODE_OPTIONS,
   ETHNICITY_DETAILED_CODE_OPTIONS,
   GENDER_CODE_OPTIONS,
@@ -18,7 +21,7 @@ import {
   RACE_OMB_CODE_OPTIONS,
   US_CORE_RACE,
   US_CORE_ETHNICITY,
-} from "./DemographicsSectionConst";
+} from "./DemographicsUtils";
 import "./DemographicsSection.scss";
 import _ from "lodash";
 import { FormControl, MenuItem as MuiMenuItem } from "@mui/material";
@@ -70,41 +73,6 @@ const DemographicsSection = ({ canEdit }) => {
       }
     }
   }, [resource]);
-
-  const selectOptions = (options) => {
-    return [
-      options
-        .sort((a, b) =>
-          a.display && b.display
-            ? a.display.localeCompare(b.display)
-            : a.localeCompare(b)
-        )
-        .map((opt, i) => {
-          const { display } = opt || {};
-          const sanitizedString = display
-            ? display.replace(/"/g, "")
-            : opt?.replace(/"/g, "");
-          return (
-            <MuiMenuItem
-              key={`${sanitizedString}-${i}`}
-              value={sanitizedString}
-            >
-              {sanitizedString}
-            </MuiMenuItem>
-          );
-        }),
-    ];
-  };
-
-  const multiSelectOptions = (options) => {
-    return options
-      .sort((a, b) =>
-        a.display && b.display
-          ? a.display.localeCompare(b.display)
-          : a.localeCompare(b)
-      )
-      .map((opt, i) => opt?.display && opt.display);
-  };
 
   const updatePatientExtension = (name, value, reason) => {
     const extensions = patient?.extension;
@@ -186,11 +154,13 @@ const DemographicsSection = ({ canEdit }) => {
                   onChange={(event) =>
                     handleGenderChange(_.lowerCase(event.target.value))
                   }
-                  options={GENDER_CODE_OPTIONS.map(({ code, display }) => (
-                    <MuiMenuItem key={code} value={code}>
-                      {display}
-                    </MuiMenuItem>
-                  ))}
+                  options={sortOptions(GENDER_CODE_OPTIONS).map(
+                    ({ code, display }) => (
+                      <MuiMenuItem key={code} value={code}>
+                        {display}
+                      </MuiMenuItem>
+                    )
+                  )}
                 />
               </FormControl>
             </div>
@@ -265,7 +235,7 @@ const DemographicsSection = ({ canEdit }) => {
                           .filter(
                             (ext) =>
                               ext?.url === "ombCategory" &&
-                              ext?.valueCoding?.code
+                              ext?.valueCoding?.display
                           )
                           .map((extension) => extension?.valueCoding?.display)
                       : "Select One"
@@ -273,7 +243,7 @@ const DemographicsSection = ({ canEdit }) => {
                   onChange={handleOmbEthnicityChange}
                   options={[
                     SELECT_ONE_OPTION,
-                    ...selectOptions(ETHNICITY_CODE_OPTIONS),
+                    ...singleSelectOptions(ETHNICITY_CODE_OPTIONS),
                   ]}
                 />
               </FormControl>
