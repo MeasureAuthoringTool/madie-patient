@@ -5,6 +5,9 @@ import StringInput from "../../../../../../../common/string/StringInput";
 import CodeInput from "../../../../../../../common/codeInput/CodeInput";
 import _ from "lodash";
 
+export const Location_Attributes = ["LocationType"];
+export const Practitioner_Attributes = ["Role", "Specialty", "Qualification"];
+
 const QdmEntity = ({
   setAttributeValue,
   attributeValue,
@@ -26,15 +29,15 @@ const QdmEntity = ({
     }
   };
 
-  const test = () => {
-    return ["Role", "Specialty", "Qualification"].map((ele) => {
+  const displayQdmEntityRelatedAttributes = (attributesList) => {
+    return attributesList.map((attribute) => {
       return (
         <CodeInput
-          handleChange={(val) => handleChange(_.lowerCase(ele), val)}
+          handleChange={(val) => handleChange(_.camelCase(attribute), val)}
           canEdit={true}
           valueSets={valueSets}
           required={false}
-          title={ele}
+          title={attribute}
         />
       );
     });
@@ -43,17 +46,9 @@ const QdmEntity = ({
   const displayQdmEntity = () => {
     switch (attributeType) {
       case "Location":
-        return (
-          <CodeInput
-            handleChange={(val) => handleChange("locationType", val)}
-            canEdit={true}
-            valueSets={valueSets}
-            required={false}
-            title={"LocationType"}
-          />
-        );
+        return displayQdmEntityRelatedAttributes(Location_Attributes);
       case "Practitioner":
-        return test();
+        return displayQdmEntityRelatedAttributes(Practitioner_Attributes);
     }
   };
 
