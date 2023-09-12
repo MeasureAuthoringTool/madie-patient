@@ -192,7 +192,7 @@ const DemographicsSection = ({ canEdit }) => {
                   }
                 />
               </FormControl>
-              <FormControl>
+              <FormControl tw={"w-2/4"}>
                 <AutoComplete
                   multiple
                   labelId="demographics-race-detailed-select-label"
@@ -247,7 +247,7 @@ const DemographicsSection = ({ canEdit }) => {
                   ]}
                 />
               </FormControl>
-              <FormControl>
+              <FormControl tw={"w-2/4"}>
                 {isHispanic && (
                   <AutoComplete
                     multiple
