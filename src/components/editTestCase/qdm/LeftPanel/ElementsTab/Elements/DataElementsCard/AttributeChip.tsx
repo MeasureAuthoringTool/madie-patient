@@ -5,13 +5,13 @@ import "./AttributeChipList.scss";
 
 interface AttributeChipProps {
   text: string;
-  deleteAttributeChip?: (deletedChip) => void;
+  onDeleteAttributeChip?: (deletedChip) => void;
   index?: string;
 }
 
 const AttributeChip = ({
   text,
-  deleteAttributeChip,
+  onDeleteAttributeChip,
   index,
 }: AttributeChipProps) => {
   return (
@@ -22,7 +22,7 @@ const AttributeChip = ({
           sx={{ color: "#fff", height: "15px", width: "15px" }}
           onClick={(e) => {
             e.preventDefault;
-            deleteAttributeChip(index);
+            onDeleteAttributeChip(index);
           }}
           data-testid={`delete-chip-button-${index}`}
         />

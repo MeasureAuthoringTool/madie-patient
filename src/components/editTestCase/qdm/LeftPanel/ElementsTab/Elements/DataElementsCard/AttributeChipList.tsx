@@ -3,12 +3,12 @@ import AttributeChip from "./AttributeChip";
 
 interface AttributeChipListProps {
   items: any;
-  deleteAttributeChip?: (deletedChip) => void;
+  onDeleteAttributeChip?: (deletedChip) => void;
 }
 
 const AttributeChipList = ({
   items,
-  deleteAttributeChip,
+  onDeleteAttributeChip,
 }: AttributeChipListProps) => {
   return (
     <div data-testid="attributes-chip-list" className="chip-list">
@@ -17,7 +17,7 @@ const AttributeChipList = ({
           text={text}
           key={`${text}-${index}`}
           index={index}
-          deleteAttributeChip={deleteAttributeChip}
+          onDeleteAttributeChip={onDeleteAttributeChip}
         />
       ))}
     </div>

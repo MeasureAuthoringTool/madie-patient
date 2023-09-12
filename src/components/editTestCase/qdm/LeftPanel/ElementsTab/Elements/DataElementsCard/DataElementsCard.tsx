@@ -151,7 +151,7 @@ const DataElementsCard = (props: {
   }, [localSelectedDataElement, codeSystemMap, dataElements]);
   // centralize state one level up so we can conditionally render our child component
 
-  const deleteAttributeChip = (deletedChip) => {
+  const onDeleteAttributeChip = (deletedChip) => {
     const newAttributes = displayAttributes.slice();
     newAttributes.splice(deletedChip, 1);
     setDisplayAttributes(newAttributes);
@@ -220,7 +220,7 @@ const DataElementsCard = (props: {
         <AttributeSection
           attributeChipList={displayAttributes}
           selectedDataElement={localSelectedDataElement}
-          deleteAttributeChip={deleteAttributeChip}
+          onDeleteAttributeChip={onDeleteAttributeChip}
           onAddClicked={(attribute, type, attributeValue) => {
             const updatedDataElement = applyAttribute(
               attribute,

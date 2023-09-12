@@ -19,14 +19,14 @@ interface AttributeSectionProps {
   selectedDataElement: DataElement;
   onAddClicked?: (attribute, type, attributeValue) => void;
   attributeChipList?: Array<Chip>;
-  deleteAttributeChip?: (deletedChip) => void;
+  onDeleteAttributeChip?: (deletedChip) => void;
 }
 
 const AttributeSection = ({
   attributeChipList = [],
   selectedDataElement,
   onAddClicked,
-  deleteAttributeChip,
+  onDeleteAttributeChip,
 }: AttributeSectionProps) => {
   const mappedAttributeList = attributeChipList.map((chip) => ({
     text: `${chip.title}: ${chip.value}`,
@@ -110,7 +110,7 @@ const AttributeSection = ({
       />
       <AttributeChipList
         items={mappedAttributeList}
-        deleteAttributeChip={deleteAttributeChip}
+        onDeleteAttributeChip={onDeleteAttributeChip}
       />
     </form>
   );
