@@ -77,6 +77,7 @@ const QdmEntity = ({
           />
           <StringInput
             label="Id"
+            title="Id"
             canEdit={true}
             fieldValue={attributeValue?.id}
             onStringValueChange={(val) => {
