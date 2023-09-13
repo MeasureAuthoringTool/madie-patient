@@ -125,7 +125,7 @@ const DisplayAttributeInputs = ({
           <CodeInput
             handleChange={(val) => setAttributeValue(val)}
             canEdit={true}
-            valueSets={cqmMeasure.value_sets}
+            valueSets={cqmMeasure?.value_sets}
             required={false}
           />
         );
