@@ -87,18 +87,11 @@ const Codes = ({
     if (!_.isEmpty(selectedDataElement?.dataElementCodes) && codeSystems) {
       const chipsToBeDisplayed = selectedDataElement.dataElementCodes.map(
         (codes) => {
-          const codeSystemDisplayName = codeSystems[codes.system];
-          if (codeSystemDisplayName) {
-            return {
+          const codeSystemDisplayName = codeSystems[codes.system] || codes.system;
+          return {
               text: `${codeSystemDisplayName}: ${codes.code}`,
               id: `${codeSystemDisplayName}-${codes.code}`,
             };
-          }
-          // For custom Codes, we directly display what is inputted by user
-          return {
-            text: `${codes.system}: ${codes.code}`,
-            id: `${codes.system}-${codes.code}`,
-          };
         }
       );
       setChips(chipsToBeDisplayed);
