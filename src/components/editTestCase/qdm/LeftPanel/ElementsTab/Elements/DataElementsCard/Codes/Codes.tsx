@@ -87,11 +87,12 @@ const Codes = ({
     if (!_.isEmpty(selectedDataElement?.dataElementCodes) && codeSystems) {
       const chipsToBeDisplayed = selectedDataElement.dataElementCodes.map(
         (codes) => {
-          const codeSystemDisplayName = codeSystems[codes.system] || codes.system;
+          const codeSystemDisplayName =
+            codeSystems[codes.system] || codes.system;
           return {
-              text: `${codeSystemDisplayName}: ${codes.code}`,
-              id: `${codeSystemDisplayName}-${codes.code}`,
-            };
+            text: `${codeSystemDisplayName}: ${codes.code}`,
+            id: `${codeSystemDisplayName}-${codes.code}`,
+          };
         }
       );
       setChips(chipsToBeDisplayed);
@@ -147,8 +148,8 @@ const Codes = ({
   const addNewCode = () => {
     if (selectedCodeSystemName === "Custom") {
       const newCodeId = `${customCodeSystemName}-${customCodeConcept}`;
-      const existingCode = _.filter(chips, _.matches({ id: newCodeId }));
-      if (_.isEmpty(existingCode)) {
+      const existingCode = _.find(chips, _.matches({ id: newCodeId }));
+      if (existingCode) {
         const customCqlCode = new CQL.Code(
           customCodeConcept,
           customCodeSystemName, // What is the oid for custom CS
@@ -162,8 +163,8 @@ const Codes = ({
       }
     } else {
       const newCodeId = `${codeSystems[savedCode.system]}-${savedCode.code}`;
-      const existingCode = _.filter(chips, _.matches({ id: newCodeId }));
-      if (_.isEmpty(existingCode)) {
+      const existingCode = _.find(chips, _.matches({ id: newCodeId }));
+      if (existingCode) {
         handleChange(savedCode);
         setSelectedCodeSystemName("");
         setSelectedCodeConcept(null);
@@ -300,7 +301,7 @@ const Codes = ({
           </IconButton>
         </div>
       </div>
-      <div tw="flex flex-wrap gap-2" id="these are chips">
+      <div tw="flex flex-wrap gap-2">
         {chips.map((chip) => {
           return (
             <Chip
