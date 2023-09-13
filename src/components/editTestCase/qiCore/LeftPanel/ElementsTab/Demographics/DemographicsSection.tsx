@@ -222,6 +222,7 @@ const DemographicsSection = ({ canEdit }) => {
                 <Select
                   labelId="demographics-ethnicity-omb-select-label"
                   id="demographics-ethnicity-omb-select-id"
+                  data-testid="demographics-ethnicity-omb-select-id"
                   defaultValue="Select One"
                   label="Ethnicity (OMB)"
                   name="ethnicityOMB"
