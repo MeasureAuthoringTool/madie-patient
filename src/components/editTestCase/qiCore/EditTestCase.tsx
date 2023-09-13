@@ -975,6 +975,8 @@ const EditTestCase = (props: EditTestCaseProps) => {
                       inputProps={{
                         "data-testid": "test-case-title",
                         "aria-describedby": "title-helper-text",
+                        "aria-required": true,
+                        required: true,
                       }}
                       helperText={formikErrorHandler("title")}
                       size="small"
