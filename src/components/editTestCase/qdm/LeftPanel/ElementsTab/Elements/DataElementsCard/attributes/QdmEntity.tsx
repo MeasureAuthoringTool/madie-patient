@@ -1,4 +1,6 @@
 import React, { useEffect } from "react";
+import "twin.macro";
+import "styled-components/macro";
 import IdentifierInput from "../../../../../../../common/Identifier/IdentifierInput";
 import cqmModels, { Identifier } from "cqm-models";
 import StringInput from "../../../../../../../common/string/StringInput";
@@ -32,13 +34,15 @@ const QdmEntity = ({
   const displayQdmEntityRelatedAttributes = (attributesList) => {
     return attributesList.map((attribute) => {
       return (
-        <CodeInput
-          handleChange={(val) => handleChange(_.camelCase(attribute), val)}
-          canEdit={true}
-          valueSets={valueSets}
-          required={false}
-          title={attribute}
-        />
+        <div tw="mt-4">
+          <CodeInput
+            handleChange={(val) => handleChange(_.camelCase(attribute), val)}
+            canEdit={true}
+            valueSets={valueSets}
+            required={false}
+            title={attribute}
+          />
+        </div>
       );
     });
   };
@@ -56,29 +60,33 @@ const QdmEntity = ({
     <>
       {attributeType ? (
         <>
-          <IdentifierInput
-            onIdentifierChange={(val) => {
-              handleChange("identifier", new Identifier(val));
-            }}
-            canEdit={true}
-            identifier={{
-              namingSystem: attributeValue?.identifier?.namingSystem
-                ? attributeValue?.identifier?.namingSystem
-                : "",
-              value: attributeValue?.identifier?.value
-                ? attributeValue?.identifier?.value
-                : "",
-            }}
-          />
-          <StringInput
-            label="Id"
-            title="Id"
-            canEdit={true}
-            fieldValue={attributeValue?.id}
-            onStringValueChange={(val) => {
-              handleChange("id", val);
-            }}
-          />
+          <div tw="mt-4">
+            <IdentifierInput
+              onIdentifierChange={(val) => {
+                handleChange("identifier", new Identifier(val));
+              }}
+              canEdit={true}
+              identifier={{
+                namingSystem: attributeValue?.identifier?.namingSystem
+                  ? attributeValue?.identifier?.namingSystem
+                  : "",
+                value: attributeValue?.identifier?.value
+                  ? attributeValue?.identifier?.value
+                  : "",
+              }}
+            />
+          </div>
+          <div tw="mt-4">
+            <StringInput
+              label="Id"
+              title="Id"
+              canEdit={true}
+              fieldValue={attributeValue?.id}
+              onStringValueChange={(val) => {
+                handleChange("id", val);
+              }}
+            />
+          </div>
           {displayQdmEntity()}
         </>
       ) : (
