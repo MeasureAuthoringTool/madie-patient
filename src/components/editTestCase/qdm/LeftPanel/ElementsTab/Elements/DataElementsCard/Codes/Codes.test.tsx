@@ -141,7 +141,7 @@ describe("Codes section", () => {
       />
     );
     // verify chips is added
-    expect(await screen.findByTestId("SNOMEDCT-183452005")).toBeInTheDocument();
+    expect(await screen.findByTestId("SNOMEDCT_183452005")).toBeInTheDocument();
   });
 
   it("Should add a custom code concept and display chips", async () => {
@@ -204,7 +204,7 @@ describe("Codes section", () => {
     );
     // verify chips is added
     expect(
-      await screen.findByTestId(`${customCodeSystem}-${customCode}`)
+      await screen.findByTestId(`${customCodeSystem}_${customCode}`)
     ).toBeInTheDocument();
   });
 
@@ -274,7 +274,7 @@ describe("Codes section", () => {
       />
     );
     // verify chips is added
-    expect(await screen.findByTestId("SNOMEDCT-183452005")).toBeInTheDocument();
+    expect(await screen.findByTestId("SNOMEDCT_183452005")).toBeInTheDocument();
 
     userEvent.click(screen.getByTestId("CancelIcon"));
 
@@ -286,6 +286,6 @@ describe("Codes section", () => {
         deleteCode={deleteCode}
       />
     );
-    expect(await screen.queryByTestId("SNOMEDCT-183452005")).toBeNull();
+    expect(await screen.queryByTestId("SNOMEDCT_183452005")).toBeNull();
   });
 });

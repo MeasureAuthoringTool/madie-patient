@@ -1034,7 +1034,7 @@ describe("DataElementsCard", () => {
 
     userEvent.click(screen.getByTestId("add-code-concept-button"));
     // verify chips is added
-    expect(await screen.findByTestId("SNOMEDCT-4525004")).toBeInTheDocument();
+    expect(await screen.findByTestId("SNOMEDCT_4525004")).toBeInTheDocument();
   });
 });
 

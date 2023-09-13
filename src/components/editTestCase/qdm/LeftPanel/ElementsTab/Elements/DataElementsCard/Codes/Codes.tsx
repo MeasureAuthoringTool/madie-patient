@@ -91,7 +91,7 @@ const Codes = ({
             codeSystems[codes.system] || codes.system;
           return {
             text: `${codeSystemDisplayName}: ${codes.code}`,
-            id: `${codeSystemDisplayName}-${codes.code}`,
+            id: `${codeSystemDisplayName}_${codes.code}`,
           };
         }
       );
@@ -147,9 +147,9 @@ const Codes = ({
   // Checks if new code is a duplicate based on chip ids.
   const addNewCode = () => {
     if (selectedCodeSystemName === "Custom") {
-      const newCodeId = `${customCodeSystemName}-${customCodeConcept}`;
+      const newCodeId = `${customCodeSystemName}_${customCodeConcept}`;
       const existingCode = _.find(chips, _.matches({ id: newCodeId }));
-      if (existingCode) {
+      if (_.isEmpty(existingCode)) {
         const customCqlCode = new CQL.Code(
           customCodeConcept,
           customCodeSystemName, // What is the oid for custom CS
@@ -162,9 +162,9 @@ const Codes = ({
         setCustomCodeConcept("");
       }
     } else {
-      const newCodeId = `${codeSystems[savedCode.system]}-${savedCode.code}`;
+      const newCodeId = `${codeSystems[savedCode.system]}_${savedCode.code}`;
       const existingCode = _.find(chips, _.matches({ id: newCodeId }));
-      if (existingCode) {
+      if (_.isEmpty(existingCode)) {
         handleChange(savedCode);
         setSelectedCodeSystemName("");
         setSelectedCodeConcept(null);
@@ -177,7 +177,7 @@ const Codes = ({
     const remainingChips = chips.filter((c) => {
       return c.id !== chip.id;
     });
-    const codeId = chip.id.split("-")[1];
+    const codeId = chip.id.split("_")[1];
     deleteCode(codeId);
     setChips(remainingChips);
   };
