@@ -1,10 +1,10 @@
 .demographics-container {
   display: grid;
-  grid-row-gap: 24px;
+  grid-row-gap: 15px;
   .demographics-row {
     display: flex;
     flex-direction: row;
     flex-grow: 1;
-    column-gap: 52px;
+    column-gap: 15px;
   }
 }
