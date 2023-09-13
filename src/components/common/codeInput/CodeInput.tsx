@@ -13,13 +13,21 @@ interface CodeInputProps {
   canEdit: boolean;
   handleChange: Function;
   valueSets: ValueSet[];
+  required: boolean;
+  title?: string;
 }
 
 const placeHolder = (label) => (
   <span style={{ color: "#717171" }}>{label}</span>
 );
 
-const CodeInput = ({ canEdit, handleChange, valueSets }: CodeInputProps) => {
+const CodeInput = ({
+  canEdit,
+  handleChange,
+  valueSets,
+  required,
+  title,
+}: CodeInputProps) => {
   const [selectedValueSet, setSelectedValueSet] = useState<ValueSet>();
   const [selectedCodeSystemName, setSelectedCodeSystemName] =
     useState<string>();
@@ -123,6 +131,9 @@ const CodeInput = ({ canEdit, handleChange, valueSets }: CodeInputProps) => {
 
   return (
     <div>
+      <h4 className="header" tw="text-blue-800">
+        {title}
+      </h4>
       <Select
         id={"value-set-selector"}
         label="Value Set / Direct Reference Code"
@@ -131,7 +142,7 @@ const CodeInput = ({ canEdit, handleChange, valueSets }: CodeInputProps) => {
         }}
         data-testid={"value-set-selector"}
         disabled={!canEdit}
-        required={true}
+        required={required}
         SelectDisplayProps={{
           "aria-required": "true",
         }}
@@ -155,7 +166,7 @@ const CodeInput = ({ canEdit, handleChange, valueSets }: CodeInputProps) => {
                   tw="w-full"
                   label="Custom Code System"
                   placeholder="Custom Code System"
-                  required={true}
+                  required={required}
                   disabled={!canEdit}
                   inputProps={{
                     "data-testid": "custom-code-system-input",
@@ -172,7 +183,7 @@ const CodeInput = ({ canEdit, handleChange, valueSets }: CodeInputProps) => {
                   tw="w-full"
                   label="Custom Code"
                   placeholder="Custom Code"
-                  required={true}
+                  required={required}
                   disabled={!canEdit}
                   inputProps={{
                     "data-testid": "custom-code-input",
@@ -197,7 +208,7 @@ const CodeInput = ({ canEdit, handleChange, valueSets }: CodeInputProps) => {
                   }}
                   data-testid={"code-system-selector"}
                   disabled={!canEdit}
-                  required={true}
+                  required={required}
                   SelectDisplayProps={{
                     "aria-required": "true",
                   }}
@@ -215,7 +226,7 @@ const CodeInput = ({ canEdit, handleChange, valueSets }: CodeInputProps) => {
                   }}
                   data-testid={"code-selector"}
                   disabled={!canEdit}
-                  required={true}
+                  required={required}
                   SelectDisplayProps={{
                     "aria-required": "true",
                   }}
