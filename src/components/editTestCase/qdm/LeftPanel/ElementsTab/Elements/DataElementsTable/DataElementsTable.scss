@@ -2,7 +2,7 @@ $header-size: 14px;
 $header-style: normal;
 $header-weight: 500;
 
-.madie-elements-table {
+.data-elements-table {
   font-family: Rubik, sans-serif;
   margin-top: 32px;
   text-align: left;
@@ -139,7 +139,7 @@ $header-weight: 500;
         }
       }
 
-      > .view-button {
+      .view-button {
         color: #242424;
         border: 1px solid #b0b0b0;
         border-radius: 4px;
