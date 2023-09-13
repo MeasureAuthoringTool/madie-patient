@@ -11,6 +11,7 @@ import {
 import useQdmExecutionContext from "../../../../../../routes/qdm/useQdmExecutionContext";
 import TimingCell from "./TimingCell";
 import DatElementActions from "./DatElementActions";
+import { SKIP_ATTRIBUTES } from "../../../../../../../util/QdmAttributeHelpers";
 
 const columnHelper = createColumnHelper<DataElement>();
 interface DataElementTableProps {
@@ -25,6 +26,9 @@ const DataElementTable = ({
 }: DataElementTableProps) => {
   const { cqmMeasureState } = useQdmExecutionContext();
   const [codeSystemMap, setCodeSystemMap] = useState({});
+
+  console.log("dataElements ", dataElements);
+
   useEffect(() => {
     const valueSets = cqmMeasureState?.[0]?.value_sets;
     if (valueSets) {
@@ -37,6 +41,30 @@ const DataElementTable = ({
       setCodeSystemMap(codeSystemMap);
     }
   }, [cqmMeasureState]);
+
+  useEffect(() => {
+    if (dataElements) {
+      dataElements[0]?.schema.eachPath((path, info) => {
+        if (!SKIP_ATTRIBUTES.includes(path) && dataElements[0][path]) {
+          console.log("Diagnosis path", path);
+        }
+
+      });
+      // dataElements.forEach((dataElement) => {
+      //   dataElement.schema.eachPath((path, info) => {
+      //     if (dataElement.qdmTitle === "Encounter, Performed") {
+      //       // if (!SKIP_ATTRIBUTES.includes(path) && dataElement[path]) {
+      //       //   console.log("dataElement", dataElement);
+      //       console.log("path", path);
+      //       // console.log("info", info);
+      //       // }
+      //     } else if (dataElement.qdmTitle === "Diagnosis") {
+      //       console.log("Diagnosis path", path);
+      //     }
+      //   });
+      // });
+    }
+  }, [dataElements]);
 
   const columns = [
     columnHelper.accessor((row) => row, {
