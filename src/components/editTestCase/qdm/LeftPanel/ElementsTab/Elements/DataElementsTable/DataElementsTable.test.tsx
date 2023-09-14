@@ -223,7 +223,7 @@ describe("Data Elements Table", () => {
     });
   });
 
-  test("data element edit action", async () => {
+  test("delete data element action", async () => {
     const onDelete = jest.fn();
     renderDataElementsTable([dataEl[0], dataEl[1]], onDelete);
     expect(queryAllByText("Encounter Performed").length).toEqual(2);

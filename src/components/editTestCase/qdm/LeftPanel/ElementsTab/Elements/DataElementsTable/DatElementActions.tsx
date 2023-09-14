@@ -20,11 +20,12 @@ export default function DatElementActions(props: DatElementMenuProps) {
     setAnchorEl(null);
   };
 
-  const viewDataElement = (id: string) => {
+  const viewDataElement = () => {
+    //TODO: future story
     handleClose();
   };
 
-  const deleteDataElement = (id: string) => {
+  const deleteDataElement = () => {
     handleClose();
     onDelete(elementId);
   };
@@ -57,7 +58,7 @@ export default function DatElementActions(props: DatElementMenuProps) {
         otherSelectOptionProps={[
           {
             label: "Delete",
-            toImplementFunction: () => deleteDataElement(elementId),
+            toImplementFunction: deleteDataElement,
             dataTestId: `delete-element-${elementId}`,
           },
         ]}

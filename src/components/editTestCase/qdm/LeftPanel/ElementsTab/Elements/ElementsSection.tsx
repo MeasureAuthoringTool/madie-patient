@@ -79,7 +79,7 @@ const ElementsSection = () => {
     });
   };
 
-  const deleteDataElement = (id) => {
+  const deleteDataElement = (id: string) => {
     dispatch({
       type: PatientActionType.REMOVE_DATA_ELEMENT,
       payload: { id: id },
