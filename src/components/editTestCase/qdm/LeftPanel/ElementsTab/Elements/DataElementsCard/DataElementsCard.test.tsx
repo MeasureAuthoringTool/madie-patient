@@ -8,7 +8,7 @@ import {
   render,
   screen,
   waitFor,
-  within
+  within,
 } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import DataElementsCard, {
@@ -1049,8 +1049,8 @@ describe("DataElementsCard", () => {
     userEvent.click(closeButton);
     expect(closeButton).not.toBeInTheDocument();
     expect(resultChip).not.toBeInTheDocument();
-   });
-    
+  });
+
   it("Should add new Codes", async () => {
     renderDataElementsCard("codes", jest.fn, dataEl[0], jest.fn);
 
