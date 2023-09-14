@@ -238,7 +238,7 @@ const EditTestCase = () => {
   const calculateQdmTestCases = async () => {
     setExecuting(true);
     try {
-      const patients: any[] = [JSON.parse(currentTestCase?.json)];
+      const patients: any[] = [JSON.parse(formik.values?.json)];
       const calculationOutput =
         await qdmCalculation.current.calculateQdmTestCases(
           cqmMeasure,
