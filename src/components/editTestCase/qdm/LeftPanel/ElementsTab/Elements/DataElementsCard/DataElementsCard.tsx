@@ -36,6 +36,27 @@ export const applyAttribute = (
   return updatedDataElement;
 };
 
+export const deleteAttribute = (chipText, dataElement) => {
+  const modelClass = getDataElementClass(dataElement);
+  const updatedDataElement = new modelClass(dataElement);
+  const attributePath = _.camelCase(
+    chipText.substring(0, chipText.indexOf(":"))
+  );
+  const attributeValue = chipText.substring(chipText.indexOf(": ") + 2);
+  const pathInfo = updatedDataElement.schema.paths[attributePath];
+  if (
+    _.upperCase(pathInfo?.instance) === "ARRAY" &&
+    updatedDataElement[attributePath].length > 1
+  ) {
+    const deleteIndex =
+      updatedDataElement[attributePath].indexOf(attributeValue);
+    updatedDataElement[attributePath].splice(deleteIndex, 1);
+  } else {
+    updatedDataElement[attributePath] = undefined;
+  }
+  return updatedDataElement;
+};
+
 const DataElementsCard = (props: {
   cardActiveTab: string;
   setCardActiveTab: Function;
@@ -159,9 +180,19 @@ const DataElementsCard = (props: {
   // centralize state one level up so we can conditionally render our child component
 
   const onDeleteAttributeChip = (deletedChip) => {
+    const deletedChipIndex = deletedChip.index;
     const newAttributes = displayAttributes.slice();
-    newAttributes.splice(deletedChip, 1);
-    setDisplayAttributes(newAttributes);
+    newAttributes.splice(deletedChipIndex, 1);
+    // setDisplayAttributes(newAttributes);
+    const updatedElement = deleteAttribute(
+      deletedChip.text,
+      selectedDataElement
+    );
+    setLocalSelectedDataElement(updatedElement);
+    setSelectedDataElement(updatedElement);
+    if (onChange) {
+      onChange(updatedElement);
+    }
   };
 
   const handleCodeChange = (selectedCode) => {
@@ -236,6 +267,7 @@ const DataElementsCard = (props: {
               localSelectedDataElement
             );
             setLocalSelectedDataElement(updatedDataElement);
+            setSelectedDataElement(updatedDataElement);
             if (onChange) {
               onChange(updatedDataElement);
             }

@@ -3,7 +3,7 @@ import AttributeChip from "./AttributeChip";
 
 interface AttributeChipListProps {
   items: any;
-  onDeleteAttributeChip?: (deletedChip) => void;
+  onDeleteAttributeChip: (deletedChip) => void;
 }
 
 const AttributeChipList = ({

@@ -911,7 +911,6 @@ export const testDataElements = [
     negationRationale: true,
   },
   {
-    //15
     dataElementCodes: [],
     _id: "6480f13e91f25700004059cd",
     relatedTo: [],

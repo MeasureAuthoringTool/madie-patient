@@ -28,7 +28,7 @@ const AttributeSection = ({
   onAddClicked,
   onDeleteAttributeChip,
 }: AttributeSectionProps) => {
-  const mappedAttributeList = attributeChipList.map((chip) => ({
+  const mappedAttributeList = attributeChipList.map((chip, index) => ({
     text: `${chip.title}: ${chip.value}`,
   }));
   const [attributes, setAttributes] = useState([]);
