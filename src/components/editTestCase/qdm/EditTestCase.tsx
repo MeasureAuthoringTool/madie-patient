@@ -5,13 +5,7 @@ import {
   checkUserCanEdit,
   routeHandlerStore,
 } from "@madie/madie-util";
-import {
-  TestCase,
-  PopulationExpectedValue,
-  Group,
-  GroupPopulation,
-  MeasureErrorType,
-} from "@madie/madie-models";
+import { TestCase, MeasureErrorType } from "@madie/madie-models";
 import "../qiCore/EditTestCase.scss";
 import {
   Button,
@@ -33,10 +27,7 @@ import "./EditTestCase.scss";
 import { MadieError, sanitizeUserInput } from "../../../util/Utils";
 import * as _ from "lodash";
 import "styled-components/macro";
-import {
-  getPopulationTypesForScoring,
-  triggerPopChanges,
-} from "../../../util/PopulationsMap";
+import { triggerPopChanges } from "../../../util/PopulationsMap";
 import { QDMPatient } from "cqm-models";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -77,7 +68,6 @@ const EditTestCase = () => {
   const [toastOpen, setToastOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>("");
   const [toastType, setToastType] = useState<string>("danger");
-  const [discardTrigger, setDiscardTrigger] = useState<boolean>(false);
   const onToastClose = () => {
     setToastMessage("");
     setToastOpen(false);

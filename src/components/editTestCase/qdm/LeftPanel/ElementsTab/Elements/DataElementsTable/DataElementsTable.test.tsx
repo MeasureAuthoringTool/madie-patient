@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Measure } from "@madie/madie-models";
 import "@testing-library/jest-dom";
-import { describe, expect, test } from "@jest/globals";
+import userEvent from "@testing-library/user-event";
 import { render, screen, waitFor } from "@testing-library/react";
 import DataElementsTable from "./DataElementsTable";
 import DataTypeCell from "./DataTypeCell";
@@ -27,13 +27,12 @@ import {
   CareGoal,
   CQL,
 } from "cqm-models";
-
 import { QDMPatient } from "cqm-models/app/assets/javascripts/QDMPatient";
 
 const { DateTime, Code } = CQL;
-const { findByText, getByTestId, queryByText } = screen;
+const { findByText, getByTestId, queryByText, queryAllByText } = screen;
 
-const renderDataElementsTable = (dataElements) => {
+const renderDataElementsTable = (dataElements, onDelete = () => {}) => {
   return render(
     <QdmExecutionContextProvider
       value={{
@@ -45,7 +44,7 @@ const renderDataElementsTable = (dataElements) => {
       }}
     >
       <QdmPatientProvider>
-        <DataElementsTable dataElements={dataElements} />
+        <DataElementsTable dataElements={dataElements} onDelete={onDelete} />
       </QdmPatientProvider>
     </QdmExecutionContextProvider>
   );
@@ -222,5 +221,17 @@ describe("Data Elements Table", () => {
     await waitFor(() => {
       expect(queryByText("Encounter Performed")).toBeInTheDocument();
     });
+  });
+
+  test("delete data element action", async () => {
+    const onDelete = jest.fn();
+    renderDataElementsTable([dataEl[0], dataEl[1]], onDelete);
+    expect(queryAllByText("Encounter Performed").length).toEqual(2);
+    // click action button
+    userEvent.click(screen.getByTestId(`view-element-btn-${dataEl[0].id}`));
+    expect(getByTestId("popover-content")).toBeInTheDocument();
+    // click delete action
+    userEvent.click(screen.getByTestId(`delete-element-${dataEl[0].id}`));
+    expect(onDelete).toHaveBeenCalledWith(dataEl[0].id);
   });
 });
