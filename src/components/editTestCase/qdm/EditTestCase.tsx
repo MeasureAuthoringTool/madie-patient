@@ -254,7 +254,7 @@ const EditTestCase = () => {
       populationSets.forEach((pop) => {
         const results = JSONPath({
           path: `$..${pop}`,
-          json: calculationOutput,
+          json: JSON.parse(JSON.stringify(calculationOutput)),
         });
         let populationMap = new Map<String, number>();
         let groupsMap = new Map<String, Map<String, number>>();
