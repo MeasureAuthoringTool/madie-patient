@@ -993,7 +993,7 @@ const renderDataElementsCard = (
 
 describe("DataElementsCard", () => {
   const { queryByText } = screen;
-  test("DataElementsCards renders length of stay", async () => {
+  it("DataElementsCards renders length of stay", async () => {
     await waitFor(() =>
       renderDataElementsCard("attributes", jest.fn, dataEl[0], jest.fn)
     );
@@ -1002,7 +1002,7 @@ describe("DataElementsCard", () => {
     });
   });
 
-  test("DataElementsCard renders codes", async () => {
+  it("DataElementsCard renders codes", async () => {
     await waitFor(() =>
       renderDataElementsCard("codes", jest.fn, dataEl[0], jest.fn)
     );
@@ -1010,7 +1010,7 @@ describe("DataElementsCard", () => {
     expect(screen.getByTestId("codes-section")).toBeInTheDocument();
   });
 
-  test("DataElementsCards renders nothing", async () => {
+  it("DataElementsCards renders nothing", async () => {
     await waitFor(() =>
       renderDataElementsCard("codes", jest.fn, testDataElements[0], jest.fn)
     );
@@ -1020,20 +1020,7 @@ describe("DataElementsCard", () => {
       ).not.toBeInTheDocument();
     });
   });
-
-  test("Attribute Chip Render", async () => {
-    await waitFor(() =>
-      renderDataElementsCard(
-        "attributes",
-        jest.fn,
-        testDataElements[15],
-        jest.fn
-      )
-    );
-
-    expect(await screen.findByText("Result: 1")).toBeInTheDocument();
-  });
-  test("Attribute Chip Render", async () => {
+  it("Attribute chip should render and delete", async () => {
     await waitFor(() =>
       renderDataElementsCard(
         "attributes",
