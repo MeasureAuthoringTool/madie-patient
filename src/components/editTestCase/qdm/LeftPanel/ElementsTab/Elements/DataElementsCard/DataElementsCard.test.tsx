@@ -2,7 +2,14 @@ import * as React from "react";
 import { Measure } from "@madie/madie-models";
 import { MemoryRouter } from "react-router-dom";
 import { describe, test } from "@jest/globals";
-import { render, screen, waitFor, within } from "@testing-library/react";
+import {
+  findByRole,
+  logRoles,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import "@testing-library/jest-dom";
 import DataElementsCard, {
   applyAttribute,
@@ -904,6 +911,23 @@ export const testDataElements = [
     description: "Device, Order: Cardiopulmonary Arrest",
     negationRationale: true,
   },
+  {
+    dataElementCodes: [],
+    _id: "6480f13e91f25700004059cd",
+    relatedTo: [],
+    performer: [],
+    qdmTitle: "Assessment, Performed",
+    hqmfOid: "2.16.840.1.113883.10.20.28.4.117",
+    qdmCategory: "assessment",
+    qdmStatus: "performed",
+    qdmVersion: "5.6",
+    _type: "QDM::AssessmentPerformed",
+    id: "6480f13e91f25700004059cd",
+    components: [],
+    codeListId: "2.16.840.1.113883.3.3157.4031",
+    description: "Assessment, Performed: Active Peptic Ulcer",
+    result: 1,
+  },
 ];
 
 //@ts-ignore
@@ -969,7 +993,7 @@ const renderDataElementsCard = (
 
 describe("DataElementsCard", () => {
   const { queryByText } = screen;
-  test("DataElementsCards renders length of stay", async () => {
+  it("DataElementsCards renders length of stay", async () => {
     await waitFor(() =>
       renderDataElementsCard("attributes", jest.fn, dataEl[0], jest.fn)
     );
@@ -978,7 +1002,7 @@ describe("DataElementsCard", () => {
     });
   });
 
-  test("DataElementsCard renders codes", async () => {
+  it("DataElementsCard renders codes", async () => {
     await waitFor(() =>
       renderDataElementsCard("codes", jest.fn, dataEl[0], jest.fn)
     );
@@ -986,7 +1010,7 @@ describe("DataElementsCard", () => {
     expect(screen.getByTestId("codes-section")).toBeInTheDocument();
   });
 
-  test("DataElementsCards renders nothing", async () => {
+  it("DataElementsCards renders nothing", async () => {
     await waitFor(() =>
       renderDataElementsCard("codes", jest.fn, testDataElements[0], jest.fn)
     );
@@ -995,6 +1019,23 @@ describe("DataElementsCard", () => {
         screen.queryByText("Admission Source: SNOMEDCT : 10725009")
       ).not.toBeInTheDocument();
     });
+  });
+  it("Attribute chip should render and delete", async () => {
+    await waitFor(() =>
+      renderDataElementsCard(
+        "attributes",
+        jest.fn,
+        testDataElements[15],
+        jest.fn
+      )
+    );
+    const resultChip = await screen.findByText("Result: 1");
+    expect(resultChip).toBeInTheDocument();
+    const closeButton = await screen.findByTestId("delete-chip-button-0");
+    expect(closeButton).toBeInTheDocument();
+    userEvent.click(closeButton);
+    expect(closeButton).not.toBeInTheDocument();
+    expect(resultChip).not.toBeInTheDocument();
   });
 
   it("Should add new Codes", async () => {
