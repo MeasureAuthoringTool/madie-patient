@@ -86,6 +86,67 @@ export const determineAttributeTypeList = (path, info) => {
   else return [info.instance];
 };
 
+// This is specific to DataElements Table as 2 data types from same attribute has to be displayed in same cell
+export const generateAttributesToDisplay = (
+  dataElement,
+  dataElements,
+  codeSystemMap: any
+) => {
+  const displayAttributes = [];
+  dataElement.schema.eachPath((path, info) => {
+    if (!SKIP_ATTRIBUTES.includes(path) && !_.isEmpty(dataElement[path])) {
+      if (info.instance === "Array") {
+        // 4 instances
+        dataElement[path].forEach((elem, index) => {
+          // works
+          if (path == "relatedTo") {
+            const display = getDisplayFromId(dataElements, elem);
+            let value = `${stringifyValue(
+              display?.description,
+              true
+            )} ${stringifyValue(display?.timing, true, codeSystemMap)}}`;
+            displayAttributes.push({
+              name: path,
+              title: _.startCase(path),
+              value: value,
+              isArrayValue: true,
+              index: index,
+            });
+          } else {
+            displayAttributes.push({
+              name: path,
+              title: _.startCase(path),
+              // this is wrong
+              value: stringifyValue(dataElement[path], true, codeSystemMap),
+              isArrayValue: true,
+              index: index,
+            });
+          }
+        });
+      } else if (path === "relatedTo") {
+        const id = dataElement[path];
+        const display = getDisplayFromId(dataElements, id);
+        const value = `${stringifyValue(
+          display.description,
+          true
+        )} ${stringifyValue(display.timing, true)}`;
+        displayAttributes.push({
+          name: path,
+          title: _.startCase(path),
+          value: value,
+        });
+      } else {
+        displayAttributes.push({
+          name: path,
+          title: _.startCase(path),
+          value: stringifyValue(dataElement[path], true, codeSystemMap),
+        });
+      }
+    }
+  });
+  return displayAttributes;
+};
+
 // from https://github.com/MeasureAuthoringTool/bonnie/blob/master/app/assets/javascripts/views/patient_builder/data_criteria_attribute_display.js.coffee
 export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
   if (!value) {
