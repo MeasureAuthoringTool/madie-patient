@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { uniq } from "lodash";
 import { DataElement } from "cqm-models";
+import { ObjectID } from "bson";
 
 import ElementSection from "../../../../../common/ElementSection";
 import DynamicElementTabs from "./DynamicElementTabs";
@@ -14,7 +15,7 @@ import {
   PatientActionType,
   useQdmPatient,
 } from "../../../../../../util/QdmPatientContext";
-import DataElementsTable from "./DataElementsTable";
+import DataElementsTable from "./DataElementsTable/DataElementsTable";
 import {
   filterDataElements,
   getDataElementClass,
@@ -67,13 +68,21 @@ const ElementsSection = () => {
     setActiveTab(v);
   };
 
-  const handleAddDataElement = (dataElement) => {
-    const modelClass = getDataElementClass(dataElement);
-    const newDataElement = new modelClass(dataElement);
+  const handleAddDataElement = (sourceCriteria) => {
+    const data = { ...sourceCriteria, id: new ObjectID().toString() };
+    const modelClass = getDataElementClass(sourceCriteria);
+    const newDataElement = new modelClass(data);
     setSelectedDataElement(newDataElement);
     dispatch({
       type: PatientActionType.ADD_DATA_ELEMENT,
       payload: newDataElement,
+    });
+  };
+
+  const deleteDataElement = (id: string) => {
+    dispatch({
+      type: PatientActionType.REMOVE_DATA_ELEMENT,
+      payload: { id: id },
     });
   };
 
@@ -121,6 +130,7 @@ const ElementsSection = () => {
         <DataElementsTable
           dataElements={filterDataElements(patient?.dataElements)}
           onView={(dataElement) => setSelectedDataElement(dataElement)}
+          onDelete={deleteDataElement}
         />
       </div>
     </ElementSection>

@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Timing from "./Timing";
@@ -22,9 +22,17 @@ jest.mock("dayjs", () => ({
   startOf: jest.fn().mockReturnThis(),
 }));
 
+const updateDataElement = jest.fn();
+
 describe("Timing", () => {
   it("should not render any timing when selected DataElement is null", () => {
-    render(<Timing selectedDataElement={null} canEdit={true} />);
+    render(
+      <Timing
+        updateDataElement={updateDataElement}
+        selectedDataElement={null}
+        canEdit={true}
+      />
+    );
 
     expect(
       screen.queryByText("Relevant Period - Start")
@@ -53,7 +61,11 @@ describe("Timing", () => {
       new AssessmentPerformed();
 
     render(
-      <Timing selectedDataElement={assessmentPerformedElement} canEdit={true} />
+      <Timing
+        updateDataElement={updateDataElement}
+        selectedDataElement={assessmentPerformedElement}
+        canEdit={true}
+      />
     );
 
     expect(screen.getByTestId("relevant-period-start")).toBeInTheDocument();
@@ -70,7 +82,13 @@ describe("Timing", () => {
   it("should render prevalencePeriod for Symptom DataElement", () => {
     const symptomDataElement: Symptom = new Symptom();
 
-    render(<Timing selectedDataElement={symptomDataElement} canEdit={true} />);
+    render(
+      <Timing
+        updateDataElement={updateDataElement}
+        selectedDataElement={symptomDataElement}
+        canEdit={true}
+      />
+    );
 
     expect(screen.getByTestId("prevalence-period-start")).toBeInTheDocument();
     expect(screen.getByTestId("prevalence-period-end")).toBeInTheDocument();
@@ -82,7 +100,11 @@ describe("Timing", () => {
     const participationDataElement: Participation = new Participation();
 
     render(
-      <Timing selectedDataElement={participationDataElement} canEdit={true} />
+      <Timing
+        updateDataElement={updateDataElement}
+        selectedDataElement={participationDataElement}
+        canEdit={true}
+      />
     );
 
     expect(
@@ -100,7 +122,11 @@ describe("Timing", () => {
       new DiagnosticStudyPerformed();
 
     render(
-      <Timing selectedDataElement={diagnosticDataElement} canEdit={true} />
+      <Timing
+        updateDataElement={updateDataElement}
+        selectedDataElement={diagnosticDataElement}
+        canEdit={true}
+      />
     );
 
     expect(screen.getByTestId("relevant-period-start")).toBeInTheDocument();
@@ -120,7 +146,13 @@ describe("Timing", () => {
   it("should handle prevalencePeriod change for Symptom DataElement", () => {
     const symptomDataElement: Symptom = new Symptom();
 
-    render(<Timing selectedDataElement={symptomDataElement} canEdit={true} />);
+    render(
+      <Timing
+        updateDataElement={updateDataElement}
+        selectedDataElement={symptomDataElement}
+        canEdit={true}
+      />
+    );
 
     expect(screen.getByTestId("prevalence-period-start")).toBeInTheDocument();
     expect(screen.getByTestId("prevalence-period-end")).toBeInTheDocument();
@@ -145,7 +177,11 @@ describe("Timing", () => {
     const participationDataElement: Participation = new Participation();
 
     render(
-      <Timing selectedDataElement={participationDataElement} canEdit={true} />
+      <Timing
+        selectedDataElement={participationDataElement}
+        updateDataElement={updateDataElement}
+        canEdit={true}
+      />
     );
 
     expect(
@@ -176,7 +212,11 @@ describe("Timing", () => {
       new DiagnosticStudyPerformed();
 
     render(
-      <Timing selectedDataElement={diagnosticDataElement} canEdit={true} />
+      <Timing
+        canEdit={true}
+        updateDataElement={updateDataElement}
+        selectedDataElement={diagnosticDataElement}
+      />
     );
 
     const inputs = screen.getAllByPlaceholderText(

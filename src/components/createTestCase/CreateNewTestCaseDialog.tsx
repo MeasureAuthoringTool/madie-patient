@@ -223,6 +223,7 @@ const CreateNewTestCaseDialog = ({ open, onClose }) => {
               inputProps={{
                 "data-testid": "create-test-case-title-input",
                 "aria-describedby": "create-test-case-title-helper-text",
+                "aria-required": true,
                 required: true,
               }}
               helperText={formikErrorHandler("title")}

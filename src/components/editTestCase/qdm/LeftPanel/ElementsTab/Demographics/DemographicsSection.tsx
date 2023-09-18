@@ -264,6 +264,10 @@ const DemographicsSection = ({ canEdit }) => {
                             helperText: formik?.errors?.birthDate
                               ? formik.errors.birthDate
                               : "",
+                            inputProps: {
+                              "aria-required": true,
+                              required: true,
+                            },
                             InputProps: {
                               startAdornment: (
                                 <InputAdornment

@@ -3,6 +3,7 @@ $grey-19: #dddddd;
 #elements-section {
   display: flex;
   flex-direction: column;
+  position: relative;
   > div:first-of-type {
     border-bottom: solid 1px $grey-19;
   }

@@ -5,13 +5,7 @@ import {
   checkUserCanEdit,
   routeHandlerStore,
 } from "@madie/madie-util";
-import {
-  TestCase,
-  PopulationExpectedValue,
-  Group,
-  GroupPopulation,
-  MeasureErrorType,
-} from "@madie/madie-models";
+import { TestCase, MeasureErrorType } from "@madie/madie-models";
 import "../qiCore/EditTestCase.scss";
 import {
   Button,
@@ -33,10 +27,7 @@ import "./EditTestCase.scss";
 import { MadieError, sanitizeUserInput } from "../../../util/Utils";
 import * as _ from "lodash";
 import "styled-components/macro";
-import {
-  getPopulationTypesForScoring,
-  triggerPopChanges,
-} from "../../../util/PopulationsMap";
+import { triggerPopChanges } from "../../../util/PopulationsMap";
 import { QDMPatient } from "cqm-models";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -77,7 +68,6 @@ const EditTestCase = () => {
   const [toastOpen, setToastOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>("");
   const [toastType, setToastType] = useState<string>("danger");
-  const [discardTrigger, setDiscardTrigger] = useState<boolean>(false);
   const onToastClose = () => {
     setToastMessage("");
     setToastOpen(false);
@@ -190,28 +180,6 @@ const EditTestCase = () => {
     setMeasure(measureCopy);
   }
 
-  // maps measure.group => testcase.groupPopulation
-  // if patient based, then default for expected and actual is false, else null
-  const mapMeasureGroupsToTestCaseGroups = (
-    measureGroup: Group
-  ): GroupPopulation => {
-    return {
-      groupId: measureGroup.id,
-      scoring: measure.scoring,
-      populationBasis: String(measure.patientBasis),
-      stratificationValues: [],
-      populationValues: getPopulationTypesForScoring(measureGroup)?.map(
-        (population: PopulationExpectedValue) => ({
-          name: population.name,
-          expected: measure.patientBasis ? false : null,
-          actual: measure.patientBasis ? false : null,
-          id: population.id,
-          criteriaReference: population.criteriaReference,
-        })
-      ),
-    };
-  };
-
   // Fetches test case based on ID, identifies measure.group converts it to testcase.groupPopulation
   // if the measure.group is not in TC then a new testcase.groupPopulation is added to nextTc
   // and set it to form
@@ -227,7 +195,7 @@ const EditTestCase = () => {
                 (gp) => gp.groupId === group.id
               );
               return _.isNil(existingTestCasePC)
-                ? mapMeasureGroupsToTestCaseGroups(group)
+                ? qdmCalculation.current.mapMeasureGroup(measure, group)
                 : {
                     ...existingTestCasePC,
                   };
@@ -260,14 +228,14 @@ const EditTestCase = () => {
   const calculateQdmTestCases = async () => {
     setExecuting(true);
     try {
+      const patients: any[] = [JSON.parse(formik.values?.json)];
       const calculationOutput =
         await qdmCalculation.current.calculateQdmTestCases(
           cqmMeasure,
-          JSON.parse(currentTestCase?.json)
+          patients
         );
 
       //find the population_sets
-
       const populationSets = JSONPath({
         path: "$.population_sets[*].population_set_id",
         json: cqmMeasure,
@@ -276,7 +244,7 @@ const EditTestCase = () => {
       populationSets.forEach((pop) => {
         const results = JSONPath({
           path: `$..${pop}`,
-          json: calculationOutput,
+          json: JSON.parse(JSON.stringify(calculationOutput)),
         });
         let populationMap = new Map<String, number>();
         let groupsMap = new Map<String, Map<String, number>>();
@@ -308,6 +276,7 @@ const EditTestCase = () => {
     } catch (error) {
       setQdmExecutionErrors((prevState) => [...prevState, `${error.message}`]);
       showToast("Error while calculating QDM test cases", "danger");
+      console.error("Error while calculating QDM test cases:", error);
     } finally {
       setExecuting(false);
     }

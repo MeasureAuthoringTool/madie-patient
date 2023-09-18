@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import "twin.macro";
+import "styled-components/macro";
 import LeftPanelNavTabs from "./LeftPanelNavTabs";
 import ElementsTab from "./ElementsTab/ElementsTab";
 import { QdmPatientProvider } from "../../../../util/QdmPatientContext";
@@ -16,7 +18,12 @@ const LeftPanel = (props: { canEdit: boolean }) => {
       <div className="panel-content">
         <QdmPatientProvider>
           {activeTab === "elements" && <ElementsTab canEdit={props.canEdit} />}
-          {activeTab === "json" && <p>{formik.values?.json}</p>}
+          {activeTab === "json" && (
+            <pre tw="text-sm">
+              {formik.values?.json &&
+                JSON.stringify(JSON.parse(formik.values?.json), null, 2)}
+            </pre>
+          )}
         </QdmPatientProvider>
       </div>
     </div>

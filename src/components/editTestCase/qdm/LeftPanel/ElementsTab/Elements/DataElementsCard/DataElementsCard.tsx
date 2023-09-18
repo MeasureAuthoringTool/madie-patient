@@ -8,7 +8,7 @@ import {
 } from "../../../../../../../util/QdmAttributeHelpers";
 import Codes from "./Codes/Codes";
 import SubNavigationTabs from "./SubNavigationTabs";
-import cqmModels, { DataElement } from "cqm-models";
+import { DataElement } from "cqm-models";
 import "./DataElementsCard.scss";
 import AttributeSection from "./attributes/AttributeSection";
 import { useQdmExecutionContext } from "../../../../../../routes/qdm/QdmExecutionContext";
@@ -25,7 +25,56 @@ export const applyAttribute = (
 ) => {
   const modelClass = getDataElementClass(dataElement);
   const updatedDataElement = new modelClass(dataElement);
-  updatedDataElement[_.camelCase(attribute)] = attributeValue;
+  const attributePath = _.camelCase(attribute);
+
+  const pathInfo = updatedDataElement.schema.paths[attributePath];
+  if (_.upperCase(pathInfo?.instance) === "ARRAY") {
+    updatedDataElement[attributePath].push(attributeValue);
+  } else {
+    updatedDataElement[_.camelCase(attribute)] = attributeValue;
+  }
+  return updatedDataElement;
+};
+
+export const deleteAttribute = (chipText, dataElement) => {
+  const modelClass = getDataElementClass(dataElement);
+  const updatedDataElement = new modelClass(dataElement);
+  const attributePath = _.camelCase(
+    chipText.substring(0, chipText.indexOf(":"))
+  );
+  const attributeValue = chipText.substring(chipText.indexOf(": ") + 2);
+  const pathInfo = updatedDataElement.schema.paths[attributePath];
+  if (
+    _.upperCase(pathInfo?.instance) === "ARRAY" &&
+    updatedDataElement[attributePath].length > 1
+  ) {
+    const deleteIndex =
+      updatedDataElement[attributePath].indexOf(attributeValue);
+    updatedDataElement[attributePath].splice(deleteIndex, 1);
+  } else {
+    updatedDataElement[attributePath] = undefined;
+  }
+  return updatedDataElement;
+};
+const applyDataElementCodes = (code, dataElement) => {
+  const modelClass = getDataElementClass(dataElement);
+  const updatedDataElement = new modelClass(dataElement);
+  updatedDataElement["dataElementCodes"] = [
+    ...updatedDataElement["dataElementCodes"],
+    code,
+  ];
+  return updatedDataElement;
+};
+
+const deleteDataElementCode = (codeId, dataElement) => {
+  const modelClass = getDataElementClass(dataElement);
+  const updatedDataElement = new modelClass(dataElement);
+  const remainingCodes = updatedDataElement["dataElementCodes"].filter(
+    (dataElementCode) => {
+      return dataElementCode.code != codeId;
+    }
+  );
+  updatedDataElement["dataElementCodes"] = [...remainingCodes];
   return updatedDataElement;
 };
 
@@ -43,9 +92,9 @@ const DataElementsCard = (props: {
     setSelectedDataElement,
     onChange,
   } = props;
-
   const [codeSystemMap, setCodeSystemMap] = useState(null);
   const { cqmMeasureState } = useQdmExecutionContext();
+  const [cqmMeasure] = cqmMeasureState;
   // from here we know the type, we need to go through the dataElements to matchTypes
   // attributes section
   // codes section
@@ -150,6 +199,27 @@ const DataElementsCard = (props: {
     }
   }, [localSelectedDataElement, codeSystemMap, dataElements]);
   // centralize state one level up so we can conditionally render our child component
+
+  const onDeleteAttributeChip = (deletedChip) => {
+    const deletedChipIndex = deletedChip.index;
+    const newAttributes = displayAttributes.slice();
+    newAttributes.splice(deletedChipIndex, 1);
+    // setDisplayAttributes(newAttributes);
+    const updatedElement = deleteAttribute(
+      deletedChip.text,
+      selectedDataElement
+    );
+    setLocalSelectedDataElement(updatedElement);
+    setSelectedDataElement(updatedElement);
+    if (onChange) {
+      onChange(updatedElement);
+    }
+  };
+
+  const handleCodeChange = (selectedCode) => {
+    // eslint-disable-next-line no-console
+    console.log("selectedCode => ", selectedCode);
+  };
   return (
     <div className="data-elements-card" data-testid="data-element-card">
       <div className="heading-row">
@@ -186,7 +256,13 @@ const DataElementsCard = (props: {
       </div>
       {/* heading row end */}
       <div className="timing">
-        <Timing canEdit={true} selectedDataElement={localSelectedDataElement} />
+        <Timing
+          canEdit={true}
+          updateDataElement={(updatedDataElement) => {
+            onChange(updatedDataElement);
+          }}
+          selectedDataElement={localSelectedDataElement}
+        />
       </div>
       {/* Govern our navigation for codes/att/negation */}
       <SubNavigationTabs
@@ -194,11 +270,33 @@ const DataElementsCard = (props: {
         activeTab={cardActiveTab}
         setActiveTab={setCardActiveTab}
       />
-      {cardActiveTab === "codes" && <Codes attributeChipList={[]} />}
+      {cardActiveTab === "codes" && (
+        <Codes
+          handleChange={(selectedCode) => {
+            const updatedDataElement = applyDataElementCodes(
+              selectedCode,
+              localSelectedDataElement
+            );
+            setLocalSelectedDataElement(updatedDataElement);
+            onChange(updatedDataElement);
+          }}
+          deleteCode={(codeId) => {
+            const updatedDataElement = deleteDataElementCode(
+              codeId,
+              localSelectedDataElement
+            );
+            setLocalSelectedDataElement(updatedDataElement);
+            onChange(updatedDataElement);
+          }}
+          cqmMeasure={cqmMeasure}
+          selectedDataElement={localSelectedDataElement}
+        />
+      )}
       {cardActiveTab === "attributes" && (
         <AttributeSection
           attributeChipList={displayAttributes}
           selectedDataElement={localSelectedDataElement}
+          onDeleteAttributeChip={onDeleteAttributeChip}
           onAddClicked={(attribute, type, attributeValue) => {
             const updatedDataElement = applyAttribute(
               attribute,
@@ -207,6 +305,7 @@ const DataElementsCard = (props: {
               localSelectedDataElement
             );
             setLocalSelectedDataElement(updatedDataElement);
+            setSelectedDataElement(updatedDataElement);
             if (onChange) {
               onChange(updatedDataElement);
             }

@@ -13,6 +13,7 @@ import {
   StatementDependency,
   PopulationSet,
   MeasurePeriod,
+  ValueSet,
 } from "cqm-models";
 import { ServiceConfig } from "./ServiceContext";
 import useServiceConfig from "./useServiceConfig";
@@ -253,7 +254,7 @@ export class CqmConversionService {
     cqlLibraryName: string,
     groupIndex: number
   ) => {
-    return stratifications.map((stratification, i) => ({
+    return stratifications?.map((stratification, i) => ({
       id: uuidv4(),
       hqmf_id: null,
       stratification_id: `PopulationSet_${groupIndex + 1}_Stratification_${
@@ -275,6 +276,9 @@ export class CqmConversionService {
     statementDependenciesMap: any
   ): CQLLibrary {
     const elmJson = JSON.parse(elm);
+    elmJson.library?.valueSets?.def.forEach((valueSet: ValueSet) => {
+      valueSet.id = valueSet.id.replace("urn:oid:", "");
+    });
     const cqlLibrary = new CQLLibrary();
     cqlLibrary.library_name = elmJson.library?.identifier.id;
     cqlLibrary.library_version = elmJson.library?.identifier.version;

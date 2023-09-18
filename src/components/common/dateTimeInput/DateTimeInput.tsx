@@ -34,7 +34,11 @@ const DateTimeInput = ({
   attributeName,
 }: DateTimeInputProps) => {
   const handleDateTimeChange = (newValue) => {
-    onDateTimeChange(getCQLDateTime(newValue), attributeName);
+    if (newValue.$D) {
+      onDateTimeChange(getCQLDateTime(newValue), attributeName);
+    } else {
+      onDateTimeChange(null);
+    }
   };
 
   return (

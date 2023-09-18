@@ -2,12 +2,19 @@ import * as React from "react";
 import { Measure } from "@madie/madie-models";
 import { MemoryRouter } from "react-router-dom";
 import { describe, test } from "@jest/globals";
-import { render, screen, waitFor } from "@testing-library/react";
+import {
+  findByRole,
+  logRoles,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import "@testing-library/jest-dom";
 import DataElementsCard, {
   applyAttribute,
 } from "../DataElementsCard/DataElementsCard";
-import { CQL } from "cqm-models";
+import { CQL, PatientEntity, CarePartner, Identifier } from "cqm-models";
 import {
   ApiContextProvider,
   ServiceConfig,
@@ -15,6 +22,7 @@ import {
 import { QdmExecutionContextProvider } from "../../../../../../routes/qdm/QdmExecutionContext";
 import { FormikProvider, FormikContextType } from "formik";
 import { QdmPatientProvider } from "../../../../../../../util/QdmPatientContext";
+import userEvent from "@testing-library/user-event";
 
 const serviceConfig = {
   testCaseService: {
@@ -28,7 +36,7 @@ const serviceConfig = {
   },
 } as ServiceConfig;
 
-const testCaseJson = {
+export const testCaseJson = {
   qdmVersion: "5.6",
   dataElements: [
     {
@@ -317,7 +325,7 @@ const testCaseJson = {
   birthDatetime: "2023-01-31T19:16:21.063+00:00",
 };
 
-const dataEl = [
+export const dataEl = [
   {
     admissionSource: {
       code: "10725009",
@@ -327,13 +335,13 @@ const dataEl = [
     },
     //authorDatetime: "2012-04-05T08:00:00.000+00:00",
     clazz: null,
-    codeListId: "2.16.840.1.113883.3.464.1003.101.12.1010",
+    codeListId: "2.16.840.1.113883.3.117.1.7.1.292",
     dataElementCodes: [
       {
         code: "4525004",
         system: "2.16.840.1.113883.6.96",
         version: null,
-        display: null,
+        display: "Emergency Department Visit",
       },
     ],
     description: "Encounter, Performed: Emergency Department Visit",
@@ -420,6 +428,44 @@ const dataEl = [
       high: "2012-04-05T08:15:00.000Z",
       lowClosed: true,
       highClosed: true,
+    },
+    schema: {
+      paths: {
+        performer: {
+          caster: {
+            path: "performer",
+            instance: "AnyEntity",
+            validators: [],
+            getters: [],
+            setters: [],
+            _presplitPath: ["performer"],
+            options: {},
+            _index: null,
+            _arrayPath: "performer.$",
+            _arrayParentPath: "performer",
+          },
+          path: "performer",
+          instance: "Array",
+          validators: [],
+          getters: [],
+          setters: [],
+          _presplitPath: ["performer"],
+          options: {
+            type: [null],
+          },
+          _index: null,
+        },
+        result: {
+          path: "result",
+          instance: "Any",
+          validators: [],
+          getters: [],
+          setters: [],
+          _presplitPath: ["result"],
+          options: {},
+          _index: null,
+        },
+      },
     },
     _type: "QDM::EncounterPerformed",
     _id: "64c176cd6483d90000a8e02d",
@@ -602,8 +648,57 @@ const dataEl = [
     _type: "QDM::PatientCharacteristicSex",
     id: "64b979eacfaef90000434095",
   },
+  {
+    dataElementCodes: [],
+    _id: "64f9cb4600acd60000b74732",
+    relatedTo: [],
+    performer: [],
+    qdmTitle: "Assessment, Performed",
+    hqmfOid: "2.16.840.1.113883.10.20.28.4.117",
+    qdmCategory: "assessment",
+    qdmStatus: "performed",
+    qdmVersion: "5.6",
+    _type: "QDM::AssessmentPerformed",
+    id: "64f9cb4600acd60000b74732",
+    components: [],
+    codeListId: "2.16.840.1.113883.3.3157.4031",
+    description: "Assessment, Performed: Active Peptic Ulcer",
+    result: null,
+  },
+  {
+    dataElementCodes: [],
+    _id: "64f9cb4600acd60000b74732",
+    relatedTo: [],
+    performer: [
+      {
+        qdmVersion: "5.6",
+        _type: "QDM::PatientEntity",
+        _id: "64fa7f785708322c5dfce804",
+        hqmfOid: "2.16.840.1.113883.10.20.28.4.136",
+        qrdaOid: "2.16.840.1.113883.10.20.24.3.161",
+        id: "PatientEntityID1",
+        identifier: {
+          qdmVersion: "5.6",
+          _type: "QDM::Identifier",
+          namingSystem: "IdentifierNamingSystem1",
+          value: "IdentifierValue1",
+        },
+      },
+    ],
+    qdmTitle: "Assessment, Performed",
+    hqmfOid: "2.16.840.1.113883.10.20.28.4.117",
+    qdmCategory: "assessment",
+    qdmStatus: "performed",
+    qdmVersion: "5.6",
+    _type: "QDM::AssessmentPerformed",
+    id: "64f9cb4600acd60000b74732",
+    components: [],
+    codeListId: "2.16.840.1.113883.3.3157.4031",
+    description: "Assessment, Performed: Active Peptic Ulcer",
+    result: null,
+  },
 ];
-const testDataElements = [
+export const testDataElements = [
   {
     dataElementCodes: [],
     _id: "6480f13e91f25700004059bf",
@@ -816,6 +911,23 @@ const testDataElements = [
     description: "Device, Order: Cardiopulmonary Arrest",
     negationRationale: true,
   },
+  {
+    dataElementCodes: [],
+    _id: "6480f13e91f25700004059cd",
+    relatedTo: [],
+    performer: [],
+    qdmTitle: "Assessment, Performed",
+    hqmfOid: "2.16.840.1.113883.10.20.28.4.117",
+    qdmCategory: "assessment",
+    qdmStatus: "performed",
+    qdmVersion: "5.6",
+    _type: "QDM::AssessmentPerformed",
+    id: "6480f13e91f25700004059cd",
+    components: [],
+    codeListId: "2.16.840.1.113883.3.3157.4031",
+    description: "Assessment, Performed: Active Peptic Ulcer",
+    result: 1,
+  },
 ];
 
 //@ts-ignore
@@ -825,7 +937,7 @@ const mockFormik: FormikContextType<any> = {
   },
 };
 
-const testValueSets = [
+export const testValueSets = [
   {
     oid: "2.16.840.1.113883.3.117.1.7.1.292",
     version: "N/A",
@@ -841,6 +953,8 @@ const testValueSets = [
     display_name: "Emergency Department Visit",
   },
 ];
+
+const mockOnChange = jest.fn();
 
 const renderDataElementsCard = (
   activeTab,
@@ -867,6 +981,7 @@ const renderDataElementsCard = (
                 setCardActiveTab={setCardActiveTab}
                 selectedDataElement={selectedDataElement}
                 setSelectedDataElement={setSelectedDataElement}
+                onChange={mockOnChange}
               />
             </QdmPatientProvider>
           </FormikProvider>
@@ -878,7 +993,7 @@ const renderDataElementsCard = (
 
 describe("DataElementsCard", () => {
   const { queryByText } = screen;
-  test("DataElementsCards renders length of stay", async () => {
+  it("DataElementsCards renders length of stay", async () => {
     await waitFor(() =>
       renderDataElementsCard("attributes", jest.fn, dataEl[0], jest.fn)
     );
@@ -887,15 +1002,15 @@ describe("DataElementsCard", () => {
     });
   });
 
-  test("DataElementsCard renders codes", async () => {
+  it("DataElementsCard renders codes", async () => {
     await waitFor(() =>
       renderDataElementsCard("codes", jest.fn, dataEl[0], jest.fn)
     );
-    const codes = await screen.queryByText("Codes section coming soon!");
-    expect(codes).toBeInTheDocument();
+
+    expect(screen.getByTestId("codes-section")).toBeInTheDocument();
   });
 
-  test("DataElementsCards renders nothing", async () => {
+  it("DataElementsCards renders nothing", async () => {
     await waitFor(() =>
       renderDataElementsCard("codes", jest.fn, testDataElements[0], jest.fn)
     );
@@ -905,12 +1020,69 @@ describe("DataElementsCard", () => {
       ).not.toBeInTheDocument();
     });
   });
+  it("Attribute chip should render and delete", async () => {
+    await waitFor(() =>
+      renderDataElementsCard(
+        "attributes",
+        jest.fn,
+        testDataElements[15],
+        jest.fn
+      )
+    );
+    const resultChip = await screen.findByText("Result: 1");
+    expect(resultChip).toBeInTheDocument();
+    const closeButton = await screen.findByTestId("delete-chip-button-0");
+    expect(closeButton).toBeInTheDocument();
+    userEvent.click(closeButton);
+    expect(closeButton).not.toBeInTheDocument();
+    expect(resultChip).not.toBeInTheDocument();
+  });
+
+  it("Should add new Codes", async () => {
+    renderDataElementsCard("codes", jest.fn, dataEl[0], jest.fn);
+
+    expect(screen.getByTestId("codes-section")).toBeInTheDocument();
+    // select the code system
+    const codeSystemSelectInput = screen.getByTestId(
+      "code-system-selector-input"
+    ) as HTMLInputElement;
+    expect(codeSystemSelectInput.value).toBe("");
+    const codeSystemSelector = screen.getByTestId("code-system-selector");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    userEvent.click(codeSystemDropdown);
+    const codeSystemOptions = await screen.findAllByTestId(
+      /code-system-option/i
+    );
+    expect(codeSystemOptions).toHaveLength(2);
+    userEvent.click(codeSystemOptions[1]);
+    expect(codeSystemSelectInput.value).toBe("SNOMEDCT");
+
+    // select the code
+    const codeSelectInput = screen.getByTestId(
+      "code-selector-input"
+    ) as HTMLInputElement;
+    expect(codeSelectInput.value).toBe("");
+    const codeSelector = screen.getByTestId("code-selector");
+    const codeDropdown = within(codeSelector).getByRole("button");
+    userEvent.click(codeDropdown);
+    const codeOptions = await screen.findAllByTestId(/code-option/i);
+    expect(codeOptions).toHaveLength(1);
+    expect(codeOptions[0]).toHaveTextContent(
+      "4525004 - Emergency department patient visit (procedure)"
+    );
+    userEvent.click(codeOptions[0]);
+    expect(codeSelectInput.value).toBe("4525004");
+
+    userEvent.click(screen.getByTestId("add-code-concept-button"));
+    // verify chips is added
+    expect(await screen.findByTestId("SNOMEDCT_4525004")).toBeInTheDocument();
+  });
 });
 
 describe("applyAttribute function", () => {
   it("should add a result of date type", () => {
     const cqlDate: CQL.Date = new CQL.Date(2023, 4, 22);
-    const dataElement = dataEl[0] as any;
+    const dataElement = dataEl[10] as any;
     expect(dataElement.result).toBeFalsy();
     const updatedElement = applyAttribute(
       "Result",
@@ -920,5 +1092,60 @@ describe("applyAttribute function", () => {
     );
     expect(updatedElement.result).toEqual(cqlDate);
     expect(dataElement === updatedElement).toBeFalsy();
+  });
+
+  it("should add an attribute value for array type when array is empty", () => {
+    const patientEntity: PatientEntity = new PatientEntity();
+    patientEntity.id = "PatientEntityID1";
+    patientEntity.identifier = new Identifier({
+      namingSystem: "IdentifierNamingSystem1",
+      value: "IdentifierValue1",
+    });
+    const dataElement = dataEl[10] as any;
+    expect(dataElement.performer).toBeTruthy();
+    expect(dataElement.performer.length).toEqual(0);
+    const updatedElement = applyAttribute(
+      "Performer",
+      "PatientEntity",
+      patientEntity,
+      dataElement
+    );
+    expect(updatedElement.performer).toBeTruthy();
+    expect(updatedElement.performer.length).toEqual(1);
+    expect(updatedElement.performer[0].id).toEqual("PatientEntityID1");
+    expect(updatedElement.performer[0].identifier).toBeTruthy();
+    expect(updatedElement.performer[0].identifier.value).toEqual(
+      "IdentifierValue1"
+    );
+  });
+
+  it("should add an attribute value for array type when array contains and element", () => {
+    const carePartner: CarePartner = new CarePartner();
+    carePartner.id = "CarePartnerID2";
+    carePartner.identifier = new Identifier({
+      namingSystem: "IdentifierNamingSystem2",
+      value: "IdentifierValue2",
+    });
+    const dataElement = dataEl[11] as any;
+    expect(dataElement.performer).toBeTruthy();
+    expect(dataElement.performer.length).toEqual(1);
+    const updatedElement = applyAttribute(
+      "Performer",
+      "PatientEntity",
+      carePartner,
+      dataElement
+    );
+    expect(updatedElement.performer).toBeTruthy();
+    expect(updatedElement.performer.length).toEqual(2);
+    expect(updatedElement.performer[0].id).toEqual("PatientEntityID1");
+    expect(updatedElement.performer[0].identifier).toBeTruthy();
+    expect(updatedElement.performer[0].identifier.value).toEqual(
+      "IdentifierValue1"
+    );
+    expect(updatedElement.performer[1].id).toEqual("CarePartnerID2");
+    expect(updatedElement.performer[1].identifier).toBeTruthy();
+    expect(updatedElement.performer[1].identifier.value).toEqual(
+      "IdentifierValue2"
+    );
   });
 });

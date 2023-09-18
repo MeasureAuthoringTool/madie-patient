@@ -59,15 +59,20 @@ describe("StringifyValue", () => {
     ).toBe("04/05/2012 8:00 AM - 04/05/2012 8:15 AM");
   });
 
+  test("is it just time?", () => {
+    const timeObj = new cqmModels.CQL.DateTime(0, 1, 1, 5, 30, 0);
+    expect(stringifyValue(timeObj)).toBe("05:30:00");
+  });
+
   test("stringify value stringifies Date Objects", () => {
     const testDateObj = new cqmModels.CQL.Date(2023, 1, 19);
     expect(stringifyValue(testDateObj)).toBe("01/19/2023");
   });
 
   // this isn't working in CI but works locally. 7h off.
-  test.skip("stringify value stringifies DateTime Objects", () => {
+  test("stringify value stringifies DateTime Objects", () => {
     const testDateObj = new cqmModels.CQL.DateTime(2023, 8, 22, 10, 5, 0, 0, 0);
-    expect(stringifyValue(testDateObj)).toBe("08/22/2023 3:05 AM");
+    expect(stringifyValue(testDateObj)).toBe("08/22/2023 10:05 AM");
   });
 });
 
