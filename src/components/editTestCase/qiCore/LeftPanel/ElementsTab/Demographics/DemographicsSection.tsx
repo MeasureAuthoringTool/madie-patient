@@ -3,7 +3,7 @@ import "twin.macro";
 import "styled-components/macro";
 import { Patient } from "fhir/r4";
 import ElementSection from "../../../../../common/ElementSection";
-
+import EventIcon from "@mui/icons-material/Event";
 import { AutoComplete, Select } from "@madie/madie-design-system/dist/react";
 
 import {
@@ -24,12 +24,24 @@ import {
 } from "./DemographicUtils";
 import "./DemographicsSection.scss";
 import _ from "lodash";
-import { FormControl, MenuItem as MuiMenuItem } from "@mui/material";
+import {
+  FormControl,
+  InputAdornment,
+  InputLabel,
+  MenuItem as MuiMenuItem,
+} from "@mui/material";
 
 import {
   ResourceActionType,
   useQiCoreResource,
 } from "../../../../../../util/QiCorePatientProvider";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import {
+  birthDateLabelStyle,
+  textFieldStyle,
+} from "./DemographicsSectionStyles";
+import dayjs from "dayjs";
 
 const SELECT_ONE_OPTION = (
   <MuiMenuItem key="SelectOne-0" value="Select One">
@@ -132,6 +144,17 @@ const DemographicsSection = ({ canEdit }) => {
       payload: updatedResource,
     });
   };
+  const handleBirthDateChange = (birthdate) => {
+    const updatedResource = _.cloneDeep(resource);
+    const patientEntry = updatedResource.entry.find(
+      (entry) => entry.resource?.resourceType === "Patient"
+    );
+    patientEntry.resource.birthDate = birthdate;
+    dispatch({
+      type: ResourceActionType.LOAD_RESOURCE,
+      payload: updatedResource,
+    });
+  };
 
   return (
     <div>
@@ -141,6 +164,56 @@ const DemographicsSection = ({ canEdit }) => {
           <div className="demographics-container">
             <div className="demographics-row">
               <FormControl tw={"w-2/4"}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <InputLabel
+                    htmlFor={"birth-date"}
+                    style={{ marginBottom: 0, height: 16 }} // force a heignt
+                    sx={birthDateLabelStyle}
+                  >
+                    Date of Birth
+                  </InputLabel>
+                  <DatePicker
+                    disabled={!canEdit}
+                    disableOpenPicker
+                    value={patient?.birthDate ? dayjs(patient.birthDate) : null}
+                    onChange={(event: any) => {
+                      const date = new Date(event);
+                      const year = date.getFullYear();
+                      const month = String(date.getMonth() + 1).padStart(
+                        2,
+                        "0"
+                      ); // Adding 1 because months are zero-indexed
+                      const day = String(date.getDate()).padStart(2, "0");
+                      const formattedDate = `${year}-${month}-${day}`;
+                      handleBirthDateChange(formattedDate);
+                    }}
+                    // onChange={(newValue: any) => {
+
+                    //   handleTimeChange(newDate);
+                    // }}
+                    slotProps={{
+                      textField: {
+                        id: "birth-date",
+                        sx: textFieldStyle,
+                        inputProps: {
+                          "aria-required": true,
+                          required: true,
+                          "data-testid": "demographics-birth-date-input",
+                        },
+                        InputProps: {
+                          startAdornment: (
+                            <InputAdornment
+                              position="start"
+                              style={{ color: "#0073c8" }}
+                            >
+                              <EventIcon />
+                            </InputAdornment>
+                          ),
+                        },
+                      },
+                    }}
+                  />
+                </LocalizationProvider>
                 <Select
                   id="gender-selector"
                   label="Gender"
