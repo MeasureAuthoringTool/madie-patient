@@ -50,13 +50,3 @@ export const ExecutionProvider = ({ children }: any) => {
 export default ExecutionContext;
 export const ExecutionContextProvider = ExecutionContext.Provider;
 export const ExecutionContextConsumer = ExecutionContext.Consumer;
-
-export const useExecutionContext = () => {
-  const context = React.useContext(ExecutionContext);
-  if (context === undefined) {
-    throw new Error(
-      "useExecutionContext must be used within an ExecutionProvider"
-    );
-  }
-  return context;
-};

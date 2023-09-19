@@ -28,7 +28,6 @@ import useTestCaseServiceApi, {
 import useCqmConversionService, {
   CqmConversionService,
 } from "../../../api/CqmModelConversionService";
-import { ValueSet } from "cqm-models";
 import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
 import { QdmPatientProvider } from "../../../util/QdmPatientContext";
 import { MadieError } from "../../../util/Utils";
@@ -315,9 +314,7 @@ jest.mock("@madie/madie-util", () => ({
 }));
 
 const { findByTestId, findByText } = screen;
-const valueSets = [] as ValueSet[];
 const measure = mockMeasure;
-const setValueSets = jest.fn();
 const setMeasure = jest.fn();
 const setCqmMeasure = jest.fn;
 const getAccessToken = jest.fn();
@@ -409,7 +406,6 @@ describe("EditTestCase QDM Component", () => {
   const { getByRole, findByTestId, findByText } = screen;
 
   beforeEach(() => {
-    const getAccessToken = jest.fn();
     useTestCaseServiceMock.mockImplementation(() => {
       return useTestCaseServiceMockResolved;
     });

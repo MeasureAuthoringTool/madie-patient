@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import "twin.macro";
+import "styled-components/macro";
 import { InputLabel } from "@madie/madie-design-system/dist/react/";
 import { FormControl } from "@mui/material";
 import { TextField } from "@madie/madie-design-system/dist/react";
@@ -14,6 +16,7 @@ export interface StringInputProps {
   canEdit: boolean;
   onStringValueChange: Function;
   required?: boolean;
+  title?: string;
 }
 
 const StringInput = ({
@@ -22,6 +25,7 @@ const StringInput = ({
   canEdit,
   onStringValueChange,
   required = false,
+  title,
 }: StringInputProps) => {
   const [field, setField] = useState<string>(fieldValue);
 
@@ -32,6 +36,9 @@ const StringInput = ({
   return (
     <div style={{ width: "134px" }}>
       <FormControl>
+        <h4 className="header" tw="text-blue-800">
+          {title}
+        </h4>
         <TextField
           disabled={!canEdit}
           label={label}

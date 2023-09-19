@@ -1,27 +1,28 @@
 import React, { useEffect, useState } from "react";
 import DataTypeCell from "./DataTypeCell";
 import { DataElement } from "cqm-models";
-
 import "./DataElementsTable.scss";
-
 import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
 import useQdmExecutionContext from "../../../../../../routes/qdm/useQdmExecutionContext";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import TimingCell from "./TimingCell";
+import DatElementActions from "./DatElementActions";
 
 const columnHelper = createColumnHelper<DataElement>();
-interface MadieTableProps {
+interface DataElementTableProps {
   dataElements?: DataElement[];
   onView?: (dataElement: DataElement) => void;
-  onDelete?: (dataElement: DataElement) => void;
+  onDelete?: (id: string) => void;
 }
-const MadieTable = ({ dataElements = [], onView }: MadieTableProps) => {
+const DataElementTable = ({
+  dataElements = [],
+  onView,
+  onDelete,
+}: DataElementTableProps) => {
   const { cqmMeasureState } = useQdmExecutionContext();
   const [codeSystemMap, setCodeSystemMap] = useState({});
   useEffect(() => {
@@ -63,19 +64,7 @@ const MadieTable = ({ dataElements = [], onView }: MadieTableProps) => {
       id: "actions",
       cell: (info) => {
         const el = info.getValue();
-        return (
-          <button
-            className="view-button"
-            // onClick={(e) => {
-            //   e.preventDefault();
-            //   onView && onView(el);
-            // }}
-            id={el.id}
-          >
-            <div>View</div>
-            <ExpandMoreIcon />
-          </button>
-        );
+        return <DatElementActions elementId={el.id} onDelete={onDelete} />;
       },
     }),
   ];
@@ -103,7 +92,7 @@ const MadieTable = ({ dataElements = [], onView }: MadieTableProps) => {
     return <div data-testid="empty-table" />;
   }
   return (
-    <table className="madie-elements-table">
+    <table className="data-elements-table">
       <thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id}>
@@ -151,4 +140,4 @@ const MadieTable = ({ dataElements = [], onView }: MadieTableProps) => {
   );
 };
 
-export default MadieTable;
+export default DataElementTable;
