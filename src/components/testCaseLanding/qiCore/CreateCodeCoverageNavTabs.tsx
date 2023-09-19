@@ -1,9 +1,11 @@
-import React from "react";
-import { CircularProgress, Box } from "@mui/material";
+import React, {useEffect, useContext, useState} from "react";
+import { Box } from "@mui/material";
 import { Button, Tabs, Tab } from "@madie/madie-design-system/dist/react";
 import AddIcon from "@mui/icons-material/Add";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
+import LoadingButton from "@mui/lab/LoadingButton";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import * as _ from "lodash";
 import { Measure, MeasureErrorType, TestCase } from "@madie/madie-models";
 import useExecutionContext from "../../routes/qiCore/useExecutionContext";
@@ -19,7 +21,7 @@ export interface NavTabProps {
   canEdit: boolean;
   measure: Measure;
   createNewTestCase: (value: string) => void;
-  executeTestCases: (value: string) => void;
+  executeTestCases: () => void;
   onImportTestCasesFromBonnie?: () => void;
   onImportTestCases?: () => void;
   testCasePassFailStats: TestCasesPassingDetailsProps;
@@ -43,7 +45,6 @@ const defaultStyle = {
 
 export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
   const { executionContextReady, executing } = useExecutionContext();
-
   const {
     activeTab,
     setActiveTab,
@@ -60,7 +61,6 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     exportTestCases,
     onDeleteAllTestCases,
   } = props;
-
   const featureFlags = useFeatureFlags();
   const executionResultsDisplayTemplate = (label) => {
     const codeCoverage = executeAllTestCases ? coveragePercentage : "-";
@@ -82,6 +82,34 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
       </div>
     );
   };
+
+  const hasErrors =
+    measure?.cqlErrors ||
+    measure?.errors?.includes(
+      MeasureErrorType.MISMATCH_CQL_POPULATION_RETURN_TYPES
+    ) ||
+    _.isNil(measure?.groups) ||
+    measure?.groups.length === 0 ||
+    _.isEmpty(validTestCases);
+
+  // const [loading, setLoading] = React.useState(false);
+  console.log("executing: ", executing);
+  // console.log("running: ", running);
+  // console.log(
+  //   "entire expression: ",
+  //   running || (!hasErrors && !executionContextReady)
+  // );
+  // console.log("loading: ", loading)
+  // useEffect(() => {
+  //   console.log("useEffect E: ", executing)
+  //   // setLoading((executing ? true : false));
+  //   // console.log("useEffect L: ", loading)
+  // }, [executing]);
+
+  const [loading, setLoading] = useState(false);
+  function handleClick() {
+    setLoading(true);
+  }
 
   return (
     <div tw="flex justify-between items-center">
@@ -160,37 +188,23 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           New Test Case
         </Button>
         <Box sx={{ position: "relative" }}>
-          <Button
-            variant="cyan"
-            disabled={
-              !!measure?.cqlErrors ||
-              measure?.errors?.includes(
-                MeasureErrorType.MISMATCH_CQL_POPULATION_RETURN_TYPES
-              ) ||
-              _.isNil(measure?.groups) ||
-              measure?.groups.length === 0 ||
-              !executionContextReady ||
-              executing ||
-              _.isEmpty(validTestCases)
-            }
+          <LoadingButton
+            sx={{
+              textTransform: "none",
+              color: "white",
+            }}
+            variant="outlined"
+            size="large"
+            disabled={hasErrors}
+            loading={executing || (!hasErrors && !executionContextReady)}
+            loadingPosition="start"
+            startIcon={<RefreshIcon />}
             onClick={executeTestCases}
             data-testid="execute-test-cases-button"
+            classes={{ root: "qpp-c-button qpp-c-button--cyan" }}
           >
-            Run Test Cases
-          </Button>
-          {executing && (
-            <CircularProgress
-              size={24}
-              sx={{
-                color: "#209FA6",
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                marginTop: "-5px",
-                marginLeft: "-12px",
-              }}
-            />
-          )}
+            Run Test(s)
+          </LoadingButton>
         </Box>
         <Button
           onClick={exportTestCases}

@@ -27,7 +27,7 @@ const TestCaseRoutes = () => {
     []
   );
   const [executionContextReady, setExecutionContextReady] = useState<boolean>();
-  const [executing, setExecuting] = useState<boolean>();
+  const [executing, setExecuting] = useState<boolean>(false);
   const [lastMeasure, setLastMeasure] = useState<any>();
 
   const terminologyService = useRef(useTerminologyServiceApi());
