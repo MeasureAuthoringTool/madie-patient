@@ -1,5 +1,4 @@
 import React from "react";
-import { CircularProgress, Box } from "@mui/material";
 import { Button, Tabs, Tab } from "@madie/madie-design-system/dist/react";
 import AddIcon from "@mui/icons-material/Add";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
@@ -11,6 +10,7 @@ import { TestCasesPassingDetailsProps } from "../common/interfaces";
 import { useFeatureFlags } from "@madie/madie-util";
 import "twin.macro";
 import "styled-components/macro";
+import RunTestButton from "../common/runTestsButton/RunTestsButton";
 
 export interface NavTabProps {
   activeTab: string;
@@ -19,7 +19,7 @@ export interface NavTabProps {
   canEdit: boolean;
   measure: Measure;
   createNewTestCase: (value: string) => void;
-  executeTestCases: (value: string) => void;
+  executeTestCases: () => void;
   onImportTestCasesFromBonnie?: () => void;
   onImportTestCases?: () => void;
   testCasePassFailStats: TestCasesPassingDetailsProps;
@@ -42,8 +42,7 @@ const defaultStyle = {
 };
 
 export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
-  const { executionContextReady, executing } = useExecutionContext();
-
+  const { executionContextReady } = useExecutionContext();
   const {
     activeTab,
     setActiveTab,
@@ -60,7 +59,6 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     exportTestCases,
     onDeleteAllTestCases,
   } = props;
-
   const featureFlags = useFeatureFlags();
   const executionResultsDisplayTemplate = (label) => {
     const codeCoverage = executeAllTestCases ? coveragePercentage : "-";
@@ -82,6 +80,15 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
       </div>
     );
   };
+
+  const hasErrors =
+    measure?.cqlErrors ||
+    measure?.errors?.includes(
+      MeasureErrorType.MISMATCH_CQL_POPULATION_RETURN_TYPES
+    ) ||
+    _.isNil(measure?.groups) ||
+    measure?.groups.length === 0 ||
+    _.isEmpty(validTestCases);
 
   return (
     <div tw="flex justify-between items-center">
@@ -159,39 +166,11 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           <AddIcon style={{ margin: "0 5px 0 -2px" }} fontSize="small" />
           New Test Case
         </Button>
-        <Box sx={{ position: "relative" }}>
-          <Button
-            variant="cyan"
-            disabled={
-              !!measure?.cqlErrors ||
-              measure?.errors?.includes(
-                MeasureErrorType.MISMATCH_CQL_POPULATION_RETURN_TYPES
-              ) ||
-              _.isNil(measure?.groups) ||
-              measure?.groups.length === 0 ||
-              !executionContextReady ||
-              executing ||
-              _.isEmpty(validTestCases)
-            }
-            onClick={executeTestCases}
-            data-testid="execute-test-cases-button"
-          >
-            Run Test Cases
-          </Button>
-          {executing && (
-            <CircularProgress
-              size={24}
-              sx={{
-                color: "#209FA6",
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                marginTop: "-5px",
-                marginLeft: "-12px",
-              }}
-            />
-          )}
-        </Box>
+        <RunTestButton
+          hasErrors={hasErrors}
+          isExecutionContextReady={executionContextReady}
+          onRunTests={executeTestCases}
+        />
         <Button
           onClick={exportTestCases}
           data-testid="export-test-cases-button"
