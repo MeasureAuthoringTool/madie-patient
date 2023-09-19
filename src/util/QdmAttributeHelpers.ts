@@ -1,7 +1,7 @@
 import moment from "moment";
 import cqmModels from "cqm-models";
 import * as _ from "lodash";
-import {getDataElementClass} from "./DataElementHelper";
+import { getDataElementClass } from "./DataElementHelper";
 
 export const PRIMARY_TIMING_ATTRIBUTES = [
   "relevantPeriod",
