@@ -1,11 +1,8 @@
-import React, { useState } from "react";
-import { Box } from "@mui/material";
+import React from "react";
 import { Button, Tabs, Tab } from "@madie/madie-design-system/dist/react";
 import AddIcon from "@mui/icons-material/Add";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
-import LoadingButton from "@mui/lab/LoadingButton";
-import RefreshIcon from "@mui/icons-material/Refresh";
 import * as _ from "lodash";
 import { Measure, MeasureErrorType, TestCase } from "@madie/madie-models";
 import useExecutionContext from "../../routes/qiCore/useExecutionContext";
@@ -13,6 +10,7 @@ import { TestCasesPassingDetailsProps } from "../common/interfaces";
 import { useFeatureFlags } from "@madie/madie-util";
 import "twin.macro";
 import "styled-components/macro";
+import RunTestButton from "../common/runTestsButton/RunTestsButton";
 
 export interface NavTabProps {
   activeTab: string;
@@ -44,7 +42,7 @@ const defaultStyle = {
 };
 
 export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
-  const { executionContextReady, executing } = useExecutionContext();
+  const { executionContextReady } = useExecutionContext();
   const {
     activeTab,
     setActiveTab,
@@ -91,18 +89,6 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     _.isNil(measure?.groups) ||
     measure?.groups.length === 0 ||
     _.isEmpty(validTestCases);
-
-  //TODO: because calculation is heavy process, react blocks all the re-renders
-  // during test case execution. this is to overcome that.
-  // remove this once we move calculation to backend
-  const [loading, setLoading] = useState(false);
-  function runTestCases() {
-    setLoading(true);
-    setTimeout(async () => {
-      await executeTestCases();
-      setLoading(false);
-    }, 500);
-  }
 
   return (
     <div tw="flex justify-between items-center">
@@ -180,25 +166,11 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           <AddIcon style={{ margin: "0 5px 0 -2px" }} fontSize="small" />
           New Test Case
         </Button>
-        <Box sx={{ position: "relative" }}>
-          <LoadingButton
-            sx={{
-              textTransform: "none",
-              color: "white",
-            }}
-            variant="outlined"
-            size="large"
-            disabled={hasErrors}
-            loading={(!hasErrors && !executionContextReady) || loading}
-            loadingPosition="start"
-            startIcon={<RefreshIcon />}
-            onClick={runTestCases}
-            data-testid="execute-test-cases-button"
-            classes={{ root: "qpp-c-button qpp-c-button--cyan" }}
-          >
-            Run Test(s)
-          </LoadingButton>
-        </Box>
+        <RunTestButton
+          hasErrors={hasErrors}
+          isExecutionContextReady={executionContextReady}
+          onRunTests={executeTestCases}
+        />
         <Button
           onClick={exportTestCases}
           data-testid="export-test-cases-button"
