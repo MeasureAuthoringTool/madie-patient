@@ -43,6 +43,7 @@ import qdmCalculationService, {
 } from "../../../api/QdmCalculationService";
 
 const serviceConfig: ServiceConfig = {
+  elmTranslationService: { baseUrl: "translator.url" },
   testCaseService: {
     baseUrl: "base.url",
   },
@@ -527,7 +528,6 @@ describe("TestCaseList component", () => {
             value={{
               measureState: [measure, setMeasure],
               cqmMeasureState: [cqmMeasure, setCqmMeasure],
-              valueSetsState: [valueSets, setValueSets],
               executionContextReady: true,
               executing: false,
               setExecuting: jest.fn(),
@@ -704,7 +704,7 @@ describe("TestCaseList component", () => {
     });
 
     const executeAllTestCasesButton = screen.getByRole("button", {
-      name: "Run Test Cases",
+      name: "Run Test(s)",
     });
 
     userEvent.click(executeAllTestCasesButton);
@@ -715,9 +715,11 @@ describe("TestCaseList component", () => {
     });
 
     userEvent.click(screen.getByTestId("coverage-tab"));
-    expect(
-      screen.getByTestId("code-coverage-highlighting")
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByTestId("code-coverage-highlighting")
+      ).toBeInTheDocument();
+    });
     userEvent.click(screen.getByTestId("passing-tab"));
     expect(screen.getByTestId("test-case-tbl")).toBeInTheDocument();
   });
@@ -743,7 +745,7 @@ describe("TestCaseList component", () => {
     });
 
     const executeAllTestCasesButton = screen.getByRole("button", {
-      name: "Run Test Cases",
+      name: "Run Test(s)",
     });
 
     expect(executeAllTestCasesButton).toBeDisabled();
@@ -892,9 +894,7 @@ describe("TestCaseList component", () => {
     renderTestCaseListComponent();
 
     expect(await screen.findByText("WhenAllGood")).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Run Test Cases" })
-    ).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Run Test(s)" })).toBeDisabled();
   });
 
   it("defaults pop criteria nav link to first pop criteria on load", async () => {
@@ -930,7 +930,7 @@ describe("TestCaseList component", () => {
 
     // wait for execution context to be ready
     const executeButton = screen.getByRole("button", {
-      name: "Run Test Cases",
+      name: "Run Test(s)",
     });
     await waitFor(() => {
       expect(executeButton).not.toBeDisabled();
@@ -976,7 +976,7 @@ describe("TestCaseList component", () => {
 
     // wait for execution context to be ready
     const executeButton = screen.getByRole("button", {
-      name: "Run Test Cases",
+      name: "Run Test(s)",
     });
 
     await waitFor(() => expect(executeButton).not.toBeDisabled());
@@ -1184,7 +1184,7 @@ describe("TestCaseList component", () => {
     });
 
     const executeAllTestCasesButton = screen.getByRole("button", {
-      name: "Run Test Cases",
+      name: "Run Test(s)",
     });
 
     await waitFor(() => expect(executeAllTestCasesButton).toBeDisabled());
