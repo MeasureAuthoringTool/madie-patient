@@ -1,4 +1,4 @@
-import React, {useEffect, useContext, useState} from "react";
+import React, { useState } from "react";
 import { Box } from "@mui/material";
 import { Button, Tabs, Tab } from "@madie/madie-design-system/dist/react";
 import AddIcon from "@mui/icons-material/Add";
@@ -92,23 +92,16 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     measure?.groups.length === 0 ||
     _.isEmpty(validTestCases);
 
-  // const [loading, setLoading] = React.useState(false);
-  console.log("executing: ", executing);
-  // console.log("running: ", running);
-  // console.log(
-  //   "entire expression: ",
-  //   running || (!hasErrors && !executionContextReady)
-  // );
-  // console.log("loading: ", loading)
-  // useEffect(() => {
-  //   console.log("useEffect E: ", executing)
-  //   // setLoading((executing ? true : false));
-  //   // console.log("useEffect L: ", loading)
-  // }, [executing]);
-
+  //TODO: because calculation is heavy process, react blocks all the re-renders
+  // during test case execution. this is to overcome that.
+  // remove this once we move calculation to backend
   const [loading, setLoading] = useState(false);
-  function handleClick() {
+  function runTestCases() {
     setLoading(true);
+    setTimeout(async () => {
+      await executeTestCases();
+      setLoading(false);
+    }, 500);
   }
 
   return (
@@ -196,10 +189,10 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
             variant="outlined"
             size="large"
             disabled={hasErrors}
-            loading={executing || (!hasErrors && !executionContextReady)}
+            loading={(!hasErrors && !executionContextReady) || loading}
             loadingPosition="start"
             startIcon={<RefreshIcon />}
-            onClick={executeTestCases}
+            onClick={runTestCases}
             data-testid="execute-test-cases-button"
             classes={{ root: "qpp-c-button qpp-c-button--cyan" }}
           >
