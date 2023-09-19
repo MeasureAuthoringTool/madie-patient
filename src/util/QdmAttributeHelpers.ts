@@ -96,32 +96,31 @@ export const generateAttributesToDisplay = (
   dataElement.schema.eachPath((path, info) => {
     if (!SKIP_ATTRIBUTES.includes(path) && !_.isEmpty(dataElement[path])) {
       if (info.instance === "Array") {
-        // 4 instances
+        const multipleDataTypes = [];
         dataElement[path].forEach((elem, index) => {
-          // works
           if (path == "relatedTo") {
             const display = getDisplayFromId(dataElements, elem);
             let value = `${stringifyValue(
               display?.description,
               true
             )} ${stringifyValue(display?.timing, true, codeSystemMap)}}`;
-            displayAttributes.push({
-              name: path,
+            multipleDataTypes.push({
+              name: _.replace(elem._type, "QDM::", ""),
               title: _.startCase(path),
               value: value,
-              isArrayValue: true,
-              index: index,
             });
           } else {
-            displayAttributes.push({
-              name: path,
+            console.log("elem ", elem);
+            multipleDataTypes.push({
+              name: _.replace(elem._type, "QDM::", ""),
               title: _.startCase(path),
-              // this is wrong
-              value: stringifyValue(dataElement[path], true, codeSystemMap),
-              isArrayValue: true,
-              index: index,
+              value: stringifyValue(elem, true, codeSystemMap),
             });
           }
+        });
+        displayAttributes.push({
+          isMultiple: true,
+          additionalElements: multipleDataTypes,
         });
       } else if (path === "relatedTo") {
         const id = dataElement[path];
@@ -209,6 +208,7 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
   }
   // this block is currently unused but should be uncommented when the dataTypes are tested
   else if (value?.[0]?.schema || value.schema) {
+    // typeof number parses to a date. Check to make sure it's not a number.
     let attrStrings = [];
     let attrString = "";
     const schema = value?.[0]?.schema ? value?.[0]?.schema : value.schema; // catches diagnoses, facilityLocations != Participant

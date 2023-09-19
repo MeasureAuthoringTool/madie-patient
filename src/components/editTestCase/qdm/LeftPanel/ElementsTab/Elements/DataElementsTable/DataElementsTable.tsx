@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
 import DataTypeCell from "./DataTypeCell";
 import { DataElement } from "cqm-models";
-<<<<<<< HEAD
-=======
 import * as _ from "lodash";
->>>>>>> 37f752b (Displaying all attributes data in Table expect array type attributes)
 import "./DataElementsTable.scss";
 import {
   createColumnHelper,
@@ -14,31 +11,22 @@ import {
 } from "@tanstack/react-table";
 import useQdmExecutionContext from "../../../../../../routes/qdm/useQdmExecutionContext";
 import TimingCell from "./TimingCell";
-<<<<<<< HEAD
 import DatElementActions from "./DatElementActions";
-import { SKIP_ATTRIBUTES } from "../../../../../../../util/QdmAttributeHelpers";
-=======
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
   generateAttributesToDisplay,
   SKIP_ATTRIBUTES,
   stringifyValue,
 } from "../../../../../../../util/QdmAttributeHelpers";
 import AttributesCell from "./AttributesCell";
->>>>>>> 37f752b (Displaying all attributes data in Table expect array type attributes)
 
 const columnHelper = createColumnHelper<DataElement>();
+
 interface DataElementTableProps {
   dataElements?: DataElement[];
   onView?: (dataElement: DataElement) => void;
   onDelete?: (id: string) => void;
 }
-<<<<<<< HEAD
-const DataElementTable = ({
-  dataElements = [],
-  onView,
-  onDelete,
-}: DataElementTableProps) => {
-=======
 
 interface ElementAttributeEntry {
   id: string;
@@ -46,14 +34,17 @@ interface ElementAttributeEntry {
 }
 
 export interface DisplayAttributes {
-  name: string;
-  title: string;
-  value: string;
-  isArray?: boolean;
+  name?: string;
+  title?: string;
+  value?: string;
+  isMultiple?: boolean;
+  additionalElements?: Array<DisplayAttributes>;
 }
 
-const MadieTable = ({ dataElements = [], onView }: MadieTableProps) => {
->>>>>>> 37f752b (Displaying all attributes data in Table expect array type attributes)
+const DataElementTable = ({
+  dataElements = [],
+  onView,
+}: DataElementTableProps) => {
   const { cqmMeasureState } = useQdmExecutionContext();
   const [codeSystemMap, setCodeSystemMap] = useState({});
   const [columns, setColumns] = useState([]);
@@ -73,22 +64,6 @@ const MadieTable = ({ dataElements = [], onView }: MadieTableProps) => {
     }
   }, [cqmMeasureState]);
 
-  // Builds a list of acceptable attributes that are used in a particular DataElement
-  const buildDisplayableAttributesList = (dataElement) => {
-    const displayAttributes: DisplayAttributes[] = [];
-    dataElement?.schema.eachPath((path) => {
-      if (!SKIP_ATTRIBUTES.includes(path) && !_.isEmpty(dataElement[path])) {
-        displayAttributes.push({
-          name: path,
-          title: _.startCase(path),
-          value: stringifyValue(dataElement[path], true, codeSystemMap),
-          isArray: false,
-        });
-      }
-    });
-    return displayAttributes;
-  };
-
   // Building Attribute columns
   useEffect(() => {
     const elementsAttributesList: ElementAttributeEntry[] = dataElements?.map(
@@ -103,7 +78,7 @@ const MadieTable = ({ dataElements = [], onView }: MadieTableProps) => {
     );
 
     const maxAttributeCount = _.max(
-      elementsAttributesList.map((e) => e.attributes?.length ?? 0)
+      elementsAttributesList?.map((e) => e.attributes?.length ?? 0)
     );
 
     const attributeColumns = [];
@@ -113,19 +88,22 @@ const MadieTable = ({ dataElements = [], onView }: MadieTableProps) => {
         id: `Attribute ${i + 1}`,
         cell: (info) => {
           const dataElement = info.getValue();
-          const attributeNumber = i + 1;
           const elementAttributes = elementsAttributesList.find(
             (e) => e.id == dataElement.id
           );
 
-          const attributes = elementAttributes?.attributes ?? [];
-          return (
-            <AttributesCell
-              attributeNumber={attributeNumber}
-              dataElement={dataElement}
-              attributes={attributes}
-            />
-          );
+          if (!_.isEmpty(elementAttributes?.attributes)) {
+            const attribute: DisplayAttributes =
+              elementAttributes?.attributes[i];
+            return (
+              <AttributesCell
+                attribute={attribute}
+                isMultiple={attribute?.isMultiple}
+              />
+            );
+          } else {
+            return <div></div>;
+          }
         },
       });
       attributeColumns.push(accessor);
@@ -133,38 +111,6 @@ const MadieTable = ({ dataElements = [], onView }: MadieTableProps) => {
     setAttributeColumns(attributeColumns);
   }, [dataElements]);
 
-<<<<<<< HEAD
-  const columns = [
-    columnHelper.accessor((row) => row, {
-      header: "Datatype, Value Set & Code",
-      id: "category",
-      cell: (info) => {
-        const el = info.getValue();
-        return <DataTypeCell element={el} codeSystemMap={codeSystemMap} />;
-      },
-    }),
-    columnHelper.accessor((row) => row, {
-      id: "timing",
-      cell: (info) => {
-        const el = info.getValue();
-        if (el.get) {
-          return <TimingCell element={el} />;
-        }
-        return null;
-      },
-      header: "Timing",
-    }),
-
-    columnHelper.accessor((row) => row, {
-      header: "Actions",
-      id: "actions",
-      cell: (info) => {
-        const el = info.getValue();
-        return <DatElementActions elementId={el.id} onDelete={onDelete} />;
-      },
-    }),
-  ];
-=======
   // Generating columns required for the table
   useEffect(() => {
     const columns = [
@@ -211,7 +157,6 @@ const MadieTable = ({ dataElements = [], onView }: MadieTableProps) => {
     ];
     setColumns(columns);
   }, [attributeColumns, codeSystemMap, onView]);
->>>>>>> 37f752b (Displaying all attributes data in Table expect array type attributes)
 
   const table = useReactTable({
     data: dataElements,

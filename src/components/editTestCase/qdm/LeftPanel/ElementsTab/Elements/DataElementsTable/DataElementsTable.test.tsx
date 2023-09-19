@@ -206,6 +206,7 @@ describe("Timing Cell component", () => {
     expect(foundStatusDate).toBeInTheDocument();
   });
 });
+
 describe("Data Elements Table", () => {
   test("emtpy table renders", async () => {
     await waitFor(() => {
@@ -214,7 +215,7 @@ describe("Data Elements Table", () => {
     expect(getByTestId("empty-table")).toBeInTheDocument();
   });
 
-  test("emtpy table renders", async () => {
+  test("Encounter Performed renders", async () => {
     await waitFor(() => {
       renderDataElementsTable([dataEl[0]]);
     });

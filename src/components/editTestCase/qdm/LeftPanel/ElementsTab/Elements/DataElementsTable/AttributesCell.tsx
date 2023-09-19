@@ -1,33 +1,35 @@
 import React from "react";
 import "twin.macro";
 import "styled-components/macro";
-import { DataElement } from "cqm-models";
-import * as _ from "lodash";
 import { DisplayAttributes } from "./DataElementsTable";
 
 interface AttributeRowProps {
-  attributeNumber: number;
-  dataElement: DataElement;
-  attributes: Array<DisplayAttributes>;
+  attribute: DisplayAttributes;
+  isMultiple?: boolean;
 }
 
-// we care about the codes
-const AttributesCell = ({
-  attributeNumber,
-  dataElement,
-  attributes,
-}: AttributeRowProps) => {
-  console.log("dataElement", dataElement);
+const AttributesCell = ({ attribute, isMultiple }: AttributeRowProps) => {
   return (
     <div>
-      {!_.isEmpty(attributes) && attributes.length >= attributeNumber ? (
-        <div tw="text-xs max-w-xs">
-          {attributes[attributeNumber - 1].title} <br />
-          {attributes[attributeNumber - 1].name} <br />
-          {attributes[attributeNumber - 1].value}
+      {isMultiple ? (
+        <div>
+          {attribute?.additionalElements?.map((a) => {
+            return (
+              <div tw="text-xs max-w-xs">
+                {a?.title} <br />
+                {a?.name} <br />
+                {a?.value}
+              </div>
+            );
+          })}
         </div>
       ) : (
-        <div></div>
+        <div tw="text-xs max-w-xs">
+          {attribute?.title} <br />
+          {attribute?.name} <br />
+          {attribute?.value} <br />
+          <br />
+        </div>
       )}
     </div>
   );
