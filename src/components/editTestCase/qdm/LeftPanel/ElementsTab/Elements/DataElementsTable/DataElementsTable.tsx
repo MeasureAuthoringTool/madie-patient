@@ -43,6 +43,7 @@ export interface DisplayAttributes {
 
 const DataElementTable = ({
   dataElements = [],
+  onDelete,
   onView,
 }: DataElementTableProps) => {
   const { cqmMeasureState } = useQdmExecutionContext();
@@ -139,19 +140,7 @@ const DataElementTable = ({
         id: "actions",
         cell: (info) => {
           const el = info.getValue();
-          return (
-            <button
-              className="view-button"
-              onClick={(e) => {
-                e.preventDefault();
-                onView && onView(el);
-              }}
-              id={el.id}
-            >
-              <div>View</div>
-              <ExpandMoreIcon />
-            </button>
-          );
+          return <DatElementActions elementId={el.id} onDelete={onDelete} />;
         },
       }),
     ];
@@ -162,10 +151,6 @@ const DataElementTable = ({
     data: dataElements,
     columns: columns,
     getCoreRowModel: getCoreRowModel(),
-    debugTable: true,
-    debugHeaders: true,
-    debugColumns: true,
-
     defaultColumn: {
       size: 100,
     },

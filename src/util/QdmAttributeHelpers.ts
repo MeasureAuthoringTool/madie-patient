@@ -1,6 +1,7 @@
 import moment from "moment";
 import cqmModels from "cqm-models";
 import * as _ from "lodash";
+import {getDataElementClass} from "./DataElementHelper";
 
 export const PRIMARY_TIMING_ATTRIBUTES = [
   "relevantPeriod",
@@ -86,14 +87,16 @@ export const determineAttributeTypeList = (path, info) => {
   else return [info.instance];
 };
 
-// This is specific to DataElements Table as 2 data types from same attribute has to be displayed in same cell
+// This is specific to DataElements Table as multiple data types from same attribute has to be displayed in same cell
 export const generateAttributesToDisplay = (
   dataElement,
   dataElements,
   codeSystemMap: any
 ) => {
+  const dataElementClass = getDataElementClass(dataElement);
+  const modeledEl = new dataElementClass(dataElement);
   const displayAttributes = [];
-  dataElement.schema.eachPath((path, info) => {
+  modeledEl.schema.eachPath((path, info) => {
     if (!SKIP_ATTRIBUTES.includes(path) && !_.isEmpty(dataElement[path])) {
       if (info.instance === "Array") {
         const multipleDataTypes = [];
@@ -110,7 +113,6 @@ export const generateAttributesToDisplay = (
               value: value,
             });
           } else {
-            console.log("elem ", elem);
             multipleDataTypes.push({
               name: _.replace(elem._type, "QDM::", ""),
               title: _.startCase(path),
