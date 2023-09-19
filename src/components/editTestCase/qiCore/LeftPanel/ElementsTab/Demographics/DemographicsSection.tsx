@@ -4,8 +4,11 @@ import "styled-components/macro";
 import { Patient } from "fhir/r4";
 import ElementSection from "../../../../../common/ElementSection";
 import EventIcon from "@mui/icons-material/Event";
-import { AutoComplete, Select } from "@madie/madie-design-system/dist/react";
-
+import {
+  AutoComplete,
+  Select,
+  DateField,
+} from "@madie/madie-design-system/dist/react";
 import {
   createExtension,
   deleteExtension,
@@ -164,56 +167,19 @@ const DemographicsSection = ({ canEdit }) => {
           <div className="demographics-container">
             <div className="demographics-row">
               <FormControl tw={"w-2/4"}>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <InputLabel
-                    htmlFor={"birth-date"}
-                    style={{ marginBottom: 0, height: 16 }} // force a heignt
-                    sx={birthDateLabelStyle}
-                  >
-                    Date of Birth
-                  </InputLabel>
-                  <DatePicker
-                    disabled={!canEdit}
-                    disableOpenPicker
-                    value={patient?.birthDate ? dayjs(patient.birthDate) : null}
-                    onChange={(event: any) => {
-                      const date = new Date(event);
-                      const year = date.getFullYear();
-                      const month = String(date.getMonth() + 1).padStart(
-                        2,
-                        "0"
-                      ); // Adding 1 because months are zero-indexed
-                      const day = String(date.getDate()).padStart(2, "0");
-                      const formattedDate = `${year}-${month}-${day}`;
-                      handleBirthDateChange(formattedDate);
-                    }}
-                    // onChange={(newValue: any) => {
-
-                    //   handleTimeChange(newDate);
-                    // }}
-                    slotProps={{
-                      textField: {
-                        id: "birth-date",
-                        sx: textFieldStyle,
-                        inputProps: {
-                          "aria-required": true,
-                          required: true,
-                          "data-testid": "demographics-birth-date-input",
-                        },
-                        InputProps: {
-                          startAdornment: (
-                            <InputAdornment
-                              position="start"
-                              style={{ color: "#0073c8" }}
-                            >
-                              <EventIcon />
-                            </InputAdornment>
-                          ),
-                        },
-                      },
-                    }}
-                  />
-                </LocalizationProvider>
+                <DateField
+                  label="Date of Birth"
+                  disabled={!canEdit}
+                  value={patient?.birthDate ? dayjs(patient.birthDate) : null}
+                  handleDateChange={(event: any) => {
+                    const date = new Date(event);
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, "0"); // Adding 1 because months are zero-indexed
+                    const day = String(date.getDate()).padStart(2, "0");
+                    const formattedDate = `${year}-${month}-${day}`;
+                    handleBirthDateChange(formattedDate);
+                  }}
+                />
                 <Select
                   id="gender-selector"
                   label="Gender"
