@@ -67,50 +67,52 @@ const DataElementTable = ({
 
   // Building Attribute columns
   useEffect(() => {
-    const elementsAttributesList: ElementAttributeEntry[] = dataElements?.map(
-      (dataElement) => {
-        const usedAttributes = generateAttributesToDisplay(
-          dataElement,
-          dataElements,
-          codeSystemMap
-        );
-        return { id: dataElement.id, attributes: usedAttributes };
-      }
-    );
-
-    const maxAttributeCount = _.max(
-      elementsAttributesList?.map((e) => e.attributes?.length ?? 0)
-    );
-
-    const attributeColumns = [];
-    for (let i = 0; i < maxAttributeCount; i++) {
-      const accessor = columnHelper.accessor((row) => row, {
-        header: `Attribute ${i + 1}`,
-        id: `Attribute ${i + 1}`,
-        cell: (info) => {
-          const dataElement = info.getValue();
-          const elementAttributes = elementsAttributesList.find(
-            (e) => e.id == dataElement.id
+    if (dataElements.length) {
+      const elementsAttributesList: ElementAttributeEntry[] = dataElements?.map(
+        (dataElement) => {
+          const usedAttributes = generateAttributesToDisplay(
+            dataElement,
+            dataElements,
+            codeSystemMap
           );
+          return { id: dataElement.id, attributes: usedAttributes };
+        }
+      );
 
-          if (!_.isEmpty(elementAttributes?.attributes)) {
-            const attribute: DisplayAttributes =
-              elementAttributes?.attributes[i];
-            return (
-              <AttributesCell
-                attribute={attribute}
-                isMultiple={attribute?.isMultiple}
-              />
+      const maxAttributeCount = _.max(
+        elementsAttributesList?.map((e) => e.attributes?.length ?? 0)
+      );
+
+      const attributeColumns = [];
+      for (let i = 0; i < maxAttributeCount; i++) {
+        const accessor = columnHelper.accessor((row) => row, {
+          header: `Attribute ${i + 1}`,
+          id: `Attribute ${i + 1}`,
+          cell: (info) => {
+            const dataElement = info.getValue();
+            const elementAttributes = elementsAttributesList.find(
+              (e) => e.id == dataElement.id
             );
-          } else {
-            return <div></div>;
-          }
-        },
-      });
-      attributeColumns.push(accessor);
+
+            if (!_.isEmpty(elementAttributes?.attributes)) {
+              const attribute: DisplayAttributes =
+                elementAttributes?.attributes[i];
+              return (
+                <AttributesCell
+                  attribute={attribute}
+                  isMultiple={attribute?.isMultiple}
+                />
+              );
+            } else {
+              return <div></div>;
+            }
+          },
+        });
+        attributeColumns.push(accessor);
+      }
+      setAttributeColumns(attributeColumns);
     }
-    setAttributeColumns(attributeColumns);
-  }, [dataElements]);
+  }, [codeSystemMap, dataElements]);
 
   // Generating columns required for the table
   useEffect(() => {
