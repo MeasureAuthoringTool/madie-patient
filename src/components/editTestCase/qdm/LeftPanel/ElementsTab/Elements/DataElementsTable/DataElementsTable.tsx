@@ -140,7 +140,16 @@ const DataElementTable = ({
         id: "actions",
         cell: (info) => {
           const el = info.getValue();
-          return <DatElementActions elementId={el.id} onDelete={onDelete} />;
+          return (
+            <DatElementActions
+              elementId={el.id}
+              onDelete={onDelete}
+              onView={(e) => {
+                // e.preventDefault();
+                onView && onView(el);
+              }}
+            />
+          );
         },
       }),
     ];
