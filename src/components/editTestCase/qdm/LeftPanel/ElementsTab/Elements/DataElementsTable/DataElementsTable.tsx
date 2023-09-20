@@ -67,7 +67,7 @@ const DataElementTable = ({
 
   // Building Attribute columns
   useEffect(() => {
-    if (dataElements.length) {
+    if (dataElements?.length) {
       const elementsAttributesList: ElementAttributeEntry[] = dataElements?.map(
         (dataElement) => {
           const usedAttributes = generateAttributesToDisplay(
