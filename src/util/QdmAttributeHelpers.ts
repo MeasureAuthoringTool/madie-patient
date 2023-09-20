@@ -150,10 +150,12 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
   else if (value?.[0]?.schema || value.schema) {
     let attrStrings = [];
     let attrString = "";
+
     const schema = value?.[0]?.schema ? value?.[0]?.schema : value.schema; // catches diagnoses, facilityLocations != Participant
     schema.eachPath((path) => {
       if (!_.without(SKIP_ATTRIBUTES, "id").includes(path)) {
-        const valueToStringify = value?.[0]?.[path];
+        const valueToStringify =
+          value?.[0] === undefined ? value?.[path] : value?.[0]?.[path];
         attrStrings.push(
           _.startCase(path) +
             ": " +
