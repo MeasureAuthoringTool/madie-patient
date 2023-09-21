@@ -544,6 +544,14 @@ describe("TestCaseList component", () => {
     );
   }
 
+  it("run qdm test case button is disabled", async () => {
+    renderTestCaseListComponent([], true);
+    await waitFor(() => {
+      const executeButton = screen.getByTestId("execute-test-cases-button");
+      expect(executeButton).toHaveProperty("disabled", true);
+    });
+  });
+
   it("should render list of test cases", async () => {
     renderTestCaseListComponent();
     await waitFor(() => {
