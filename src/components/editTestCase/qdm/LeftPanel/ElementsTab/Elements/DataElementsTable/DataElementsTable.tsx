@@ -12,12 +12,7 @@ import {
 import useQdmExecutionContext from "../../../../../../routes/qdm/useQdmExecutionContext";
 import TimingCell from "./TimingCell";
 import DatElementActions from "./DatElementActions";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import {
-  generateAttributesToDisplay,
-  SKIP_ATTRIBUTES,
-  stringifyValue,
-} from "../../../../../../../util/QdmAttributeHelpers";
+import { generateAttributesToDisplay } from "../../../../../../../util/QdmAttributeHelpers";
 import AttributesCell from "./AttributesCell";
 
 const columnHelper = createColumnHelper<DataElement>();

@@ -100,7 +100,7 @@ export const generateAttributesToDisplay = (
     if (!SKIP_ATTRIBUTES.includes(path) && !_.isEmpty(dataElement[path])) {
       if (info.instance === "Array") {
         const multipleDataTypes = [];
-        dataElement[path].forEach((elem, index) => {
+        dataElement[path].forEach((elem) => {
           if (path == "relatedTo") {
             const display = getDisplayFromId(dataElements, elem);
             let value = `${stringifyValue(
