@@ -10,6 +10,7 @@ import _ from "lodash";
 export const Location_Attributes = ["LocationType"];
 export const Practitioner_Attributes = ["Role", "Specialty", "Qualification"];
 export const CarePartner_Attributes = ["Relationship"];
+export const Organization_Attributes = ["OrganizationType"];
 
 const QdmEntity = ({
   setAttributeValue,
@@ -56,6 +57,8 @@ const QdmEntity = ({
         return displayQdmEntityRelatedAttributes(Practitioner_Attributes);
       case "CarePartner":
         return displayQdmEntityRelatedAttributes(CarePartner_Attributes);
+      case "Organization":
+        return displayQdmEntityRelatedAttributes(Organization_Attributes);
     }
   };
 
