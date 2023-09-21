@@ -544,7 +544,10 @@ describe("TestCaseList component", () => {
     jest.clearAllMocks();
   });
 
-  function renderTestCaseListComponent(errors: string[] = []) {
+  function renderTestCaseListComponent(
+    errors: string[] = [],
+    contextFailure = false
+  ) {
     return render(
       <MemoryRouter>
         <ApiContextProvider value={serviceConfig}>
@@ -556,6 +559,7 @@ describe("TestCaseList component", () => {
               executionContextReady: true,
               executing: false,
               setExecuting: jest.fn(),
+              contextFailure: contextFailure,
             }}
           >
             <TestCaseList
