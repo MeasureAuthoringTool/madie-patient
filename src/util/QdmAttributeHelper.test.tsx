@@ -2,10 +2,15 @@ import { stringifyValue, getDisplayFromId } from "./QdmAttributeHelpers";
 import cqmModels from "cqm-models";
 
 describe("StringifyValue", () => {
-  test("stringify value stringifies a number to a string without thinking it's a date", () => {
+  it("stringify value stringifies a number to a string without thinking it's a date", () => {
     expect(stringifyValue(1)).toBe("1");
   });
-  test("stringify value stringifies null value", () => {
+
+  it("stringify value stringifies a number, greater than 999, to a string without thinking it's a date", () => {
+    expect(stringifyValue("1234")).toBe("1234");
+  });
+
+  it("stringify value stringifies null value", () => {
     expect(stringifyValue(null)).toBe("null");
   });
   test("stringify value stringifies Code  value", () => {
@@ -48,7 +53,7 @@ describe("StringifyValue", () => {
   test("stringify value stringifies a string", () => {
     expect(stringifyValue("alreadyAString")).toBe("alreadyAString");
   });
-  test("stringifyValue stringifies interval strings", () => {
+  it("stringifyValue stringifies interval strings", () => {
     expect(
       stringifyValue({
         low: "2012-04-05T08:00:00.000",
