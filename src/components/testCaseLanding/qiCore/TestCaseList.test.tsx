@@ -573,7 +573,7 @@ describe("TestCaseList component", () => {
     );
   }
 
-  it("run QICore test case button is disabled", async () => {
+  it("run QICore test case button is disabled if execution context failed", async () => {
     renderTestCaseListComponent([], true);
     await waitFor(() => {
       const executeButton = screen.getByTestId("execute-test-cases-button");
