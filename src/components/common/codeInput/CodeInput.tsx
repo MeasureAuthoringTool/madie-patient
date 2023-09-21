@@ -97,7 +97,7 @@ const CodeInput = ({
     <MenuItem key="custom-vs" value="custom-vs" data-testid={`custom-vs`}>
       Custom Code
     </MenuItem>,
-    ...valueSets.map((vs) => {
+    ...valueSets?.map((vs) => {
       return (
         <MenuItem key={vs.oid} value={vs.oid} data-testid={`option-${vs.oid}`}>
           {vs.display_name}
