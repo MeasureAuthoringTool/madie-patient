@@ -128,6 +128,23 @@ describe("QdmEntity Component", () => {
     expect(mockHandleChange.mock.calls[0][0] instanceof Location).toBeTruthy();
   });
 
+  test("CarePartner attributeType", () => {
+    const mockHandleChange = jest.fn();
+    render(
+      <QdmEntity
+        attributeType="CarePartner"
+        attributeValue=""
+        setAttributeValue={mockHandleChange}
+        valueSets={valueSets}
+      />
+    );
+
+    expect(mockHandleChange).toHaveBeenCalledTimes(1);
+    expect(
+      mockHandleChange.mock.calls[0][0] instanceof CarePartner
+    ).toBeTruthy();
+  });
+
   test("change in attributeType", () => {
     const mockHandleChange = jest.fn();
     const { rerender } = render(
