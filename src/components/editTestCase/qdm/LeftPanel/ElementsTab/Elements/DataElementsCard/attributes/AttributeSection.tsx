@@ -70,12 +70,20 @@ const AttributeSection = ({
     formik.setFieldValue("attribute", attr);
 
     if (attr) {
-      const nextTypes = [...determineAttributeTypeList(attr.path, attr.info)];
-      setTypes(nextTypes);
-      if (nextTypes?.length === 1) {
-        formik.setFieldValue("type", nextTypes[0]);
-      } else {
-        formik.setFieldValue("type", null);
+      // relatedTo's info comes back as a string, which is right, but mockup wants next select to say "Data Element"
+      if (attr.path === "relatedTo") {
+        setTypes(["DataElement"]);
+        formik.setFieldValue("type", "DataElement");
+      }
+      // all other attribute cases
+      else {
+        const nextTypes = [...determineAttributeTypeList(attr.path, attr.info)];
+        setTypes(nextTypes);
+        if (nextTypes?.length === 1) {
+          formik.setFieldValue("type", nextTypes[0]);
+        } else {
+          formik.setFieldValue("type", null);
+        }
       }
     } else {
       setTypes([]);

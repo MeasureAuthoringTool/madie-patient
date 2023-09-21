@@ -17,6 +17,7 @@ import "styled-components/macro";
 import useQdmExecutionContext from "../../../../../../../routes/qdm/useQdmExecutionContext";
 import QuantityIntervalInput from "../../../../../../../common/quantityIntervalInput/QuantityIntervalInput";
 import StringInput from "../../../../../../../common/string/StringInput";
+import DataElementSelector from "../../../../../../../common/DataElementSelector/DataElementSelector";
 
 interface DisplayAttributeInputsProps {
   attributeType?: string;
@@ -161,6 +162,17 @@ const DisplayAttributeInputs = ({
             fieldValue=""
             onStringValueChange={(val) => {
               setAttributeValue(val);
+            }}
+          />
+        );
+      case "DataElement":
+        // relatedTo's value is an array of id's, but only one is supported?
+        return (
+          <DataElementSelector
+            canEdit={true}
+            value={attributeValue || ""}
+            handleChange={(v) => {
+              setAttributeValue(v);
             }}
           />
         );
