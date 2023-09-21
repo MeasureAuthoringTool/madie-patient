@@ -48,7 +48,7 @@ const ElementsSection = () => {
     if (measure?.cql) {
       retrieveCategories();
     }
-  }, [measure?.cql]);
+  }, [measure?.cql, retrieveCategories]);
 
   const [activeTab, setActiveTab] = useState(""); // OnChange we need to remove our focused element
   const [cardActiveTab, setCardActiveTab] = useState("codes"); // sub tabs in card
@@ -61,7 +61,7 @@ const ElementsSection = () => {
     if (activeTab) {
       setAvailableDataElements(filterDataElements(dataElements, activeTab));
     }
-  }, [activeTab]);
+  }, [activeTab, dataElements]);
   // whenever we update the active tab, we want to blank the selectedDataElement
   const handleActiveTab = (v) => {
     setSelectedDataElement(null);

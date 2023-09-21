@@ -334,9 +334,7 @@ const renderEditTestCaseComponent = () => {
             setExecuting: jest.fn(),
           }}
         >
-          <QdmPatientProvider>
-            <EditTestCase />
-          </QdmPatientProvider>
+          <EditTestCase />
         </QdmExecutionContextProvider>
       </ApiContextProvider>
     </MemoryRouter>

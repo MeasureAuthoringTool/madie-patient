@@ -6,10 +6,11 @@ import "./DataElementsTable.scss";
 type DatElementMenuProps = {
   elementId: string;
   onDelete: Function;
+  onView: Function;
 };
 
 export default function DatElementActions(props: DatElementMenuProps) {
-  const { elementId, onDelete } = props;
+  const { elementId, onDelete, onView } = props;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -21,8 +22,8 @@ export default function DatElementActions(props: DatElementMenuProps) {
   };
 
   const viewDataElement = () => {
-    //TODO: future story
-    handleClose();
+    onView();
+    // handleClose();
   };
 
   const deleteDataElement = () => {
