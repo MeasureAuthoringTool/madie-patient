@@ -153,12 +153,13 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
   if (!value) {
     return "null";
   }
+
   if (value instanceof cqmModels.CQL.Code) {
     const title = codeSystemMap[value.system] || value.system;
     return `${title} : ${value.code}`;
   }
-  // typeof number parses to a date. Check to make sure it's not a number.
-  else if (typeof value !== "number" && !isNaN(Date.parse(value))) {
+  //Value might be a string, so let's see if the string is a number.
+  else if (isNaN(value) && !isNaN(Date.parse(value))) {
     if (value instanceof cqmModels.CQL.DateTime) {
       return moment.utc(value.toJSDate(), true).format("L LT");
     }
