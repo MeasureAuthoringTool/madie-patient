@@ -1,6 +1,7 @@
 import moment from "moment";
 import cqmModels from "cqm-models";
 import * as _ from "lodash";
+import { getDataElementClass } from "./DataElementHelper";
 
 export const PRIMARY_TIMING_ATTRIBUTES = [
   "relevantPeriod",
@@ -86,6 +87,67 @@ export const determineAttributeTypeList = (path, info) => {
   else return [info.instance];
 };
 
+// This is specific to DataElements Table as multiple data types from same attribute has to be displayed in same cell
+export const generateAttributesToDisplay = (
+  dataElement,
+  dataElements,
+  codeSystemMap: any
+) => {
+  const dataElementClass = getDataElementClass(dataElement);
+  const modeledEl = new dataElementClass(dataElement);
+  const displayAttributes = [];
+  modeledEl.schema.eachPath((path, info) => {
+    if (!SKIP_ATTRIBUTES.includes(path) && !_.isEmpty(dataElement[path])) {
+      if (info.instance === "Array") {
+        const multipleDataTypes = [];
+        dataElement[path].forEach((elem) => {
+          if (path == "relatedTo") {
+            const display = getDisplayFromId(dataElements, elem);
+            let value = `${stringifyValue(
+              display?.description,
+              true
+            )} ${stringifyValue(display?.timing, true, codeSystemMap)}}`;
+            multipleDataTypes.push({
+              name: _.replace(elem._type, "QDM::", ""),
+              title: _.startCase(path),
+              value: value,
+            });
+          } else {
+            multipleDataTypes.push({
+              name: _.replace(elem._type, "QDM::", ""),
+              title: _.startCase(path),
+              value: stringifyValue(elem, true, codeSystemMap),
+            });
+          }
+        });
+        displayAttributes.push({
+          isMultiple: true,
+          additionalElements: multipleDataTypes,
+        });
+      } else if (path === "relatedTo") {
+        const id = dataElement[path];
+        const display = getDisplayFromId(dataElements, id);
+        const value = `${stringifyValue(
+          display.description,
+          true
+        )} ${stringifyValue(display.timing, true)}`;
+        displayAttributes.push({
+          name: path,
+          title: _.startCase(path),
+          value: value,
+        });
+      } else {
+        displayAttributes.push({
+          name: path,
+          title: _.startCase(path),
+          value: stringifyValue(dataElement[path], true, codeSystemMap),
+        });
+      }
+    }
+  });
+  return displayAttributes;
+};
+
 // from https://github.com/MeasureAuthoringTool/bonnie/blob/master/app/assets/javascripts/views/patient_builder/data_criteria_attribute_display.js.coffee
 export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
   if (!value) {
@@ -149,9 +211,9 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
   }
   // this block is currently unused but should be uncommented when the dataTypes are tested
   else if (value?.[0]?.schema || value.schema) {
+    // typeof number parses to a date. Check to make sure it's not a number.
     let attrStrings = [];
     let attrString = "";
-
     const schema = value?.[0]?.schema ? value?.[0]?.schema : value.schema; // catches diagnoses, facilityLocations != Participant
     schema.eachPath((path) => {
       if (!_.without(SKIP_ATTRIBUTES, "id").includes(path)) {

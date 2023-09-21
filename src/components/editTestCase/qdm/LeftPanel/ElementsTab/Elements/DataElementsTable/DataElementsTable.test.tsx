@@ -2,7 +2,7 @@ import * as React from "react";
 import { Measure } from "@madie/madie-models";
 import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import DataElementsTable from "./DataElementsTable";
 import DataTypeCell from "./DataTypeCell";
 import TimingRow from "./TimingRow";
@@ -31,6 +31,107 @@ import { QDMPatient } from "cqm-models/app/assets/javascripts/QDMPatient";
 
 const { DateTime, Code } = CQL;
 const { findByText, getByTestId, queryByText, queryAllByText } = screen;
+
+const dataElements = [
+  {
+    dataElementCodes: [],
+    _id: "65006e928a89e50000b674c8",
+    recorder: [],
+    qdmTitle: "Diagnosis",
+    hqmfOid: "2.16.840.1.113883.10.20.28.4.110",
+    qrdaOid: "2.16.840.1.113883.10.20.24.3.135",
+    qdmCategory: "condition",
+    qdmVersion: "5.6",
+    _type: "QDM::Diagnosis",
+    id: "65006e928a89e50000b674c8",
+    codeListId: "2.16.840.1.113762.1.4.1095.55",
+    description: "Diagnosis: Malnutrition Diagnosis",
+    anatomicalLocationSite: {
+      code: "110468005",
+      system: "2.16.840.1.113883.6.96",
+      version: null,
+      display: "Ambulatory surgery (procedure)",
+    },
+    severity: {
+      code: "4525004",
+      system: "2.16.840.1.113883.6.96",
+      version: null,
+      display: "Emergency department patient visit (procedure)",
+    },
+  },
+  {
+    dataElementCodes: [],
+    _id: "650322990cc70300007fe993",
+    recorder: [],
+    qdmTitle: "Diagnosis",
+    hqmfOid: "2.16.840.1.113883.10.20.28.4.110",
+    qrdaOid: "2.16.840.1.113883.10.20.24.3.135",
+    qdmCategory: "condition",
+    qdmVersion: "5.6",
+    _type: "QDM::Diagnosis",
+    id: "650322990cc70300007fe993",
+    codeListId: "2.16.840.1.113762.1.4.1095.55",
+    description: "Diagnosis: Malnutrition Diagnosis",
+    anatomicalLocationSite: {
+      code: "238111008",
+      system: "2.16.840.1.113883.6.96",
+      version: null,
+      display: "Deficiency of micronutrients (disorder)",
+    },
+  },
+  {
+    dataElementCodes: [],
+    _id: "6507127337d9a10000ed4409",
+    participant: [
+      {
+        qdmVersion: "5.6",
+        _type: "QDM::PatientEntity",
+        _id: "6507127f37d9a10000ed4480",
+        hqmfOid: "2.16.840.1.113883.10.20.28.4.136",
+        qrdaOid: "2.16.840.1.113883.10.20.24.3.161",
+        id: "1234",
+        identifier: {
+          qdmVersion: "5.6",
+          _type: "QDM::Identifier",
+          namingSystem: "ValueSet",
+          value: "Kg",
+        },
+      },
+      {
+        qdmVersion: "5.6",
+        _type: "QDM::Organization",
+        _id: "65087971c035e2000099cdb3",
+        hqmfOid: "2.16.840.1.113883.10.20.28.4.135",
+        qrdaOid: "2.16.840.1.113883.10.20.24.3.163",
+        id: "this is id",
+        identifier: {
+          qdmVersion: "5.6",
+          _type: "QDM::Identifier",
+          namingSystem: "ValueSet for Org",
+          value: "Value",
+        },
+      },
+    ],
+    relatedTo: ["related to a different DataElement"],
+    qdmTitle: "Encounter, Performed",
+    hqmfOid: "2.16.840.1.113883.10.20.28.4.5",
+    qdmCategory: "encounter",
+    qdmStatus: "performed",
+    qdmVersion: "5.6",
+    _type: "QDM::EncounterPerformed",
+    id: "6507127337d9a10000ed4409",
+    facilityLocations: [],
+    diagnoses: [],
+    codeListId: "2.16.840.1.113883.3.666.5.307",
+    description: "Encounter, Performed: Encounter Inpatient",
+    priority: {
+      code: "709063003",
+      system: "2.16.840.1.113883.6.96",
+      version: null,
+      display: "Admission to same day surgery center (procedure)",
+    },
+  },
+];
 
 const renderDataElementsTable = (dataElements, onDelete = () => {}) => {
   return render(
@@ -206,6 +307,7 @@ describe("Timing Cell component", () => {
     expect(foundStatusDate).toBeInTheDocument();
   });
 });
+
 describe("Data Elements Table", () => {
   test("emtpy table renders", async () => {
     await waitFor(() => {
@@ -214,14 +316,62 @@ describe("Data Elements Table", () => {
     expect(getByTestId("empty-table")).toBeInTheDocument();
   });
 
-  test("emtpy table renders", async () => {
-    await waitFor(() => {
-      renderDataElementsTable([dataEl[0]]);
-    });
-    await waitFor(() => {
-      expect(queryByText("Encounter Performed")).toBeInTheDocument();
-    });
+  it("Should render all required columns as per mock data", () => {
+    // Includes rendering of dynamic columns for Attributes
+    renderDataElementsTable(dataElements);
+    expect(
+      screen.getByRole("columnheader", {
+        name: "Datatype, Value Set & Code",
+      })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", {
+        name: "Timing",
+      })
+    ).toBeInTheDocument();
+    expect(
+      screen.getAllByRole("columnheader", { name: /Attribute/i }).length
+    ).toBe(3);
+    expect(
+      screen.getByRole("columnheader", {
+        name: "Actions",
+      })
+    ).toBeInTheDocument();
   });
+
+  it("Should render data in respective columns as per mock data", () => {
+    renderDataElementsTable(dataElements);
+    const table = screen.getByRole("table");
+    const tbody = within(table).getAllByRole("rowgroup")[1];
+    const rows = within(tbody).getAllByRole("row");
+    checkRowContent(rows[0], "Condition, Diagnosis", "", [
+      "Anatomical Location Site",
+      "Severity",
+      "",
+    ]);
+    checkRowContent(rows[1], "Condition, Diagnosis", "", [
+      "Anatomical Location Site",
+      "",
+      "",
+    ]);
+    // is there is a better way to verify Complex attribute display text
+    // revisit once the actual values of attributes are displayed
+    checkRowContent(rows[2], /Encounter, Performed/i, "", [
+      "Priority",
+      "Participant",
+      "Related To",
+    ]);
+  });
+
+  const checkRowContent = (row, title, timing, attributes) => {
+    const columns = within(row).getAllByRole("cell");
+    expect(columns).toHaveLength(6);
+    expect(columns[0]).toHaveTextContent(title);
+    expect(columns[1]).toHaveTextContent(timing);
+    expect(columns[2]).toHaveTextContent(attributes[0]);
+    expect(columns[3]).toHaveTextContent(attributes[1]);
+    expect(columns[4]).toHaveTextContent(attributes[2]);
+  };
 
   test("delete data element action", async () => {
     const onDelete = jest.fn();

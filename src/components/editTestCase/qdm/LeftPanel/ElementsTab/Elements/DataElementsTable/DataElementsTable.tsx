@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import DataTypeCell from "./DataTypeCell";
 import { DataElement } from "cqm-models";
+import * as _ from "lodash";
 import "./DataElementsTable.scss";
 import {
   createColumnHelper,
@@ -11,20 +12,41 @@ import {
 import useQdmExecutionContext from "../../../../../../routes/qdm/useQdmExecutionContext";
 import TimingCell from "./TimingCell";
 import DatElementActions from "./DatElementActions";
+import { generateAttributesToDisplay } from "../../../../../../../util/QdmAttributeHelpers";
+import AttributesCell from "./AttributesCell";
 
 const columnHelper = createColumnHelper<DataElement>();
+
 interface DataElementTableProps {
   dataElements?: DataElement[];
   onView?: (dataElement: DataElement) => void;
   onDelete?: (id: string) => void;
 }
+
+interface ElementAttributeEntry {
+  id: string;
+  attributes: Array<DisplayAttributes>;
+}
+
+export interface DisplayAttributes {
+  name?: string;
+  title?: string;
+  value?: string;
+  isMultiple?: boolean;
+  additionalElements?: Array<DisplayAttributes>;
+}
+
 const DataElementTable = ({
   dataElements = [],
-  onView,
   onDelete,
+  onView,
 }: DataElementTableProps) => {
   const { cqmMeasureState } = useQdmExecutionContext();
   const [codeSystemMap, setCodeSystemMap] = useState({});
+  const [columns, setColumns] = useState([]);
+  const [attributeColumns, setAttributeColumns] = useState([]);
+
+  // Building codeSystemMap, so that selected codes can be displayed on the table
   useEffect(() => {
     const valueSets = cqmMeasureState?.[0]?.value_sets;
     if (valueSets) {
@@ -38,45 +60,103 @@ const DataElementTable = ({
     }
   }, [cqmMeasureState]);
 
-  const columns = [
-    columnHelper.accessor((row) => row, {
-      header: "Datatype, Value Set & Code",
-      id: "category",
-      cell: (info) => {
-        const el = info.getValue();
-        return <DataTypeCell element={el} codeSystemMap={codeSystemMap} />;
-      },
-    }),
-    columnHelper.accessor((row) => row, {
-      id: "timing",
-      cell: (info) => {
-        const el = info.getValue();
-        if (el.get) {
-          return <TimingCell element={el} />;
+  // Building Attribute columns
+  useEffect(() => {
+    if (dataElements?.length) {
+      const elementsAttributesList: ElementAttributeEntry[] = dataElements?.map(
+        (dataElement) => {
+          const usedAttributes = generateAttributesToDisplay(
+            dataElement,
+            dataElements,
+            codeSystemMap
+          );
+          return { id: dataElement.id, attributes: usedAttributes };
         }
-        return null;
-      },
-      header: "Timing",
-    }),
+      );
 
-    columnHelper.accessor((row) => row, {
-      header: "Actions",
-      id: "actions",
-      cell: (info) => {
-        const el = info.getValue();
-        return <DatElementActions elementId={el.id} onDelete={onDelete} />;
-      },
-    }),
-  ];
+      const maxAttributeCount = _.max(
+        elementsAttributesList?.map((e) => e.attributes?.length ?? 0)
+      );
+
+      const attributeColumns = [];
+      for (let i = 0; i < maxAttributeCount; i++) {
+        const accessor = columnHelper.accessor((row) => row, {
+          header: `Attribute ${i + 1}`,
+          id: `Attribute ${i + 1}`,
+          cell: (info) => {
+            const dataElement = info.getValue();
+            const elementAttributes = elementsAttributesList.find(
+              (e) => e.id == dataElement.id
+            );
+
+            if (!_.isEmpty(elementAttributes?.attributes)) {
+              const attribute: DisplayAttributes =
+                elementAttributes?.attributes[i];
+              return (
+                <AttributesCell
+                  attribute={attribute}
+                  isMultiple={attribute?.isMultiple}
+                />
+              );
+            } else {
+              return <div></div>;
+            }
+          },
+        });
+        attributeColumns.push(accessor);
+      }
+      setAttributeColumns(attributeColumns);
+    }
+  }, [codeSystemMap, dataElements]);
+
+  // Generating columns required for the table
+  useEffect(() => {
+    const columns = [
+      columnHelper.accessor((row) => row, {
+        header: "Datatype, Value Set & Code",
+        id: "category",
+        cell: (info) => {
+          const el = info.getValue();
+          return <DataTypeCell element={el} codeSystemMap={codeSystemMap} />;
+        },
+      }),
+      columnHelper.accessor((row) => row, {
+        id: "timing",
+        cell: (info) => {
+          const el = info.getValue();
+          if (el.get) {
+            return <TimingCell element={el} />;
+          }
+          return null;
+        },
+        header: "Timing",
+      }),
+      ...attributeColumns,
+      columnHelper.accessor((row) => row, {
+        header: "Actions",
+        id: "actions",
+        cell: (info) => {
+          const el = info.getValue();
+          return (
+            <DatElementActions
+              elementId={el.id}
+              onDelete={onDelete}
+              onView={(e) => {
+                // e.preventDefault();
+                onView && onView(el);
+              }}
+            />
+          );
+        },
+      }),
+    ];
+    setColumns(columns);
+  }, [attributeColumns, codeSystemMap, onView]);
 
   const table = useReactTable({
     data: dataElements,
-    columns,
+    columns: columns,
     getCoreRowModel: getCoreRowModel(),
-    debugTable: true,
-    debugHeaders: true,
-    debugColumns: true,
-
     defaultColumn: {
       size: 100,
     },
