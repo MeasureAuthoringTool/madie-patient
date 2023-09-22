@@ -544,7 +544,10 @@ describe("TestCaseList component", () => {
     jest.clearAllMocks();
   });
 
-  function renderTestCaseListComponent(errors: string[] = []) {
+  function renderTestCaseListComponent(
+    errors: string[] = [],
+    contextFailure = false
+  ) {
     return render(
       <MemoryRouter>
         <ApiContextProvider value={serviceConfig}>
@@ -556,6 +559,7 @@ describe("TestCaseList component", () => {
               executionContextReady: true,
               executing: false,
               setExecuting: jest.fn(),
+              contextFailure: contextFailure,
             }}
           >
             <TestCaseList
@@ -568,6 +572,14 @@ describe("TestCaseList component", () => {
       </MemoryRouter>
     );
   }
+
+  it("should disable Run QICore test case button, if execution context failed", async () => {
+    renderTestCaseListComponent([], true);
+    await waitFor(() => {
+      const executeButton = screen.getByTestId("execute-test-cases-button");
+      expect(executeButton).toHaveProperty("disabled", true);
+    });
+  });
 
   it("should render list of test cases", async () => {
     renderTestCaseListComponent();
