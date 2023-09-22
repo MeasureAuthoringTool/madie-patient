@@ -7,10 +7,10 @@ import StringInput from "../../../../../../../common/string/StringInput";
 import CodeInput from "../../../../../../../common/codeInput/CodeInput";
 import _ from "lodash";
 
-export const Location_Attributes = ["LocationType"];
-export const Practitioner_Attributes = ["Role", "Specialty", "Qualification"];
-export const CarePartner_Attributes = ["Relationship"];
-export const Organization_Attributes = ["OrganizationType"];
+export const LOCATION_ATTRIBUTES = ["LocationType"];
+export const PRACTITIONER_ATTRIBUTES = ["Role", "Specialty", "Qualification"];
+export const CAREPARTNER_ATTRIBUTES = ["Relationship"];
+export const ORGANIZATION_ATTRIBUTES = ["OrganizationType"];
 
 const QdmEntity = ({
   setAttributeValue,
@@ -52,13 +52,13 @@ const QdmEntity = ({
   const displayQdmEntity = () => {
     switch (attributeType) {
       case "Location":
-        return displayQdmEntityRelatedAttributes(Location_Attributes);
+        return displayQdmEntityRelatedAttributes(LOCATION_ATTRIBUTES);
       case "Practitioner":
-        return displayQdmEntityRelatedAttributes(Practitioner_Attributes);
+        return displayQdmEntityRelatedAttributes(PRACTITIONER_ATTRIBUTES);
       case "CarePartner":
-        return displayQdmEntityRelatedAttributes(CarePartner_Attributes);
+        return displayQdmEntityRelatedAttributes(CAREPARTNER_ATTRIBUTES);
       case "Organization":
-        return displayQdmEntityRelatedAttributes(Organization_Attributes);
+        return displayQdmEntityRelatedAttributes(ORGANIZATION_ATTRIBUTES);
     }
   };
 
