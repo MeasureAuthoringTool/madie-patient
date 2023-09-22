@@ -157,10 +157,7 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
   if (value instanceof cqmModels.CQL.Code) {
     const title = codeSystemMap[value.system] || value.system;
     return `${title} : ${value.code}`;
-  } else if (
-    value.low ||
-    value.high
-  ) {
+  } else if (value.low || value.high) {
     let lowString = value.low ? stringifyValue(value.low) : "N/A";
     let highString = value.high ? stringifyValue(value.high) : "N/A";
     return `${lowString} - ${highString}`;
