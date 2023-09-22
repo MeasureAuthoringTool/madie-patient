@@ -23,10 +23,12 @@ const DataElementSelector = ({
   const { patient } = state;
 
   const dataElements = filterDataElements(patient?.dataElements);
-  const options: MenuObj[] = dataElements.map(({ id, description }) => ({
-    value: id,
-    label: description,
-  }));
+  const options: MenuObj[] = dataElements
+    ? dataElements.map(({ id, description }) => ({
+        value: id,
+        label: description,
+      }))
+    : [];
   const renderMenuItems = (options: MenuObj[]) => {
     return [
       <MenuItem key="-" value="">

@@ -13,6 +13,7 @@ import {
 import { MemoryRouter } from "react-router-dom";
 import { QdmExecutionContextProvider } from "../../../../../../../routes/qdm/QdmExecutionContext";
 import { MeasureScoring } from "@madie/madie-models";
+import { QdmPatientProvider } from "../../../../../../../../util/QdmPatientContext";
 
 jest.mock("dayjs", () => ({
   extend: jest.fn(),
@@ -54,11 +55,13 @@ describe("AttributeSection", () => {
             setExecuting: jest.fn(),
           }}
         >
-          <AttributeSection
-            selectedDataElement={dataElement}
-            attributeChipList={attributeChipList}
-            onAddClicked={onAddCb}
-          />
+          <QdmPatientProvider>
+            <AttributeSection
+              selectedDataElement={dataElement}
+              attributeChipList={attributeChipList}
+              onAddClicked={onAddCb}
+            />
+          </QdmPatientProvider>
         </QdmExecutionContextProvider>
       </MemoryRouter>
     );
@@ -563,6 +566,40 @@ describe("AttributeSection", () => {
     expect(addButton).toBeInTheDocument();
     userEvent.click(addButton);
   });
+  it("shows the Data element component when selecting relatedTo", async () => {
+    renderAttributeSection(assessmentElement, [], onAddClicked);
+    const attributeSelectBtn = screen.getByRole("button", {
+      name: "Attribute Select Attribute",
+    });
+    expect(attributeSelectBtn).toBeInTheDocument();
+
+    userEvent.click(attributeSelectBtn);
+
+    const attributeSelect = await screen.findByRole("listbox");
+    const attributeOptions = within(attributeSelect).getAllByRole("option");
+    expect(attributeOptions).toHaveLength(7);
+
+    userEvent.click(within(attributeSelect).getByText(/related to/i));
+    const attributeInput = within(attributeSelectBtn.parentElement).getByRole(
+      "textbox",
+      { hidden: true }
+    );
+    expect(attributeInput).toBeInTheDocument();
+    expect(attributeInput).toHaveValue("Related To");
+    const typeSelectBtn = screen.getByRole("button", {
+      name: "Type DataElement",
+    });
+    expect(typeSelectBtn).toBeInTheDocument();
+    const typeInput = within(typeSelectBtn.parentElement).getByRole("textbox", {
+      hidden: true,
+    });
+    expect(typeInput).toHaveValue("DataElement");
+    const DataElementSelect = screen.getByRole("button", {
+      name: "DataElement Select DataElement",
+    });
+    expect(DataElementSelect).toBeInTheDocument();
+  });
+
   it("renders code component on selecting the code type attribute", async () => {
     renderAttributeSection(assessmentElement, [], onAddClicked);
     const attributeSelectBtn = screen.getByRole("button", {
