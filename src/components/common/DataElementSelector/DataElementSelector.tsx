@@ -21,7 +21,6 @@ const DataElementSelector = ({
 }: DataElementSelectorProps) => {
   const { state } = useQdmPatient();
   const { patient } = state;
-
   const dataElements = filterDataElements(patient?.dataElements);
   const options: MenuObj[] = dataElements
     ? dataElements.map(({ id, description }) => ({

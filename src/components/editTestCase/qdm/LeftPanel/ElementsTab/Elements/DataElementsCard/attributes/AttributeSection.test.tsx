@@ -13,7 +13,11 @@ import {
 import { MemoryRouter } from "react-router-dom";
 import { QdmExecutionContextProvider } from "../../../../../../../routes/qdm/QdmExecutionContext";
 import { MeasureScoring } from "@madie/madie-models";
-import { QdmPatientProvider } from "../../../../../../../../util/QdmPatientContext";
+import {
+  QdmPatientProvider,
+  QdmPatientContext,
+} from "../../../../../../../../util/QdmPatientContext";
+import { act } from "react-dom/test-utils";
 
 jest.mock("dayjs", () => ({
   extend: jest.fn(),
@@ -55,13 +59,31 @@ describe("AttributeSection", () => {
             setExecuting: jest.fn(),
           }}
         >
-          <QdmPatientProvider>
+          <QdmPatientContext.Provider
+            value={{
+              state: {
+                patient: {
+                  dataElements: [
+                    {
+                      id: "faketest",
+                      description: "faketestdescription",
+                    },
+                    {
+                      id: "faketest1",
+                      description: "faketestdescription1",
+                    },
+                  ],
+                },
+              },
+              dispatch: jest.fn,
+            }}
+          >
             <AttributeSection
               selectedDataElement={dataElement}
               attributeChipList={attributeChipList}
               onAddClicked={onAddCb}
             />
-          </QdmPatientProvider>
+          </QdmPatientContext.Provider>
         </QdmExecutionContextProvider>
       </MemoryRouter>
     );
@@ -586,6 +608,7 @@ describe("AttributeSection", () => {
     );
     expect(attributeInput).toBeInTheDocument();
     expect(attributeInput).toHaveValue("Related To");
+
     const typeSelectBtn = screen.getByRole("button", {
       name: "Type DataElement",
     });
@@ -594,10 +617,27 @@ describe("AttributeSection", () => {
       hidden: true,
     });
     expect(typeInput).toHaveValue("DataElement");
-    const DataElementSelect = screen.getByRole("button", {
-      name: "DataElement Select DataElement",
+
+    const DataElementSelectBtn = await screen.findByRole("button", {
+      name: /data elements select field/i,
     });
-    expect(DataElementSelect).toBeInTheDocument();
+    expect(DataElementSelectBtn).toBeInTheDocument();
+    act(() => {
+      userEvent.click(DataElementSelectBtn);
+    });
+
+    userEvent.click(screen.getByText("faketestdescription"));
+    const dataElInput = await screen.findByTestId(
+      "data-element-selector-input"
+    );
+    expect(dataElInput).toHaveValue("faketest");
+    act(() => {
+      userEvent.click(DataElementSelectBtn);
+    });
+    act(() => {
+      userEvent.click(screen.getByText("faketestdescription1"));
+    });
+    expect(dataElInput).toHaveValue("faketest1");
   });
 
   it("renders code component on selecting the code type attribute", async () => {

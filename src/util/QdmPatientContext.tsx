@@ -91,4 +91,4 @@ function useQdmPatient() {
   return context;
 }
 
-export { QdmPatientProvider, useQdmPatient };
+export { QdmPatientProvider, QdmPatientContext, useQdmPatient };
