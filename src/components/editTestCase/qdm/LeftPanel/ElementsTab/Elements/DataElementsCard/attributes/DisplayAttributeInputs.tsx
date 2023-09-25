@@ -166,7 +166,6 @@ const DisplayAttributeInputs = ({
           />
         );
       case "DataElement":
-        // relatedTo's value is an array of id's, but only one is supported?
         return (
           <DataElementSelector
             canEdit={true}
