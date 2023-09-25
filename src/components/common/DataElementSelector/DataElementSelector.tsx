@@ -20,16 +20,18 @@ const DataElementSelector = ({
   canEdit,
   handleChange,
   value,
-  selectedDataElement
+  selectedDataElement,
 }: DataElementSelectorProps) => {
   const { state } = useQdmPatient();
   const { patient } = state;
   const dataElements = filterDataElements(patient?.dataElements);
   const options: MenuObj[] = dataElements
-    ? dataElements.filter((el) => el.id !== selectedDataElement.id).map(({ id, description }) => ({
-        value: id,
-        label: description,
-      }))
+    ? dataElements
+        .filter((el) => el.id !== selectedDataElement.id)
+        .map(({ id, description }) => ({
+          value: id,
+          label: description,
+        }))
     : [];
   const renderMenuItems = (options: MenuObj[]) => {
     return [

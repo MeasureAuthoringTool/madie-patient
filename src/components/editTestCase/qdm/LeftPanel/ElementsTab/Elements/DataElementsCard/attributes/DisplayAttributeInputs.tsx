@@ -29,7 +29,7 @@ interface DisplayAttributeInputsProps {
 const DisplayAttributeInputs = ({
   attributeType,
   onInputAdd,
-  selectedDataElement
+  selectedDataElement,
 }: DisplayAttributeInputsProps) => {
   const [attributeValue, setAttributeValue] = useState(null);
   const currentRatio = {
