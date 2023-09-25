@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { DataElement } from "cqm-models";
 import { Select } from "@madie/madie-design-system/dist/react";
 import { useQdmPatient } from "../../../util/QdmPatientContext";
 import { filterDataElements } from "../../../util/DataElementHelper";
@@ -8,6 +9,7 @@ interface DataElementSelectorProps {
   canEdit: boolean;
   value?: string;
   handleChange?: (value) => void;
+  selectedDataElement: DataElement;
 }
 interface MenuObj {
   value: string;
@@ -18,12 +20,13 @@ const DataElementSelector = ({
   canEdit,
   handleChange,
   value,
+  selectedDataElement
 }: DataElementSelectorProps) => {
   const { state } = useQdmPatient();
   const { patient } = state;
   const dataElements = filterDataElements(patient?.dataElements);
   const options: MenuObj[] = dataElements
-    ? dataElements.map(({ id, description }) => ({
+    ? dataElements.filter((el) => el.id !== selectedDataElement.id).map(({ id, description }) => ({
         value: id,
         label: description,
       }))

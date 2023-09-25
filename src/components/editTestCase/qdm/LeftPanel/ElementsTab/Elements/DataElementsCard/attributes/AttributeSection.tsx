@@ -113,6 +113,7 @@ const AttributeSection = ({
         }}
       />
       <DisplayAttributeInputs
+        selectedDataElement={selectedDataElement}
         attributeType={formik.values.type}
         onInputAdd={onInputAdd}
       />

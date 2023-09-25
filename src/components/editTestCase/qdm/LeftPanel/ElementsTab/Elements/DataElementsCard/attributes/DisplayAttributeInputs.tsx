@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { CQL } from "cqm-models";
+import { CQL, DataElement } from "cqm-models";
 import { DateField } from "@madie/madie-design-system/dist/react";
 import { IconButton } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -23,11 +23,13 @@ interface DisplayAttributeInputsProps {
   attributeType?: string;
   onChange?: (e) => void;
   onInputAdd: Function;
+  selectedDataElement: DataElement;
 }
 
 const DisplayAttributeInputs = ({
   attributeType,
   onInputAdd,
+  selectedDataElement
 }: DisplayAttributeInputsProps) => {
   const [attributeValue, setAttributeValue] = useState(null);
   const currentRatio = {
@@ -168,6 +170,7 @@ const DisplayAttributeInputs = ({
       case "DataElement":
         return (
           <DataElementSelector
+            selectedDataElement={selectedDataElement}
             canEdit={true}
             value={attributeValue || ""}
             handleChange={(v) => {
