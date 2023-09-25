@@ -16,6 +16,7 @@ export interface ExecutionContextHolder {
   executionContextReady: boolean;
   executing: boolean;
   setExecuting: (executing: boolean) => void;
+  contextFailure: boolean;
 }
 
 const ExecutionContext = createContext<ExecutionContextHolder>(null);

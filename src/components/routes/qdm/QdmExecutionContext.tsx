@@ -11,6 +11,7 @@ export interface QdmExecutionContextHolder {
   executionContextReady: boolean;
   executing: boolean;
   setExecuting: (executing: boolean) => void;
+  contextFailure: boolean;
 }
 
 const QdmExecutionContext = createContext<QdmExecutionContextHolder>(null);

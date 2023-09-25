@@ -36,7 +36,7 @@ const defaultStyle = {
 };
 
 export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
-  const { executionContextReady } = useQdmExecutionContext();
+  const { executionContextReady, contextFailure } = useQdmExecutionContext();
 
   const {
     activeTab,
@@ -81,7 +81,8 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     ) ||
     _.isNil(measure?.groups) ||
     measure?.groups.length === 0 ||
-    _.isEmpty(validTestCases);
+    _.isEmpty(validTestCases) ||
+    contextFailure;
 
   return (
     <div
