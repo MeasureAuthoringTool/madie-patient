@@ -23,6 +23,7 @@ jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const serviceConfig: ServiceConfig = {
+  elmTranslationService: { baseUrl: "translator.url" },
   measureService: {
     baseUrl: "measure.url",
   },
@@ -651,7 +652,7 @@ describe("TestCaseRoutes", () => {
     );
 
     const runAllTestsButton = await screen.findByRole("button", {
-      name: "Run Test Cases",
+      name: "Run Test(s)",
     });
     await waitFor(() => {
       expect(runAllTestsButton).toBeInTheDocument();

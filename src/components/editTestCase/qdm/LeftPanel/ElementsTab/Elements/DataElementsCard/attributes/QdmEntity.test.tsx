@@ -4,7 +4,13 @@ import { render, screen } from "@testing-library/react";
 
 import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
-import { PatientEntity, CarePartner, Location, Practitioner } from "cqm-models";
+import {
+  PatientEntity,
+  CarePartner,
+  Location,
+  Practitioner,
+  Organization,
+} from "cqm-models";
 import QdmEntity from "./QdmEntity";
 
 const valueSets = [
@@ -126,6 +132,40 @@ describe("QdmEntity Component", () => {
 
     expect(mockHandleChange).toHaveBeenCalledTimes(1);
     expect(mockHandleChange.mock.calls[0][0] instanceof Location).toBeTruthy();
+  });
+
+  test("CarePartner attributeType", () => {
+    const mockHandleChange = jest.fn();
+    render(
+      <QdmEntity
+        attributeType="CarePartner"
+        attributeValue=""
+        setAttributeValue={mockHandleChange}
+        valueSets={valueSets}
+      />
+    );
+
+    expect(mockHandleChange).toHaveBeenCalledTimes(1);
+    expect(
+      mockHandleChange.mock.calls[0][0] instanceof CarePartner
+    ).toBeTruthy();
+  });
+
+  test("Organization attributeType", () => {
+    const mockHandleChange = jest.fn();
+    render(
+      <QdmEntity
+        attributeType="Organization"
+        attributeValue=""
+        setAttributeValue={mockHandleChange}
+        valueSets={valueSets}
+      />
+    );
+
+    expect(mockHandleChange).toHaveBeenCalledTimes(1);
+    expect(
+      mockHandleChange.mock.calls[0][0] instanceof Organization
+    ).toBeTruthy();
   });
 
   test("change in attributeType", () => {

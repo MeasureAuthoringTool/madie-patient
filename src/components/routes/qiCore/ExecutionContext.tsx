@@ -16,6 +16,7 @@ export interface ExecutionContextHolder {
   executionContextReady: boolean;
   executing: boolean;
   setExecuting: (executing: boolean) => void;
+  contextFailure: boolean;
 }
 
 const ExecutionContext = createContext<ExecutionContextHolder>(null);
@@ -50,13 +51,3 @@ export const ExecutionProvider = ({ children }: any) => {
 export default ExecutionContext;
 export const ExecutionContextProvider = ExecutionContext.Provider;
 export const ExecutionContextConsumer = ExecutionContext.Consumer;
-
-export const useExecutionContext = () => {
-  const context = React.useContext(ExecutionContext);
-  if (context === undefined) {
-    throw new Error(
-      "useExecutionContext must be used within an ExecutionProvider"
-    );
-  }
-  return context;
-};

@@ -28,6 +28,7 @@ const TestCaseRoutes = () => {
   );
   const [executionContextReady, setExecutionContextReady] = useState<boolean>();
   const [executing, setExecuting] = useState<boolean>();
+  const [contextFailure, setContextFailure] = useState<boolean>(false);
   const [lastMeasure, setLastMeasure] = useState<any>();
 
   const terminologyService = useRef(useTerminologyServiceApi());
@@ -69,6 +70,7 @@ const TestCaseRoutes = () => {
             setMeasureBundle(bundle);
           })
           .catch((err) => {
+            setContextFailure(true);
             setErrors((prevState) => [...prevState, err.message]);
           });
       }
@@ -95,6 +97,7 @@ const TestCaseRoutes = () => {
           setValueSets(vs);
         })
         .catch((err) => {
+          setContextFailure(true);
           setErrors((prevState) => [...prevState, err.message]);
         });
     }
@@ -113,6 +116,7 @@ const TestCaseRoutes = () => {
         executionContextReady,
         executing,
         setExecuting,
+        contextFailure,
       }}
     >
       {errors && errors.length > 0 && (

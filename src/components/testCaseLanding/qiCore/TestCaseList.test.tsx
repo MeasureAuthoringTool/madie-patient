@@ -544,7 +544,10 @@ describe("TestCaseList component", () => {
     jest.clearAllMocks();
   });
 
-  function renderTestCaseListComponent(errors: string[] = []) {
+  function renderTestCaseListComponent(
+    errors: string[] = [],
+    contextFailure = false
+  ) {
     return render(
       <MemoryRouter>
         <ApiContextProvider value={serviceConfig}>
@@ -556,6 +559,7 @@ describe("TestCaseList component", () => {
               executionContextReady: true,
               executing: false,
               setExecuting: jest.fn(),
+              contextFailure: contextFailure,
             }}
           >
             <TestCaseList
@@ -568,6 +572,14 @@ describe("TestCaseList component", () => {
       </MemoryRouter>
     );
   }
+
+  it("should disable Run QICore test case button, if execution context failed", async () => {
+    renderTestCaseListComponent([], true);
+    await waitFor(() => {
+      const executeButton = screen.getByTestId("execute-test-cases-button");
+      expect(executeButton).toHaveProperty("disabled", true);
+    });
+  });
 
   it("should render list of test cases", async () => {
     renderTestCaseListComponent();
@@ -809,7 +821,7 @@ describe("TestCaseList component", () => {
     });
 
     const executeAllTestCasesButton = screen.getByRole("button", {
-      name: "Run Test Cases",
+      name: "Run Test(s)",
     });
 
     userEvent.click(executeAllTestCasesButton);
@@ -820,9 +832,11 @@ describe("TestCaseList component", () => {
     });
 
     userEvent.click(screen.getByTestId("coverage-tab"));
-    expect(
-      screen.getByTestId("code-coverage-highlighting")
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByTestId("code-coverage-highlighting")
+      ).toBeInTheDocument();
+    });
     userEvent.click(screen.getByTestId("passing-tab"));
     expect(screen.getByTestId("test-case-tbl")).toBeInTheDocument();
   });
@@ -848,7 +862,7 @@ describe("TestCaseList component", () => {
     });
 
     const executeAllTestCasesButton = screen.getByRole("button", {
-      name: "Run Test Cases",
+      name: "Run Test(s)",
     });
 
     expect(executeAllTestCasesButton).toBeDisabled();
@@ -997,9 +1011,7 @@ describe("TestCaseList component", () => {
     renderTestCaseListComponent();
 
     expect(await screen.findByText("WhenAllGood")).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Run Test Cases" })
-    ).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Run Test(s)" })).toBeDisabled();
   });
 
   it("defaults pop criteria nav link to first pop criteria on load", async () => {
@@ -1035,7 +1047,7 @@ describe("TestCaseList component", () => {
 
     // wait for execution context to be ready
     const executeButton = screen.getByRole("button", {
-      name: "Run Test Cases",
+      name: "Run Test(s)",
     });
     await waitFor(() => {
       expect(executeButton).not.toBeDisabled();
@@ -1081,7 +1093,7 @@ describe("TestCaseList component", () => {
 
     // wait for execution context to be ready
     const executeButton = screen.getByRole("button", {
-      name: "Run Test Cases",
+      name: "Run Test(s)",
     });
 
     await waitFor(() => expect(executeButton).not.toBeDisabled());
@@ -1289,7 +1301,7 @@ describe("TestCaseList component", () => {
     });
 
     const executeAllTestCasesButton = screen.getByRole("button", {
-      name: "Run Test Cases",
+      name: "Run Test(s)",
     });
 
     await waitFor(() => expect(executeAllTestCasesButton).toBeDisabled());

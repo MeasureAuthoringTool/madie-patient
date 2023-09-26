@@ -17,6 +17,7 @@ const TestCaseRoutes = () => {
   const [executionContextReady, setExecutionContextReady] =
     useState<boolean>(true);
   const [executing, setExecuting] = useState<boolean>();
+  const [contextFailure, setContextFailure] = useState<boolean>();
   const [cqmMeasure, setCqmMeasure] = useState<CqmMeasure>();
 
   const cqmService = useRef(useCqmConversionService());
@@ -54,6 +55,7 @@ const TestCaseRoutes = () => {
             }
           })
           .catch((err) => {
+            setContextFailure(true);
             setErrors((prevState) => [
               ...prevState,
               "An error occurred, please try again. If the error persists, please contact the help desk",
@@ -70,6 +72,7 @@ const TestCaseRoutes = () => {
         setCqmMeasure({ ...convertedMeasure, value_sets: vs });
       })
       .catch((err) => {
+        setContextFailure(true);
         setErrors((prevState) => [...prevState, err.message]);
       });
   };
@@ -88,6 +91,7 @@ const TestCaseRoutes = () => {
         executionContextReady,
         executing,
         setExecuting,
+        contextFailure,
       }}
     >
       {errors && errors.length > 0 && (
