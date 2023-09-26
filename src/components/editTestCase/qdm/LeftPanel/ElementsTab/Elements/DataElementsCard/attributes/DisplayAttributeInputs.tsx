@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { CQL } from "cqm-models";
+import { CQL, DataElement } from "cqm-models";
 import { DateField } from "@madie/madie-design-system/dist/react";
 import { IconButton } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -17,16 +17,19 @@ import "styled-components/macro";
 import useQdmExecutionContext from "../../../../../../../routes/qdm/useQdmExecutionContext";
 import QuantityIntervalInput from "../../../../../../../common/quantityIntervalInput/QuantityIntervalInput";
 import StringInput from "../../../../../../../common/string/StringInput";
+import DataElementSelector from "../../../../../../../common/DataElementSelector/DataElementSelector";
 
 interface DisplayAttributeInputsProps {
   attributeType?: string;
   onChange?: (e) => void;
   onInputAdd: Function;
+  selectedDataElement: DataElement;
 }
 
 const DisplayAttributeInputs = ({
   attributeType,
   onInputAdd,
+  selectedDataElement,
 }: DisplayAttributeInputsProps) => {
   const [attributeValue, setAttributeValue] = useState(null);
   const currentRatio = {
@@ -161,6 +164,17 @@ const DisplayAttributeInputs = ({
             fieldValue=""
             onStringValueChange={(val) => {
               setAttributeValue(val);
+            }}
+          />
+        );
+      case "DataElement":
+        return (
+          <DataElementSelector
+            selectedDataElement={selectedDataElement}
+            canEdit={true}
+            value={attributeValue || ""}
+            handleChange={(v) => {
+              setAttributeValue(v);
             }}
           />
         );

@@ -228,10 +228,6 @@ const DataElementsCard = (props: {
     onChange(updatedElement);
   };
 
-  const handleCodeChange = (selectedCode) => {
-    // eslint-disable-next-line no-console
-    console.log("selectedCode => ", selectedCode);
-  };
   return (
     <div className="data-elements-card" data-testid="data-element-card">
       <div className="heading-row">

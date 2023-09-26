@@ -157,9 +157,12 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
   if (value instanceof cqmModels.CQL.Code) {
     const title = codeSystemMap[value.system] || value.system;
     return `${title} : ${value.code}`;
-  }
-  //Value might be a string, so let's see if the string is a number.
-  else if (isNaN(value) && !isNaN(Date.parse(value))) {
+  } else if (value.low || value.high) {
+    let lowString = value.low ? stringifyValue(value.low) : "N/A";
+    let highString = value.high ? stringifyValue(value.high) : "N/A";
+    return `${lowString} - ${highString}`;
+  } else if (isNaN(value) && !isNaN(Date.parse(value))) {
+    //Value might be a string, so let's see if the string is a number.
     if (value instanceof cqmModels.CQL.DateTime) {
       return moment.utc(value.toJSDate(), true).format("L LT");
     }
@@ -234,10 +237,6 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
       attrString = `{ ${attrString} }`;
     }
     return attrString;
-  } else if (value.high || value.low) {
-    let lowString = value.low ? stringifyValue(value.low) : "null";
-    let highString = value.high ? stringifyValue(value.high) : "null";
-    return `${lowString} - ${highString}`;
   } else {
     return value.toString();
   }
