@@ -143,7 +143,7 @@ export class TerminologyServiceApi {
                 artifact?.resource &&
                 artifact.resource.includes("/ValueSet/")
               ) {
-                const oid = this.getOidFromString(artifact?.resource);
+                const oid = this.getOidFromString(artifact.resource);
                 if (oid) {
                   libVs.push({ oid: oid });
                 }
