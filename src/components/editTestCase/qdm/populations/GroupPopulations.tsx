@@ -7,6 +7,7 @@ import {
   GroupPopulation,
   DisplayPopulationValue,
   DisplayStratificationValue,
+  Stratification,
 } from "@madie/madie-models";
 import * as _ from "lodash";
 import { useFormikContext } from "formik";
@@ -87,19 +88,23 @@ const GroupPopulations = ({
                   populations={null}
                   stratifications={gp.stratificationValues}
                   populationBasis={gp.populationBasis}
-                  // onStratificationChange={(
-                  //   stratifications,
-                  //   type,
-                  //   changedStratification
-                  // ) => {
-                  //   const nextPopulations = _.cloneDeep(groupPopulations);
-                  //   const groupPopulation = nextPopulations.find(
-                  //     (np) => np.groupId === gp.groupId
-                  //   );
-                  //   if (groupPopulation) {
-                  //     groupPopulation.stratificationValues = stratifications;
-                  //   }
-                  // }}
+                  onStratificationChange={(
+                    stratifications,
+                    type,
+                    changedStratification
+                  ) => {
+                    const nextPopulations = _.cloneDeep(groupPopulations);
+                    const groupPopulation = nextPopulations.find(
+                      (np) => np.groupId === gp.groupId
+                    );
+                    if (groupPopulation) {
+                      groupPopulation.stratificationValues = stratifications;
+                    }
+                    formik.setFieldValue(
+                      "groupPopulations",
+                      groupPopulation.stratificationValues
+                    );
+                  }}
                 />
               )}
             </div>
