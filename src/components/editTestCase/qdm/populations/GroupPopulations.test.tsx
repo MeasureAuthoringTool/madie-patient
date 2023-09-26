@@ -269,4 +269,38 @@ describe("Group Populations", () => {
     );
     expect(actualColumn).toBeInTheDocument();
   });
+
+  it("should not display stratifications", () => {
+    const groupPopulations: GroupPopulation[] = [
+      {
+        groupId: "Group1_ID",
+        scoring: MeasureScoring.COHORT,
+        populationBasis: "true",
+        populationValues: [
+          {
+            id: "1",
+            name: PopulationType.INITIAL_POPULATION,
+            expected: true,
+            actual: false,
+            criteriaReference: "",
+          },
+        ],
+        stratificationValues: [],
+      },
+    ];
+    const handleChange = jest.fn();
+    render(
+      <GroupPopulations
+        executionRun={false}
+        groupPopulations={groupPopulations}
+        onChange={handleChange}
+        errors={errors}
+        birthDateTime={birthDateTime}
+      />
+    );
+    screen.debug(undefined, 50000);
+
+    const strat = screen.queryByTestId("measure-group-1-stratifications");
+    expect(strat).not.toBeInTheDocument();
+  });
 });
