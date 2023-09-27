@@ -1,9 +1,8 @@
 import React from "react";
-// import Popover from "@mui/material/Popover";
 import { Popover } from "@mui/material";
 
 const DataElementsTablePopover = (props: {
-  id: String;
+  id: string;
   optionsOpen: boolean;
   anchorEl: any;
   handleClose: any;
