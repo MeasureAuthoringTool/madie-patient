@@ -5,6 +5,7 @@ import LeftPanelNavTabs from "./LeftPanelNavTabs";
 import ElementsTab from "./ElementsTab/ElementsTab";
 import { QdmPatientProvider } from "../../../../util/QdmPatientContext";
 import { useFormikContext } from "formik";
+import Editor from "../../../editor/Editor";
 
 const LeftPanel = (props: { canEdit: boolean }) => {
   const [activeTab, setActiveTab] = useState<string>("elements");
@@ -19,10 +20,15 @@ const LeftPanel = (props: { canEdit: boolean }) => {
         <QdmPatientProvider>
           {activeTab === "elements" && <ElementsTab canEdit={props.canEdit} />}
           {activeTab === "json" && (
-            <pre tw="text-sm">
-              {formik.values?.json &&
-                JSON.stringify(JSON.parse(formik.values?.json), null, 2)}
-            </pre>
+            <Editor
+              value={
+                formik.values?.json
+                  ? JSON.stringify(JSON.parse(formik.values?.json), null, 2)
+                  : ""
+              }
+              height="100%"
+              readOnly={true}
+            />
           )}
         </QdmPatientProvider>
       </div>

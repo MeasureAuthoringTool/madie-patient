@@ -33,6 +33,7 @@ import {
   getLivingStatusDataElement,
 } from "./DemographicsSectionConst";
 import { MenuItem as MuiMenuItem } from "@mui/material";
+import { PatientActionType, useQdmPatient } from "../../../../../../util/QdmPatientContext";
 
 export interface CodeSystem {
   code: string;
@@ -45,8 +46,10 @@ const DemographicsSection = ({ canEdit }) => {
   dayjs.extend(utc);
   dayjs.utc().format(); // utc format
   const formik: any = useFormikContext();
+  const { state, dispatch } = useQdmPatient();
+  const { patient } = state;
   // select stuff
-  const [qdmPatient, setQdmPatient] = useState<QDMPatient>();
+  // const [qdmPatient, setQdmPatient] = useState<QDMPatient>();
   // this will be local
   const [raceDataElement, setRaceDataElement] = useState<DataElement>();
   const [genderDataElement, setGenderDataElement] = useState<DataElement>();
@@ -80,122 +83,194 @@ const DemographicsSection = ({ canEdit }) => {
     ];
   };
 
+  const getDataElementByStatus = (status: string, patient: QDMPatient) => {
+    return patient?.dataElements?.find((element) => element?.status === status);
+  };
+
   // this populates the json making it able to be edited. we should only do this before change
   useEffect(() => {
-    let patient: QDMPatient = null;
-    if (formik.values?.json) {
-      patient = JSON.parse(formik.values.json);
-    }
+    // let patient: QDMPatient = null;
+    // if (formik.values?.json) {
+    //   patient = JSON.parse(formik.values.json);
+    // }
+    console.log("patient: ", patient);
+
     // save local patient
     if (patient) {
-      setQdmPatient(patient);
-      const dataElements: DataElement[] = patient.dataElements;
+      console.log("running logic to default the Demographic values");
+      const raceElement = getDataElementByStatus("race", patient);
+      if (raceElement) {
+        setRaceDataElement(raceElement);
+      } else {
+        const newRaceDataElement: DataElement = getRaceDataElement(
+          "American Indian or Alaska Native",
+          patient
+        );
+        setRaceDataElement(newRaceDataElement);
+        dispatch({
+          type: PatientActionType.ADD_DATA_ELEMENT,
+          payload: newRaceDataElement,
+        });
+      }
 
-      // what is the purpose of this intermediate
-      dataElements.forEach((element) => {
-        if (element.qdmStatus === "race") {
-          setRaceDataElement(element);
-        }
-        if (element.qdmStatus === "gender") {
-          setGenderDataElement(element);
-        }
-        if (element.qdmStatus === "ethnicity") {
-          setEthnicityDataElement(element);
-        }
-        if (element.qdmStatus === "expired") {
-          setLivingStatusDataElement(element);
-        }
-      });
-    } else {
-      // default values for QDM patient. to do race and gender default values?
-      const newRaceDataElement: DataElement = getRaceDataElement(
-        "American Indian or Alaska Native"
-      );
-      setRaceDataElement(newRaceDataElement);
-      const newGenderDataElement: DataElement = getGenderDataElement("Female");
-      setGenderDataElement(newGenderDataElement);
-      const newEthnicityDataElement: DataElement =
-        getEthnicityDataElement("Hispanic or Latino");
-      setEthnicityDataElement(newEthnicityDataElement);
-      setLivingStatusDataElement("Living");
+      const genderElement = getDataElementByStatus("gender", patient);
+      if (genderElement) {
+        setGenderDataElement(genderElement);
+      } else {
+        const newGenderDataElement: DataElement = getGenderDataElement(
+          "Female",
+          patient
+        );
+        setGenderDataElement(newGenderDataElement);
+        dispatch({
+          type: PatientActionType.ADD_DATA_ELEMENT,
+          payload: newGenderDataElement,
+        });
+      }
 
-      let dataElements: DataElement[] = [
-        newRaceDataElement,
-        newGenderDataElement,
-      ];
+      const ethnicity = getDataElementByStatus("ethnicity", patient);
+      if (ethnicity) {
+        setEthnicityDataElement(ethnicity);
+      } else {
+        const newEthnicityDataElement: DataElement = getEthnicityDataElement(
+          "Hispanic or Latino",
+          patient
+        );
+        setEthnicityDataElement(newEthnicityDataElement);
+        dispatch({
+          type: PatientActionType.ADD_DATA_ELEMENT,
+          payload: newEthnicityDataElement,
+        });
+      }
 
-      const patient: QDMPatient = new QDMPatient();
-      patient.dataElements = dataElements;
-      setQdmPatient(patient);
+      const expiredElement = getDataElementByStatus("expired", patient);
+      if (expiredElement) {
+        setLivingStatusDataElement(expiredElement);
+      } else {
+        setLivingStatusDataElement("Living");
+      }
+
+      // let i = 1;
+      // if (i == 1) {
+      //   // setQdmPatient(patient);
+      //   const dataElements: DataElement[] = patient.dataElements;
+      //
+      //   // what is the purpose of this intermediate
+      //   dataElements.forEach((element) => {
+      //     if (element.qdmStatus === "race") {
+      //       setRaceDataElement(element);
+      //     }
+      //     if (element.qdmStatus === "gender") {
+      //       setGenderDataElement(element);
+      //     }
+      //     if (element.qdmStatus === "ethnicity") {
+      //       setEthnicityDataElement(element);
+      //     }
+      //     if (element.qdmStatus === "expired") {
+      //       setLivingStatusDataElement(element);
+      //     }
+      //   });
+      // } else {
+      //   // default values for QDM patient. to do race and gender default values?
+      //   const newRaceDataElement: DataElement = getRaceDataElement(
+      //     "American Indian or Alaska Native",
+      //     patient
+      //   );
+      //   setRaceDataElement(newRaceDataElement);
+      //   const newGenderDataElement: DataElement = getGenderDataElement(
+      //     "Female",
+      //     patient
+      //   );
+      //   setGenderDataElement(newGenderDataElement);
+      //   const newEthnicityDataElement: DataElement = getEthnicityDataElement(
+      //     "Hispanic or Latino",
+      //     patient
+      //   );
+      //   setEthnicityDataElement(newEthnicityDataElement);
+      //   setLivingStatusDataElement("Living");
+      //
+      //   let dataElements: DataElement[] = [
+      //     newRaceDataElement,
+      //     newGenderDataElement,
+      //   ];
+      //
+      //   // const patient: QDMPatient = new QDMPatient();
+      //   // patient.dataElements = dataElements;
+      //   // setQdmPatient(patient);
+      //   // TODO: update the state with the defaults
+      // }
     }
-  }, [formik.values.json]);
+  }, [patient]);
 
   // given element and type make this return instead
-  const generateNewQdmPatient = (newElement: DataElement, type: string) => {
-    const patient: QDMPatient = new QDMPatient(qdmPatient);
-    // patient.qdmVersion = "5.6";
-    if (qdmPatient.birthDatetime) {
-      patient.birthDatetime = qdmPatient.birthDatetime;
-    }
-    let dataElements: DataElement[] = [];
-    dataElements.push(newElement);
-    const otherElements: DataElement[] = qdmPatient?.dataElements?.filter(
-      (element) => {
-        return element.qdmStatus !== type;
-      }
-    );
-    if (otherElements) {
-      otherElements.forEach((element) => {
-        dataElements.push(element);
-      });
-    }
-    // save local
-    patient.dataElements = dataElements;
-    return patient;
-  };
+  // const generateNewQdmPatient = (newElement: DataElement, type: string) => {
+  //   const patient: QDMPatient = new QDMPatient(qdmPatient);
+  //   // patient.qdmVersion = "5.6";
+  //   if (qdmPatient.birthDatetime) {
+  //     patient.birthDatetime = qdmPatient.birthDatetime;
+  //   }
+  //   let dataElements: DataElement[] = [];
+  //   dataElements.push(newElement);
+  //   const otherElements: DataElement[] = qdmPatient?.dataElements?.filter(
+  //     (element) => {
+  //       return element.qdmStatus !== type;
+  //     }
+  //   );
+  //   if (otherElements) {
+  //     otherElements.forEach((element) => {
+  //       dataElements.push(element);
+  //     });
+  //   }
+  //   // save local
+  //   patient.dataElements = dataElements;
+  //   return patient;
+  // };
 
   // gender race change
   const handleRaceChange = (event) => {
     const newRaceDataElement: DataElement = getRaceDataElement(
-      event.target.value
+      event.target.value,
+      patient
     );
     setRaceDataElement(newRaceDataElement);
-    const patient = generateNewQdmPatient(newRaceDataElement, "race");
-    setQdmPatient(patient);
-    formik.setFieldValue("json", JSON.stringify(patient));
+    // const patient = generateNewQdmPatient(newRaceDataElement, "race");
+    // setQdmPatient(patient);
+    // formik.setFieldValue("json", JSON.stringify(patient));
   };
 
   const handleGenderChange = (event) => {
     const newGenderDataElement: DataElement = getGenderDataElement(
-      event.target.value
+      event.target.value,
+      patient
     );
     setGenderDataElement(newGenderDataElement);
-    const patient = generateNewQdmPatient(newGenderDataElement, "gender");
-    setQdmPatient(patient);
-    formik.setFieldValue("json", JSON.stringify(patient));
+    // const patient = generateNewQdmPatient(newGenderDataElement, "gender");
+    // setQdmPatient(patient);
+    // formik.setFieldValue("json", JSON.stringify(patient));
   };
 
   const handleEthnicityChange = (event) => {
     const newEthnicityDataElement: DataElement = getEthnicityDataElement(
-      event.target.value
+      event.target.value,
+      patient
     );
     setEthnicityDataElement(newEthnicityDataElement);
-    const patient = generateNewQdmPatient(newEthnicityDataElement, "ethnicity");
-    setQdmPatient(patient);
-    formik.setFieldValue("json", JSON.stringify(patient));
+    // const patient = generateNewQdmPatient(newEthnicityDataElement, "ethnicity");
+    // setQdmPatient(patient);
+    // formik.setFieldValue("json", JSON.stringify(patient));
   };
 
   const handleLivingStatusChange = (event) => {
     if (event.target.value !== "Living") {
       const newLivingStatusDataElement: DataElement =
-        getLivingStatusDataElement(event.target.value);
+        getLivingStatusDataElement(event.target.value, patient);
       setLivingStatusDataElement(newLivingStatusDataElement);
-      const patient = generateNewQdmPatient(
-        newLivingStatusDataElement,
-        "expired"
-      );
-      setQdmPatient(patient);
-      formik.setFieldValue("json", JSON.stringify(patient));
+      // const patient = generateNewQdmPatient(
+      //   newLivingStatusDataElement,
+      //   "expired"
+      // );
+      // setQdmPatient(patient);
+      // formik.setFieldValue("json", JSON.stringify(patient));
     } else {
       setLivingStatusDataElement(event.target.value);
       const patient = JSON.parse(formik.values.json);
@@ -211,10 +286,10 @@ const DemographicsSection = ({ canEdit }) => {
     const newTimeElement = getBirthDateElement(formatted);
 
     // setBirthDateElement(newTimeEleement);
-    const patient = generateNewQdmPatient(newTimeElement, "birthdate");
-    patient.birthDatetime = val; // extra ste
-    setQdmPatient(patient);
-    formik.setFieldValue("json", JSON.stringify(patient));
+    // const patient = generateNewQdmPatient(newTimeElement, "birthdate");
+    // patient.birthDatetime = val; // extra ste
+    // setQdmPatient(patient);
+    // formik.setFieldValue("json", JSON.stringify(patient));
     formik.setFieldValue("birthDate", val);
   };
 
@@ -224,6 +299,7 @@ const DemographicsSection = ({ canEdit }) => {
         title="Demographics"
         children={
           <div className="demographics-container">
+            <h5>HELLO</h5>
             {/* container */}
             <div className="demographics-row">
               <div className="birth-date">
@@ -247,7 +323,7 @@ const DemographicsSection = ({ canEdit }) => {
                             : null
                         }
                         onChange={(newValue: any) => {
-                          const currentDate = dayjs(qdmPatient?.birthDatetime);
+                          const currentDate = dayjs(patient?.birthDatetime);
                           const newDate = dayjs(currentDate)
                             .set("year", newValue?.$y)
                             .set("month", newValue?.$M)
@@ -260,7 +336,7 @@ const DemographicsSection = ({ canEdit }) => {
                             id: "birth-date",
                             sx: textFieldStyle,
                             required: true,
-                            error: formik.errors?.birthDate ? true : false,
+                            error: !!formik.errors?.birthDate && formik.touched.birthDate,
                             helperText: formik?.errors?.birthDate
                               ? formik.errors.birthDate
                               : "",
@@ -285,12 +361,12 @@ const DemographicsSection = ({ canEdit }) => {
                         disableOpenPicker
                         disabled={!canEdit}
                         value={
-                          qdmPatient?.birthDatetime
-                            ? dayjs(qdmPatient?.birthDatetime)
+                          patient?.birthDatetime
+                            ? dayjs(patient?.birthDatetime)
                             : null
                         }
                         onChange={(newValue: any, v) => {
-                          const currentDate = qdmPatient?.birthDatetime;
+                          const currentDate = patient?.birthDatetime;
                           // hours and minute seem to already take into account AMPM
                           const newDate = dayjs(currentDate)
                             .set("hour", newValue?.$H)
