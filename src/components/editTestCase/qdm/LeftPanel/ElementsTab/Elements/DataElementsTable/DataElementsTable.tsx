@@ -21,6 +21,7 @@ interface DataElementTableProps {
   dataElements?: DataElement[];
   onView?: (dataElement: DataElement) => void;
   onDelete?: (id: string) => void;
+  allowedTypes: object;
 }
 
 interface ElementAttributeEntry {
@@ -40,6 +41,7 @@ const DataElementTable = ({
   dataElements = [],
   onDelete,
   onView,
+  allowedTypes,
 }: DataElementTableProps) => {
   const { cqmMeasureState } = useQdmExecutionContext();
   const [codeSystemMap, setCodeSystemMap] = useState({});
@@ -140,6 +142,7 @@ const DataElementTable = ({
           return (
             <DatElementActions
               elementId={el.id}
+              canView={allowedTypes.hasOwnProperty(el._type)}
               onDelete={onDelete}
               onView={(e) => {
                 // e.preventDefault();
