@@ -200,18 +200,14 @@ const DataElementsCard = (props: {
   }, [localSelectedDataElement, codeSystemMap, dataElements]);
   // centralize state one level up so we can conditionally render our child component
   useEffect(() => {
-    setAttributesPresent(true);
-    let checker = 0;
+    setAttributesPresent(false);
     if (selectedDataElement && selectedDataElement.schema?.eachPath) {
       selectedDataElement.schema.eachPath((path) => {
-        if (!SKIP_ATTRIBUTES.includes(path)) {
+        if (!SKIP_ATTRIBUTES.includes(path) && !attributesPresent) {
           //you can't break an eachPath loop, since it's built off of forEach
-          checker++;
+          setAttributesPresent(true);
         }
       });
-    }
-    if (checker == 0) {
-      setAttributesPresent(false);
     }
   }, [localSelectedDataElement]);
   const onDeleteAttributeChip = (deletedChip) => {
