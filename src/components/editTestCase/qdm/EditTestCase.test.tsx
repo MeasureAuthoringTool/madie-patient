@@ -418,11 +418,9 @@ describe("EditTestCase QDM Component", () => {
       name: "Run Test",
     });
     expect(runTestCaseButton).toBeInTheDocument();
-
+    expect(runTestCaseButton).toBeDisabled();
     expect(getByRole("button", { name: "Save" })).toBeDisabled();
     expect(getByRole("button", { name: "Discard Changes" })).toBeDisabled();
-
-    userEvent.click(runTestCaseButton);
   });
 
   it("should render qdm edit test case component along with action buttons", async () => {
