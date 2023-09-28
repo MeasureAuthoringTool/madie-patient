@@ -42,7 +42,7 @@ const DateTimeInput = ({
       disabled={!canEdit}
       label={`${label}`}
       handleDateTimeChange={handleDateTimeChange}
-      dateTimeValue={dateTime ? dayjs(dateTime) : null}
+      dateTimeValue={dateTime ? dayjs.utc(dateTime) : null}
     />
   );
 };

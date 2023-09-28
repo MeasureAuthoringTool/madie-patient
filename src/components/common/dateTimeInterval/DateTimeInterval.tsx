@@ -48,7 +48,7 @@ const DateTimeInterval = ({
             label={`${label} - Start`}
             handleDateTimeChange={handleStartDateTimeChange}
             dateTimeValue={
-              dateTimeInterval?.low ? dayjs(dateTimeInterval.low) : null
+              dateTimeInterval?.low ? dayjs.utc(dateTimeInterval.low) : null
             }
           />
           <DateTimeField
@@ -56,7 +56,7 @@ const DateTimeInterval = ({
             label={`${label} - End`}
             handleDateTimeChange={handleEndDateTimeChange}
             dateTimeValue={
-              dateTimeInterval?.high ? dayjs(dateTimeInterval.high) : null
+              dateTimeInterval?.high ? dayjs.utc(dateTimeInterval.high) : null
             }
           />
         </div>
