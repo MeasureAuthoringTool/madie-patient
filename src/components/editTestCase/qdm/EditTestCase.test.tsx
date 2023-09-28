@@ -418,9 +418,31 @@ describe("EditTestCase QDM Component", () => {
       name: "Run Test",
     });
     expect(runTestCaseButton).toBeInTheDocument();
+
+    expect(getByRole("button", { name: "Save" })).toBeDisabled();
+    expect(getByRole("button", { name: "Discard Changes" })).toBeDisabled();
+  });
+  it("should see that the JSON changed", async () => {
+    await waitFor(() => renderEditTestCaseComponent());
+    const runTestCaseButton = await getByRole("button", {
+      name: "Run Test",
+    });
+    expect(runTestCaseButton).toBeInTheDocument();
     expect(runTestCaseButton).toBeDisabled();
     expect(getByRole("button", { name: "Save" })).toBeDisabled();
     expect(getByRole("button", { name: "Discard Changes" })).toBeDisabled();
+    const raceInput = screen.getByTestId(
+      "demographics-race-input"
+    ) as HTMLInputElement;
+    expect(raceInput).toBeInTheDocument();
+    expect(raceInput.value).not.toBe("White");
+    fireEvent.change(raceInput, {
+      target: { value: "White" },
+    });
+    expect(raceInput.value).toBe("White");
+    expect(getByRole("button", { name: "Save" })).not.toBeDisabled();
+    expect(getByRole("button", { name: "Discard Changes" })).not.toBeDisabled();
+    expect(runTestCaseButton).not.toBeDisabled();
   });
 
   it("should render qdm edit test case component along with action buttons", async () => {
