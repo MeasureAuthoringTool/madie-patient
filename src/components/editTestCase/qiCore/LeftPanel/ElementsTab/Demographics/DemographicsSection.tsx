@@ -3,7 +3,6 @@ import "twin.macro";
 import "styled-components/macro";
 import { Patient } from "fhir/r4";
 import ElementSection from "../../../../../common/ElementSection";
-import EventIcon from "@mui/icons-material/Event";
 import {
   AutoComplete,
   Select,
@@ -27,12 +26,7 @@ import {
 } from "./DemographicUtils";
 import "./DemographicsSection.scss";
 import _ from "lodash";
-import {
-  FormControl,
-  InputAdornment,
-  InputLabel,
-  MenuItem as MuiMenuItem,
-} from "@mui/material";
+import { FormControl, MenuItem as MuiMenuItem } from "@mui/material";
 
 import {
   ResourceActionType,
