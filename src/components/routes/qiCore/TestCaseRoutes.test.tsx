@@ -583,7 +583,8 @@ describe("TestCaseRoutes", () => {
           relatedArtifact: [
             {
               type: "depends-on",
-              url: "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1029.213",
+              resource:
+                "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113762.1.4.1029.213",
             },
           ],
         } as any,

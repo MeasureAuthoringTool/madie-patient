@@ -131,7 +131,7 @@ export class TerminologyServiceApi {
    */
   getValueSetsOIdsFromBundle(measureBundle: Bundle): ValueSetSearchParams[] {
     if (measureBundle?.entry) {
-      const valueSetOIDs = measureBundle.entry
+      return measureBundle.entry
         .filter((entry) => entry.resource?.resourceType === "Library")
         .reduce((allVs, library) => {
           const libraryResource = library.resource as Library;
@@ -139,8 +139,11 @@ export class TerminologyServiceApi {
           // TODO: release and version not supported
           const libVs = libraryResource.relatedArtifact?.reduce(
             (libVs, artifact) => {
-              if (artifact?.url && artifact.url.includes("/ValueSet/")) {
-                const oid = this.getOidFromString(artifact?.url);
+              if (
+                artifact?.resource &&
+                artifact.resource.includes("/ValueSet/")
+              ) {
+                const oid = this.getOidFromString(artifact.resource);
                 if (oid) {
                   libVs.push({ oid: oid });
                 }
@@ -155,7 +158,6 @@ export class TerminologyServiceApi {
             return allVs;
           }
         }, [] as ValueSetSearchParams[]);
-      return valueSetOIDs;
     }
     return [];
   }
