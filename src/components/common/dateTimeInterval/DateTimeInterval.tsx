@@ -3,6 +3,7 @@ import { DateTimeField } from "@madie/madie-design-system/dist/react";
 import { FormControl } from "@mui/material";
 import "twin.macro";
 import "styled-components/macro";
+import dayjs from "dayjs";
 import { CQL } from "cqm-models";
 import { getCQLDateTime } from "../dateTimeInput/DateTimeInput";
 
@@ -46,13 +47,17 @@ const DateTimeInterval = ({
             disabled={!canEdit}
             label={`${label} - Start`}
             handleDateTimeChange={handleStartDateTimeChange}
-            dateTimeValue={dateTimeInterval?.low}
+            dateTimeValue={
+              dateTimeInterval?.low ? dayjs(dateTimeInterval.low) : null
+            }
           />
           <DateTimeField
             disabled={!canEdit}
             label={`${label} - End`}
             handleDateTimeChange={handleEndDateTimeChange}
-            dateTimeValue={dateTimeInterval?.high}
+            dateTimeValue={
+              dateTimeInterval?.high ? dayjs(dateTimeInterval.high) : null
+            }
           />
         </div>
       </FormControl>
