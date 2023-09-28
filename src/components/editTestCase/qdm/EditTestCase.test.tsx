@@ -421,6 +421,8 @@ describe("EditTestCase QDM Component", () => {
 
     expect(getByRole("button", { name: "Save" })).toBeDisabled();
     expect(getByRole("button", { name: "Discard Changes" })).toBeDisabled();
+
+    userEvent.click(runTestCaseButton);
   });
   it("should see that the JSON changed", async () => {
     await waitFor(() => renderEditTestCaseComponent());
@@ -443,6 +445,7 @@ describe("EditTestCase QDM Component", () => {
     expect(getByRole("button", { name: "Save" })).not.toBeDisabled();
     expect(getByRole("button", { name: "Discard Changes" })).not.toBeDisabled();
     expect(runTestCaseButton).not.toBeDisabled();
+    userEvent.click(runTestCaseButton);
   });
 
   it("should render qdm edit test case component along with action buttons", async () => {
