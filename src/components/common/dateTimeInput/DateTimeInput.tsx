@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { CQL } from "cqm-models";
 
 export const getCQLDateTime = (value) => {
-  const newDateTime = dayjs(value).utc();
+  const newDateTime = dayjs.utc(value);
   const newCQLDateTime: CQL.DateTime = new CQL.DateTime(
     newDateTime.year(),
     newDateTime.month() + 1,
