@@ -359,7 +359,6 @@ const EditTestCase = () => {
               </Allotment.Pane>
             </Allotment>
           </div>
-
           <div className="bottom-row">
             {/* shows up in some mockups. leaving for later */}
             {/* <Button variant="outline-filled">Import</Button> */}
@@ -374,6 +373,7 @@ const EditTestCase = () => {
                 measure?.errors?.includes(
                   MeasureErrorType.MISMATCH_CQL_POPULATION_RETURN_TYPES
                 ) ||
+                !formik.values?.json ||
                 !executionContextReady ||
                 executing
               }
