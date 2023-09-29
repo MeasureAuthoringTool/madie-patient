@@ -14,7 +14,8 @@ const Timing = ({ canEdit, updateDataElement, selectedDataElement }) => {
     if (attributeName.includes("Period")) {
       setCurrentInterval(newValue);
     }
-    selectedDataElement[attributeName] = newValue;
+    // previous implementation didn't use set. may be functionally identical?
+    selectedDataElement.set(attributeName, newValue);
     updateDataElement(selectedDataElement);
   };
 
