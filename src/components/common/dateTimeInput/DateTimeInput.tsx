@@ -20,7 +20,7 @@ export const getCQLDateTime = (value) => {
 
 interface DateTimeInputProps {
   label: string;
-  dateTime: object;
+  dateTime: any;
   onDateTimeChange: Function;
   canEdit: boolean;
   attributeName: string;
@@ -34,11 +34,7 @@ const DateTimeInput = ({
   attributeName,
 }: DateTimeInputProps) => {
   const handleDateTimeChange = (newValue) => {
-    if (newValue.$D) {
-      onDateTimeChange(getCQLDateTime(newValue), attributeName);
-    } else {
-      onDateTimeChange(null);
-    }
+    onDateTimeChange(getCQLDateTime(newValue), attributeName);
   };
 
   return (
@@ -46,7 +42,7 @@ const DateTimeInput = ({
       disabled={!canEdit}
       label={`${label}`}
       handleDateTimeChange={handleDateTimeChange}
-      dateTimeValue={dateTime}
+      dateTimeValue={dateTime ? dayjs.utc(dateTime) : null}
     />
   );
 };
