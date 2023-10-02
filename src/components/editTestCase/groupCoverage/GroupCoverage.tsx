@@ -35,7 +35,7 @@ const allPopulations = [
   { name: "measureObservation", abbreviation: "OBSERV" },
 ] as Array<Population>;
 
-const GroupCovered = ({ groupPopulations, calculationResults }: Props) => {
+const GroupCoverage = ({ groupPopulations, calculationResults }: Props) => {
   // selected group/criteria
   const [selectedCriteria, setSelectedCriteria] = useState<string>("");
   // selected population of a selected group
@@ -197,4 +197,4 @@ const GroupCovered = ({ groupPopulations, calculationResults }: Props) => {
   );
 };
 
-export default GroupCovered;
+export default GroupCoverage;

@@ -63,13 +63,13 @@ const CalculationResults = ({
           }}
         />
       )}
-      {featureFlags.qiCoreElementsTab && groupPopulations && (
+      {featureFlags.highlightingTabs && groupPopulations && (
         <GroupCoverage
           groupPopulations={groupPopulations}
           calculationResults={calculationResults}
         />
       )}
-      {!featureFlags.qiCoreElementsTab && coverageHtmls && (
+      {!featureFlags.highlightingTabs && coverageHtmls && (
         <div tw="text-sm" data-testid="calculation-results">
           {coverageHtmls.map((coverageHtml) => parse(coverageHtml))}
         </div>
