@@ -1,16 +1,17 @@
 import React from "react";
-import { Popover } from "@madie/madie-design-system/dist/react";
+import DataElementsTablePopover from "./DataElementsTablePopover";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import "./DataElementsTable.scss";
 
 type DatElementMenuProps = {
   elementId: string;
+  canView: boolean;
   onDelete: Function;
   onView: Function;
 };
 
 export default function DatElementActions(props: DatElementMenuProps) {
-  const { elementId, onDelete, onView } = props;
+  const { elementId, canView, onDelete, onView } = props;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -45,12 +46,13 @@ export default function DatElementActions(props: DatElementMenuProps) {
         <div>View</div>
         <ExpandMoreIcon />
       </button>
-      <Popover
+      <DataElementsTablePopover
         id={`view-element-menu-${elementId}`}
         anchorEl={anchorEl}
         optionsOpen={open}
-        onClose={handleClose}
+        handleClose={handleClose}
         canEdit={true}
+        canView={canView}
         editViewSelectOptionProps={{
           label: "View",
           toImplementFunction: viewDataElement,

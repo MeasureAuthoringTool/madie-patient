@@ -21,7 +21,8 @@ import {
   getDataElementClass,
 } from "../../../../../../util/DataElementHelper";
 
-const ElementsSection = () => {
+const ElementsSection = (props: { handleTestCaseErrors: Function }) => {
+  const { handleTestCaseErrors } = props;
   const cqmService = useRef(useCqmConversionService());
   const [measure, setMeasure] = useState<any>(measureStore.state);
   useEffect(() => {
@@ -33,8 +34,43 @@ const ElementsSection = () => {
 
   const [categories, setCategories] = useState([]);
   const [dataElements, setDataElements] = useState<DataElement[]>([]);
+  // init an object that will track which data element types are allowed based on our cql / source-data-criteria
+  const [allowedTypes, setAllowedTypes] = useState({});
   const { state, dispatch } = useQdmPatient();
   const { patient } = state;
+
+  const checkForMissingDataElements = useCallback(() => {
+    const types = {};
+    dataElements.forEach((item) => {
+      types[item._type] = true;
+    });
+    setAllowedTypes(types);
+    let failedLookupCount = 0;
+    patient?.dataElements.forEach((el) => {
+      if (
+        !types[el._type] &&
+        el._type !== "QDM::PatientCharacteristicBirthdate"
+      ) {
+        failedLookupCount++;
+      }
+    });
+    if (failedLookupCount) {
+      handleTestCaseErrors(
+        "There are data elements in this test case not relevant to the measure.  Those data elements are not editable and can only be deleted from the Elements table."
+      );
+    }
+  }, [
+    setAllowedTypes,
+    handleTestCaseErrors,
+    dataElements?.length,
+    patient?.dataElements?.length,
+  ]);
+
+  useEffect(() => {
+    if (dataElements?.length > 0 && patient?.dataElements?.length > 0) {
+      checkForMissingDataElements();
+    }
+  }, [dataElements, patient?.dataElements]);
 
   const retrieveCategories = useCallback(() => {
     cqmService.current.fetchSourceDataCriteria(measure.cql).then((r) => {
@@ -128,6 +164,7 @@ const ElementsSection = () => {
           </div>
         )}
         <DataElementsTable
+          allowedTypes={allowedTypes}
           dataElements={filterDataElements(patient?.dataElements)}
           onView={(dataElement) => setSelectedDataElement(dataElement)}
           onDelete={deleteDataElement}
