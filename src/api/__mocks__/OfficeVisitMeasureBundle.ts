@@ -131,15 +131,16 @@ export const officeVisitMeasureBundle: fhir4.Bundle = {
         relatedArtifact: [
           {
             type: "depends-on",
-            url: "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1001",
+            resource:
+              "http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.464.1003.101.12.1001",
           },
           {
             type: "depends-on",
-            url: "http://ecqi.healthit.gov/ecqms/Library/FHIRHelpers",
+            resource: "http://ecqi.healthit.gov/ecqms/Library/FHIRHelpers",
           },
           {
             type: "depends-on",
-            url: "urn:oid:2.16.840.1.113883.6.238",
+            resource: "urn:oid:2.16.840.1.113883.6.238",
           },
         ],
         dataRequirement: [

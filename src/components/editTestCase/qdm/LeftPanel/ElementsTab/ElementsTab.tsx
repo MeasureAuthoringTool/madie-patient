@@ -9,7 +9,11 @@ import { useFormikContext } from "formik";
 import * as _ from "lodash";
 import { QDMPatient } from "cqm-models";
 
-const ElementsTab = ({ canEdit }) => {
+const ElementsTab = (props: {
+  canEdit: boolean;
+  handleTestCaseErrors: Function;
+}) => {
+  const { canEdit, handleTestCaseErrors } = props;
   const { state, dispatch } = useQdmPatient();
   const formik: any = useFormikContext();
   const lastJsonRef = useRef(null);
@@ -40,7 +44,7 @@ const ElementsTab = ({ canEdit }) => {
   return (
     <>
       <DemographicsSection canEdit={canEdit} />
-      <ElementsSection />
+      <ElementsSection handleTestCaseErrors={handleTestCaseErrors} />
     </>
   );
 };

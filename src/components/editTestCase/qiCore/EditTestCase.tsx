@@ -74,7 +74,6 @@ import { Bundle } from "fhir/r4";
 import { Allotment } from "allotment";
 import ElementsTab from "./LeftPanel/ElementsTab/ElementsTab";
 import { QiCoreResourceProvider } from "../../../util/QiCorePatientProvider";
-// import '../qdm/EditTestCase.scss'
 
 const TestCaseForm = tw.form`m-3`;
 const ValidationErrorsButton = tw.button`
