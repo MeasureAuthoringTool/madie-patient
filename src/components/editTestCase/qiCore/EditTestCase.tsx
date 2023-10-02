@@ -875,6 +875,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
                     <CalculationResults
                       calculationResults={populationGroupResults}
                       calculationErrors={calculationErrors}
+                      groupPopulations={groupPopulations}
                     />
                   )}
                 </div>
