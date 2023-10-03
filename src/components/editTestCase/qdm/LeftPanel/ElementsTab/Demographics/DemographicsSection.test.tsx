@@ -1,11 +1,12 @@
 import * as React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import DemographicsSection from "./DemographicsSection";
 import { FormikProvider, FormikContextType } from "formik";
-import { useQdmPatient } from "../../../../../../util/QdmPatientContext";
+import { PatientActionType, useQdmPatient } from "../../../../../../util/QdmPatientContext";
 import {
   QDMPatient,
   PatientCharacteristicEthnicity,
+  PatientCharacteristicExpired,
   DataElementCode,
 } from "cqm-models";
 
@@ -43,7 +44,7 @@ describe("DemographicsSection", () => {
     }));
   });
 
-  it("should handle birth date time change", () => {
+  it("should handle birth date time change", async () => {
     render(
       <FormikProvider value={mockFormik}>
         <DemographicsSection canEdit={true} />
@@ -70,6 +71,12 @@ describe("DemographicsSection", () => {
       target: { value: "02:24 PM" },
     });
     expect(birthtimeInputs[0].value).toBe("02:24 PM");
+    await waitFor(() => {
+      expect(mockUseQdmPatientDispatch).toHaveBeenLastCalledWith({
+        type: PatientActionType.SET_BIRTHDATETIME,
+        payload: expect.anything(),
+      });
+    });
   });
 
   it("should handle Living Status change", () => {
@@ -129,5 +136,39 @@ describe("DemographicsSection", () => {
       target: { value: "Not Hispanic or Latino" },
     });
     expect(ethnicityInput.value).toBe("Not Hispanic or Latino");
+  });
+
+  it("should render expired on load", async () => {
+    const qdmPatient = new QDMPatient();
+    const expiredElement = new PatientCharacteristicExpired();
+    expiredElement.dataElementCodes = [];
+    qdmPatient.dataElements.push(expiredElement);
+    (useQdmPatient as jest.Mock).mockImplementation(() => ({
+      state: { patient: qdmPatient },
+      dispatch: mockUseQdmPatientDispatch,
+    }));
+    render(
+      <FormikProvider value={mockFormik}>
+        <DemographicsSection canEdit={true} />
+      </FormikProvider>
+    );
+
+    expect(screen.getByText("Living Status")).toBeInTheDocument();
+    const livingStatusInput = screen.getByTestId(
+      "demographics-living-status-input"
+    ) as HTMLInputElement;
+    expect(livingStatusInput).toBeInTheDocument();
+    expect(livingStatusInput.value).toBe("Expired");
+
+    fireEvent.change(livingStatusInput, {
+      target: { value: "Living" },
+    });
+    expect(livingStatusInput.value).toBe("Living");
+    await waitFor(() => {
+      expect(mockUseQdmPatientDispatch).toHaveBeenCalledWith({
+        type: PatientActionType.REMOVE_DATA_ELEMENT,
+        payload: expect.anything(),
+      });
+    });
   });
 });
