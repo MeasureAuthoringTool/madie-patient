@@ -1,9 +1,12 @@
 import React from "react";
 import { Tabs, Tab } from "@madie/madie-design-system/dist/react";
+import { PopulationType } from "@madie/madie-models";
 
 export interface Population {
-  name: string;
   abbreviation: string;
+  id: string;
+  criteriaReference?: string;
+  name: PopulationType;
 }
 
 interface Props {

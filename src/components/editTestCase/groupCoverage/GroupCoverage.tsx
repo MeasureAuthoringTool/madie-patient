@@ -24,25 +24,28 @@ interface Props {
   calculationResults: DetailedPopulationGroupResult[];
 }
 const populationCriteriaLabel = "Population Criteria";
-const allPopulations = [
-  { name: "initialPopulation", abbreviation: "IP" },
-  { name: "denominator", abbreviation: "DENOM" },
-  { name: "denominatorExclusion", abbreviation: "DENEX" },
-  { name: "numerator", abbreviation: "NUMER" },
-  { name: "numeratorExclusion", abbreviation: "NUMEX" },
-  { name: "denominatorException", abbreviation: "DENEXCEP" },
-  { name: "measurePopulation", abbreviation: "MSRPOPL" },
-  { name: "measurePopulationExclusion", abbreviation: "MSRPOPLEX" },
-  { name: "measureObservation", abbreviation: "OBSERV" },
-] as Array<Population>;
+const abbreviatedPopulations = {
+  initialPopulation: "IP",
+  denominator: "DENOM",
+  denominatorExclusion: "DENEX",
+  numerator: "NUMER",
+  numeratorExclusion: "NUMEX",
+  denominatorException: "DENEXCEP",
+  measurePopulation: "MSRPOPL",
+};
 
 const GroupCoverage = ({ groupPopulations, calculationResults }: Props) => {
   // selected group/criteria
   const [selectedCriteria, setSelectedCriteria] = useState<string>("");
   // selected population of a selected group
-  const [selectedPopulation, setSelectedPopulation] = useState<Population>(
-    allPopulations[0]
-  );
+  const [selectedPopulation, setSelectedPopulation] = useState<Population>({
+    abbreviation: "IP",
+    criteriaReference:
+      groupPopulations[0].populationValues[0].criteriaReference,
+    name: groupPopulations[0].populationValues[0].name,
+    id: groupPopulations[0].populationValues[0].id,
+  });
+
   // calculation results for selected group/criteria
   const [populationResults, setPopulationResults] =
     useState<Array<PopulationResult>>();
@@ -63,9 +66,18 @@ const GroupCoverage = ({ groupPopulations, calculationResults }: Props) => {
     const selectedGroup = groupPopulations.find(
       (gp) => gp.groupId === selectedCriteria
     );
-    return selectedGroup?.populationValues.map((population) => {
-      return allPopulations.find((p) => p.name === population.name);
-    });
+    return selectedGroup?.populationValues
+      .filter((population) => {
+        return !population.name.includes("Observation");
+      })
+      .map((population) => {
+        return {
+          id: population.id,
+          criteriaReference: population.criteriaReference,
+          name: population.name,
+          abbreviation: abbreviatedPopulations[population.name],
+        };
+      });
   };
 
   const getPopulationResults = (groupId: string): Array<PopulationResult> => {
@@ -98,6 +110,7 @@ const GroupCoverage = ({ groupPopulations, calculationResults }: Props) => {
   const changePopulation = (population: Population) => {
     setSelectedPopulation(population);
     const result = populationResults?.find(
+      // TODO: Handle 2 IP scenario
       (result) => result.populationName === population.name
     );
     setCoverageHtml(
