@@ -500,12 +500,12 @@ describe("EditTestCase QDM Component", () => {
       "demographics-race-input"
     ) as HTMLInputElement;
     expect(raceInput).toBeInTheDocument();
-    expect(raceInput.value).toBe("American Indian or Alaska Native");
+    expect(raceInput.value).toBe("");
     const genderInput = screen.getByTestId(
       "demographics-gender-input"
     ) as HTMLInputElement;
     expect(genderInput).toBeInTheDocument();
-    expect(genderInput.value).toBe("Female");
+    expect(genderInput.value).toBe("");
     const livingStatusInput = screen.getByTestId(
       "demographics-living-status-input"
     ) as HTMLInputElement;
@@ -536,13 +536,14 @@ describe("EditTestCase QDM Component", () => {
     expect(livingStatusInput.value).toBe("Living");
   });
 
-  it("discard button resets form", () => {
+  it("discard button resets form", async () => {
+    testCase.json = "";
     renderEditTestCaseComponent();
     const raceInput = screen.getByTestId(
       "demographics-race-input"
     ) as HTMLInputElement;
     expect(raceInput).toBeInTheDocument();
-    expect(raceInput.value).toBe("American Indian or Alaska Native");
+    expect(raceInput.value).toBe("");
 
     fireEvent.change(raceInput, {
       target: { value: "White" },
@@ -553,7 +554,7 @@ describe("EditTestCase QDM Component", () => {
       "demographics-gender-input"
     ) as HTMLInputElement;
     expect(genderInput).toBeInTheDocument();
-    expect(genderInput.value).toBe("Female");
+    expect(genderInput.value).toBe("");
 
     fireEvent.change(genderInput, {
       target: { value: "Male" },
@@ -570,8 +571,10 @@ describe("EditTestCase QDM Component", () => {
     expect(discardConfirm).not.toBeDisabled();
     fireEvent.click(discardConfirm);
 
-    expect(raceInput.value).toBe("American Indian or Alaska Native");
-    expect(genderInput.value).toBe("Female");
+    await waitFor(() => expect(raceInput.value).toBe(""));
+    await waitFor(() => expect(genderInput.value).toBe(""));
+    // expect(raceInput.value).toBe("");
+    // expect(genderInput.value).toBe("");
   });
 
   it("test change dropwdown values", () => {
@@ -581,7 +584,7 @@ describe("EditTestCase QDM Component", () => {
       "demographics-race-input"
     ) as HTMLInputElement;
     expect(raceInput).toBeInTheDocument();
-    expect(raceInput.value).toBe("American Indian or Alaska Native");
+    expect(raceInput.value).toBe("");
 
     fireEvent.change(raceInput, {
       target: { value: "White" },
@@ -592,7 +595,7 @@ describe("EditTestCase QDM Component", () => {
       "demographics-gender-input"
     ) as HTMLInputElement;
     expect(genderInput).toBeInTheDocument();
-    expect(genderInput.value).toBe("Female");
+    expect(genderInput.value).toBe("");
 
     fireEvent.change(genderInput, {
       target: { value: "Male" },
@@ -681,7 +684,7 @@ describe("EditTestCase QDM Component", () => {
       "demographics-race-input"
     ) as HTMLInputElement;
     expect(raceInput).toBeInTheDocument();
-    expect(raceInput.value).toBe("American Indian or Alaska Native");
+    expect(raceInput.value).toBe("");
 
     act(() => {
       fireEvent.change(raceInput, {
@@ -750,7 +753,7 @@ describe("EditTestCase QDM Component", () => {
       "demographics-race-input"
     ) as HTMLInputElement;
     expect(raceInput).toBeInTheDocument();
-    expect(raceInput.value).toBe("American Indian or Alaska Native");
+    expect(raceInput.value).toBe("");
 
     act(() => {
       fireEvent.change(raceInput, {

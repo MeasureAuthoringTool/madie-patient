@@ -12,6 +12,7 @@ export enum PatientActionType {
   ADD_DATA_ELEMENT = "AddDataElement",
   REMOVE_DATA_ELEMENT = "RemoveDataElement",
   MODIFY_DATA_ELEMENT = "ModifyDataElement",
+  SET_BIRTHDATETIME = "SetBirthDateTime",
 }
 
 export interface QdmPatientAction {
@@ -61,6 +62,11 @@ export function patientReducer(state, action: QdmPatientAction) {
           return dataElement;
         });
       }
+      return { ...state, patient };
+    }
+    case PatientActionType.SET_BIRTHDATETIME: {
+      let patient = _.isNil(state.patient) ? new QDMPatient() : state.patient;
+      patient.birthDatetime = action.payload;
       return { ...state, patient };
     }
     default: {

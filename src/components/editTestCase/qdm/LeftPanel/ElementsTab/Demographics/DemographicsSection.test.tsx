@@ -2,6 +2,20 @@ import * as React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import DemographicsSection from "./DemographicsSection";
 import { FormikProvider, FormikContextType } from "formik";
+import { useQdmPatient } from "../../../../../../util/QdmPatientContext";
+import {
+  QDMPatient,
+  PatientCharacteristicEthnicity,
+  DataElementCode,
+} from "cqm-models";
+
+const emptyPatient = new QDMPatient();
+jest.mock("../../../../../../util/QdmPatientContext", () => ({
+  useQdmPatient: jest.fn(),
+  PatientActionType: jest.requireActual(
+    "../../../../../../util/QdmPatientContext"
+  ).PatientActionType,
+}));
 
 const testCaseJson = {
   qdmVersion: "5.6",
@@ -18,7 +32,17 @@ const mockFormik: FormikContextType<any> = {
   setFieldValue: jest.fn(),
 };
 
+const mockUseQdmPatientDispatch = jest.fn();
+
 describe("DemographicsSection", () => {
+  beforeEach(() => {
+    mockUseQdmPatientDispatch.mockClear();
+    (useQdmPatient as jest.Mock).mockImplementation(() => ({
+      state: { patient: emptyPatient },
+      dispatch: mockUseQdmPatientDispatch,
+    }));
+  });
+
   it("should handle birth date time change", () => {
     render(
       <FormikProvider value={mockFormik}>
@@ -74,6 +98,20 @@ describe("DemographicsSection", () => {
   });
 
   it("should handle Ethnicity change", () => {
+    const qdmPatient = new QDMPatient();
+    const ethnicityElement = new PatientCharacteristicEthnicity();
+    const newCode: DataElementCode = {
+      code: "2135-2",
+      display: "Hispanic or Latino",
+      version: "1.2",
+      system: "2.16.840.1.113883.6.238",
+    };
+    ethnicityElement.dataElementCodes = [newCode];
+    qdmPatient.dataElements.push(ethnicityElement);
+    (useQdmPatient as jest.Mock).mockImplementation(() => ({
+      state: { patient: qdmPatient },
+      dispatch: mockUseQdmPatientDispatch,
+    }));
     render(
       <FormikProvider value={mockFormik}>
         <DemographicsSection canEdit={true} />

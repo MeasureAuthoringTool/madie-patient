@@ -87,8 +87,13 @@ export const ETHNICITY_CODE_OPTIONS: DataElementCode[] = [
 
 export const LIVING_STATUS_CODE_OPTIONS = ["Living", "Expired"];
 
-export const getBirthDateElement = (value): DataElement => {
-  const pcb: DataElement = new PatientCharacteristicBirthdate();
+export const getBirthDateElement = (
+  value,
+  existingElement: DataElement
+): DataElement => {
+  const pcb: DataElement = existingElement
+    ? new PatientCharacteristicBirthdate(existingElement)
+    : new PatientCharacteristicBirthdate();
   pcb.birthDatetime = value;
   return pcb;
 };
@@ -96,11 +101,8 @@ export const getBirthDateElement = (value): DataElement => {
 // given a value, return a data element
 export const getRaceDataElement = (
   value: string,
-  patient: QDMPatient
+  existingElement: DataElement
 ): DataElement => {
-  const existingElement = patient?.dataElements?.find(
-    (element) => element.qdmStatus === "race"
-  );
   const newCode: DataElementCode = getNewCode(RACE_CODE_OPTIONS, value);
   const pcr: DataElement = existingElement
     ? new PatientCharacteristicRace(existingElement)
@@ -111,11 +113,8 @@ export const getRaceDataElement = (
 
 export const getGenderDataElement = (
   value: string,
-  patient: QDMPatient
+  existingElement: DataElement
 ): DataElement => {
-  const existingElement = patient?.dataElements?.find(
-    (element) => element.qdmStatus === "race"
-  );
   const newCode: DataElementCode = getNewCode(GENDER_CODE_OPTIONS, value);
   const pcs: DataElement = existingElement
     ? new PatientCharacteristicSex(existingElement)
@@ -126,24 +125,17 @@ export const getGenderDataElement = (
 
 export const getEthnicityDataElement = (
   value: string,
-  patient: QDMPatient
+  existingElement: DataElement
 ): DataElement => {
-  const existingElement = patient?.dataElements?.find(
-    (element) => element.qdmStatus === "race"
-  );
   const newCode: DataElementCode = getNewCode(ETHNICITY_CODE_OPTIONS, value);
-  const pce: DataElement = new PatientCharacteristicEthnicity();
+  const pce: DataElement = existingElement
+    ? new PatientCharacteristicEthnicity(existingElement)
+    : new PatientCharacteristicEthnicity();
   pce.dataElementCodes = [newCode];
   return pce;
 };
 
-export const getLivingStatusDataElement = (
-  value: string,
-  patient: QDMPatient
-): DataElement => {
-  const existingElement = patient?.dataElements?.find(
-    (element) => element.qdmStatus === "expired"
-  );
+export const getLivingStatusDataElement = (): DataElement => {
   const pce: DataElement = new PatientCharacteristicExpired();
   pce.dataElementCodes = [];
   return pce;

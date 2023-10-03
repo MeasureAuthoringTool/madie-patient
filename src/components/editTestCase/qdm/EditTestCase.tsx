@@ -213,7 +213,7 @@ const EditTestCase = () => {
             "birthDate",
             patient?.birthDatetime ? dayjs(patient?.birthDatetime) : null
           );
-          nextTc.json = JSON.stringify(patient, null, 2);
+          nextTc.json = JSON.stringify(patient);
           formik.resetForm({ values: _.cloneDeep(nextTc) });
         })
         .catch((error) => {
