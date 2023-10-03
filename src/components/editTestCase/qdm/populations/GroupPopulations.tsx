@@ -2,13 +2,6 @@ import React from "react";
 import "twin.macro";
 import "styled-components/macro";
 import TestCasePopulationList from "./TestCasePopulationList";
-import {
-  DisplayGroupPopulation,
-  GroupPopulation,
-  DisplayPopulationValue,
-  DisplayStratificationValue,
-  Stratification,
-} from "@madie/madie-models";
 import * as _ from "lodash";
 import { useFormikContext } from "formik";
 

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, within, fireEvent } from "@testing-library/react";
 import GroupPopulations from "./GroupPopulations";
 import {
   GroupPopulation,
@@ -10,6 +10,13 @@ import userEvent from "@testing-library/user-event";
 
 const errors = jest.fn();
 const birthDateTime = 90436320690;
+
+jest.mock("formik", () => ({
+  useField: jest.fn(),
+  useFormikContext: jest
+    .fn()
+    .mockReturnValue({ isValidating: false, setFieldValue: () => {} }),
+}));
 
 describe("Group Populations", () => {
   let testCaseGroups: GroupPopulation[];
@@ -298,9 +305,30 @@ describe("Group Populations", () => {
         birthDateTime={birthDateTime}
       />
     );
-    screen.debug(undefined, 50000);
 
     const strat = screen.queryByTestId("measure-group-1-stratifications");
     expect(strat).not.toBeInTheDocument();
+  });
+
+  it("test trigger stratification change", async () => {
+    const handleChange = jest.fn();
+    render(
+      <GroupPopulations
+        disableExpected={false}
+        executionRun={true}
+        groupPopulations={testCaseGroups}
+        onChange={handleChange}
+        errors={errors}
+        birthDateTime={birthDateTime}
+      />
+    );
+
+    const strat1Input = screen.getByTestId(
+      "test-population-strata-1 Initial Population-expected"
+    );
+    expect(strat1Input).toBeInTheDocument();
+    expect(strat1Input.value).toBe("true");
+
+    fireEvent.change(strat1Input, { target: { value: "false" } });
   });
 });
