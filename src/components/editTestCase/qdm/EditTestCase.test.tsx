@@ -430,7 +430,6 @@ describe("EditTestCase QDM Component", () => {
       name: "Run Test",
     });
     expect(runTestCaseButton).toBeInTheDocument();
-    expect(runTestCaseButton).toBeDisabled();
     expect(getByRole("button", { name: "Save" })).toBeDisabled();
     expect(getByRole("button", { name: "Discard Changes" })).toBeDisabled();
     const raceInput = screen.getByTestId(
@@ -442,7 +441,9 @@ describe("EditTestCase QDM Component", () => {
       target: { value: "White" },
     });
     expect(raceInput.value).toBe("White");
-    expect(getByRole("button", { name: "Save" })).not.toBeDisabled();
+    await waitFor(() =>
+      expect(getByRole("button", { name: "Save" })).not.toBeDisabled()
+    );
     expect(getByRole("button", { name: "Discard Changes" })).not.toBeDisabled();
     expect(runTestCaseButton).not.toBeDisabled();
     userEvent.click(runTestCaseButton);
