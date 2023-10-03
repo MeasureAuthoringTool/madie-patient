@@ -27,7 +27,7 @@ const GroupCoverageNav = ({
       type="C"
       size="standard"
       orientation="vertical"
-      value={`${selectedPopulation.abbreviation}_${id}`}
+      value={selectedPopulation.id}
       data-testid={`group-coverage-nav-${id}`}
     >
       {populations &&
@@ -35,8 +35,8 @@ const GroupCoverageNav = ({
           <Tab
             type="C"
             label={population.abbreviation}
-            key={`${population.abbreviation}_${id}`}
-            value={`${population.abbreviation}_${id}`}
+            key={population.abbreviation}
+            value={population.id}
             orientation="vertical"
             onClick={() => {
               onClick(population);

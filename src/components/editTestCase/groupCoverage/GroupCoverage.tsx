@@ -34,17 +34,22 @@ const abbreviatedPopulations = {
   measurePopulation: "MSRPOPL",
 };
 
+const getFirstPopulation = (group) => {
+  return {
+    abbreviation: "IP",
+    criteriaReference: group.populationValues[0].criteriaReference,
+    name: group.populationValues[0].name,
+    id: group.populationValues[0].id,
+  };
+};
+
 const GroupCoverage = ({ groupPopulations, calculationResults }: Props) => {
   // selected group/criteria
   const [selectedCriteria, setSelectedCriteria] = useState<string>("");
   // selected population of a selected group
-  const [selectedPopulation, setSelectedPopulation] = useState<Population>({
-    abbreviation: "IP",
-    criteriaReference:
-      groupPopulations[0].populationValues[0].criteriaReference,
-    name: groupPopulations[0].populationValues[0].name,
-    id: groupPopulations[0].populationValues[0].id,
-  });
+  const [selectedPopulation, setSelectedPopulation] = useState<Population>(
+    getFirstPopulation(groupPopulations[0])
+  );
 
   // calculation results for selected group/criteria
   const [populationResults, setPopulationResults] =
@@ -105,6 +110,8 @@ const GroupCoverage = ({ groupPopulations, calculationResults }: Props) => {
     setSelectedCriteria(criteriaId);
     const populationResults = getPopulationResults(criteriaId);
     setPopulationResults(populationResults);
+    const group = groupPopulations.find((gp) => gp.groupId === criteriaId);
+    setSelectedPopulation(getFirstPopulation(group));
   };
 
   const changePopulation = (population: Population) => {

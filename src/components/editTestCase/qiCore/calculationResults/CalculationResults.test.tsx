@@ -336,13 +336,6 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
       "NUMER 1 Partially Covered"
     );
 
-    // back to IP tab
-    const ip = await getPopulation("IP");
-    userEvent.click(ip);
-    expect(screen.getByTestId("IP-highlighting")).toHaveTextContent(
-      "IP 1 Covered"
-    );
-
     // select population criteria 2
     const criteriaOptions = await getCriteriaOptions();
     userEvent.click(criteriaOptions[1]);
