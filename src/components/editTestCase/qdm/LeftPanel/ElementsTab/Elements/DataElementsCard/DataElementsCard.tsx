@@ -8,7 +8,7 @@ import {
 } from "../../../../../../../util/QdmAttributeHelpers";
 import Codes from "./Codes/Codes";
 import SubNavigationTabs from "./SubNavigationTabs";
-import { DataElement } from "cqm-models";
+import { DataElement, CQL } from "cqm-models";
 import "./DataElementsCard.scss";
 import AttributeSection from "./attributes/AttributeSection";
 import { useQdmExecutionContext } from "../../../../../../routes/qdm/QdmExecutionContext";
@@ -16,6 +16,7 @@ import * as _ from "lodash";
 import Timing from "./timing/Timing";
 import { getDataElementClass } from "../../../../../../../util/DataElementHelper";
 import { useQdmPatient } from "../../../../../../../util/QdmPatientContext";
+import NegationRationale from "./negationRationale/NegationRationale";
 
 export const applyAttribute = (
   attribute,
@@ -63,6 +64,26 @@ const applyDataElementCodes = (code, dataElement) => {
     ...updatedDataElement["dataElementCodes"],
     code,
   ];
+  return updatedDataElement;
+};
+
+const applyNegationRationale = (code, dataElement) => {
+  const modelClass = getDataElementClass(dataElement);
+  const updatedDataElement = new modelClass(dataElement);
+  const cqlCode = new CQL.Code(
+    code.code,
+    code.system,
+    code.version,
+    code.display
+  );
+  updatedDataElement["negationRationale"] = cqlCode;
+  return updatedDataElement;
+};
+
+const deleteNegationRationale = (dataElement) => {
+  const modelClass = getDataElementClass(dataElement);
+  const updatedDataElement = new modelClass(dataElement);
+  updatedDataElement["negationRationale"] = null;
   return updatedDataElement;
 };
 
@@ -309,7 +330,29 @@ const DataElementsCard = (props: {
         />
       )}
       {/* uncomment later when we do something with it */}
-      {/* {activeTab === 'negation_rationale' && <NegationRationale />} */}
+      {cardActiveTab === "negation_rationale" && (
+        <NegationRationale
+          handleChange={(selectedCode) => {
+            if (selectedCode) {
+              const updatedDataElement = applyNegationRationale(
+                selectedCode,
+                localSelectedDataElement
+              );
+              setLocalSelectedDataElement(updatedDataElement);
+              onChange(updatedDataElement);
+            }
+          }}
+          deleteNegationRationale={(codeId) => {
+            const updatedDataElement = deleteNegationRationale(
+              localSelectedDataElement
+            );
+            setLocalSelectedDataElement(updatedDataElement);
+            onChange(updatedDataElement);
+          }}
+          cqmMeasure={cqmMeasure}
+          selectedDataElement={localSelectedDataElement}
+        />
+      )}
     </div>
   );
 };
