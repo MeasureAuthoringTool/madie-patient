@@ -62,7 +62,17 @@ export class QdmCalculationService {
       groupId: measureGroup.id,
       scoring: measure.scoring,
       populationBasis: String(measure.patientBasis),
-      stratificationValues: [],
+      stratificationValues: measureGroup.stratifications?.map(
+        (stratification, index) => ({
+          name: `Strata-${index + 1} ${_.startCase(
+            stratification.association
+          )}`,
+          expected: measure.patientBasis ? false : null,
+          actual: measure.patientBasis ? false : null,
+          id: stratification.id,
+          criteriaReference: "",
+        })
+      ),
       populationValues: getPopulationTypesForScoring(measureGroup)?.map(
         (population: PopulationExpectedValue) => ({
           name: population.name,

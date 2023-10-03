@@ -92,6 +92,82 @@ describe("QDM CalculationService Tests", () => {
     expect(output.scoring).toEqual(MeasureScoring.COHORT);
   });
 
+  it("test mapping QDM measure group to test case group with stratifications", () => {
+    const measure: Measure = {
+      scoring: MeasureScoring.COHORT,
+      patientBasis: true,
+    } as unknown as Measure;
+
+    const measureGroup: Group = {
+      id: "Group1",
+      populations: [
+        {
+          id: "g1pop1",
+          name: PopulationType.INITIAL_POPULATION,
+          definition: "foo1",
+        },
+      ],
+      stratifications: [{ id: "strat1", description: "strat1 description" }],
+      measureGroupTypes: [],
+    } as unknown as Group;
+
+    const output = calculationService.mapMeasureGroup(measure, measureGroup);
+
+    expect(output).toBeTruthy();
+    expect(output.groupId).toEqual("Group1");
+    expect(output.populationBasis).toBeTruthy();
+    expect(output.populationValues).toBeTruthy();
+    expect(output.populationValues.length).toEqual(1);
+    expect(output.scoring).toEqual(MeasureScoring.COHORT);
+    expect(output.stratificationValues.length).toEqual(1);
+    expect(output.stratificationValues[0].name).toEqual("Strata-1 ");
+    expect(output.stratificationValues[0].expected).toEqual(false);
+    expect(output.stratificationValues[0].actual).toEqual(false);
+    expect(output.stratificationValues[0].id).toEqual("strat1");
+  });
+
+  it("test mapping QDM measure group to test case group with stratifications and non patient-based", () => {
+    const measure: Measure = {
+      scoring: MeasureScoring.COHORT,
+      patientBasis: false,
+    } as unknown as Measure;
+
+    const measureGroup: Group = {
+      id: "Group1",
+      populations: [
+        {
+          id: "g1pop1",
+          name: PopulationType.INITIAL_POPULATION,
+          definition: "foo1",
+        },
+      ],
+      stratifications: [
+        {
+          id: "strat1",
+          description: "strat1 description",
+          association: "Episode of Care",
+        },
+      ],
+      measureGroupTypes: [],
+    } as unknown as Group;
+
+    const output = calculationService.mapMeasureGroup(measure, measureGroup);
+
+    expect(output).toBeTruthy();
+    expect(output.groupId).toEqual("Group1");
+    expect(output.populationBasis).toBeTruthy();
+    expect(output.populationValues).toBeTruthy();
+    expect(output.populationValues.length).toEqual(1);
+    expect(output.scoring).toEqual(MeasureScoring.COHORT);
+    expect(output.stratificationValues.length).toEqual(1);
+    expect(output.stratificationValues[0].name).toEqual(
+      "Strata-1 Episode Of Care"
+    );
+    expect(output.stratificationValues[0].expected).toEqual(null);
+    expect(output.stratificationValues[0].actual).toEqual(null);
+    expect(output.stratificationValues[0].id).toEqual("strat1");
+  });
+
   describe("isValuePass", () => {
     it("should return true for patientBasis true", () => {
       const output = calculationService.isValuePass(true, true, true);
@@ -136,6 +212,11 @@ describe("QDM CalculationService Tests", () => {
     it("should return false for missing expected value for patientBasis false", () => {
       const output = calculationService.isValuePass(2, undefined, false);
       expect(output).toEqual(false);
+    });
+
+    it("test non patient-based and undefined expected value", () => {
+      const output = calculationService.isValuePass(null, undefined, false);
+      expect(output).toEqual(true);
     });
   });
 
@@ -492,6 +573,56 @@ describe("QDM CalculationService Tests", () => {
         populationGroupResults
       );
       expect(output).toBeFalsy();
+    });
+
+    it("test undefined Patient Basis should return non patient-based result", () => {
+      const testCase: TestCase = {
+        id: "tc1",
+        name: "Test IPP",
+        createdAt: "",
+        createdBy: "",
+        lastModifiedAt: "",
+        lastModifiedBy: "",
+        description: "Test IPP",
+        title: "WhenAllGood",
+        series: "IPP_Pass",
+        validResource: true,
+        hapiOperationOutcome: null,
+        json: "{}",
+        executionStatus: null,
+        patientId: "patient-1a",
+        groupPopulations: [
+          {
+            groupId: "Group1",
+            scoring: MeasureScoring.COHORT,
+            populationValues: [
+              {
+                name: PopulationType.INITIAL_POPULATION,
+                expected: 2,
+              },
+            ] as PopulationExpectedValue[],
+          },
+        ] as GroupPopulation[],
+      };
+      measure.scoring = MeasureScoring.COHORT;
+      measure.patientBasis = undefined;
+      const populationGroupResults: CqmExecutionPatientResultsByPopulationSet =
+        {
+          Group1: {
+            IPP: 1,
+          },
+        };
+
+      const output = calculationService.processTestCaseResults(
+        testCase,
+        measureGroups,
+        measure,
+        populationGroupResults
+      );
+      expect(output).not.toBeFalsy();
+      expect(output.groupPopulations.length).toBe(1);
+      expect(output.groupPopulations[0].populationValues[0].expected).toBe(2);
+      expect(output.groupPopulations[0].populationValues[0].actual).toBe(1);
     });
 
     it("should return testCase with updated actual values passing patientBasis", () => {
