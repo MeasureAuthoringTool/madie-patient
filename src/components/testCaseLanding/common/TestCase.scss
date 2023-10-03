@@ -39,4 +39,25 @@
     display: flex;
     align-self: center;
   }
+
+  .export-bundle-button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-family: Rubik, sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    border-radius: 4px;
+    height: 49px;
+
+    .export-action {
+      padding: 14px 8px;
+      border-right: solid 1px #0073c8;
+    }
+    .export-chevron-container {
+      margin-left: 3px;
+      display: flex;
+      align-self: center;
+    }
+  }
 }

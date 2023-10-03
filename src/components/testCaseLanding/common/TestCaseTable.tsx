@@ -13,6 +13,7 @@ interface TestCaseTableProps {
   };
   deleteTestCase: Function;
   exportTestCase: Function;
+  measure: Measure;
 }
 
 const TestCaseTable = (props: TestCaseTableProps) => {
@@ -22,6 +23,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     executionResults,
     deleteTestCase,
     exportTestCase,
+    measure,
   } = props;
   const TH = tw.th`p-3 border-b text-left text-sm font-bold capitalize`;
 
@@ -54,6 +56,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
               executionResult={executionResults[testCase.id]}
               deleteTestCase={deleteTestCase}
               exportTestCase={exportTestCase}
+              measure={measure}
               // we assume all results have been run here
             />
           );
