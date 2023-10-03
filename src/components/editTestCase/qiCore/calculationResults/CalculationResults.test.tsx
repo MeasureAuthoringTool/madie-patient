@@ -287,6 +287,20 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     expect(numer.getAttribute("aria-selected")).toEqual("false");
   };
 
+  // TODO: this scenario needs to be run by UI/UX
+  test("highlighting tab if no groups available", () => {
+    render(
+      <CalculationResults
+        groupPopulations={[]}
+        calculationResults={undefined}
+        calculationErrors={undefined}
+      />
+    );
+    expect(
+      screen.getByText("To see the logic highlights, click 'Run Test'")
+    ).toBeInTheDocument();
+  });
+
   test("render default highlighting view", async () => {
     renderCoverageComponent();
     expect(screen.getByText("Population Criteria 1")).toBeInTheDocument();

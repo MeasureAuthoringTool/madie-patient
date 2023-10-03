@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import parse from "html-react-parser";
+import { isEmpty } from "lodash";
 import { GroupPopulation } from "@madie/madie-models";
 import { Select } from "@madie/madie-design-system/dist/react";
 import GroupCoverageNav, {
@@ -49,7 +50,7 @@ const GroupCoverage = ({ groupPopulations, calculationResults }: Props) => {
   const [coverageHtml, setCoverageHtml] = useState<string>("");
 
   useEffect(() => {
-    if (groupPopulations) {
+    if (!isEmpty(groupPopulations)) {
       changeCriteria(groupPopulations[0].groupId);
     }
   }, [groupPopulations]);

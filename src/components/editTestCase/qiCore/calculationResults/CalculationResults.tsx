@@ -2,6 +2,7 @@ import React from "react";
 import parse from "html-react-parser";
 import "twin.macro";
 import "styled-components/macro";
+import { isEmpty } from "lodash";
 import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calculator";
 import { MadieAlert } from "@madie/madie-design-system/dist/react";
 import { GroupPopulation } from "@madie/madie-models";
@@ -63,7 +64,7 @@ const CalculationResults = ({
           }}
         />
       )}
-      {featureFlags.highlightingTabs && groupPopulations && (
+      {featureFlags.highlightingTabs && !isEmpty(groupPopulations) && (
         <GroupCoverage
           groupPopulations={groupPopulations}
           calculationResults={calculationResults}
