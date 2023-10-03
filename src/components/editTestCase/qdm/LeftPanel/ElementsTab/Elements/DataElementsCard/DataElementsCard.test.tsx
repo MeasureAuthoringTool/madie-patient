@@ -1243,7 +1243,5 @@ describe("Negation Rationale", () => {
     expect(
       await screen.queryByTestId("4525004: 2.16.840.1.113883.6.96")
     ).toBeNull();
-
-    screen.debug(undefined, 800000);
   });
 });

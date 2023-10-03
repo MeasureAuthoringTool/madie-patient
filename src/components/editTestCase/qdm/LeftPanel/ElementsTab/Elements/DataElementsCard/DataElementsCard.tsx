@@ -329,7 +329,6 @@ const DataElementsCard = (props: {
           }}
         />
       )}
-      {/* uncomment later when we do something with it */}
       {cardActiveTab === "negation_rationale" && (
         <NegationRationale
           handleChange={(selectedCode) => {
