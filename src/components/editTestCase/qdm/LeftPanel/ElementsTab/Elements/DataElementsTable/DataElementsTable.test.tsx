@@ -133,6 +133,11 @@ const dataElements = [
   },
 ];
 
+const allowedTypes = {
+  "QDM::EncounterPerformed": true,
+  "QDM::Diagnosis": true,
+};
+
 const renderDataElementsTable = (dataElements, onDelete = () => {}) => {
   return render(
     <QdmExecutionContextProvider
@@ -145,7 +150,11 @@ const renderDataElementsTable = (dataElements, onDelete = () => {}) => {
       }}
     >
       <QdmPatientProvider>
-        <DataElementsTable dataElements={dataElements} onDelete={onDelete} />
+        <DataElementsTable
+          dataElements={dataElements}
+          onDelete={onDelete}
+          allowedTypes={allowedTypes}
+        />
       </QdmPatientProvider>
     </QdmExecutionContextProvider>
   );

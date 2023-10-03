@@ -294,12 +294,27 @@ const EditTestCase = () => {
     setDiscardDialogOpen(false);
   };
 
+  const [testCaseErrors, setTestCaseErrors] = useState([]);
+
+  const handleTestCaseErrors = (value) => {
+    setTestCaseErrors([value]);
+  };
+
+  //
+
   return (
     <>
       {qdmExecutionErrors && qdmExecutionErrors.length > 0 && (
         <StatusHandler
           error={true}
           errorMessages={qdmExecutionErrors}
+          testDataId="test_case_execution_errors"
+        />
+      )}
+      {testCaseErrors && (
+        <StatusHandler
+          error={true}
+          errorMessages={testCaseErrors}
           testDataId="test_case_execution_errors"
         />
       )}
@@ -313,7 +328,10 @@ const EditTestCase = () => {
           <div className="allotment-wrapper">
             <Allotment defaultSizes={[200, 100]} vertical={false}>
               <Allotment.Pane>
-                <LeftPanel canEdit={canEdit} />
+                <LeftPanel
+                  canEdit={canEdit}
+                  handleTestCaseErrors={handleTestCaseErrors}
+                />
               </Allotment.Pane>
               <Allotment.Pane>
                 <RightPanel
@@ -358,7 +376,6 @@ const EditTestCase = () => {
               </Allotment.Pane>
             </Allotment>
           </div>
-
           <div className="bottom-row">
             {/* shows up in some mockups. leaving for later */}
             {/* <Button variant="outline-filled">Import</Button> */}
@@ -373,6 +390,7 @@ const EditTestCase = () => {
                 measure?.errors?.includes(
                   MeasureErrorType.MISMATCH_CQL_POPULATION_RETURN_TYPES
                 ) ||
+                !formik.values?.json ||
                 !executionContextReady ||
                 executing
               }

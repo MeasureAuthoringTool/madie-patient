@@ -7,7 +7,11 @@ import { QdmPatientProvider } from "../../../../util/QdmPatientContext";
 import { useFormikContext } from "formik";
 import Editor from "../../../editor/Editor";
 
-const LeftPanel = (props: { canEdit: boolean }) => {
+const LeftPanel = (props: {
+  canEdit: boolean;
+  handleTestCaseErrors: Function;
+}) => {
+  const { canEdit, handleTestCaseErrors } = props;
   const [activeTab, setActiveTab] = useState<string>("elements");
   const formik: any = useFormikContext();
 
@@ -18,7 +22,12 @@ const LeftPanel = (props: { canEdit: boolean }) => {
       </div>
       <div className="panel-content">
         <QdmPatientProvider>
-          {activeTab === "elements" && <ElementsTab canEdit={props.canEdit} />}
+          {activeTab === "elements" && (
+            <ElementsTab
+              canEdit={canEdit}
+              handleTestCaseErrors={handleTestCaseErrors}
+            />
+          )}
           {activeTab === "json" && (
             <Editor
               value={

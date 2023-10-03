@@ -3,9 +3,11 @@ import "twin.macro";
 import "styled-components/macro";
 import { Patient } from "fhir/r4";
 import ElementSection from "../../../../../common/ElementSection";
-
-import { AutoComplete, Select } from "@madie/madie-design-system/dist/react";
-
+import {
+  AutoComplete,
+  Select,
+  DateField,
+} from "@madie/madie-design-system/dist/react";
 import {
   createExtension,
   deleteExtension,
@@ -30,6 +32,7 @@ import {
   ResourceActionType,
   useQiCoreResource,
 } from "../../../../../../util/QiCorePatientProvider";
+import dayjs from "dayjs";
 
 const SELECT_ONE_OPTION = (
   <MuiMenuItem key="SelectOne-0" value="Select One">
@@ -132,6 +135,17 @@ const DemographicsSection = ({ canEdit }) => {
       payload: updatedResource,
     });
   };
+  const handleBirthDateChange = (birthdate) => {
+    const updatedResource = _.cloneDeep(resource);
+    const patientEntry = updatedResource.entry.find(
+      (entry) => entry.resource?.resourceType === "Patient"
+    );
+    patientEntry.resource.birthDate = birthdate;
+    dispatch({
+      type: ResourceActionType.LOAD_RESOURCE,
+      payload: updatedResource,
+    });
+  };
 
   return (
     <div>
@@ -141,6 +155,19 @@ const DemographicsSection = ({ canEdit }) => {
           <div className="demographics-container">
             <div className="demographics-row">
               <FormControl tw={"w-2/4"}>
+                <DateField
+                  label="Date of Birth"
+                  disabled={!canEdit}
+                  value={patient?.birthDate ? dayjs(patient.birthDate) : null}
+                  handleDateChange={(value: any) => {
+                    const date = new Date(value);
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, "0");
+                    const day = String(date.getDate()).padStart(2, "0");
+                    const formattedDate = `${year}-${month}-${day}`;
+                    handleBirthDateChange(formattedDate);
+                  }}
+                />
                 <Select
                   id="gender-selector"
                   label="Gender"
