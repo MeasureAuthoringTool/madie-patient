@@ -385,7 +385,7 @@ describe("Data Elements Table", () => {
   test("delete data element action", async () => {
     const onDelete = jest.fn();
     renderDataElementsTable([dataEl[0], dataEl[1]], onDelete);
-    expect(queryAllByText("Encounter Performed").length).toEqual(2);
+    expect(queryAllByText("Emergency Department Visit").length).toEqual(2);
     // click action button
     userEvent.click(screen.getByTestId(`view-element-btn-${dataEl[0].id}`));
     expect(getByTestId("popover-content")).toBeInTheDocument();
