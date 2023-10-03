@@ -2,7 +2,10 @@ import * as React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import DemographicsSection from "./DemographicsSection";
 import { FormikProvider, FormikContextType } from "formik";
-import { PatientActionType, useQdmPatient } from "../../../../../../util/QdmPatientContext";
+import {
+  PatientActionType,
+  useQdmPatient,
+} from "../../../../../../util/QdmPatientContext";
 import {
   QDMPatient,
   PatientCharacteristicEthnicity,
