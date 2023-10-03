@@ -19,6 +19,27 @@
   background-color: #e1f3f8;
 }
 
+.export-bundle-button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-family: Rubik, sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  border-radius: 4px;
+  height: 49px;
+
+  .export-action {
+    padding: 14px 8px;
+    border-right: solid 1px #0073c8;
+  }
+  .export-chevron-container {
+    margin-left: 3px;
+    display: flex;
+    align-self: center;
+  }
+}
+
 .action-button {
   font-family: Rubik, sans-serif;
   font-weight: 400;
@@ -34,30 +55,8 @@
     padding: 7px 21px;
     border-right: solid 1px #c4c4c4;
   }
-
   .chevron-container {
     display: flex;
     align-self: center;
-  }
-
-  .export-bundle-button {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    font-family: Rubik, sans-serif;
-    font-weight: 500;
-    font-size: 14px;
-    border-radius: 4px;
-    height: 49px;
-
-    .export-action {
-      padding: 14px 8px;
-      border-right: solid 1px #0073c8;
-    }
-    .export-chevron-container {
-      margin-left: 3px;
-      display: flex;
-      align-self: center;
-    }
   }
 }

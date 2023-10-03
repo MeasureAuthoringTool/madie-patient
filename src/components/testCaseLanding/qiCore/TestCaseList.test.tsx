@@ -1436,6 +1436,25 @@ describe("TestCaseList component", () => {
     });
   });
 
+  it("should render options for exporting bundle types when Export Test Cases button is clicked", async () => {
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      exportQiCoreBundleType: true,
+    }));
+
+    const { getByTestId } = renderTestCaseListComponent();
+    const codeCoverageTabs = await screen.findByTestId("code-coverage-tabs");
+    expect(codeCoverageTabs).toBeInTheDocument();
+    const passingTab = await screen.findByTestId("passing-tab");
+    expect(passingTab).toBeInTheDocument();
+    const testCaseList = await screen.findByTestId("test-case-tbl");
+    expect(testCaseList).toBeInTheDocument();
+
+    const exportTestCasesButton = getByTestId("export-test-cases-button");
+    fireEvent.click(exportTestCasesButton);
+    expect(screen.getByText("Transaction Bundle")).toBeInTheDocument();
+    expect(screen.getByText("Collection Bundle")).toBeInTheDocument();
+  });
+
   it("should render Export Test Cases button and export partial test cases successfully", async () => {
     useTestCaseServiceMock.mockImplementation(() => {
       return {
