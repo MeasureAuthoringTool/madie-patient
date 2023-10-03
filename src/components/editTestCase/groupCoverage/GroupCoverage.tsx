@@ -189,7 +189,11 @@ const GroupCoverage = ({ groupPopulations, calculationResults }: Props) => {
             onClick={changePopulation}
           />
         </div>
-        <div tw="flex-auto p-3" id={`highlight-${selectedCriteria}`}>
+        <div
+          tw="flex-auto p-3"
+          id={`${selectedPopulation.abbreviation}-highlighting`}
+          data-testid={`${selectedPopulation.abbreviation}-highlighting`}
+        >
           {parse(coverageHtml)}
         </div>
       </div>

@@ -199,6 +199,7 @@ const renderWithRouter = (
             executionContextReady: true,
             executing: false,
             setExecuting: jest.fn(),
+            contextFailure: false,
           }}
         >
           <Routes>

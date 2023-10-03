@@ -6,7 +6,7 @@ import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calcula
 import { MadieAlert } from "@madie/madie-design-system/dist/react";
 import { GroupPopulation } from "@madie/madie-models";
 import { useFeatureFlags } from "@madie/madie-util";
-import GroupCoverage from "../../editTestCase/groupCoverage/GroupCoverage";
+import GroupCoverage from "../../groupCoverage/GroupCoverage";
 
 type ErrorProps = {
   status?: "success" | "warning" | "error" | "info" | "meta";
