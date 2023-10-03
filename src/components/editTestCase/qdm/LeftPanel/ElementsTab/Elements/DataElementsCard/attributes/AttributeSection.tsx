@@ -20,13 +20,11 @@ interface AttributeSectionProps {
   onAddClicked?: (attribute, type, attributeValue) => void;
   attributeChipList?: Array<Chip>;
   onDeleteAttributeChip?: (deletedChip) => void;
-  setAttributesPresent: (bool) => void;
 }
 
 const AttributeSection = ({
   attributeChipList = [],
   selectedDataElement,
-  setAttributesPresent,
   onAddClicked,
   onDeleteAttributeChip,
 }: AttributeSectionProps) => {

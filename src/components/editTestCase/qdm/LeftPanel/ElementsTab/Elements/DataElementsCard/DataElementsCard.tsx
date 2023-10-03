@@ -302,7 +302,6 @@ const DataElementsCard = (props: {
           attributeChipList={displayAttributes}
           selectedDataElement={localSelectedDataElement}
           onDeleteAttributeChip={onDeleteAttributeChip}
-          setAttributesPresent={setAttributesPresent}
           onAddClicked={(attribute, type, attributeValue) => {
             const updatedDataElement = applyAttribute(
               attribute,
