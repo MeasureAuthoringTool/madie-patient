@@ -13,19 +13,26 @@ export interface NavTabProps {
 }
 
 // this guy will have to be able to access state and update the values of state to show numbers such as [Codes (1)] later on. we will have to update matchers too
-const SubNavigationTabs = ({ activeTab, setActiveTab, negationRationale }) => {
+const SubNavigationTabs = ({
+  activeTab,
+  setActiveTab,
+  negationRationale,
+  attributesPresent,
+}) => {
   const OPTIONS = [
     {
       label: "Codes",
       value: "codes",
       icon: CodesIcon,
     },
-    {
+  ];
+  if (attributesPresent) {
+    OPTIONS.push({
       label: "Attributes",
       value: "attributes",
       icon: AttributesIcon,
-    },
-  ];
+    });
+  }
   // only push if we need it
   if (negationRationale) {
     OPTIONS.push({
