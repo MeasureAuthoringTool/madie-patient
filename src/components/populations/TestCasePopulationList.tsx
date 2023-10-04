@@ -79,9 +79,6 @@ export const determineGroupResultStratification = (
   stratifications: DisplayStratificationValue[],
   executionRun?: boolean
 ) => {
-  // console.log('populationBasis', populationBasis);
-  // console.log('stratifications', stratifications);
-  // console.log('executionRun', executionRun);
   if (!executionRun) {
     return "initial";
   }
