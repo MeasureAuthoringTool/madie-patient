@@ -11,6 +11,7 @@ export interface TestCaseStratificationProps {
   showExpected?: boolean;
   disableExpected?: boolean;
   onStratificationChange: (stratification: DisplayStratificationValue) => void;
+  QDM?: boolean;
 }
 
 const TestCaseStratification = ({
@@ -20,6 +21,7 @@ const TestCaseStratification = ({
   populationBasis,
   disableExpected = false,
   onStratificationChange,
+  QDM,
 }: TestCaseStratificationProps) => {
   return (
     <React.Fragment key={`fragment-key-${strataCode}`}>
@@ -30,7 +32,7 @@ const TestCaseStratification = ({
         role="row"
       >
         <td>&nbsp;</td>
-        <td role="cell">{strataCode}</td>
+        <td role="cell">{QDM ? strataCode : "Stratification"}</td>
         <td role="cell">
           <ExpectActualInput
             id={`${stratification.name}-expected-cb`}

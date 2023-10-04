@@ -36,6 +36,7 @@ export interface TestCasePopulationListProps {
     changedStratification: DisplayStratificationValue
   ) => void;
   errors?: any;
+  QDM?: boolean;
 }
 const StyledIcon = styled(FontAwesomeIcon)(
   ({ errors }: { errors: boolean }) => [
@@ -119,6 +120,7 @@ const TestCasePopulationList = ({
   onChange,
   onStratificationChange,
   errors,
+  QDM = false,
 }: TestCasePopulationListProps) => {
   let measureObservations = [];
   let numeratorObservations = [];
@@ -129,7 +131,6 @@ const TestCasePopulationList = ({
   const getPopulationCount = (populations, type: PopulationType): number => {
     return populations.filter((res) => res.name === type).length;
   };
-
   const getObservationCount = (
     observationCount: number,
     observation: PopulationType,
@@ -218,13 +219,22 @@ const TestCasePopulationList = ({
   };
 
   // we need to do an all check here for pass / no pass
-  const view = determineGroupResult(populationBasis, populations, executionRun);
 
-  const viewStratification = determineGroupResultStratification(
-    populationBasis,
-    stratifications,
-    executionRun
-  );
+  // we need to check if either normal or stratification
+
+  let view;
+
+  if (populations?.length > 0) {
+    view = determineGroupResult(populationBasis, populations, executionRun);
+  }
+
+  if (stratifications?.length > 0) {
+    view = determineGroupResultStratification(
+      populationBasis,
+      stratifications,
+      executionRun
+    );
+  }
 
   /*
     we have three separate views
@@ -294,6 +304,7 @@ const TestCasePopulationList = ({
 
           {stratifications?.map((stratification, j) => (
             <TestCaseStratification
+              QDM={QDM}
               strataCode={stratification.name}
               executionRun={executionRun}
               stratification={stratification}

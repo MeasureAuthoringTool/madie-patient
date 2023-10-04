@@ -79,6 +79,9 @@ export const determineGroupResultStratification = (
   stratifications: DisplayStratificationValue[],
   executionRun?: boolean
 ) => {
+  // console.log('populationBasis', populationBasis);
+  // console.log('stratifications', stratifications);
+  // console.log('executionRun', executionRun);
   if (!executionRun) {
     return "initial";
   }
@@ -219,12 +222,14 @@ const TestCasePopulationList = ({
 
   // we need to do an all check here for pass / no pass
   const view = determineGroupResult(populationBasis, populations, executionRun);
+  // console.log('view',view)
 
   const viewStratification = determineGroupResultStratification(
     populationBasis,
     stratifications,
     executionRun
   );
+  // console.log('viewStratification',viewStratification)
 
   /*
     we have three separate views
@@ -236,7 +241,7 @@ const TestCasePopulationList = ({
     pass: view === "pass",
     fail: view === "fail",
   });
-
+  // console.log('captions are', captionClass)
   return (
     <div>
       <table
