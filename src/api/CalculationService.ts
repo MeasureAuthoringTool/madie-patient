@@ -109,6 +109,7 @@ export class CalculationService {
         {
           includeClauseResults: false,
           trustMetaProfile: true,
+          buildStatementLevelHTML: true,
           measurementPeriodStart: measurementPeriodStart,
           measurementPeriodEnd: measurementPeriodEnd,
         },
