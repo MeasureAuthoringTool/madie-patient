@@ -1,5 +1,10 @@
-import React from "react";
-import { Button, Tabs, Tab } from "@madie/madie-design-system/dist/react";
+import React, { useState } from "react";
+import {
+  Button,
+  Tabs,
+  Tab,
+  Popover,
+} from "@madie/madie-design-system/dist/react";
 import AddIcon from "@mui/icons-material/Add";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
@@ -11,6 +16,7 @@ import { useFeatureFlags } from "@madie/madie-util";
 import "twin.macro";
 import "styled-components/macro";
 import RunTestButton from "../common/runTestsButton/RunTestsButton";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 export interface NavTabProps {
   activeTab: string;
@@ -59,6 +65,8 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     exportTestCases,
     onDeleteAllTestCases,
   } = props;
+  const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
+  const [anchorEl, setAnchorEl] = useState(null);
   const featureFlags = useFeatureFlags();
   const executionResultsDisplayTemplate = (label) => {
     const codeCoverage = executeAllTestCases ? coveragePercentage : "-";
@@ -79,6 +87,15 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
         </div>
       </div>
     );
+  };
+
+  const handleOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+    setOptionsOpen(true);
+  };
+  const handleClose = () => {
+    setOptionsOpen(false);
+    setAnchorEl(null);
   };
 
   const hasErrors =
@@ -173,11 +190,41 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           onRunTests={executeTestCases}
         />
         <Button
-          onClick={exportTestCases}
+          variant={featureFlags?.exportQiCoreBundleType ? "outline" : "filled"}
+          className="export-bundle-button"
+          onClick={(e) => {
+            featureFlags?.exportQiCoreBundleType
+              ? handleOpen(e)
+              : exportTestCases();
+          }}
           data-testid="export-test-cases-button"
         >
-          Export Test Cases
+          <div className="export-action">Export Test Cases</div>
+          {featureFlags?.exportQiCoreBundleType && (
+            <div className="export-chevron-container">
+              <ExpandMoreIcon />
+            </div>
+          )}
         </Button>
+
+        <Popover
+          optionsOpen={optionsOpen}
+          anchorEl={anchorEl}
+          handleClose={handleClose}
+          canEdit={canEdit}
+          additionalSelectOptionProps={[
+            {
+              label: "Transaction Bundle",
+              dataTestId: `export-transaction-bundle`,
+              toImplementFunction: "",
+            },
+            {
+              label: "Collection Bundle",
+              dataTestId: `export-collection-bundle`,
+              toImplementFunction: "",
+            },
+          ]}
+        />
       </div>
     </div>
   );

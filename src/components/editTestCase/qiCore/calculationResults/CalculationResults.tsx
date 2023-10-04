@@ -2,8 +2,12 @@ import React from "react";
 import parse from "html-react-parser";
 import "twin.macro";
 import "styled-components/macro";
+import { isEmpty } from "lodash";
 import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calculator";
 import { MadieAlert } from "@madie/madie-design-system/dist/react";
+import { GroupPopulation } from "@madie/madie-models";
+import { useFeatureFlags } from "@madie/madie-util";
+import GroupCoverage from "../../groupCoverage/GroupCoverage";
 
 type ErrorProps = {
   status?: "success" | "warning" | "error" | "info" | "meta";
@@ -13,17 +17,19 @@ type ErrorProps = {
 type CalculationResultType = {
   calculationResults: DetailedPopulationGroupResult[];
   calculationErrors: ErrorProps;
+  groupPopulations: GroupPopulation[];
 };
 
 const CalculationResults = ({
   calculationResults,
   calculationErrors,
+  groupPopulations,
 }: CalculationResultType) => {
   // template for group name coming from execution engine
   const originalGroupName = (name) => {
     return `<h2>Population Group: ${name}</h2>`;
   };
-
+  const featureFlags = useFeatureFlags();
   // We wanted to have our own group name. This is the template for group name
   const updatedGroupName = (name) => {
     return `<br/><h4>Population Criteria ${name}</h4>`;
@@ -58,7 +64,13 @@ const CalculationResults = ({
           }}
         />
       )}
-      {coverageHtmls && (
+      {featureFlags.highlightingTabs && !isEmpty(groupPopulations) && (
+        <GroupCoverage
+          groupPopulations={groupPopulations}
+          calculationResults={calculationResults}
+        />
+      )}
+      {!featureFlags.highlightingTabs && coverageHtmls && (
         <div tw="text-sm" data-testid="calculation-results">
           {coverageHtmls.map((coverageHtml) => parse(coverageHtml))}
         </div>
