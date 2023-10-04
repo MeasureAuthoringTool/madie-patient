@@ -39,8 +39,10 @@ const DataTypeCell = (props: { element: DataElement; codeSystemMap: any }) => {
             : _.capitalize(element?.qdmTitle)}
         </span>
       </div>
+      x
       <div className="element-type">
-        {_.startCase(element?._type.split("QDM::")[1])}
+        {element?.description &&
+          element.description.substring(element.qdmTitle.length + 2)}
       </div>
       {codeList.map((code) => (
         <CodesRow code={code} />
