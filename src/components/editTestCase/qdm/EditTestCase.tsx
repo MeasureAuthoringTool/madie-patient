@@ -240,13 +240,10 @@ const EditTestCase = () => {
       });
 
       populationSets.forEach((pop) => {
-        // console.log('!populationSet', pop)
         const results = JSONPath({
           path: `$..${pop}`,
           json: JSON.parse(JSON.stringify(calculationOutput)),
         });
-        console.log("~ expected patient 675", results[0].patient);
-
         const stratifications = JSONPath({
           path: "$.PopulationSet_[*]_Stratification_[*]",
           json: JSON.parse(

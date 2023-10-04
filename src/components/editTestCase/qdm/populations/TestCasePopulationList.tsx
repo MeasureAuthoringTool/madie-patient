@@ -80,6 +80,7 @@ export const determineGroupResultStratification = (
   stratifications: DisplayStratificationValue[],
   executionRun?: boolean
 ) => {
+  
   if (!executionRun) {
     return "initial";
   }
