@@ -61,6 +61,7 @@ const defaultMeasure = {
       ],
     },
   ],
+  model: "QI-Core v4.1.1",
   acls: [{ userId: "othertestuser@example.com", roles: ["SHARED_WITH"] }],
 } as unknown as Measure;
 
@@ -70,6 +71,13 @@ const setMeasure = jest.fn();
 const setMeasureBundle = jest.fn();
 const setValueSets = jest.fn();
 const setError = jest.fn();
+
+let mockApplyDefaults = false;
+jest.mock("@madie/madie-util", () => ({
+  useFeatureFlags: () => {
+    return { applyDefaults: mockApplyDefaults, exportQiCoreBundleType: true };
+  },
+}));
 
 const renderWithTestCase = (
   canEdit: boolean,
@@ -94,6 +102,7 @@ const renderWithTestCase = (
             executionResult={[]}
             deleteTestCase={jest.fn()}
             exportTestCase={jest.fn()}
+            measure={measure}
           />
         </ExecutionContextProvider>
       </ApiContextProvider>
@@ -122,7 +131,8 @@ describe("TestCase component", () => {
     expect(buttons[0]).toHaveTextContent("Select");
     fireEvent.click(buttons[0]);
     expect(screen.getByText("edit")).toBeInTheDocument();
-    expect(screen.getByText("export")).toBeInTheDocument();
+    expect(screen.getByText("export transaction bundle")).toBeInTheDocument();
+    expect(screen.getByText("export collection bundle")).toBeInTheDocument();
     expect(screen.getByText("delete")).toBeInTheDocument();
 
     const deleteButton = screen.getByText("delete");
