@@ -15,6 +15,7 @@ declare module "@madie/madie-util" {
     importTestCases: boolean;
     qdmTestCases: boolean;
     qiCoreElementsTab: boolean;
+    exportQiCoreBundleType: boolean;
   }
 
   export interface ServiceConfig {

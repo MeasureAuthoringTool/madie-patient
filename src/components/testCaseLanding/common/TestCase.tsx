@@ -9,11 +9,12 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
 import DoNotDisturbOnIcon from "@mui/icons-material/DoNotDisturbOn";
 import TruncateText from "./TruncateText";
-import { TestCase as TestCaseModel } from "@madie/madie-models";
+import { Measure, TestCase as TestCaseModel } from "@madie/madie-models";
 import {
   MadieDeleteDialog,
   Toast,
 } from "@madie/madie-design-system/dist/react";
+import { useFeatureFlags } from "@madie/madie-util";
 import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calculator";
 import { Box, useTheme } from "@mui/material";
 import * as _ from "lodash";
@@ -25,16 +26,19 @@ const TestCase = ({
   executionResult,
   deleteTestCase,
   exportTestCase,
+  measure,
 }: {
   testCase: TestCaseModel;
   canEdit: boolean;
   executionResult: DetailedPopulationGroupResult[];
   deleteTestCase;
   exportTestCase: any;
+  measure: Measure;
 }) => {
   const viewOrEdit = canEdit ? "edit" : "view";
   const theme = useTheme();
   const navigate = useNavigate();
+  const featureFlags = useFeatureFlags();
   const status = testCase.executionStatus;
   const [deleteDialogModalOpen, setDeleteDialogModalOpen] =
     useState<boolean>(false);
@@ -47,7 +51,6 @@ const TestCase = ({
     setToastMessage("");
     setToastOpen(false);
   };
-
   // Popover utilities
   const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -182,7 +185,7 @@ const TestCase = ({
               marginLeft: "-70px",
               borderRadius: "6px",
               background: "#F7F7F7",
-              width: "115px",
+              width: "fit-content",
               "&::before": {
                 borderWidth: "thin",
                 position: "absolute",
@@ -226,17 +229,38 @@ const TestCase = ({
             >
               {viewOrEdit}
             </button>
-            <button
-              id={`export-test-case-${testCase.id}`}
-              aria-label={`export-test-case-${testCase.title}`}
-              data-testid={`export-test-case-${testCase.id}`}
-              onClick={() => {
-                exportTestCase(selectedTestCase);
-                setOptionsOpen(false);
-              }}
-            >
-              export
-            </button>
+            {featureFlags?.exportQiCoreBundleType &&
+            measure.model.startsWith("QI-Core") ? (
+              <>
+                <button
+                  id={`export-transaction-bundle-${testCase.id}`}
+                  aria-label={`export-transaction-bundle-${testCase.title}`}
+                  data-testid={`export-transaction-bundle-${testCase.id}`}
+                >
+                  export transaction bundle
+                </button>
+                <button
+                  id={`export-collection-bundle-${testCase.id}`}
+                  aria-label={`export-collection-bundle-${testCase.title}`}
+                  data-testid={`export-collection-bundle-${testCase.id}`}
+                >
+                  export collection bundle
+                </button>
+              </>
+            ) : (
+              <button
+                id={`export-test-case-${testCase.id}`}
+                aria-label={`export-test-case-${testCase.title}`}
+                data-testid={`export-test-case-${testCase.id}`}
+                onClick={() => {
+                  exportTestCase(selectedTestCase);
+                  setOptionsOpen(false);
+                }}
+              >
+                export
+              </button>
+            )}
+
             {canEdit && (
               <button
                 id={`delete-test-case-btn-${testCase.id}`}
