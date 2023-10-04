@@ -39,7 +39,6 @@ const DataTypeCell = (props: { element: DataElement; codeSystemMap: any }) => {
             : _.capitalize(element?.qdmTitle)}
         </span>
       </div>
-      x
       <div className="element-type">
         {element?.description &&
           element.description.substring(element.qdmTitle.length + 2)}
