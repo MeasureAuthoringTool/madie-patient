@@ -542,6 +542,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                         executionResults={executionResults}
                         deleteTestCase={deleteTestCase}
                         exportTestCase={exportTestCase}
+                        measure={measure}
                       />
                     </>
                   )}
