@@ -12,14 +12,11 @@ const ExpectActualInput = ({
     expected: displayType === "expected",
     actual: displayType === "actual",
   });
-
-  return (props.populationBasis?.toLowerCase() === "boolean" ||
-    props.populationBasis?.toLowerCase() === "true" ||
-    props?.stratificationBasis?.toLowerCase() === "true") &&
-    props.name !== "measureObservation" &&
-    props.name !== "measurePopulationObservation" &&
-    props.name !== "numeratorObservation" &&
-    props.name != "denominatorObservation" ? (
+  return props.populationBasis?.toLowerCase() === "boolean" ||
+    (props.name !== "measureObservation" &&
+      props.name !== "measurePopulationObservation" &&
+      props.name !== "numeratorObservation" &&
+      props.name != "denominatorObservation") ? (
     <input
       type="checkbox"
       className={checkBoxClass}
