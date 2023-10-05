@@ -45,6 +45,18 @@ describe("Group Populations", () => {
       },
     ];
   });
+  it("still renders with default props", () => {
+    render(
+      <GroupPopulations
+        disableExpected={undefined}
+        executionRun={false}
+        groupPopulations={undefined}
+        onChange={jest.fn()}
+        errors={undefined}
+        birthDateTime={birthDateTime}
+      />
+    );
+  });
 
   it("should render the populations", () => {
     const groupPopulations: GroupPopulation[] = [
