@@ -236,6 +236,10 @@ const TestCase = ({
                   id={`export-transaction-bundle-${testCase.id}`}
                   aria-label={`export-transaction-bundle-${testCase.title}`}
                   data-testid={`export-transaction-bundle-${testCase.id}`}
+                  onClick={() => {
+                    exportTestCase(selectedTestCase, "TRANSACTION");
+                    setOptionsOpen(false);
+                  }}
                 >
                   export transaction bundle
                 </button>
@@ -243,8 +247,12 @@ const TestCase = ({
                   id={`export-collection-bundle-${testCase.id}`}
                   aria-label={`export-collection-bundle-${testCase.title}`}
                   data-testid={`export-collection-bundle-${testCase.id}`}
+                  onClick={() => {
+                    exportTestCase(selectedTestCase, "COLLECTION");
+                    setOptionsOpen(false);
+                  }}
                 >
-                  export collection bundle
+                  export colllection bundle
                 </button>
               </>
             ) : (

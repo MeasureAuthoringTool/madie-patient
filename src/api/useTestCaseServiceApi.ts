@@ -164,6 +164,7 @@ export class TestCaseServiceApi {
 
   async exportTestCases(
     measureId: string,
+    bundleType: string,
     testCaseIds: string[],
     signal
   ): Promise<AxiosResponse> {
@@ -171,6 +172,7 @@ export class TestCaseServiceApi {
       `${this.baseUrl}/measures/${measureId}/test-cases/exports`,
       testCaseIds,
       {
+        params: { bundleType: `${bundleType}` },
         headers: {
           Authorization: `Bearer ${this.getAccessToken()}`,
         },
