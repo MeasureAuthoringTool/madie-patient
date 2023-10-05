@@ -252,7 +252,7 @@ const TestCase = ({
                     setOptionsOpen(false);
                   }}
                 >
-                  export colllection bundle
+                  export collection bundle
                 </button>
               </>
             ) : (
