@@ -14,6 +14,8 @@ export interface TestCasePopulationProps {
   measureObservationsCount: number;
   initialPopulationCount: number;
   error: any;
+  i?: number;
+  strat?: boolean;
 }
 
 const TestCasePopulation = ({
@@ -25,6 +27,8 @@ const TestCasePopulation = ({
   measureObservationsCount,
   initialPopulationCount,
   error,
+  strat,
+  i,
 }: TestCasePopulationProps) => {
   const populationNameTemplate = (prop) => {
     if (prop === PopulationType.INITIAL_POPULATION) {
@@ -57,7 +61,11 @@ const TestCasePopulation = ({
       <tr
         tw="border-b"
         key={population.name}
-        data-testid={`test-row-population-id-${population.name}`}
+        data-testid={
+          strat
+            ? `strat-test-row-population-id-${population.name}-${i}`
+            : `test-row-population-id-${population.name}`
+        }
         role="row"
       >
         <td>&nbsp;</td>
@@ -75,7 +83,11 @@ const TestCasePopulation = ({
             }
             populationBasis={populationBasis}
             disabled={disableExpected}
-            data-testid={`test-population-${population.name}-expected`}
+            data-testid={
+              strat
+                ? `strat-test-population-${population.name}-expected-${i}`
+                : `test-population-${population.name}-expected`
+            }
             displayType="expected"
           />
         </td>
@@ -89,11 +101,21 @@ const TestCasePopulation = ({
               onChange={() => {}} // do nothing - should not be editable here
               populationBasis={populationBasis}
               disabled={true}
-              data-testid={`test-population-${population.name}-actual`}
+              data-testid={
+                strat
+                  ? `strat-test-population-${population.name}-actual-${i}`
+                  : `test-population-${population.name}-actual`
+              }
               displayType="actual"
             />
           ) : (
-            <pre data-testid={`test-population-${population.name}-actual`}>
+            <pre
+              data-testid={
+                strat
+                  ? `test-population-${population.name}-actual-${i}`
+                  : `test-population-${population.name}-actual`
+              }
+            >
               {" "}
               -
             </pre>

@@ -11,6 +11,8 @@ export interface TestCaseStratificationProps {
   showExpected?: boolean;
   disableExpected?: boolean;
   onStratificationChange: (stratification: DisplayStratificationValue) => void;
+  QDM?: boolean;
+  index?: number;
 }
 
 const TestCaseStratification = ({
@@ -20,6 +22,8 @@ const TestCaseStratification = ({
   populationBasis,
   disableExpected = false,
   onStratificationChange,
+  index,
+  QDM = false,
 }: TestCaseStratificationProps) => {
   return (
     <React.Fragment key={`fragment-key-${strataCode}`}>
@@ -30,7 +34,7 @@ const TestCaseStratification = ({
         role="row"
       >
         <td>&nbsp;</td>
-        <td role="cell">{strataCode}</td>
+        <td role="cell">{QDM ? "Stratification" : strataCode}</td>
         <td role="cell">
           <ExpectActualInput
             id={`${stratification.name}-expected-cb`}
@@ -43,7 +47,11 @@ const TestCaseStratification = ({
             }
             populationBasis={populationBasis}
             disabled={disableExpected}
-            data-testid={`test-population-${stratification.name}-expected`}
+            data-testid={
+              QDM
+                ? `test-population-${stratification.name}-expected-${index}`
+                : `test-population-${stratification.name}-expected`
+            }
             displayType="expected"
           />
         </td>
@@ -60,12 +68,20 @@ const TestCaseStratification = ({
               }
               stratificationBasis={populationBasis}
               disabled={true}
-              data-testid={`test-stratification-${stratification.name}-actual`}
+              data-testid={
+                QDM
+                  ? `test-stratification-${stratification.name}-actual-${index}`
+                  : `test-stratification-${stratification.name}-actual`
+              }
               displayType="actual"
             />
           ) : (
             <pre
-              data-testid={`test-stratification-${stratification.name}-actual`}
+              data-testid={
+                QDM
+                  ? `test-stratification-${stratification.name}-actual-${index}`
+                  : `test-stratification-${stratification.name}-actual`
+              }
             >
               {" "}
               -

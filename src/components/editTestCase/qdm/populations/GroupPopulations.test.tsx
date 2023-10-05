@@ -190,7 +190,7 @@ describe("Group Populations", () => {
     ).toBeInTheDocument();
   });
 
-  it("should render the populations with both checkboxes disabled", () => {
+  it("should render the populations with both checkboxes disabled", async () => {
     const handleChange = jest.fn();
     render(
       <GroupPopulations
@@ -203,7 +203,10 @@ describe("Group Populations", () => {
       />
     );
 
-    const ippRow = screen.getByRole("row", { name: "Initial Population" });
+    const ippRows = await screen.getAllByRole("row", {
+      name: "Initial Population",
+    });
+    const ippRow = ippRows[0];
     const ippCbs = within(ippRow).getAllByRole("checkbox");
     expect(ippCbs[0]).toBeDisabled();
     expect(ippCbs[0]).toBeChecked();
@@ -270,9 +273,8 @@ describe("Group Populations", () => {
         birthDateTime={birthDateTime}
       />
     );
-
     const actualColumn = screen.getByTestId(
-      "test-population-initialPopulation-actual"
+      "test-population-initialPopulation-actual-0"
     );
     expect(actualColumn).toBeInTheDocument();
   });
@@ -324,10 +326,10 @@ describe("Group Populations", () => {
     );
 
     const strat1Input = screen.getByTestId(
-      "test-population-strata-1 Initial Population-expected"
-    );
+      "test-population-strata-1 Initial Population-expected-0"
+    ) as HTMLInputElement;
     expect(strat1Input).toBeInTheDocument();
-    expect(strat1Input.value).toBe("true");
+    expect(strat1Input.checked).toBe(true);
 
     fireEvent.change(strat1Input, { target: { value: "false" } });
   });

@@ -3,7 +3,7 @@ import tw, { styled } from "twin.macro";
 import "styled-components/macro";
 import * as _ from "lodash";
 import TestCasePopulation from "./TestCasePopulation";
-import TestCaseStratification from "../../../stratifications/TestCaseStratification";
+import TestCaseStratification from "../stratifications/TestCaseStratification";
 import {
   DisplayPopulationValue,
   DisplayStratificationValue,
@@ -18,7 +18,8 @@ import {
 
 export interface TestCasePopulationListProps {
   content: string;
-  i: number;
+  i?: number;
+  strat?: boolean;
   scoring: string;
   populations: DisplayPopulationValue[];
   stratifications?: DisplayStratificationValue[];
@@ -36,7 +37,6 @@ export interface TestCasePopulationListProps {
     changedStratification: DisplayStratificationValue
   ) => void;
   errors?: any;
-  QDM?: boolean;
 }
 const StyledIcon = styled(FontAwesomeIcon)(
   ({ errors }: { errors: boolean }) => [
@@ -111,7 +111,6 @@ export const determineGroupResultStratification = (
 const TestCasePopulationList = ({
   content,
   scoring,
-  i,
   populations,
   stratifications,
   populationBasis,
@@ -120,7 +119,8 @@ const TestCasePopulationList = ({
   onChange,
   onStratificationChange,
   errors,
-  QDM = false,
+  i,
+  strat,
 }: TestCasePopulationListProps) => {
   let measureObservations = [];
   let numeratorObservations = [];
@@ -286,6 +286,8 @@ const TestCasePopulationList = ({
         <tbody>
           {populations?.map((population, j) => (
             <TestCasePopulation
+              i={j}
+              strat={strat}
               executionRun={executionRun}
               population={population}
               populationBasis={populationBasis}
@@ -304,7 +306,8 @@ const TestCasePopulationList = ({
 
           {stratifications?.map((stratification, j) => (
             <TestCaseStratification
-              QDM={QDM}
+              index={j}
+              QDM={true}
               strataCode={stratification.name}
               executionRun={executionRun}
               stratification={stratification}

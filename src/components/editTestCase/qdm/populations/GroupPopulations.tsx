@@ -75,7 +75,7 @@ const GroupPopulations = ({
                 gp.stratificationValues.map((strat, stratIndex) => {
                   return (
                     <TestCasePopulationList
-                      QDM
+                      strat
                       i={i}
                       content={`Measure Group ${i + 1}: Stratification ${
                         stratIndex + 1
