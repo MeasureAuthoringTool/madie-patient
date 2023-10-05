@@ -311,7 +311,6 @@ describe("Group Populations", () => {
     const handleChange = jest.fn();
     render(
       <GroupPopulations
-        executionRun={false}
         groupPopulations={groupPopulations}
         onChange={handleChange}
         errors={errors}
