@@ -1,7 +1,11 @@
 import * as React from "react";
-
-import { render, screen, within, fireEvent } from "@testing-library/react";
-
+import {
+  render,
+  screen,
+  within,
+  fireEvent,
+  waitFor,
+} from "@testing-library/react";
 import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
 import AttributeSection from "./AttributeSection";
@@ -13,10 +17,7 @@ import {
 import { MemoryRouter } from "react-router-dom";
 import { QdmExecutionContextProvider } from "../../../../../../../routes/qdm/QdmExecutionContext";
 import { MeasureScoring } from "@madie/madie-models";
-import {
-  QdmPatientProvider,
-  QdmPatientContext,
-} from "../../../../../../../../util/QdmPatientContext";
+import { QdmPatientContext } from "../../../../../../../../util/QdmPatientContext";
 import { act } from "react-dom/test-utils";
 
 jest.mock("dayjs", () => ({
@@ -553,6 +554,50 @@ describe("AttributeSection", () => {
     fireEvent.click(within(typeSelect).getByText("DateTime"));
   });
 
+  it("Should render Time component on selecting the Result attribute with Time as a choice type", async () => {
+    renderAttributeSection(assessmentElement, [], onAddClicked);
+    const attributeSelectBtn = screen.getByRole("button", {
+      name: "Attribute Select Attribute",
+    });
+    expect(attributeSelectBtn).toBeInTheDocument();
+
+    userEvent.click(attributeSelectBtn);
+
+    const attributeSelect = await screen.findByRole("listbox");
+    const attributeOptions = within(attributeSelect).getAllByRole("option");
+    expect(attributeOptions).toHaveLength(7);
+
+    userEvent.click(within(attributeSelect).getByText(/result/i));
+    const attributeInput = within(attributeSelectBtn.parentElement).getByRole(
+      "textbox",
+      { hidden: true }
+    );
+    expect(attributeInput).toBeInTheDocument();
+    expect(attributeInput).toHaveValue("Result");
+    const typeSelectBtn = await screen.findByRole("button", {
+      name: /type/i,
+    });
+    expect(typeSelectBtn).toBeInTheDocument();
+    userEvent.click(typeSelectBtn);
+    const typeSelect = await screen.findByRole("listbox");
+    expect(typeSelect).toBeInTheDocument();
+    const typeOptions = within(typeSelect).getAllByRole("option");
+    expect(typeOptions.length).toEqual(9);
+    fireEvent.click(within(typeSelect).getByText("Time"));
+
+    const timeInput = await screen.getByLabelText("Time");
+    expect(timeInput).toBeInTheDocument();
+    // userEvent.click(timeInput);
+    // fireEvent.change(timeInput, { target: { value: "1205AM" } });
+    userEvent.type(timeInput, "1205");
+    const plusButton = await screen.findByTestId("AddCircleOutlineIcon");
+    expect(plusButton).toBeInTheDocument();
+    userEvent.click(plusButton);
+    waitFor(() => {
+      expect(onAddClicked).toHaveBeenCalled();
+    });
+  });
+
   it("shows Quantity on selecting the Quantity type", async () => {
     renderAttributeSection(assessmentElement, [], onAddClicked);
 
@@ -588,6 +633,7 @@ describe("AttributeSection", () => {
     expect(addButton).toBeInTheDocument();
     userEvent.click(addButton);
   });
+
   it("shows the Data element component when selecting relatedTo", async () => {
     renderAttributeSection(assessmentElement, [], onAddClicked);
     const attributeSelectBtn = screen.getByRole("button", {

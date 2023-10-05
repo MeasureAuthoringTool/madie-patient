@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import * as React from "react";
 import { render, screen, within, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
@@ -8,7 +8,11 @@ import DisplayAttributeInputs from "./DisplayAttributeInputs";
 import { testCaseJson } from "../../../../../../../../mockdata/qdm/testcase";
 import { FormikProvider, FormikContextType } from "formik";
 import { QdmPatientProvider } from "../../../../../../../../util/QdmPatientContext";
-import { ApiContextProvider } from "../../../../../../../../api/ServiceContext";
+import {
+  ApiContextProvider,
+  ServiceConfig,
+} from "../../../../../../../../api/ServiceContext";
+
 const serviceConfig: ServiceConfig = {
   testCaseService: {
     baseUrl: "base.url",
@@ -81,10 +85,6 @@ const renderDisplayAttributeInputs = (attributeType, onChange, onInputAdd) => {
 describe("DisplayAttributeInputs component", () => {
   const { findByTestId } = screen;
 
-  // it("should render the data-element selector", () => {
-
-  // })
-
   it("should render the data-element selector", async () => {
     const onChange = jest.fn;
     const onInputAdd = jest.fn;
@@ -97,6 +97,14 @@ describe("DisplayAttributeInputs component", () => {
     const onInputAdd = jest.fn;
     renderDisplayAttributeInputs("String", onChange, onInputAdd);
     const selectorComponent = await findByTestId("string-field-string");
+    expect(selectorComponent).toBeInTheDocument();
+  });
+
+  it("should render the Time selector", async () => {
+    const onChange = jest.fn;
+    const onInputAdd = jest.fn;
+    renderDisplayAttributeInputs("Time", onChange, onInputAdd);
+    const selectorComponent = await findByTestId("time");
     expect(selectorComponent).toBeInTheDocument();
   });
 });
