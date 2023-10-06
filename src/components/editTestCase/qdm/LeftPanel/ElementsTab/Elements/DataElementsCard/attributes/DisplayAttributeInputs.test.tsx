@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, screen, within, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { QdmExecutionContextProvider } from "../../../../../../../routes/qdm/QdmExecutionContext";
@@ -12,6 +12,7 @@ import {
   ApiContextProvider,
   ServiceConfig,
 } from "../../../../../../../../api/ServiceContext";
+import { EncounterOrder, AssessmentPerformed } from "cqm-models";
 
 const serviceConfig: ServiceConfig = {
   testCaseService: {
@@ -54,35 +55,47 @@ const mockFormik: FormikContextType<any> = {
   },
 };
 
-const renderDisplayAttributeInputs = (attributeType, onChange, onInputAdd) => {
-  return render(
-    <MemoryRouter>
-      <ApiContextProvider value={serviceConfig}>
-        <FormikProvider value={mockFormik}>
-          <QdmExecutionContextProvider
-            value={{
-              measureState: [null, jest.fn],
-              cqmMeasureState: [mockCqmMeasure, jest.fn],
-              executionContextReady: true,
-              executing: false,
-              setExecuting: jest.fn(),
-            }}
-          >
-            <QdmPatientProvider>
-              <DisplayAttributeInputs
-                attributeType={attributeType}
-                onChange={onChange}
-                onInputAdd={onInputAdd}
-              />
-            </QdmPatientProvider>
-          </QdmExecutionContextProvider>
-        </FormikProvider>
-      </ApiContextProvider>
-    </MemoryRouter>
-  );
-};
-
 describe("DisplayAttributeInputs component", () => {
+  let encounterElement;
+  let assessmentElement;
+  beforeEach(() => {
+    encounterElement = new EncounterOrder();
+    assessmentElement = new AssessmentPerformed();
+  });
+
+  const renderDisplayAttributeInputs = (
+    attributeType,
+    onChange,
+    onInputAdd
+  ) => {
+    return render(
+      <MemoryRouter>
+        <ApiContextProvider value={serviceConfig}>
+          <FormikProvider value={mockFormik}>
+            <QdmExecutionContextProvider
+              value={{
+                measureState: [null, jest.fn],
+                cqmMeasureState: [mockCqmMeasure, jest.fn],
+                executionContextReady: true,
+                executing: false,
+                setExecuting: jest.fn(),
+                contextFailure: false,
+              }}
+            >
+              <QdmPatientProvider>
+                <DisplayAttributeInputs
+                  attributeType={attributeType}
+                  onInputAdd={onInputAdd}
+                  selectedDataElement={encounterElement}
+                />
+              </QdmPatientProvider>
+            </QdmExecutionContextProvider>
+          </FormikProvider>
+        </ApiContextProvider>
+      </MemoryRouter>
+    );
+  };
+
   const { findByTestId } = screen;
 
   it("should render the data-element selector", async () => {

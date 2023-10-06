@@ -58,6 +58,7 @@ describe("AttributeSection", () => {
             executionContextReady: true,
             executing: false,
             setExecuting: jest.fn(),
+            contextFailure: false,
           }}
         >
           <QdmPatientContext.Provider
@@ -585,15 +586,13 @@ describe("AttributeSection", () => {
     expect(typeOptions.length).toEqual(9);
     fireEvent.click(within(typeSelect).getByText("Time"));
 
-    const timeInput = await screen.getByLabelText("Time");
-    expect(timeInput).toBeInTheDocument();
-    // userEvent.click(timeInput);
-    // fireEvent.change(timeInput, { target: { value: "1205AM" } });
+    const timeInput = await screen.findByLabelText("Time");
     userEvent.type(timeInput, "1205");
-    const plusButton = await screen.findByTestId("AddCircleOutlineIcon");
-    expect(plusButton).toBeInTheDocument();
+
+    const plusButton = screen.getByTestId("AddCircleOutlineIcon");
     userEvent.click(plusButton);
-    waitFor(() => {
+
+    await waitFor(() => {
       expect(onAddClicked).toHaveBeenCalled();
     });
   });
