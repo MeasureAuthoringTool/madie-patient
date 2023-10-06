@@ -38,10 +38,9 @@ import { ExecutionContextProvider } from "../../routes/qiCore/ExecutionContext";
 import { multiGroupMeasureFixture } from "../../createTestCase/__mocks__/multiGroupMeasureFixture";
 import { nonBoolTestCaseFixture } from "../../createTestCase/__mocks__/nonBoolTestCaseFixture";
 import { TestCaseValidator } from "../../../validators/TestCaseValidator";
-import { checkUserCanEdit, featureFlags } from "@madie/madie-util";
+import { checkUserCanEdit } from "@madie/madie-util";
 import { PopulationType as FqmPopulationType } from "fqm-execution/build/types/Enums";
 import { addValues } from "../../../util/DefaultValueProcessor";
-import DemographicsSection from "./LeftPanel/ElementsTab/Demographics/DemographicsSection";
 
 //temporary solution (after jest updated to version 27) for error: thrown: "Exceeded timeout of 5000 ms for a test.
 jest.setTimeout(60000);
@@ -80,6 +79,7 @@ jest.mock(
 const testCaseAlertToast = false;
 
 const serviceConfig: ServiceConfig = {
+  elmTranslationService: { baseUrl: "cql-to-elm.com" },
   measureService: {
     baseUrl: "measure.url",
   },
@@ -96,7 +96,11 @@ jest.mock("@madie/madie-util", () => {
   return {
     useDocumentTitle: jest.fn(),
     useFeatureFlags: () => {
-      return { applyDefaults: mockApplyDefaults, qiCoreElementsTab: true };
+      return {
+        applyDefaults: mockApplyDefaults,
+        qiCoreElementsTab: true,
+        highlightingTabs: false,
+      };
     },
     measureStore: {
       updateMeasure: jest.fn((measure) => measure),
@@ -195,6 +199,7 @@ const renderWithRouter = (
             executionContextReady: true,
             executing: false,
             setExecuting: jest.fn(),
+            contextFailure: false,
           }}
         >
           <Routes>

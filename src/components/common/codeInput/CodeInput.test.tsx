@@ -51,7 +51,12 @@ const valueSets = [
 describe("CodeInput Component", () => {
   it("Should render Code Input component", async () => {
     render(
-      <CodeInput canEdit={true} valueSets={valueSets} handleChange={jest.fn} />
+      <CodeInput
+        canEdit={true}
+        required={false}
+        valueSets={valueSets}
+        handleChange={jest.fn}
+      />
     );
 
     const valueSetsInput = screen.getByTestId(
@@ -86,6 +91,7 @@ describe("CodeInput Component", () => {
     render(
       <CodeInput
         canEdit={true}
+        required={false}
         valueSets={valueSets}
         handleChange={(value) => verifyCqlCode(value)}
       />
@@ -138,6 +144,7 @@ describe("CodeInput Component", () => {
     render(
       <CodeInput
         canEdit={true}
+        required={false}
         valueSets={valueSets}
         handleChange={verifyCqlCode}
       />

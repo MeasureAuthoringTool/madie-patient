@@ -58,7 +58,7 @@ import CreateTestCaseLeftPanelNavTabs from "../../createTestCase/CreateTestCaseL
 import ExpectedActual from "../../createTestCase/RightPanel/ExpectedActual/ExpectedActual";
 import "./EditTestCase.scss";
 import "allotment/dist/style.css";
-import CalculationResults from "../../createTestCase/calculationResults/CalculationResults";
+import CalculationResults from "./calculationResults/CalculationResults";
 import {
   Button,
   TextField,
@@ -875,6 +875,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
                     <CalculationResults
                       calculationResults={populationGroupResults}
                       calculationErrors={calculationErrors}
+                      groupPopulations={groupPopulations}
                     />
                   )}
                 </div>

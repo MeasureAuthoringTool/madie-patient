@@ -204,17 +204,16 @@ const EditTestCase = () => {
             nextTc.groupPopulations = [];
           }
           setCurrentTestCase(nextTc);
-          let patient: QDMPatient = null;
+          let patient: QDMPatient = new QDMPatient();
           if (nextTc?.json) {
-            patient = JSON.parse(tc?.json);
-            if (patient) {
-              setQdmPatient(patient);
-              formik.setFieldValue(
-                "birthDate",
-                patient?.birthDatetime ? dayjs(patient?.birthDatetime) : null
-              );
-            }
+            patient = new QDMPatient(JSON.parse(tc?.json));
           }
+          setQdmPatient(patient);
+          formik.setFieldValue(
+            "birthDate",
+            patient?.birthDatetime ? dayjs(patient?.birthDatetime) : null
+          );
+          nextTc.json = JSON.stringify(patient);
           formik.resetForm({ values: _.cloneDeep(nextTc) });
         })
         .catch((error) => {
