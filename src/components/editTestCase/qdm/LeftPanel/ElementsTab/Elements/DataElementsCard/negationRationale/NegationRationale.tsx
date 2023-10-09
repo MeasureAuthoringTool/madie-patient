@@ -8,12 +8,6 @@ import { DataElement, CqmMeasure, CQL } from "cqm-models";
 import { makeStyles } from "@mui/styles";
 import CodeInput from "../../../../../../../common/codeInput/CodeInput";
 
-interface Chip {
-  title: String;
-  name?: String;
-  value?: String;
-}
-
 interface NegationRationaleProps {
   handleChange: Function;
   cqmMeasure: CqmMeasure;

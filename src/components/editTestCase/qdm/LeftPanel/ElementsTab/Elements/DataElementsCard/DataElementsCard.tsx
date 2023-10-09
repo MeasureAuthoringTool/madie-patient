@@ -8,7 +8,7 @@ import {
 } from "../../../../../../../util/QdmAttributeHelpers";
 import Codes from "./Codes/Codes";
 import SubNavigationTabs from "./SubNavigationTabs";
-import { DataElement, CQL } from "cqm-models";
+import { DataElement } from "cqm-models";
 import "./DataElementsCard.scss";
 import AttributeSection from "./attributes/AttributeSection";
 import { useQdmExecutionContext } from "../../../../../../routes/qdm/QdmExecutionContext";
@@ -70,13 +70,7 @@ const applyDataElementCodes = (code, dataElement) => {
 const applyNegationRationale = (code, dataElement) => {
   const modelClass = getDataElementClass(dataElement);
   const updatedDataElement = new modelClass(dataElement);
-  const cqlCode = new CQL.Code(
-    code.code,
-    code.system,
-    code.version,
-    code.display
-  );
-  updatedDataElement["negationRationale"] = cqlCode;
+  updatedDataElement["negationRationale"] = code;
   return updatedDataElement;
 };
 
