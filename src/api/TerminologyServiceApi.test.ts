@@ -4,12 +4,16 @@ import { officeVisitValueSet } from "./__mocks__/OfficeVisitValueSet";
 import { officeVisitMeasureBundle } from "./__mocks__/OfficeVisitMeasureBundle";
 import { cqm_measure_basic } from "../mockdata/qdm/CMS108/cqm_measure_basic";
 import { cqm_measure_basic_valueset } from "../mockdata/qdm/CMS108/cqm_measure_basic_valueset";
+import { Measure as CqmMeasure } from "cqm-models";
+import * as _ from "lodash";
 
 jest.mock("axios");
 
 jest.mock("@madie/madie-util", () => ({
   getOidFromString: (oid) => oid.split("urn:oid:")[1],
 }));
+
+const testCqmMeasure: CqmMeasure = new CqmMeasure();
 
 describe("TerminologyServiceApi Tests", () => {
   let terminologyService: TerminologyServiceApi;
@@ -108,5 +112,60 @@ describe("TerminologyServiceApi Tests", () => {
         "An error exists with the measure CQL, please review the CQL Editor tab."
       );
     }
+  });
+
+  it("test getQdmValueSetsExpansion no search param", () => {
+    const result = terminologyService.getQdmValueSetsExpansion(testCqmMeasure);
+    expect(_.isEmpty(result)).toBe(true);
+  });
+
+  it("test getOidFromString no match", () => {
+    const result = terminologyService.getOidFromString("test");
+    expect(result).toBeNull();
+  });
+
+  it("test getCqlCodesForDRCs", () => {
+    const result = terminologyService.getCqlCodesForDRCs(cqm_measure_basic);
+    expect(result.length).toBe(3);
+
+    expect(result[0].code).toBe("71802-3");
+    expect(result[0].system).toBe("LOINC");
+    expect(result[0].display).toBe("Housing status");
+    expect(result[1].code).toBe("160734000");
+    expect(result[1].system).toBe("SNOMEDCT");
+    expect(result[1].display).toBe("Lives in a nursing home (finding)");
+    expect(result[2].code).toBe("98181-1");
+    expect(result[2].system).toBe("LOINC");
+    expect(result[2].display).toBe("Medical equipment used");
+  });
+
+  it("test getCqlCodesForDRCs no codes", () => {
+    const result = terminologyService.getCqlCodesForDRCs(testCqmMeasure);
+    expect(_.isEmpty(result)).toBe(true);
+  });
+
+  it("test getValueSetsForDRCs", () => {
+    const result = terminologyService.getValueSetsForDRCs(cqm_measure_basic);
+
+    expect(result.length).toBe(3);
+    expect(result[0].oid).toBe("71802-3");
+    expect(result[0].concepts[0].code).toBe("71802-3");
+    expect(result[0].concepts[0].code_system_name).toBe("LOINC");
+    expect(result[0].concepts[0].display_name).toBe("Housing status");
+    expect(result[1].oid).toBe("160734000");
+    expect(result[1].concepts[0].code).toBe("160734000");
+    expect(result[1].concepts[0].code_system_name).toBe("SNOMEDCT");
+    expect(result[1].concepts[0].display_name).toBe(
+      "Lives in a nursing home (finding)"
+    );
+    expect(result[2].oid).toBe("98181-1");
+    expect(result[2].concepts[0].code).toBe("98181-1");
+    expect(result[2].concepts[0].code_system_name).toBe("LOINC");
+    expect(result[2].concepts[0].display_name).toBe("Medical equipment used");
+  });
+
+  it("test getValueSetsForDRCs no value sets", () => {
+    const result = terminologyService.getValueSetsForDRCs(testCqmMeasure);
+    expect(_.isEmpty(result)).toBe(true);
   });
 });

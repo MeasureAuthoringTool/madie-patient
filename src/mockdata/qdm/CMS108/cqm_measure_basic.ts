@@ -198,6 +198,151 @@ export const cqm_measure_basic = {
               },
             ],
           },
+          codes: {
+            def: [
+              {
+                localId: "17",
+                locator: "22:1-22:70",
+                resultTypeName: "{urn:hl7-org:elm-types:r1}Code",
+                name: "Housing status",
+                id: "71802-3",
+                display: "Housing status",
+                accessLevel: "Public",
+                annotation: [
+                  {
+                    type: "Annotation",
+                    s: {
+                      r: "17",
+                      s: [
+                        {
+                          value: [
+                            "",
+                            "code ",
+                            '"Housing status"',
+                            ": ",
+                            "'71802-3'",
+                            " from ",
+                          ],
+                        },
+                        {
+                          r: "16",
+                          s: [
+                            {
+                              value: ['"LOINC"'],
+                            },
+                          ],
+                        },
+                        {
+                          value: [" display ", "'Housing status'"],
+                        },
+                      ],
+                    },
+                  },
+                ],
+                codeSystem: {
+                  localId: "16",
+                  locator: "22:39-22:45",
+                  resultTypeName: "{urn:hl7-org:elm-types:r1}CodeSystem",
+                  name: "LOINC",
+                },
+              },
+              {
+                localId: "19",
+                locator: "23:1-23:113",
+                resultTypeName: "{urn:hl7-org:elm-types:r1}Code",
+                name: "Lives in a nursing home (finding)",
+                id: "160734000",
+                display: "Lives in a nursing home (finding)",
+                accessLevel: "Public",
+                annotation: [
+                  {
+                    type: "Annotation",
+                    s: {
+                      r: "19",
+                      s: [
+                        {
+                          value: [
+                            "",
+                            "code ",
+                            '"Lives in a nursing home (finding)"',
+                            ": ",
+                            "'160734000'",
+                            " from ",
+                          ],
+                        },
+                        {
+                          r: "18",
+                          s: [
+                            {
+                              value: ['"SNOMEDCT"'],
+                            },
+                          ],
+                        },
+                        {
+                          value: [
+                            " display ",
+                            "'Lives in a nursing home (finding)'",
+                          ],
+                        },
+                      ],
+                    },
+                  },
+                ],
+                codeSystem: {
+                  localId: "18",
+                  locator: "23:60-23:69",
+                  resultTypeName: "{urn:hl7-org:elm-types:r1}CodeSystem",
+                  name: "SNOMEDCT",
+                },
+              },
+              {
+                localId: "21",
+                locator: "24:1-24:86",
+                resultTypeName: "{urn:hl7-org:elm-types:r1}Code",
+                name: "Medical equipment used",
+                id: "98181-1",
+                display: "Medical equipment used",
+                accessLevel: "Public",
+                annotation: [
+                  {
+                    type: "Annotation",
+                    s: {
+                      r: "21",
+                      s: [
+                        {
+                          value: [
+                            "",
+                            "code ",
+                            '"Medical equipment used"',
+                            ": ",
+                            "'98181-1'",
+                            " from ",
+                          ],
+                        },
+                        {
+                          r: "20",
+                          s: [
+                            {
+                              value: ['"LOINC"'],
+                            },
+                          ],
+                        },
+                        {
+                          value: [" display ", "'Medical equipment used'"],
+                        },
+                      ],
+                    },
+                  },
+                ],
+                codeSystem: {
+                  localId: "20",
+                  locator: "24:47-24:53",
+                  resultTypeName: "{urn:hl7-org:elm-types:r1}CodeSystem",
+                  name: "LOINC",
+                },
+              },
+            ],
+          },
         },
       },
       is_main_library: true,

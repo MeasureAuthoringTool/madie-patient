@@ -3,7 +3,7 @@ import useServiceConfig from "./useServiceConfig";
 import { ServiceConfig } from "./ServiceContext";
 import { getOidFromString, useOktaTokens } from "@madie/madie-util";
 import { Bundle, Library, ValueSet } from "fhir/r4";
-import { CqmMeasure } from "cqm-models";
+import { CqmMeasure, CQL } from "cqm-models";
 import * as _ from "lodash";
 
 type ValueSetSearchParams = {
@@ -169,6 +169,50 @@ export class TerminologyServiceApi {
       return match[0];
     }
     return null;
+  }
+
+  getValueSetsForDRCs(cqmMeasure: CqmMeasure): ValueSet[] {
+    const drcValueSets = [];
+    const cqlCodes: CQL.CQLCode[] = this.getCqlCodesForDRCs(cqmMeasure);
+    if (cqlCodes) {
+      cqlCodes.forEach((cqlCode) => {
+        const valueSet = {
+          oid: `${cqlCode.code}`,
+          version: `${cqlCode.version}`,
+          concepts: [
+            {
+              code: `${cqlCode.code}`,
+              code_system_oid: `${cqlCode.oid}`,
+              code_system_name: `${cqlCode.system}`,
+              code_system_version: `${cqlCode.version}`,
+              display_name: `${cqlCode.display}`,
+            },
+          ],
+          display_name: `${cqlCode.display}`,
+        };
+        drcValueSets.push(valueSet);
+      });
+    }
+    return drcValueSets;
+  }
+
+  getCqlCodesForDRCs(cqmMeasure: CqmMeasure): CQL.CQLCode[] {
+    const cqlCodes: CQL.CQLCode[] = [];
+    cqmMeasure?.cql_libraries?.forEach((library) => {
+      const codeDefs = library?.elm?.library?.codes?.def;
+      if (!_.isEmpty(codeDefs)) {
+        codeDefs.forEach((def) => {
+          const cqlCode = new CQL.Code(
+            def?.id, //code
+            def.codeSystem.name, //system
+            "N/A", //version,
+            def.display //display
+          );
+          cqlCodes.push(cqlCode);
+        });
+      }
+    });
+    return cqlCodes;
   }
 }
 

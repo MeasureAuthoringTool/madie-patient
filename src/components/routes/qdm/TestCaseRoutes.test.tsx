@@ -5,6 +5,10 @@ import TestCaseRoutes from "./TestCaseRoutes";
 import axios from "axios";
 import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
 import { Model, PopulationType } from "@madie/madie-models";
+import useCqmConversionService, {
+  CqmConversionService,
+} from "../../../api/CqmModelConversionService";
+import { TerminologyServiceApi } from "../../../api/useTerminologyServiceApi";
 
 // mock the editor cause we don't care for this test and it gets rid of errors
 // jest.mock("../../editor/Editor", () => () => <div>editor contents</div>);
@@ -37,7 +41,7 @@ const mockMeasure = {
   measurementPeriodEnd: "03/07/2022",
   active: true,
   cqlErrors: false,
-  errors: [],
+  errors: ["error"],
   elmJson: "Fak3",
   groups: [
     {
@@ -97,6 +101,17 @@ jest.mock("use-resize-observer", () => {
   return jest.requireActual("use-resize-observer/polyfilled");
 });
 
+jest.mock("../../../api/CqmModelConversionService");
+const CQMConversionMock =
+  useCqmConversionService as jest.Mock<CqmConversionService>;
+const useCqmConversionServiceMockResolved = {
+  convertToCqmMeasure: jest.fn().mockResolvedValue(mockMeasure),
+} as unknown as TerminologyServiceApi;
+
+CQMConversionMock.mockImplementation(() => {
+  return useCqmConversionServiceMockResolved;
+});
+
 describe("TestCaseRoutes", () => {
   it("should render the test case list component", async () => {
     mockedAxios.get.mockImplementation(() => {
@@ -141,6 +156,32 @@ describe("TestCaseRoutes", () => {
           },
         ],
       });
+    });
+    render(
+      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases/m1234"]}>
+        <ApiContextProvider value={serviceConfig}>
+          <TestCaseRoutes />
+        </ApiContextProvider>
+      </MemoryRouter>
+    );
+
+    const runTestCaseButton = await screen.getByRole("button", {
+      name: "Run Test",
+    });
+    expect(runTestCaseButton).toBeInTheDocument();
+  });
+
+  it("test error convertToCqmMeasure", async () => {
+    const useCqmConversionServiceMockRejected = {
+      convertToCqmMeasure: jest.fn().mockRejectedValueOnce({
+        error: {
+          message: "error convert to qdm measure",
+        },
+      }),
+    } as unknown as TerminologyServiceApi;
+
+    CQMConversionMock.mockImplementation(() => {
+      return useCqmConversionServiceMockRejected;
     });
     render(
       <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases/m1234"]}>
