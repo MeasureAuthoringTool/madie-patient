@@ -33,19 +33,6 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
 import StatusHandler from "../../statusHandler/StatusHandler";
-import { JSONPath } from "jsonpath-plus";
-
-enum PopulationType {
-  IPP = "initialPopulation",
-  DENOM = "denominator",
-  DENEX = "denominator-exclusion",
-  DENEXCEP = "denominator-exception",
-  NUMER = "numerator",
-  NUMEX = "numerator-exclusion",
-  MSRPOPL = "measure-population",
-  MSRPOPLEX = "measure-population-exclusion",
-  OBSERV = "measure-observation",
-}
 
 const EditTestCase = () => {
   useDocumentTitle("MADiE Edit Measure Edit Test Case");
@@ -227,44 +214,22 @@ const EditTestCase = () => {
   const calculateQdmTestCases = async () => {
     setExecuting(true);
     try {
-      const patients: any[] = [JSON.parse(formik.values?.json)];
+      const patient = JSON.parse(formik.values?.json);
+      const patients: any[] = [patient];
       const calculationOutput =
         await qdmCalculation.current.calculateQdmTestCases(
           cqmMeasure,
           patients
         );
 
-      //find the population_sets
-      const populationSets = JSONPath({
-        path: "$.population_sets[*].population_set_id",
-        json: cqmMeasure,
-      });
-
-      populationSets.forEach((pop) => {
-        const results = JSONPath({
-          path: `$..${pop}`,
-          json: JSON.parse(JSON.stringify(calculationOutput)),
-        });
-        let populationMap = new Map<String, number>();
-        let groupsMap = new Map<String, Map<String, number>>();
-
-        Object.entries(PopulationType).forEach((value, key) => {
-          //value is one of IPP, DENOM, NUMER, etc...
-          //Set's an entry = IPP & numeric value from results
-          populationMap.set(value[1], eval(`results[0].${value[0]}`));
-        });
-
-        groupsMap.set("" + pop, populationMap);
-
-        currentTestCase.groupPopulations.forEach((value) => {
-          if (value.groupId === pop) {
-            value.populationValues.forEach((population) => {
-              //Look up population
-              population.actual = groupsMap.get(pop).get(population.name);
-            });
-          }
-        });
-      });
+      const patientResults = calculationOutput[patient._id];
+      const output = qdmCalculation.current.processTestCaseResults(
+        currentTestCase,
+        measure.groups,
+        measure,
+        patientResults
+      );
+      setCurrentTestCase(output);
 
       calculationOutput &&
         showToast(
