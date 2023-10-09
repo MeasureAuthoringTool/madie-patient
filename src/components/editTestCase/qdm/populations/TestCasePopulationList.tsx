@@ -3,7 +3,7 @@ import tw, { styled } from "twin.macro";
 import "styled-components/macro";
 import * as _ from "lodash";
 import TestCasePopulation from "./TestCasePopulation";
-import TestCaseStratification from "../../../stratifications/TestCaseStratification";
+import TestCaseStratification from "../stratifications/TestCaseStratification";
 import {
   DisplayPopulationValue,
   DisplayStratificationValue,
@@ -18,7 +18,8 @@ import {
 
 export interface TestCasePopulationListProps {
   content: string;
-  i: number;
+  i?: number;
+  strat?: boolean;
   scoring: string;
   populations: DisplayPopulationValue[];
   stratifications?: DisplayStratificationValue[];
@@ -110,7 +111,6 @@ export const determineGroupResultStratification = (
 const TestCasePopulationList = ({
   content,
   scoring,
-  i,
   populations,
   stratifications,
   populationBasis,
@@ -119,6 +119,8 @@ const TestCasePopulationList = ({
   onChange,
   onStratificationChange,
   errors,
+  i,
+  strat,
 }: TestCasePopulationListProps) => {
   let measureObservations = [];
   let numeratorObservations = [];
@@ -129,7 +131,6 @@ const TestCasePopulationList = ({
   const getPopulationCount = (populations, type: PopulationType): number => {
     return populations.filter((res) => res.name === type).length;
   };
-
   const getObservationCount = (
     observationCount: number,
     observation: PopulationType,
@@ -218,13 +219,22 @@ const TestCasePopulationList = ({
   };
 
   // we need to do an all check here for pass / no pass
-  const view = determineGroupResult(populationBasis, populations, executionRun);
 
-  const viewStratification = determineGroupResultStratification(
-    populationBasis,
-    stratifications,
-    executionRun
-  );
+  // we need to check if either normal or stratification
+
+  let view;
+
+  if (populations?.length > 0) {
+    view = determineGroupResult(populationBasis, populations, executionRun);
+  }
+
+  if (stratifications?.length > 0) {
+    view = determineGroupResultStratification(
+      populationBasis,
+      stratifications,
+      executionRun
+    );
+  }
 
   /*
     we have three separate views
@@ -276,6 +286,8 @@ const TestCasePopulationList = ({
         <tbody>
           {populations?.map((population, j) => (
             <TestCasePopulation
+              i={j}
+              strat={strat}
               executionRun={executionRun}
               population={population}
               populationBasis={populationBasis}
@@ -294,6 +306,8 @@ const TestCasePopulationList = ({
 
           {stratifications?.map((stratification, j) => (
             <TestCaseStratification
+              index={j}
+              QDM={true}
               strataCode={stratification.name}
               executionRun={executionRun}
               stratification={stratification}

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { CQL, DataElement } from "cqm-models";
-import { DateField } from "@madie/madie-design-system/dist/react";
+import { DateField, TimeField } from "@madie/madie-design-system/dist/react";
 import { IconButton } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import dayjs from "dayjs";
@@ -81,7 +81,27 @@ const DisplayAttributeInputs = ({
             }}
           />
         );
-
+      case "Time":
+        return (
+          <TimeField
+            disabled={false}
+            label="Time"
+            handleTimeChange={(e) => {
+              const newCQLDateTime: CQL.DateTime = new CQL.DateTime(
+                null,
+                null,
+                null,
+                e.hour(),
+                e.minute(),
+                0,
+                0,
+                0
+              ).getTime();
+              setAttributeValue(newCQLDateTime);
+            }}
+            value={""}
+          />
+        );
       case "Ratio":
         return (
           <RatioInput
@@ -94,7 +114,6 @@ const DisplayAttributeInputs = ({
             canEdit={true}
           />
         );
-
       case "Integer":
         return (
           <IntegerInput
@@ -186,7 +205,7 @@ const DisplayAttributeInputs = ({
   return (
     <>
       <div tw="flex w-3/4">
-        <div tw="flex-grow w-3/4">{displayAttributeInput()}</div>
+        <div tw="flex-grow w-3/4 pt-4">{displayAttributeInput()}</div>
         <div tw="flex-grow py-6">
           {attributeType ? (
             <IconButton onClick={handleAttributeChange}>

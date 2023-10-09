@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, within, fireEvent } from "@testing-library/react";
 import GroupPopulations from "./GroupPopulations";
 import {
   GroupPopulation,
@@ -10,6 +10,13 @@ import userEvent from "@testing-library/user-event";
 
 const errors = jest.fn();
 const birthDateTime = 90436320690;
+
+jest.mock("formik", () => ({
+  useField: jest.fn(),
+  useFormikContext: jest
+    .fn()
+    .mockReturnValue({ isValidating: false, setFieldValue: () => {} }),
+}));
 
 describe("Group Populations", () => {
   let testCaseGroups: GroupPopulation[];
@@ -37,6 +44,18 @@ describe("Group Populations", () => {
         ],
       },
     ];
+  });
+  it("still renders with default props", () => {
+    render(
+      <GroupPopulations
+        disableExpected={undefined}
+        executionRun={false}
+        groupPopulations={undefined}
+        onChange={jest.fn()}
+        errors={undefined}
+        birthDateTime={birthDateTime}
+      />
+    );
   });
 
   it("should render the populations", () => {
@@ -183,7 +202,7 @@ describe("Group Populations", () => {
     ).toBeInTheDocument();
   });
 
-  it("should render the populations with both checkboxes disabled", () => {
+  it("should render the populations with both checkboxes disabled", async () => {
     const handleChange = jest.fn();
     render(
       <GroupPopulations
@@ -196,7 +215,10 @@ describe("Group Populations", () => {
       />
     );
 
-    const ippRow = screen.getByRole("row", { name: "Initial Population" });
+    const ippRows = await screen.getAllByRole("row", {
+      name: "Initial Population",
+    });
+    const ippRow = ippRows[0];
     const ippCbs = within(ippRow).getAllByRole("checkbox");
     expect(ippCbs[0]).toBeDisabled();
     expect(ippCbs[0]).toBeChecked();
@@ -204,7 +226,7 @@ describe("Group Populations", () => {
     expect(ippCbs[1]).toBeChecked();
   });
 
-  it.skip("should handle checkbox changes", () => {
+  it("should handle checkbox changes", () => {
     testCaseGroups[0].scoring = MeasureScoring.CONTINUOUS_VARIABLE;
     const handleChange = jest.fn();
     const handleStratificationChange = jest.fn();
@@ -213,13 +235,14 @@ describe("Group Populations", () => {
         executionRun
         groupPopulations={testCaseGroups}
         onChange={handleChange}
-        // onStratificationChange={handleStratificationChange}
         errors={errors}
         birthDateTime={birthDateTime}
       />
     );
 
-    const ippRow = screen.getByRole("row", { name: "Initial Population" });
+    const ippRow = screen.getAllByRole("row", {
+      name: "Initial Population",
+    })[0];
     const ippCbs = within(ippRow).getAllByRole("checkbox");
     expect(ippCbs[0]).not.toBeDisabled();
     expect(ippCbs[0]).toBeChecked();
@@ -242,14 +265,12 @@ describe("Group Populations", () => {
       { actual: true, expected: false, id: "123", name: "initialPopulation" }
     );
 
-    const stratRow = screen.getByRole("row", {
-      name: "strata-1 Initial Population",
-    });
+    const stratRow = screen.getAllByRole("row", {
+      name: "Stratification",
+    })[0];
     const stratCbs = within(stratRow).getAllByRole("checkbox");
     expect(stratCbs[0]).not.toBeDisabled();
     expect(stratCbs[0]).toBeChecked();
-    userEvent.click(stratCbs[0]);
-    expect(handleStratificationChange).toHaveBeenCalledTimes(1);
   });
 
   it("should display empty on non run", () => {
@@ -263,10 +284,63 @@ describe("Group Populations", () => {
         birthDateTime={birthDateTime}
       />
     );
-
     const actualColumn = screen.getByTestId(
-      "test-population-initialPopulation-actual"
+      "test-population-initialPopulation-actual-0"
     );
     expect(actualColumn).toBeInTheDocument();
+  });
+
+  it("should not display stratifications", () => {
+    const groupPopulations: GroupPopulation[] = [
+      {
+        groupId: "Group1_ID",
+        scoring: MeasureScoring.COHORT,
+        populationBasis: "true",
+        populationValues: [
+          {
+            id: "1",
+            name: PopulationType.INITIAL_POPULATION,
+            expected: true,
+            actual: false,
+            criteriaReference: "",
+          },
+        ],
+        stratificationValues: [],
+      },
+    ];
+    const handleChange = jest.fn();
+    render(
+      <GroupPopulations
+        groupPopulations={groupPopulations}
+        onChange={handleChange}
+        errors={errors}
+        birthDateTime={birthDateTime}
+      />
+    );
+
+    const strat = screen.queryByTestId("measure-group-1-stratifications");
+    expect(strat).not.toBeInTheDocument();
+  });
+
+  it("test trigger stratification change", async () => {
+    const handleChange = jest.fn();
+    render(
+      <GroupPopulations
+        disableExpected={false}
+        executionRun={true}
+        groupPopulations={testCaseGroups}
+        onChange={handleChange}
+        errors={errors}
+        birthDateTime={birthDateTime}
+      />
+    );
+
+    const strat1Input = screen.getByTestId(
+      "test-population-strata-1 Initial Population-expected-0"
+    ) as HTMLInputElement;
+    expect(strat1Input).toBeInTheDocument();
+    expect(strat1Input.checked).toBe(true);
+
+    fireEvent.change(strat1Input, { target: { value: "false" } });
   });
 });

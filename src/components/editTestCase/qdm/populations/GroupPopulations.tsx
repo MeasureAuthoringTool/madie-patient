@@ -2,12 +2,6 @@ import React from "react";
 import "twin.macro";
 import "styled-components/macro";
 import TestCasePopulationList from "./TestCasePopulationList";
-import {
-  DisplayGroupPopulation,
-  GroupPopulation,
-  DisplayPopulationValue,
-  DisplayStratificationValue,
-} from "@madie/madie-models";
 import * as _ from "lodash";
 import { useFormikContext } from "formik";
 
@@ -77,6 +71,42 @@ const GroupPopulations = ({
                   }
                 }}
               />
+              {gp?.stratificationValues?.length > 0 &&
+                gp.stratificationValues.map((strat, stratIndex) => {
+                  return (
+                    <TestCasePopulationList
+                      strat
+                      i={i}
+                      content={`Measure Group ${i + 1}: Stratification ${
+                        stratIndex + 1
+                      }`}
+                      scoring={gp.scoring}
+                      disableExpected={disableExpected}
+                      executionRun={executionRun}
+                      populations={gp.populationValues}
+                      stratifications={[strat]}
+                      populationBasis={gp.populationBasis}
+                      onStratificationChange={(
+                        stratifications,
+                        type,
+                        changedStratification
+                      ) => {
+                        const nextPopulations = _.cloneDeep(groupPopulations);
+                        const groupPopulation = nextPopulations.find(
+                          (np) => np.groupId === gp.groupId
+                        );
+                        if (groupPopulation) {
+                          groupPopulation.stratificationValues =
+                            stratifications;
+                        }
+                        formik.setFieldValue(
+                          "groupPopulations",
+                          groupPopulation.stratificationValues
+                        );
+                      }}
+                    />
+                  );
+                })}
             </div>
           );
         })

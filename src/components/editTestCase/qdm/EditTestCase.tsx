@@ -204,17 +204,16 @@ const EditTestCase = () => {
             nextTc.groupPopulations = [];
           }
           setCurrentTestCase(nextTc);
-          let patient: QDMPatient = null;
+          let patient: QDMPatient = new QDMPatient();
           if (nextTc?.json) {
-            patient = JSON.parse(tc?.json);
-            if (patient) {
-              setQdmPatient(patient);
-              formik.setFieldValue(
-                "birthDate",
-                patient?.birthDatetime ? dayjs(patient?.birthDatetime) : null
-              );
-            }
+            patient = new QDMPatient(JSON.parse(tc?.json));
           }
+          setQdmPatient(patient);
+          formik.setFieldValue(
+            "birthDate",
+            patient?.birthDatetime ? dayjs(patient?.birthDatetime) : null
+          );
+          nextTc.json = JSON.stringify(patient);
           formik.resetForm({ values: _.cloneDeep(nextTc) });
         })
         .catch((error) => {
@@ -234,7 +233,6 @@ const EditTestCase = () => {
           cqmMeasure,
           patients
         );
-
       //find the population_sets
       const populationSets = JSONPath({
         path: "$.population_sets[*].population_set_id",
@@ -246,27 +244,38 @@ const EditTestCase = () => {
           path: `$..${pop}`,
           json: JSON.parse(JSON.stringify(calculationOutput)),
         });
+        const stratifications = JSONPath({
+          path: "$.PopulationSet_[*]_Stratification_[*]",
+          json: JSON.parse(
+            JSON.stringify(calculationOutput[results[0].patient])
+          ),
+        });
         let populationMap = new Map<String, number>();
         let groupsMap = new Map<String, Map<String, number>>();
-
         Object.entries(PopulationType).forEach((value, key) => {
           //value is one of IPP, DENOM, NUMER, etc...
           //Set's an entry = IPP & numeric value from results
           populationMap.set(value[1], eval(`results[0].${value[0]}`));
         });
-
         groupsMap.set("" + pop, populationMap);
-
-        currentTestCase.groupPopulations.forEach((value) => {
+        // we know stratificaitons show up as `PopulationSet_index_Stratification_index` from the results
+        const stratificationLookup = calculationOutput[results[0].patient];
+        currentTestCase.groupPopulations.forEach((value, gpIndex) => {
           if (value.groupId === pop) {
             value.populationValues.forEach((population) => {
               //Look up population
               population.actual = groupsMap.get(pop).get(population.name);
             });
           }
+          // so we can reference them by the two sets of indeces
+          value.stratificationValues.forEach((strat, stratIndex) => {
+            strat.actual =
+              stratificationLookup[
+                `PopulationSet_${gpIndex + 1}_Stratification_${stratIndex + 1}`
+              ].STRAT;
+          });
         });
       });
-
       calculationOutput &&
         showToast(
           "Calculation was successful, output is printed in the console",
@@ -300,8 +309,6 @@ const EditTestCase = () => {
   const handleTestCaseErrors = (value) => {
     setTestCaseErrors([value]);
   };
-
-  //
 
   return (
     <>

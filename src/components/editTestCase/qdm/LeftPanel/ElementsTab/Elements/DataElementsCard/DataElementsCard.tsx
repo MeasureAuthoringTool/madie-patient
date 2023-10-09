@@ -114,6 +114,7 @@ const DataElementsCard = (props: {
     onChange,
   } = props;
   const [codeSystemMap, setCodeSystemMap] = useState(null);
+  const [attributesPresent, setAttributesPresent] = useState(true);
   const { cqmMeasureState } = useQdmExecutionContext();
   const [cqmMeasure] = cqmMeasureState;
   // from here we know the type, we need to go through the dataElements to matchTypes
@@ -152,7 +153,6 @@ const DataElementsCard = (props: {
     const modeledEl = new dataElementClass(selectedDataElement);
     setLocalSelectedDataElement(modeledEl);
   }, [selectedDataElement, getDataElementClass, setLocalSelectedDataElement]);
-
   useEffect(() => {
     if (localSelectedDataElement && codeSystemMap) {
       const displayAttributes = [];
@@ -220,7 +220,17 @@ const DataElementsCard = (props: {
     }
   }, [localSelectedDataElement, codeSystemMap, dataElements]);
   // centralize state one level up so we can conditionally render our child component
-
+  useEffect(() => {
+    setAttributesPresent(false);
+    if (selectedDataElement && selectedDataElement.schema?.eachPath) {
+      selectedDataElement.schema.eachPath((path) => {
+        if (!SKIP_ATTRIBUTES.includes(path) && !attributesPresent) {
+          //you can't break an eachPath loop, since it's built off of forEach
+          setAttributesPresent(true);
+        }
+      });
+    }
+  }, [localSelectedDataElement]);
   const onDeleteAttributeChip = (deletedChip) => {
     const deletedChipIndex = deletedChip.index;
     const newAttributes = displayAttributes.slice();
@@ -232,9 +242,7 @@ const DataElementsCard = (props: {
     );
     setLocalSelectedDataElement(updatedElement);
     setSelectedDataElement(updatedElement);
-    if (onChange) {
-      onChange(updatedElement);
-    }
+    onChange(updatedElement);
   };
 
   return (
@@ -286,6 +294,7 @@ const DataElementsCard = (props: {
         negationRationale={negationRationale}
         activeTab={cardActiveTab}
         setActiveTab={setCardActiveTab}
+        attributesPresent={attributesPresent}
       />
       {cardActiveTab === "codes" && (
         <Codes
