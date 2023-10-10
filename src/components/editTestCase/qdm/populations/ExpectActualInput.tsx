@@ -12,7 +12,6 @@ const ExpectActualInput = ({
     expected: displayType === "expected",
     actual: displayType === "actual",
   });
-
   return props.populationBasis?.toLowerCase() === "true" &&
     props.name !== "measureObservation" &&
     props.name !== "measurePopulationObservation" &&

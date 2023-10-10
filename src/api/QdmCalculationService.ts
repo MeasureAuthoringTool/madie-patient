@@ -162,12 +162,19 @@ export class QdmCalculationService {
       });
       groupsMap.set("" + groupId, populationMap);
 
-      updatedTestCase.groupPopulations.forEach((groupPop) => {
+      updatedTestCase.groupPopulations.forEach((groupPop, gpIndex) => {
         if (groupPop.groupId === groupId) {
           groupPop.populationValues.forEach((population) => {
             //Look up population
             const value = groupsMap.get(groupId).get(population.name);
             population.actual = measure.patientBasis ? !!value : value;
+          });
+          // so we can reference them by the two sets of indeces
+          groupPop.stratificationValues.forEach((strat, stratIndex) => {
+            strat.actual =
+              populationGroupResults[
+                `PopulationSet_${gpIndex + 1}_Stratification_${stratIndex + 1}`
+                ]?.STRAT;
           });
         }
       });

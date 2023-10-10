@@ -265,8 +265,6 @@ const EditTestCase = () => {
     setTestCaseErrors([value]);
   };
 
-  //
-
   return (
     <>
       {qdmExecutionErrors && qdmExecutionErrors.length > 0 && (
