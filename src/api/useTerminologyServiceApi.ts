@@ -14,7 +14,7 @@ type ValueSetSearchParams = {
 
 type ValueSetsSearchCriteria = {
   profile: string;
-  includeDraft: boolean;
+  includeDraft: "yes" | "no";
   valueSetParams: ValueSetSearchParams[];
 };
 
@@ -26,7 +26,7 @@ export class TerminologyServiceApi {
       return null;
     }
     const searchCriteria = {
-      includeDraft: true, // always true for now
+      includeDraft: "yes", // always yes for now
       valueSetParams: this.getValueSetsOIdsFromBundle(measureBundle),
     } as ValueSetsSearchCriteria;
     if (searchCriteria.valueSetParams.length == 0) {
@@ -65,7 +65,7 @@ export class TerminologyServiceApi {
       return null;
     }
     const searchCriteria = {
-      includeDraft: true, // always true for now
+      includeDraft: "yes", // always yes for now
       valueSetParams: this.getValueSetsOIDsFromCqmMeasure(
         JSON.parse(JSON.stringify(cqmMeasure))
       ),
