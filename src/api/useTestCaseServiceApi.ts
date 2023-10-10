@@ -172,7 +172,7 @@ export class TestCaseServiceApi {
       `${this.baseUrl}/measures/${measureId}/test-cases/exports`,
       testCaseIds,
       {
-        params: { bundleType: `${bundleType}` },
+        params: { bundleType: bundleType },
         headers: {
           Authorization: `Bearer ${this.getAccessToken()}`,
         },
