@@ -177,18 +177,18 @@ export class TerminologyServiceApi {
     if (cqlCodes) {
       cqlCodes.forEach((cqlCode) => {
         const valueSet = {
-          oid: `${cqlCode.code}`,
-          version: `${cqlCode.version}`,
+          oid: cqlCode.code,
+          version: cqlCode.version,
           concepts: [
             {
-              code: `${cqlCode.code}`,
-              code_system_oid: `${cqlCode.oid}`,
-              code_system_name: `${cqlCode.system}`,
-              code_system_version: `${cqlCode.version}`,
-              display_name: `${cqlCode.display}`,
+              code: cqlCode.code,
+              code_system_oid: cqlCode.oid,
+              code_system_name: cqlCode.system,
+              code_system_version: cqlCode.version,
+              display_name: cqlCode.display,
             },
           ],
-          display_name: `${cqlCode.display}`,
+          display_name: cqlCode.display,
         };
         drcValueSets.push(valueSet);
       });
