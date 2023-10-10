@@ -310,10 +310,9 @@ export class CqmConversionService {
       dataCriteria.type
     );
     if (dataCriteria.drc) {
-      sourceDataCriteria.codeListId = dataCriteria.codeId;
-    } else {
-      sourceDataCriteria.codeListId = dataCriteria.oid;
+      sourceDataCriteria.codeId = dataCriteria.codeId;
     }
+    sourceDataCriteria.codeListId = dataCriteria.oid;
     sourceDataCriteria.desc = dataCriteria.oid;
     sourceDataCriteria.description = dataCriteria.description;
     return sourceDataCriteria;

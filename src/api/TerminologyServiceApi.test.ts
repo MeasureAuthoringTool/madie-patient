@@ -124,11 +124,19 @@ describe("TerminologyServiceApi Tests", () => {
     expect(result).toBeNull();
   });
 
+  it("test getValueSetsOIdsFromBundle empty", () => {
+    const bundle: fhir4.Bundle = {
+      resourceType: "Bundle",
+    } as fhir4.Bundle;
+    const result = terminologyService.getValueSetsOIdsFromBundle(bundle);
+    expect(_.isEmpty(result)).toBe(true);
+  });
+
   it("test getCqlCodesForDRCs", () => {
     const result = terminologyService.getCqlCodesForDRCs(cqm_measure_basic);
     expect(result.length).toBe(3);
 
-    expect(result[0].code).toBe("71802-3");
+    expect(result[0].code).toBe("drc-bdb8b89536181a411ad034378b7ceef6");
     expect(result[0].system).toBe("LOINC");
     expect(result[0].display).toBe("Housing status");
     expect(result[1].code).toBe("160734000");
@@ -144,24 +152,25 @@ describe("TerminologyServiceApi Tests", () => {
     expect(_.isEmpty(result)).toBe(true);
   });
 
+  it("test getDrcOid", () => {
+    const result = terminologyService.getDrcOid(
+      cqm_measure_basic,
+      "drc-bdb8b89536181a411ad034378b7ceef6"
+    );
+    expect(result).toBe("drc-bdb8b89536181a411ad034378b7ceef6");
+  });
+
   it("test getValueSetsForDRCs", () => {
     const result = terminologyService.getValueSetsForDRCs(cqm_measure_basic);
 
-    expect(result.length).toBe(3);
-    expect(result[0].oid).toBe("71802-3");
-    expect(result[0].concepts[0].code).toBe("71802-3");
+    expect(result.length).toBe(1);
+
+    expect(result[0].oid).toBe("drc-bdb8b89536181a411ad034378b7ceef6");
+    expect(result[0].concepts[0].code).toBe(
+      "drc-bdb8b89536181a411ad034378b7ceef6"
+    );
     expect(result[0].concepts[0].code_system_name).toBe("LOINC");
     expect(result[0].concepts[0].display_name).toBe("Housing status");
-    expect(result[1].oid).toBe("160734000");
-    expect(result[1].concepts[0].code).toBe("160734000");
-    expect(result[1].concepts[0].code_system_name).toBe("SNOMEDCT");
-    expect(result[1].concepts[0].display_name).toBe(
-      "Lives in a nursing home (finding)"
-    );
-    expect(result[2].oid).toBe("98181-1");
-    expect(result[2].concepts[0].code).toBe("98181-1");
-    expect(result[2].concepts[0].code_system_name).toBe("LOINC");
-    expect(result[2].concepts[0].display_name).toBe("Medical equipment used");
   });
 
   it("test getValueSetsForDRCs no value sets", () => {

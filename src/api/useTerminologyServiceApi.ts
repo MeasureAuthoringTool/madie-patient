@@ -176,21 +176,24 @@ export class TerminologyServiceApi {
     const cqlCodes: CQL.CQLCode[] = this.getCqlCodesForDRCs(cqmMeasure);
     if (cqlCodes) {
       cqlCodes.forEach((cqlCode) => {
-        const valueSet = {
-          oid: cqlCode.code,
-          version: cqlCode.version,
-          concepts: [
-            {
-              code: cqlCode.code,
-              code_system_oid: cqlCode.oid,
-              code_system_name: cqlCode.system,
-              code_system_version: cqlCode.version,
-              display_name: cqlCode.display,
-            },
-          ],
-          display_name: cqlCode.display,
-        };
-        drcValueSets.push(valueSet);
+        const drcOid = this.getDrcOid(cqmMeasure, cqlCode.code);
+        if (drcOid) {
+          const valueSet = {
+            oid: drcOid,
+            version: cqlCode.version,
+            concepts: [
+              {
+                code: cqlCode.code,
+                code_system_oid: cqlCode.oid,
+                code_system_name: cqlCode.system,
+                code_system_version: cqlCode.version,
+                display_name: cqlCode.display,
+              },
+            ],
+            display_name: cqlCode.display,
+          };
+          drcValueSets.push(valueSet);
+        }
       });
     }
     return drcValueSets;
@@ -213,6 +216,13 @@ export class TerminologyServiceApi {
       }
     });
     return cqlCodes;
+  }
+
+  getDrcOid(cqmMeasure: CqmMeasure, code: string): string {
+    const find = cqmMeasure?.source_data_criteria?.find(
+      (source) => source.codeId === code
+    );
+    return find?.desc;
   }
 }
 

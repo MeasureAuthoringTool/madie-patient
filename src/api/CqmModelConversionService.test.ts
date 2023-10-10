@@ -236,6 +236,6 @@ describe("CqmConversionService", () => {
     expect(result.length).toBe(3);
     expect(result[0].codeListId).toBe("2.16.840.1.114222.4.11.837");
     expect(result[1].codeListId).toBe("2.16.840.1.113883.3.666.5.307");
-    expect(result[2].codeListId).toBe("71802-3");
+    expect(result[2].codeId).toBe("71802-3");
   });
 });
