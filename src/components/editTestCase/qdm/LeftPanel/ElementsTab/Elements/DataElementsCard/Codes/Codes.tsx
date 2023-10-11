@@ -67,19 +67,9 @@ const Codes = ({
   // filters out the appropriate value set for the selected data element and gets all code concepts
   // Also creates an object for CodeSystems oid as key and display name as value
   useEffect(() => {
-    let currentValueSet: ValueSet = undefined;
-    if (selectedDataElement?.codeListId?.includes("drc-")) {
-      currentValueSet = cqmMeasure?.value_sets?.find(
-        (drcValueSet) =>
-          drcValueSet.oid === selectedDataElement?.codeListId &&
-          drcValueSet.display_name ===
-            selectedDataElement?.description?.split(": ")?.[1]
-      );
-    } else {
-      currentValueSet = _.find(cqmMeasure?.value_sets, {
-        oid: selectedDataElement?.codeListId,
-      });
-    }
+    const currentValueSet = _.find(cqmMeasure?.value_sets, {
+      oid: selectedDataElement?.codeListId,
+    });
 
     if (currentValueSet) {
       setConcepts(currentValueSet.concepts);

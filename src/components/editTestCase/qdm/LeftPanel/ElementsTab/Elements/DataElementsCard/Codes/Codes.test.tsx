@@ -305,7 +305,6 @@ describe("Codes section", () => {
   it("Should render Codes for DRCs", async () => {
     const selectedDataElementForDrc = {
       codeListId: "drc-bdb8b89536181a411ad034378b7ceef6",
-      description: "Assessment, Performed: Housing status",
     };
     render(
       <Codes
