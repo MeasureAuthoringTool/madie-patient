@@ -67,7 +67,7 @@ const Codes = ({
   // filters out the appropriate value set for the selected data element and gets all code concepts
   // Also creates an object for CodeSystems oid as key and display name as value
   useEffect(() => {
-    const currentValueSet = _.find(cqmMeasure?.value_sets, {
+    const currentValueSet: ValueSet = _.find(cqmMeasure?.value_sets, {
       oid: selectedDataElement?.codeListId,
     });
 
