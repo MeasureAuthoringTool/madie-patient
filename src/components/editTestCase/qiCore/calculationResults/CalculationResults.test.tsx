@@ -305,6 +305,12 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     renderCoverageComponent();
     expect(screen.getByText("Population Criteria 1")).toBeInTheDocument();
     expect(screen.getByText("No results available")).toBeInTheDocument();
+    expect(screen.getByText("Definitions")).toBeInTheDocument();
+    expect(screen.getByText("No results available")).toBeInTheDocument();
+    expect(screen.getByText("Unused")).toBeInTheDocument();
+    expect(screen.getByText("No results available")).toBeInTheDocument();
+    expect(screen.getByText("Functions")).toBeInTheDocument();
+    expect(screen.getByText("No results available")).toBeInTheDocument();
 
     await assertPopulationTabs();
 

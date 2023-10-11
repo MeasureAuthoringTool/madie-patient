@@ -130,7 +130,6 @@ const CalculationResults = ({
       {featureFlags.highlightingTabs && !isEmpty(groupPopulations) && (
         <GroupCoverage
           groupPopulations={groupPopulations}
-          calculationResults={calculationResults}
           mappedCalculationResults={mapCalculationResults(calculationResults)}
         />
       )}

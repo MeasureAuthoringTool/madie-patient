@@ -19,7 +19,6 @@ import { Relevance } from "fqm-execution/build/types/Enums";
 
 interface Props {
   groupPopulations: GroupPopulation[];
-  calculationResults: DetailedPopulationGroupResult[];
   mappedCalculationResults: MappedCalculationResults;
 }
 
