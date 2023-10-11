@@ -174,7 +174,7 @@ export class QdmCalculationService {
             strat.actual =
               populationGroupResults[
                 `PopulationSet_${gpIndex + 1}_Stratification_${stratIndex + 1}`
-                ]?.STRAT;
+              ]?.STRAT;
           });
         }
       });
