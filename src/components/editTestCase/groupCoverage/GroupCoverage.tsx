@@ -17,23 +17,24 @@ import { FHIR_POPULATION_CODES } from "../../../util/PopulationsMap";
 import { MappedCalculationResults } from "../qiCore/calculationResults/CalculationResults";
 import { Relevance } from "fqm-execution/build/types/Enums";
 
-interface PopulationResult extends StatementResult {
-  populationName: string;
-}
-
 interface Props {
   groupPopulations: GroupPopulation[];
   calculationResults: DetailedPopulationGroupResult[];
   mappedCalculationResults: MappedCalculationResults;
 }
 
-interface TestObject {
-  [key: string]: {
-    isFunction: boolean;
-    relevance: string;
-    statementLevelHTML?: string | undefined;
-  };
+interface Statement {
+  isFunction: boolean;
+  relevance: Relevance;
+  statementLevelHTML?: string | undefined;
 }
+
+interface PopulationStatement extends Statement {
+  populationName: string;
+}
+
+type PopulationResult = Record<string, PopulationStatement>;
+type SelectedFunction = Record<string, Statement>;
 
 const populationCriteriaLabel = "Population Criteria";
 const abbreviatedPopulations = {
@@ -71,10 +72,13 @@ const GroupCoverage = ({
   const [selectedPopulation, setSelectedPopulation] = useState<Population>(
     getFirstPopulation(groupPopulations[0])
   );
-  const [selectedFunctions, setSelectedFunctions] = useState<TestObject>();
+  const [selectedFunctions, setSelectedFunctions] =
+    useState<SelectedFunction>();
 
   // calculation results for selected group/criteria
-  const [populationResults, setPopulationResults] = useState<any>();
+  const [populationResults, setPopulationResults] = useState<
+    PopulationResult | {}
+  >();
   // coverage html for selected population of a selected group/criteria
   const [coverageHtml, setCoverageHtml] = useState<string>("");
 
@@ -133,7 +137,8 @@ const GroupCoverage = ({
 
   const changeCriteria = (criteriaId: string) => {
     setSelectedCriteria(criteriaId);
-    const populationResults = getPopulationResults(criteriaId);
+    const populationResults: PopulationResult | {} =
+      getPopulationResults(criteriaId);
     setPopulationResults(populationResults);
     const group = groupPopulations.find((gp) => gp.groupId === criteriaId);
     setSelectedPopulation(getFirstPopulation(group));
@@ -142,11 +147,11 @@ const GroupCoverage = ({
   const changePopulation = (population: Population) => {
     setSelectedPopulation(population);
     setSelectedFunctions(undefined);
-    const result: any =
+    const result =
       populationResults &&
       Object.values(populationResults).find(
         // TODO: Handle 2 IP scenario
-        (result: any) => result.populationName === population.name
+        (result) => result.populationName === population.name
       );
     setCoverageHtml(
       result ? result.statementLevelHTML : "No results available"
