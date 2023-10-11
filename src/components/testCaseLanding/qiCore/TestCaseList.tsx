@@ -38,6 +38,7 @@ import UseToast from "../common/Hooks/UseToast";
 import getModelFamily from "../../../util/measureModelHelpers";
 import FileSaver from "file-saver";
 import TestCaseImportDialog from "../common/import/TestCaseImportDialog";
+import axios from "axios";
 
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
@@ -358,6 +359,8 @@ const TestCaseList = (props: TestCaseListProps) => {
     if (validTestCases && validTestCases.length > 0 && measureBundle) {
       setExecuting(true);
       try {
+        console.time("frontend")
+
         const calculationOutput: CalculationOutput<any> =
           await calculation.current.calculateTestCases(
             measure,
@@ -366,6 +369,7 @@ const TestCaseList = (props: TestCaseListProps) => {
             valueSets
           );
         setCalculationOutput(calculationOutput);
+        console.timeEnd("frontend")
       } catch (error) {
         console.error("calculateTestCases: error.message = " + error.message);
         setErrors((prevState) => [...prevState, error.message]);
@@ -379,6 +383,36 @@ const TestCaseList = (props: TestCaseListProps) => {
       ]);
     }
   };
+  const backendTestCases = async () => {
+    
+    const validTestCases = testCases?.filter((tc) => tc.validResource);
+
+    if (validTestCases && validTestCases.length > 0 && measureBundle) {
+      setExecuting(true);
+      try {
+        console.time("backend")
+        const backendTestRan = await axios.put('http://localhost:3000/tests',{
+          headers: { 
+          'Access-Control-Allow-Origin' : '*',
+          'Access-Control-Allow-Methods':'GET,PUT,POST,DELETE,PATCH,OPTIONS',
+          
+        }, 
+        withCredentials: true,
+            "measure":measure,
+            "testCases":validTestCases,
+            "measureBundle":measureBundle,
+            "valueSets":valueSets})
+
+            setCalculationOutput(backendTestRan.data);
+            console.timeEnd("backend")
+      } catch (error) {
+        console.error("calculateTestCases: error.message = " + error.message);
+        setErrors((prevState) => [...prevState, error.message]);
+      }
+      setExecuting(false);
+    } 
+  };
+
   // Test case 2 "test case name" has a status of "status".
   const generateSRString = (testCaseList) => {
     let string = "";
@@ -492,6 +526,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                 measure={measure}
                 createNewTestCase={createNewTestCase}
                 executeTestCases={executeTestCases}
+                backendTestCases={backendTestCases}
                 onImportTestCasesFromBonnie={() => {
                   setErrors((prevState) => [
                     ...prevState?.filter((e) => e !== IMPORT_ERROR),

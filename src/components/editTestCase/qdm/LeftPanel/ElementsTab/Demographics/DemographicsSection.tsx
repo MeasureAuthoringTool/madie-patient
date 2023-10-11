@@ -228,7 +228,7 @@ const DemographicsSection = ({ canEdit }) => {
                     <div style={{ display: "flex" }}>
                       <DatePicker
                         disabled={!canEdit}
-                        disableOpenPicker
+                        
                         value={
                           patient?.birthDatetime
                             ? dayjs(patient?.birthDatetime)
@@ -248,14 +248,7 @@ const DemographicsSection = ({ canEdit }) => {
                             id: "birth-date",
                             sx: textFieldStyle,
                             InputProps: {
-                              startAdornment: (
-                                <InputAdornment
-                                  position="start"
-                                  style={{ color: "#0073c8" }}
-                                >
-                                  <EventIcon />
-                                </InputAdornment>
-                              ),
+
                             },
                           },
                         }}

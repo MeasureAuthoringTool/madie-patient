@@ -33,6 +33,7 @@ export interface NavTabProps {
   validTestCases: TestCase[];
   exportTestCases: () => void;
   onDeleteAllTestCases: () => void;
+  backendTestCases: () => void;
 }
 
 const defaultStyle = {
@@ -64,6 +65,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     validTestCases,
     exportTestCases,
     onDeleteAllTestCases,
+    backendTestCases,
   } = props;
   const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -97,6 +99,9 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     setOptionsOpen(false);
     setAnchorEl(null);
   };
+  const sendBackend=()=>{
+    backendTestCases()
+  }
 
   const hasErrors =
     measure?.cqlErrors ||
@@ -189,6 +194,17 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           isExecutionContextReady={executionContextReady}
           onRunTests={executeTestCases}
         />
+        <div>
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+
+              sendBackend();
+            }}
+          >
+            Backend
+          </Button>
+        </div>
         <Button
           variant={featureFlags?.exportQiCoreBundleType ? "outline" : "filled"}
           className="export-bundle-button"
