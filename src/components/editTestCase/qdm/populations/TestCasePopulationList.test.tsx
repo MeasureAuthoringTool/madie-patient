@@ -144,7 +144,7 @@ describe("TestCasePopulationList component", () => {
           onChange={handleChange}
           onStratificationChange={handleStratificationChange}
           disableExpected={false}
-          populationBasis="boolean"
+          populationBasis="true"
           content="population"
           i={0}
           scoring="Proportion"
@@ -158,7 +158,7 @@ describe("TestCasePopulationList component", () => {
     expect(tableRows[0]).toHaveTextContent("Initial Population");
 
     const ippCb = screen.getByTestId(
-      "test-population-Strata-1 Initial Population-expected"
+      "test-population-Strata-1 Initial Population-expected-0"
     );
     expect(ippCb).toBeInTheDocument();
     userEvent.click(ippCb);
@@ -195,7 +195,7 @@ describe("TestCasePopulationList component", () => {
           onChange={handleChange}
           onStratificationChange={handleStratificationChange}
           disableExpected={false}
-          populationBasis="boolean"
+          populationBasis="true"
           content="population"
           i={0}
           scoring="Proportion"
@@ -210,7 +210,7 @@ describe("TestCasePopulationList component", () => {
     expect(tableRows[0]).toHaveTextContent("Initial Population");
 
     const ippCb = screen.getByTestId(
-      "test-population-Strata-1 Initial Population-expected"
+      "test-population-Strata-1 Initial Population-expected-0"
     );
     expect(ippCb).toBeInTheDocument();
     userEvent.click(ippCb);
