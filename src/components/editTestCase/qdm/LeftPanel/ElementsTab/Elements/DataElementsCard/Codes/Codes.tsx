@@ -70,7 +70,6 @@ const Codes = ({
     const currentValueSet: ValueSet = _.find(cqmMeasure?.value_sets, {
       oid: selectedDataElement?.codeListId,
     });
-
     if (currentValueSet) {
       setConcepts(currentValueSet.concepts);
       const codeSystems: CodeSystems =
