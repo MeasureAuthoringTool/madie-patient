@@ -11,6 +11,7 @@ import {
   MeasureScoring,
   PopulationExpectedValue,
   PopulationType,
+  Stratification,
   TestCase,
 } from "@madie/madie-models";
 import { ExecutionStatusType } from "./CalculationService";
@@ -659,6 +660,18 @@ describe("QDM CalculationService Tests", () => {
                 expected: false,
               },
             ] as PopulationExpectedValue[],
+            stratificationValues: [
+              {
+                id: "Strat1ID",
+                name: "Strata-1",
+                expected: true,
+              },
+              {
+                id: "Strat2ID",
+                name: "Strata-2",
+                expected: true,
+              },
+            ],
           },
         ] as GroupPopulation[],
       };
@@ -670,7 +683,30 @@ describe("QDM CalculationService Tests", () => {
             DENOM: 1,
             NUMER: 1,
           },
+          PopulationSet_1_Stratification_1: {
+            IPP: 1,
+            DENOM: 1,
+            NUMBER: 1,
+            STRAT: 1,
+          },
+          PopulationSet_1_Stratification_2: {
+            IPP: 1,
+            DENOM: 1,
+            NUMBER: 1,
+            STRAT: 1,
+          },
         };
+
+      const groupStrats: Stratification[] = [
+        { cqlDefinition: "foo1", id: "Strata1ID" },
+        { cqlDefinition: "foo3", id: "Strata2ID" },
+      ];
+
+      measure.patientBasis = true;
+      measure.groups[0].populationBasis = "true";
+
+      measureGroups[0].stratifications = [...groupStrats];
+      measure.groups[0].stratifications = [...groupStrats];
 
       const output = calculationService.processTestCaseResults(
         testCase,
@@ -694,6 +730,18 @@ describe("QDM CalculationService Tests", () => {
         "numerator"
       );
       expect(output.groupPopulations[0].populationValues[2].actual).toBe(true);
+      expect(output.groupPopulations[0].stratificationValues[0].expected).toBe(
+        true
+      );
+      expect(output.groupPopulations[0].stratificationValues[0].actual).toBe(
+        true
+      );
+      expect(output.groupPopulations[0].stratificationValues[1].expected).toBe(
+        true
+      );
+      expect(output.groupPopulations[0].stratificationValues[1].actual).toBe(
+        true
+      );
     });
 
     it("should return testCase with updated actual values passing non-patientBasis", () => {
