@@ -14,6 +14,7 @@ import {
 } from "fqm-execution/build/types/Calculator";
 import { MenuItem } from "@mui/material";
 import { FHIR_POPULATION_CODES } from "../../../util/PopulationsMap";
+import { MappedCalculationResults } from "../qiCore/calculationResults/CalculationResults";
 
 interface PopulationResult extends StatementResult {
   populationName: string;
@@ -22,7 +23,17 @@ interface PopulationResult extends StatementResult {
 interface Props {
   groupPopulations: GroupPopulation[];
   calculationResults: DetailedPopulationGroupResult[];
+  mappedCalculationResults: MappedCalculationResults;
 }
+
+interface TestObject {
+  [key: string]: {
+    isFunction: boolean;
+    relevance: string;
+    statementLevelHTML?: string | undefined;
+  };
+}
+
 const populationCriteriaLabel = "Population Criteria";
 const abbreviatedPopulations = {
   initialPopulation: "IP",
@@ -43,17 +54,20 @@ const getFirstPopulation = (group) => {
   };
 };
 
-const GroupCoverage = ({ groupPopulations, calculationResults }: Props) => {
+const GroupCoverage = ({
+  groupPopulations,
+  mappedCalculationResults,
+}: Props) => {
   // selected group/criteria
   const [selectedCriteria, setSelectedCriteria] = useState<string>("");
   // selected population of a selected group
   const [selectedPopulation, setSelectedPopulation] = useState<Population>(
     getFirstPopulation(groupPopulations[0])
   );
+  const [selectedFunctions, setSelectedFunctions] = useState<TestObject>();
 
   // calculation results for selected group/criteria
-  const [populationResults, setPopulationResults] =
-    useState<Array<PopulationResult>>();
+  const [populationResults, setPopulationResults] = useState<any>();
   // coverage html for selected population of a selected group/criteria
   const [coverageHtml, setCoverageHtml] = useState<string>("");
 
@@ -85,23 +99,25 @@ const GroupCoverage = ({ groupPopulations, calculationResults }: Props) => {
       });
   };
 
-  const getPopulationResults = (groupId: string): Array<PopulationResult> => {
-    const groupCalculations = calculationResults?.find(
-      (result) => result.groupId === groupId
-    );
-    if (groupCalculations) {
-      const relevantPopulations = groupCalculations.populationRelevance;
-      const statementResults = groupCalculations.statementResults;
-      return relevantPopulations.map((population) => {
-        const populationResult = statementResults.find(
-          (statementResult) =>
-            statementResult.statementName === population.criteriaExpression
-        );
-        return {
-          ...populationResult,
-          populationName: FHIR_POPULATION_CODES[population.populationType],
-        };
-      });
+  const getPopulationResults = (groupId: string) => {
+    if (mappedCalculationResults) {
+      const testCalculations = mappedCalculationResults[groupId];
+      if (testCalculations) {
+        const relevant1Populations = testCalculations.populationRelevance;
+        const statement1Results = testCalculations.statementResults;
+        const matchingResults = Object.keys(statement1Results)
+          .filter((key) => relevant1Populations[key])
+          .reduce((output, key) => {
+            output[key] = {
+              ...statement1Results[key],
+              populationName:
+                FHIR_POPULATION_CODES[relevant1Populations[key].populationType],
+            };
+            return output;
+          }, {});
+
+        return matchingResults;
+      }
     }
     return [];
   };
@@ -116,10 +132,13 @@ const GroupCoverage = ({ groupPopulations, calculationResults }: Props) => {
 
   const changePopulation = (population: Population) => {
     setSelectedPopulation(population);
-    const result = populationResults?.find(
-      // TODO: Handle 2 IP scenario
-      (result) => result.populationName === population.name
-    );
+    setSelectedFunctions(undefined);
+    const result: any =
+      populationResults &&
+      Object.values(populationResults).find(
+        // TODO: Handle 2 IP scenario
+        (result: any) => result.populationName === population.name
+      );
     setCoverageHtml(
       result ? result.statementLevelHTML : "No results available"
     );
@@ -144,6 +163,41 @@ const GroupCoverage = ({ groupPopulations, calculationResults }: Props) => {
       );
     }),
   ];
+
+  const changeDefinitions = (population) => {
+    setSelectedPopulation(population);
+
+    if (mappedCalculationResults) {
+      const test =
+        mappedCalculationResults[selectedCriteria]["statementResults"];
+      let filteredFunctions;
+
+      if (population.name === "Functions") {
+        filteredFunctions = filterTestObject(
+          test,
+          (value) => value?.isFunction && value.relevance !== "NA"
+        );
+      } else if (population.name === "Definitions") {
+        filteredFunctions = filterTestObject(
+          test,
+          (value) => !value?.isFunction && value.relevance === "TRUE"
+        );
+      } else if (population.name === "Unused") {
+        filteredFunctions = filterTestObject(
+          test,
+          (value) => value?.isFunction === false && value?.relevance !== "TRUE"
+        );
+      }
+      setSelectedFunctions(filteredFunctions);
+    }
+  };
+
+  const filterTestObject = (obj, filterFn) => {
+    return Object.fromEntries(
+      Object.entries(obj).filter(([key, value]) => filterFn(value))
+    );
+  };
+
   return (
     <>
       <div tw="border-b pb-2">
@@ -206,16 +260,33 @@ const GroupCoverage = ({ groupPopulations, calculationResults }: Props) => {
           <GroupCoverageNav
             id={selectedCriteria}
             populations={getRelevantPopulations()}
+            definition={[
+              { name: "Definitions" },
+              { name: "Functions" },
+              { name: "Unused" },
+            ]}
             selectedPopulation={selectedPopulation}
             onClick={changePopulation}
+            onDefClick={changeDefinitions}
           />
         </div>
-        <div
-          tw="flex-auto p-3"
-          id={`${selectedPopulation.abbreviation}-highlighting`}
-          data-testid={`${selectedPopulation.abbreviation}-highlighting`}
-        >
-          {parse(coverageHtml)}
+
+        {!selectedFunctions && (
+          <div
+            tw="flex-auto p-3"
+            id={`${selectedPopulation.abbreviation}-highlighting`}
+            data-testid={`${selectedPopulation.abbreviation}-highlighting`}
+          >
+            {parse(coverageHtml)}
+          </div>
+        )}
+
+        <div>
+          {selectedFunctions &&
+            Object.values(selectedFunctions)
+              .map((record) => record.statementLevelHTML)
+              .filter(Boolean)
+              .map((html) => <div tw="flex-auto p-3">{parse(html)}</div>)}
         </div>
       </div>
     </>

@@ -5,7 +5,7 @@ import "styled-components/macro";
 import { isEmpty } from "lodash";
 import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calculator";
 import { MadieAlert } from "@madie/madie-design-system/dist/react";
-import { GroupPopulation } from "@madie/madie-models";
+import { GroupPopulation, PopulationType } from "@madie/madie-models";
 import { useFeatureFlags } from "@madie/madie-util";
 import GroupCoverage from "../../groupCoverage/GroupCoverage";
 
@@ -19,6 +19,25 @@ type CalculationResultType = {
   calculationErrors: ErrorProps;
   groupPopulations: GroupPopulation[];
 };
+
+export interface MappedCalculationResults {
+  [groupId: string]: {
+    statementResults: {
+      [statementName: string]: {
+        isFunction: boolean;
+        relevance: string;
+        statementLevelHTML?: string | undefined;
+      };
+    }[];
+    populationRelevance: {
+      [criteriaExpression: string]: {
+        populationId: string;
+        populationType: PopulationType;
+        result: boolean;
+      };
+    }[];
+  };
+}
 
 const CalculationResults = ({
   calculationResults,
@@ -41,6 +60,50 @@ const CalculationResults = ({
       updatedGroupName(index + 1)
     )
   );
+
+  const mapCalculationResults = (
+    calculationResult: DetailedPopulationGroupResult[]
+  ): MappedCalculationResults => {
+    if (calculationResult) {
+      const mapCalculationResults = calculationResult.reduce((output, item) => {
+        const { groupId, statementResults, populationRelevance } = item;
+
+        output[groupId] = {
+          statementResults: statementResults.reduce(
+            (
+              statementResultsOutput,
+              { isFunction, relevance, statementLevelHTML, statementName }
+            ) => {
+              statementResultsOutput[statementName] = {
+                isFunction,
+                relevance,
+                statementLevelHTML,
+              };
+              return statementResultsOutput;
+            },
+            {}
+          ),
+          populationRelevance: populationRelevance.reduce(
+            (
+              populationRelevanceOutput,
+              { criteriaExpression, populationId, populationType, result }
+            ) => {
+              populationRelevanceOutput[criteriaExpression] = {
+                populationId,
+                populationType,
+                result,
+              };
+              return populationRelevanceOutput;
+            },
+            {}
+          ),
+        };
+
+        return output;
+      }, {});
+      return mapCalculationResults;
+    }
+  };
 
   return (
     <div tw="p-5" style={{ paddingRight: ".25rem" }}>
@@ -68,6 +131,7 @@ const CalculationResults = ({
         <GroupCoverage
           groupPopulations={groupPopulations}
           calculationResults={calculationResults}
+          mappedCalculationResults={mapCalculationResults(calculationResults)}
         />
       )}
       {!featureFlags.highlightingTabs && coverageHtmls && (
