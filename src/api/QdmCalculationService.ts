@@ -171,10 +171,11 @@ export class QdmCalculationService {
           });
           // so we can reference them by the two sets of indeces
           groupPop.stratificationValues?.forEach((strat, stratIndex) => {
-            strat.actual =
+            const value =
               populationGroupResults[
                 `PopulationSet_${gpIndex + 1}_Stratification_${stratIndex + 1}`
               ]?.STRAT;
+            strat.actual = measure.patientBasis ? !!value : value;
           });
         }
       });
