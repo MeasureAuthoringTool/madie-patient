@@ -12,19 +12,17 @@ export interface Population {
 interface Props {
   id: string;
   populations: Array<Population>;
-  definition: any;
+  otherCqlStatements: any;
   selectedPopulation: Population;
   onClick: Function;
-  onDefClick: Function;
 }
 
 const GroupCoverageNav = ({
   id,
   populations,
-  definition,
+  otherCqlStatements,
   selectedPopulation,
   onClick,
-  onDefClick,
 }: Props) => {
   return (
     <>
@@ -56,8 +54,8 @@ const GroupCoverageNav = ({
         value={selectedPopulation.name}
         data-testid={`group-coverage-nav-${name}`}
       >
-        {definition &&
-          definition.map((population) => (
+        {otherCqlStatements &&
+          otherCqlStatements.map((population) => (
             <Tab
               type="C"
               label={population.name}
@@ -65,7 +63,7 @@ const GroupCoverageNav = ({
               value={population.name}
               orientation="vertical"
               onClick={() => {
-                onDefClick(population);
+                onClick(population);
               }}
             />
           ))}

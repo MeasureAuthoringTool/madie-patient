@@ -15,6 +15,7 @@ import {
 import { MenuItem } from "@mui/material";
 import { FHIR_POPULATION_CODES } from "../../../util/PopulationsMap";
 import { MappedCalculationResults } from "../qiCore/calculationResults/CalculationResults";
+import { Relevance } from "fqm-execution/build/types/Enums";
 
 interface PopulationResult extends StatementResult {
   populationName: string;
@@ -44,6 +45,12 @@ const abbreviatedPopulations = {
   denominatorException: "DENEXCEP",
   measurePopulation: "MSRPOPL",
 };
+
+const otherCqlStatements = [
+  { name: "Definitions" },
+  { name: "Functions" },
+  { name: "Unused" },
+];
 
 const getFirstPopulation = (group) => {
   return {
@@ -101,10 +108,12 @@ const GroupCoverage = ({
 
   const getPopulationResults = (groupId: string) => {
     if (mappedCalculationResults) {
-      const testCalculations = mappedCalculationResults[groupId];
-      if (testCalculations) {
-        const relevant1Populations = testCalculations.populationRelevance;
-        const statement1Results = testCalculations.statementResults;
+      const selectedGroupCalculationResults = mappedCalculationResults[groupId];
+      if (selectedGroupCalculationResults) {
+        const relevant1Populations =
+          selectedGroupCalculationResults.populationRelevance;
+        const statement1Results =
+          selectedGroupCalculationResults.statementResults;
         const matchingResults = Object.keys(statement1Results)
           .filter((key) => relevant1Populations[key])
           .reduce((output, key) => {
@@ -168,24 +177,25 @@ const GroupCoverage = ({
     setSelectedPopulation(population);
 
     if (mappedCalculationResults) {
-      const test =
+      const statementResults =
         mappedCalculationResults[selectedCriteria]["statementResults"];
       let filteredFunctions;
 
       if (population.name === "Functions") {
         filteredFunctions = filterTestObject(
-          test,
-          (value) => value?.isFunction && value.relevance !== "NA"
+          statementResults,
+          (value) => value?.isFunction && value.relevance !== Relevance.NA
         );
       } else if (population.name === "Definitions") {
         filteredFunctions = filterTestObject(
-          test,
-          (value) => !value?.isFunction && value.relevance === "TRUE"
+          statementResults,
+          (value) => !value?.isFunction && value.relevance === Relevance.TRUE
         );
       } else if (population.name === "Unused") {
         filteredFunctions = filterTestObject(
-          test,
-          (value) => value?.isFunction === false && value?.relevance !== "TRUE"
+          statementResults,
+          (value) =>
+            value?.isFunction === false && value?.relevance !== Relevance.TRUE
         );
       }
       setSelectedFunctions(filteredFunctions);
@@ -196,6 +206,18 @@ const GroupCoverage = ({
     return Object.fromEntries(
       Object.entries(obj).filter(([key, value]) => filterFn(value))
     );
+  };
+
+  const isPopulation = (name: string) => {
+    return name !== "Functions" && name !== "Definitions" && name !== "Unused";
+  };
+
+  const onCovergaNavTabClick = (data) => {
+    if (isPopulation(data.name)) {
+      changePopulation(data);
+    } else {
+      changeDefinitions(data);
+    }
   };
 
   return (
@@ -260,14 +282,9 @@ const GroupCoverage = ({
           <GroupCoverageNav
             id={selectedCriteria}
             populations={getRelevantPopulations()}
-            definition={[
-              { name: "Definitions" },
-              { name: "Functions" },
-              { name: "Unused" },
-            ]}
+            otherCqlStatements={otherCqlStatements}
             selectedPopulation={selectedPopulation}
-            onClick={changePopulation}
-            onDefClick={changeDefinitions}
+            onClick={onCovergaNavTabClick}
           />
         </div>
 
