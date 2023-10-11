@@ -1235,13 +1235,13 @@ describe("Negation Rationale", () => {
     userEvent.click(addNegationRationale);
 
     //negation rationale chip displays with code:system
-    const chip = screen.getByTestId("4525004: 2.16.840.1.113883.6.96");
+    const chip = screen.getByTestId("2.16.840.1.113883.6.96 : 4525004");
     expect(chip).toBeInTheDocument();
 
     //delete negation rationale
     userEvent.click(screen.getByTestId("CancelIcon"));
     expect(
-      await screen.queryByTestId("4525004: 2.16.840.1.113883.6.96")
+      await screen.queryByTestId("2.16.840.1.113883.6.96 : 4525004")
     ).toBeNull();
   });
 });

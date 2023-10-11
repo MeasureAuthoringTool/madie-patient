@@ -83,10 +83,10 @@ const NegationRationale = ({
       {negationRationaleCode && negationRationaleCode.code && (
         <div tw="flex flex-wrap gap-2 pt-4">
           <Chip
-            id={`${negationRationaleCode?.code}: ${negationRationaleCode?.system}`}
-            data-testid={`${negationRationaleCode?.code}: ${negationRationaleCode?.system}`}
+            id={`${negationRationaleCode?.system} : ${negationRationaleCode?.code}`}
+            data-testid={`${negationRationaleCode?.system} : ${negationRationaleCode?.code}`}
             className={classes.customChips}
-            label={`${negationRationaleCode?.code}: ${negationRationaleCode?.system}`}
+            label={`${negationRationaleCode?.system} : ${negationRationaleCode?.code}`}
             onDelete={() => handleDeleteNegationRationale()}
           />
         </div>
