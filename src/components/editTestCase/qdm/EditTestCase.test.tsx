@@ -31,6 +31,9 @@ import useCqmConversionService, {
 import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
 import { QdmPatientProvider } from "../../../util/QdmPatientContext";
 import { MadieError } from "../../../util/Utils";
+import qdmCalculationService, {
+  QdmCalculationService,
+} from "../../../api/QdmCalculationService";
 
 const serviceConfig = {
   testCaseService: {
@@ -173,7 +176,7 @@ const mockMeasure = {
       scoring: MeasureScoring.COHORT,
       populations: [
         {
-          id: "308d2af8-9650-49c0-a454-14a85163d9f9",
+          id: "4f0a1989-205f-45df-a476-8e19999d21c7",
           name: PopulationType.INITIAL_POPULATION,
           definition: "IP",
         },
@@ -274,13 +277,55 @@ const useTestCaseServiceMockRejectedNonUniqueName = {
     .mockResolvedValue(["Series 1", "Series 2"]),
   updateTestCase: jest.fn().mockRejectedValueOnce(nonUniqNameData),
 } as unknown as TestCaseServiceApi;
-
 let mockApplyDefaults = false;
 global.ResizeObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
   unobserve: jest.fn(),
   disconnect: jest.fn(),
 }));
+
+jest.mock("../../../api/QdmCalculationService");
+const qdmCalculationServiceMock =
+  qdmCalculationService as jest.Mock<QdmCalculationService>;
+
+const qdmExecutionResults = {
+  // patient with id "1"
+  testid: {
+    // group / population set with id "1"
+    test_groupId: {
+      IPP: 1,
+      episodeResults: {},
+    },
+  },
+};
+
+const mockProcessTestCaseResults = jest.fn().mockImplementation(() => {
+  return {
+    ...testCase,
+    groupPopulations: [
+      {
+        groupId: "test_groupId",
+        scoring: MeasureScoring.COHORT,
+        populationBasis: "true",
+        populationValues: [
+          {
+            id: "4f0a1989-205f-45df-a476-8e19999d21c7",
+            name: PopulationType.INITIAL_POPULATION,
+            expected: true,
+            actual: true,
+          },
+        ],
+        stratificationValues: [],
+      },
+    ],
+  };
+});
+
+const qdmCalculationServiceMockResolved = {
+  calculateQdmTestCases: jest.fn().mockResolvedValue(qdmExecutionResults),
+  processTestCaseResults: mockProcessTestCaseResults,
+  qdmFakeFunction: jest.fn(),
+} as unknown as QdmCalculationService;
 
 jest.mock("@madie/madie-util", () => ({
   useDocumentTitle: jest.fn(),
@@ -407,22 +452,36 @@ describe("EditTestCase QDM Component", () => {
     useTestCaseServiceMock.mockImplementation(() => {
       return useTestCaseServiceMockResolved;
     });
+    qdmCalculationServiceMock.mockImplementation(() => {
+      return qdmCalculationServiceMockResolved;
+    });
     CQMConversionMock.mockImplementation(() => {
       return useCqmConversionServiceMockResolved;
     });
   });
 
-  it("should render qdm edit test case component along with action buttons", async () => {
+  it("should run qdm test case", async () => {
     await waitFor(() => renderEditTestCaseComponent());
     const runTestCaseButton = await getByRole("button", {
       name: "Run Test",
     });
     expect(runTestCaseButton).toBeInTheDocument();
 
+    expect(runTestCaseButton).not.toBeDisabled();
     expect(getByRole("button", { name: "Save" })).toBeDisabled();
     expect(getByRole("button", { name: "Discard Changes" })).toBeDisabled();
 
     userEvent.click(runTestCaseButton);
+
+    userEvent.click(getByRole("tab", { name: "Expected or Actual tab panel" }));
+    expect(
+      await screen.findByText("Measure Group 1", {}, { timeout: 3000 })
+    ).toBeInTheDocument();
+
+    const actualResult = await screen.findByTestId(
+      "test-population-initialPopulation-actual"
+    ); // it has no name
+    await waitFor(() => expect(actualResult).toBeChecked());
   });
   it("should see that the JSON changed", async () => {
     await waitFor(() => renderEditTestCaseComponent());
