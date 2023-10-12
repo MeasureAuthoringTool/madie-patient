@@ -83,12 +83,8 @@ const GroupCoverage = ({
   }, [groupPopulations]);
 
   useEffect(() => {
-    onHighlightingNavTabClick(selectedHighlightingTab);
+    changePopulation(selectedHighlightingTab);
   }, [populationResults]);
-
-  // useEffect(() => {
-  //   changePopulation(selectedHighlightingTab);
-  // }, [populationResults]);
 
   const getRelevantPopulations = () => {
     const selectedGroup = groupPopulations.find(
