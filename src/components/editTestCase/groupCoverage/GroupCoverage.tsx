@@ -46,7 +46,7 @@ const abbreviatedPopulations = {
   measurePopulation: "MSRPOPL",
 };
 
-const otherCqlStatements = [
+const otherCqlDefinitions = [
   { name: "Definitions" },
   { name: "Functions" },
   { name: "Unused" },
@@ -71,7 +71,7 @@ const GroupCoverage = ({
   const [selectedPopulation, setSelectedPopulation] = useState<Population>(
     getFirstPopulation(groupPopulations[0])
   );
-  const [selectedFunctions, setSelectedFunctions] =
+  const [selectedOtherCqlDefinitions, setSelectedOtherCqlDefinitions] =
     useState<SelectedFunction>();
 
   // calculation results for selected group/criteria
@@ -145,7 +145,7 @@ const GroupCoverage = ({
 
   const changePopulation = (population: Population) => {
     setSelectedPopulation(population);
-    setSelectedFunctions(undefined);
+    setSelectedOtherCqlDefinitions(undefined);
     const result =
       populationResults &&
       Object.values(populationResults).find(
@@ -202,7 +202,7 @@ const GroupCoverage = ({
             value?.isFunction === false && value?.relevance !== Relevance.TRUE
         );
       }
-      setSelectedFunctions(filteredFunctions);
+      setSelectedOtherCqlDefinitions(filteredFunctions);
     }
   };
 
@@ -286,13 +286,13 @@ const GroupCoverage = ({
           <GroupCoverageNav
             id={selectedCriteria}
             populations={getRelevantPopulations()}
-            otherCqlStatements={otherCqlStatements}
+            otherCqlStatements={otherCqlDefinitions}
             selectedPopulation={selectedPopulation}
             onClick={onHighlightingNavTabClick}
           />
         </div>
 
-        {!selectedFunctions ? (
+        {!selectedOtherCqlDefinitions ? (
           <div
             tw="flex-auto p-3"
             id={`${selectedPopulation.abbreviation}-highlighting`}
@@ -302,11 +302,16 @@ const GroupCoverage = ({
           </div>
         ) : (
           <div>
-            {Object.values(selectedFunctions)
+            {Object.values(selectedOtherCqlDefinitions)
               .map((record) => record.statementLevelHTML)
               .filter(Boolean)
               .map((html, index) => (
-                <div key={index} tw="flex-auto p-3">
+                <div
+                  key={index}
+                  tw="flex-auto p-3"
+                  id={`${selectedPopulation.name}-highlighting`}
+                  data-testid={`${selectedPopulation.name}-highlighting`}
+                >
                   {parse(html)}
                 </div>
               ))}
