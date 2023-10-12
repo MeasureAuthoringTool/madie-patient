@@ -4,4 +4,5 @@ export interface DataCriteria {
   description: string;
   type: string;
   drc: boolean;
+  codeId: string;
 }

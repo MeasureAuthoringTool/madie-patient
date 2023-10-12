@@ -309,8 +309,11 @@ export class CqmConversionService {
     let sourceDataCriteria = CqmModelFactory.instantiateModel(
       dataCriteria.type
     );
-    sourceDataCriteria.desc = dataCriteria.oid;
+    if (dataCriteria.drc) {
+      sourceDataCriteria.codeId = dataCriteria.codeId;
+    }
     sourceDataCriteria.codeListId = dataCriteria.oid;
+    sourceDataCriteria.desc = dataCriteria.oid;
     sourceDataCriteria.description = dataCriteria.description;
     return sourceDataCriteria;
   }
