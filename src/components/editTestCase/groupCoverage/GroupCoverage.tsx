@@ -29,7 +29,7 @@ interface PopulationStatement extends Statement {
 }
 
 type PopulationResult = Record<string, PopulationStatement>;
-type SelectedFunction = Record<string, Statement>;
+type AllDefinitions = Record<string, Statement>;
 
 const populationCriteriaLabel = "Population Criteria";
 const abbreviatedPopulations = {
@@ -67,7 +67,7 @@ const GroupCoverage = ({
   const [selectedHighlightingTab, setSelectedHighlightingTab] =
     useState<Population>(getFirstPopulation(groupPopulations[0]));
   const [selectedAllDefinitions, setSelectedAllDefinitions] =
-    useState<SelectedFunction>();
+    useState<AllDefinitions>();
 
   // calculation results for selected group/criteria
   const [populationResults, setPopulationResults] = useState<
