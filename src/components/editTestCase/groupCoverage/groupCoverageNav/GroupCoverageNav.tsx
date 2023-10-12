@@ -9,10 +9,14 @@ export interface Population {
   name: PopulationType;
 }
 
+export interface AllDefinitions {
+  name: string;
+}
+
 interface Props {
   id: string;
   populations: Array<Population>;
-  otherCqlStatements: any;
+  allDefinitions: Array<AllDefinitions>;
   selectedHighlightingTab: Population;
   onClick: Function;
 }
@@ -20,7 +24,7 @@ interface Props {
 const GroupCoverageNav = ({
   id,
   populations,
-  otherCqlStatements,
+  allDefinitions,
   selectedHighlightingTab,
   onClick,
 }: Props) => {
@@ -54,8 +58,8 @@ const GroupCoverageNav = ({
         value={selectedHighlightingTab.name}
         data-testid={`group-coverage-nav-${name}`}
       >
-        {otherCqlStatements &&
-          otherCqlStatements.map((population) => (
+        {allDefinitions &&
+          allDefinitions.map((population) => (
             <Tab
               type="C"
               label={population.name}

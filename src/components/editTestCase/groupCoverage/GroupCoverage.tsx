@@ -281,7 +281,7 @@ const GroupCoverage = ({
           <GroupCoverageNav
             id={selectedCriteria}
             populations={getRelevantPopulations()}
-            otherCqlStatements={allDefinitions}
+            allDefinitions={allDefinitions}
             selectedHighlightingTab={selectedHighlightingTab}
             onClick={onHighlightingNavTabClick}
           />
