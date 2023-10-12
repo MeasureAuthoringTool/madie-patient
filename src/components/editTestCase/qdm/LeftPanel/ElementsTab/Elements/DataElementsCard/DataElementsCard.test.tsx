@@ -1149,3 +1149,99 @@ describe("applyAttribute function", () => {
     );
   });
 });
+
+describe("Negation Rationale", () => {
+  it("DataElementsCard renders negation rationale", async () => {
+    await waitFor(() =>
+      renderDataElementsCard(
+        "negation_rationale",
+        jest.fn,
+        testDataElements[12],
+        jest.fn
+      )
+    );
+    expect(
+      await screen.findByTestId("negation-rationale-div")
+    ).toBeInTheDocument();
+
+    const valueSetsInput = screen.getByTestId(
+      "value-set-selector-input"
+    ) as HTMLInputElement;
+    expect(valueSetsInput.value).toBe("");
+    const valueSetSelector = screen.getByTestId("value-set-selector");
+    const valueSetDropdown = within(valueSetSelector).getByRole(
+      "button"
+    ) as HTMLInputElement;
+    userEvent.click(valueSetDropdown);
+
+    const valueSetOptions = await screen.findAllByRole("option");
+    expect(valueSetOptions).toHaveLength(2);
+    // by default code system and code dropdown is not displayed unless user choose value set
+    expect(
+      screen.queryByTestId("code-system-selector")
+    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("code-selector")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("custom-code-system")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("custom-code")).not.toBeInTheDocument();
+  });
+
+  it("Should allow user to choose negation rationale value set, code and system", async () => {
+    await waitFor(() =>
+      renderDataElementsCard(
+        "negation_rationale",
+        jest.fn,
+        testDataElements[12],
+        jest.fn
+      )
+    );
+    expect(
+      await screen.findByTestId("negation-rationale-div")
+    ).toBeInTheDocument();
+
+    const valueSetsInput = screen.getByTestId(
+      "value-set-selector-input"
+    ) as HTMLInputElement;
+    expect(valueSetsInput.value).toBe("");
+    const valueSetSelector = screen.getByTestId("value-set-selector");
+    const valueSetDropdown = within(valueSetSelector).getByRole(
+      "button"
+    ) as HTMLInputElement;
+    userEvent.click(valueSetDropdown);
+    const valueSetOptions = await screen.findAllByRole("option");
+    userEvent.click(valueSetOptions[1]);
+
+    // select the code system
+    const codeSystemSelector = screen.getByTestId("code-system-selector");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    userEvent.click(codeSystemDropdown);
+    const codeSystemOptions = await screen.findAllByRole("option");
+    expect(codeSystemOptions[0]).toHaveTextContent("SNOMEDCT");
+    userEvent.click(codeSystemOptions[0]);
+
+    // select the code
+    const codeSelector = screen.getByTestId("code-selector");
+    const codeDropdown = within(codeSelector).getByRole("button");
+    userEvent.click(codeDropdown);
+    const codeOptions = await screen.findAllByRole("option");
+    expect(codeOptions).toHaveLength(1);
+    expect(codeOptions[0]).toHaveTextContent(
+      "4525004 - Emergency department patient visit (procedure)"
+    );
+    userEvent.click(codeOptions[0]);
+
+    //add negation rationale
+    const addNegationRationale = screen.getByTestId("add-negation-rationale");
+    expect(addNegationRationale).toBeInTheDocument();
+    userEvent.click(addNegationRationale);
+
+    //negation rationale chip displays with code:system
+    const chip = screen.getByTestId("2.16.840.1.113883.6.96 : 4525004");
+    expect(chip).toBeInTheDocument();
+
+    //delete negation rationale
+    userEvent.click(screen.getByTestId("CancelIcon"));
+    expect(
+      await screen.queryByTestId("2.16.840.1.113883.6.96 : 4525004")
+    ).toBeNull();
+  });
+});
