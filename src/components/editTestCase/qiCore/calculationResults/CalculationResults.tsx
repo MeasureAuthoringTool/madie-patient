@@ -8,6 +8,7 @@ import { MadieAlert } from "@madie/madie-design-system/dist/react";
 import { GroupPopulation, PopulationType } from "@madie/madie-models";
 import { useFeatureFlags } from "@madie/madie-util";
 import GroupCoverage from "../../groupCoverage/GroupCoverage";
+import { Relevance } from "fqm-execution";
 
 type ErrorProps = {
   status?: "success" | "warning" | "error" | "info" | "meta";
@@ -25,7 +26,7 @@ export interface MappedCalculationResults {
     statementResults: {
       [statementName: string]: {
         isFunction: boolean;
-        relevance: string;
+        relevance: Relevance;
         statementLevelHTML?: string | undefined;
       };
     }[];

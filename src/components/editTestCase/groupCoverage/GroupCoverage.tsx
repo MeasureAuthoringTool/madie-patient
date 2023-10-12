@@ -3,7 +3,7 @@ import "twin.macro";
 import "styled-components/macro";
 import parse from "html-react-parser";
 import { isEmpty } from "lodash";
-import { GroupPopulation } from "@madie/madie-models";
+import { GroupPopulation, PopulationType } from "@madie/madie-models";
 import { Select } from "@madie/madie-design-system/dist/react";
 import GroupCoverageNav, {
   Population,
@@ -29,7 +29,7 @@ interface Statement {
 }
 
 interface PopulationStatement extends Statement {
-  populationName: string;
+  populationName: PopulationType;
 }
 
 type PopulationResult = Record<string, PopulationStatement>;
@@ -216,7 +216,7 @@ const GroupCoverage = ({
     return name !== "Functions" && name !== "Definitions" && name !== "Unused";
   };
 
-  const onCovergaNavTabClick = (data) => {
+  const onHighlightingNavTabClick = (data) => {
     if (isPopulation(data.name)) {
       changePopulation(data);
     } else {
@@ -288,11 +288,11 @@ const GroupCoverage = ({
             populations={getRelevantPopulations()}
             otherCqlStatements={otherCqlStatements}
             selectedPopulation={selectedPopulation}
-            onClick={onCovergaNavTabClick}
+            onClick={onHighlightingNavTabClick}
           />
         </div>
 
-        {!selectedFunctions && (
+        {!selectedFunctions ? (
           <div
             tw="flex-auto p-3"
             id={`${selectedPopulation.abbreviation}-highlighting`}
@@ -300,15 +300,18 @@ const GroupCoverage = ({
           >
             {parse(coverageHtml)}
           </div>
-        )}
-
-        <div>
-          {selectedFunctions &&
-            Object.values(selectedFunctions)
+        ) : (
+          <div>
+            {Object.values(selectedFunctions)
               .map((record) => record.statementLevelHTML)
               .filter(Boolean)
-              .map((html) => <div tw="flex-auto p-3">{parse(html)}</div>)}
-        </div>
+              .map((html, index) => (
+                <div key={index} tw="flex-auto p-3">
+                  {parse(html)}
+                </div>
+              ))}
+          </div>
+        )}
       </div>
     </>
   );
