@@ -206,9 +206,9 @@ const GroupCoverage = ({
     }
   };
 
-  const filterTestObject = (obj, filterFn) => {
+  const filterTestObject = (statementResults, filterFn) => {
     return Object.fromEntries(
-      Object.entries(obj).filter(([key, value]) => filterFn(value))
+      Object.entries(statementResults).filter(([key, value]) => filterFn(value))
     );
   };
 
