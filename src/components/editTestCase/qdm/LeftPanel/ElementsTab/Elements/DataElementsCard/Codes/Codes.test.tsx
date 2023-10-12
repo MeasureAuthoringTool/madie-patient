@@ -35,6 +35,19 @@ const cqmMeasure = {
         },
       ],
     },
+    {
+      oid: "drc-bdb8b89536181a411ad034378b7ceef6",
+      version: "N/A",
+      concepts: [
+        {
+          code: "71802-3",
+          code_system_name: "LOINC",
+          code_system_version: "N/A",
+          display_name: "Housing status",
+        },
+      ],
+      display_name: "Housing status",
+    },
   ],
 };
 
@@ -287,5 +300,86 @@ describe("Codes section", () => {
       />
     );
     expect(await screen.queryByTestId("SNOMEDCT_183452005")).toBeNull();
+  });
+
+  it("Should render Codes for DRCs", async () => {
+    const selectedDataElementForDrc = {
+      codeListId: "drc-bdb8b89536181a411ad034378b7ceef6",
+    };
+    render(
+      <Codes
+        cqmMeasure={cqmMeasure}
+        handleChange={handleChange}
+        selectedDataElement={selectedDataElementForDrc}
+        deleteCode={deleteCode}
+      />
+    );
+    expect(screen.getByTestId("codes-section")).toBeInTheDocument();
+    const codeSystemSelectInput = screen.getByTestId(
+      "code-system-selector-input"
+    ) as HTMLInputElement;
+    expect(codeSystemSelectInput.value).toBe("");
+
+    const codeSystemSelector = screen.getByTestId("code-system-selector");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    userEvent.click(codeSystemDropdown);
+    const optionsList = await screen.findAllByTestId(/code-system-option/i);
+    expect(optionsList).toHaveLength(2);
+    expect(optionsList[0]).toHaveTextContent("Custom");
+    expect(optionsList[1]).toHaveTextContent("LOINC");
+  });
+  it("No valueset found", async () => {
+    const testSelectedDataElement = {
+      codeListId: "testCodeListId",
+    };
+    render(
+      <Codes
+        cqmMeasure={cqmMeasure}
+        handleChange={handleChange}
+        selectedDataElement={testSelectedDataElement}
+        deleteCode={deleteCode}
+      />
+    );
+    expect(screen.getByTestId("codes-section")).toBeInTheDocument();
+    const codeSystemSelectInput = screen.getByTestId(
+      "code-system-selector-input"
+    ) as HTMLInputElement;
+    expect(codeSystemSelectInput.value).toBe("");
+
+    const codeSystemSelector = screen.getByTestId("code-system-selector");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    userEvent.click(codeSystemDropdown);
+    const optionsList = await screen.queryAllByTestId(/code-system-option/i);
+    expect(optionsList).toHaveLength(0);
+  });
+  it("No concepts", async () => {
+    const testCqmMeasure = {
+      value_sets: [
+        {
+          display_name: "Encounter Inpatient",
+          oid: "2.16.840.1.113883.3.666.5.307",
+          version: "N/A",
+        },
+      ],
+    };
+    render(
+      <Codes
+        cqmMeasure={testCqmMeasure}
+        handleChange={handleChange}
+        selectedDataElement={selectedDataElement}
+        deleteCode={deleteCode}
+      />
+    );
+    expect(screen.getByTestId("codes-section")).toBeInTheDocument();
+    const codeSystemSelectInput = screen.getByTestId(
+      "code-system-selector-input"
+    ) as HTMLInputElement;
+    expect(codeSystemSelectInput.value).toBe("");
+
+    const codeSystemSelector = screen.getByTestId("code-system-selector");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    userEvent.click(codeSystemDropdown);
+    const optionsList = await screen.getAllByTestId(/code-system-option/i);
+    expect(optionsList).toHaveLength(1);
   });
 });
