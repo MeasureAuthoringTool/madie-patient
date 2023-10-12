@@ -64,9 +64,8 @@ const GroupCoverage = ({
   // selected group/criteria
   const [selectedCriteria, setSelectedCriteria] = useState<string>("");
   // selected population of a selected group
-  const [selectedPopulation, setSelectedPopulation] = useState<Population>(
-    getFirstPopulation(groupPopulations[0])
-  );
+  const [selectedHighlightingTab, setSelectedHighlightingTab] =
+    useState<Population>(getFirstPopulation(groupPopulations[0]));
   const [selectedAllDefinitions, setSelectedAllDefinitions] =
     useState<SelectedFunction>();
 
@@ -84,8 +83,12 @@ const GroupCoverage = ({
   }, [groupPopulations]);
 
   useEffect(() => {
-    changePopulation(selectedPopulation);
+    onHighlightingNavTabClick(selectedHighlightingTab);
   }, [populationResults]);
+
+  // useEffect(() => {
+  //   changePopulation(selectedHighlightingTab);
+  // }, [populationResults]);
 
   const getRelevantPopulations = () => {
     const selectedGroup = groupPopulations.find(
@@ -136,11 +139,11 @@ const GroupCoverage = ({
       getPopulationResults(criteriaId);
     setPopulationResults(populationResults);
     const group = groupPopulations.find((gp) => gp.groupId === criteriaId);
-    setSelectedPopulation(getFirstPopulation(group));
+    setSelectedHighlightingTab(getFirstPopulation(group));
   };
 
   const changePopulation = (population: Population) => {
-    setSelectedPopulation(population);
+    setSelectedHighlightingTab(population);
     setSelectedAllDefinitions(undefined);
     const result =
       populationResults &&
@@ -174,35 +177,35 @@ const GroupCoverage = ({
   ];
 
   const changeDefinitions = (population) => {
-    setSelectedPopulation(population);
+    setSelectedHighlightingTab(population);
 
     if (mappedCalculationResults) {
       const statementResults =
         mappedCalculationResults[selectedCriteria]["statementResults"];
-      let filteredFunctions;
+      let filteredDefinitions;
 
       if (population.name === "Functions") {
-        filteredFunctions = filterTestObject(
+        filteredDefinitions = filterDefinitions(
           statementResults,
           (value) => value?.isFunction && value.relevance !== Relevance.NA
         );
       } else if (population.name === "Definitions") {
-        filteredFunctions = filterTestObject(
+        filteredDefinitions = filterDefinitions(
           statementResults,
           (value) => !value?.isFunction && value.relevance === Relevance.TRUE
         );
       } else if (population.name === "Unused") {
-        filteredFunctions = filterTestObject(
+        filteredDefinitions = filterDefinitions(
           statementResults,
           (value) =>
             value?.isFunction === false && value?.relevance !== Relevance.TRUE
         );
       }
-      setSelectedAllDefinitions(filteredFunctions);
+      setSelectedAllDefinitions(filteredDefinitions);
     }
   };
 
-  const filterTestObject = (statementResults, filterFn) => {
+  const filterDefinitions = (statementResults, filterFn) => {
     return Object.fromEntries(
       Object.entries(statementResults).filter(([key, value]) => filterFn(value))
     );
@@ -212,11 +215,11 @@ const GroupCoverage = ({
     return name !== "Functions" && name !== "Definitions" && name !== "Unused";
   };
 
-  const onHighlightingNavTabClick = (data) => {
-    if (isPopulation(data.name)) {
-      changePopulation(data);
+  const onHighlightingNavTabClick = (selectedTab) => {
+    if (isPopulation(selectedTab.name)) {
+      changePopulation(selectedTab);
     } else {
-      changeDefinitions(data);
+      changeDefinitions(selectedTab);
     }
   };
 
@@ -283,7 +286,7 @@ const GroupCoverage = ({
             id={selectedCriteria}
             populations={getRelevantPopulations()}
             otherCqlStatements={allDefinitions}
-            selectedPopulation={selectedPopulation}
+            selectedHighlightingTab={selectedHighlightingTab}
             onClick={onHighlightingNavTabClick}
           />
         </div>
@@ -291,8 +294,8 @@ const GroupCoverage = ({
         {!selectedAllDefinitions ? (
           <div
             tw="flex-auto p-3"
-            id={`${selectedPopulation.abbreviation}-highlighting`}
-            data-testid={`${selectedPopulation.abbreviation}-highlighting`}
+            id={`${selectedHighlightingTab.abbreviation}-highlighting`}
+            data-testid={`${selectedHighlightingTab.abbreviation}-highlighting`}
           >
             {parse(coverageHtml)}
           </div>
@@ -305,8 +308,8 @@ const GroupCoverage = ({
                 <div
                   key={index}
                   tw="flex-auto p-3"
-                  id={`${selectedPopulation.name}-highlighting`}
-                  data-testid={`${selectedPopulation.name}-highlighting`}
+                  id={`${selectedHighlightingTab.name}-highlighting`}
+                  data-testid={`${selectedHighlightingTab.name}-highlighting`}
                 >
                   {parse(html)}
                 </div>

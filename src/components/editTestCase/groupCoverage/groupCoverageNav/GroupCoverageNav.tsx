@@ -13,7 +13,7 @@ interface Props {
   id: string;
   populations: Array<Population>;
   otherCqlStatements: any;
-  selectedPopulation: Population;
+  selectedHighlightingTab: Population;
   onClick: Function;
 }
 
@@ -21,7 +21,7 @@ const GroupCoverageNav = ({
   id,
   populations,
   otherCqlStatements,
-  selectedPopulation,
+  selectedHighlightingTab,
   onClick,
 }: Props) => {
   return (
@@ -30,7 +30,7 @@ const GroupCoverageNav = ({
         type="C"
         size="standard"
         orientation="vertical"
-        value={selectedPopulation.id}
+        value={selectedHighlightingTab.id}
         data-testid={`group-coverage-nav-${id}`}
       >
         {populations &&
@@ -51,7 +51,7 @@ const GroupCoverageNav = ({
         type="C"
         size="standard"
         orientation="vertical"
-        value={selectedPopulation.name}
+        value={selectedHighlightingTab.name}
         data-testid={`group-coverage-nav-${name}`}
       >
         {otherCqlStatements &&
