@@ -188,13 +188,25 @@ const GroupCoverage = ({
       } else if (population.name === "Definitions") {
         filteredDefinitions = filterDefinitions(
           statementResults,
-          (value) => !value?.isFunction && value.relevance === Relevance.TRUE
+          (value) => !value?.isFunction && value.relevance !== Relevance.NA
         );
       } else if (population.name === "Unused") {
-        filteredDefinitions = filterDefinitions(
+        const unusedDefinitions: any = filterDefinitions(
           statementResults,
           (value) =>
-            value?.isFunction === false && value?.relevance !== Relevance.TRUE
+            value?.isFunction === false && value.relevance === Relevance.NA
+        );
+
+        filteredDefinitions = Object.keys(unusedDefinitions).reduce(
+          (result, statementName) => {
+            result[statementName] = {
+              ...unusedDefinitions[statementName],
+              //currently we don’t have tools for CQl unused definitions
+              statementLevelHTML: `<code><span>define &quot;${statementName}&quot;: </span><span>&quot;unavailable&quot;</span></code>`,
+            };
+            return result;
+          },
+          {}
         );
       }
       setSelectedAllDefinitions(filteredDefinitions);
