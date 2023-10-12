@@ -116,6 +116,9 @@ const ElementsSection = (props: { handleTestCaseErrors: Function }) => {
   };
 
   const deleteDataElement = (id: string) => {
+    if (selectedDataElement?.id === id) {
+      setSelectedDataElement(null);
+    }
     dispatch({
       type: PatientActionType.REMOVE_DATA_ELEMENT,
       payload: { id: id },
