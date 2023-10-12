@@ -8,10 +8,6 @@ import { Select } from "@madie/madie-design-system/dist/react";
 import GroupCoverageNav, {
   Population,
 } from "./groupCoverageNav/GroupCoverageNav";
-import {
-  DetailedPopulationGroupResult,
-  StatementResult,
-} from "fqm-execution/build/types/Calculator";
 import { MenuItem } from "@mui/material";
 import { FHIR_POPULATION_CODES } from "../../../util/PopulationsMap";
 import { MappedCalculationResults } from "../qiCore/calculationResults/CalculationResults";
@@ -46,7 +42,7 @@ const abbreviatedPopulations = {
   measurePopulation: "MSRPOPL",
 };
 
-const otherCqlDefinitions = [
+const allDefinitions = [
   { name: "Definitions" },
   { name: "Functions" },
   { name: "Unused" },
@@ -71,7 +67,7 @@ const GroupCoverage = ({
   const [selectedPopulation, setSelectedPopulation] = useState<Population>(
     getFirstPopulation(groupPopulations[0])
   );
-  const [selectedOtherCqlDefinitions, setSelectedOtherCqlDefinitions] =
+  const [selectedAllDefinitions, setSelectedAllDefinitions] =
     useState<SelectedFunction>();
 
   // calculation results for selected group/criteria
@@ -145,7 +141,7 @@ const GroupCoverage = ({
 
   const changePopulation = (population: Population) => {
     setSelectedPopulation(population);
-    setSelectedOtherCqlDefinitions(undefined);
+    setSelectedAllDefinitions(undefined);
     const result =
       populationResults &&
       Object.values(populationResults).find(
@@ -202,7 +198,7 @@ const GroupCoverage = ({
             value?.isFunction === false && value?.relevance !== Relevance.TRUE
         );
       }
-      setSelectedOtherCqlDefinitions(filteredFunctions);
+      setSelectedAllDefinitions(filteredFunctions);
     }
   };
 
@@ -286,13 +282,13 @@ const GroupCoverage = ({
           <GroupCoverageNav
             id={selectedCriteria}
             populations={getRelevantPopulations()}
-            otherCqlStatements={otherCqlDefinitions}
+            otherCqlStatements={allDefinitions}
             selectedPopulation={selectedPopulation}
             onClick={onHighlightingNavTabClick}
           />
         </div>
 
-        {!selectedOtherCqlDefinitions ? (
+        {!selectedAllDefinitions ? (
           <div
             tw="flex-auto p-3"
             id={`${selectedPopulation.abbreviation}-highlighting`}
@@ -302,7 +298,7 @@ const GroupCoverage = ({
           </div>
         ) : (
           <div>
-            {Object.values(selectedOtherCqlDefinitions)
+            {Object.values(selectedAllDefinitions)
               .map((record) => record.statementLevelHTML)
               .filter(Boolean)
               .map((html, index) => (
