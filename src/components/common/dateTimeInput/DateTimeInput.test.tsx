@@ -2,22 +2,9 @@ import * as React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import DateTimeInput from "./DateTimeInput";
 import dayjs from "dayjs";
-import { CQL } from "cqm-models";
 
 const testDateTime: CQL.DateTimeField = dayjs.utc("2022-04-17T15:30");
 const onDateTimeChange = jest.fn();
-
-jest.mock("dayjs", () => ({
-  extend: jest.fn(),
-  utc: jest.fn((...args) => {
-    const dayjs = jest.requireActual("dayjs");
-    dayjs.extend(jest.requireActual("dayjs/plugin/utc"));
-
-    return dayjs.utc(
-      args.filter((arg) => arg).length > 0 ? args : "08/03/2023"
-    );
-  }),
-}));
 
 describe("DateTimeInput Component", () => {
   it("Should render DateTimeInput component with appropriate data", () => {
