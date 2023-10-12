@@ -9,14 +9,14 @@ export interface Population {
   name: PopulationType;
 }
 
-export interface AllDefinitions {
+export interface AllDefinitionsTabs {
   name: string;
 }
 
 interface Props {
   id: string;
   populations: Array<Population>;
-  allDefinitions: Array<AllDefinitions>;
+  allDefinitions: Array<AllDefinitionsTabs>;
   selectedHighlightingTab: Population;
   onClick: Function;
 }
