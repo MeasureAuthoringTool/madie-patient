@@ -7,21 +7,13 @@ import { PRIMARY_TIMING_ATTRIBUTES } from "../../../../../../../../util/QdmAttri
 import * as _ from "lodash";
 
 const Timing = ({ canEdit, updateDataElement, selectedDataElement }) => {
-  const [currentInterval, setCurrentInterval] =
-    useState<CQL.DateTimeInterval>(null);
-
   const handleChange = (newValue, attributeName) => {
-    if (attributeName.includes("Period")) {
-      setCurrentInterval(newValue);
-    }
-    // previous implementation didn't use set. may be functionally identical?
     selectedDataElement.set(attributeName, newValue);
     updateDataElement(selectedDataElement);
   };
 
   const displayTiming = () => {
     const displayTimingArray = [];
-
     for (const attr of PRIMARY_TIMING_ATTRIBUTES) {
       const timingAttr = selectedDataElement?.schema?.paths?.[attr];
       if (timingAttr) {
@@ -30,7 +22,7 @@ const Timing = ({ canEdit, updateDataElement, selectedDataElement }) => {
             <div style={{ paddingRight: "30px", paddingBottom: "12px" }}>
               <DateTimeInterval
                 label={_.startCase(timingAttr.path)}
-                dateTimeInterval={currentInterval}
+                dateTimeInterval={selectedDataElement.get(timingAttr.path)}
                 onDateTimeIntervalChange={handleChange}
                 canEdit={canEdit}
                 attributeName={timingAttr.path}
@@ -38,6 +30,18 @@ const Timing = ({ canEdit, updateDataElement, selectedDataElement }) => {
             </div>
           );
         } else if (timingAttr.instance == "DateTime") {
+          displayTimingArray.push(
+            <div style={{ paddingRight: "30px", paddingBottom: "12px" }}>
+              <DateTimeInput
+                label={_.startCase(timingAttr.path)}
+                canEdit={canEdit}
+                dateTime={selectedDataElement.get(timingAttr.path)}
+                onDateTimeChange={handleChange}
+                attributeName={timingAttr.path}
+              ></DateTimeInput>
+            </div>
+          );
+        } else if (timingAttr.instance === "Date") {
           displayTimingArray.push(
             <div style={{ paddingRight: "30px" }}>
               <DateTimeInput
@@ -52,6 +56,7 @@ const Timing = ({ canEdit, updateDataElement, selectedDataElement }) => {
         }
       }
     }
+
     return displayTimingArray;
   };
 
