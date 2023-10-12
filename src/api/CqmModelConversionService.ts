@@ -206,6 +206,7 @@ export class CqmConversionService {
     cqlLibraryName: string,
     populations: Population[]
   ) => {
+    debugger
     return observations.map((observation, i) => ({
       id: observation.id,
       hqmf_id: null,
@@ -219,7 +220,7 @@ export class CqmConversionService {
       observation_parameter: {
         id: uuidv4(),
         library_name: cqlLibraryName,
-        statement_name: this.getCqmObservationAssociationName(
+        statement_name: this.getAssociatedPopulationDefinition(
           observation.criteriaReference,
           populations
         ),
@@ -228,13 +229,13 @@ export class CqmConversionService {
     }));
   };
 
-  private getCqmObservationAssociationName = (
+  private getAssociatedPopulationDefinition = (
     criteriaReference: string,
     populations: Population[]
   ) => {
     return populations.filter(
       (population) => population.id === criteriaReference
-    )[0]?.name;
+    )[0]?.definition;
   };
 
   private generateCqmSupplementalDataElements = (

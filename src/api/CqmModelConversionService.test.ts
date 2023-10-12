@@ -47,7 +47,7 @@ describe("CqmConversionService", () => {
           description: "",
         },
         {
-          definition: "Initial Population",
+          definition: "Measure Population",
           description: "",
           id: "id-2",
           name: PopulationType.MEASURE_POPULATION,
@@ -181,7 +181,7 @@ describe("CqmConversionService", () => {
     ).toEqual("test");
     expect(
       populationSets[0].observations[0].observation_parameter.statement_name
-    ).toEqual("measurePopulation");
+    ).toEqual("Measure Population");
   });
 
   it("converts to cqm measure when MADiE measure is null/undefined", async () => {
