@@ -31,7 +31,7 @@ export interface NavTabProps {
   testCasePassFailStats: TestCasesPassingDetailsProps;
   coveragePercentage: number;
   validTestCases: TestCase[];
-  exportTestCases: () => void;
+  exportTestCases: (bundleType: string) => void;
   onDeleteAllTestCases: () => void;
   backendTestCases: () => void;
 }
@@ -211,7 +211,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           onClick={(e) => {
             featureFlags?.exportQiCoreBundleType
               ? handleOpen(e)
-              : exportTestCases();
+              : exportTestCases("COLLECTION");
           }}
           data-testid="export-test-cases-button"
         >
@@ -232,12 +232,16 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
             {
               label: "Transaction Bundle",
               dataTestId: `export-transaction-bundle`,
-              toImplementFunction: "",
+              toImplementFunction: () => {
+                exportTestCases("TRANSACTION");
+              },
             },
             {
               label: "Collection Bundle",
               dataTestId: `export-collection-bundle`,
-              toImplementFunction: "",
+              toImplementFunction: () => {
+                exportTestCases("COLLECTION");
+              },
             },
           ]}
         />

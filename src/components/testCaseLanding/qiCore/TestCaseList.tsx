@@ -261,12 +261,16 @@ const TestCaseList = (props: TestCaseListProps) => {
       });
   };
 
-  const exportTestCase = async (selectedTestCase: TestCase) => {
+  const exportTestCase = async (
+    selectedTestCase: TestCase,
+    bundleType: string
+  ) => {
     try {
       abortController.current = new AbortController();
       const { ecqmTitle, model, version } = measure ?? {};
       const exportData = await testCaseService?.current.exportTestCases(
         measure?.id,
+        bundleType,
         [selectedTestCase.id],
         abortController.current.signal
       );
@@ -294,7 +298,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     }
   };
 
-  const exportTestCases = async () => {
+  const exportTestCases = async (bundleType: string) => {
     try {
       abortController.current = new AbortController();
       const { ecqmTitle, model, version } = measure ?? {};
@@ -304,6 +308,7 @@ const TestCaseList = (props: TestCaseListProps) => {
       });
       const exportData = await testCaseService?.current.exportTestCases(
         measure?.id,
+        bundleType,
         testCaseIds,
         abortController.current.signal
       );
