@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { CQL, DataElement } from "cqm-models";
-import { DateField, TimeField } from "@madie/madie-design-system/dist/react";
-import { IconButton } from "@mui/material";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import {
+  DateField,
+  TimeField,
+  Button,
+} from "@madie/madie-design-system/dist/react";
 import dayjs from "dayjs";
 import IntegerInput from "../../../../../../../common/IntegerInput/IntegerInput";
 import "./DisplayAttributeInputs.scss";
@@ -206,11 +208,16 @@ const DisplayAttributeInputs = ({
     <>
       <div tw="flex w-3/4">
         <div tw="flex-grow w-3/4 pt-4">{displayAttributeInput()}</div>
-        <div tw="flex-grow py-6">
+        <div tw="relative pl-2.5">
           {attributeType ? (
-            <IconButton onClick={handleAttributeChange}>
-              <AddCircleOutlineIcon sx={{ color: "#0073c8" }} />
-            </IconButton>
+            <Button
+              tw="absolute bottom-0"
+              variant="outline-filled"
+              data-testid="add-attribute-button"
+              onClick={handleAttributeChange}
+            >
+              Add
+            </Button>
           ) : (
             ""
           )}
