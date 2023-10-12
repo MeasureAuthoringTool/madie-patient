@@ -47,7 +47,7 @@ describe("CqmConversionService", () => {
           description: "",
         },
         {
-          definition: "Initial Population",
+          definition: "Measure Population",
           description: "",
           id: "id-2",
           name: PopulationType.MEASURE_POPULATION,
@@ -87,6 +87,7 @@ describe("CqmConversionService", () => {
         description: "Patient Characteristic Ethnicity: Ethnicity",
         type: "PatientCharacteristicEthnicity",
         drc: false,
+        codeId: "",
       },
       {
         oid: "2.16.840.1.113883.3.666.5.307",
@@ -94,13 +95,15 @@ describe("CqmConversionService", () => {
         description: "Encounter, Performed: Encounter Inpatient",
         type: "EncounterPerformed",
         drc: false,
+        codeId: "",
       },
       {
         oid: "drc-0897635b538e9dfe8d873e13e47dcac3",
-        title: "Clinical Examples",
-        description: "Procedure, Performed: Clinical Examples",
-        type: "ProcedurePerformed",
+        title: "Housing status",
+        description: "Assessment, Performed: Housing status",
+        type: "AssessmentPerformed",
         drc: true,
+        codeId: "71802-3",
       },
     ];
     elms = [
@@ -108,6 +111,10 @@ describe("CqmConversionService", () => {
       '{"library":{"annotation":{},"identifier":{"id":"IncludedLib","version":"0.1.000"},"statements":{}}}',
     ];
     population_sets = [];
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it("converts MADiE measure to cqm measure successfully", async () => {
@@ -174,7 +181,7 @@ describe("CqmConversionService", () => {
     ).toEqual("test");
     expect(
       populationSets[0].observations[0].observation_parameter.statement_name
-    ).toEqual("measurePopulation");
+    ).toEqual("Measure Population");
   });
 
   it("converts to cqm measure when MADiE measure is null/undefined", async () => {
@@ -217,5 +224,18 @@ describe("CqmConversionService", () => {
         "An Error occurred while fetching source data criteria"
       );
     }
+  });
+
+  it("handle fetchSourceDataCriteria success", async () => {
+    axios.put = jest.fn().mockResolvedValueOnce({
+      status: 200,
+      data: dataCriteria,
+    });
+
+    const result = await cqmConversionService.fetchSourceDataCriteria("cql");
+    expect(result.length).toBe(3);
+    expect(result[0].codeListId).toBe("2.16.840.1.114222.4.11.837");
+    expect(result[1].codeListId).toBe("2.16.840.1.113883.3.666.5.307");
+    expect(result[2].codeId).toBe("71802-3");
   });
 });

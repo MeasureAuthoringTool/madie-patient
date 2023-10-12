@@ -66,10 +66,16 @@ const TestCaseRoutes = () => {
   }, [measure]);
 
   const getQdmValueSets = (convertedMeasure) => {
+    const drcValueSets: ValueSet[] =
+      terminologyService.current.getValueSetsForDRCs(convertedMeasure);
+
     terminologyService.current
       .getQdmValueSetsExpansion(convertedMeasure)
       .then((vs: ValueSet[]) => {
-        setCqmMeasure({ ...convertedMeasure, value_sets: vs });
+        setCqmMeasure({
+          ...convertedMeasure,
+          value_sets: [...vs, ...drcValueSets],
+        });
       })
       .catch((err) => {
         setContextFailure(true);
