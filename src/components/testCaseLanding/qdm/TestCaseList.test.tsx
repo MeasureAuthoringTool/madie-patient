@@ -102,7 +102,7 @@ jest.mock("@madie/madie-util", () => ({
 
 let importingTestCases = [];
 jest.mock(
-  "../common/import/TestCaseImportFromBonnieDialog",
+  "../common/import/TestCaseImportFromBonnieDialogQDM",
   () =>
     ({ open, handleClose, onImport }) => {
       return open ? (
@@ -116,6 +116,7 @@ jest.mock(
           <button
             onClick={() => onImport(importingTestCases)}
             data-testid="test-case-import-import-btn"
+            type="button"
           >
             Import
           </button>
