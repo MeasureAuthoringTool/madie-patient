@@ -108,17 +108,17 @@ const GroupCoverage = ({
     if (mappedCalculationResults) {
       const selectedGroupCalculationResults = mappedCalculationResults[groupId];
       if (selectedGroupCalculationResults) {
-        const relevant1Populations =
+        const relevantPopulations =
           selectedGroupCalculationResults.populationRelevance;
-        const statement1Results =
+        const statementResults =
           selectedGroupCalculationResults.statementResults;
-        const matchingResults = Object.keys(statement1Results)
-          .filter((key) => relevant1Populations[key])
+        const matchingResults = Object.keys(statementResults)
+          .filter((key) => relevantPopulations[key])
           .reduce((output, key) => {
             output[key] = {
-              ...statement1Results[key],
+              ...statementResults[key],
               populationName:
-                FHIR_POPULATION_CODES[relevant1Populations[key].populationType],
+                FHIR_POPULATION_CODES[relevantPopulations[key].populationType],
             };
             return output;
           }, {});
