@@ -199,11 +199,13 @@ const GroupCoverage = ({
 
         filteredDefinitions = Object.keys(unusedDefinitions).reduce(
           (result, statementName) => {
-            result[statementName] = {
-              ...unusedDefinitions[statementName],
-              //currently we don’t have tools for CQl unused definitions
-              statementLevelHTML: `<code><span>define &quot;${statementName}&quot;: </span><span>&quot;unavailable&quot;</span></code>`,
-            };
+            if (statementName !== "Patient") {
+              result[statementName] = {
+                ...unusedDefinitions[statementName],
+                //currently we don’t have tools for CQl unused definitions
+                statementLevelHTML: `<code><span>define &quot;${statementName}&quot;: </span><span>&quot;unavailable&quot;</span></code>`,
+              };
+            }
             return result;
           },
           {}
