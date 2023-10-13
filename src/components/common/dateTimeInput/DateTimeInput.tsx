@@ -60,7 +60,7 @@ const DateTimeInput = ({
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DateTimeField
         disabled={!canEdit}
-        label={`${label}`}
+        label={label}
         handleDateTimeChange={handleDateTimeChange}
         dateTimeValue={toDayJS(dateTime)}
       />
