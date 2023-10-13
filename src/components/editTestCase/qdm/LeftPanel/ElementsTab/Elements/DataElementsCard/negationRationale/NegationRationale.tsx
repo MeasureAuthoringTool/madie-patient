@@ -52,6 +52,12 @@ const NegationRationale = ({
 
   const handleNegationRationaleChange = (value) => {
     setNegationRationale(value);
+    selectedDataElement.negationRationale = {
+      code: value.code,
+      system: value.system,
+      version: null,
+      display: value.display,
+    };
   };
 
   const isFormValid = () => {
