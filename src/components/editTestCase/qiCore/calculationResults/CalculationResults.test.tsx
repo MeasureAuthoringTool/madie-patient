@@ -182,6 +182,16 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
           pretty: "FALSE ([])",
           statementLevelHTML: "<pre>NUMER 1 Partially Covered</pre>",
         },
+        {
+          libraryName: "FHIRHelpers",
+          statementName: "ToCalendarUnit",
+          localId: "54",
+          final: FinalResult.FALSE,
+          relevance: Relevance.TRUE,
+          isFunction: true,
+          pretty: "FUNCTION",
+          statementLevelHTML: "<pre>ToCalendarUnit Function Covered</pre>",
+        },
       ],
     },
     {
@@ -261,7 +271,7 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     useFeatureFlags.mockReturnValue({ highlightingTabs: true });
   });
 
-  const getPopulation = (name) => screen.findByRole("tab", { name: name });
+  const getByRole = (name) => screen.findByRole("tab", { name: name });
   const getCriteriaOptions = () => {
     const criteriaSelector = screen.getByTestId(
       "population-criterion-selector"
@@ -274,9 +284,9 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
   };
 
   const assertPopulationTabs = async () => {
-    const ip = await getPopulation("IP");
-    const denom = await getPopulation("DENOM");
-    const numer = await getPopulation("NUMER");
+    const ip = await getByRole("IP");
+    const denom = await getByRole("DENOM");
+    const numer = await getByRole("NUMER");
     // check tabs are rendered for all populations of a group
     expect(ip).toBeInTheDocument();
     expect(denom).toBeInTheDocument();
@@ -305,6 +315,12 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     renderCoverageComponent();
     expect(screen.getByText("Population Criteria 1")).toBeInTheDocument();
     expect(screen.getByText("No results available")).toBeInTheDocument();
+    expect(screen.getByText("Definitions")).toBeInTheDocument();
+    expect(screen.getByText("No results available")).toBeInTheDocument();
+    expect(screen.getByText("Unused")).toBeInTheDocument();
+    expect(screen.getByText("No results available")).toBeInTheDocument();
+    expect(screen.getByText("Functions")).toBeInTheDocument();
+    expect(screen.getByText("No results available")).toBeInTheDocument();
 
     await assertPopulationTabs();
 
@@ -323,17 +339,23 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
       "IP 1 Covered"
     );
     // switch to denominator tab
-    const denom = await getPopulation("DENOM");
+    const denom = await getByRole("DENOM");
     userEvent.click(denom);
     expect(screen.getByTestId("DENOM-highlighting")).toHaveTextContent(
       "DENOM 1 Covered"
     );
 
     // switch to numerator tab
-    const numer = await getPopulation("NUMER");
+    const numer = await getByRole("NUMER");
     userEvent.click(numer);
     expect(screen.getByTestId("NUMER-highlighting")).toHaveTextContent(
       "NUMER 1 Partially Covered"
+    );
+
+    const functions = await getByRole("Functions");
+    userEvent.click(functions);
+    expect(screen.getByTestId("Functions-highlighting")).toHaveTextContent(
+      "ToCalendarUnit Function Covered"
     );
 
     // select population criteria 2
