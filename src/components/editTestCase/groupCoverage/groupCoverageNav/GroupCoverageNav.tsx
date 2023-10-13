@@ -9,41 +9,70 @@ export interface Population {
   name: PopulationType;
 }
 
+export interface AllDefinitionsTabs {
+  name: string;
+}
+
 interface Props {
   id: string;
   populations: Array<Population>;
-  selectedPopulation: Population;
+  allDefinitions: Array<AllDefinitionsTabs>;
+  selectedHighlightingTab: Population;
   onClick: Function;
 }
 
 const GroupCoverageNav = ({
   id,
   populations,
-  selectedPopulation,
+  allDefinitions,
+  selectedHighlightingTab,
   onClick,
 }: Props) => {
   return (
-    <Tabs
-      type="C"
-      size="standard"
-      orientation="vertical"
-      value={selectedPopulation.id}
-      data-testid={`group-coverage-nav-${id}`}
-    >
-      {populations &&
-        populations.map((population) => (
-          <Tab
-            type="C"
-            label={population.abbreviation}
-            key={population.abbreviation}
-            value={population.id}
-            orientation="vertical"
-            onClick={() => {
-              onClick(population);
-            }}
-          />
-        ))}
-    </Tabs>
+    <>
+      <Tabs
+        type="C"
+        size="standard"
+        orientation="vertical"
+        value={selectedHighlightingTab.id}
+        data-testid={`group-coverage-nav-${id}`}
+      >
+        {populations &&
+          populations.map((population) => (
+            <Tab
+              type="C"
+              label={population.abbreviation}
+              key={population.abbreviation}
+              value={population.id}
+              orientation="vertical"
+              onClick={() => {
+                onClick(population);
+              }}
+            />
+          ))}
+      </Tabs>
+      <Tabs
+        type="C"
+        size="standard"
+        orientation="vertical"
+        value={selectedHighlightingTab.name}
+        data-testid={`group-coverage-nav-${name}`}
+      >
+        {allDefinitions &&
+          allDefinitions.map((population) => (
+            <Tab
+              type="C"
+              label={population.name}
+              key={population.name}
+              value={population.name}
+              orientation="vertical"
+              onClick={() => {
+                onClick(population);
+              }}
+            />
+          ))}
+      </Tabs>
+    </>
   );
 };
 

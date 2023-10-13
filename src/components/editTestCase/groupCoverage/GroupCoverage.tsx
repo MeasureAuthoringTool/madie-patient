@@ -3,26 +3,34 @@ import "twin.macro";
 import "styled-components/macro";
 import parse from "html-react-parser";
 import { isEmpty } from "lodash";
-import { GroupPopulation } from "@madie/madie-models";
+import { GroupPopulation, PopulationType } from "@madie/madie-models";
 import { Select } from "@madie/madie-design-system/dist/react";
 import GroupCoverageNav, {
   Population,
 } from "./groupCoverageNav/GroupCoverageNav";
-import {
-  DetailedPopulationGroupResult,
-  StatementResult,
-} from "fqm-execution/build/types/Calculator";
 import { MenuItem } from "@mui/material";
 import { FHIR_POPULATION_CODES } from "../../../util/PopulationsMap";
-
-interface PopulationResult extends StatementResult {
-  populationName: string;
-}
+import { MappedCalculationResults } from "../qiCore/calculationResults/CalculationResults";
+import { Relevance } from "fqm-execution/build/types/Enums";
 
 interface Props {
   groupPopulations: GroupPopulation[];
-  calculationResults: DetailedPopulationGroupResult[];
+  mappedCalculationResults: MappedCalculationResults;
 }
+
+interface Statement {
+  isFunction: boolean;
+  relevance: Relevance;
+  statementLevelHTML?: string | undefined;
+}
+
+interface PopulationStatement extends Statement {
+  populationName: PopulationType;
+}
+
+type PopulationResult = Record<string, PopulationStatement>;
+type AllDefinitions = Record<string, Statement>;
+
 const populationCriteriaLabel = "Population Criteria";
 const abbreviatedPopulations = {
   initialPopulation: "IP",
@@ -34,6 +42,12 @@ const abbreviatedPopulations = {
   measurePopulation: "MSRPOPL",
 };
 
+const allDefinitions = [
+  { name: "Definitions" },
+  { name: "Functions" },
+  { name: "Unused" },
+];
+
 const getFirstPopulation = (group) => {
   return {
     abbreviation: "IP",
@@ -43,17 +57,22 @@ const getFirstPopulation = (group) => {
   };
 };
 
-const GroupCoverage = ({ groupPopulations, calculationResults }: Props) => {
+const GroupCoverage = ({
+  groupPopulations,
+  mappedCalculationResults,
+}: Props) => {
   // selected group/criteria
   const [selectedCriteria, setSelectedCriteria] = useState<string>("");
   // selected population of a selected group
-  const [selectedPopulation, setSelectedPopulation] = useState<Population>(
-    getFirstPopulation(groupPopulations[0])
-  );
+  const [selectedHighlightingTab, setSelectedHighlightingTab] =
+    useState<Population>(getFirstPopulation(groupPopulations[0]));
+  const [selectedAllDefinitions, setSelectedAllDefinitions] =
+    useState<AllDefinitions>();
 
   // calculation results for selected group/criteria
-  const [populationResults, setPopulationResults] =
-    useState<Array<PopulationResult>>();
+  const [populationResults, setPopulationResults] = useState<
+    PopulationResult | {}
+  >();
   // coverage html for selected population of a selected group/criteria
   const [coverageHtml, setCoverageHtml] = useState<string>("");
 
@@ -64,7 +83,7 @@ const GroupCoverage = ({ groupPopulations, calculationResults }: Props) => {
   }, [groupPopulations]);
 
   useEffect(() => {
-    changePopulation(selectedPopulation);
+    changePopulation(selectedHighlightingTab);
   }, [populationResults]);
 
   const getRelevantPopulations = () => {
@@ -85,41 +104,49 @@ const GroupCoverage = ({ groupPopulations, calculationResults }: Props) => {
       });
   };
 
-  const getPopulationResults = (groupId: string): Array<PopulationResult> => {
-    const groupCalculations = calculationResults?.find(
-      (result) => result.groupId === groupId
-    );
-    if (groupCalculations) {
-      const relevantPopulations = groupCalculations.populationRelevance;
-      const statementResults = groupCalculations.statementResults;
-      return relevantPopulations.map((population) => {
-        const populationResult = statementResults.find(
-          (statementResult) =>
-            statementResult.statementName === population.criteriaExpression
-        );
-        return {
-          ...populationResult,
-          populationName: FHIR_POPULATION_CODES[population.populationType],
-        };
-      });
+  const getPopulationResults = (groupId: string) => {
+    if (mappedCalculationResults) {
+      const selectedGroupCalculationResults = mappedCalculationResults[groupId];
+      if (selectedGroupCalculationResults) {
+        const relevantPopulations =
+          selectedGroupCalculationResults.populationRelevance;
+        const statementResults =
+          selectedGroupCalculationResults.statementResults;
+        const matchingResults = Object.keys(statementResults)
+          .filter((key) => relevantPopulations[key])
+          .reduce((output, key) => {
+            output[key] = {
+              ...statementResults[key],
+              populationName:
+                FHIR_POPULATION_CODES[relevantPopulations[key].populationType],
+            };
+            return output;
+          }, {});
+
+        return matchingResults;
+      }
     }
     return [];
   };
 
   const changeCriteria = (criteriaId: string) => {
     setSelectedCriteria(criteriaId);
-    const populationResults = getPopulationResults(criteriaId);
+    const populationResults: PopulationResult | {} =
+      getPopulationResults(criteriaId);
     setPopulationResults(populationResults);
     const group = groupPopulations.find((gp) => gp.groupId === criteriaId);
-    setSelectedPopulation(getFirstPopulation(group));
+    setSelectedHighlightingTab(getFirstPopulation(group));
   };
 
   const changePopulation = (population: Population) => {
-    setSelectedPopulation(population);
-    const result = populationResults?.find(
-      // TODO: Handle 2 IP scenario
-      (result) => result.populationName === population.name
-    );
+    setSelectedHighlightingTab(population);
+    setSelectedAllDefinitions(undefined);
+    const result =
+      populationResults &&
+      Object.values(populationResults).find(
+        // TODO: Handle 2 IP scenario
+        (result) => result.populationName === population.name
+      );
     setCoverageHtml(
       result ? result.statementLevelHTML : "No results available"
     );
@@ -144,6 +171,68 @@ const GroupCoverage = ({ groupPopulations, calculationResults }: Props) => {
       );
     }),
   ];
+
+  const changeDefinitions = (population) => {
+    setSelectedHighlightingTab(population);
+
+    if (mappedCalculationResults) {
+      const statementResults =
+        mappedCalculationResults[selectedCriteria]["statementResults"];
+      let filteredDefinitions;
+
+      if (population.name === "Functions") {
+        filteredDefinitions = filterDefinitions(
+          statementResults,
+          (value) => value?.isFunction && value.relevance !== Relevance.NA
+        );
+      } else if (population.name === "Definitions") {
+        filteredDefinitions = filterDefinitions(
+          statementResults,
+          (value) => !value?.isFunction && value.relevance !== Relevance.NA
+        );
+      } else if (population.name === "Unused") {
+        const unusedDefinitions: any = filterDefinitions(
+          statementResults,
+          (value) =>
+            value?.isFunction === false && value.relevance === Relevance.NA
+        );
+
+        filteredDefinitions = Object.keys(unusedDefinitions).reduce(
+          (result, statementName) => {
+            if (statementName !== "Patient") {
+              result[statementName] = {
+                ...unusedDefinitions[statementName],
+                //currently we don’t have tools for CQl unused definitions
+                statementLevelHTML: `<code><span>define &quot;${statementName}&quot;: </span><span>&quot;unavailable&quot;</span></code>`,
+              };
+            }
+            return result;
+          },
+          {}
+        );
+      }
+      setSelectedAllDefinitions(filteredDefinitions);
+    }
+  };
+
+  const filterDefinitions = (statementResults, filterFn) => {
+    return Object.fromEntries(
+      Object.entries(statementResults).filter(([key, value]) => filterFn(value))
+    );
+  };
+
+  const isPopulation = (name: string) => {
+    return name !== "Functions" && name !== "Definitions" && name !== "Unused";
+  };
+
+  const onHighlightingNavTabClick = (selectedTab) => {
+    if (isPopulation(selectedTab.name)) {
+      changePopulation(selectedTab);
+    } else {
+      changeDefinitions(selectedTab);
+    }
+  };
+
   return (
     <>
       <div tw="border-b pb-2">
@@ -206,17 +295,37 @@ const GroupCoverage = ({ groupPopulations, calculationResults }: Props) => {
           <GroupCoverageNav
             id={selectedCriteria}
             populations={getRelevantPopulations()}
-            selectedPopulation={selectedPopulation}
-            onClick={changePopulation}
+            allDefinitions={allDefinitions}
+            selectedHighlightingTab={selectedHighlightingTab}
+            onClick={onHighlightingNavTabClick}
           />
         </div>
-        <div
-          tw="flex-auto p-3"
-          id={`${selectedPopulation.abbreviation}-highlighting`}
-          data-testid={`${selectedPopulation.abbreviation}-highlighting`}
-        >
-          {parse(coverageHtml)}
-        </div>
+
+        {!selectedAllDefinitions ? (
+          <div
+            tw="flex-auto p-3"
+            id={`${selectedHighlightingTab.abbreviation}-highlighting`}
+            data-testid={`${selectedHighlightingTab.abbreviation}-highlighting`}
+          >
+            {parse(coverageHtml)}
+          </div>
+        ) : (
+          <div>
+            {Object.values(selectedAllDefinitions)
+              .map((record) => record.statementLevelHTML)
+              .filter(Boolean)
+              .map((html, index) => (
+                <div
+                  key={index}
+                  tw="flex-auto p-3"
+                  id={`${selectedHighlightingTab.name}-highlighting`}
+                  data-testid={`${selectedHighlightingTab.name}-highlighting`}
+                >
+                  {parse(html)}
+                </div>
+              ))}
+          </div>
+        )}
       </div>
     </>
   );
