@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
-import { IconButton, Chip } from "@mui/material";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import { Chip } from "@mui/material";
 import _ from "lodash";
 import { DataElement, CqmMeasure, CQL } from "cqm-models";
 import { makeStyles } from "@mui/styles";
 import CodeInput from "../../../../../../../common/codeInput/CodeInput";
+import { Button } from "@madie/madie-design-system/dist/react";
 
 interface NegationRationaleProps {
   handleChange: Function;
@@ -54,6 +54,14 @@ const NegationRationale = ({
     setNegationRationale(value);
   };
 
+  const isFormValid = () => {
+    let isValid = false;
+    if (!_.isEmpty(negationRationale)) {
+      isValid = true;
+    }
+    return !isValid;
+  };
+
   return (
     <>
       <div tw="flex w-3/4" data-testid="negation-rationale-div">
@@ -69,15 +77,17 @@ const NegationRationale = ({
             required={false}
           />
         </div>
-        <div tw="flex-grow py-6">
-          <IconButton
+        <div tw="relative pl-2.5">
+          <Button
+            tw="absolute bottom-0"
             data-testid="add-negation-rationale"
             onClick={() => {
               handleChange(negationRationale);
             }}
+            disabled={isFormValid()}
           >
-            <AddCircleOutlineIcon sx={{ color: "#0073c8" }} />
-          </IconButton>
+            Add
+          </Button>
         </div>
       </div>
       {negationRationaleCode && negationRationaleCode.code && (
