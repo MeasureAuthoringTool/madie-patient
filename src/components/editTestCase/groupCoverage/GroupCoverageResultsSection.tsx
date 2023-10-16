@@ -17,12 +17,39 @@ const GroupCoverageResultsSection = ({ results }) => {
           handleResultsCollapse(e);
         }}
       >
-        <div>
-          <span>
-            Results
-            {showGroupCoverageResults ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-          </span>
-          <div>{showGroupCoverageResults ? results : ""}</div>
+        <div style={{ float: "right" }}>
+          {/* <span
+            style={{
+              backgroundColor: "#3498db",
+              color: "#fff",
+              padding: "10px",
+              border: "1px solid  #2980b9",
+              borderRadius: "5px",
+              float: "right",
+              marginLeft: "160px",
+            }}
+          > */}
+          Results
+          {showGroupCoverageResults ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          {/* </span> */}
+          {showGroupCoverageResults && (
+            <div
+              style={{
+                padding: "10px",
+                marginLeft: "10px",
+                marginRight: "10px",
+                height: "49px",
+                border: "1px solid #EDEDED",
+                backgroundColor: "#EDEDED",
+                fontFamily: "sans-serif",
+                borderRadius: "5px",
+              }}
+              data-testId="results-section"
+              id="results"
+            >
+              {results.trim()}{" "}
+            </div>
+          )}
         </div>
       </button>
     </div>

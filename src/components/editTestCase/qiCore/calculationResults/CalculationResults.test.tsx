@@ -338,11 +338,17 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     expect(screen.getByTestId("IP-highlighting")).toHaveTextContent(
       "IP 1 Covered"
     );
+    expect(screen.getByTestId("results-section")).toHaveTextContent(
+      `[Encounter ID: 123 PERIOD: 03/02/2024 9:00:00 AM - 03/02/2024 9:00:00 AM TYPE: [CPT 99213]]`
+    );
     // switch to denominator tab
     const denom = await getByRole("DENOM");
     userEvent.click(denom);
     expect(screen.getByTestId("DENOM-highlighting")).toHaveTextContent(
       "DENOM 1 Covered"
+    );
+    expect(screen.getByTestId("results-section")).toHaveTextContent(
+      `[Encounter ID: 5ca52604b8484613a555a8f8 PERIOD: 03/02/2024 9:00:00 AM - 03/02/2024 9:00:00 AM TYPE: [CPT 99213]]`
     );
 
     // switch to numerator tab
@@ -350,6 +356,9 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     userEvent.click(numer);
     expect(screen.getByTestId("NUMER-highlighting")).toHaveTextContent(
       "NUMER 1 Partially Covered"
+    );
+    expect(screen.getByTestId("results-section")).toHaveTextContent(
+      `FALSE ([])`
     );
 
     const functions = await getByRole("Functions");
@@ -367,5 +376,10 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     expect(screen.getByTestId("IP-highlighting")).toHaveTextContent(
       "IP 2 Not Covered"
     );
+
+    const definitions = await getByRole("Definitions");
+    userEvent.click(definitions);
+    expect(screen.getByText("IP 2 Not Covered")).toBeInTheDocument();
+    expect(screen.getAllByText("UNHIT").length).toEqual(2);
   });
 });
