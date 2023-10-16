@@ -12,6 +12,7 @@ import { MenuItem } from "@mui/material";
 import { FHIR_POPULATION_CODES } from "../../../util/PopulationsMap";
 import { MappedCalculationResults } from "../qiCore/calculationResults/CalculationResults";
 import { Relevance } from "fqm-execution/build/types/Enums";
+import GroupCoverageResultsSection from "./GroupCoverageResultsSection";
 
 interface Props {
   groupPopulations: GroupPopulation[];
@@ -22,6 +23,7 @@ interface Statement {
   isFunction: boolean;
   relevance: Relevance;
   statementLevelHTML?: string | undefined;
+  pretty?: string;
 }
 
 interface PopulationStatement extends Statement {
@@ -68,13 +70,15 @@ const GroupCoverage = ({
     useState<Population>(getFirstPopulation(groupPopulations[0]));
   const [selectedAllDefinitions, setSelectedAllDefinitions] =
     useState<AllDefinitions>();
+  const [
+    selectedPopulationDefinitionResults,
+    setSelectedPopulationDefinitionResults,
+  ] = useState<Statement>();
 
   // calculation results for selected group/criteria
   const [populationResults, setPopulationResults] = useState<
     PopulationResult | {}
   >();
-  // coverage html for selected population of a selected group/criteria
-  const [coverageHtml, setCoverageHtml] = useState<string>("");
 
   useEffect(() => {
     if (!isEmpty(groupPopulations)) {
@@ -147,9 +151,7 @@ const GroupCoverage = ({
         // TODO: Handle 2 IP scenario
         (result) => result.populationName === population.name
       );
-    setCoverageHtml(
-      result ? result.statementLevelHTML : "No results available"
-    );
+    setSelectedPopulationDefinitionResults(result);
   };
 
   const getCriteriaLabel = (index) => {
@@ -307,23 +309,36 @@ const GroupCoverage = ({
             id={`${selectedHighlightingTab.abbreviation}-highlighting`}
             data-testid={`${selectedHighlightingTab.abbreviation}-highlighting`}
           >
-            {parse(coverageHtml)}
+            {selectedPopulationDefinitionResults ? (
+              <div>
+                {parse(selectedPopulationDefinitionResults?.statementLevelHTML)}
+                <GroupCoverageResultsSection
+                  results={selectedPopulationDefinitionResults.pretty}
+                />
+              </div>
+            ) : (
+              "No results available"
+            )}
           </div>
         ) : (
           <div>
             {Object.values(selectedAllDefinitions)
-              .map((record) => record.statementLevelHTML)
-              .filter(Boolean)
-              .map((html, index) => (
-                <div
-                  key={index}
-                  tw="flex-auto p-3"
-                  id={`${selectedHighlightingTab.name}-highlighting`}
-                  data-testid={`${selectedHighlightingTab.name}-highlighting`}
-                >
-                  {parse(html)}
-                </div>
-              ))}
+              .filter((record) => !!record.statementLevelHTML)
+              .map((record, index) => {
+                return (
+                  <div
+                    key={index}
+                    tw="flex-auto p-3"
+                    id={`${selectedHighlightingTab.name}-highlighting`}
+                    data-testid={`${selectedHighlightingTab.name}-highlighting`}
+                  >
+                    {parse(record.statementLevelHTML)}
+                    {!record.isFunction && (
+                      <GroupCoverageResultsSection results={record.pretty} />
+                    )}
+                  </div>
+                );
+              })}
           </div>
         )}
       </div>
