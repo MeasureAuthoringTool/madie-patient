@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import parse from "html-react-parser";
-import { isEmpty } from "lodash";
+import _, { isEmpty } from "lodash";
 import { GroupPopulation, PopulationType } from "@madie/madie-models";
 import { Select } from "@madie/madie-design-system/dist/react";
 import GroupCoverageNav, {
@@ -330,7 +330,9 @@ const GroupCoverage = ({
                     key={index}
                     tw="flex-auto p-3"
                     id={`${selectedHighlightingTab.name}-highlighting`}
-                    data-testid={`${selectedHighlightingTab.name}-highlighting`}
+                    data-testid={`${_.camelCase(
+                      selectedHighlightingTab.name
+                    )}-highlighting`}
                   >
                     {parse(record.statementLevelHTML)}
                     {!record.isFunction && (

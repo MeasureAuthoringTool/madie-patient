@@ -363,7 +363,7 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
 
     const functions = await getByRole("Functions");
     userEvent.click(functions);
-    expect(screen.getByTestId("Functions-highlighting")).toHaveTextContent(
+    expect(screen.getByTestId("functions-highlighting")).toHaveTextContent(
       "ToCalendarUnit Function Covered"
     );
 
