@@ -15,6 +15,10 @@ import {
   TestCase,
 } from "@madie/madie-models";
 import { ExecutionStatusType } from "./CalculationService";
+import {
+  CV_EPISODE_WITH_OBS_RESULTS,
+  CV_PATIENT_WITH_OBS_RESULTS,
+} from "./__mocks__/QdmTestCaseProcessingScenarios";
 
 const localStorageMock = (function () {
   let store = {};
@@ -1066,6 +1070,84 @@ describe("QDM CalculationService Tests", () => {
         output.groupPopulations[0].populationValues[4].expected
       ).toBeFalsy();
       expect(output.executionStatus).toEqual(ExecutionStatusType.FAIL);
+    });
+
+    it("should return testCase with actual values passing for patientBasis CV", () => {
+      const output = calculationService.processTestCaseResults(
+        CV_PATIENT_WITH_OBS_RESULTS.testCase,
+        CV_PATIENT_WITH_OBS_RESULTS.measureGroups,
+        CV_PATIENT_WITH_OBS_RESULTS.measure,
+        CV_PATIENT_WITH_OBS_RESULTS.patientResults
+      );
+
+      expect(output).toBeTruthy();
+      expect(output.groupPopulations).toBeTruthy();
+
+      expect(output.groupPopulations[0].populationValues).toBeTruthy();
+      expect(output.groupPopulations[0].populationValues.length).toEqual(4);
+
+      expect(output.groupPopulations[0].populationValues[0].name).toEqual(
+        PopulationType.INITIAL_POPULATION
+      );
+      expect(output.groupPopulations[0].populationValues[0].actual).toBe(true);
+
+      expect(output.groupPopulations[0].populationValues[1].name).toEqual(
+        PopulationType.MEASURE_POPULATION
+      );
+      expect(output.groupPopulations[0].populationValues[1].actual).toBe(true);
+
+      expect(output.groupPopulations[0].populationValues[2].name).toEqual(
+        PopulationType.MEASURE_POPULATION_EXCLUSION
+      );
+      expect(output.groupPopulations[0].populationValues[2].expected).toBe(
+        null
+      );
+      expect(output.groupPopulations[0].populationValues[2].actual).toBe(false);
+
+      expect(output.groupPopulations[0].populationValues[3].name).toEqual(
+        PopulationType.MEASURE_POPULATION_OBSERVATION
+      );
+      expect(output.groupPopulations[0].populationValues[3].actual).toBe(22);
+
+      expect(output.executionStatus).toEqual(ExecutionStatusType.PASS);
+    });
+
+    it("should return testCase with actual values passing for episode CV", () => {
+      const output = calculationService.processTestCaseResults(
+        CV_EPISODE_WITH_OBS_RESULTS.testCase,
+        CV_EPISODE_WITH_OBS_RESULTS.measureGroups,
+        CV_EPISODE_WITH_OBS_RESULTS.measure,
+        CV_EPISODE_WITH_OBS_RESULTS.patientResults
+      );
+
+      expect(output).toBeTruthy();
+      expect(output.groupPopulations).toBeTruthy();
+
+      expect(output.groupPopulations[0].populationValues).toBeTruthy();
+      expect(output.groupPopulations[0].populationValues.length).toEqual(4);
+
+      expect(output.groupPopulations[0].populationValues[0].name).toEqual(
+        PopulationType.INITIAL_POPULATION
+      );
+      expect(output.groupPopulations[0].populationValues[0].actual).toBe(3);
+
+      expect(output.groupPopulations[0].populationValues[1].name).toEqual(
+        PopulationType.MEASURE_POPULATION
+      );
+      expect(output.groupPopulations[0].populationValues[1].actual).toBe(3);
+
+      expect(output.groupPopulations[0].populationValues[2].name).toEqual(
+        PopulationType.MEASURE_OBSERVATION
+      );
+      expect(output.groupPopulations[0].populationValues[2].expected).toBe(6);
+      expect(output.groupPopulations[0].populationValues[2].actual).toBe(6);
+
+      expect(output.groupPopulations[0].populationValues[3].name).toEqual(
+        PopulationType.MEASURE_POPULATION_EXCLUSION
+      );
+      expect(output.groupPopulations[0].populationValues[3].actual).toBe(2);
+
+      expect(output.executionStatus).toEqual(ExecutionStatusType.PASS);
     });
   });
 
