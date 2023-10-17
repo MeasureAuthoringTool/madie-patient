@@ -18,7 +18,6 @@ const TestCaseLandingQdm = (props: TestCaseListProps) => {
           <div data-testid="coming-soon">"QDM Test Cases are Coming Soon!"</div>
         )}
       </section>
-      <TestCaseList errors={props.errors} setErrors={props.setErrors} />
     </div>
   );
 };
