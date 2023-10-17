@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CQL, DataElement } from "cqm-models";
 import { DateField, TimeField } from "@madie/madie-design-system/dist/react";
 import { IconButton } from "@mui/material";
@@ -18,20 +18,23 @@ import useQdmExecutionContext from "../../../../../../../routes/qdm/useQdmExecut
 import QuantityIntervalInput from "../../../../../../../common/quantityIntervalInput/QuantityIntervalInput";
 import StringInput from "../../../../../../../common/string/StringInput";
 import DataElementSelector from "../../../../../../../common/DataElementSelector/DataElementSelector";
+import ComponentType from "../../../../../../../common/componentDataType/ComponentType";
 
 interface DisplayAttributeInputsProps {
   attributeType?: string;
-  onChange?: (e) => void;
   onInputAdd: Function;
   selectedDataElement: DataElement;
+  onChangeForComponentType?: Function;
 }
 
 const DisplayAttributeInputs = ({
   attributeType,
   onInputAdd,
   selectedDataElement,
+  onChangeForComponentType,
 }: DisplayAttributeInputsProps) => {
   const [attributeValue, setAttributeValue] = useState(null);
+
   const currentRatio = {
     numerator: {},
     denominator: {},
@@ -43,7 +46,9 @@ const DisplayAttributeInputs = ({
 
   const handleAttributeChange = (e) => {
     e.preventDefault();
-    if (attributeValue) {
+    if (onChangeForComponentType) {
+      onChangeForComponentType(attributeValue);
+    } else if (attributeValue) {
       onInputAdd(attributeValue);
     }
   };
@@ -197,6 +202,33 @@ const DisplayAttributeInputs = ({
             }}
           />
         );
+      case "Component":
+        return (
+          <ComponentType
+            onChange={(val) => onInputAdd(val)}
+            canEdit={true}
+            valueSets={cqmMeasure?.value_sets}
+            selectedDataElement={selectedDataElement}
+            // required={false}
+            onInputAdd={onInputAdd}
+            attributeTypeProps={{
+              label: "Result",
+              options: [
+                "Code",
+                "Quantity",
+                "Ratio",
+                "Integer",
+                "Decimal",
+                "Date",
+                "DateTime",
+                "Time",
+              ],
+              required: false,
+              // ...formik.getFieldProps("type"),
+              // disabled: _.isEmpty(types),
+            }}
+          />
+        );
       default:
         return null;
     }
@@ -207,12 +239,10 @@ const DisplayAttributeInputs = ({
       <div tw="flex w-3/4">
         <div tw="flex-grow w-3/4 pt-4">{displayAttributeInput()}</div>
         <div tw="flex-grow py-6">
-          {attributeType ? (
+          {attributeType && attributeType !== "Component" && attributeValue && (
             <IconButton onClick={handleAttributeChange}>
               <AddCircleOutlineIcon sx={{ color: "#0073c8" }} />
             </IconButton>
-          ) : (
-            ""
           )}
         </div>
       </div>
