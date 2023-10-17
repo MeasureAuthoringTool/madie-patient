@@ -163,11 +163,21 @@ export class QdmCalculationService {
       groupsMap.set("" + groupId, populationMap);
 
       updatedTestCase.groupPopulations.forEach((groupPop, gpIndex) => {
+        let obsCount = 0;
         if (groupPop.groupId === groupId) {
           groupPop.populationValues.forEach((population) => {
-            //Look up population
-            const value = groupsMap.get(groupId).get(population.name);
-            population.actual = measure.patientBasis ? !!value : value;
+            if (isTestCasePopulationObservation(population)) {
+              if (patientBased) {
+                population.actual = results?.observation_values?.[0];
+              } else if (obsCount < results?.observation_values?.length) {
+                population.actual = results?.observation_values?.[obsCount];
+              }
+              obsCount++;
+            } else {
+              //Look up population
+              const value = groupsMap.get(groupId).get(population.name);
+              population.actual = measure.patientBasis ? !!value : value;
+            }
           });
           // so we can reference them by the two sets of indeces
           groupPop.stratificationValues?.forEach((strat, stratIndex) => {
