@@ -12,18 +12,6 @@ const testDateTimeInterval: CQL.DateTimeInterval = {
 };
 const onDateTimeIntervalChange = jest.fn();
 
-jest.mock("dayjs", () => ({
-  extend: jest.fn(),
-  utc: jest.fn((...args) => {
-    const dayjs = jest.requireActual("dayjs");
-    dayjs.extend(jest.requireActual("dayjs/plugin/utc"));
-
-    return dayjs.utc(
-      args.filter((arg) => arg).length > 0 ? args : "08/03/2023"
-    );
-  }),
-}));
-
 describe("DateTimeInterval Field Component", () => {
   it("Should render DateTimeInterval component with appropriate data", () => {
     render(
