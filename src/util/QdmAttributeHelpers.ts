@@ -10,6 +10,10 @@ export const PRIMARY_TIMING_ATTRIBUTES = [
   "participationPeriod",
   "authorDatetime",
   "resultDatetime",
+  "activeDatetime",
+  "receivedDatetime",
+  "statusDate",
+  "sentDatetime",
 ];
 
 // the attributes to skip in user attribute view and editing fields
