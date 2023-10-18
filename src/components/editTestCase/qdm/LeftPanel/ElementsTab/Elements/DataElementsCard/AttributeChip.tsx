@@ -5,12 +5,14 @@ import "./AttributeChipList.scss";
 
 interface AttributeChipProps {
   text: string;
+  canEdit:boolean;
   onDeleteAttributeChip: (deletedChip) => void;
   index: string;
 }
 
 const AttributeChip = ({
   text,
+  canEdit,
   onDeleteAttributeChip,
   index,
 }: AttributeChipProps) => {
@@ -18,6 +20,7 @@ const AttributeChip = ({
     <div className="chip-body">
       {text}
       <IconButton sx={{ padding: 0, marginLeft: "5px", marginTop: "-2px" }}>
+        {canEdit &&
         <CancelIcon
           sx={{ color: "#fff", height: "15px", width: "15px" }}
           onClick={(e) => {
@@ -25,7 +28,7 @@ const AttributeChip = ({
             onDeleteAttributeChip({ index: index, text: text });
           }}
           data-testid={`delete-chip-button-${index}`}
-        />
+        />}
       </IconButton>
     </div>
   );
