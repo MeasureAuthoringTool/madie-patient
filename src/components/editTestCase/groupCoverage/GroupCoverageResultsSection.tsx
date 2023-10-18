@@ -21,8 +21,6 @@ const GroupCoverageResultsSection = ({ results }) => {
         style={{
           width: "fit",
           marginTop: "10px",
-          position: "relative",
-          float: "right",
         }}
       >
         <div
@@ -43,15 +41,13 @@ const GroupCoverageResultsSection = ({ results }) => {
           <div
             style={{
               padding: "10px",
-              marginLeft: "10px",
-              marginRight: "10px",
-              marginTop: "50px",
+              marginTop: "20px",
               width: "auto",
               height: "75px",
               border: "1px solid #EDEDED",
               backgroundColor: "#EDEDED",
               fontFamily: "sans-serif",
-              borderRadius: "5px",
+              borderRadius: "1px",
               color: "black",
             }}
             data-testId="results-section"
