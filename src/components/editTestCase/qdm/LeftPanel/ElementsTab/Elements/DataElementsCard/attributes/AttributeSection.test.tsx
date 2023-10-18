@@ -20,18 +20,6 @@ import { MeasureScoring } from "@madie/madie-models";
 import { QdmPatientContext } from "../../../../../../../../util/QdmPatientContext";
 import { act } from "react-dom/test-utils";
 
-jest.mock("dayjs", () => ({
-  extend: jest.fn(),
-  utc: jest.fn((...args) => {
-    const dayjs = jest.requireActual("dayjs");
-    dayjs.extend(jest.requireActual("dayjs/plugin/utc"));
-
-    return dayjs.utc(
-      args.filter((arg) => arg).length > 0 ? args : "01/01/2023"
-    );
-  }),
-  startOf: jest.fn().mockReturnThis(),
-}));
 const onAddClicked = jest.fn();
 const mockCqmMeasure = {
   id: "id-1",

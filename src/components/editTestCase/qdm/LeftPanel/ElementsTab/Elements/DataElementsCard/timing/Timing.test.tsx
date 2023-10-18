@@ -9,19 +9,6 @@ import {
   DiagnosticStudyPerformed,
 } from "cqm-models";
 
-jest.mock("dayjs", () => ({
-  extend: jest.fn(),
-  utc: jest.fn((...args) => {
-    const dayjs = jest.requireActual("dayjs");
-    dayjs.extend(jest.requireActual("dayjs/plugin/utc"));
-
-    return dayjs.utc(
-      args.filter((arg) => arg).length > 0 ? args : "08/03/2023"
-    );
-  }),
-  startOf: jest.fn().mockReturnThis(),
-}));
-
 const updateDataElement = jest.fn();
 
 describe("Timing", () => {
