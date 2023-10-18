@@ -188,6 +188,8 @@ const DisplayAttributeInputs = ({
             }}
           />
         );
+      // To Do: implement FacilityLocation selector which allows for location selection -> locationPeriod selection
+      // case "FacilityLocation":
       case "DataElement":
         return (
           <DataElementSelector
