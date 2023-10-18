@@ -92,12 +92,7 @@ const AttributeSection = ({
   };
   const onInputAdd = (e) => {
     onAddClicked(formik.values.attribute.displayName, formik.values.type, e);
-
-    formik.setValues({
-      attribute: null,
-      type: "",
-      attributeValue: "",
-    });
+    formik.resetForm();
   };
   return (
     <form id="add-attribute-form" onSubmit={formik.handleSubmit}>
