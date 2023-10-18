@@ -60,14 +60,6 @@ const NegationRationale = ({
     };
   };
 
-  const isFormValid = () => {
-    let isValid = false;
-    if (!_.isEmpty(negationRationale)) {
-      isValid = true;
-    }
-    return !isValid;
-  };
-
   return (
     <>
       <div tw="flex w-3/4" data-testid="negation-rationale-div">
@@ -90,7 +82,7 @@ const NegationRationale = ({
             onClick={() => {
               handleChange(negationRationale);
             }}
-            disabled={isFormValid()}
+            disabled={_.isEmpty(negationRationale)}
           >
             Add
           </Button>
