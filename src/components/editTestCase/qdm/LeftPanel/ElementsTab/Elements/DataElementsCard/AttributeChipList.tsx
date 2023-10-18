@@ -3,7 +3,7 @@ import AttributeChip from "./AttributeChip";
 
 interface AttributeChipListProps {
   items: any;
-  canEdit:boolean;
+  canEdit: boolean;
   onDeleteAttributeChip: (deletedChip) => void;
 }
 

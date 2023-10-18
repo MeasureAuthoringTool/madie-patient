@@ -8,10 +8,11 @@ type DatElementMenuProps = {
   canView: boolean;
   onDelete: Function;
   onView: Function;
+  canEdit: boolean;
 };
 
 export default function DatElementActions(props: DatElementMenuProps) {
-  const { elementId, canView, onDelete, onView } = props;
+  const { elementId, canView, onDelete, onView, canEdit } = props;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -31,6 +32,13 @@ export default function DatElementActions(props: DatElementMenuProps) {
     handleClose();
     onDelete(elementId);
   };
+  const deleteElement = canEdit
+    ? {
+        label: "Delete",
+        toImplementFunction: deleteDataElement,
+        dataTestId: `delete-element-${elementId}`,
+      }
+    : {};
 
   return (
     <div>
@@ -58,13 +66,7 @@ export default function DatElementActions(props: DatElementMenuProps) {
           toImplementFunction: viewDataElement,
           dataTestId: `view-element-${elementId}`,
         }}
-        otherSelectOptionProps={[
-          {
-            label: "Delete",
-            toImplementFunction: deleteDataElement,
-            dataTestId: `delete-element-${elementId}`,
-          },
-        ]}
+        otherSelectOptionProps={[deleteElement]}
       />
     </div>
   );

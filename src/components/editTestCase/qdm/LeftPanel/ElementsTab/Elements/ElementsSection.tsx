@@ -174,6 +174,7 @@ const ElementsSection = (props: {
           allowedTypes={allowedTypes}
           dataElements={filterDataElements(patient?.dataElements)}
           onView={(dataElement) => setSelectedDataElement(dataElement)}
+          canEdit={canEdit}
           onDelete={deleteDataElement}
         />
       </div>

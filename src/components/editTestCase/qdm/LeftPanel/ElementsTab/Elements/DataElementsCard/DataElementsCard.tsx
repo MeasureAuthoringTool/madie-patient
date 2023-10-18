@@ -22,7 +22,7 @@ export const applyAttribute = (
   attribute,
   type,
   attributeValue,
-  dataElement,
+  dataElement
 ) => {
   const modelClass = getDataElementClass(dataElement);
   const updatedDataElement = new modelClass(dataElement);
@@ -98,7 +98,7 @@ const DataElementsCard = (props: {
   setCardActiveTab: Function;
   selectedDataElement: DataElement;
   setSelectedDataElement: Function;
-  canEdit:boolean;
+  canEdit: boolean;
   onChange?: (changedDataElement: DataElement) => void;
 }) => {
   const {
@@ -292,9 +292,10 @@ const DataElementsCard = (props: {
         setActiveTab={setCardActiveTab}
         attributesPresent={attributesPresent}
       />
-      
+
       {cardActiveTab === "codes" && (
         <Codes
+          canEdit={canEdit}
           handleChange={(selectedCode) => {
             const updatedDataElement = applyDataElementCodes(
               selectedCode,
@@ -338,6 +339,7 @@ const DataElementsCard = (props: {
       )}
       {cardActiveTab === "negation_rationale" && (
         <NegationRationale
+          canEdit={canEdit}
           handleChange={(selectedCode) => {
             if (selectedCode) {
               const updatedDataElement = applyNegationRationale(
