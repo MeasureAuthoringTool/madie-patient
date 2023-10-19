@@ -301,17 +301,16 @@ const Codes = ({
           </>
         )}
         <div tw="w-1/4 py-6 pl-2.5">
-                    {canEdit && (
-          <Button
-            variant="outline-filled"
-            disabled={isFormValid()}
-            data-testid="add-code-concept-button"
-            onClick={addNewCode}
-          >
-            Add
-          </Button>
-            )}
-
+          {canEdit && (
+            <Button
+              variant="outline-filled"
+              disabled={isFormValid()}
+              data-testid="add-code-concept-button"
+              onClick={addNewCode}
+            >
+              Add
+            </Button>
+          )}
         </div>
       </div>
       <div tw="flex flex-wrap gap-2">

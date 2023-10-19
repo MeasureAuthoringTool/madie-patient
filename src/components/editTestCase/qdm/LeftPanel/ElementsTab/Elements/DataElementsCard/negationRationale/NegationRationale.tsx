@@ -78,18 +78,18 @@ const NegationRationale = ({
           />
         </div>
         <div tw="relative pl-2.5">
-                    {canEdit && (
-          <Button
-            tw="absolute bottom-0"
-            data-testid="add-negation-rationale"
-            onClick={() => {
-              handleChange(negationRationale);
-            }}
-            disabled={_.isEmpty(negationRationale)}
-          >
-            Add
-          </Button>
-            )}
+          {canEdit && (
+            <Button
+              tw="absolute bottom-0"
+              data-testid="add-negation-rationale"
+              onClick={() => {
+                handleChange(negationRationale);
+              }}
+              disabled={_.isEmpty(negationRationale)}
+            >
+              Add
+            </Button>
+          )}
         </div>
       </div>
       {negationRationaleCode && negationRationaleCode.code && (
