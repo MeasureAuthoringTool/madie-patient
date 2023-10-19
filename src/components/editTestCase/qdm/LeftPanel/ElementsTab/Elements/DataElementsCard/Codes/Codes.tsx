@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
-import { Select, TextField } from "@madie/madie-design-system/dist/react";
-import { IconButton, MenuItem, Chip } from "@mui/material";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import {
+  Select,
+  TextField,
+  Button,
+} from "@madie/madie-design-system/dist/react";
+import { MenuItem, Chip } from "@mui/material";
 import _ from "lodash";
 import {
   DataElement,
@@ -297,16 +300,18 @@ const Codes = ({
             )}
           </>
         )}
-        <div tw="w-1/4 py-6">
-          {canEdit && (
-            <IconButton
-              disabled={isFormValid()}
-              data-testid="add-code-concept-button"
-              onClick={addNewCode}
-            >
-              <AddCircleOutlineIcon sx={{ color: "#0073c8" }} />
-            </IconButton>
-          )}
+        <div tw="w-1/4 py-6 pl-2.5">
+                    {canEdit && (
+          <Button
+            variant="outline-filled"
+            disabled={isFormValid()}
+            data-testid="add-code-concept-button"
+            onClick={addNewCode}
+          >
+            Add
+          </Button>
+            )}
+
         </div>
       </div>
       <div tw="flex flex-wrap gap-2">

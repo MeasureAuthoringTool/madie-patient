@@ -28,6 +28,7 @@ export interface MappedCalculationResults {
         isFunction: boolean;
         relevance: Relevance;
         statementLevelHTML?: string | undefined;
+        pretty?: string;
       };
     }[];
     populationRelevance: {
@@ -73,12 +74,19 @@ const CalculationResults = ({
           statementResults: statementResults.reduce(
             (
               statementResultsOutput,
-              { isFunction, relevance, statementLevelHTML, statementName }
+              {
+                isFunction,
+                relevance,
+                statementLevelHTML,
+                statementName,
+                pretty,
+              }
             ) => {
               statementResultsOutput[statementName] = {
                 isFunction,
                 relevance,
                 statementLevelHTML,
+                pretty,
               };
               return statementResultsOutput;
             },
