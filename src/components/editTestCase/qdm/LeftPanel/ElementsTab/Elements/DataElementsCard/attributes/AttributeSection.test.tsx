@@ -174,8 +174,8 @@ describe("AttributeSection", () => {
     });
     expect(typeInput).toBeInTheDocument();
     expect(typeInput).toHaveValue("Code");
-    const plusButton = await screen.findByTestId("AddCircleOutlineIcon");
-    expect(plusButton).toBeInTheDocument();
+    const addButton = await screen.findByTestId("add-attribute-button");
+    expect(addButton).toBeInTheDocument();
   });
 
   it("should render different type select options for different selected attributes", async () => {
@@ -285,7 +285,7 @@ describe("AttributeSection", () => {
     fireEvent.change(dateInput, { target: { value: "01/01/2023" } });
     expect(dateInput.value).toBe("01/01/2023");
 
-    const addButton = screen.getByTestId("AddCircleOutlineIcon");
+    const addButton = screen.getByTestId("add-attribute-button");
     expect(addButton).toBeInTheDocument();
     userEvent.click(addButton);
   });
@@ -364,7 +364,7 @@ describe("AttributeSection", () => {
     });
     expect(dateTimeInput.value).toBe("01/01/2023 12:00 AM");
 
-    const addButton = screen.getByTestId("AddCircleOutlineIcon");
+    const addButton = screen.getByTestId("add-attribute-button");
     expect(addButton).toBeInTheDocument();
     userEvent.click(addButton);
   });
@@ -404,7 +404,7 @@ describe("AttributeSection", () => {
     expect(highInput).toBeInTheDocument();
   });
 
-  it("Clicking the plus button calls works", async () => {
+  it("Clicking the add button calls works", async () => {
     renderAttributeSection(assessmentElement, [], onAddClicked);
     const attributeSelectBtn = screen.getByRole("button", {
       name: "Attribute Select Attribute",
@@ -433,9 +433,9 @@ describe("AttributeSection", () => {
     expect(dateInput).toBeInTheDocument();
     userEvent.click(dateInput);
     userEvent.type(dateInput, "12121912");
-    const plusButton = await screen.findByTestId("AddCircleOutlineIcon");
-    expect(plusButton).toBeInTheDocument();
-    userEvent.click(plusButton);
+    const addButton = await screen.findByTestId("add-attribute-button");
+    expect(addButton).toBeInTheDocument();
+    userEvent.click(addButton);
     expect(onAddClicked).toHaveBeenCalled();
   });
 
@@ -577,8 +577,8 @@ describe("AttributeSection", () => {
     const timeInput = await screen.findByLabelText("Time");
     userEvent.type(timeInput, "1205");
 
-    const plusButton = screen.getByTestId("AddCircleOutlineIcon");
-    userEvent.click(plusButton);
+    const addButton = screen.getByTestId("add-attribute-button");
+    userEvent.click(addButton);
 
     await waitFor(() => {
       expect(onAddClicked).toHaveBeenCalled();
@@ -616,7 +616,7 @@ describe("AttributeSection", () => {
     const typeOptions = within(typeSelect).getAllByRole("option");
     expect(typeOptions.length).toEqual(9);
     fireEvent.click(within(typeSelect).getByText("Quantity"));
-    const addButton = screen.getByTestId("AddCircleOutlineIcon");
+    const addButton = screen.getByTestId("add-attribute-button");
     expect(addButton).toBeInTheDocument();
     userEvent.click(addButton);
   });
