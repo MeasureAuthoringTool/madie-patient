@@ -102,7 +102,7 @@ jest.mock("@madie/madie-util", () => ({
 
 let importingTestCases = [];
 jest.mock(
-  "../common/import/TestCaseImportFromBonnieDialog",
+  "../common/import/TestCaseImportFromBonnieDialogQDM",
   () =>
     ({ open, handleClose, onImport }) => {
       return open ? (
@@ -116,6 +116,7 @@ jest.mock(
           <button
             onClick={() => onImport(importingTestCases)}
             data-testid="test-case-import-import-btn"
+            type="button"
           >
             Import
           </button>
@@ -1174,10 +1175,12 @@ describe("TestCaseList component", () => {
     });
     expect(cancelBtn).toBeInTheDocument();
     userEvent.click(cancelBtn);
-    const removedImportDialog = await screen.queryByTestId(
-      "test-case-import-dialog"
-    );
-    expect(removedImportDialog).not.toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(
+        screen.queryByTestId("test-case-import-dialog")
+      ).not.toBeInTheDocument();
+    });
     expect(setError).toHaveBeenCalled();
     expect(nextState).toEqual([]);
   });
