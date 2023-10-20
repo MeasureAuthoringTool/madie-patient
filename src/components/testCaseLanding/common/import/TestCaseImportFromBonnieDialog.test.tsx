@@ -9,6 +9,7 @@ import {
   processPatientBundles,
   readImportFile,
 } from "../../../../util/FhirImportHelper";
+// @ts-ignore
 import bonnieJson from "../../../../__mocks__/bonniePatient.json";
 
 jest.mock("axios");
@@ -41,7 +42,7 @@ jest.mock("@madie/madie-util", () => ({
     return true;
   }),
   routeHandlerStore: {
-    subscribe: (set) => {
+    subscribe: () => {
       return { unsubscribe: () => null };
     },
     updateRouteHandlerState: () => null,
