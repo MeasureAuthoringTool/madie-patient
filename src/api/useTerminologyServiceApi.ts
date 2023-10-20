@@ -184,7 +184,7 @@ export class TerminologyServiceApi {
             concepts: [
               {
                 code: cqlCode.code,
-                code_system_oid: cqlCode.oid,
+                code_system_oid: cqlCode.system,
                 code_system_name: cqlCode.system,
                 code_system_version: cqlCode.version,
                 display_name: cqlCode.display,

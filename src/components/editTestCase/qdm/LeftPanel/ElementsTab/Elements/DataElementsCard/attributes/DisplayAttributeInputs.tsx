@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { CQL, DataElement } from "cqm-models";
-import { DateField, TimeField } from "@madie/madie-design-system/dist/react";
-import { IconButton } from "@mui/material";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import {
+  DateField,
+  TimeField,
+  Button,
+} from "@madie/madie-design-system/dist/react";
 import dayjs from "dayjs";
 import IntegerInput from "../../../../../../../common/IntegerInput/IntegerInput";
 import "./DisplayAttributeInputs.scss";
@@ -191,6 +193,8 @@ const DisplayAttributeInputs = ({
             }}
           />
         );
+      // To Do: implement FacilityLocation selector which allows for location selection -> locationPeriod selection
+      // case "FacilityLocation":
       case "DataElement":
         return (
           <DataElementSelector
@@ -238,11 +242,16 @@ const DisplayAttributeInputs = ({
     <>
       <div tw="flex w-3/4">
         <div tw="flex-grow w-3/4 pt-4">{displayAttributeInput()}</div>
-        <div tw="flex-grow py-6">
-          {attributeType && attributeType !== "Component" && attributeValue && (
-            <IconButton onClick={handleAttributeChange}>
-              <AddCircleOutlineIcon sx={{ color: "#0073c8" }} />
-            </IconButton>
+        <div tw="relative pl-2.5">
+          {attributeType && attributeType !== "Component" && attributeValue &&  (
+            <Button
+              tw="absolute bottom-0"
+              variant="outline-filled"
+              data-testid="add-attribute-button"
+              onClick={handleAttributeChange}
+            >
+              Add
+            </Button>
           )}
         </div>
       </div>

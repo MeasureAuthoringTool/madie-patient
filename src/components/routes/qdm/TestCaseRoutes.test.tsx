@@ -135,11 +135,17 @@ describe("TestCaseRoutes", () => {
       </MemoryRouter>
     );
 
-    const testCaseTitle = await screen.findByText("TC1");
+    // I only changed how time worked with dayjs? This test now inexplicibly has multiple tc1
+    const testCaseTitles = await screen.findAllByText("TC1");
+    const testCaseTitle = testCaseTitles[0];
     expect(testCaseTitle).toBeInTheDocument();
-    const testCaseSeries = await screen.findByText("IPP_Pass");
+    const testCaseSerieses = await screen.findAllByText("IPP_Pass");
+    const testCaseSeries = testCaseSerieses[0];
     expect(testCaseSeries).toBeInTheDocument();
-    const editBtn = screen.getByRole("button", { name: "select-action-TC1" });
+    const editBtns = screen.getAllByRole("button", {
+      name: "select-action-TC1",
+    });
+    const editBtn = editBtns[0];
     expect(editBtn).toBeInTheDocument();
   });
 
