@@ -7,6 +7,7 @@ import TestCaseStratification from "../stratifications/TestCaseStratification";
 import {
   DisplayPopulationValue,
   DisplayStratificationValue,
+  StratificationExpectedValue,
   PopulationType,
 } from "@madie/madie-models";
 import classNames from "classnames";
@@ -22,7 +23,7 @@ export interface TestCasePopulationListProps {
   strat?: boolean;
   scoring: string;
   populations: DisplayPopulationValue[];
-  stratifications?: DisplayStratificationValue[];
+  stratifications?: StratificationExpectedValue[];
   populationBasis: string;
   disableExpected?: boolean;
   executionRun?: boolean;
@@ -32,9 +33,12 @@ export interface TestCasePopulationListProps {
     changedPopulation: DisplayPopulationValue
   ) => void;
   onStratificationChange?: (
-    stratifications: DisplayStratificationValue[],
-    type: "actual" | "expected",
-    changedStratification: DisplayStratificationValue
+    stratifications: any,
+    type: "actual" | "expected"
+    // changedStratification: any
+    // stratifications: DisplayStratificationValue[],
+    // type: "actual" | "expected",
+    // changedStratification: DisplayStratificationValue
   ) => void;
   errors?: any;
 }
@@ -164,27 +168,47 @@ const TestCasePopulationList = ({
       return 0;
     }
   };
+
+  // if we're handling a population nested in a strat we need to update that part instead.
   const handleChange = (population: DisplayPopulationValue) => {
-    // testing(populations)
-    const newPopulations = [...populations];
-    const newPop = newPopulations.find((pop) => pop.id === population.id);
-    const type =
-      newPop.actual !== population.actual
-        ? "actual"
-        : newPop.expected !== population.expected
-        ? "expected"
-        : null;
-    newPop.actual = population.actual;
-    newPop.expected = population.expected;
-    if (onChange) {
-      onChange(newPopulations, type, population);
+    // if our population is part of a strat, we're going to modify that populationValue instead.
+    if (strat) {
+      // we want to trigger change in strat[0]
+      const currentStrats = [...stratifications];
+      const targetPopulation = currentStrats[0].populationValues.find(
+        (pop) => pop.id === population.id
+      );
+      const type =
+        targetPopulation.actual !== population.actual
+          ? "actual"
+          : targetPopulation.expected !== population.expected
+          ? "expected"
+          : null;
+      targetPopulation.actual = population.actual;
+      targetPopulation.expected = population.expected;
+      onStratificationChange(currentStrats[0], type);
+    } else {
+      const newPopulations = [...populations];
+      const newPop = newPopulations.find((pop) => pop.id === population.id);
+      const type =
+        newPop.actual !== population.actual
+          ? "actual"
+          : newPop.expected !== population.expected
+          ? "expected"
+          : null;
+      newPop.actual = population.actual;
+      newPop.expected = population.expected;
+      if (onChange) {
+        // we want to trigger a different population change if there is a strat
+        onChange(newPopulations, type, population);
+      }
     }
   };
 
   const handleStratificationChange = (
     stratification: DisplayStratificationValue
   ) => {
-    const newStratifications = [...stratifications];
+    const newStratifications = [...stratifications]; //copy
     const newStrat = newStratifications.find(
       (strat) => strat.id === stratification.id
     );
@@ -199,7 +223,7 @@ const TestCasePopulationList = ({
     newStrat.actual = stratification.actual;
     newStrat.expected = stratification.expected;
     if (onStratificationChange) {
-      onStratificationChange(newStratifications, type, stratification);
+      onStratificationChange(newStratifications, type);
     }
   };
 
