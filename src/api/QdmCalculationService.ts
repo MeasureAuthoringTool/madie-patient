@@ -71,6 +71,16 @@ export class QdmCalculationService {
           actual: measure.patientBasis ? false : null,
           id: stratification.id,
           criteriaReference: "",
+          // create references to individual populations
+          populationValues: getPopulationTypesForScoring(measureGroup)?.map(
+            (population: PopulationExpectedValue) => ({
+              name: population.name,
+              expected: measure.patientBasis ? false : null,
+              actual: measure.patientBasis ? false : null,
+              id: population.id,
+              criteriaReference: population.criteriaReference,
+            })
+          ),
         })
       ),
       populationValues: getPopulationTypesForScoring(measureGroup)?.map(
