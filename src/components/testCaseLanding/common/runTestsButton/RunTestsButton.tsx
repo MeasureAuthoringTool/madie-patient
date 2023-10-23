@@ -1,15 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import LoadingButton from "@mui/lab/LoadingButton";
+import {
+  Measure,
+  Group,
+  MeasureObservation,
+  Stratification,
+} from "@madie/madie-models";
+import { useFeatureFlags } from "@madie/madie-util";
 
 interface RunTestButtonProps {
   hasErrors: boolean;
   isExecutionContextReady: boolean;
   onRunTests: () => void;
+  measure: Measure;
 }
 
 export default function RunTestButton(props: RunTestButtonProps) {
-  const { hasErrors, isExecutionContextReady, onRunTests } = props;
+  const { hasErrors, isExecutionContextReady, onRunTests, measure } = props;
+  const featureFlags = useFeatureFlags();
+  const [shouldDisableRunTestsButton, setShouldDisableRunTestsButton] =
+    useState(false);
   //TODO: because calculation is a heavy process, react blocks all the re-renders
   // during test case execution. this is to overcome that.
   // remove this once we move calculation to backend
@@ -22,6 +33,23 @@ export default function RunTestButton(props: RunTestButtonProps) {
     }, 500);
   }
 
+  useEffect(() => {
+    const groups: Group[] = measure?.groups;
+    groups?.forEach((group) => {
+      const measureObservations: MeasureObservation[] =
+        group?.measureObservations;
+      const measureStratifications: Stratification[] = group?.stratifications;
+      if (
+        measureObservations ||
+        (measureStratifications && measureStratifications.length > 0)
+      ) {
+        if (featureFlags?.disableRunTestCaseWithObservStrat) {
+          setShouldDisableRunTestsButton(true);
+        }
+      }
+    });
+  }, [measure, measure?.groups]);
+
   return (
     <LoadingButton
       sx={{
@@ -30,7 +58,8 @@ export default function RunTestButton(props: RunTestButtonProps) {
       }}
       variant="outlined"
       size="large"
-      disabled={hasErrors}
+      //disabled={hasErrors || featureFlags?.disableRunTestCaseWithObservStrat}
+      disabled={hasErrors || shouldDisableRunTestsButton}
       loading={(!hasErrors && !isExecutionContextReady) || loading}
       loadingPosition="start"
       startIcon={<RefreshIcon />}

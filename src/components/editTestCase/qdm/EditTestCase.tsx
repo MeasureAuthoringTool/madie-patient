@@ -4,8 +4,15 @@ import {
   measureStore,
   checkUserCanEdit,
   routeHandlerStore,
+  useFeatureFlags,
 } from "@madie/madie-util";
-import { TestCase, MeasureErrorType } from "@madie/madie-models";
+import {
+  TestCase,
+  MeasureErrorType,
+  Group,
+  MeasureObservation,
+  Stratification,
+} from "@madie/madie-models";
 import "../qiCore/EditTestCase.scss";
 import {
   Button,
@@ -89,6 +96,28 @@ const EditTestCase = () => {
 
   dayjs.extend(utc);
   dayjs.utc().format(); // utc format
+
+  const featureFlags = useFeatureFlags();
+  const [hasObservationOrStratification, setHasObservationOrStratification] =
+    useState(false);
+  useEffect(() => {
+    if (measure) {
+      const groups: Group[] = measure?.groups;
+      groups?.forEach((group) => {
+        const measureObservations: MeasureObservation[] =
+          group?.measureObservations;
+        const measureStratifications: Stratification[] = group?.stratifications;
+        if (
+          measureObservations ||
+          (measureStratifications && measureStratifications.length > 0)
+        ) {
+          if (featureFlags?.disableRunTestCaseWithObservStrat === true) {
+            setHasObservationOrStratification(true);
+          }
+        }
+      });
+    }
+  }, [measure, measure?.groups]);
 
   const formik = useFormik({
     initialValues: {
@@ -355,7 +384,8 @@ const EditTestCase = () => {
                 ) ||
                 !formik.values?.json ||
                 !executionContextReady ||
-                executing
+                executing ||
+                hasObservationOrStratification
               }
             >
               Run Test

@@ -24,6 +24,8 @@ import {
   HapiOperationOutcome,
   PopulationExpectedValue,
   MeasureErrorType,
+  MeasureObservation,
+  Stratification,
 } from "@madie/madie-models";
 import useTestCaseServiceApi from "../../../api/useTestCaseServiceApi";
 import Editor from "../../editor/Editor";
@@ -271,6 +273,26 @@ const EditTestCase = (props: EditTestCaseProps) => {
     measure?.measureSet?.acls,
     measure?.measureMetaData?.draft
   );
+  const [hasObservationOrStratification, setHasObservationOrStratification] =
+    useState(false);
+  useEffect(() => {
+    if (measure) {
+      const groups: Group[] = measure?.groups;
+      groups?.forEach((group) => {
+        const measureObservations: MeasureObservation[] =
+          group?.measureObservations;
+        const measureStratifications: Stratification[] = group?.stratifications;
+        if (
+          measureObservations ||
+          (measureStratifications && measureStratifications.length > 0)
+        ) {
+          if (featureFlags?.disableRunTestCaseWithObservStrat === true) {
+            setHasObservationOrStratification(true);
+          }
+        }
+      });
+    }
+  }, [measure, measure?.groups]);
 
   const formik = useFormik({
     initialValues: { ...INITIAL_VALUES },
@@ -1165,7 +1187,8 @@ const EditTestCase = (props: EditTestCaseProps) => {
                   (!isJsonModified() && hasErrorSeverity(validationErrors)) ||
                   isEmptyTestCaseJsonString(editorVal) ||
                   !executionContextReady ||
-                  executing
+                  executing ||
+                  hasObservationOrStratification
                 }
                 /*
                   if new test case
