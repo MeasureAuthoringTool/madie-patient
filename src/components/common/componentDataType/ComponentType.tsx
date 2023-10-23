@@ -1,9 +1,9 @@
-import React, { ComponentProps, useState } from "react";
+import React, { ComponentProps, useEffect, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import CodeInput from "../codeInput/CodeInput";
 import { Select } from "@madie/madie-design-system/dist/react";
-import { ValueSet, DataElement, Component, CQL, Result } from "cqm-models";
+import { ValueSet, DataElement, Component } from "cqm-models";
 import { kebabCase } from "lodash";
 import { MenuItem } from "@mui/material";
 import * as _ from "lodash";
@@ -52,32 +52,44 @@ const ComponentType = ({
     ].filter((s) => !_.isNil(s));
   };
 
-  console.log("selectedDataElement", selectedDataElement);
+  useEffect(() => {
+    if (localComponent) {
+      onChange(localComponent);
+    }
+  }, [localComponent]);
 
   const saveComponentInputs = (val) => {
+    let component;
     if (localComponent) {
-      if (val instanceof CQL.Code) {
-        setLocalComponent({ ...localComponent, Code: val });
-      } else {
-        setLocalComponent({ ...localComponent, Result: val });
-      }
+      component = new Component(localComponent);
     } else {
-      const component = new Component();
-      if (val instanceof CQL.Code) {
-        setLocalComponent({ ...component, Code: val });
-      } else {
-        setLocalComponent({ ...component, Result: val });
-      }
+      component = new Component();
     }
-    debugger;
-    // console.log("component", component);
+    if (typeof val === "string") {
+      // Todo Numbmer and decimal are cannot be added to result directly
+      component.result = String(val);
+    } else {
+      component.result = val;
+    }
+    setLocalComponent(component);
+  };
+
+  const saveCodeInput = (cqlCode) => {
+    let component;
+    if (localComponent) {
+      component = new Component(localComponent);
+    } else {
+      component = new Component();
+    }
+    component.code = cqlCode;
+    setLocalComponent(component);
   };
 
   return (
     <div tw="flex flex-col">
       <div tw="w-full">
         <CodeInput
-          handleChange={(val) => saveComponentInputs(val)}
+          handleChange={(cqlCode) => saveCodeInput(cqlCode)}
           canEdit={true}
           valueSets={valueSets}
           required={false}
@@ -90,6 +102,7 @@ const ComponentType = ({
               name: `Select ${attributeTypeProps.label}`,
               value: "",
             }}
+            label={"Result"}
             id={`${kebabCase(attributeTypeProps.label)}-select`}
             inputProps={{
               "data-testid": `${kebabCase(

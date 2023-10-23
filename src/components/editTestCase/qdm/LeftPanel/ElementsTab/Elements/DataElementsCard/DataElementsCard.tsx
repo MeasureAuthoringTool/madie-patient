@@ -318,7 +318,6 @@ const DataElementsCard = (props: {
           selectedDataElement={localSelectedDataElement}
           onDeleteAttributeChip={onDeleteAttributeChip}
           onAddClicked={(attribute, type, attributeValue) => {
-            debugger;
             const updatedDataElement = applyAttribute(
               attribute,
               type,
