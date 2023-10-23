@@ -56,7 +56,6 @@ const ElementsSection = (props: { handleTestCaseErrors: Function }) => {
       }
     });
     if (failedLookupCount) {
-      console.log("failedloookupcount", failedLookupCount);
       handleTestCaseErrors(
         "There are data elements in this test case not relevant to the measure.  Those data elements are not editable and can only be deleted from the Elements table."
       );
