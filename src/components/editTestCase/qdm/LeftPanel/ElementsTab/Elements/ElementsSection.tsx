@@ -38,29 +38,32 @@ const ElementsSection = (props: { handleTestCaseErrors: Function }) => {
   const [allowedTypes, setAllowedTypes] = useState({});
   const { state, dispatch } = useQdmPatient();
   const { patient } = state;
+  const [typesFromCql, setTypesFromCql] = useState([]);
 
   const checkForMissingDataElements = useCallback(() => {
     const types = {};
-    dataElements.forEach((item) => {
+    // skip birthday as type
+    types["QDM::PatientCharacteristicBirthdate"] = true;
+    // compile types from typesfromCQL
+    typesFromCql.forEach((item) => {
       types[item._type] = true;
     });
     setAllowedTypes(types);
     let failedLookupCount = 0;
     patient?.dataElements.forEach((el) => {
-      if (
-        !types[el._type] &&
-        el._type !== "QDM::PatientCharacteristicBirthdate"
-      ) {
+      if (!types[el._type]) {
         failedLookupCount++;
       }
     });
     if (failedLookupCount) {
+      console.log("failedloookupcount", failedLookupCount);
       handleTestCaseErrors(
         "There are data elements in this test case not relevant to the measure.  Those data elements are not editable and can only be deleted from the Elements table."
       );
     }
   }, [
     setAllowedTypes,
+    typesFromCql,
     handleTestCaseErrors,
     dataElements?.length,
     patient?.dataElements?.length,
@@ -75,6 +78,8 @@ const ElementsSection = (props: { handleTestCaseErrors: Function }) => {
   const retrieveCategories = useCallback(() => {
     cqmService.current.fetchSourceDataCriteria(measure.cql).then((r) => {
       const categories = r.map((r) => r.qdmCategory).sort();
+      const sourceDataCriteriaTypes = r.map((c) => c._type);
+      setTypesFromCql(sourceDataCriteriaTypes);
       setCategories(uniq(categories));
       setDataElements(r);
     });
