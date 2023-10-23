@@ -28,7 +28,10 @@ export const toDayJS = (value) => {
   if (!value) {
     return null;
   }
-  if (value instanceof CQL.DateTime || value instanceof CQL.Date) {
+  if (
+    Date.parse(value) &&
+    (value instanceof CQL.DateTime || value instanceof CQL.Date)
+  ) {
     return dayjs.utc(value.toJSDate());
   }
   return dayjs.utc(value);
