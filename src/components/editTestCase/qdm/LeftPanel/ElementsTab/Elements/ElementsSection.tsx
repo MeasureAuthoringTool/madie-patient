@@ -21,8 +21,13 @@ import {
   getDataElementClass,
 } from "../../../../../../util/DataElementHelper";
 
-const ElementsSection = (props: { handleTestCaseErrors: Function }) => {
-  const { handleTestCaseErrors } = props;
+const ElementsSection = (props: {
+  handleTestCaseErrors: Function;
+  selectedDataElement: DataElement;
+  setSelectedDataElement: Function;
+}) => {
+  const { handleTestCaseErrors, selectedDataElement, setSelectedDataElement } =
+    props;
   const cqmService = useRef(useCqmConversionService());
   const [measure, setMeasure] = useState<any>(measureStore.state);
   useEffect(() => {
@@ -91,7 +96,7 @@ const ElementsSection = (props: { handleTestCaseErrors: Function }) => {
 
   const [availableDataElements, setAvailableDataElements] =
     useState<DataElement[]>();
-  const [selectedDataElement, setSelectedDataElement] = useState<DataElement>();
+  // const [selectedDataElement, setSelectedDataElement] = useState<DataElement>();
 
   useEffect(() => {
     if (activeTab) {
