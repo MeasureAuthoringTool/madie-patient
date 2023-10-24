@@ -13,6 +13,8 @@ import {
   ServiceConfig,
 } from "../../../../../../../../api/ServiceContext";
 import { EncounterOrder, AssessmentPerformed } from "cqm-models";
+import userEvent from "@testing-library/user-event";
+import { mockValueSets } from "../../../../../../../common/componentDataType/ComponentType.test";
 
 const serviceConfig: ServiceConfig = {
   testCaseService: {
@@ -32,7 +34,7 @@ const mockCqmMeasure = {
   id: "id-1",
   title: "Mock Measure",
   measure_scoring: MeasureScoring.COHORT,
-  value_sets: [],
+  value_sets: [...mockValueSets],
 };
 
 jest.mock("dayjs", () => ({
@@ -63,11 +65,7 @@ describe("DisplayAttributeInputs component", () => {
     assessmentElement = new AssessmentPerformed();
   });
 
-  const renderDisplayAttributeInputs = (
-    attributeType,
-    onChange,
-    onInputAdd
-  ) => {
+  const renderDisplayAttributeInputs = (attributeType, onInputAdd) => {
     return render(
       <MemoryRouter>
         <ApiContextProvider value={serviceConfig}>
@@ -99,25 +97,85 @@ describe("DisplayAttributeInputs component", () => {
   const { findByTestId } = screen;
 
   it("should render the data-element selector", async () => {
-    const onChange = jest.fn;
     const onInputAdd = jest.fn;
-    renderDisplayAttributeInputs("DataElement", onChange, onInputAdd);
+    renderDisplayAttributeInputs("DataElement", onInputAdd);
     const selectorComponent = await findByTestId("data-element-selector");
     expect(selectorComponent).toBeInTheDocument();
   });
   it("should render the String selector", async () => {
-    const onChange = jest.fn;
     const onInputAdd = jest.fn;
-    renderDisplayAttributeInputs("String", onChange, onInputAdd);
+    renderDisplayAttributeInputs("String", onInputAdd);
     const selectorComponent = await findByTestId("string-field-string");
     expect(selectorComponent).toBeInTheDocument();
   });
 
   it("should render the Time selector", async () => {
-    const onChange = jest.fn;
     const onInputAdd = jest.fn;
-    renderDisplayAttributeInputs("Time", onChange, onInputAdd);
+    renderDisplayAttributeInputs("Time", onInputAdd);
     const selectorComponent = await findByTestId("time");
     expect(selectorComponent).toBeInTheDocument();
+  });
+
+  it("should render inputs for Components Attribute", async () => {
+    const mockOnInputAdd = jest.fn();
+    renderDisplayAttributeInputs("Component", mockOnInputAdd);
+
+    // Select a Code input
+    const valueSetSelector = screen.getByLabelText(
+      "Value Set / Direct Reference Code"
+    );
+    userEvent.click(valueSetSelector);
+    const valueSetOptions = await screen.findAllByRole("option");
+    expect(valueSetOptions.length).toBe(3);
+    expect(valueSetOptions[1]).toHaveTextContent("Encounter Inpatient");
+    expect(valueSetOptions[2]).toHaveTextContent(
+      "Palliative Care Intervention"
+    );
+    userEvent.click(valueSetOptions[1]);
+
+    const codeSystemSelector = await screen.findByLabelText("Code System");
+    expect(codeSystemSelector).toBeInTheDocument();
+
+    userEvent.click(codeSystemSelector);
+    const codeSystemOptions = await screen.findAllByRole("option");
+    expect(codeSystemOptions.length).toBe(2);
+    expect(codeSystemOptions[0]).toHaveTextContent("SNOMEDCT");
+    expect(codeSystemOptions[1]).toHaveTextContent("ICD10CM");
+    userEvent.click(codeSystemOptions[1]);
+
+    const codeSelector = await screen.findByLabelText("Code");
+    expect(codeSelector).toBeInTheDocument();
+
+    userEvent.click(codeSelector);
+    const codeOptions = await screen.findAllByRole("option");
+    expect(codeOptions.length).toBe(1);
+    expect(codeOptions[0]).toHaveTextContent("Encounter for palliative care");
+    userEvent.click(codeOptions[0]);
+
+    // Select a choice type & value for Result
+    const resultSelector = screen.getByLabelText("Result");
+    userEvent.click(resultSelector);
+    const resultOptions = await screen.findAllByRole("option");
+    expect(resultOptions.length).toBe(9);
+    expect(resultOptions[0]).toHaveTextContent("-");
+    expect(resultOptions[1]).toHaveTextContent("Code");
+    expect(resultOptions[2]).toHaveTextContent("Quantity");
+    userEvent.click(resultOptions[2]);
+
+    const quantityInput = (await screen.findByTestId(
+      "quantity-value-input-quantity"
+    )) as HTMLInputElement;
+    expect(quantityInput.value).toBe("");
+    userEvent.type(quantityInput, "34");
+    expect(quantityInput.value).toBe("34");
+
+    const unitInput = screen.getByLabelText("Unit") as HTMLInputElement;
+    expect(unitInput.value).toBe("");
+    userEvent.type(unitInput, "m meter");
+    expect(unitInput.value).toBe("m meter");
+
+    const addButton = screen.getByRole("button", { name: "Add" });
+    userEvent.click(addButton);
+    expect(mockOnInputAdd).toHaveBeenCalledTimes(1);
   });
 });

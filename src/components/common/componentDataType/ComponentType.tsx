@@ -1,36 +1,36 @@
-import React, { ComponentProps, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import CodeInput from "../codeInput/CodeInput";
 import { Select } from "@madie/madie-design-system/dist/react";
 import { ValueSet, DataElement, Component } from "cqm-models";
-import { kebabCase } from "lodash";
 import { MenuItem } from "@mui/material";
 import * as _ from "lodash";
 import DisplayAttributeInputs from "../../editTestCase/qdm/LeftPanel/ElementsTab/Elements/DataElementsCard/attributes/DisplayAttributeInputs";
-
-interface SelectProps extends ComponentProps<any> {
-  label: string;
-  options: string[];
-  required: boolean;
-  error?: boolean;
-  helperText?: string;
-}
 
 export interface ComponentTypeProps {
   onChange: Function;
   canEdit: boolean;
   valueSets: ValueSet[];
-  attributeTypeProps: SelectProps;
   selectedDataElement: DataElement;
   onInputAdd: Function;
 }
+
+const resultOptions = [
+  "Code",
+  "Quantity",
+  "Ratio",
+  "Integer",
+  "Decimal",
+  "Date",
+  "DateTime",
+  "Time",
+];
 
 const ComponentType = ({
   valueSets,
   onChange,
   canEdit,
-  attributeTypeProps,
   selectedDataElement,
   onInputAdd,
 }: ComponentTypeProps) => {
@@ -66,7 +66,7 @@ const ComponentType = ({
       component = new Component();
     }
     if (typeof val === "string") {
-      // Todo Numbmer and decimal are cannot be added to result directly
+      // Todo Number and decimal are cannot be added to result directly
       component.result = String(val);
     } else {
       component.result = val;
@@ -99,26 +99,21 @@ const ComponentType = ({
         <div tw="w-1/2 pt-4">
           <Select
             placeHolder={{
-              name: `Select ${attributeTypeProps.label}`,
+              name: "Select Result",
               value: "",
             }}
             label={"Result"}
-            id={`${kebabCase(attributeTypeProps.label)}-select`}
+            id={"result-select"}
             inputProps={{
-              "data-testid": `${kebabCase(
-                attributeTypeProps.label
-              )}-select-input`,
+              "data-testid": "result-select-input",
             }}
-            data-testid={`${kebabCase(attributeTypeProps.label)}-select`}
+            data-testid={"result-select"}
             disabled={!canEdit}
             size="small"
             SelectDisplayProps={{
               "aria-required": "true",
             }}
-            options={getMenuItems(
-              attributeTypeProps.options,
-              attributeTypeProps.required
-            )}
+            options={getMenuItems(resultOptions, false)}
             onChange={(val) => {
               setResultType(val.target.value);
             }}

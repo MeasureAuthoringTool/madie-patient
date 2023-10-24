@@ -248,20 +248,6 @@ const DisplayAttributeInputs = ({
             valueSets={cqmMeasure?.value_sets}
             selectedDataElement={selectedDataElement}
             onInputAdd={onInputAdd}
-            attributeTypeProps={{
-              label: "Result",
-              options: [
-                "Code",
-                "Quantity",
-                "Ratio",
-                "Integer",
-                "Decimal",
-                "Date",
-                "DateTime",
-                "Time",
-              ],
-              required: false,
-            }}
           />
         );
       default:
