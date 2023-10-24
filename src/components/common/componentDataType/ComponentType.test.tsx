@@ -1,5 +1,5 @@
 import * as React from "react";
-import {render, screen, waitFor} from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import ComponentType from "./ComponentType";
 import { AssessmentPerformed } from "cqm-models";
 import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";

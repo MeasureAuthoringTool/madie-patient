@@ -178,4 +178,36 @@ describe("DisplayAttributeInputs component", () => {
     userEvent.click(addButton);
     expect(mockOnInputAdd).toHaveBeenCalledTimes(1);
   });
+
+  it("should capture input values for Integer choice type When attribute is Component", async () => {
+    const mockOnInputAdd = jest.fn();
+    renderDisplayAttributeInputs("Component", mockOnInputAdd);
+
+    // Select a choice type & value for Result
+    const resultSelector = screen.getByLabelText("Result");
+    userEvent.click(resultSelector);
+    const resultOptions = await screen.findAllByRole("option");
+    expect(resultOptions.length).toBe(9);
+    expect(resultOptions[0]).toHaveTextContent("-");
+    expect(resultOptions[1]).toHaveTextContent("Code");
+    expect(resultOptions[2]).toHaveTextContent("Quantity");
+    expect(resultOptions[4]).toHaveTextContent("Integer");
+    userEvent.click(resultOptions[4]);
+
+    const integerInput = (await screen.findByTestId(
+      "integer-input-field-Integer"
+    )) as HTMLInputElement;
+    expect(integerInput.value).toBe("");
+    userEvent.type(integerInput, "34");
+    expect(integerInput.value).toBe("34");
+
+    const addButton = screen.getByRole("button", { name: "Add" });
+    userEvent.click(addButton);
+    expect(mockOnInputAdd).toHaveBeenCalledTimes(1);
+    expect(mockOnInputAdd).toHaveBeenCalledWith(
+      expect.objectContaining({
+        result: 34,
+      })
+    );
+  });
 });

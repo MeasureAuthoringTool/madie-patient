@@ -66,8 +66,7 @@ const ComponentType = ({
       component = new Component();
     }
     if (typeof val === "string") {
-      // Todo Number and decimal are cannot be added to result directly
-      component.result = String(val);
+      component.result = parseFloat(val);
     } else {
       component.result = val;
     }
