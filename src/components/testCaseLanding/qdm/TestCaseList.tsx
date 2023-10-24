@@ -26,6 +26,7 @@ import qdmCalculationService, {
   CqmExecutionResultsByPatient,
 } from "../../../api/QdmCalculationService";
 import { JSONPath } from "jsonpath-plus";
+import TestCaseImportFromBonnieDialogQDM from "../common/import/TestCaseImportFromBonnieDialogQDM";
 
 const TH = tw.th`p-3 border-b text-left text-sm font-bold capitalize`;
 
@@ -418,7 +419,7 @@ const TestCaseList = (props: TestCaseListProps) => {
           <Typography color="inherit">{loadingState.message}</Typography>
         </div>
       )}
-      <TestCaseImportFromBonnieDialog
+      <TestCaseImportFromBonnieDialogQDM
         open={importDialogState.open}
         onImport={onTestCaseImport}
         handleClose={() =>
