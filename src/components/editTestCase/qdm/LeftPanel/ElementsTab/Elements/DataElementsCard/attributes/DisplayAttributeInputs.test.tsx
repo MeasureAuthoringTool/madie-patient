@@ -169,7 +169,9 @@ describe("DisplayAttributeInputs component", () => {
     userEvent.type(quantityInput, "34");
     expect(quantityInput.value).toBe("34");
 
-    const unitInput = screen.getByLabelText("Unit") as HTMLInputElement;
+    const unitInput = screen.getByTestId(
+      "quantity-unit-dropdown-quantity"
+    ) as HTMLInputElement;
     expect(unitInput.value).toBe("");
     userEvent.type(unitInput, "m meter");
     expect(unitInput.value).toBe("m meter");
@@ -177,9 +179,20 @@ describe("DisplayAttributeInputs component", () => {
     const addButton = screen.getByRole("button", { name: "Add" });
     userEvent.click(addButton);
     expect(mockOnInputAdd).toHaveBeenCalledTimes(1);
+    expect(mockOnInputAdd).toHaveBeenCalledWith(
+      expect.objectContaining({
+        code: {
+          code: "Z51.5",
+          display: "Encounter for palliative care",
+          system: "4.5.6",
+          version: null,
+        },
+        result: null,
+      })
+    );
   });
 
-  it("should capture input values for Integer choice type When attribute is Component", async () => {
+  it("should capture input values for Component type when Result attribute is Integer", async () => {
     const mockOnInputAdd = jest.fn();
     renderDisplayAttributeInputs("Component", mockOnInputAdd);
 
@@ -188,9 +201,7 @@ describe("DisplayAttributeInputs component", () => {
     userEvent.click(resultSelector);
     const resultOptions = await screen.findAllByRole("option");
     expect(resultOptions.length).toBe(9);
-    expect(resultOptions[0]).toHaveTextContent("-");
-    expect(resultOptions[1]).toHaveTextContent("Code");
-    expect(resultOptions[2]).toHaveTextContent("Quantity");
+    expect(resultOptions[0]).toHaveTextContent("-");;
     expect(resultOptions[4]).toHaveTextContent("Integer");
     userEvent.click(resultOptions[4]);
 
@@ -207,6 +218,66 @@ describe("DisplayAttributeInputs component", () => {
     expect(mockOnInputAdd).toHaveBeenCalledWith(
       expect.objectContaining({
         result: 34,
+      })
+    );
+  });
+
+  it("should capture input values for Component type when Result attribute is Decimal", async () => {
+    const mockOnInputAdd = jest.fn();
+    renderDisplayAttributeInputs("Component", mockOnInputAdd);
+
+    // Select a choice type & value for Result
+    const resultSelector = screen.getByLabelText("Result");
+    userEvent.click(resultSelector);
+    const resultOptions = await screen.findAllByRole("option");
+    expect(resultOptions.length).toBe(9);
+    expect(resultOptions[0]).toHaveTextContent("-");
+    expect(resultOptions[5]).toHaveTextContent("Decimal");
+    userEvent.click(resultOptions[5]);
+
+    const integerInput = (await screen.findByTestId(
+      "decimal-input-field-Decimal"
+    )) as HTMLInputElement;
+    expect(integerInput.value).toBe("");
+    userEvent.type(integerInput, "34.68");
+    expect(integerInput.value).toBe("34.68");
+
+    const addButton = screen.getByRole("button", { name: "Add" });
+    userEvent.click(addButton);
+    expect(mockOnInputAdd).toHaveBeenCalledTimes(1);
+    expect(mockOnInputAdd).toHaveBeenCalledWith(
+      expect.objectContaining({
+        result: 34.68,
+      })
+    );
+  });
+
+  it("should capture input values for Component type when Result attribute is Date", async () => {
+    const mockOnInputAdd = jest.fn();
+    renderDisplayAttributeInputs("Component", mockOnInputAdd);
+
+    // Select a choice type & value for Result
+    const resultSelector = screen.getByLabelText("Result");
+    userEvent.click(resultSelector);
+    const resultOptions = await screen.findAllByRole("option");
+    expect(resultOptions.length).toBe(9);
+    expect(resultOptions[0]).toHaveTextContent("-");
+    expect(resultOptions[6]).toHaveTextContent("Date");
+    userEvent.click(resultOptions[6]);
+
+    const integerInput = (await screen.findByTestId(
+      "decimal-input-field-Decimal"
+    )) as HTMLInputElement;
+    expect(integerInput.value).toBe("");
+    userEvent.type(integerInput, "34.68");
+    expect(integerInput.value).toBe("34.68");
+
+    const addButton = screen.getByRole("button", { name: "Add" });
+    userEvent.click(addButton);
+    expect(mockOnInputAdd).toHaveBeenCalledTimes(1);
+    expect(mockOnInputAdd).toHaveBeenCalledWith(
+      expect.objectContaining({
+        result: 34.68,
       })
     );
   });
