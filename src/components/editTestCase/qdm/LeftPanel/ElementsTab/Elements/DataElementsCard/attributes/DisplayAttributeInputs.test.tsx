@@ -163,7 +163,6 @@ describe("DisplayAttributeInputs component", () => {
           system: "4.5.6",
           version: null,
         },
-        result: null,
       })
     );
   });
