@@ -37,7 +37,6 @@ const GroupPopulations = ({
   if (formik && formik.values) {
     formik.values.birthDate = birthDateTime;
   }
-
   return (
     <>
       {groupPopulations && groupPopulations.length > 0 ? (
@@ -52,7 +51,6 @@ const GroupPopulations = ({
                 disableExpected={disableExpected}
                 executionRun={executionRun}
                 populations={gp.populationValues}
-                // populationBasis will contain patientBasis field
                 populationBasis={gp?.populationBasis}
                 onChange={(populations, type, changedPopulation) => {
                   const nextPopulations = _.cloneDeep(groupPopulations);
@@ -83,26 +81,59 @@ const GroupPopulations = ({
                       scoring={gp.scoring}
                       disableExpected={disableExpected}
                       executionRun={executionRun}
-                      populations={gp.populationValues}
+                      populations={strat.populationValues}
                       stratifications={[strat]}
                       populationBasis={gp.populationBasis}
+                      // Could expect only changedStrat
                       onStratificationChange={(
-                        stratifications,
-                        type,
-                        changedStratification
+                        changedStrat,
+                        type // unused
                       ) => {
+                        // given a strat and gp, we find the strat and update it completely.
+                        const nextPopulations = _.cloneDeep(groupPopulations);
+                        const groupPopulation = nextPopulations.find(
+                          (np) => np.groupId === gp.groupId
+                        );
+                        // slice strat values
+                        const newStratificationValues = [
+                          ...groupPopulation.stratificationValues,
+                        ];
+                        // find index
+                        const targetStratIndex =
+                          newStratificationValues.findIndex(
+                            (strat) => strat.id === changedStrat.id
+                          );
+                        // update el
+                        newStratificationValues[targetStratIndex] =
+                          changedStrat;
+
+                        if (groupPopulation) {
+                          groupPopulation.stratificationValues =
+                            newStratificationValues;
+                        }
+
+                        formik.setFieldValue(
+                          "groupPopulations",
+                          nextPopulations
+                        );
+                        // onChange(nextPopulations, groupPopulation.groupId, )
+                      }}
+                      onChange={(populations, type, changedPopulation) => {
+                        // refactor
                         const nextPopulations = _.cloneDeep(groupPopulations);
                         const groupPopulation = nextPopulations.find(
                           (np) => np.groupId === gp.groupId
                         );
                         if (groupPopulation) {
-                          groupPopulation.stratificationValues =
-                            stratifications;
+                          groupPopulation.populationValues = populations;
                         }
-                        formik.setFieldValue(
-                          "groupPopulations",
-                          groupPopulation.stratificationValues
-                        );
+                        if (onChange) {
+                          onChange(
+                            nextPopulations,
+                            groupPopulation.groupId,
+                            changedPopulation
+                          );
+                        }
                       }}
                     />
                   );
