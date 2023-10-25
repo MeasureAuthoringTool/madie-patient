@@ -3,7 +3,11 @@ import "twin.macro";
 import "styled-components/macro";
 import parse from "html-react-parser";
 import _, { isEmpty } from "lodash";
-import { GroupPopulation, PopulationType } from "@madie/madie-models";
+import {
+  GroupPopulation,
+  PopulationType,
+  PopulationExpectedValue,
+} from "@madie/madie-models";
 import { Select } from "@madie/madie-design-system/dist/react";
 import GroupCoverageNav, {
   Population,
@@ -13,7 +17,6 @@ import { FHIR_POPULATION_CODES } from "../../../util/PopulationsMap";
 import { MappedCalculationResults } from "../qiCore/calculationResults/CalculationResults";
 import { Relevance } from "fqm-execution/build/types/Enums";
 import GroupCoverageResultsSection from "./GroupCoverageResultsSection";
-import { PopulationExpectedValue } from "../../../../../../../madie-models/src";
 
 interface Props {
   groupPopulations: GroupPopulation[];
