@@ -13,6 +13,7 @@ import { FHIR_POPULATION_CODES } from "../../../util/PopulationsMap";
 import { MappedCalculationResults } from "../qiCore/calculationResults/CalculationResults";
 import { Relevance } from "fqm-execution/build/types/Enums";
 import GroupCoverageResultsSection from "./GroupCoverageResultsSection";
+import { PopulationExpectedValue } from "../../../../../../../madie-models/src";
 
 interface Props {
   groupPopulations: GroupPopulation[];
@@ -28,6 +29,7 @@ interface Statement {
 
 interface PopulationStatement extends Statement {
   populationName: PopulationType;
+  id?: string;
 }
 
 type PopulationResult = Record<string, PopulationStatement>;
@@ -90,6 +92,17 @@ const GroupCoverage = ({
     changePopulation(selectedHighlightingTab);
   }, [populationResults]);
 
+  const getPopulationAbbreviation = (
+    populations: PopulationExpectedValue[],
+    name: string,
+    index: number
+  ) => {
+    const count = populations.filter((p) => p.name === name).length;
+    return count > 1
+      ? `${abbreviatedPopulations[name]} ${index + 1}`
+      : abbreviatedPopulations[name];
+  };
+
   const getRelevantPopulations = () => {
     const selectedGroup = groupPopulations.find(
       (gp) => gp.groupId === selectedCriteria
@@ -98,12 +111,16 @@ const GroupCoverage = ({
       .filter((population) => {
         return !population.name.includes("Observation");
       })
-      .map((population) => {
+      .map((population, index) => {
         return {
           id: population.id,
           criteriaReference: population.criteriaReference,
           name: population.name,
-          abbreviation: abbreviatedPopulations[population.name],
+          abbreviation: getPopulationAbbreviation(
+            selectedGroup?.populationValues,
+            population.name,
+            index
+          ),
         };
       });
   };
@@ -116,18 +133,17 @@ const GroupCoverage = ({
           selectedGroupCalculationResults.populationRelevance;
         const statementResults =
           selectedGroupCalculationResults.statementResults;
-        const matchingResults = Object.keys(statementResults)
+        return Object.keys(statementResults)
           .filter((key) => relevantPopulations[key])
           .reduce((output, key) => {
             output[key] = {
               ...statementResults[key],
               populationName:
                 FHIR_POPULATION_CODES[relevantPopulations[key].populationType],
+              id: relevantPopulations[key].populationId,
             };
             return output;
           }, {});
-
-        return matchingResults;
       }
     }
     return [];
@@ -148,8 +164,7 @@ const GroupCoverage = ({
     const result =
       populationResults &&
       Object.values(populationResults).find(
-        // TODO: Handle 2 IP scenario
-        (result) => result.populationName === population.name
+        (result) => result.id === population.id
       );
     setSelectedPopulationDefinitionResults(result);
   };
