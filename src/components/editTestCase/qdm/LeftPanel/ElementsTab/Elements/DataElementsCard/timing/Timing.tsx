@@ -9,10 +9,11 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { InputLabel } from "@mui/material";
-import { labelStyle } from "./TimingStyles";
 
 const Timing = ({ canEdit, updateDataElement, selectedDataElement }) => {
   const handleChange = (newValue, attributeName) => {
+    console.log(newValue)
+    console.log(attributeName)
     selectedDataElement.set(attributeName, newValue);
     updateDataElement(selectedDataElement);
   };
@@ -28,7 +29,24 @@ const Timing = ({ canEdit, updateDataElement, selectedDataElement }) => {
     }
     return;
   };
-
+  const labelStyle ={
+    backgroundColor: "transparent",
+    display: "flex",
+    flexDirection: "row-reverse",
+    alignSelf: "baseline",
+    textTransform: "none",
+    // force it outside the select box
+    position: "initial",
+    transform: "translateX(0px) translateY(0px)",
+    fontFamily: "Rubik",
+    fontWeight: 500,
+    fontSize: 14,
+    color: "#333",
+    "& .MuiInputLabel-asterisk": {
+      color: "#AE1C1C !important",
+      marginRight: "3px !important", //this was
+    },
+  }
   const displayTiming = () => {
     const displayTimingArray = [];
     for (const attr of PRIMARY_TIMING_ATTRIBUTES) {
@@ -68,17 +86,16 @@ const Timing = ({ canEdit, updateDataElement, selectedDataElement }) => {
                 onDateTimeChange={handleChange}
                 attributeName={timingAttr.path}
               ></DateTimeInput> */}
-              <InputLabel
-                htmlFor={"date-picker"}
-                style={{ marginBottom: 8, height: 16 }} // force a heignt
-                sx={labelStyle}
-              >
-                Date of Birth
-              </InputLabel>
+                    <InputLabel
+                      htmlFor={"date-picker"}
+                      style={{ marginBottom: 0, height: 16 }} // force a heignt
+                      sx={labelStyle}
+                    >
+                      Date of Birth
+                    </InputLabel>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
                   // label={_.startCase(timingAttr.path)}
-                  className="datePicker"
                   disabled={!canEdit}
                   value={
                     dateFormatToDisplay(
