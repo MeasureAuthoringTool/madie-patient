@@ -101,7 +101,7 @@ const EditTestCase = () => {
   const [hasObservationOrStratification, setHasObservationOrStratification] =
     useState(false);
   useEffect(() => {
-    if (measure) {
+    if (featureFlags?.disableRunTestCaseWithObservStrat) {
       const groups: Group[] = measure?.groups;
       groups?.forEach((group) => {
         const measureObservations: MeasureObservation[] =
@@ -111,9 +111,7 @@ const EditTestCase = () => {
           measureObservations ||
           (measureStratifications && measureStratifications.length > 0)
         ) {
-          if (featureFlags?.disableRunTestCaseWithObservStrat === true) {
-            setHasObservationOrStratification(true);
-          }
+          setHasObservationOrStratification(true);
         }
       });
     }
