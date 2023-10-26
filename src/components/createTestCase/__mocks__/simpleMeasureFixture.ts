@@ -46,6 +46,7 @@ export const simpleMeasureFixture: Measure = {
         {
           id: "id-4",
           association: PopulationType.INITIAL_POPULATION,
+          cqlDefinition: "cql definition",
         },
       ],
       measureGroupTypes: [MeasureGroupTypes.OUTCOME],
