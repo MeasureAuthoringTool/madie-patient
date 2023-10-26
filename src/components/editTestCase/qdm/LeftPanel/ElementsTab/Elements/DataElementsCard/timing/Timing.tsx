@@ -61,13 +61,6 @@ const Timing = ({ canEdit, updateDataElement, selectedDataElement }) => {
         } else if (timingAttr.instance === "Date") {
           displayTimingArray.push(
             <div style={{ paddingRight: "30px" }}>
-              {/* <DateTimeInput
-                label={_.startCase(timingAttr.path)}
-                canEdit={canEdit}
-                dateTime={selectedDataElement.get(timingAttr.path)}
-                onDateTimeChange={handleChange}
-                attributeName={timingAttr.path}
-              ></DateTimeInput> */}
               <InputLabel
                 htmlFor={"date-picker"}
                 style={{ marginBottom: 8, height: 16 }} // force a heignt
