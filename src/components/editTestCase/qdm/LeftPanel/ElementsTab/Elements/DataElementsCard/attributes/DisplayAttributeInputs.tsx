@@ -20,20 +20,24 @@ import useQdmExecutionContext from "../../../../../../../routes/qdm/useQdmExecut
 import QuantityIntervalInput from "../../../../../../../common/quantityIntervalInput/QuantityIntervalInput";
 import StringInput from "../../../../../../../common/string/StringInput";
 import DataElementSelector from "../../../../../../../common/DataElementSelector/DataElementSelector";
+import DiagnosisComponent from "../../../../../../../common/DiagnosisComponent/DiagnosisComponent";
+import ComponentType from "../../../../../../../common/componentDataType/ComponentType";
 
 interface DisplayAttributeInputsProps {
   attributeType?: string;
-  onChange?: (e) => void;
   onInputAdd: Function;
   selectedDataElement: DataElement;
+  onChangeForComponentType?: Function;
 }
 
 const DisplayAttributeInputs = ({
   attributeType,
   onInputAdd,
   selectedDataElement,
+  onChangeForComponentType,
 }: DisplayAttributeInputsProps) => {
   const [attributeValue, setAttributeValue] = useState(null);
+
   const currentRatio = {
     numerator: {},
     denominator: {},
@@ -68,6 +72,9 @@ const DisplayAttributeInputs = ({
                 newDate.date()
               );
               setAttributeValue(newCQLDate);
+              if (onChangeForComponentType) {
+                onChangeForComponentType(newCQLDate);
+              }
             }}
           />
         );
@@ -80,6 +87,9 @@ const DisplayAttributeInputs = ({
             attributeName="DateTime"
             onDateTimeChange={(e) => {
               setAttributeValue(e);
+              if (onChangeForComponentType) {
+                onChangeForComponentType(e);
+              }
             }}
           />
         );
@@ -100,6 +110,9 @@ const DisplayAttributeInputs = ({
                 0
               ).getTime();
               setAttributeValue(newCQLDateTime);
+              if (onChangeForComponentType) {
+                onChangeForComponentType(newCQLDateTime);
+              }
             }}
             value={""}
           />
@@ -112,6 +125,9 @@ const DisplayAttributeInputs = ({
             data-testid="ratio-input"
             onRatioChange={(val) => {
               setAttributeValue(val);
+              if (onChangeForComponentType) {
+                onChangeForComponentType(val);
+              }
             }}
             canEdit={true}
           />
@@ -121,7 +137,12 @@ const DisplayAttributeInputs = ({
           <IntegerInput
             intValue={null}
             canEdit={true}
-            handleChange={(val) => setAttributeValue(parseInt(val))}
+            handleChange={(val) => {
+              setAttributeValue(parseInt(val));
+              if (onChangeForComponentType) {
+                onChangeForComponentType(val);
+              }
+            }}
             label="Integer"
           />
         );
@@ -132,6 +153,9 @@ const DisplayAttributeInputs = ({
             quantity={{}}
             onQuantityChange={(val) => {
               setAttributeValue(val);
+              if (onChangeForComponentType) {
+                onChangeForComponentType(val);
+              }
             }}
             canEdit={true}
           />
@@ -140,14 +164,24 @@ const DisplayAttributeInputs = ({
         return (
           <DecimalInput
             value={null}
-            handleChange={(val) => setAttributeValue(parseFloat(val))}
+            handleChange={(val) => {
+              setAttributeValue(parseFloat(val));
+              if (onChangeForComponentType) {
+                onChangeForComponentType(val);
+              }
+            }}
             canEdit={true}
           />
         );
       case "Code":
         return (
           <CodeInput
-            handleChange={(val) => setAttributeValue(val)}
+            handleChange={(val) => {
+              setAttributeValue(val);
+              if (onChangeForComponentType) {
+                onChangeForComponentType(val);
+              }
+            }}
             canEdit={true}
             valueSets={cqmMeasure?.value_sets}
             required={false}
@@ -160,6 +194,9 @@ const DisplayAttributeInputs = ({
             quantityInterval={currentQuantityRatio}
             onQuantityIntervalChange={(val) => {
               setAttributeValue(val);
+              if (onChangeForComponentType) {
+                onChangeForComponentType(val);
+              }
             }}
             canEdit={true}
           />
@@ -185,6 +222,9 @@ const DisplayAttributeInputs = ({
             fieldValue=""
             onStringValueChange={(val) => {
               setAttributeValue(val);
+              if (onChangeForComponentType) {
+                onChangeForComponentType(val);
+              }
             }}
           />
         );
@@ -201,6 +241,27 @@ const DisplayAttributeInputs = ({
             }}
           />
         );
+      case "DiagnosisComponent":
+        return (
+          <DiagnosisComponent
+            handleChange={(val) => {
+              setAttributeValue(val);
+            }}
+            canEdit={true}
+            valueSets={cqmMeasure?.value_sets}
+            required={false}
+          />
+        );
+      case "Component":
+        return (
+          <ComponentType
+            onChange={(val) => setAttributeValue(val)}
+            canEdit={true}
+            valueSets={cqmMeasure?.value_sets}
+            selectedDataElement={selectedDataElement}
+            onInputAdd={onInputAdd}
+          />
+        );
       default:
         return null;
     }
@@ -211,7 +272,7 @@ const DisplayAttributeInputs = ({
       <div tw="flex w-3/4">
         <div tw="flex-grow w-3/4 pt-4">{displayAttributeInput()}</div>
         <div tw="relative pl-2.5">
-          {attributeType ? (
+          {attributeType && !onChangeForComponentType && (
             <Button
               tw="absolute bottom-0"
               variant="outline-filled"
@@ -220,8 +281,6 @@ const DisplayAttributeInputs = ({
             >
               Add
             </Button>
-          ) : (
-            ""
           )}
         </div>
       </div>
