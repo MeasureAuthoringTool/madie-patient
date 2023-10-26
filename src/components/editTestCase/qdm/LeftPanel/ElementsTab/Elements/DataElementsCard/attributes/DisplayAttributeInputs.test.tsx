@@ -14,6 +14,7 @@ import {
 } from "../../../../../../../../api/ServiceContext";
 import { EncounterOrder, AssessmentPerformed } from "cqm-models";
 import userEvent from "@testing-library/user-event";
+import { mockValueSets } from "../../../../../../../common/componentDataType/ComponentType.test";
 
 const serviceConfig: ServiceConfig = {
   testCaseService: {
@@ -33,50 +34,7 @@ const mockCqmMeasure = {
   id: "id-1",
   title: "Mock Measure",
   measure_scoring: MeasureScoring.COHORT,
-  value_sets: [
-    {
-      display_name: "Encounter Inpatient",
-      version: "2023-03",
-      concepts: [
-        {
-          code: "183452005",
-          code_system_name: "SNOMEDCT",
-          code_system_oid: "1.2.3",
-          code_system_version: "2023-03",
-          display_name: "Snomed Emergency hospital admission (procedure)",
-        },
-        {
-          code: "305686008",
-          code_system_name: "SNOMEDCT",
-          code_system_oid: "1.2.3",
-          code_system_version: "2023-03",
-          display_name: "Seen by palliative care physician (finding)",
-        },
-        {
-          code: "Z51.5",
-          code_system_name: "ICD10CM",
-          code_system_oid: "4.5.6",
-          code_system_version: "2023-03",
-          display_name: "Encounter for palliative care",
-        },
-      ],
-      oid: "1.2.3.4.5",
-    },
-    {
-      display_name: "Palliative Care Intervention",
-      version: "2023-03",
-      concepts: [
-        {
-          code: "443761007",
-          code_system_name: "SNOMEDCT",
-          code_system_oid: "1.2.3",
-          code_system_version: "2023-03",
-          display_name: "Anticipatory palliative care (regime/therapy)",
-        },
-      ],
-      oid: "7.8.9.10",
-    },
-  ],
+  value_sets: [...mockValueSets],
 };
 
 const diagnosisValue = {
@@ -123,11 +81,7 @@ describe("DisplayAttributeInputs component", () => {
     assessmentElement = new AssessmentPerformed();
   });
 
-  const renderDisplayAttributeInputs = (
-    attributeType,
-    onChange,
-    onInputAdd
-  ) => {
+  const renderDisplayAttributeInputs = (attributeType, onInputAdd) => {
     return render(
       <MemoryRouter>
         <ApiContextProvider value={serviceConfig}>
@@ -159,16 +113,16 @@ describe("DisplayAttributeInputs component", () => {
   const { findByTestId, queryByTestId, findByText } = screen;
 
   it("should render the data-element selector", async () => {
-    const onChange = jest.fn;
     const onInputAdd = jest.fn;
-    renderDisplayAttributeInputs("DataElement", onChange, onInputAdd);
+    renderDisplayAttributeInputs("DataElement", onInputAdd);
     const selectorComponent = await findByTestId("data-element-selector");
     expect(selectorComponent).toBeInTheDocument();
   });
+
   it("should render the String selector and handle changes", async () => {
     const onChange = jest.fn;
     const onInputAdd = jest.fn;
-    renderDisplayAttributeInputs("String", onChange, onInputAdd);
+    renderDisplayAttributeInputs("String", onInputAdd);
     const selectorComponent = await findByTestId("string-field-string");
     expect(selectorComponent).toBeInTheDocument();
 
@@ -183,9 +137,8 @@ describe("DisplayAttributeInputs component", () => {
   });
 
   it("should render the Time selector", async () => {
-    const onChange = jest.fn;
     const onInputAdd = jest.fn;
-    renderDisplayAttributeInputs("Time", onChange, onInputAdd);
+    renderDisplayAttributeInputs("Time", onInputAdd);
     const selectorComponent = await findByTestId("time");
     expect(selectorComponent).toBeInTheDocument();
   });
@@ -445,5 +398,116 @@ describe("DisplayAttributeInputs component", () => {
     renderDisplayAttributeInputs("Test", onChange, onInputAdd);
     const selectorComponent = await queryByTestId("DiagnosisComponent");
     expect(selectorComponent).not.toBeInTheDocument();
+  });
+
+  it("should capture Code input values for Components Attribute", async () => {
+    const mockOnInputAdd = jest.fn();
+    renderDisplayAttributeInputs("Component", mockOnInputAdd);
+
+    // Select a Code input
+    const valueSetSelector = screen.getByLabelText(
+      "Value Set / Direct Reference Code"
+    );
+    userEvent.click(valueSetSelector);
+    const valueSetOptions = await screen.findAllByRole("option");
+    expect(valueSetOptions.length).toBe(3);
+    expect(valueSetOptions[1]).toHaveTextContent("Encounter Inpatient");
+    expect(valueSetOptions[2]).toHaveTextContent(
+      "Palliative Care Intervention"
+    );
+    userEvent.click(valueSetOptions[1]);
+
+    const codeSystemSelector = await screen.findByLabelText("Code System");
+    expect(codeSystemSelector).toBeInTheDocument();
+
+    userEvent.click(codeSystemSelector);
+    const codeSystemOptions = await screen.findAllByRole("option");
+    expect(codeSystemOptions.length).toBe(2);
+    expect(codeSystemOptions[0]).toHaveTextContent("SNOMEDCT");
+    expect(codeSystemOptions[1]).toHaveTextContent("ICD10CM");
+    userEvent.click(codeSystemOptions[1]);
+
+    const codeSelector = await screen.findByLabelText("Code");
+    expect(codeSelector).toBeInTheDocument();
+
+    userEvent.click(codeSelector);
+    const codeOptions = await screen.findAllByRole("option");
+    expect(codeOptions.length).toBe(1);
+    expect(codeOptions[0]).toHaveTextContent("Encounter for palliative care");
+    userEvent.click(codeOptions[0]);
+
+    const addButton = screen.getByRole("button", { name: "Add" });
+    userEvent.click(addButton);
+    expect(mockOnInputAdd).toHaveBeenCalledTimes(1);
+    expect(mockOnInputAdd).toHaveBeenCalledWith(
+      expect.objectContaining({
+        code: {
+          code: "Z51.5",
+          display: "Encounter for palliative care",
+          system: "4.5.6",
+          version: null,
+        },
+      })
+    );
+  });
+
+  it("should capture input values for Component type when Result attribute is Integer", async () => {
+    const mockOnInputAdd = jest.fn();
+    renderDisplayAttributeInputs("Component", mockOnInputAdd);
+
+    // Select a choice type & value for Result
+    const resultSelector = screen.getByLabelText("Result");
+    userEvent.click(resultSelector);
+    const resultOptions = await screen.findAllByRole("option");
+    expect(resultOptions.length).toBe(9);
+    expect(resultOptions[0]).toHaveTextContent("-");
+    expect(resultOptions[4]).toHaveTextContent("Integer");
+    userEvent.click(resultOptions[4]);
+
+    const integerInput = (await screen.findByTestId(
+      "integer-input-field-Integer"
+    )) as HTMLInputElement;
+    expect(integerInput.value).toBe("");
+    userEvent.type(integerInput, "34");
+    expect(integerInput.value).toBe("34");
+
+    const addButton = screen.getByRole("button", { name: "Add" });
+    userEvent.click(addButton);
+    expect(mockOnInputAdd).toHaveBeenCalledTimes(1);
+    expect(mockOnInputAdd).toHaveBeenCalledWith(
+      expect.objectContaining({
+        result: 34,
+      })
+    );
+  });
+
+  it("should capture input values for Component type when Result attribute is Decimal", async () => {
+    const mockOnInputAdd = jest.fn();
+    renderDisplayAttributeInputs("Component", mockOnInputAdd);
+
+    // Select a choice type & value for Result
+    const resultSelector = screen.getByLabelText("Result");
+    userEvent.click(resultSelector);
+    const resultOptions = await screen.findAllByRole("option");
+    expect(resultOptions.length).toBe(9);
+    expect(resultOptions[0]).toHaveTextContent("-");
+    expect(resultOptions[5]).toHaveTextContent("Decimal");
+    userEvent.click(resultOptions[5]);
+
+    const integerInput = (await screen.findByTestId(
+      "decimal-input-field-Decimal"
+    )) as HTMLInputElement;
+    expect(integerInput.value).toBe("");
+    userEvent.type(integerInput, "34.68");
+    expect(integerInput.value).toBe("34.68");
+
+    const addButton = screen.getByRole("button", { name: "Add" });
+    userEvent.click(addButton);
+    expect(mockOnInputAdd).toHaveBeenCalledTimes(1);
+    expect(mockOnInputAdd).toHaveBeenCalledWith(
+      expect.objectContaining({
+        result: 34.68,
+      })
+    );
   });
 });

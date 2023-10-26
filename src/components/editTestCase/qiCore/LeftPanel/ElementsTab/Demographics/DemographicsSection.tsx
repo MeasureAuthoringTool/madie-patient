@@ -156,8 +156,6 @@ const DemographicsSection = ({ canEdit }) => {
             <div className="demographics-row">
               <FormControl tw={"w-2/4"}>
                 <DateField
-                  label="Date of Birth"
-                  disabled={!canEdit}
                   value={patient?.birthDate ? dayjs(patient.birthDate) : null}
                   handleDateChange={(value: any) => {
                     const date = new Date(value);
@@ -167,6 +165,8 @@ const DemographicsSection = ({ canEdit }) => {
                     const formattedDate = `${year}-${month}-${day}`;
                     handleBirthDateChange(formattedDate);
                   }}
+                  disabled={!canEdit}
+                  label="Date of Birth"
                 />
                 <Select
                   id="gender-selector"
