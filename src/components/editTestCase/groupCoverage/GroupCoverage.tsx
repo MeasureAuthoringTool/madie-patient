@@ -120,7 +120,7 @@ const GroupCoverage = ({
           criteriaReference: population.criteriaReference,
           name: population.name,
           abbreviation: getPopulationAbbreviation(
-            selectedGroup?.populationValues,
+            selectedGroup.populationValues,
             population.name,
             index
           ),
