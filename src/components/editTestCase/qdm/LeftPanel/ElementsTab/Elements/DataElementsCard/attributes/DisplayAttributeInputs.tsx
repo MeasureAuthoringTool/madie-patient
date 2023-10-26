@@ -20,6 +20,7 @@ import useQdmExecutionContext from "../../../../../../../routes/qdm/useQdmExecut
 import QuantityIntervalInput from "../../../../../../../common/quantityIntervalInput/QuantityIntervalInput";
 import StringInput from "../../../../../../../common/string/StringInput";
 import DataElementSelector from "../../../../../../../common/DataElementSelector/DataElementSelector";
+import DiagnosisComponent from "../../../../../../../common/DiagnosisComponent/DiagnosisComponent";
 import ComponentType from "../../../../../../../common/componentDataType/ComponentType";
 
 interface DisplayAttributeInputsProps {
@@ -238,6 +239,17 @@ const DisplayAttributeInputs = ({
             handleChange={(v) => {
               setAttributeValue(v);
             }}
+          />
+        );
+      case "DiagnosisComponent":
+        return (
+          <DiagnosisComponent
+            handleChange={(val) => {
+              setAttributeValue(val);
+            }}
+            canEdit={true}
+            valueSets={cqmMeasure?.value_sets}
+            required={false}
           />
         );
       case "Component":
