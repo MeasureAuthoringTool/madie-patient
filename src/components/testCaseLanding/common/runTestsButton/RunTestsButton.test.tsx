@@ -97,6 +97,40 @@ const measureWithStratifications = {
   ],
 } as Measure;
 
+const qicoreMeasure = {
+  id: "testMeasureId",
+  scoring: MeasureScoring.COHORT,
+  model: Model.QICORE,
+  createdBy: "testUserOwner",
+  patientBasis: true,
+  groups: [
+    {
+      id: "test_groupId",
+      scoring: MeasureScoring.COHORT,
+      populations: [
+        {
+          id: "4f0a1989-205f-45df-a476-8e19999d21c7",
+          name: PopulationType.INITIAL_POPULATION,
+          definition: "IP",
+        },
+      ],
+      populationBasis: "true",
+      stratifications: [
+        {
+          id: "strata1",
+          cqlDefinition: "strat1Def",
+          association: PopulationType.INITIAL_POPULATION,
+        },
+        {
+          id: "strata2",
+          cqlDefinition: "strat2Def",
+          association: PopulationType.INITIAL_POPULATION,
+        },
+      ],
+    },
+  ],
+} as Measure;
+
 jest.mock("@madie/madie-util", () => ({
   useFeatureFlags: () => {
     return { disableRunTestCaseWithObservStrat: true };
@@ -104,6 +138,19 @@ jest.mock("@madie/madie-util", () => ({
 }));
 
 describe("RunTestsButton", () => {
+  it("RunTestsButton should be enabled with QI-Core measure", () => {
+    render(
+      <RunTestsButton
+        hasErrors={false}
+        isExecutionContextReady={true}
+        onRunTests={onRunTests}
+        measure={qicoreMeasure}
+      />
+    );
+    const executeButton = screen.getByTestId("execute-test-cases-button");
+    expect(executeButton).toHaveProperty("disabled", false);
+  });
+
   it("RunTestsButton should be enabled with no error, no observation and no stratification and disableRunTestCaseWithObservStrat is true", () => {
     render(
       <RunTestsButton

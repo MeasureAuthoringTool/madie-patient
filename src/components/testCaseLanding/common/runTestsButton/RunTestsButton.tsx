@@ -6,6 +6,7 @@ import {
   Group,
   MeasureObservation,
   Stratification,
+  Model,
 } from "@madie/madie-models";
 import { useFeatureFlags } from "@madie/madie-util";
 
@@ -34,20 +35,22 @@ export default function RunTestButton(props: RunTestButtonProps) {
   }
 
   useEffect(() => {
-    const groups: Group[] = measure?.groups;
-    groups?.forEach((group) => {
-      const measureObservations: MeasureObservation[] =
-        group?.measureObservations;
-      const measureStratifications: Stratification[] = group?.stratifications;
-      if (
-        measureObservations ||
-        (measureStratifications && measureStratifications.length > 0)
-      ) {
-        if (featureFlags?.disableRunTestCaseWithObservStrat) {
-          setShouldDisableRunTestsButton(true);
+    if (measure?.model === Model.QDM_5_6) {
+      const groups: Group[] = measure?.groups;
+      groups?.forEach((group) => {
+        const measureObservations: MeasureObservation[] =
+          group?.measureObservations;
+        const measureStratifications: Stratification[] = group?.stratifications;
+        if (
+          measureObservations ||
+          (measureStratifications && measureStratifications.length > 0)
+        ) {
+          if (featureFlags?.disableRunTestCaseWithObservStrat) {
+            setShouldDisableRunTestsButton(true);
+          }
         }
-      }
-    });
+      });
+    }
   }, [measure, measure?.groups]);
 
   return (
