@@ -32,7 +32,7 @@ interface Statement {
 
 interface PopulationStatement extends Statement {
   populationName: PopulationType;
-  id?: string;
+  id: string;
 }
 
 type PopulationResult = Record<string, PopulationStatement>;
