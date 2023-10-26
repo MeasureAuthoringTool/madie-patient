@@ -35,7 +35,10 @@ export default function RunTestButton(props: RunTestButtonProps) {
   }
 
   useEffect(() => {
-    if (measure?.model === Model.QDM_5_6) {
+    if (
+      measure?.model === Model.QDM_5_6 &&
+      featureFlags?.disableRunTestCaseWithObservStrat
+    ) {
       const groups: Group[] = measure?.groups;
       groups?.forEach((group) => {
         const measureObservations: MeasureObservation[] =
@@ -45,9 +48,7 @@ export default function RunTestButton(props: RunTestButtonProps) {
           measureObservations ||
           (measureStratifications && measureStratifications.length > 0)
         ) {
-          if (featureFlags?.disableRunTestCaseWithObservStrat) {
-            setShouldDisableRunTestsButton(true);
-          }
+          setShouldDisableRunTestsButton(true);
         }
       });
     }
