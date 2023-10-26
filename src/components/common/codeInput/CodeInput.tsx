@@ -15,6 +15,7 @@ interface CodeInputProps {
   valueSets: ValueSet[];
   required: boolean;
   title?: string;
+  type?: string;
 }
 
 const placeHolder = (label) => (
@@ -27,6 +28,7 @@ const CodeInput = ({
   valueSets,
   required,
   title,
+  type = "",
 }: CodeInputProps) => {
   const [selectedValueSet, setSelectedValueSet] = useState<ValueSet>();
   const [selectedCodeSystemName, setSelectedCodeSystemName] =
@@ -57,9 +59,9 @@ const CodeInput = ({
     setSelectedCodeConcept(undefined);
     setCustom(false);
     setCustomCode("");
-    if (oid === "custom-vs") {
+    if (oid === `custom-vs${type}`) {
       setSelectedValueSet({
-        oid: "custom-vs",
+        oid: `custom-vs${type}`,
         display_name: "Custom code",
       } as ValueSet);
       setCustom(true);
@@ -94,7 +96,11 @@ const CodeInput = ({
   };
 
   const valueSetMenuOptions = [
-    <MenuItem key="custom-vs" value="custom-vs" data-testid={`custom-vs`}>
+    <MenuItem
+      key={`custom-vs${type}`}
+      value={`custom-vs${type}`}
+      data-testid={`custom-vs${type}`}
+    >
       Custom Code
     </MenuItem>,
     valueSets?.map((vs) => {
@@ -113,7 +119,7 @@ const CodeInput = ({
         return acc;
       }, {}) || [];
     return Object.entries(codeSystems).map(([oid, name]) => (
-      <MenuItem key={oid} value={name} data-testid={`option-${name}`}>
+      <MenuItem key={oid} value={name} data-testid={`option-${name}${type}`}>
         {name}
       </MenuItem>
     ));
@@ -135,12 +141,12 @@ const CodeInput = ({
         {title}
       </h4>
       <Select
-        id={"value-set-selector"}
+        id={`value-set-selector${type}`}
         label="Value Set / Direct Reference Code"
         inputProps={{
-          "data-testid": "value-set-selector-input",
+          "data-testid": `value-set-selector-input${type}`,
         }}
-        data-testid={"value-set-selector"}
+        data-testid={`value-set-selector${type}`}
         disabled={!canEdit}
         required={required}
         SelectDisplayProps={{
@@ -162,16 +168,16 @@ const CodeInput = ({
             <>
               <div tw="w-1/2">
                 <TextField
-                  id="custom-code-system"
+                  id={`custom-code-system${type}`}
                   tw="w-full"
                   label="Custom Code System"
                   placeholder="Custom Code System"
                   required={required}
                   disabled={!canEdit}
                   inputProps={{
-                    "data-testid": "custom-code-system-input",
+                    "data-testid": `custom-code-system-input${type}`,
                   }}
-                  data-testid="custom-code-system"
+                  data-testid={`custom-code-system${type}`}
                   onChange={(event) =>
                     setSelectedCodeSystemName(event.target.value)
                   }
@@ -179,14 +185,14 @@ const CodeInput = ({
               </div>
               <div tw="w-1/2 pl-3">
                 <TextField
-                  id="custom-code"
+                  id={`custom-code${type}`}
                   tw="w-full"
                   label="Custom Code"
                   placeholder="Custom Code"
                   required={required}
                   disabled={!canEdit}
                   inputProps={{
-                    "data-testid": "custom-code-input",
+                    "data-testid": `custom-code-input${type}`,
                   }}
                   data-testid="custom-code"
                   onChange={(event) => setCustomCode(event.target.value)}
@@ -202,11 +208,11 @@ const CodeInput = ({
                     value: "",
                   }}
                   label="Code System"
-                  id={"code-system-selector"}
+                  id={`code-system-selector${type}`}
                   inputProps={{
-                    "data-testid": "code-system-selector-input",
+                    "data-testid": `code-system-selector-input${type}`,
                   }}
-                  data-testid={"code-system-selector"}
+                  data-testid={`code-system-selector${type}`}
                   disabled={!canEdit}
                   required={required}
                   SelectDisplayProps={{
@@ -220,11 +226,11 @@ const CodeInput = ({
               <div tw="w-1/2 pl-3">
                 <Select
                   label="Code"
-                  id={"code-selector"}
+                  id={`code-selector${type}`}
                   inputProps={{
-                    "data-testid": "code-selector-input",
+                    "data-testid": `code-selector-input${type}`,
                   }}
-                  data-testid={"code-selector"}
+                  data-testid={`code-selector${type}`}
                   disabled={!canEdit}
                   required={required}
                   SelectDisplayProps={{
