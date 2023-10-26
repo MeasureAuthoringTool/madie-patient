@@ -304,8 +304,9 @@ const EditTestCase = (props: EditTestCaseProps) => {
       groupId: group.id,
       scoring: group.scoring,
       populationBasis: group.populationBasis,
-      stratificationValues: group.stratifications?.map(
-        (stratification, index) => ({
+      stratificationValues: group.stratifications
+        ?.filter((stratification) => stratification.cqlDefinition)
+        ?.map((stratification, index) => ({
           name: `Strata-${index + 1} ${_.startCase(
             stratification.association
           )}`,
@@ -313,8 +314,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
           actual: calculateEpisodes ? false : null,
           id: stratification.id,
           criteriaReference: "",
-        })
-      ),
+        })),
       populationValues: getPopulationTypesForScoring(group)?.map(
         (population: PopulationExpectedValue) => ({
           name: population.name,
