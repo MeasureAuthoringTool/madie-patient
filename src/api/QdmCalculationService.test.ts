@@ -112,7 +112,13 @@ describe("QDM CalculationService Tests", () => {
           definition: "foo1",
         },
       ],
-      stratifications: [{ id: "strat1", description: "strat1 description" }],
+      stratifications: [
+        {
+          id: "strat1",
+          description: "strat1 description",
+          cqlDefinition: "cql definition",
+        },
+      ],
       measureGroupTypes: [],
     } as unknown as Group;
 
@@ -151,6 +157,7 @@ describe("QDM CalculationService Tests", () => {
           id: "strat1",
           description: "strat1 description",
           association: "Episode of Care",
+          cqlDefinition: "cql definition",
         },
       ],
       measureGroupTypes: [],
