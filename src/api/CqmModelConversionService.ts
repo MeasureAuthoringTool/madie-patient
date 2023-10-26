@@ -206,7 +206,7 @@ export class CqmConversionService {
     cqlLibraryName: string,
     populations: Population[]
   ) => {
-    return observations.map((observation, i) => ({
+    return observations?.map((observation, i) => ({
       id: observation.id,
       hqmf_id: null,
       aggregation_type: observation.aggregateMethod,
