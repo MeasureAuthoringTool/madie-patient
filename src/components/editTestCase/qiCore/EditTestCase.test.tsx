@@ -164,6 +164,8 @@ const defaultMeasure = {
       stratifications: [
         {
           id: "strat-id-1",
+          description: "strat1 description",
+          cqlDefinition: "cql definition",
         },
       ],
     },
