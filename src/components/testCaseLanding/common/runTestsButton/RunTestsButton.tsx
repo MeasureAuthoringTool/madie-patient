@@ -62,7 +62,6 @@ export default function RunTestButton(props: RunTestButtonProps) {
       }}
       variant="outlined"
       size="large"
-      //disabled={hasErrors || featureFlags?.disableRunTestCaseWithObservStrat}
       disabled={hasErrors || shouldDisableRunTestsButton}
       loading={(!hasErrors && !isExecutionContextReady) || loading}
       loadingPosition="start"
