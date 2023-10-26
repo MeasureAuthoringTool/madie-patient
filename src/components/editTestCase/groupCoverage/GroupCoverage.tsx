@@ -74,7 +74,6 @@ const GroupCoverage = ({
     selectedPopulationDefinitionResults,
     setSelectedPopulationDefinitionResults,
   ] = useState<Statement>();
-
   // calculation results for selected group/criteria
   const [populationResults, setPopulationResults] = useState<
     PopulationResult | {}
