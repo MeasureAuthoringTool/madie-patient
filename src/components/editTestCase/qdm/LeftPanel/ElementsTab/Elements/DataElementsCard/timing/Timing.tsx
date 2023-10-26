@@ -5,11 +5,28 @@ import { CQL } from "cqm-models";
 import "./Timing.scss";
 import { PRIMARY_TIMING_ATTRIBUTES } from "../../../../../../../../util/QdmAttributeHelpers";
 import * as _ from "lodash";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
+import { InputLabel } from "@mui/material";
+import { labelStyle } from "./TimingStyles";
 
 const Timing = ({ canEdit, updateDataElement, selectedDataElement }) => {
   const handleChange = (newValue, attributeName) => {
     selectedDataElement.set(attributeName, newValue);
     updateDataElement(selectedDataElement);
+  };
+
+  const dateFormatToDisplay = (date) => {
+    if (date) {
+      const currentDate = dayjs();
+      const dayjsDate = dayjs(currentDate)
+        .set("year", date?.year)
+        .set("month", date?.month)
+        .set("date", date?.day);
+      return dayjsDate;
+    }
+    return;
   };
 
   const displayTiming = () => {
@@ -44,13 +61,40 @@ const Timing = ({ canEdit, updateDataElement, selectedDataElement }) => {
         } else if (timingAttr.instance === "Date") {
           displayTimingArray.push(
             <div style={{ paddingRight: "30px" }}>
-              <DateTimeInput
+              {/* <DateTimeInput
                 label={_.startCase(timingAttr.path)}
                 canEdit={canEdit}
                 dateTime={selectedDataElement.get(timingAttr.path)}
                 onDateTimeChange={handleChange}
                 attributeName={timingAttr.path}
-              ></DateTimeInput>
+              ></DateTimeInput> */}
+              <InputLabel
+                htmlFor={"date-picker"}
+                style={{ marginBottom: 8, height: 16 }} // force a heignt
+                sx={labelStyle}
+              >
+                Date of Birth
+              </InputLabel>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker
+                  // label={_.startCase(timingAttr.path)}
+                  className="datePicker"
+                  disabled={!canEdit}
+                  value={
+                    dateFormatToDisplay(
+                      selectedDataElement.get(timingAttr.path)
+                    ) || null
+                  }
+                  onChange={(newValue: any) => {
+                    const newDate = new CQL.Date(
+                      newValue.$y,
+                      newValue.$M + 1,
+                      newValue.$D
+                    );
+                    handleChange(newDate, timingAttr.path);
+                  }}
+                />
+              </LocalizationProvider>
             </div>
           );
         }
