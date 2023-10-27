@@ -46,7 +46,7 @@ const ElementsSection = (props: { handleTestCaseErrors: Function }) => {
     types["QDM::PatientCharacteristicBirthdate"] = true;
     // compile types from typesfromCQL
     typesFromCql.forEach((item) => {
-      types[item._type] = true;
+      types[item] = true;
     });
     setAllowedTypes(types);
     let failedLookupCount = 0;
@@ -79,6 +79,10 @@ const ElementsSection = (props: { handleTestCaseErrors: Function }) => {
       const categories = r.map((r) => r.qdmCategory).sort();
       const sourceDataCriteriaTypes = r.map((c) => c._type);
       setTypesFromCql(sourceDataCriteriaTypes);
+      console.log(
+        "retrieveCategories: setTypesFromCql -> " +
+          JSON.stringify(sourceDataCriteriaTypes)
+      );
       setCategories(uniq(categories));
       setDataElements(r);
     });
