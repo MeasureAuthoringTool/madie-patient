@@ -157,10 +157,11 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
   if (!value) {
     return "null";
   }
-
   if (value instanceof cqmModels.CQL.Code) {
     const title = codeSystemMap[value.system] || value.system;
     return `${title} : ${value.code}`;
+  } else if (value.unit == "%") {
+    return `${value.value} ${value.unit}`;
   } else if (value.low || value.high) {
     let lowString = value.low ? stringifyValue(value.low) : "N/A";
     let highString = value.high ? stringifyValue(value.high) : "N/A";
