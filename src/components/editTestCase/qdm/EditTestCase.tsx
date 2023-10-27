@@ -108,7 +108,7 @@ const EditTestCase = () => {
           group?.measureObservations;
         const measureStratifications: Stratification[] = group?.stratifications;
         if (
-          measureObservations ||
+          (measureObservations && measureObservations.length > 0) ||
           (measureStratifications && measureStratifications.length > 0)
         ) {
           setHasObservationOrStratification(true);
