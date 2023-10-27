@@ -79,10 +79,6 @@ const ElementsSection = (props: { handleTestCaseErrors: Function }) => {
       const categories = r.map((r) => r.qdmCategory).sort();
       const sourceDataCriteriaTypes = r.map((c) => c._type);
       setTypesFromCql(sourceDataCriteriaTypes);
-      console.log(
-        "retrieveCategories: setTypesFromCql -> " +
-          JSON.stringify(sourceDataCriteriaTypes)
-      );
       setCategories(uniq(categories));
       setDataElements(r);
     });
