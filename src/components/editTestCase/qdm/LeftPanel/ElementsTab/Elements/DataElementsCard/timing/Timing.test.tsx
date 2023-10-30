@@ -15,7 +15,7 @@ describe("Timing", () => {
   it("should not render any timing when selected DataElement is null", () => {
     render(
       <Timing
-        updateDataElement={updateDataElement}
+        onChange={updateDataElement}
         selectedDataElement={null}
         canEdit={true}
       />
@@ -49,7 +49,7 @@ describe("Timing", () => {
 
     render(
       <Timing
-        updateDataElement={updateDataElement}
+        onChange={updateDataElement}
         selectedDataElement={assessmentPerformedElement}
         canEdit={true}
       />
@@ -71,7 +71,7 @@ describe("Timing", () => {
 
     render(
       <Timing
-        updateDataElement={updateDataElement}
+        onChange={updateDataElement}
         selectedDataElement={symptomDataElement}
         canEdit={true}
       />
@@ -88,7 +88,7 @@ describe("Timing", () => {
 
     render(
       <Timing
-        updateDataElement={updateDataElement}
+        onChange={updateDataElement}
         selectedDataElement={participationDataElement}
         canEdit={true}
       />
@@ -110,7 +110,7 @@ describe("Timing", () => {
 
     render(
       <Timing
-        updateDataElement={updateDataElement}
+        onChange={updateDataElement}
         selectedDataElement={diagnosticDataElement}
         canEdit={true}
       />
@@ -135,7 +135,7 @@ describe("Timing", () => {
 
     render(
       <Timing
-        updateDataElement={updateDataElement}
+        onChange={updateDataElement}
         selectedDataElement={symptomDataElement}
         canEdit={true}
       />
@@ -166,7 +166,7 @@ describe("Timing", () => {
     render(
       <Timing
         selectedDataElement={participationDataElement}
-        updateDataElement={updateDataElement}
+        onChange={updateDataElement}
         canEdit={true}
       />
     );
@@ -201,7 +201,7 @@ describe("Timing", () => {
     render(
       <Timing
         canEdit={true}
-        updateDataElement={updateDataElement}
+        onChange={updateDataElement}
         selectedDataElement={diagnosticDataElement}
       />
     );
