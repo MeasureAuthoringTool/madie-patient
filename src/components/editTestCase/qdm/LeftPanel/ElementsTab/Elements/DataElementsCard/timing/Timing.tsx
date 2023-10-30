@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import DateTimeInput from "../../../../../../../common/dateTimeInput/DateTimeInput";
 import DateTimeInterval from "../../../../../../../common/dateTimeInterval/DateTimeInterval";
-import { CQL } from "cqm-models";
+import { CQL, QDMDate } from "cqm-models";
 import "./Timing.scss";
 import { PRIMARY_TIMING_ATTRIBUTES } from "../../../../../../../../util/QdmAttributeHelpers";
 import * as _ from "lodash";
@@ -83,7 +83,14 @@ const Timing = ({ canEdit, updateDataElement, selectedDataElement }) => {
                       newValue.$M + 1,
                       newValue.$D
                     );
-                    handleChange(newDate, timingAttr.path);
+                    handleChange(
+                      {
+                        day: newValue.$D,
+                        month: newValue.$M + 1,
+                        year: newValue.$y,
+                      },
+                      timingAttr.path
+                    );
                   }}
                 />
               </LocalizationProvider>
