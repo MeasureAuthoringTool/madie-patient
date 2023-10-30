@@ -161,7 +161,6 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
   if (!value) {
     return "null";
   }
-  debugger;
   if (value instanceof cqmModels.CQL.Code) {
     const title = codeSystemMap[value.system] || value.system;
     return `${title} : ${value.code}`;
