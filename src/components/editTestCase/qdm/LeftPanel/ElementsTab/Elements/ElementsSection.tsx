@@ -46,7 +46,7 @@ const ElementsSection = (props: { handleTestCaseErrors: Function }) => {
     types["QDM::PatientCharacteristicBirthdate"] = true;
     // compile types from typesfromCQL
     typesFromCql.forEach((item) => {
-      types[item._type] = true;
+      types[item] = true;
     });
     setAllowedTypes(types);
     let failedLookupCount = 0;
