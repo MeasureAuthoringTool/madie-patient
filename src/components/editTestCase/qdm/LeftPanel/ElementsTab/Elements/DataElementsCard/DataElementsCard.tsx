@@ -220,7 +220,7 @@ const DataElementsCard = (props: {
     setAttributesPresent(false);
     if (selectedDataElement && selectedDataElement.schema?.eachPath) {
       selectedDataElement.schema.eachPath((path) => {
-        if (!SKIP_ATTRIBUTES.includes(path) && !attributesPresent) {
+        if (!SKIP_ATTRIBUTES.includes(path)) {
           //you can't break an eachPath loop, since it's built off of forEach
           setAttributesPresent(true);
         }

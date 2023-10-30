@@ -55,6 +55,8 @@ import {
   SubstanceRecommended,
   InterventionRecommended,
   PhysicalExamPerformed,
+  PatientCharacteristicEthnicity,
+  EncounterPerformed,
 } from "cqm-models";
 import { CqmModelFactory } from "./CqmModelFactory";
 
@@ -225,6 +227,16 @@ describe("CqmModelFactory", () => {
     expect(
       CqmModelFactory.instantiateModel("PhysicalExamPerformed")
     ).toBeInstanceOf(PhysicalExamPerformed);
+
+    expect(
+      CqmModelFactory.instantiateModel("PatientCharacteristicEthnicity")
+    ).toBeInstanceOf(PatientCharacteristicEthnicity);
+    expect(
+      CqmModelFactory.instantiateModel("EncounterPerformed")
+    ).toBeInstanceOf(EncounterPerformed);
+    expect(
+      CqmModelFactory.instantiateModel("CommunicationNotPerformed")
+    ).toBeInstanceOf(CommunicationPerformed);
   });
 
   it("Error on UnSupportedType", () => {
