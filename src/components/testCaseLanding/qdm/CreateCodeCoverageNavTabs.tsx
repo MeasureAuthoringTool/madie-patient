@@ -154,6 +154,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           hasErrors={hasErrors}
           isExecutionContextReady={executionContextReady}
           onRunTests={executeTestCases}
+          measure={measure}
         />
       </div>
     </div>
