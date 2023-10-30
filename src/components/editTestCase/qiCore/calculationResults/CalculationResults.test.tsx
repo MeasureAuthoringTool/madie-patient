@@ -40,6 +40,10 @@ const groups = [
         name: "initialPopulation",
       },
       {
+        id: "915a",
+        name: "initialPopulation",
+      },
+      {
         id: "19cb",
         name: "denominator",
       },
@@ -121,11 +125,13 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
           criteriaExpression: "Initial Population 1",
           populationType: PopulationType.IPP,
           result: true,
+          populationId: "914d",
         },
         {
           criteriaExpression: "Denominator 1",
           populationType: PopulationType.DENOM,
           result: true,
+          populationId: "19c0",
         },
         {
           criteriaExpression: undefined,
@@ -136,6 +142,7 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
           criteriaExpression: "Numerator 1",
           populationType: PopulationType.NUMER,
           result: false,
+          populationId: "3fdd",
         },
         {
           criteriaExpression: undefined,
@@ -202,11 +209,19 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
           criteriaExpression: "Initial Population 2",
           populationType: PopulationType.IPP,
           result: true,
+          populationId: "914a",
+        },
+        {
+          criteriaExpression: "Initial Population 2-1",
+          populationType: PopulationType.IPP,
+          result: true,
+          populationId: "915a",
         },
         {
           criteriaExpression: "Denominator 2",
           populationType: PopulationType.DENOM,
           result: true,
+          populationId: "19cb",
         },
         {
           criteriaExpression: undefined,
@@ -217,6 +232,7 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
           criteriaExpression: "Numerator 2",
           populationType: PopulationType.NUMER,
           result: false,
+          populationId: "3fdc",
         },
         {
           criteriaExpression: undefined,
@@ -328,8 +344,12 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     const criteriaOptions = await getCriteriaOptions();
     // options to select groups
     expect(criteriaOptions).toHaveLength(2);
-    userEvent.click(criteriaOptions[0]);
-    await assertPopulationTabs();
+    userEvent.click(criteriaOptions[1]);
+    // check tabs are rendered for all populations of a group
+    expect(await getByRole("IP 1")).toBeInTheDocument();
+    expect(await getByRole("IP 2")).toBeInTheDocument();
+    expect(await getByRole("DENOM")).toBeInTheDocument();
+    expect(await getByRole("NUMER")).toBeInTheDocument();
   });
 
   test("render highlighting view with coverage results for 2 groups", async () => {

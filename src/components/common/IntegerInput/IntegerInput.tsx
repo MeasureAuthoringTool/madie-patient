@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { TextField } from "@madie/madie-design-system/dist/react/";
 import "twin.macro";
 import "styled-components/macro";
@@ -8,6 +8,7 @@ export interface IntegerProps {
   handleChange: Function;
   canEdit: boolean;
   label: string;
+  allowNegative?: boolean;
 }
 
 const IntegerInput = ({
@@ -15,7 +16,9 @@ const IntegerInput = ({
   handleChange,
   canEdit,
   label,
+  allowNegative = false,
 }: IntegerProps) => {
+  const [inputValue, setInputValue] = useState<string>();
   return (
     <div tw="flex flex-row">
       <div tw="w-32">
@@ -32,17 +35,45 @@ const IntegerInput = ({
             required: true,
           }}
           onKeyPress={(e) => {
-            if (!Number(e.key) && e.key != "0") {
+            if (!allowNegative && !Number(e.key) && e.key != "0") {
               e.preventDefault();
+            } else if (allowNegative) {
+              if (
+                !inputValue &&
+                !Number(e.key) &&
+                e.key != "0" &&
+                e.key != "-"
+              ) {
+                e.preventDefault();
+              } else if (
+                inputValue?.includes("-") &&
+                !Number(inputValue + e.key) &&
+                !Number(e.key) &&
+                e.key != "0"
+              ) {
+                e.preventDefault();
+              } else if (Number(inputValue) && !Number(e.key)) {
+                e.preventDefault();
+              }
             }
           }}
           onChange={(e) => {
-            if (
-              Number(e.target.value) >= 0 &&
-              Number(e.target.value) % 1 == 0 &&
-              !e.target.value.toString().includes(".")
-            ) {
-              handleChange(e.target.value);
+            setInputValue(e.target.value.toString());
+            if (!allowNegative) {
+              if (
+                Number(e.target.value) >= 0 &&
+                Number(e.target.value) % 1 == 0 &&
+                !e.target.value.toString().includes(".")
+              ) {
+                handleChange(e.target.value);
+              }
+            } else {
+              if (
+                Number(e.target.value) % 1 == 0 &&
+                !e.target.value.toString().includes(".")
+              ) {
+                handleChange(e.target.value);
+              }
             }
           }}
         />
