@@ -101,7 +101,10 @@ export const generateAttributesToDisplay = (
   const modeledEl = new dataElementClass(dataElement);
   const displayAttributes = [];
   modeledEl.schema.eachPath((path, info) => {
-    if (!SKIP_ATTRIBUTES.includes(path) && dataElement[path]) {
+    if (
+      !SKIP_ATTRIBUTES.includes(path) &&
+      (!_.isEmpty(dataElement[path]) || typeof dataElement[path] === "number")
+    ) {
       if (info.instance === "Array") {
         const multipleDataTypes = [];
         dataElement[path].forEach((elem) => {
