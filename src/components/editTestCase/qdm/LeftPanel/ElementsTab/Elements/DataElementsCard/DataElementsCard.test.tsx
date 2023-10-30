@@ -1,15 +1,7 @@
 import * as React from "react";
 import { Measure } from "@madie/madie-models";
 import { MemoryRouter } from "react-router-dom";
-import { describe, test } from "@jest/globals";
-import {
-  findByRole,
-  logRoles,
-  render,
-  screen,
-  waitFor,
-  within,
-} from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import DataElementsCard, {
   applyAttribute,
@@ -23,6 +15,7 @@ import { QdmExecutionContextProvider } from "../../../../../../routes/qdm/QdmExe
 import { FormikProvider, FormikContextType } from "formik";
 import { QdmPatientProvider } from "../../../../../../../util/QdmPatientContext";
 import userEvent from "@testing-library/user-event";
+import { getDataElementClass } from "../../../../../../../util/DataElementHelper";
 
 const serviceConfig = {
   testCaseService: {
@@ -882,6 +875,12 @@ export const testDataElements = [
     codeListId: "2.16.840.1.113883.3.3157.4036",
     description:
       "Assessment, Order: Active Bleeding or Bleeding Diathesis (Excluding Menses)",
+    negationRationale: {
+      code: "10217006",
+      system: "2.16.840.1.113883.6.96",
+      version: null,
+      display: "Third degree perineal laceration (disorder)",
+    },
   },
   {
     dataElementCodes: [],
@@ -909,7 +908,6 @@ export const testDataElements = [
     id: "6480f13e91f25700004059db",
     codeListId: "2.16.840.1.113883.3.3157.4048",
     description: "Device, Order: Cardiopulmonary Arrest",
-    negationRationale: true,
   },
   {
     dataElementCodes: [],
@@ -972,6 +970,7 @@ const renderDataElementsCard = (
             executionContextReady: true,
             executing: false,
             setExecuting: jest.fn(),
+            contextFailure: false,
           }}
         >
           <FormikProvider value={mockFormik}>
@@ -993,9 +992,12 @@ const renderDataElementsCard = (
 
 describe("DataElementsCard", () => {
   const { queryByText } = screen;
+
   it("DataElementsCards renders length of stay", async () => {
+    const modelClass = getDataElementClass(dataEl[0]);
+    const newDataElement = new modelClass(dataEl[0]);
     await waitFor(() =>
-      renderDataElementsCard("attributes", jest.fn, dataEl[0], jest.fn)
+      renderDataElementsCard("attributes", jest.fn, newDataElement, jest.fn)
     );
     await waitFor(() => {
       expect(queryByText("Length Of Stay: 12 'hours'")).toBeInTheDocument();
@@ -1003,16 +1005,20 @@ describe("DataElementsCard", () => {
   });
 
   it("DataElementsCard renders codes", async () => {
+    const modelClass = getDataElementClass(dataEl[0]);
+    const newDataElement = new modelClass(dataEl[0]);
     await waitFor(() =>
-      renderDataElementsCard("codes", jest.fn, dataEl[0], jest.fn)
+      renderDataElementsCard("codes", jest.fn, newDataElement, jest.fn)
     );
 
     expect(screen.getByTestId("codes-section")).toBeInTheDocument();
   });
 
   it("DataElementsCards renders nothing", async () => {
+    const modelClass = getDataElementClass(testDataElements[0]);
+    const newDataElement = new modelClass(testDataElements[0]);
     await waitFor(() =>
-      renderDataElementsCard("codes", jest.fn, testDataElements[0], jest.fn)
+      renderDataElementsCard("codes", jest.fn, newDataElement, jest.fn)
     );
     await waitFor(() => {
       expect(
@@ -1020,26 +1026,28 @@ describe("DataElementsCard", () => {
       ).not.toBeInTheDocument();
     });
   });
+
   it("Attribute chip should render and delete", async () => {
+    const modelClass = getDataElementClass(testDataElements[15]);
+    const newDataElement = new modelClass(testDataElements[15]);
     await waitFor(() =>
-      renderDataElementsCard(
-        "attributes",
-        jest.fn,
-        testDataElements[15],
-        jest.fn
-      )
+      renderDataElementsCard("attributes", jest.fn, newDataElement, jest.fn)
     );
-    const resultChip = await screen.findByText("Result: 1");
-    expect(resultChip).toBeInTheDocument();
-    const closeButton = await screen.findByTestId("delete-chip-button-0");
-    expect(closeButton).toBeInTheDocument();
-    userEvent.click(closeButton);
-    expect(closeButton).not.toBeInTheDocument();
-    expect(resultChip).not.toBeInTheDocument();
+    await waitFor(() => {
+      const resultChip = screen.getByText("Result: 1");
+      expect(resultChip).toBeInTheDocument();
+      const closeButton = screen.getByTestId("delete-chip-button-0");
+      expect(closeButton).toBeInTheDocument();
+      userEvent.click(closeButton);
+      expect(closeButton).not.toBeInTheDocument();
+      expect(resultChip).not.toBeInTheDocument();
+    })
   });
 
   it("Should add new Codes", async () => {
-    renderDataElementsCard("codes", jest.fn, dataEl[0], jest.fn);
+    const modelClass = getDataElementClass(dataEl[0]);
+    const newDataElement = new modelClass(dataEl[0]);
+    renderDataElementsCard("codes", jest.fn, newDataElement, jest.fn);
 
     expect(screen.getByTestId("codes-section")).toBeInTheDocument();
     // select the code system
@@ -1183,20 +1191,28 @@ describe("Negation Rationale", () => {
     expect(screen.queryByTestId("code-selector")).not.toBeInTheDocument();
     expect(screen.queryByTestId("custom-code-system")).not.toBeInTheDocument();
     expect(screen.queryByTestId("custom-code")).not.toBeInTheDocument();
+    expect(
+      screen.getByTestId("2.16.840.1.113883.6.96 : 10217006")
+    ).toBeInTheDocument();
   });
 
   it("Should allow user to choose negation rationale value set, code and system", async () => {
-    await waitFor(() =>
-      renderDataElementsCard(
-        "negation_rationale",
-        jest.fn,
-        testDataElements[12],
-        jest.fn
-      )
+    const modelClass = getDataElementClass(testDataElements[12]);
+    const newDataElement = new modelClass(testDataElements[12]);
+    const mockSetSelectedDataElement = jest.fn();
+    renderDataElementsCard(
+      "negation_rationale",
+      jest.fn,
+      newDataElement,
+      mockSetSelectedDataElement
     );
+
     expect(
       await screen.findByTestId("negation-rationale-div")
     ).toBeInTheDocument();
+
+    const addNegationRationale = screen.getByRole("button", { name: "Add" });
+    expect(addNegationRationale).toBeDisabled();
 
     const valueSetsInput = screen.getByTestId(
       "value-set-selector-input"
@@ -1230,18 +1246,9 @@ describe("Negation Rationale", () => {
     userEvent.click(codeOptions[0]);
 
     //add negation rationale
-    const addNegationRationale = screen.getByTestId("add-negation-rationale");
-    expect(addNegationRationale).toBeInTheDocument();
+    expect(addNegationRationale).toBeEnabled();
     userEvent.click(addNegationRationale);
 
-    //negation rationale chip displays with code:system
-    const chip = screen.getByTestId("2.16.840.1.113883.6.96 : 4525004");
-    expect(chip).toBeInTheDocument();
-
-    //delete negation rationale
-    userEvent.click(screen.getByTestId("CancelIcon"));
-    expect(
-      await screen.queryByTestId("2.16.840.1.113883.6.96 : 4525004")
-    ).toBeNull();
+    expect(mockSetSelectedDataElement).toHaveBeenCalledTimes(1);
   });
 });

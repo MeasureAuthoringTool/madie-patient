@@ -101,7 +101,7 @@ export const generateAttributesToDisplay = (
   const modeledEl = new dataElementClass(dataElement);
   const displayAttributes = [];
   modeledEl.schema.eachPath((path, info) => {
-    if (!SKIP_ATTRIBUTES.includes(path) && !_.isEmpty(dataElement[path])) {
+    if (!SKIP_ATTRIBUTES.includes(path) && dataElement[path]) {
       if (info.instance === "Array") {
         const multipleDataTypes = [];
         dataElement[path].forEach((elem) => {
@@ -115,13 +115,14 @@ export const generateAttributesToDisplay = (
               name: _.replace(elem._type, "QDM::", ""),
               title: _.startCase(path),
               value: value,
+              id: elem._id?.toString(),
             });
           } else {
             multipleDataTypes.push({
               name: _.replace(elem._type, "QDM::", ""),
               title: _.startCase(path),
               value: stringifyValue(elem, true, codeSystemMap),
-              id: elem._id.toString(),
+              id: elem._id?.toString(),
             });
           }
         });
@@ -160,6 +161,7 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
   if (!value) {
     return "null";
   }
+  debugger;
   if (value instanceof cqmModels.CQL.Code) {
     const title = codeSystemMap[value.system] || value.system;
     return `${title} : ${value.code}`;

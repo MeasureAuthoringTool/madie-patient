@@ -45,10 +45,7 @@ export const deleteAttribute = (chip, dataElement) => {
       _.split(_.split(chip.text, ":", 1)[0], "-", 1)[0]
     );
     const pathInfo = updatedDataElement.schema.paths[attributePath];
-    if (
-      _.upperCase(pathInfo?.instance) === "ARRAY" &&
-      updatedDataElement[attributePath].length > 1
-    ) {
+    if (_.upperCase(pathInfo?.instance) === "ARRAY") {
       updatedDataElement[attributePath] = _.filter(
         updatedDataElement[attributePath],
         (a) => a._id.toString() !== chip.id
@@ -162,6 +159,7 @@ const DataElementsCard = (props: {
   }, [selectedDataElement, codeSystemMap, dataElements]);
 
   // centralize state one level up so we can conditionally render our child component
+  // Determines if the selected DataElement has at least one attribute.
   useEffect(() => {
     setAttributesPresent(false);
     if (selectedDataElement && selectedDataElement.schema?.eachPath) {
