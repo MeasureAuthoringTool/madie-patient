@@ -1041,7 +1041,7 @@ describe("DataElementsCard", () => {
       userEvent.click(closeButton);
       expect(closeButton).not.toBeInTheDocument();
       expect(resultChip).not.toBeInTheDocument();
-    })
+    });
   });
 
   it("Should add new Codes", async () => {
