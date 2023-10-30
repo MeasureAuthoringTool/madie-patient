@@ -152,6 +152,8 @@ const ElementsSection = (props: { handleTestCaseErrors: Function }) => {
               cardActiveTab={cardActiveTab}
               setCardActiveTab={setCardActiveTab}
               onChange={(changedDataElement) => {
+                console.log(changedDataElement.statusDate)
+                console.log(JSON.stringify(changedDataElement.statusDate))
                 dispatch({
                   type: PatientActionType.MODIFY_DATA_ELEMENT,
                   payload: changedDataElement,

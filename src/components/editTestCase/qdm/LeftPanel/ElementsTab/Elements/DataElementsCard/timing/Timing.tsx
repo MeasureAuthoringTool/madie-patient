@@ -66,11 +66,10 @@ const Timing = ({ canEdit, updateDataElement, selectedDataElement }) => {
                 style={{ marginBottom: 8, height: 16 }} // force a heignt
                 sx={labelStyle}
               >
-                Date of Birth
+                {_.startCase(timingAttr.path)}
               </InputLabel>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
-                  // label={_.startCase(timingAttr.path)}
                   className="datePicker"
                   disabled={!canEdit}
                   value={
