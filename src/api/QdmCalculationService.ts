@@ -133,6 +133,29 @@ export class QdmCalculationService {
     return groupPass;
   }
 
+  mapObservations = (population, results) => {
+    if (population.name === "denominatorObservation") {
+      if (results.DENOM === 1 && results.DENEX === 0) {
+        return results?.observation_values?.[0];
+      }
+      if ((results.DENOM === 1 && results.DENEX === 1) || results.DENOM === 0) {
+        return "NA";
+      }
+    }
+
+    if (population.name === "numeratorObservation") {
+      if (results.NUMER === 1 && results.NUMEX === 0) {
+        //check if both observations are present
+        return results?.observation_values?.length > 1
+          ? results?.observation_values?.[1]
+          : results?.observation_values?.[0];
+      }
+      if ((results.NUMER === 1 && results.NUMEX === 1) || results.NUMER === 0) {
+        return "NA";
+      }
+    }
+  };
+
   processTestCaseResults(
     testCase: TestCase,
     measureGroups: Group[],
@@ -178,7 +201,11 @@ export class QdmCalculationService {
           groupPop.populationValues.forEach((population) => {
             if (isTestCasePopulationObservation(population)) {
               if (patientBased) {
-                population.actual = results?.observation_values?.[0];
+                if (groupPop.scoring === "Ratio") {
+                  population.actual = this.mapObservations(population, results);
+                } else {
+                  population.actual = results?.observation_values?.[0];
+                }
               } else if (obsCount < results?.observation_values?.length) {
                 population.actual = results?.observation_values?.[obsCount];
               }
