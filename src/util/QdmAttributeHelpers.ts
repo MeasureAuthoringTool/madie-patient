@@ -121,6 +121,7 @@ export const generateAttributesToDisplay = (
               name: _.replace(elem._type, "QDM::", ""),
               title: _.startCase(path),
               value: stringifyValue(elem, true, codeSystemMap),
+              id: elem._id.toString(),
             });
           }
         });
@@ -139,12 +140,14 @@ export const generateAttributesToDisplay = (
           name: path,
           title: _.startCase(path),
           value: value,
+          isMultiple: false,
         });
       } else {
         displayAttributes.push({
           name: path,
           title: _.startCase(path),
           value: stringifyValue(dataElement[path], true, codeSystemMap),
+          isMultiple: false,
         });
       }
     }

@@ -6,10 +6,10 @@ import "./Timing.scss";
 import { PRIMARY_TIMING_ATTRIBUTES } from "../../../../../../../../util/QdmAttributeHelpers";
 import * as _ from "lodash";
 
-const Timing = ({ canEdit, updateDataElement, selectedDataElement }) => {
+const Timing = ({ canEdit, onChange, selectedDataElement }) => {
   const handleChange = (newValue, attributeName) => {
     selectedDataElement.set(attributeName, newValue);
-    updateDataElement(selectedDataElement);
+    onChange(selectedDataElement);
   };
 
   const displayTiming = () => {
