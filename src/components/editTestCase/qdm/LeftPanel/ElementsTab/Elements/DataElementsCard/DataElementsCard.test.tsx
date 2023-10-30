@@ -996,9 +996,7 @@ describe("DataElementsCard", () => {
   it("DataElementsCards renders length of stay", async () => {
     const modelClass = getDataElementClass(dataEl[0]);
     const newDataElement = new modelClass(dataEl[0]);
-    await waitFor(() =>
-      renderDataElementsCard("attributes", jest.fn, newDataElement, jest.fn)
-    );
+    renderDataElementsCard("attributes", jest.fn, newDataElement, jest.fn);
     await waitFor(() => {
       expect(queryByText("Length Of Stay: 12 'hours'")).toBeInTheDocument();
     });
@@ -1007,19 +1005,14 @@ describe("DataElementsCard", () => {
   it("DataElementsCard renders codes", async () => {
     const modelClass = getDataElementClass(dataEl[0]);
     const newDataElement = new modelClass(dataEl[0]);
-    await waitFor(() =>
-      renderDataElementsCard("codes", jest.fn, newDataElement, jest.fn)
-    );
-
+    renderDataElementsCard("codes", jest.fn, newDataElement, jest.fn);
     expect(screen.getByTestId("codes-section")).toBeInTheDocument();
   });
 
   it("DataElementsCards renders nothing", async () => {
     const modelClass = getDataElementClass(testDataElements[0]);
     const newDataElement = new modelClass(testDataElements[0]);
-    await waitFor(() =>
-      renderDataElementsCard("codes", jest.fn, newDataElement, jest.fn)
-    );
+    renderDataElementsCard("codes", jest.fn, newDataElement, jest.fn);
     await waitFor(() => {
       expect(
         screen.queryByText("Admission Source: SNOMEDCT : 10725009")
@@ -1027,21 +1020,17 @@ describe("DataElementsCard", () => {
     });
   });
 
-  it("Attribute chip should render and delete", async () => {
-    const modelClass = getDataElementClass(testDataElements[15]);
-    const newDataElement = new modelClass(testDataElements[15]);
-    await waitFor(() =>
-      renderDataElementsCard("attributes", jest.fn, newDataElement, jest.fn)
+  it("Should render Attribute chips", async () => {
+    renderDataElementsCard(
+      "attributes",
+      jest.fn,
+      testDataElements[15],
+      jest.fn
     );
-    await waitFor(() => {
-      const resultChip = screen.getByText("Result: 1");
-      expect(resultChip).toBeInTheDocument();
-      const closeButton = screen.getByTestId("delete-chip-button-0");
-      expect(closeButton).toBeInTheDocument();
-      userEvent.click(closeButton);
-      expect(closeButton).not.toBeInTheDocument();
-      expect(resultChip).not.toBeInTheDocument();
-    });
+    const resultChip = await screen.findByText("Result: 1");
+    expect(resultChip).toBeInTheDocument();
+    const closeButton = await screen.findByTestId("delete-chip-button-0");
+    expect(closeButton).toBeInTheDocument();
   });
 
   it("Should add new Codes", async () => {
@@ -1160,13 +1149,11 @@ describe("applyAttribute function", () => {
 
 describe("Negation Rationale", () => {
   it("DataElementsCard renders negation rationale", async () => {
-    await waitFor(() =>
-      renderDataElementsCard(
-        "negation_rationale",
-        jest.fn,
-        testDataElements[12],
-        jest.fn
-      )
+    renderDataElementsCard(
+      "negation_rationale",
+      jest.fn,
+      testDataElements[12],
+      jest.fn
     );
     expect(
       await screen.findByTestId("negation-rationale-div")

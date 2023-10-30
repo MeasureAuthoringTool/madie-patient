@@ -305,6 +305,7 @@ const renderElementsSectionComponent = () => {
               executionContextReady: true,
               executing: false,
               setExecuting: jest.fn(),
+              contextFailure: false,
             }}
           >
             <QdmPatientProvider>
@@ -344,7 +345,7 @@ jest.mock("@madie/madie-util", () => ({
     return true;
   }),
   routeHandlerStore: {
-    subscribe: (set) => {
+    subscribe: () => {
       return { unsubscribe: () => null };
     },
     updateRouteHandlerState: () => null,
@@ -359,7 +360,7 @@ describe("ElementsSection allows card opening and closing", () => {
   // need to mock measureStore, and the results from retrieve categories
   const { findByTestId, getByTestId, queryByText } = screen;
   test("should open and close a data element card manual close selection", async () => {
-    await waitFor(() => renderElementsSectionComponent());
+    renderElementsSectionComponent();
     const elementSection = await findByTestId("elements-section");
     expect(elementSection).toBeInTheDocument();
     //  navigate to adverse event
@@ -392,7 +393,7 @@ describe("ElementsSection allows card opening and closing", () => {
   });
 
   test("should open and close a data element card manual close selection", async () => {
-    await waitFor(() => renderElementsSectionComponent());
+    renderElementsSectionComponent();
     const elementSection = await findByTestId("elements-section");
     expect(elementSection).toBeInTheDocument();
     const adverseEventTab = screen.getByTestId("elements-tab-adverse_event");
