@@ -12,9 +12,10 @@ import DateTimeInterval from "../dateTimeInterval/DateTimeInterval";
 interface Props {
   onChange: Function;
   valueSets: ValueSet[];
+  canEdit: boolean;
 }
 
-const FacilityLocation = ({ onChange, valueSets }: Props) => {
+const FacilityLocation = ({ onChange, valueSets, canEdit }: Props) => {
   const [code, setCode] = useState<CQL.Code>();
   const [locationPeriod, setLocationPeriod] = useState<CQL.DateTimeInterval>();
 
@@ -36,6 +37,7 @@ const FacilityLocation = ({ onChange, valueSets }: Props) => {
       />
       <div tw="mt-4">
         <DateTimeInterval
+          canEdit={canEdit}
           label="Location Period"
           dateTimeInterval={locationPeriod}
           onDateTimeIntervalChange={(period) => setLocationPeriod(period)}
