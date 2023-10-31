@@ -55,7 +55,7 @@ const Timing = ({ canEdit, updateDataElement, selectedDataElement }) => {
                 dateTime={selectedDataElement.get(timingAttr.path)}
                 onDateTimeChange={handleChange}
                 attributeName={timingAttr.path}
-              ></DateTimeInput>
+              />
             </div>
           );
         } else if (timingAttr.instance === "Date") {
