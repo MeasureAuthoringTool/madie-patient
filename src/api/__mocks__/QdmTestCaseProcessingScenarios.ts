@@ -917,7 +917,7 @@ export const RATIO_PATIENTBASED_WITH_OBS_RESULTS: QdmTestCaseProcessingScenario 
             definition: "Numer Observation",
             description: null,
             criteriaReference: "g1pop4",
-            aggregateMethod: "Count",
+            aggregateMethod: AggregateFunctionType.COUNT,
           },
         ],
         measureGroupTypes: null,
