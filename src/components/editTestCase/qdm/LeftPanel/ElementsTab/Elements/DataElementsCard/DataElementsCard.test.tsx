@@ -1,7 +1,13 @@
 import * as React from "react";
 import { Measure } from "@madie/madie-models";
 import { MemoryRouter } from "react-router-dom";
-import { render, screen, waitFor, within } from "@testing-library/react";
+import {
+  prettyDOM,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import "@testing-library/jest-dom";
 import DataElementsCard, {
   applyAttribute,
@@ -707,162 +713,6 @@ export const testDataElements = [
   },
   {
     dataElementCodes: [],
-    _id: "6480f13e91f25700004059c1",
-    recorder: [],
-    qdmTitle: "Allergy/Intolerance",
-    hqmfOid: "2.16.840.1.113883.10.20.28.4.119",
-    qdmCategory: "allergy",
-    qdmStatus: "intolerance",
-    qdmVersion: "5.6",
-    _type: "QDM::AllergyIntolerance",
-    id: "6480f13e91f25700004059c1",
-    codeListId: "2.16.840.1.113762.1.4.1111.143",
-    description: "Allergy/Intolerance: Observation Services",
-  },
-  {
-    dataElementCodes: [],
-    _id: "6480f13e91f25700004059c3",
-    qdmTitle: "Patient Characteristic Sex",
-    hqmfOid: "2.16.840.1.113883.10.20.28.4.55",
-    qdmCategory: "patient_characteristic",
-    qdmStatus: "gender",
-    qdmVersion: "5.6",
-    _type: "QDM::PatientCharacteristicSex",
-    id: "6480f13e91f25700004059c3",
-    codeListId: "2.16.840.1.113762.1.4.1",
-    description: "Patient Characteristic Sex: ONC Administrative Sex",
-  },
-  {
-    dataElementCodes: [],
-    _id: "6480f13e91f25700004059c5",
-    requester: [],
-    qdmTitle: "Diagnostic Study, Order",
-    hqmfOid: "2.16.840.1.113883.10.20.28.4.22",
-    qdmCategory: "diagnostic_study",
-    qdmStatus: "order",
-    qdmVersion: "5.6",
-    _type: "QDM::DiagnosticStudyOrder",
-    id: "6480f13e91f25700004059c5",
-    codeListId: "2.16.840.1.113883.3.3157.4025",
-    description: "Diagnostic Study, Order: Cerebral Vascular Lesion",
-  },
-  {
-    dataElementCodes: [],
-    _id: "6480f13e91f25700004059c7",
-    requester: [],
-    qdmTitle: "Assessment, Recommended",
-    hqmfOid: "2.16.840.1.113883.10.20.28.4.118",
-    qdmCategory: "assessment",
-    qdmStatus: "recommended",
-    qdmVersion: "5.6",
-    _type: "QDM::AssessmentRecommended",
-    id: "6480f13e91f25700004059c7",
-    codeListId: "2.16.840.1.113762.1.4.1170.6",
-    description: "Assessment, Recommended: Adverse reaction to thrombolytics",
-  },
-  {
-    dataElementCodes: [],
-    _id: "6480f13e91f25700004059c9",
-    requester: [],
-    qdmTitle: "Encounter, Order",
-    hqmfOid: "2.16.840.1.113883.10.20.28.4.27",
-    qdmCategory: "encounter",
-    qdmStatus: "order",
-    qdmVersion: "5.6",
-    _type: "QDM::EncounterOrder",
-    id: "6480f13e91f25700004059c9",
-    codeListId: "2.16.840.1.113883.3.3157.4026",
-    description: "Encounter, Order: Closed Head and Facial Trauma",
-  },
-  {
-    dataElementCodes: [],
-    _id: "6480f13e91f25700004059cb",
-    requester: [],
-    qdmTitle: "Encounter, Recommended",
-    hqmfOid: "2.16.840.1.113883.10.20.28.4.28",
-    qdmCategory: "encounter",
-    qdmStatus: "recommended",
-    qdmVersion: "5.6",
-    _type: "QDM::EncounterRecommended",
-    id: "6480f13e91f25700004059cb",
-    codeListId: "2.16.840.1.113883.3.3157.4043",
-    description: "Encounter, Recommended: Dementia",
-  },
-  {
-    dataElementCodes: [],
-    _id: "6480f13e91f25700004059cd",
-    relatedTo: [],
-    performer: [],
-    qdmTitle: "Assessment, Performed",
-    hqmfOid: "2.16.840.1.113883.10.20.28.4.117",
-    qdmCategory: "assessment",
-    qdmStatus: "performed",
-    qdmVersion: "5.6",
-    _type: "QDM::AssessmentPerformed",
-    id: "6480f13e91f25700004059cd",
-    components: [],
-    codeListId: "2.16.840.1.113883.3.3157.4031",
-    description: "Assessment, Performed: Active Peptic Ulcer",
-  },
-  {
-    dataElementCodes: [],
-    _id: "6480f13e91f25700004059cf",
-    participant: [],
-    relatedTo: [],
-    qdmTitle: "Encounter, Performed",
-    hqmfOid: "2.16.840.1.113883.10.20.28.4.5",
-    qdmCategory: "encounter",
-    qdmStatus: "performed",
-    qdmVersion: "5.6",
-    _type: "QDM::EncounterPerformed",
-    id: "6480f13e91f25700004059cf",
-    facilityLocations: [],
-    diagnoses: [],
-    codeListId: "2.16.840.1.113883.3.117.1.7.1.292",
-    description: "Encounter, Performed: Emergency Department Visit",
-  },
-  {
-    dataElementCodes: [],
-    _id: "6480f13e91f25700004059d1",
-    recorder: [],
-    qdmTitle: "Diagnosis",
-    hqmfOid: "2.16.840.1.113883.10.20.28.4.110",
-    qrdaOid: "2.16.840.1.113883.10.20.24.3.135",
-    qdmCategory: "condition",
-    qdmVersion: "5.6",
-    _type: "QDM::Diagnosis",
-    id: "6480f13e91f25700004059d1",
-    codeListId: "2.16.840.1.113762.1.4.1170.5",
-    description: "Diagnosis: Allergy to thrombolytics",
-  },
-  {
-    dataElementCodes: [],
-    _id: "6480f13e91f25700004059d3",
-    qdmTitle: "Patient Characteristic Race",
-    hqmfOid: "2.16.840.1.113883.10.20.28.4.59",
-    qdmCategory: "patient_characteristic",
-    qdmStatus: "race",
-    qdmVersion: "5.6",
-    _type: "QDM::PatientCharacteristicRace",
-    id: "6480f13e91f25700004059d3",
-    codeListId: "2.16.840.1.114222.4.11.836",
-    description: "Patient Characteristic Race: Race",
-  },
-  {
-    dataElementCodes: [],
-    _id: "6480f13e91f25700004059d5",
-    recorder: [],
-    qdmTitle: "Adverse Event",
-    hqmfOid: "2.16.840.1.113883.10.20.28.4.120",
-    qdmCategory: "adverse_event",
-    qdmVersion: "5.6",
-    _type: "QDM::AdverseEvent",
-    id: "6480f13e91f25700004059d5",
-    codeListId: "2.16.840.1.113883.3.666.5.307",
-    description: "Adverse Event: Encounter Inpatient",
-  },
-  {
-    dataElementCodes: [],
     _id: "6480f13e91f25700004059d7",
     requester: [],
     qdmTitle: "Assessment, Order",
@@ -884,33 +734,6 @@ export const testDataElements = [
   },
   {
     dataElementCodes: [],
-    _id: "6480f13e91f25700004059d9",
-    qdmTitle: "Patient Characteristic Payer",
-    hqmfOid: "2.16.840.1.113883.10.20.28.4.58",
-    qdmCategory: "patient_characteristic",
-    qdmStatus: "payer",
-    qdmVersion: "5.6",
-    _type: "QDM::PatientCharacteristicPayer",
-    id: "6480f13e91f25700004059d9",
-    codeListId: "2.16.840.1.114222.4.11.3591",
-    description: "Patient Characteristic Payer: Payer",
-  },
-  {
-    dataElementCodes: [],
-    _id: "6480f13e91f25700004059db",
-    requester: [],
-    qdmTitle: "Device, Order",
-    hqmfOid: "2.16.840.1.113883.10.20.28.4.15",
-    qdmCategory: "device",
-    qdmStatus: "order",
-    qdmVersion: "5.6",
-    _type: "QDM::DeviceOrder",
-    id: "6480f13e91f25700004059db",
-    codeListId: "2.16.840.1.113883.3.3157.4048",
-    description: "Device, Order: Cardiopulmonary Arrest",
-  },
-  {
-    dataElementCodes: [],
     _id: "6480f13e91f25700004059cd",
     relatedTo: [],
     performer: [],
@@ -925,6 +748,58 @@ export const testDataElements = [
     codeListId: "2.16.840.1.113883.3.3157.4031",
     description: "Assessment, Performed: Active Peptic Ulcer",
     result: 1,
+  },
+  {
+    dataElementCodes: [
+      {
+        code: "4525004",
+        system: "SNOMEDCT",
+        version: null,
+        display: "Emergency department patient visit (procedure)",
+      },
+    ],
+    _id: "653fde67b0f7260000d5eb9d",
+    relatedTo: [],
+    performer: [],
+    qdmTitle: "Assessment, Performed",
+    hqmfOid: "2.16.840.1.113883.10.20.28.4.117",
+    qdmCategory: "assessment",
+    qdmStatus: "performed",
+    qdmVersion: "5.6",
+    _type: "QDM::AssessmentPerformed",
+    description: "Assessment, Performed: Risk for venous thromboembolism",
+    codeListId: "drc-efe800ace1e7ebcd8e49f196420f4f5b",
+    id: "653fde6bb0f7260000d5eb9f",
+    result: 2323,
+    components: [
+      {
+        qdmVersion: "5.6",
+        _type: "QDM::Component",
+        _id: "65401988cd7f770000460de5",
+        code: {
+          code: "133918004",
+          system: "2.16.840.1.113883.6.96",
+          version: null,
+          display: "Comfort measures (regime/therapy)",
+        },
+        result: 4545,
+      },
+      {
+        qdmVersion: "5.6",
+        _type: "QDM::Component",
+        _id: "65401999cd7f770000460e16",
+        result: "NaN",
+      },
+    ],
+    negationRationale: null,
+    relevantPeriod: {
+      low: "2023-10-04T00:00:00.000+00:00",
+      high: "2023-10-18T00:00:00.000+00:00",
+      lowClosed: true,
+      highClosed: true,
+    },
+    relevantDatetime: "2023-10-30T00:00:00.000+00:00",
+    authorDatetime: "2023-10-23T00:00:00.000+00:00",
   },
 ];
 
@@ -1020,17 +895,54 @@ describe("DataElementsCard", () => {
     });
   });
 
-  it("Should render Attribute chips", async () => {
+  it("Should render Attribute chips and deletes them", async () => {
+    const mockSetSelectedElement = jest.fn();
     renderDataElementsCard(
       "attributes",
       jest.fn,
-      testDataElements[15],
-      jest.fn
+      testDataElements[2],
+      mockSetSelectedElement
     );
     const resultChip = await screen.findByText("Result: 1");
     expect(resultChip).toBeInTheDocument();
     const closeButton = await screen.findByTestId("delete-chip-button-0");
     expect(closeButton).toBeInTheDocument();
+    userEvent.click(closeButton);
+
+    expect(mockSetSelectedElement).toHaveBeenCalledTimes(1);
+  });
+
+  it("Should render Attribute chips of array type and deletes them", async () => {
+    const mockSetSelectedElement = jest.fn();
+    const modelClass = getDataElementClass(testDataElements[3]);
+    const newDataElement = new modelClass(testDataElements[3]);
+    renderDataElementsCard(
+      "attributes",
+      jest.fn,
+      newDataElement,
+      mockSetSelectedElement
+    );
+
+    const attributeChipList = await screen.findByTestId("attributes-chip-list");
+
+    const chips = attributeChipList.querySelectorAll(".chip-body");
+
+    expect(chips[0]).toHaveTextContent("Result: 2323");
+    const resultChipCloseButton = await screen.findByTestId(
+      "delete-chip-button-0"
+    );
+    userEvent.click(resultChipCloseButton);
+
+    expect(chips[1]).toHaveTextContent(
+      "Components - Component: Code: SNOMEDCT : 133918004, Result: 4545"
+    );
+    const component1CloseButton = await screen.findByTestId(
+      "delete-chip-button-1"
+    );
+    expect(component1CloseButton).toBeInTheDocument();
+    userEvent.click(component1CloseButton);
+
+    expect(mockSetSelectedElement).toHaveBeenCalledTimes(2);
   });
 
   it("Should add new Codes", async () => {
@@ -1073,6 +985,25 @@ describe("DataElementsCard", () => {
     userEvent.click(screen.getByTestId("add-code-concept-button"));
     // verify chips is added
     expect(await screen.findByTestId("SNOMEDCT_4525004")).toBeInTheDocument();
+  });
+
+  it("Should delete data element codes", async () => {
+    const mockSetSelectedElement = jest.fn();
+    const modelClass = getDataElementClass(dataEl[0]);
+    const newDataElement = new modelClass(dataEl[0]);
+    renderDataElementsCard(
+      "codes",
+      jest.fn,
+      newDataElement,
+      mockSetSelectedElement
+    );
+
+    const codeChip = await screen.findByTestId("SNOMEDCT_4525004");
+    expect(codeChip).toBeInTheDocument();
+
+    const cancelIcon = within(codeChip).getByTestId("CancelIcon");
+    userEvent.click(cancelIcon);
+    expect(mockSetSelectedElement).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -1152,7 +1083,7 @@ describe("Negation Rationale", () => {
     renderDataElementsCard(
       "negation_rationale",
       jest.fn,
-      testDataElements[12],
+      testDataElements[1],
       jest.fn
     );
     expect(
@@ -1184,8 +1115,8 @@ describe("Negation Rationale", () => {
   });
 
   it("Should allow user to choose negation rationale value set, code and system", async () => {
-    const modelClass = getDataElementClass(testDataElements[12]);
-    const newDataElement = new modelClass(testDataElements[12]);
+    const modelClass = getDataElementClass(testDataElements[1]);
+    const newDataElement = new modelClass(testDataElements[1]);
     const mockSetSelectedDataElement = jest.fn();
     renderDataElementsCard(
       "negation_rationale",
