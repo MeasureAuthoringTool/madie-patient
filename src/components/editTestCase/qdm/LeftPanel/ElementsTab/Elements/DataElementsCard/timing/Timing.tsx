@@ -1,15 +1,15 @@
 import React from "react";
 import DateTimeInput from "../../../../../../../common/dateTimeInput/DateTimeInput";
 import DateTimeInterval from "../../../../../../../common/dateTimeInterval/DateTimeInterval";
-import { CQL } from "cqm-models";
+import {CQL} from "cqm-models";
 import "./Timing.scss";
-import { PRIMARY_TIMING_ATTRIBUTES } from "../../../../../../../../util/QdmAttributeHelpers";
+import {PRIMARY_TIMING_ATTRIBUTES} from "../../../../../../../../util/QdmAttributeHelpers";
 import * as _ from "lodash";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
+import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
-import { InputLabel } from "@mui/material";
-import { labelStyle } from "./TimingStyles";
+import {InputLabel} from "@mui/material";
+import {labelStyle} from "./TimingStyles";
 
 const Timing = ({ canEdit, updateDataElement, selectedDataElement }) => {
   const handleChange = (newValue, attributeName) => {

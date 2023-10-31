@@ -20,7 +20,7 @@ const DateTimeInterval = ({
   onDateTimeIntervalChange,
   canEdit,
   attributeName,
-  displayAttributeName = false,
+  displayAttributeName,
 }: DateTimeIntervalProps) => {
   const handleStartDateTimeChange = (newValue) => {
     onDateTimeIntervalChange(
