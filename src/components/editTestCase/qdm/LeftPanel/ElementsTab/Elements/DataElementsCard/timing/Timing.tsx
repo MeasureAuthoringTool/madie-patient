@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import DateTimeInput from "../../../../../../../common/dateTimeInput/DateTimeInput";
 import DateTimeInterval from "../../../../../../../common/dateTimeInterval/DateTimeInterval";
 import { CQL } from "cqm-models";
@@ -55,7 +55,7 @@ const Timing = ({ canEdit, onChange, selectedDataElement }) => {
                 dateTime={selectedDataElement.get(timingAttr.path)}
                 onDateTimeChange={handleChange}
                 attributeName={timingAttr.path}
-              ></DateTimeInput>
+              />
             </div>
           );
         } else if (timingAttr.instance === "Date") {
