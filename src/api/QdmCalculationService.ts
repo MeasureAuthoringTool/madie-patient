@@ -134,7 +134,7 @@ export class QdmCalculationService {
     return groupPass;
   }
 
-  mapObservations = (population, results) => {
+  mapPatientBasedObservations = (population, results) => {
     if (population.name === PopulationType.DENOMINATOR_OBSERVATION) {
       if (results.DENOM === 1 && results.DENEX === 0) {
         return results?.observation_values?.[0];
@@ -203,7 +203,10 @@ export class QdmCalculationService {
             if (isTestCasePopulationObservation(population)) {
               if (patientBased) {
                 if (groupPop.scoring === MeasureScoring.RATIO) {
-                  population.actual = this.mapObservations(population, results);
+                  population.actual = this.mapPatientBasedObservations(
+                    population,
+                    results
+                  );
                 } else {
                   population.actual = results?.observation_values?.[0];
                 }
