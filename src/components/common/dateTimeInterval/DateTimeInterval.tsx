@@ -10,12 +10,12 @@ interface DateTimeIntervalProps {
   dateTimeInterval?: CQL.DateTimeInterval;
   onDateTimeIntervalChange: Function;
   attributeName: string;
-  canEdit?: boolean;
+  canEdit: boolean;
   displayAttributeName?: boolean;
 }
 
 const DateTimeInterval = ({
-  canEdit = true,
+  canEdit,
   label,
   dateTimeInterval,
   onDateTimeIntervalChange,
