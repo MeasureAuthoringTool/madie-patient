@@ -982,6 +982,7 @@ const renderDataElementsCard = (
                 selectedDataElement={selectedDataElement}
                 setSelectedDataElement={setSelectedDataElement}
                 onChange={mockOnChange}
+                canEdit={true}
               />
             </QdmPatientProvider>
           </FormikProvider>
