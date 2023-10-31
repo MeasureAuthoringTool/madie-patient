@@ -404,6 +404,20 @@ const EditTestCase = () => {
               Discard Changes
             </Button>
           </div>
+          {hasObservationOrStratification && (
+            <div
+              style={{
+                textAlign: "center",
+                color: "grey",
+                fontSize: "14px",
+                paddingBottom: "30px",
+              }}
+            >
+              Execution of test case against Population Criteria that contain
+              Stratifications or Measure Observations is NOT supported at this
+              time
+            </div>
+          )}
           {/* outside flow of page */}
           <Toast
             toastKey="edit-action-toast"
