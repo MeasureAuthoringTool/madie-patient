@@ -3,3 +3,13 @@
   flex-wrap: wrap;
   padding-bottom: 12px;
 }
+
+.datePicker {
+  border: 1px solid rgb(176, 176, 176);
+  border-radius: 3px;
+  width: 240px;
+
+  input {
+    padding: 9px;
+  }
+}
