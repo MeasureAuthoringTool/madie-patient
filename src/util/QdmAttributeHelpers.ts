@@ -101,7 +101,10 @@ export const generateAttributesToDisplay = (
   const modeledEl = new dataElementClass(dataElement);
   const displayAttributes = [];
   modeledEl.schema.eachPath((path, info) => {
-    if (!SKIP_ATTRIBUTES.includes(path) && !_.isEmpty(dataElement[path])) {
+    if (
+      !SKIP_ATTRIBUTES.includes(path) &&
+      (!_.isEmpty(dataElement[path]) || typeof dataElement[path] === "number")
+    ) {
       if (info.instance === "Array") {
         const multipleDataTypes = [];
         dataElement[path].forEach((elem) => {
@@ -115,12 +118,14 @@ export const generateAttributesToDisplay = (
               name: _.replace(elem._type, "QDM::", ""),
               title: _.startCase(path),
               value: value,
+              id: elem._id?.toString(),
             });
           } else {
             multipleDataTypes.push({
               name: _.replace(elem._type, "QDM::", ""),
               title: _.startCase(path),
               value: stringifyValue(elem, true, codeSystemMap),
+              id: elem._id?.toString(),
             });
           }
         });
@@ -139,12 +144,14 @@ export const generateAttributesToDisplay = (
           name: path,
           title: _.startCase(path),
           value: value,
+          isMultiple: false,
         });
       } else {
         displayAttributes.push({
           name: path,
           title: _.startCase(path),
           value: stringifyValue(dataElement[path], true, codeSystemMap),
+          isMultiple: false,
         });
       }
     }

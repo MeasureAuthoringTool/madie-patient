@@ -138,7 +138,10 @@ const allowedTypes = {
   "QDM::Diagnosis": true,
 };
 
-const renderDataElementsTable = (dataElements, onDelete = () => {}) => {
+const mockOnView = jest.fn();
+const mockOnDelete = jest.fn();
+
+const renderDataElementsTable = (dataElements, onDelete, onView) => {
   return render(
     <QdmExecutionContextProvider
       value={{
@@ -147,12 +150,14 @@ const renderDataElementsTable = (dataElements, onDelete = () => {}) => {
         executionContextReady: true,
         executing: false,
         setExecuting: jest.fn(),
+        contextFailure: false,
       }}
     >
       <QdmPatientProvider>
         <DataElementsTable
           dataElements={dataElements}
           onDelete={onDelete}
+          onView={onView}
           allowedTypes={allowedTypes}
           canEdit={true}
         />
@@ -318,17 +323,25 @@ describe("Timing Cell component", () => {
   });
 });
 
+const checkRowContent = (row, title, timing, attributes) => {
+  const columns = within(row).getAllByRole("cell");
+  expect(columns).toHaveLength(6);
+  expect(columns[0]).toHaveTextContent(title);
+  expect(columns[1]).toHaveTextContent(timing);
+  expect(columns[2]).toHaveTextContent(attributes[0]);
+  expect(columns[3]).toHaveTextContent(attributes[1]);
+  expect(columns[4]).toHaveTextContent(attributes[2]);
+};
+
 describe("Data Elements Table", () => {
   test("emtpy table renders", async () => {
-    await waitFor(() => {
-      renderDataElementsTable(null);
-    });
+    renderDataElementsTable(null, mockOnDelete, mockOnView);
     expect(getByTestId("empty-table")).toBeInTheDocument();
   });
 
   it("Should render all required columns as per mock data", () => {
     // Includes rendering of dynamic columns for Attributes
-    renderDataElementsTable(dataElements);
+    renderDataElementsTable(dataElements, mockOnDelete, mockOnView);
     expect(
       screen.getByRole("columnheader", {
         name: "Datatype, Value Set & Code",
@@ -350,7 +363,7 @@ describe("Data Elements Table", () => {
   });
 
   it("Should render data in respective columns as per mock data", () => {
-    renderDataElementsTable(dataElements);
+    renderDataElementsTable(dataElements, mockOnDelete, mockOnView);
     const table = screen.getByRole("table");
     const tbody = within(table).getAllByRole("rowgroup")[1];
     const rows = within(tbody).getAllByRole("row");
@@ -373,25 +386,14 @@ describe("Data Elements Table", () => {
     ]);
   });
 
-  const checkRowContent = (row, title, timing, attributes) => {
-    const columns = within(row).getAllByRole("cell");
-    expect(columns).toHaveLength(6);
-    expect(columns[0]).toHaveTextContent(title);
-    expect(columns[1]).toHaveTextContent(timing);
-    expect(columns[2]).toHaveTextContent(attributes[0]);
-    expect(columns[3]).toHaveTextContent(attributes[1]);
-    expect(columns[4]).toHaveTextContent(attributes[2]);
-  };
-
   test("delete data element action", async () => {
-    const onDelete = jest.fn();
-    renderDataElementsTable([dataEl[0], dataEl[1]], onDelete);
+    renderDataElementsTable([dataEl[0], dataEl[1]], mockOnDelete, mockOnView);
     expect(queryAllByText("Emergency Department Visit").length).toEqual(2);
     // click action button
     userEvent.click(screen.getByTestId(`view-element-btn-${dataEl[0].id}`));
     expect(getByTestId("popover-content")).toBeInTheDocument();
     // click delete action
     userEvent.click(screen.getByTestId(`delete-element-${dataEl[0].id}`));
-    expect(onDelete).toHaveBeenCalledWith(dataEl[0].id);
+    expect(mockOnDelete).toHaveBeenCalledWith(dataEl[0].id);
   });
 });
