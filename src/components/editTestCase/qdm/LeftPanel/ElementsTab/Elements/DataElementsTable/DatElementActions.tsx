@@ -39,6 +39,13 @@ export default function DatElementActions(props: DatElementMenuProps) {
         dataTestId: `delete-element-${elementId}`,
       }
     : {};
+  const deletePropOption = canEdit
+    ? {
+        label: "Delete",
+        toImplementFunction: deleteDataElement,
+        dataTestId: `delete-element-${elementId}`,
+      }
+    : {};
 
   return (
     <div>
@@ -66,13 +73,7 @@ export default function DatElementActions(props: DatElementMenuProps) {
           toImplementFunction: viewDataElement,
           dataTestId: `view-element-${elementId}`,
         }}
-        otherSelectOptionProps={[
-          {
-            label: "Delete",
-            toImplementFunction: deleteDataElement,
-            dataTestId: `delete-element-${elementId}`,
-          },
-        ]}
+        otherSelectOptionProps={[deletePropOption]}
       />
     </div>
   );
