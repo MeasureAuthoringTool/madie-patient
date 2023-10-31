@@ -398,7 +398,7 @@ describe("ElementsSection allows card opening and closing", () => {
     });
   });
 
-  test("should open and close a data element card manual close selection", async () => {
+  test("should open and close a data element card with negation rationale", async () => {
     const { rerender } = renderElementsSectionComponent(render, null);
     const elementSection = await findByTestId("elements-section");
     const adverseEventTab = getByTestId("elements-tab-adverse_event");
