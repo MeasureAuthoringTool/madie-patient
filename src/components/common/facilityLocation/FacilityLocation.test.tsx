@@ -44,11 +44,7 @@ const mockOnChange = jest.fn();
 describe("FacilityLocation Component", () => {
   it("should render FacilityLocation view", () => {
     render(
-      <FacilityLocation
-        canEdit={true}
-        onChange={mockOnChange}
-        valueSets={mockValueSets}
-      />
+      <FacilityLocation onChange={mockOnChange} valueSets={mockValueSets} />
     );
     expect(screen.getByTestId("value-set-selector")).toBeInTheDocument();
     expect(screen.getByTestId("location-period-start")).toBeInTheDocument();

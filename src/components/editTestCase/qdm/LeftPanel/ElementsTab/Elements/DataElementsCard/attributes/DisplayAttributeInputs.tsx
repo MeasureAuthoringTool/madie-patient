@@ -266,7 +266,6 @@ const DisplayAttributeInputs = ({
       case "FacilityLocation":
         return (
           <FacilityLocation
-            canEdit={true}
             onChange={(val) => setAttributeValue(val)}
             valueSets={cqmMeasure?.value_sets}
           />
