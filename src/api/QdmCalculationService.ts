@@ -5,6 +5,7 @@ import {
   Measure,
   MeasureScoring,
   PopulationExpectedValue,
+  PopulationType,
   TestCase,
 } from "@madie/madie-models";
 import * as _ from "lodash";
@@ -134,7 +135,7 @@ export class QdmCalculationService {
   }
 
   mapObservations = (population, results) => {
-    if (population.name === "denominatorObservation") {
+    if (population.name === PopulationType.DENOMINATOR_OBSERVATION) {
       if (results.DENOM === 1 && results.DENEX === 0) {
         return results?.observation_values?.[0];
       }
@@ -143,7 +144,7 @@ export class QdmCalculationService {
       }
     }
 
-    if (population.name === "numeratorObservation") {
+    if (population.name === PopulationType.NUMERATOR_OBSERVATION) {
       if (results.NUMER === 1 && results.NUMEX === 0) {
         //check if both observations are present
         return results?.observation_values?.length > 1
