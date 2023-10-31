@@ -308,6 +308,19 @@ const TestCasePopulationList = ({
           </tr>
         </thead>
         <tbody>
+          {stratifications?.map((stratification, j) => (
+            <TestCaseStratification
+              index={j}
+              QDM={true}
+              strataCode={stratification.name}
+              executionRun={executionRun}
+              stratification={stratification}
+              populationBasis={populationBasis}
+              key={stratification.id}
+              disableExpected={disableExpected}
+              onStratificationChange={handleStratificationChange}
+            />
+          ))}
           {populations?.map((population, j) => (
             <TestCasePopulation
               i={j}
@@ -325,20 +338,6 @@ const TestCasePopulationList = ({
               }
               initialPopulationCount={getIppCount(population)}
               error={errors?.populationValues?.[j]}
-            />
-          ))}
-
-          {stratifications?.map((stratification, j) => (
-            <TestCaseStratification
-              index={j}
-              QDM={true}
-              strataCode={stratification.name}
-              executionRun={executionRun}
-              stratification={stratification}
-              populationBasis={populationBasis}
-              key={stratification.id}
-              disableExpected={disableExpected}
-              onStratificationChange={handleStratificationChange}
             />
           ))}
         </tbody>
