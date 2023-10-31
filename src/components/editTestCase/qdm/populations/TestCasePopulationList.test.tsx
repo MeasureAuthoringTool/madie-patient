@@ -155,7 +155,7 @@ describe("TestCasePopulationList component", () => {
     const table = screen.getByTestId("test-case-population-list-tbl");
 
     const tableRows = table.querySelectorAll("tbody tr");
-    expect(tableRows[0]).toHaveTextContent("Initial Population");
+    expect(tableRows[1]).toHaveTextContent("Initial Population");
 
     const ippCb = screen.getByTestId(
       "test-population-Strata-1 Initial Population-expected-0"
@@ -207,7 +207,7 @@ describe("TestCasePopulationList component", () => {
     const table = screen.getByTestId("test-case-population-list-tbl");
 
     const tableRows = table.querySelectorAll("tbody tr");
-    expect(tableRows[0]).toHaveTextContent("Initial Population");
+    expect(tableRows[1]).toHaveTextContent("Initial Population");
 
     const ippCb = screen.getByTestId(
       "test-population-Strata-1 Initial Population-expected-0"
