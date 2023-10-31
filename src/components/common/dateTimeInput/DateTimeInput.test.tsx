@@ -2,6 +2,7 @@ import * as React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import DateTimeInput from "./DateTimeInput";
 import dayjs from "dayjs";
+import { CQL } from "cqm-models";
 
 const testDateTime: CQL.DateTimeField = dayjs.utc("2022-04-17T15:30");
 const onDateTimeChange = jest.fn();
