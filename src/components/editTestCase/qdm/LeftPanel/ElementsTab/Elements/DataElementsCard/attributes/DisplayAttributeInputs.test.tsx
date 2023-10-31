@@ -53,19 +53,6 @@ const diagnosisValue = {
   rank: -1,
 };
 
-jest.mock("dayjs", () => ({
-  extend: jest.fn(),
-  utc: jest.fn((...args) => {
-    const dayjs = jest.requireActual("dayjs");
-    dayjs.extend(jest.requireActual("dayjs/plugin/utc"));
-
-    return dayjs.utc(
-      args.filter((arg) => arg).length > 0 ? args : "01/01/2023"
-    );
-  }),
-  startOf: jest.fn().mockReturnThis(),
-}));
-
 //@ts-ignore
 const mockFormik: FormikContextType<any> = {
   values: {
@@ -76,9 +63,11 @@ const mockFormik: FormikContextType<any> = {
 describe("DisplayAttributeInputs component", () => {
   let encounterElement;
   let assessmentElement;
+  let mockOnInputAdd;
   beforeEach(() => {
     encounterElement = new EncounterOrder();
     assessmentElement = new AssessmentPerformed();
+    mockOnInputAdd = jest.fn();
   });
 
   const renderDisplayAttributeInputs = (attributeType, onInputAdd) => {
@@ -126,7 +115,9 @@ describe("DisplayAttributeInputs component", () => {
     const selectorComponent = await findByTestId("string-field-string");
     expect(selectorComponent).toBeInTheDocument();
 
-    const stringInput = await findByTestId("string-field-string-input");
+    const stringInput = (await findByTestId(
+      "string-field-string-input"
+    )) as HTMLInputElement;
     expect(stringInput).toBeInTheDocument();
     expect(stringInput.value).toBe("");
 
@@ -146,7 +137,7 @@ describe("DisplayAttributeInputs component", () => {
   it("should render the Ratio selector", async () => {
     const onChange = jest.fn;
     const onInputAdd = jest.fn;
-    renderDisplayAttributeInputs("Ratio", onChange, onInputAdd);
+    renderDisplayAttributeInputs("Ratio", onInputAdd);
     const selectorComponent = await findByText("Ratio");
     expect(selectorComponent).toBeInTheDocument();
   });
@@ -154,11 +145,13 @@ describe("DisplayAttributeInputs component", () => {
   it("should render the Integer selector and handle changes", async () => {
     const onChange = jest.fn;
     const onInputAdd = jest.fn;
-    renderDisplayAttributeInputs("Integer", onChange, onInputAdd);
+    renderDisplayAttributeInputs("Integer", onInputAdd);
     const selectorComponent = await findByTestId("integer-field-Integer");
     expect(selectorComponent).toBeInTheDocument();
 
-    const integerInput = await findByTestId("integer-input-field-Integer");
+    const integerInput = (await findByTestId(
+      "integer-input-field-Integer"
+    )) as HTMLInputElement;
     expect(integerInput.value).toBe("");
 
     fireEvent.change(integerInput, {
@@ -170,15 +163,14 @@ describe("DisplayAttributeInputs component", () => {
   it("should render the Quantity selector", async () => {
     const onChange = jest.fn;
     const onInputAdd = jest.fn;
-    renderDisplayAttributeInputs("Quantity", onChange, onInputAdd);
+    renderDisplayAttributeInputs("Quantity", onInputAdd);
     const selectorComponent = await findByText("Quantity");
     expect(selectorComponent).toBeInTheDocument();
   });
 
   it("should render the Decimal selector and handle changes", async () => {
-    const onChange = jest.fn;
     const onInputAdd = jest.fn;
-    renderDisplayAttributeInputs("Decimal", onChange, onInputAdd);
+    renderDisplayAttributeInputs("Decimal", onInputAdd);
     const selectorComponent = await findByText("Decimal");
     expect(selectorComponent).toBeInTheDocument();
 
@@ -192,9 +184,8 @@ describe("DisplayAttributeInputs component", () => {
   });
 
   it("should render the Code selector and handle changes", async () => {
-    const onChange = jest.fn;
     const onInputAdd = jest.fn;
-    renderDisplayAttributeInputs("Code", onChange, onInputAdd);
+    renderDisplayAttributeInputs("Code", onInputAdd);
     const selectorComponent = await findByTestId("value-set-selector");
     expect(selectorComponent).toBeInTheDocument();
 
@@ -232,9 +223,8 @@ describe("DisplayAttributeInputs component", () => {
   });
 
   it("should render the Interval<Quantity> selector and handle changes", async () => {
-    const onChange = jest.fn;
     const onInputAdd = jest.fn;
-    renderDisplayAttributeInputs("Interval<Quantity>", onChange, onInputAdd);
+    renderDisplayAttributeInputs("Interval<Quantity>", onInputAdd);
     const selectorComponent = await findByText("Quantity Interval");
     expect(selectorComponent).toBeInTheDocument();
 
@@ -284,19 +274,17 @@ describe("DisplayAttributeInputs component", () => {
   });
 
   it("should render the Organization selector", async () => {
-    const onChange = jest.fn;
     const onInputAdd = jest.fn;
-    renderDisplayAttributeInputs("Organization", onChange, onInputAdd);
+    renderDisplayAttributeInputs("Organization", onInputAdd);
     const selectorComponent = await findByText("Identifier");
     expect(selectorComponent).toBeInTheDocument();
   });
 
   it("should render the DiagnosisComponent selector and handle diagnosis changes", async () => {
-    const onChange = jest.fn;
     const onInputAdd = jest.fn((value) => {
       expect(value.code.code).toBe(diagnosisValue.code.code);
     });
-    renderDisplayAttributeInputs("DiagnosisComponent", onChange, onInputAdd);
+    renderDisplayAttributeInputs("DiagnosisComponent", onInputAdd);
     const selectorComponent = await findByTestId("DiagnosisComponent");
     expect(selectorComponent).toBeInTheDocument();
 
@@ -384,7 +372,7 @@ describe("DisplayAttributeInputs component", () => {
     //Rank
     const rankInput = screen.getByTestId(
       "integer-input-field-Rank"
-    ) as HTMLElement;
+    ) as HTMLInputElement;
     expect(rankInput).toBeInTheDocument();
     expect(rankInput.value).toBe("");
 
@@ -393,15 +381,13 @@ describe("DisplayAttributeInputs component", () => {
   });
 
   it("should render default", async () => {
-    const onChange = jest.fn;
     const onInputAdd = jest.fn;
-    renderDisplayAttributeInputs("Test", onChange, onInputAdd);
+    renderDisplayAttributeInputs("Test", onInputAdd);
     const selectorComponent = await queryByTestId("DiagnosisComponent");
     expect(selectorComponent).not.toBeInTheDocument();
   });
 
   it("should capture Code input values for Components Attribute", async () => {
-    const mockOnInputAdd = jest.fn();
     renderDisplayAttributeInputs("Component", mockOnInputAdd);
 
     // Select a Code input
@@ -452,7 +438,6 @@ describe("DisplayAttributeInputs component", () => {
   });
 
   it("should capture input values for Component type when Result attribute is Integer", async () => {
-    const mockOnInputAdd = jest.fn();
     renderDisplayAttributeInputs("Component", mockOnInputAdd);
 
     // Select a choice type & value for Result
@@ -482,7 +467,6 @@ describe("DisplayAttributeInputs component", () => {
   });
 
   it("should capture input values for Component type when Result attribute is Decimal", async () => {
-    const mockOnInputAdd = jest.fn();
     renderDisplayAttributeInputs("Component", mockOnInputAdd);
 
     // Select a choice type & value for Result
@@ -507,6 +491,67 @@ describe("DisplayAttributeInputs component", () => {
     expect(mockOnInputAdd).toHaveBeenCalledWith(
       expect.objectContaining({
         result: 34.68,
+      })
+    );
+  });
+
+  it("should allow user to add FacilityLocation attribute", async () => {
+    renderDisplayAttributeInputs("FacilityLocation", mockOnInputAdd);
+
+    // select the value set
+    const valueSetSelector = screen.getByTestId("value-set-selector");
+    const valueSetDropdown = within(valueSetSelector).getByRole(
+      "button"
+    ) as HTMLInputElement;
+    userEvent.click(valueSetDropdown);
+    const valueSetOptions = await screen.findAllByRole("option");
+    userEvent.click(valueSetOptions[1]);
+
+    // select the code system
+    const codeSystemSelector = screen.getByTestId("code-system-selector");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    userEvent.click(codeSystemDropdown);
+    const codeSystemOptions = await screen.findAllByRole("option");
+    expect(codeSystemOptions[0]).toHaveTextContent("SNOMEDCT");
+    expect(codeSystemOptions[1]).toHaveTextContent("ICD10CM");
+    userEvent.click(codeSystemOptions[0]);
+
+    // select the code
+    const codeSelector = screen.getByTestId("code-selector");
+    const codeDropdown = within(codeSelector).getByRole("button");
+    userEvent.click(codeDropdown);
+    const codeOptions = await screen.findAllByRole("option");
+    expect(codeOptions).toHaveLength(2);
+    userEvent.click(codeOptions[0]);
+
+    // Location period
+    const locationPeriods = screen.getAllByPlaceholderText(
+      "MM/DD/YYYY hh:mm aa"
+    ) as HTMLInputElement[];
+    expect(locationPeriods.length).toBe(2);
+    // start date
+    fireEvent.change(locationPeriods[0], {
+      target: { value: "08/02/2023 07:49 AM" },
+    });
+    expect(locationPeriods[0].value).toBe("08/02/2023 07:49 AM");
+    // end date
+    fireEvent.change(locationPeriods[1], {
+      target: { value: "08/04/2023 11:49 AM" },
+    });
+    expect(locationPeriods[1].value).toBe("08/04/2023 11:49 AM");
+
+    // add attribute
+    const addButton = screen.getByRole("button", { name: "Add" });
+    userEvent.click(addButton);
+    expect(mockOnInputAdd).toHaveBeenCalledWith(
+      expect.objectContaining({
+        _type: "QDM::FacilityLocation",
+        code: {
+          code: "183452005",
+          display: "Snomed Emergency hospital admission (procedure)",
+          system: "1.2.3",
+          version: null,
+        },
       })
     );
   });
