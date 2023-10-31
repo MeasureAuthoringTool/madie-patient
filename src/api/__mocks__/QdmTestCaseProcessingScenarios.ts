@@ -1070,6 +1070,7 @@ export const RATIO_PATIENTBASED_WITH_OBS_RESULTS: QdmTestCaseProcessingScenario 
       measurementPeriodEnd: "2023-12-22T23:59:59.999+00:00",
       model: "QDM v5.6",
       scoring: "Ratio",
+      patientBasis: true,
     } as unknown as Measure,
     patientResults: {
       Group1: {

@@ -1166,7 +1166,6 @@ describe("QDM CalculationService Tests", () => {
       RATIO_PATIENTBASED_WITH_OBS_RESULTS.measure,
       RATIO_PATIENTBASED_WITH_OBS_RESULTS.patientResults
     );
-
     expect(output).toBeTruthy();
     expect(output.groupPopulations).toBeTruthy();
 
@@ -1176,9 +1175,9 @@ describe("QDM CalculationService Tests", () => {
     expect(output.groupPopulations[0].populationValues[0].name).toEqual(
       PopulationType.INITIAL_POPULATION
     );
-    expect(output.groupPopulations[0].populationValues[0].actual).toBe(1);
+    expect(output.groupPopulations[0].populationValues[0].actual).toBe(true);
 
-    expect(output.groupPopulations[0].populationValues[1].actual).toBe(1);
+    expect(output.groupPopulations[0].populationValues[1].actual).toBe(true);
 
     expect(output.groupPopulations[0].populationValues[2].name).toEqual(
       PopulationType.DENOMINATOR
