@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Tabs, Tab } from "@madie/madie-design-system/dist/react";
+import { useFeatureFlags } from "@madie/madie-util";
 
 export interface NavTabProps {
   activeTab: string;
@@ -8,6 +9,14 @@ export interface NavTabProps {
 
 export default function RightPanelNavTabs(props: NavTabProps) {
   const { activeTab, setActiveTab } = props;
+  const featureFlags = useFeatureFlags();
+  const [qdmHidJsonTab, setQdmHidJsonTab] = useState(false);
+  useEffect(() => {
+    if (featureFlags?.qdmHideJson) {
+      setQdmHidJsonTab(true);
+    }
+  });
+
   return (
     <Tabs
       id="left-panel-navs"
@@ -25,14 +34,16 @@ export default function RightPanelNavTabs(props: NavTabProps) {
         data-testid="elements-tab"
         value="elements"
       />
-      <Tab
-        tabIndex={0}
-        aria-label="JSON tab panel"
-        type="D"
-        data-testid="json-tab"
-        label="JSON"
-        value="json"
-      />
+      {!qdmHidJsonTab && (
+        <Tab
+          tabIndex={0}
+          aria-label="JSON tab panel"
+          type="D"
+          data-testid="json-tab"
+          label="JSON"
+          value="json"
+        />
+      )}
     </Tabs>
   );
 }
