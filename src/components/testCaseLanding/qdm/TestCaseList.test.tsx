@@ -510,6 +510,7 @@ describe("TestCaseList component", () => {
       applyDefaults: false,
       importTestCases: false,
       qdmTestCases: true,
+      disableRunTestCaseWithObservStrat: true,
     }));
     setError.mockClear();
 
@@ -958,6 +959,50 @@ describe("TestCaseList component", () => {
       expect(tableRows[0]).toHaveTextContent("Pass");
       expect(tableRows[1]).toHaveTextContent("Fail");
       expect(tableRows[2]).toHaveTextContent("Invalid");
+    });
+  });
+
+  it("Execution button should be disabled for stratifiation", async () => {
+    measure.cqlErrors = false;
+    measure.groups = [
+      ...measure.groups,
+      {
+        id: "2",
+        scoring: MeasureScoring.COHORT,
+        populationBasis: "boolean",
+        populations: [
+          {
+            id: "id-1",
+            name: PopulationType.INITIAL_POPULATION,
+            definition: "ipp",
+          },
+        ],
+        measureGroupTypes: [],
+        stratifications: [
+          {
+            id: "strata1",
+            cqlDefinition: "strat1Def",
+            association: PopulationType.INITIAL_POPULATION,
+          },
+        ],
+      },
+    ];
+    renderTestCaseListComponent();
+
+    // wait for pop criteria to load
+    await waitFor(() => {
+      const popCriteria1 = screen.getByText("Population Criteria 1");
+      const popCriteria2 = screen.getByText("Population Criteria 2");
+      expect(popCriteria1).toBeInTheDocument();
+      expect(popCriteria2).toBeInTheDocument();
+
+      const executeButton = screen.getByRole("button", {
+        name: "Run Test(s)",
+      });
+      expect(executeButton).not.toBeDisabled();
+
+      userEvent.click(popCriteria2);
+      expect(executeButton).toBeDisabled();
     });
   });
 
