@@ -53,6 +53,7 @@ const ElementsTab = (props: {
       <DemographicsSection canEdit={canEdit} />
       <ElementsSection
         handleTestCaseErrors={handleTestCaseErrors}
+        canEdit={canEdit}
         selectedDataElement={selectedDataElement}
         setSelectedDataElement={setSelectedDataElement}
       />

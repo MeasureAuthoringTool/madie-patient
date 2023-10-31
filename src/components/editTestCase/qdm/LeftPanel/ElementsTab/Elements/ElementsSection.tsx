@@ -23,11 +23,16 @@ import {
 
 const ElementsSection = (props: {
   handleTestCaseErrors: Function;
+  canEdit: boolean;
   selectedDataElement: DataElement;
   setSelectedDataElement: Function;
 }) => {
-  const { handleTestCaseErrors, selectedDataElement, setSelectedDataElement } =
-    props;
+  const {
+    handleTestCaseErrors,
+    canEdit,
+    selectedDataElement,
+    setSelectedDataElement,
+  } = props;
   const cqmService = useRef(useCqmConversionService());
   const [measure, setMeasure] = useState<any>(measureStore.state);
   useEffect(() => {
@@ -137,7 +142,7 @@ const ElementsSection = (props: {
   return (
     <ElementSection title="Elements">
       <div id="elements-section" data-testid="elements-section">
-        {categories.length > 0 && (
+        {categories.length > 0 && canEdit && (
           <DynamicElementTabs
             categories={categories}
             activeTab={activeTab}
@@ -151,6 +156,7 @@ const ElementsSection = (props: {
         >
           {selectedDataElement && (
             <DataElementsCard
+              canEdit={canEdit}
               selectedDataElement={selectedDataElement}
               setSelectedDataElement={setSelectedDataElement}
               cardActiveTab={cardActiveTab}
@@ -178,6 +184,7 @@ const ElementsSection = (props: {
           allowedTypes={allowedTypes}
           dataElements={filterDataElements(patient?.dataElements)}
           onView={(dataElement) => setSelectedDataElement(dataElement)}
+          canEdit={canEdit}
           onDelete={deleteDataElement}
         />
       </div>

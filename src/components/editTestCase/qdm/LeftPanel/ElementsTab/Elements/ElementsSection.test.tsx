@@ -312,6 +312,7 @@ const renderElementsSectionComponent = (render, selectedDataElement) => {
           >
             <QdmPatientProvider>
               <ElementsSection
+                canEdit={true}
                 handleTestCaseErrors={jest.fn()}
                 selectedDataElement={selectedDataElement}
                 setSelectedDataElement={setSelectedDataElement}

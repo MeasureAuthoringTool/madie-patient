@@ -19,6 +19,7 @@ interface AttributeSectionProps {
   selectedDataElement: DataElement;
   onAddClicked?: (attribute, type, attributeValue) => void;
   attributeChipList?: Array<Chip>;
+  canEdit: boolean;
   onDeleteAttributeChip?: (deletedChip) => void;
 }
 
@@ -26,6 +27,7 @@ const AttributeSection = ({
   attributeChipList = [],
   selectedDataElement,
   onAddClicked,
+  canEdit,
   onDeleteAttributeChip,
 }: AttributeSectionProps) => {
   const mappedAttributeList = attributeChipList.map((chip, index) => ({
@@ -97,7 +99,7 @@ const AttributeSection = ({
   return (
     <form id="add-attribute-form" onSubmit={formik.handleSubmit}>
       <AttributeSelector
-        canEdit={true}
+        canEdit={canEdit}
         attributeProps={{
           label: "Attribute",
           options: attributes.map((attr) => attr.displayName),
@@ -113,12 +115,15 @@ const AttributeSection = ({
           disabled: _.isEmpty(types),
         }}
       />
-      <DisplayAttributeInputs
-        selectedDataElement={selectedDataElement}
-        attributeType={formik.values.type}
-        onInputAdd={onInputAdd}
-      />
+      {canEdit && (
+        <DisplayAttributeInputs
+          selectedDataElement={selectedDataElement}
+          attributeType={formik.values.type}
+          onInputAdd={onInputAdd}
+        />
+      )}
       <AttributeChipList
+        canEdit={canEdit}
         items={mappedAttributeList}
         onDeleteAttributeChip={onDeleteAttributeChip}
       />
