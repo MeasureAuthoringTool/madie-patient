@@ -64,6 +64,11 @@ export default function DatElementActions(props: DatElementMenuProps) {
             toImplementFunction: deleteDataElement,
             dataTestId: `delete-element-${elementId}`,
           },
+          {
+            label: "View",
+            toImplementFunction: viewDataElement,
+            dataTestId: `view-element-${elementId}`,
+          },
         ]}
       />
     </div>
