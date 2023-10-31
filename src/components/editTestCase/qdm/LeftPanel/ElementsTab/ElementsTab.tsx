@@ -44,10 +44,7 @@ const ElementsTab = (props: {
   return (
     <>
       <DemographicsSection canEdit={canEdit} />
-      <ElementsSection
-        handleTestCaseErrors={handleTestCaseErrors}
-        canEdit={canEdit}
-      />
+      <ElementsSection handleTestCaseErrors={handleTestCaseErrors} />
     </>
   );
 };

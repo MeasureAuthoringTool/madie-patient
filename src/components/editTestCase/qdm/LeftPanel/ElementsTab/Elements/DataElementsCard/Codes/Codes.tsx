@@ -27,7 +27,6 @@ interface Chip {
 
 interface CodesProps {
   handleChange: Function;
-  canEdit: boolean;
   cqmMeasure: CqmMeasure;
   selectedDataElement: DataElement;
   deleteCode: Function;
@@ -47,7 +46,6 @@ const useStyles = makeStyles({
 
 const Codes = ({
   handleChange,
-  canEdit,
   cqmMeasure,
   selectedDataElement,
   deleteCode,
@@ -205,7 +203,6 @@ const Codes = ({
       <div tw="flex md:flex-wrap mt-3">
         <div tw="w-1/4">
           <Select
-            disabled={!canEdit}
             placeHolder={{
               name: "Select Code System",
               value: "",
@@ -234,7 +231,6 @@ const Codes = ({
                     tw="w-full"
                     label="Custom Code System"
                     placeholder="Custom Code System"
-                    disabled={!canEdit}
                     inputProps={{
                       "data-testid": "custom-code-system-input",
                     }}
@@ -250,7 +246,6 @@ const Codes = ({
                     tw="w-full"
                     label="Custom Code"
                     placeholder="Custom Code"
-                    disabled={!canEdit}
                     inputProps={{
                       "data-testid": "custom-code-input",
                     }}
@@ -273,7 +268,6 @@ const Codes = ({
                   SelectDisplayProps={{
                     "aria-required": "true",
                   }}
-                  diabled={!canEdit}
                   options={
                     relatedCodeConcepts
                       ? relatedCodeConcepts.map((concept) => (
@@ -300,24 +294,22 @@ const Codes = ({
             )}
           </>
         )}
+
         <div tw="w-1/4 py-6 pl-2.5">
-          {canEdit && (
-            <Button
-              variant="outline-filled"
-              disabled={isFormValid()}
-              data-testid="add-code-concept-button"
-              onClick={addNewCode}
-            >
-              Add
-            </Button>
-          )}
+          <Button
+            variant="outline-filled"
+            disabled={isFormValid()}
+            data-testid="add-code-concept-button"
+            onClick={addNewCode}
+          >
+            Add
+          </Button>
         </div>
       </div>
       <div tw="flex flex-wrap gap-2">
         {chips.map((chip) => {
           return (
             <Chip
-              disabled={!canEdit}
               id={chip?.id}
               data-testid={chip?.id}
               className={classes.customChips}

@@ -20,7 +20,6 @@ const columnHelper = createColumnHelper<DataElement>();
 interface DataElementTableProps {
   dataElements?: DataElement[];
   onView?: (dataElement: DataElement) => void;
-  canEdit: boolean;
   onDelete?: (id: string) => void;
   allowedTypes: object;
 }
@@ -41,7 +40,6 @@ export interface DisplayAttributes {
 const DataElementTable = ({
   dataElements = [],
   onDelete,
-  canEdit,
   onView,
   allowedTypes,
 }: DataElementTableProps) => {
@@ -144,7 +142,6 @@ const DataElementTable = ({
           return (
             <DatElementActions
               elementId={el.id}
-              canEdit={canEdit}
               canView={allowedTypes.hasOwnProperty(el._type)}
               onDelete={onDelete}
               onView={(e) => {

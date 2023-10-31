@@ -72,7 +72,6 @@ describe("AttributeSection", () => {
               selectedDataElement={dataElement}
               attributeChipList={attributeChipList}
               onAddClicked={onAddCb}
-              canEdit={true}
             />
           </QdmPatientContext.Provider>
         </QdmExecutionContextProvider>

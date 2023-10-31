@@ -13,7 +13,6 @@ interface NegationRationaleProps {
   cqmMeasure: CqmMeasure;
   selectedDataElement: DataElement;
   deleteNegationRationale: Function;
-  canEdit: boolean;
 }
 
 const useStyles = makeStyles({
@@ -26,7 +25,6 @@ const useStyles = makeStyles({
 
 const NegationRationale = ({
   handleChange,
-  canEdit,
   cqmMeasure,
   selectedDataElement,
   deleteNegationRationale,
@@ -72,30 +70,27 @@ const NegationRationale = ({
                 handleNegationRationaleChange(val);
               }
             }}
-            canEdit={canEdit}
+            canEdit={true}
             valueSets={cqmMeasure?.value_sets}
             required={false}
           />
         </div>
         <div tw="relative pl-2.5">
-          {canEdit && (
-            <Button
-              tw="absolute bottom-0"
-              data-testid="add-negation-rationale"
-              onClick={() => {
-                handleChange(negationRationale);
-              }}
-              disabled={_.isEmpty(negationRationale)}
-            >
-              Add
-            </Button>
-          )}
+          <Button
+            tw="absolute bottom-0"
+            data-testid="add-negation-rationale"
+            onClick={() => {
+              handleChange(negationRationale);
+            }}
+            disabled={_.isEmpty(negationRationale)}
+          >
+            Add
+          </Button>
         </div>
       </div>
       {negationRationaleCode && negationRationaleCode.code && (
         <div tw="flex flex-wrap gap-2 pt-4">
           <Chip
-            disabled={!canEdit}
             id={`${negationRationaleCode?.system} : ${negationRationaleCode?.code}`}
             data-testid={`${negationRationaleCode?.system} : ${negationRationaleCode?.code}`}
             className={classes.customChips}

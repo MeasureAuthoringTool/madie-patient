@@ -66,7 +66,6 @@ describe("Codes section", () => {
         handleChange={handleChange}
         selectedDataElement={selectedDataElement}
         deleteCode={deleteCode}
-        canEdit={true}
       />
     );
     expect(screen.getByTestId("codes-section")).toBeInTheDocument();
@@ -96,7 +95,6 @@ describe("Codes section", () => {
         handleChange={handleChange}
         selectedDataElement={selectedDataElement}
         deleteCode={deleteCode}
-        canEdit={true}
       />
     );
     expect(screen.getByTestId("codes-section")).toBeInTheDocument();
@@ -153,7 +151,6 @@ describe("Codes section", () => {
         handleChange={handleChange}
         selectedDataElement={updatedDataElement}
         deleteCode={deleteCode}
-        canEdit={true}
       />
     );
     // verify chips is added
@@ -169,7 +166,6 @@ describe("Codes section", () => {
         handleChange={handleChange}
         selectedDataElement={selectedDataElement}
         deleteCode={deleteCode}
-        canEdit={true}
       />
     );
     expect(screen.getByTestId("codes-section")).toBeInTheDocument();
@@ -217,7 +213,6 @@ describe("Codes section", () => {
         handleChange={handleChange}
         selectedDataElement={updatedDataElement}
         deleteCode={deleteCode}
-        canEdit={true}
       />
     );
     // verify chips is added
@@ -233,7 +228,6 @@ describe("Codes section", () => {
         handleChange={handleChange}
         selectedDataElement={selectedDataElement}
         deleteCode={deleteCode}
-        canEdit={true}
       />
     );
     expect(screen.getByTestId("codes-section")).toBeInTheDocument();
@@ -290,7 +284,6 @@ describe("Codes section", () => {
         handleChange={handleChange}
         selectedDataElement={updatedDataElement}
         deleteCode={deleteCode}
-        canEdit={true}
       />
     );
     // verify chips is added
@@ -319,7 +312,6 @@ describe("Codes section", () => {
         handleChange={handleChange}
         selectedDataElement={selectedDataElementForDrc}
         deleteCode={deleteCode}
-        canEdit={true}
       />
     );
     expect(screen.getByTestId("codes-section")).toBeInTheDocument();
@@ -346,7 +338,6 @@ describe("Codes section", () => {
         handleChange={handleChange}
         selectedDataElement={testSelectedDataElement}
         deleteCode={deleteCode}
-        canEdit={true}
       />
     );
     expect(screen.getByTestId("codes-section")).toBeInTheDocument();
@@ -377,7 +368,6 @@ describe("Codes section", () => {
         handleChange={handleChange}
         selectedDataElement={selectedDataElement}
         deleteCode={deleteCode}
-        canEdit={true}
       />
     );
     expect(screen.getByTestId("codes-section")).toBeInTheDocument();

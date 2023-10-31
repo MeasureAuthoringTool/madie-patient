@@ -154,7 +154,6 @@ const renderDataElementsTable = (dataElements, onDelete = () => {}) => {
           dataElements={dataElements}
           onDelete={onDelete}
           allowedTypes={allowedTypes}
-          canEdit={true}
         />
       </QdmPatientProvider>
     </QdmExecutionContextProvider>
