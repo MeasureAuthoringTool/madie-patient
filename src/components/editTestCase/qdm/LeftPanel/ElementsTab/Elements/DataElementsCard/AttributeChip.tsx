@@ -8,6 +8,7 @@ interface AttributeChipProps {
   canEdit: boolean;
   onDeleteAttributeChip: (deletedChip) => void;
   index: string;
+  id?: string;
 }
 
 const AttributeChip = ({
@@ -15,6 +16,7 @@ const AttributeChip = ({
   canEdit,
   onDeleteAttributeChip,
   index,
+  id,
 }: AttributeChipProps) => {
   return (
     <div className="chip-body">
@@ -25,7 +27,7 @@ const AttributeChip = ({
             sx={{ color: "#fff", height: "15px", width: "15px" }}
             onClick={(e) => {
               e.preventDefault;
-              onDeleteAttributeChip({ index: index, text: text });
+              onDeleteAttributeChip({ index: index, text: text, id: id });
             }}
             data-testid={`delete-chip-button-${index}`}
           />
