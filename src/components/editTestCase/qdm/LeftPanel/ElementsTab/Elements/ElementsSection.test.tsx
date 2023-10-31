@@ -6,7 +6,7 @@ import {
   PopulationType,
 } from "@madie/madie-models";
 import { MemoryRouter } from "react-router-dom";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
 import { mockCqlWithAllCategoriesPresent } from "../../../mockCql";
@@ -22,8 +22,8 @@ import {
 import { QdmExecutionContextProvider } from "../../../../../routes/qdm/QdmExecutionContext";
 import { FormikProvider, FormikContextType } from "formik";
 import { testCaseJson } from "../../../../../../mockdata/qdm/testcase";
-import { act } from "react-dom/test-utils";
 import { QdmPatientProvider } from "../../../../../../util/QdmPatientContext";
+import { DataElement } from "cqm-models";
 
 const serviceConfig: ServiceConfig = {
   testCaseService: {
@@ -66,6 +66,8 @@ const measure = mockMeasure;
 const setMeasure = jest.fn();
 const setCqmMeasure = jest.fn;
 const getAccessToken = jest.fn();
+let selectedDataElement: DataElement = null;
+const setSelectedDataElement = jest.fn();
 let cqmConversionService = new CqmConversionService("url", getAccessToken);
 const cqmMeasure = cqmConversionService.convertToCqmMeasure(mockMeasure);
 jest.mock("../../../../../../api/CqmModelConversionService");
@@ -293,7 +295,7 @@ const mockFormik: FormikContextType<any> = {
   },
 };
 
-const renderElementsSectionComponent = () => {
+const renderElementsSectionComponent = (render, selectedDataElement) => {
   return render(
     <MemoryRouter>
       <ApiContextProvider value={serviceConfig}>
@@ -305,10 +307,15 @@ const renderElementsSectionComponent = () => {
               executionContextReady: true,
               executing: false,
               setExecuting: jest.fn(),
+              contextFailure: false,
             }}
           >
             <QdmPatientProvider>
-              <ElementsSection />
+              <ElementsSection
+                handleTestCaseErrors={jest.fn()}
+                selectedDataElement={selectedDataElement}
+                setSelectedDataElement={setSelectedDataElement}
+              />
             </QdmPatientProvider>
           </QdmExecutionContextProvider>
         </FormikProvider>
@@ -356,80 +363,77 @@ describe("ElementsSection allows card opening and closing", () => {
   CQMConversionMock.mockImplementation(() => {
     return useCqmConversionServiceMockResolved;
   });
+  beforeEach(() => {
+    selectedDataElement = undefined;
+  });
   // need to mock measureStore, and the results from retrieve categories
-  const { findByTestId, getByTestId, queryByText } = screen;
+  const { findByTestId, getByTestId, queryByText, queryByTestId } = screen;
   test("should open and close a data element card manual close selection", async () => {
-    await waitFor(() => renderElementsSectionComponent());
+    const { rerender } = renderElementsSectionComponent(render, null);
     const elementSection = await findByTestId("elements-section");
-    expect(elementSection).toBeInTheDocument();
     //  navigate to adverse event
-    const adverseEventTab = screen.getByTestId("elements-tab-adverse_event");
-    expect(adverseEventTab).toBeInTheDocument();
-    act(() => {
-      userEvent.click(adverseEventTab);
-    });
+    const adverseEventTab = getByTestId("elements-tab-adverse_event");
+    userEvent.click(adverseEventTab);
+
     expect(adverseEventTab).toHaveAttribute("aria-selected", "true");
-    const adverseEventDataType = screen.getByTestId(
+    const adverseEventDataType = getByTestId(
       "data-type-Adverse Event: Encounter Inpatient"
     );
 
-    expect(adverseEventDataType).toBeInTheDocument();
-    act(() => {
-      fireEvent.click(adverseEventDataType);
-    });
+    await userEvent.click(adverseEventDataType);
+    expect(setSelectedDataElement).toBeCalled();
+    selectedDataElement = testDataElements[11];
 
-    await waitFor(() => {
-      expect(getByTestId("data-element-card")).toBeInTheDocument();
-    });
+    renderElementsSectionComponent(rerender, testDataElements[11]);
+    await findByTestId("data-element-card");
+
     const closeButton = getByTestId("close-element-card");
-    expect(closeButton).toBeInTheDocument();
-    act(() => {
-      fireEvent.click(closeButton);
-    });
+    await userEvent.click(closeButton);
+
+    expect(setSelectedDataElement).toHaveBeenCalledWith(null);
+    renderElementsSectionComponent(rerender, null);
     await waitFor(() => {
-      expect(screen.queryByTestId("data-element-card")).not.toBeInTheDocument();
+      expect(queryByTestId("data-element-card")).not.toBeInTheDocument();
     });
   });
 
   test("should open and close a data element card manual close selection", async () => {
-    await waitFor(() => renderElementsSectionComponent());
+    const { rerender } = renderElementsSectionComponent(render, null);
     const elementSection = await findByTestId("elements-section");
-    expect(elementSection).toBeInTheDocument();
-    const adverseEventTab = screen.getByTestId("elements-tab-adverse_event");
-    expect(adverseEventTab).toBeInTheDocument();
-    act(() => {
-      userEvent.click(adverseEventTab);
-    });
+    const adverseEventTab = getByTestId("elements-tab-adverse_event");
+    userEvent.click(adverseEventTab);
     expect(adverseEventTab).toHaveAttribute("aria-selected", "true");
-    const adverseEventDataType = screen.getByTestId(
+    const adverseEventDataType = getByTestId(
       "data-type-Adverse Event: Encounter Inpatient"
     );
 
-    expect(adverseEventDataType).toBeInTheDocument();
-    act(() => {
-      fireEvent.click(adverseEventDataType);
-    });
+    userEvent.click(adverseEventDataType);
+    expect(setSelectedDataElement).toBeCalled();
+    selectedDataElement = testDataElements[11];
 
-    await waitFor(() => {
-      expect(getByTestId("data-element-card")).toBeInTheDocument();
-    });
+    renderElementsSectionComponent(rerender, testDataElements[11]);
+    expect(getByTestId("data-element-card")).toBeInTheDocument();
+
     await waitFor(() => {
       expect(queryByText("Negation Rationale")).not.toBeInTheDocument();
     });
-    const deviceTab = screen.getByTestId("elements-tab-device");
-    expect(deviceTab).toBeInTheDocument();
-    act(() => {
-      userEvent.click(deviceTab);
-    });
+    const deviceTab = getByTestId("elements-tab-device");
+
+    userEvent.click(deviceTab);
+
+    renderElementsSectionComponent(rerender, null);
     await waitFor(() => {
-      expect(screen.queryByTestId("data-element-card")).not.toBeInTheDocument();
+      expect(queryByTestId("data-element-card")).not.toBeInTheDocument();
     });
-    const deviceDataType = screen.getByTestId(
+    const deviceDataType = getByTestId(
       "data-type-Device, Order: Cardiopulmonary Arrest"
     );
-    act(() => {
-      fireEvent.click(deviceDataType);
-    });
+
+    userEvent.click(deviceDataType);
+    expect(setSelectedDataElement).toBeCalled();
+    selectedDataElement = testDataElements[14];
+
+    renderElementsSectionComponent(rerender, testDataElements[14]);
     await waitFor(() => {
       expect(queryByText("Negation Rationale")).toBeInTheDocument();
     });

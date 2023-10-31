@@ -96,7 +96,6 @@ const ElementsSection = (props: {
 
   const [availableDataElements, setAvailableDataElements] =
     useState<DataElement[]>();
-  // const [selectedDataElement, setSelectedDataElement] = useState<DataElement>();
 
   useEffect(() => {
     if (activeTab) {
