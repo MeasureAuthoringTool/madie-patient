@@ -24,8 +24,15 @@ import {
 const ElementsSection = (props: {
   handleTestCaseErrors: Function;
   canEdit: boolean;
+  selectedDataElement: DataElement;
+  setSelectedDataElement: Function;
 }) => {
-  const { handleTestCaseErrors, canEdit } = props;
+  const {
+    handleTestCaseErrors,
+    canEdit,
+    selectedDataElement,
+    setSelectedDataElement,
+  } = props;
   const cqmService = useRef(useCqmConversionService());
   const [measure, setMeasure] = useState<any>(measureStore.state);
   useEffect(() => {
@@ -98,7 +105,6 @@ const ElementsSection = (props: {
 
   const [availableDataElements, setAvailableDataElements] =
     useState<DataElement[]>();
-  const [selectedDataElement, setSelectedDataElement] = useState<DataElement>();
 
   useEffect(() => {
     if (activeTab) {
