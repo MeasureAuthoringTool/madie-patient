@@ -11,10 +11,10 @@ import dayjs from "dayjs";
 import { InputLabel } from "@mui/material";
 import { labelStyle } from "./TimingStyles";
 
-const Timing = ({ canEdit, updateDataElement, selectedDataElement }) => {
+const Timing = ({ canEdit, onChange, selectedDataElement }) => {
   const handleChange = (newValue, attributeName) => {
     selectedDataElement.set(attributeName, newValue);
-    updateDataElement(selectedDataElement);
+    onChange(selectedDataElement);
   };
 
   const dateFormatToDisplay = (date) => {
