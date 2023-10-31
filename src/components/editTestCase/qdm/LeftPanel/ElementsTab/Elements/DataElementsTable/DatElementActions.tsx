@@ -66,7 +66,13 @@ export default function DatElementActions(props: DatElementMenuProps) {
           toImplementFunction: viewDataElement,
           dataTestId: `view-element-${elementId}`,
         }}
-        otherSelectOptionProps={[deleteElement]}
+        otherSelectOptionProps={[
+          {
+            label: "Delete",
+            toImplementFunction: deleteDataElement,
+            dataTestId: `delete-element-${elementId}`,
+          },
+        ]}
       />
     </div>
   );
