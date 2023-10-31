@@ -3,8 +3,8 @@ import { CqmMeasure, IndividualResult } from "cqm-models";
 import {
   Group,
   Measure,
+  MeasureScoring,
   PopulationExpectedValue,
-  PopulationType,
   TestCase,
 } from "@madie/madie-models";
 import * as _ from "lodash";
@@ -201,7 +201,7 @@ export class QdmCalculationService {
           groupPop.populationValues.forEach((population) => {
             if (isTestCasePopulationObservation(population)) {
               if (patientBased) {
-                if (groupPop.scoring === "Ratio") {
+                if (groupPop.scoring === MeasureScoring.RATIO) {
                   population.actual = this.mapObservations(population, results);
                 } else {
                   population.actual = results?.observation_values?.[0];

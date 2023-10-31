@@ -18,6 +18,7 @@ import { ExecutionStatusType } from "./CalculationService";
 import {
   CV_EPISODE_WITH_OBS_RESULTS,
   CV_PATIENT_WITH_OBS_RESULTS,
+  RATIO_PATIENTBASED_WITH_OBS_RESULTS,
 } from "./__mocks__/QdmTestCaseProcessingScenarios";
 
 const localStorageMock = (function () {
@@ -1156,6 +1157,38 @@ describe("QDM CalculationService Tests", () => {
 
       expect(output.executionStatus).toEqual(ExecutionStatusType.PASS);
     });
+  });
+
+  it("should return testCase with actual values passing for patientBasis Ratio", () => {
+    const output = calculationService.processTestCaseResults(
+      RATIO_PATIENTBASED_WITH_OBS_RESULTS.testCase,
+      RATIO_PATIENTBASED_WITH_OBS_RESULTS.measureGroups,
+      RATIO_PATIENTBASED_WITH_OBS_RESULTS.measure,
+      RATIO_PATIENTBASED_WITH_OBS_RESULTS.patientResults
+    );
+
+    expect(output).toBeTruthy();
+    expect(output.groupPopulations).toBeTruthy();
+
+    expect(output.groupPopulations[0].populationValues).toBeTruthy();
+    expect(output.groupPopulations[0].populationValues.length).toEqual(5);
+
+    expect(output.groupPopulations[0].populationValues[0].name).toEqual(
+      PopulationType.INITIAL_POPULATION
+    );
+    expect(output.groupPopulations[0].populationValues[0].actual).toBe(1);
+
+    expect(output.groupPopulations[0].populationValues[1].actual).toBe(1);
+
+    expect(output.groupPopulations[0].populationValues[2].name).toEqual(
+      PopulationType.DENOMINATOR
+    );
+
+    expect(output.groupPopulations[0].populationValues[4].name).toEqual(
+      PopulationType.NUMERATOR_OBSERVATION
+    );
+
+    expect(output.groupPopulations[0].populationValues[4].actual).toBe(12);
   });
 
   describe("hook", () => {
