@@ -18,6 +18,7 @@ import { ExecutionStatusType } from "./CalculationService";
 import {
   CV_EPISODE_WITH_OBS_RESULTS,
   CV_PATIENT_WITH_OBS_RESULTS,
+  RATIO_PATIENTBASED_WITH_OBS_RESULTS,
 } from "./__mocks__/QdmTestCaseProcessingScenarios";
 
 const localStorageMock = (function () {
@@ -45,6 +46,16 @@ const localStorageMock = (function () {
     },
   };
 })();
+
+let actualCalculationResults = {
+  IPP: 1,
+  DENOM: 1,
+  DENEX: 0,
+  NUMER: 1,
+  NUMEX: 0,
+  observation_values: [10, 12],
+  state: "complete",
+};
 
 Object.defineProperty(window, "localStorage", { value: localStorageMock });
 
@@ -1156,6 +1167,114 @@ describe("QDM CalculationService Tests", () => {
 
       expect(output.executionStatus).toEqual(ExecutionStatusType.PASS);
     });
+  });
+
+  it("should return testCase with actual values passing for patientBasis Ratio", () => {
+    const output = calculationService.processTestCaseResults(
+      RATIO_PATIENTBASED_WITH_OBS_RESULTS.testCase,
+      RATIO_PATIENTBASED_WITH_OBS_RESULTS.measureGroups,
+      RATIO_PATIENTBASED_WITH_OBS_RESULTS.measure,
+      RATIO_PATIENTBASED_WITH_OBS_RESULTS.patientResults
+    );
+    expect(output).toBeTruthy();
+    expect(output.groupPopulations).toBeTruthy();
+
+    expect(output.groupPopulations[0].populationValues).toBeTruthy();
+    expect(output.groupPopulations[0].populationValues.length).toEqual(5);
+
+    expect(output.groupPopulations[0].populationValues[0].name).toEqual(
+      PopulationType.INITIAL_POPULATION
+    );
+    expect(output.groupPopulations[0].populationValues[0].actual).toBe(true);
+
+    expect(output.groupPopulations[0].populationValues[1].actual).toBe(true);
+
+    expect(output.groupPopulations[0].populationValues[2].name).toEqual(
+      PopulationType.DENOMINATOR
+    );
+
+    expect(output.groupPopulations[0].populationValues[4].name).toEqual(
+      PopulationType.NUMERATOR_OBSERVATION
+    );
+
+    expect(output.groupPopulations[0].populationValues[4].actual).toBe(12);
+  });
+
+  it("mapping QDM patient based observation actual results when denom is 1 and denex is 0", () => {
+    const populationGroup = {
+      id: "denominatorObservation0",
+      name: "denominatorObservation",
+      expected: "10",
+    };
+    const denominatorObservationActualValue =
+      calculationService.mapPatientBasedObservations(
+        populationGroup,
+        actualCalculationResults
+      );
+    expect(denominatorObservationActualValue).toBe(10);
+  });
+
+  it("mapping QDM patient based observation actual results when (denom is 1 and denex is 1) or when denom is 0", () => {
+    const populationGroup = {
+      id: "denominatorObservation0",
+      name: "denominatorObservation",
+      expected: "10",
+    };
+
+    actualCalculationResults.DENEX = 1;
+    const denominatorObservationActualValueWithExclusion =
+      calculationService.mapPatientBasedObservations(
+        populationGroup,
+        actualCalculationResults
+      );
+    expect(denominatorObservationActualValueWithExclusion).toBe("NA");
+
+    actualCalculationResults.DENOM = 1;
+    const denominatorObservationActualValue =
+      calculationService.mapPatientBasedObservations(
+        populationGroup,
+        actualCalculationResults
+      );
+    expect(denominatorObservationActualValue).toBe("NA");
+  });
+
+  it("mapping QDM patient based observation actual results when numer is 1 and numex is 0", () => {
+    const populationGroup = {
+      id: "numeratorObservation0",
+      name: "numeratorObservation",
+      expected: "12",
+    };
+
+    const numeratorObservationActualValue =
+      calculationService.mapPatientBasedObservations(
+        populationGroup,
+        actualCalculationResults
+      );
+    expect(numeratorObservationActualValue).toBe(12);
+  });
+
+  it("mapping QDM patient based observation actual results when (numer is 1 and numex is 1) or when numer is 0", () => {
+    const populationGroup = {
+      id: "numeratorObservation0",
+      name: "numeratorObservation",
+      expected: "12",
+    };
+
+    actualCalculationResults.NUMEX = 1;
+    const numeratorObservationActualValueWithExclusion =
+      calculationService.mapPatientBasedObservations(
+        populationGroup,
+        actualCalculationResults
+      );
+    expect(numeratorObservationActualValueWithExclusion).toBe("NA");
+
+    actualCalculationResults.NUMER = 1;
+    const numeratorObservationActualValue =
+      calculationService.mapPatientBasedObservations(
+        populationGroup,
+        actualCalculationResults
+      );
+    expect(numeratorObservationActualValue).toBe("NA");
   });
 
   describe("hook", () => {
