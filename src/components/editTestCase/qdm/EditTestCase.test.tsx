@@ -13,6 +13,7 @@ import {
   Model,
   PopulationType,
   TestCase,
+  AggregateFunctionType,
 } from "@madie/madie-models";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
@@ -24,6 +25,7 @@ import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
 import useTestCaseServiceApi, {
   TestCaseServiceApi,
 } from "../../../api/useTestCaseServiceApi";
+import { useFeatureFlags } from "@madie/madie-util";
 
 import useCqmConversionService, {
   CqmConversionService,
@@ -182,6 +184,22 @@ const mockMeasure = {
         },
       ],
       populationBasis: "true",
+      stratifications: [
+        {
+          cqlDefinition: "Initial Population",
+          description: "",
+          id: "strat-1",
+        },
+      ],
+      measureObservations: [
+        {
+          aggregateMethod: AggregateFunctionType.AVERAGE,
+          criteriaReference: "id-2",
+          definition: "test",
+          description: "",
+          id: "observ-1",
+        },
+      ],
     },
   ],
 } as Measure;
@@ -221,15 +239,18 @@ const useCqmConversionServiceMockResolved = {
   fetchSourceDataCriteria: jest.fn().mockResolvedValue([
     {
       qdmCategory: "symptom",
+      _type: "",
       qdmStatus: "Encounter",
       description: "Allergy/Intolerance: Observation Services",
     },
     {
+      _type: "QDM::AllergyIntolerance",
       qdmCategory: "allergy",
       qdmStatus: "Encounter",
       description: "Allergy/Intolerance: Observation Services",
     },
     {
+      _type: "QDM::EncounterPerformed",
       qdmCategory: "device",
       qdmStatus: "Encounter",
       description: "Allergy/Intolerance: Observation Services",
@@ -329,9 +350,12 @@ const qdmCalculationServiceMockResolved = {
 
 jest.mock("@madie/madie-util", () => ({
   useDocumentTitle: jest.fn(),
-  useFeatureFlags: () => {
-    return { applyDefaults: mockApplyDefaults };
-  },
+  useFeatureFlags: jest.fn(() => {
+    return {
+      applyDefaults: mockApplyDefaults,
+      disableRunTestCaseWithObservStrat: true,
+    };
+  }),
   measureStore: {
     updateMeasure: jest.fn((measure) => measure),
     state: jest.fn().mockImplementation(() => mockMeasure),
@@ -458,6 +482,12 @@ describe("EditTestCase QDM Component", () => {
     CQMConversionMock.mockImplementation(() => {
       return useCqmConversionServiceMockResolved;
     });
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => {
+      return {
+        applyDefaults: mockApplyDefaults,
+        disableRunTestCaseWithObservStrat: false,
+      };
+    });
   });
 
   it("should run qdm test case", async () => {
@@ -483,6 +513,23 @@ describe("EditTestCase QDM Component", () => {
     ); // it has no name
     await waitFor(() => expect(actualResult).toBeChecked());
   });
+
+  it("should disable run qdm test case", async () => {
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementationOnce(() => {
+      return {
+        applyDefaults: mockApplyDefaults,
+        disableRunTestCaseWithObservStrat: true,
+      };
+    });
+    await waitFor(() => renderEditTestCaseComponent());
+    const runTestCaseButton = await getByRole("button", {
+      name: "Run Test",
+    });
+    expect(runTestCaseButton).toBeInTheDocument();
+
+    expect(runTestCaseButton).toBeDisabled();
+  });
+
   it("should see that the JSON changed", async () => {
     await waitFor(() => renderEditTestCaseComponent());
     const runTestCaseButton = await getByRole("button", {

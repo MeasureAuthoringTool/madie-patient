@@ -4,8 +4,15 @@ import {
   measureStore,
   checkUserCanEdit,
   routeHandlerStore,
+  useFeatureFlags,
 } from "@madie/madie-util";
-import { TestCase, MeasureErrorType } from "@madie/madie-models";
+import {
+  TestCase,
+  MeasureErrorType,
+  Group,
+  MeasureObservation,
+  Stratification,
+} from "@madie/madie-models";
 import "../qiCore/EditTestCase.scss";
 import {
   Button,
@@ -91,6 +98,26 @@ const EditTestCase = () => {
   dayjs.extend(utc);
   dayjs.utc().format(); // utc format
 
+  const featureFlags = useFeatureFlags();
+  const [hasObservationOrStratification, setHasObservationOrStratification] =
+    useState(false);
+  useEffect(() => {
+    if (featureFlags?.disableRunTestCaseWithObservStrat) {
+      const groups: Group[] = measure?.groups;
+      groups?.forEach((group) => {
+        const measureObservations: MeasureObservation[] =
+          group?.measureObservations;
+        const measureStratifications: Stratification[] = group?.stratifications;
+        if (
+          (measureObservations && measureObservations.length > 0) ||
+          (measureStratifications && measureStratifications.length > 0)
+        ) {
+          setHasObservationOrStratification(true);
+        }
+      });
+    }
+  }, [measure, measure?.groups]);
+
   const formik = useFormik({
     initialValues: {
       title: "",
@@ -111,7 +138,6 @@ const EditTestCase = () => {
     testCase.title = sanitizeUserInput(testCase.title);
     testCase.description = sanitizeUserInput(testCase.description);
     testCase.series = sanitizeUserInput(testCase.series);
-
     if (formik.values?.json) {
       testCase.json = formik.values?.json;
       const patient: QDMPatient = JSON.parse(formik.values.json);
@@ -359,7 +385,8 @@ const EditTestCase = () => {
                 ) ||
                 !formik.values?.json ||
                 !executionContextReady ||
-                executing
+                executing ||
+                hasObservationOrStratification
               }
             >
               Run Test
