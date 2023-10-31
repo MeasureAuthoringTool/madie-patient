@@ -6,12 +6,20 @@ import ElementsTab from "./ElementsTab/ElementsTab";
 import { QdmPatientProvider } from "../../../../util/QdmPatientContext";
 import { useFormikContext } from "formik";
 import Editor from "../../../editor/Editor";
+import { DataElement } from "cqm-models";
 
 const LeftPanel = (props: {
   canEdit: boolean;
   handleTestCaseErrors: Function;
+  selectedDataElement: DataElement;
+  setSelectedDataElement: Function;
 }) => {
-  const { canEdit, handleTestCaseErrors } = props;
+  const {
+    canEdit,
+    handleTestCaseErrors,
+    selectedDataElement,
+    setSelectedDataElement,
+  } = props;
   const [activeTab, setActiveTab] = useState<string>("elements");
   const formik: any = useFormikContext();
 
@@ -26,6 +34,8 @@ const LeftPanel = (props: {
             <ElementsTab
               canEdit={canEdit}
               handleTestCaseErrors={handleTestCaseErrors}
+              selectedDataElement={selectedDataElement}
+              setSelectedDataElement={setSelectedDataElement}
             />
           )}
           {activeTab === "json" && (
