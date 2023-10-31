@@ -10,10 +10,13 @@ import { useFormik } from "formik";
 import DisplayAttributeInputs from "./DisplayAttributeInputs";
 import AttributeChipList from "../AttributeChipList";
 
-interface Chip {
-  title: String;
+export interface Chip {
+  title?: String;
   name?: String;
   value?: String;
+  additionalElements?: Array<Chip>;
+  isMultiple?: boolean;
+  id?: string;
 }
 interface AttributeSectionProps {
   selectedDataElement: DataElement;
@@ -30,9 +33,6 @@ const AttributeSection = ({
   canEdit,
   onDeleteAttributeChip,
 }: AttributeSectionProps) => {
-  const mappedAttributeList = attributeChipList.map((chip, index) => ({
-    text: `${chip.title}: ${chip.value}`,
-  }));
   const [attributes, setAttributes] = useState([]);
   const [types, setTypes] = useState([]);
 
@@ -123,8 +123,8 @@ const AttributeSection = ({
         />
       )}
       <AttributeChipList
+        attributeChipList={attributeChipList}
         canEdit={canEdit}
-        items={mappedAttributeList}
         onDeleteAttributeChip={onDeleteAttributeChip}
       />
     </form>

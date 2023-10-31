@@ -3,8 +3,7 @@ import { Close } from "@mui/icons-material";
 import { IconButton } from "@mui/material";
 import {
   SKIP_ATTRIBUTES,
-  getDisplayFromId,
-  stringifyValue,
+  generateAttributesToDisplay,
 } from "../../../../../../../util/QdmAttributeHelpers";
 import Codes from "./Codes/Codes";
 import SubNavigationTabs from "./SubNavigationTabs";
@@ -37,26 +36,28 @@ export const applyAttribute = (
   return updatedDataElement;
 };
 
-export const deleteAttribute = (chipText, dataElement) => {
+export const deleteAttribute = (chip, dataElement) => {
   const modelClass = getDataElementClass(dataElement);
   const updatedDataElement = new modelClass(dataElement);
-  const attributePath = _.camelCase(
-    chipText.substring(0, chipText.indexOf(":"))
-  );
-  const attributeValue = chipText.substring(chipText.indexOf(": ") + 2);
-  const pathInfo = updatedDataElement.schema.paths[attributePath];
-  if (
-    _.upperCase(pathInfo?.instance) === "ARRAY" &&
-    updatedDataElement[attributePath].length > 1
-  ) {
-    const deleteIndex =
-      updatedDataElement[attributePath].indexOf(attributeValue);
-    updatedDataElement[attributePath].splice(deleteIndex, 1);
+  // If a chip has id, then it is part of an Attribute which can accept multiple dataTypes.
+  if (chip.id) {
+    const attributePath = _.camelCase(
+      _.split(_.split(chip.text, ":", 1)[0], "-", 1)[0]
+    );
+    const pathInfo = updatedDataElement.schema.paths[attributePath];
+    if (_.upperCase(pathInfo?.instance) === "ARRAY") {
+      updatedDataElement[attributePath] = _.filter(
+        updatedDataElement[attributePath],
+        (a) => a._id.toString() !== chip.id
+      );
+    }
   } else {
+    const attributePath = _.camelCase(_.split(chip.text, ":", 1)[0]);
     updatedDataElement[attributePath] = undefined;
   }
   return updatedDataElement;
 };
+
 const applyDataElementCodes = (code, dataElement) => {
   const modelClass = getDataElementClass(dataElement);
   const updatedDataElement = new modelClass(dataElement);
@@ -64,6 +65,18 @@ const applyDataElementCodes = (code, dataElement) => {
     ...updatedDataElement["dataElementCodes"],
     code,
   ];
+  return updatedDataElement;
+};
+
+const deleteDataElementCode = (codeId, dataElement) => {
+  const modelClass = getDataElementClass(dataElement);
+  const updatedDataElement = new modelClass(dataElement);
+  const remainingCodes = updatedDataElement["dataElementCodes"].filter(
+    (dataElementCode) => {
+      return dataElementCode.code != codeId;
+    }
+  );
+  updatedDataElement["dataElementCodes"] = [...remainingCodes];
   return updatedDataElement;
 };
 
@@ -78,18 +91,6 @@ const deleteNegationRationale = (dataElement) => {
   const modelClass = getDataElementClass(dataElement);
   const updatedDataElement = new modelClass(dataElement);
   updatedDataElement["negationRationale"] = null;
-  return updatedDataElement;
-};
-
-const deleteDataElementCode = (codeId, dataElement) => {
-  const modelClass = getDataElementClass(dataElement);
-  const updatedDataElement = new modelClass(dataElement);
-  const remainingCodes = updatedDataElement["dataElementCodes"].filter(
-    (dataElementCode) => {
-      return dataElementCode.code != codeId;
-    }
-  );
-  updatedDataElement["dataElementCodes"] = [...remainingCodes];
   return updatedDataElement;
 };
 
@@ -116,12 +117,12 @@ const DataElementsCard = (props: {
   // from here we know the type, we need to go through the dataElements to matchTypes
   // attributes section
   // codes section
-  const [localSelectedDataElement, setLocalSelectedDataElement] =
-    useState(null);
+
   const [displayAttributes, setDisplayAttributes] = useState([]);
   const [dataElements, setDataElements] = useState([]);
   const { patient } = useQdmPatient()?.state;
-  // // data elements are required for relatedTo.
+
+  // data elements are required for relatedTo.
   useEffect(() => {
     patient?.dataElements
       ? setDataElements(patient.dataElements)
@@ -144,78 +145,23 @@ const DataElementsCard = (props: {
   const negationRationale =
     selectedDataElement?.hasOwnProperty("negationRationale");
   // https://ecqi.healthit.gov/mcw/2020/qdm-attribute/negationrationale.html  (list of all categories that use negation rationale)
+
+  // Generates data required for displaying saved attributes in Chips.
+  // If an attribute is of type Array, then "additionalElements" field is populated
+  // returns { name, title, value }
   useEffect(() => {
-    const dataElementClass = getDataElementClass(selectedDataElement);
-    const modeledEl = new dataElementClass(selectedDataElement);
-    setLocalSelectedDataElement(modeledEl);
-  }, [selectedDataElement, getDataElementClass, setLocalSelectedDataElement]);
-  useEffect(() => {
-    if (localSelectedDataElement && codeSystemMap) {
-      const displayAttributes = [];
-      localSelectedDataElement.schema.eachPath((path, info) => {
-        if (!SKIP_ATTRIBUTES.includes(path) && localSelectedDataElement[path]) {
-          if (info.instance === "Array") {
-            // 4 instances
-            localSelectedDataElement[path].forEach((elem, index) => {
-              // works
-              if (path == "relatedTo") {
-                let id = elem;
-                const display = getDisplayFromId(dataElements, id);
-                let value = `${stringifyValue(
-                  display?.description,
-                  true
-                )} ${stringifyValue(display?.timing, true, codeSystemMap)}}`;
-                displayAttributes.push({
-                  name: path,
-                  title: _.startCase(path),
-                  value: value,
-                  isArrayValue: true,
-                  index: index,
-                });
-              } else {
-                displayAttributes.push({
-                  name: path,
-                  title: _.startCase(path),
-                  // this is wrong
-                  value: stringifyValue(
-                    localSelectedDataElement[path],
-                    true,
-                    codeSystemMap
-                  ),
-                  isArrayValue: true,
-                  index: index,
-                });
-              }
-            });
-          } else if (path === "relatedTo") {
-            const id = localSelectedDataElement[path];
-            const display = getDisplayFromId(dataElements, id);
-            const value = `${stringifyValue(
-              display.description,
-              true
-            )} ${stringifyValue(display.timing, true)}`;
-            displayAttributes.push({
-              name: path,
-              title: _.startCase(path),
-              value: value,
-            });
-          } else {
-            displayAttributes.push({
-              name: path,
-              title: _.startCase(path),
-              value: stringifyValue(
-                localSelectedDataElement[path],
-                true,
-                codeSystemMap
-              ),
-            });
-          }
-        }
-      });
-      setDisplayAttributes(displayAttributes);
+    if (selectedDataElement && codeSystemMap) {
+      const attributesToDisplay = generateAttributesToDisplay(
+        selectedDataElement,
+        [],
+        codeSystemMap
+      );
+      setDisplayAttributes(attributesToDisplay);
     }
-  }, [localSelectedDataElement, codeSystemMap, dataElements]);
+  }, [selectedDataElement, codeSystemMap, dataElements]);
+
   // centralize state one level up so we can conditionally render our child component
+  // Determines if the selected DataElement has at least one attribute.
   useEffect(() => {
     setAttributesPresent(false);
     if (selectedDataElement && selectedDataElement.schema?.eachPath) {
@@ -226,30 +172,24 @@ const DataElementsCard = (props: {
         }
       });
     }
-  }, [localSelectedDataElement]);
-  const onDeleteAttributeChip = (deletedChip) => {
-    const deletedChipIndex = deletedChip.index;
-    const newAttributes = displayAttributes.slice();
-    newAttributes.splice(deletedChipIndex, 1);
-    // setDisplayAttributes(newAttributes);
-    const updatedElement = deleteAttribute(
-      deletedChip.text,
-      selectedDataElement
-    );
-    setLocalSelectedDataElement(updatedElement);
-    setSelectedDataElement(updatedElement);
-    onChange(updatedElement);
+  }, [selectedDataElement]);
+
+  // Updates selectedDataElement which is a parent components State
+  // also calls onChange so that the QDM Patient state is updated
+  const updateDataElement = (updatedDataElement: DataElement) => {
+    setSelectedDataElement(updatedDataElement);
+    onChange(updatedDataElement);
   };
 
   return (
     <div className="data-elements-card" data-testid="data-element-card">
       <div className="heading-row">
         <div className="text-container">
-          {localSelectedDataElement?.qdmStatus && (
+          {selectedDataElement?.qdmStatus && (
             <div className="title">
-              {localSelectedDataElement.qdmStatus
-                ? _.capitalize(localSelectedDataElement.qdmStatus)
-                : localSelectedDataElement.qdmTitle}
+              {selectedDataElement.qdmStatus
+                ? _.capitalize(selectedDataElement.qdmStatus)
+                : selectedDataElement.qdmTitle}
               :&nbsp;
             </div>
           )}
@@ -279,61 +219,60 @@ const DataElementsCard = (props: {
       <div className="timing">
         <Timing
           canEdit={canEdit}
-          updateDataElement={(updatedDataElement) => {
-            onChange(updatedDataElement);
+          onChange={(updatedDataElement) => {
+            updateDataElement(updatedDataElement);
           }}
-          selectedDataElement={localSelectedDataElement}
+          selectedDataElement={selectedDataElement}
         />
       </div>
-      {/* Govern our navigation for codes/att/negation */}
+      {/* Govern our navigation for codes/attribute/negation */}
       <SubNavigationTabs
         negationRationale={negationRationale}
         activeTab={cardActiveTab}
         setActiveTab={setCardActiveTab}
         attributesPresent={attributesPresent}
       />
-
       {cardActiveTab === "codes" && (
         <Codes
           canEdit={canEdit}
           handleChange={(selectedCode) => {
             const updatedDataElement = applyDataElementCodes(
               selectedCode,
-              localSelectedDataElement
+              selectedDataElement
             );
-            setLocalSelectedDataElement(updatedDataElement);
-            onChange(updatedDataElement);
+            updateDataElement(updatedDataElement);
           }}
           deleteCode={(codeId) => {
             const updatedDataElement = deleteDataElementCode(
               codeId,
-              localSelectedDataElement
+              selectedDataElement
             );
-            setLocalSelectedDataElement(updatedDataElement);
-            onChange(updatedDataElement);
+            updateDataElement(updatedDataElement);
           }}
           cqmMeasure={cqmMeasure}
-          selectedDataElement={localSelectedDataElement}
+          selectedDataElement={selectedDataElement}
         />
       )}
       {cardActiveTab === "attributes" && (
         <AttributeSection
           attributeChipList={displayAttributes}
-          selectedDataElement={localSelectedDataElement}
-          onDeleteAttributeChip={onDeleteAttributeChip}
+          selectedDataElement={selectedDataElement}
           canEdit={canEdit}
           onAddClicked={(attribute, type, attributeValue) => {
             const updatedDataElement = applyAttribute(
               attribute,
               type,
               attributeValue,
-              localSelectedDataElement
+              selectedDataElement
             );
-            setLocalSelectedDataElement(updatedDataElement);
-            setSelectedDataElement(updatedDataElement);
-            if (onChange) {
-              onChange(updatedDataElement);
-            }
+            updateDataElement(updatedDataElement);
+          }}
+          onDeleteAttributeChip={(deletedChip) => {
+            const updatedDataElement = deleteAttribute(
+              deletedChip,
+              selectedDataElement
+            );
+            updateDataElement(updatedDataElement);
           }}
         />
       )}
@@ -344,21 +283,18 @@ const DataElementsCard = (props: {
             if (selectedCode) {
               const updatedDataElement = applyNegationRationale(
                 selectedCode,
-                localSelectedDataElement
+                selectedDataElement
               );
-              setLocalSelectedDataElement(updatedDataElement);
-              onChange(updatedDataElement);
+              updateDataElement(updatedDataElement);
             }
           }}
-          deleteNegationRationale={(codeId) => {
-            const updatedDataElement = deleteNegationRationale(
-              localSelectedDataElement
-            );
-            setLocalSelectedDataElement(updatedDataElement);
-            onChange(updatedDataElement);
+          deleteNegationRationale={() => {
+            const updatedDataElement =
+              deleteNegationRationale(selectedDataElement);
+            updateDataElement(updatedDataElement);
           }}
           cqmMeasure={cqmMeasure}
-          selectedDataElement={localSelectedDataElement}
+          selectedDataElement={selectedDataElement}
         />
       )}
     </div>
