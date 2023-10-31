@@ -309,7 +309,10 @@ const renderElementsSectionComponent = () => {
             }}
           >
             <QdmPatientProvider>
-              <ElementsSection handleTestCaseErrors={jest.fn()} />
+              <ElementsSection
+                canEdit={true}
+                handleTestCaseErrors={jest.fn()}
+              />
             </QdmPatientProvider>
           </QdmExecutionContextProvider>
         </FormikProvider>

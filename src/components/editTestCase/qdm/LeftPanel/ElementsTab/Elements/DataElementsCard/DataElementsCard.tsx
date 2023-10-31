@@ -99,6 +99,7 @@ const DataElementsCard = (props: {
   setCardActiveTab: Function;
   selectedDataElement: DataElement;
   setSelectedDataElement: Function;
+  canEdit: boolean;
   onChange?: (changedDataElement: DataElement) => void;
 }) => {
   const {
@@ -106,6 +107,7 @@ const DataElementsCard = (props: {
     setCardActiveTab,
     selectedDataElement,
     setSelectedDataElement,
+    canEdit,
     onChange,
   } = props;
   const [codeSystemMap, setCodeSystemMap] = useState(null);
@@ -216,7 +218,7 @@ const DataElementsCard = (props: {
       {/* heading row end */}
       <div className="timing">
         <Timing
-          canEdit={true}
+          canEdit={canEdit}
           onChange={(updatedDataElement) => {
             updateDataElement(updatedDataElement);
           }}
@@ -232,6 +234,7 @@ const DataElementsCard = (props: {
       />
       {cardActiveTab === "codes" && (
         <Codes
+          canEdit={canEdit}
           handleChange={(selectedCode) => {
             const updatedDataElement = applyDataElementCodes(
               selectedCode,
@@ -254,6 +257,7 @@ const DataElementsCard = (props: {
         <AttributeSection
           attributeChipList={displayAttributes}
           selectedDataElement={selectedDataElement}
+          canEdit={canEdit}
           onAddClicked={(attribute, type, attributeValue) => {
             const updatedDataElement = applyAttribute(
               attribute,
@@ -274,6 +278,7 @@ const DataElementsCard = (props: {
       )}
       {cardActiveTab === "negation_rationale" && (
         <NegationRationale
+          canEdit={canEdit}
           handleChange={(selectedCode) => {
             if (selectedCode) {
               const updatedDataElement = applyNegationRationale(

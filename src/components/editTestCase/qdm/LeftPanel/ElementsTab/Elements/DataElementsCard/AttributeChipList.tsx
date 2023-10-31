@@ -5,11 +5,13 @@ import * as _ from "lodash";
 
 interface AttributeChipListProps {
   attributeChipList?: Array<Chip>;
+  canEdit: boolean;
   onDeleteAttributeChip: (deletedChip) => void;
 }
 
 const AttributeChipList = ({
   attributeChipList,
+  canEdit,
   onDeleteAttributeChip,
 }: AttributeChipListProps) => {
   const [chipsToDisplay, setChipsToDisplay] = useState<any>();
@@ -34,6 +36,7 @@ const AttributeChipList = ({
     <div data-testid="attributes-chip-list" className="chip-list">
       {chipsToDisplay?.map(({ text, id }, index) => (
         <AttributeChip
+          canEdit={canEdit}
           text={text}
           key={`${text}-${index}`}
           index={index}
