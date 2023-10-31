@@ -367,6 +367,10 @@ describe("ElementsSection allows card opening and closing", () => {
   beforeEach(() => {
     selectedDataElement = undefined;
   });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
   // need to mock measureStore, and the results from retrieve categories
   const { findByTestId, getByTestId, queryByText, queryByTestId } = screen;
   test("should open and close a data element card manual close selection", async () => {
@@ -382,7 +386,17 @@ describe("ElementsSection allows card opening and closing", () => {
     );
 
     await userEvent.click(adverseEventDataType);
-    expect(setSelectedDataElement).toBeCalled();
+    expect(setSelectedDataElement).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        id: expect.any(String),
+        _type: "QDM::AdverseEvent",
+        hqmfOid: "2.16.840.1.113883.10.20.28.4.120",
+        qdmCategory: "adverse_event",
+        codeListId: "2.16.840.1.113883.3.666.5.307",
+        description: "Adverse Event: Encounter Inpatient",
+      })
+    );
     selectedDataElement = testDataElements[11];
 
     renderElementsSectionComponent(rerender, testDataElements[11]);
@@ -409,7 +423,17 @@ describe("ElementsSection allows card opening and closing", () => {
     );
 
     userEvent.click(adverseEventDataType);
-    expect(setSelectedDataElement).toBeCalled();
+    expect(setSelectedDataElement).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        id: expect.any(String),
+        _type: "QDM::AdverseEvent",
+        hqmfOid: "2.16.840.1.113883.10.20.28.4.120",
+        qdmCategory: "adverse_event",
+        codeListId: "2.16.840.1.113883.3.666.5.307",
+        description: "Adverse Event: Encounter Inpatient",
+      })
+    );
     selectedDataElement = testDataElements[11];
 
     renderElementsSectionComponent(rerender, testDataElements[11]);
@@ -431,7 +455,18 @@ describe("ElementsSection allows card opening and closing", () => {
     );
 
     userEvent.click(deviceDataType);
-    expect(setSelectedDataElement).toBeCalled();
+    expect(setSelectedDataElement).toHaveBeenNthCalledWith(
+      4,
+      expect.objectContaining({
+        id: expect.any(String),
+        qdmTitle: "Device, Order",
+        _type: "QDM::DeviceOrder",
+        hqmfOid: "2.16.840.1.113883.10.20.28.4.15",
+        qdmCategory: "device",
+        codeListId: "2.16.840.1.113883.3.3157.4048",
+        description: "Device, Order: Cardiopulmonary Arrest",
+      })
+    );
     selectedDataElement = testDataElements[14];
 
     renderElementsSectionComponent(rerender, testDataElements[14]);
