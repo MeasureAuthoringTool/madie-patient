@@ -52,8 +52,12 @@ const ElementsSection = (props: {
 
   const checkForMissingDataElements = useCallback(() => {
     const types = {};
-    // skip birthday as type
+    // skip demographics
     types["QDM::PatientCharacteristicBirthdate"] = true;
+    types["QDM::PatientCharacteristicRace"] = true;
+    types["QDM::PatientCharacteristicEthnicity"] = true;
+    types["QDM::PatientCharacteristicSex"] = true;
+    types["QDM::PatientCharacteristicExpired"] = true;
     // compile types from typesfromCQL
     typesFromCql.forEach((item) => {
       types[item] = true;
