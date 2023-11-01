@@ -58,7 +58,6 @@ const DateTimeInput = ({
       attributeName
     );
   };
-
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DateTimeField
