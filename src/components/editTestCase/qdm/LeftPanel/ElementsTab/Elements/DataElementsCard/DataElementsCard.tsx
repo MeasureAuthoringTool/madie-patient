@@ -107,7 +107,7 @@ const DataElementsCard = (props: {
     setCardActiveTab,
     selectedDataElement,
     setSelectedDataElement,
-    canEdit,
+    canEdit=false,
     onChange,
   } = props;
   const [codeSystemMap, setCodeSystemMap] = useState(null);
@@ -279,7 +279,7 @@ const DataElementsCard = (props: {
       {cardActiveTab === "negation_rationale" && (
         <NegationRationale
           //NR needs explicitly false for some reason
-          canEdit={canEdit === true}
+          canEdit={canEdit}
           handleChange={(selectedCode) => {
             if (selectedCode) {
               const updatedDataElement = applyNegationRationale(
