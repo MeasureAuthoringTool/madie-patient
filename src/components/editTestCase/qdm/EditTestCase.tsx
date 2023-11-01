@@ -31,7 +31,11 @@ import { QDMPatientSchemaValidator } from "./QDMPatientSchemaValidator";
 
 import "allotment/dist/style.css";
 import "./EditTestCase.scss";
-import { MadieError, sanitizeUserInput } from "../../../util/Utils";
+import {
+  MadieError,
+  sanitizeUserInput,
+  disableRunTestButtonText,
+} from "../../../util/Utils";
 import * as _ from "lodash";
 import "styled-components/macro";
 import { triggerPopChanges } from "../../../util/PopulationsMap";
@@ -40,7 +44,6 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
 import StatusHandler from "../../statusHandler/StatusHandler";
-import { disableRunTestButtonText } from "../../../util/Utils";
 
 const EditTestCase = () => {
   useDocumentTitle("MADiE Edit Measure Edit Test Case");
