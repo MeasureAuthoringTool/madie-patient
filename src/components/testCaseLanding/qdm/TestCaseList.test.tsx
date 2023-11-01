@@ -25,6 +25,7 @@ import {
   PopulationExpectedValue,
   PopulationType,
   TestCase,
+  AggregateFunctionType,
 } from "@madie/madie-models";
 import useTestCaseServiceApi, {
   TestCaseServiceApi,
@@ -97,6 +98,7 @@ jest.mock("@madie/madie-util", () => ({
   useFeatureFlags: jest.fn().mockImplementation(() => ({
     applyDefaults: false,
     importTestCases: false,
+    disableRunTestCaseWithObservStrat: true,
   })),
 }));
 
@@ -510,6 +512,7 @@ describe("TestCaseList component", () => {
       applyDefaults: false,
       importTestCases: false,
       qdmTestCases: true,
+      disableRunTestCaseWithObservStrat: true,
     }));
     setError.mockClear();
 
@@ -1203,6 +1206,83 @@ describe("TestCaseList component", () => {
     });
 
     await waitFor(() => expect(executeAllTestCasesButton).toBeDisabled());
+  });
+
+  it("Execution button should be disabled for stratifiation", async () => {
+    measure.cqlErrors = false;
+    measure.groups = [
+      {
+        id: "2",
+        scoring: MeasureScoring.COHORT,
+        populationBasis: "boolean",
+        populations: [
+          {
+            id: "id-1",
+            name: PopulationType.INITIAL_POPULATION,
+            definition: "ipp",
+          },
+        ],
+        measureGroupTypes: [],
+        stratifications: [
+          {
+            id: "strata1",
+            cqlDefinition: "strat1Def",
+            association: PopulationType.INITIAL_POPULATION,
+          },
+        ],
+      },
+    ];
+    renderTestCaseListComponent();
+
+    // wait for pop criteria to load
+    await waitFor(() => {
+      const popCriteria1 = screen.getByText("Population Criteria 1");
+      expect(popCriteria1).toBeInTheDocument();
+
+      const executeButton = screen.getByRole("button", {
+        name: "Run Test(s)",
+      });
+      expect(executeButton).toBeDisabled();
+    });
+  });
+
+  it("Execution button should be disabled for observation", async () => {
+    measure.cqlErrors = false;
+    measure.groups = [
+      {
+        id: "2",
+        scoring: MeasureScoring.COHORT,
+        populationBasis: "boolean",
+        populations: [
+          {
+            id: "id-1",
+            name: PopulationType.INITIAL_POPULATION,
+            definition: "ipp",
+          },
+        ],
+        measureGroupTypes: [],
+        measureObservations: [
+          {
+            id: "7e20f14a-3659-4a87-9692-5ec35391e8f6",
+            definition: "boolFunc",
+            criteriaReference: "79349c30-791c-41c7-9463-81872a0dbed1",
+            aggregateMethod: AggregateFunctionType.AVERAGE,
+          },
+        ],
+      },
+    ];
+    renderTestCaseListComponent();
+
+    // wait for pop criteria to load
+    await waitFor(() => {
+      const popCriteria1 = screen.getByText("Population Criteria 1");
+      expect(popCriteria1).toBeInTheDocument();
+
+      const executeButton = screen.getByRole("button", {
+        name: "Run Test(s)",
+      });
+      expect(executeButton).toBeDisabled();
+    });
   });
 });
 

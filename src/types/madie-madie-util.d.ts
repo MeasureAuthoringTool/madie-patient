@@ -18,6 +18,7 @@ declare module "@madie/madie-util" {
     exportQiCoreBundleType: boolean;
     highlightingTabs: boolean;
     disableRunTestCaseWithObservStrat: boolean;
+    qdmHideJson: boolean;
   }
 
   export interface ServiceConfig {

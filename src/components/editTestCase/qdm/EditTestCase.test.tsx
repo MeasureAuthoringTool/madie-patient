@@ -354,6 +354,7 @@ jest.mock("@madie/madie-util", () => ({
     return {
       applyDefaults: mockApplyDefaults,
       disableRunTestCaseWithObservStrat: true,
+      qdmHideJson: false,
     };
   }),
   measureStore: {
@@ -382,7 +383,7 @@ jest.mock("@madie/madie-util", () => ({
   },
 }));
 
-const { findByTestId, findByText } = screen;
+const { findByTestId, findByText, queryByTestId, queryByText } = screen;
 const measure = mockMeasure;
 const setMeasure = jest.fn();
 const setCqmMeasure = jest.fn;
@@ -437,6 +438,22 @@ describe("ElementsTab", () => {
     await waitFor(() => {
       expect(json).toHaveAttribute("aria-selected", "true");
     });
+  });
+
+  test("JSON tab is disabled with feature flag qdmHideJson being true", async () => {
+    CQMConversionMock.mockImplementation(() => {
+      return useCqmConversionServiceMockResolved;
+    });
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => {
+      return {
+        qdmHideJson: true,
+      };
+    });
+    await waitFor(() => renderEditTestCaseComponent());
+    const json = await queryByText("JSON");
+    const elements = await queryByTestId("json-tab");
+    expect(json).not.toBeInTheDocument();
+    expect(elements).not.toBeInTheDocument();
   });
 });
 
