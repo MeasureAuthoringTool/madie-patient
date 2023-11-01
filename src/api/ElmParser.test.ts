@@ -359,5 +359,13 @@ describe("CqmConversionService", () => {
       result.statements[0].children[0].children[0].children[0].children[1]
         .ref_id
     ).toEqual("14");
+
+    expect(
+      result.statements[1].children[0].children[0].children[0].children.length
+    ).toEqual(2);
+    expect(
+      result.statements[1].children[0].children[0].children[0].children[1]
+        .children[0].children.length
+    ).toEqual(3);
   });
 });
