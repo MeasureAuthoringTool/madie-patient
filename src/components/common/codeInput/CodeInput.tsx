@@ -10,10 +10,10 @@ type CodeSystems = {
 };
 
 interface CodeInputProps {
-  canEdit: boolean;
   handleChange: Function;
   valueSets: ValueSet[];
   required: boolean;
+  canEdit?: boolean;
   title?: string;
   type?: string;
 }
@@ -23,7 +23,7 @@ const placeHolder = (label) => (
 );
 
 const CodeInput = ({
-  canEdit,
+  canEdit = true,
   handleChange,
   valueSets,
   required,

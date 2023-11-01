@@ -35,7 +35,7 @@ import { MadieError, sanitizeUserInput } from "../../../util/Utils";
 import * as _ from "lodash";
 import "styled-components/macro";
 import { triggerPopChanges } from "../../../util/PopulationsMap";
-import { QDMPatient } from "cqm-models";
+import { QDMPatient, DataElement } from "cqm-models";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
@@ -93,6 +93,7 @@ const EditTestCase = () => {
   const [qdmExecutionErrors, setQdmExecutionErrors] = useState<Array<string>>(
     []
   );
+  const [selectedDataElement, setSelectedDataElement] = useState<DataElement>();
 
   dayjs.extend(utc);
   dayjs.utc().format(); // utc format
@@ -282,6 +283,7 @@ const EditTestCase = () => {
 
   const discardChanges = () => {
     resetForm();
+    setSelectedDataElement(null);
     setDiscardDialogOpen(false);
   };
 
@@ -320,6 +322,8 @@ const EditTestCase = () => {
                 <LeftPanel
                   canEdit={canEdit}
                   handleTestCaseErrors={handleTestCaseErrors}
+                  selectedDataElement={selectedDataElement}
+                  setSelectedDataElement={setSelectedDataElement}
                 />
               </Allotment.Pane>
               <Allotment.Pane>

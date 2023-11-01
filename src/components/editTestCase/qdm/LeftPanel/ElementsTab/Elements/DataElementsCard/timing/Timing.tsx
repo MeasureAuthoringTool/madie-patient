@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import DateTimeInput from "../../../../../../../common/dateTimeInput/DateTimeInput";
 import DateTimeInterval from "../../../../../../../common/dateTimeInterval/DateTimeInterval";
 import { CQL } from "cqm-models";
@@ -11,10 +11,10 @@ import dayjs from "dayjs";
 import { InputLabel } from "@mui/material";
 import { labelStyle } from "./TimingStyles";
 
-const Timing = ({ canEdit, updateDataElement, selectedDataElement }) => {
+const Timing = ({ canEdit, onChange, selectedDataElement }) => {
   const handleChange = (newValue, attributeName) => {
     selectedDataElement.set(attributeName, newValue);
-    updateDataElement(selectedDataElement);
+    onChange(selectedDataElement);
   };
 
   const dateFormatToDisplay = (date) => {
@@ -55,7 +55,7 @@ const Timing = ({ canEdit, updateDataElement, selectedDataElement }) => {
                 dateTime={selectedDataElement.get(timingAttr.path)}
                 onDateTimeChange={handleChange}
                 attributeName={timingAttr.path}
-              ></DateTimeInput>
+              />
             </div>
           );
         } else if (timingAttr.instance === "Date") {
