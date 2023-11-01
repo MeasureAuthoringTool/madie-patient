@@ -31,7 +31,11 @@ import { QDMPatientSchemaValidator } from "./QDMPatientSchemaValidator";
 
 import "allotment/dist/style.css";
 import "./EditTestCase.scss";
-import { MadieError, sanitizeUserInput } from "../../../util/Utils";
+import {
+  MadieError,
+  sanitizeUserInput,
+  disableRunTestButtonText,
+} from "../../../util/Utils";
 import * as _ from "lodash";
 import "styled-components/macro";
 import { triggerPopChanges } from "../../../util/PopulationsMap";
@@ -408,6 +412,18 @@ const EditTestCase = () => {
               Discard Changes
             </Button>
           </div>
+          {hasObservationOrStratification && (
+            <div
+              style={{
+                textAlign: "center",
+                color: "grey",
+                fontSize: "14px",
+                paddingBottom: "30px",
+              }}
+            >
+              {disableRunTestButtonText}
+            </div>
+          )}
           {/* outside flow of page */}
           <Toast
             toastKey="edit-action-toast"
