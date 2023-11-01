@@ -397,7 +397,6 @@ describe("ElementsSection allows card opening and closing", () => {
         description: "Adverse Event: Encounter Inpatient",
       })
     );
-    selectedDataElement = testDataElements[11];
 
     renderElementsSectionComponent(rerender, testDataElements[11]);
     await findByTestId("data-element-card");
@@ -434,7 +433,6 @@ describe("ElementsSection allows card opening and closing", () => {
         description: "Adverse Event: Encounter Inpatient",
       })
     );
-    selectedDataElement = testDataElements[11];
 
     renderElementsSectionComponent(rerender, testDataElements[11]);
     expect(getByTestId("data-element-card")).toBeInTheDocument();
@@ -467,7 +465,6 @@ describe("ElementsSection allows card opening and closing", () => {
         description: "Device, Order: Cardiopulmonary Arrest",
       })
     );
-    selectedDataElement = testDataElements[14];
 
     renderElementsSectionComponent(rerender, testDataElements[14]);
     await waitFor(() => {
