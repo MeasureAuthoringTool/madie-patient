@@ -40,6 +40,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
 import StatusHandler from "../../statusHandler/StatusHandler";
+import { disableRunTestButtonText } from "../../../util/Utils";
 
 const EditTestCase = () => {
   useDocumentTitle("MADiE Edit Measure Edit Test Case");
@@ -417,9 +418,7 @@ const EditTestCase = () => {
                 paddingBottom: "30px",
               }}
             >
-              Execution of test case against Population Criteria that contain
-              Stratifications or Measure Observations is NOT supported at this
-              time
+              {disableRunTestButtonText}
             </div>
           )}
           {/* outside flow of page */}

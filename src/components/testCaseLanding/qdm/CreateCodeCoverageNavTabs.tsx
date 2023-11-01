@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Tabs, Tab } from "@madie/madie-design-system/dist/react";
 import AddIcon from "@mui/icons-material/Add";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
@@ -15,6 +15,7 @@ import { TestCasesPassingDetailsProps } from "../common/interfaces";
 import { useFeatureFlags } from "@madie/madie-util";
 import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
 import RunTestButton from "../common/runTestsButton/RunTestsButton";
+import { disableRunTestButtonText } from "../../../util/Utils";
 
 export interface NavTabProps {
   activeTab: string;
@@ -62,22 +63,24 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
   } = props;
 
   const featureFlags = useFeatureFlags();
-
-  const shouldDisableRunTestsButton = () => {
+  const [shouldDisableRunTestsButton, setShouldDisableRunTestsButton] =
+    useState(false);
+  useEffect(() => {
     if (featureFlags?.disableRunTestCaseWithObservStrat) {
-      const measureObservations: MeasureObservation[] =
-        selectedPopCriteria?.measureObservations;
-      const measureStratifications: Stratification[] =
-        selectedPopCriteria?.stratifications;
-      if (
-        (measureObservations && measureObservations.length > 0) ||
-        (measureStratifications && measureStratifications.length > 0)
-      ) {
-        return true;
-      }
+      const groups: Group[] = measure?.groups;
+      groups?.forEach((group) => {
+        const measureObservations: MeasureObservation[] =
+          group?.measureObservations;
+        const measureStratifications: Stratification[] = group?.stratifications;
+        if (
+          (measureObservations && measureObservations.length > 0) ||
+          (measureStratifications && measureStratifications.length > 0)
+        ) {
+          setShouldDisableRunTestsButton(true);
+        }
+      });
     }
-    return false;
-  };
+  }, [measure, measure?.groups]);
 
   const executionResultsDisplayTemplate = (label) => {
     const codeCoverage = executeAllTestCases ? coveragePercentage : "-";
@@ -181,15 +184,13 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
             hasErrors={hasErrors}
             isExecutionContextReady={executionContextReady}
             onRunTests={executeTestCases}
-            //measure={measure}
-            shouldDisableRunTestsButton={shouldDisableRunTestsButton()}
+            shouldDisableRunTestsButton={shouldDisableRunTestsButton}
           />
         </div>
       </div>
-      {shouldDisableRunTestsButton() && (
+      {shouldDisableRunTestsButton && (
         <div style={{ textAlign: "right", color: "grey", fontSize: "9px" }}>
-          Execution of test cases against Population Criteria that contain
-          Stratifications or Measure Observations is NOT supported at this time
+          {disableRunTestButtonText}
         </div>
       )}
     </>
