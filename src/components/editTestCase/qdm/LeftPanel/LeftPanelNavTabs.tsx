@@ -10,12 +10,6 @@ export interface NavTabProps {
 export default function RightPanelNavTabs(props: NavTabProps) {
   const { activeTab, setActiveTab } = props;
   const featureFlags = useFeatureFlags();
-  const [qdmHidJsonTab, setQdmHidJsonTab] = useState(false);
-  useEffect(() => {
-    if (featureFlags?.qdmHideJson) {
-      setQdmHidJsonTab(true);
-    }
-  });
 
   return (
     <Tabs
@@ -34,7 +28,7 @@ export default function RightPanelNavTabs(props: NavTabProps) {
         data-testid="elements-tab"
         value="elements"
       />
-      {!qdmHidJsonTab && (
+      {!featureFlags?.qdmHideJson && (
         <Tab
           tabIndex={0}
           aria-label="JSON tab panel"
