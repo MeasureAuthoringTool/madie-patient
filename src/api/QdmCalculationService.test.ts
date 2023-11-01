@@ -18,6 +18,7 @@ import { ExecutionStatusType } from "./CalculationService";
 import {
   CV_EPISODE_WITH_OBS_RESULTS,
   CV_PATIENT_WITH_OBS_RESULTS,
+  RATIO_EPISODEBASED_WITH_OBS_RESULTS,
   RATIO_PATIENTBASED_WITH_OBS_RESULTS,
 } from "./__mocks__/QdmTestCaseProcessingScenarios";
 
@@ -1167,114 +1168,238 @@ describe("QDM CalculationService Tests", () => {
 
       expect(output.executionStatus).toEqual(ExecutionStatusType.PASS);
     });
+
+    it("should return testCase with actual values passing for patientBasis Ratio", () => {
+      const output = calculationService.processTestCaseResults(
+        RATIO_PATIENTBASED_WITH_OBS_RESULTS.testCase,
+        RATIO_PATIENTBASED_WITH_OBS_RESULTS.measureGroups,
+        RATIO_PATIENTBASED_WITH_OBS_RESULTS.measure,
+        RATIO_PATIENTBASED_WITH_OBS_RESULTS.patientResults
+      );
+      expect(output).toBeTruthy();
+      expect(output.groupPopulations).toBeTruthy();
+
+      expect(output.groupPopulations[0].populationValues).toBeTruthy();
+      expect(output.groupPopulations[0].populationValues.length).toEqual(5);
+
+      expect(output.groupPopulations[0].populationValues[0].name).toEqual(
+        PopulationType.INITIAL_POPULATION
+      );
+      expect(output.groupPopulations[0].populationValues[0].actual).toBe(true);
+
+      expect(output.groupPopulations[0].populationValues[1].actual).toBe(true);
+
+      expect(output.groupPopulations[0].populationValues[2].name).toEqual(
+        PopulationType.DENOMINATOR
+      );
+
+      expect(output.groupPopulations[0].populationValues[4].name).toEqual(
+        PopulationType.NUMERATOR_OBSERVATION
+      );
+
+      expect(output.groupPopulations[0].populationValues[4].actual).toBe(12);
+    });
+
+    it("should return testCase with actual values passing for episode Ratio", () => {
+      const output = calculationService.processTestCaseResults(
+        {
+          ...RATIO_EPISODEBASED_WITH_OBS_RESULTS.testCase,
+          groupPopulations: [
+            {
+              ...RATIO_EPISODEBASED_WITH_OBS_RESULTS.testCase
+                .groupPopulations[0],
+            },
+            {
+              ...RATIO_EPISODEBASED_WITH_OBS_RESULTS.testCase
+                .groupPopulations[1],
+            },
+          ],
+        },
+        [
+          { ...RATIO_EPISODEBASED_WITH_OBS_RESULTS.measureGroups[0] },
+          { ...RATIO_EPISODEBASED_WITH_OBS_RESULTS.measureGroups[1] },
+        ],
+        {
+          ...RATIO_EPISODEBASED_WITH_OBS_RESULTS.measure,
+          groups: [
+            { ...RATIO_EPISODEBASED_WITH_OBS_RESULTS.measure.groups[0] },
+            { ...RATIO_EPISODEBASED_WITH_OBS_RESULTS.measure.groups[1] },
+          ],
+        },
+        RATIO_EPISODEBASED_WITH_OBS_RESULTS.patientResults
+      );
+
+      expect(output).toBeTruthy();
+      expect(output.groupPopulations).toBeTruthy();
+      expect(output.groupPopulations.length).toEqual(2);
+
+      expect(output.groupPopulations[0].populationValues).toBeTruthy();
+      expect(output.groupPopulations[0].populationValues.length).toEqual(7);
+      expect(output.groupPopulations[1].populationValues).toBeTruthy();
+      expect(output.groupPopulations[1].populationValues.length).toEqual(6);
+
+      expect(output.groupPopulations[0].populationValues[0]).toBeTruthy();
+      expect(output.groupPopulations[0].populationValues[0].name).toEqual(
+        PopulationType.INITIAL_POPULATION
+      );
+      expect(output.groupPopulations[0].populationValues[1].name).toEqual(
+        PopulationType.DENOMINATOR
+      );
+      expect(output.groupPopulations[0].populationValues[2].name).toEqual(
+        PopulationType.DENOMINATOR_OBSERVATION
+      );
+      expect(output.groupPopulations[0].populationValues[3].name).toEqual(
+        PopulationType.DENOMINATOR_OBSERVATION
+      );
+      expect(output.groupPopulations[0].populationValues[4].name).toEqual(
+        PopulationType.DENOMINATOR_EXCLUSION
+      );
+      expect(output.groupPopulations[0].populationValues[5].name).toEqual(
+        PopulationType.NUMERATOR
+      );
+      expect(output.groupPopulations[0].populationValues[6].name).toEqual(
+        PopulationType.NUMERATOR_OBSERVATION
+      );
+
+      expect(output.executionStatus).toEqual(ExecutionStatusType.PASS);
+    });
+
+    it("should return testCase with actual values failing for episode Ratio", () => {
+      const output = calculationService.processTestCaseResults(
+        RATIO_EPISODEBASED_WITH_OBS_RESULTS.testCase,
+        RATIO_EPISODEBASED_WITH_OBS_RESULTS.measureGroups,
+        RATIO_EPISODEBASED_WITH_OBS_RESULTS.measure,
+        RATIO_EPISODEBASED_WITH_OBS_RESULTS.patientResults
+      );
+
+      expect(output).toBeTruthy();
+      expect(output.groupPopulations).toBeTruthy();
+      expect(output.groupPopulations.length).toEqual(3);
+
+      expect(output.groupPopulations[0].populationValues).toBeTruthy();
+      expect(output.groupPopulations[0].populationValues.length).toEqual(7);
+      expect(output.groupPopulations[1].populationValues).toBeTruthy();
+      expect(output.groupPopulations[1].populationValues.length).toEqual(6);
+      expect(output.groupPopulations[2].populationValues).toBeTruthy();
+      expect(output.groupPopulations[2].populationValues.length).toEqual(10);
+
+      expect(output.groupPopulations[2].populationValues[0]).toBeTruthy();
+      expect(output.groupPopulations[2].populationValues[0].name).toEqual(
+        PopulationType.INITIAL_POPULATION
+      );
+      expect(output.groupPopulations[2].populationValues[1].name).toEqual(
+        PopulationType.DENOMINATOR
+      );
+      expect(output.groupPopulations[2].populationValues[2].name).toEqual(
+        PopulationType.DENOMINATOR_OBSERVATION
+      );
+      expect(output.groupPopulations[2].populationValues[3].name).toEqual(
+        PopulationType.DENOMINATOR_OBSERVATION
+      );
+      expect(output.groupPopulations[2].populationValues[4].name).toEqual(
+        PopulationType.DENOMINATOR_OBSERVATION
+      );
+      expect(output.groupPopulations[2].populationValues[5].name).toEqual(
+        PopulationType.DENOMINATOR_OBSERVATION
+      );
+      expect(output.groupPopulations[2].populationValues[6].name).toEqual(
+        PopulationType.NUMERATOR
+      );
+      expect(output.groupPopulations[2].populationValues[7].name).toEqual(
+        PopulationType.NUMERATOR_OBSERVATION
+      );
+      expect(output.groupPopulations[2].populationValues[8].name).toEqual(
+        PopulationType.NUMERATOR_OBSERVATION
+      );
+      expect(output.groupPopulations[2].populationValues[9].name).toEqual(
+        PopulationType.NUMERATOR_OBSERVATION
+      );
+      expect(output.groupPopulations[2].populationValues[9].expected).toEqual(
+        0
+      );
+      expect(output.groupPopulations[2].populationValues[9].actual).toEqual(6);
+
+      expect(output.executionStatus).toEqual(ExecutionStatusType.FAIL);
+    });
   });
 
-  it("should return testCase with actual values passing for patientBasis Ratio", () => {
-    const output = calculationService.processTestCaseResults(
-      RATIO_PATIENTBASED_WITH_OBS_RESULTS.testCase,
-      RATIO_PATIENTBASED_WITH_OBS_RESULTS.measureGroups,
-      RATIO_PATIENTBASED_WITH_OBS_RESULTS.measure,
-      RATIO_PATIENTBASED_WITH_OBS_RESULTS.patientResults
-    );
-    expect(output).toBeTruthy();
-    expect(output.groupPopulations).toBeTruthy();
+  describe("mapPatientBasedObservations", () => {
+    it("mapping QDM patient based observation actual results when denom is 1 and denex is 0", () => {
+      const populationGroup = {
+        id: "denominatorObservation0",
+        name: "denominatorObservation",
+        expected: "10",
+      };
+      const denominatorObservationActualValue =
+        calculationService.mapPatientBasedObservations(
+          populationGroup,
+          actualCalculationResults
+        );
+      expect(denominatorObservationActualValue).toBe(10);
+    });
 
-    expect(output.groupPopulations[0].populationValues).toBeTruthy();
-    expect(output.groupPopulations[0].populationValues.length).toEqual(5);
+    it("mapping QDM patient based observation actual results when (denom is 1 and denex is 1) or when denom is 0", () => {
+      const populationGroup = {
+        id: "denominatorObservation0",
+        name: "denominatorObservation",
+        expected: "10",
+      };
 
-    expect(output.groupPopulations[0].populationValues[0].name).toEqual(
-      PopulationType.INITIAL_POPULATION
-    );
-    expect(output.groupPopulations[0].populationValues[0].actual).toBe(true);
+      actualCalculationResults.DENEX = 1;
+      const denominatorObservationActualValueWithExclusion =
+        calculationService.mapPatientBasedObservations(
+          populationGroup,
+          actualCalculationResults
+        );
+      expect(denominatorObservationActualValueWithExclusion).toBe("NA");
 
-    expect(output.groupPopulations[0].populationValues[1].actual).toBe(true);
+      actualCalculationResults.DENOM = 1;
+      const denominatorObservationActualValue =
+        calculationService.mapPatientBasedObservations(
+          populationGroup,
+          actualCalculationResults
+        );
+      expect(denominatorObservationActualValue).toBe("NA");
+    });
 
-    expect(output.groupPopulations[0].populationValues[2].name).toEqual(
-      PopulationType.DENOMINATOR
-    );
+    it("mapping QDM patient based observation actual results when numer is 1 and numex is 0", () => {
+      const populationGroup = {
+        id: "numeratorObservation0",
+        name: "numeratorObservation",
+        expected: "12",
+      };
 
-    expect(output.groupPopulations[0].populationValues[4].name).toEqual(
-      PopulationType.NUMERATOR_OBSERVATION
-    );
+      const numeratorObservationActualValue =
+        calculationService.mapPatientBasedObservations(
+          populationGroup,
+          actualCalculationResults
+        );
+      expect(numeratorObservationActualValue).toBe(12);
+    });
 
-    expect(output.groupPopulations[0].populationValues[4].actual).toBe(12);
-  });
+    it("mapping QDM patient based observation actual results when (numer is 1 and numex is 1) or when numer is 0", () => {
+      const populationGroup = {
+        id: "numeratorObservation0",
+        name: "numeratorObservation",
+        expected: "12",
+      };
 
-  it("mapping QDM patient based observation actual results when denom is 1 and denex is 0", () => {
-    const populationGroup = {
-      id: "denominatorObservation0",
-      name: "denominatorObservation",
-      expected: "10",
-    };
-    const denominatorObservationActualValue =
-      calculationService.mapPatientBasedObservations(
-        populationGroup,
-        actualCalculationResults
-      );
-    expect(denominatorObservationActualValue).toBe(10);
-  });
+      actualCalculationResults.NUMEX = 1;
+      const numeratorObservationActualValueWithExclusion =
+        calculationService.mapPatientBasedObservations(
+          populationGroup,
+          actualCalculationResults
+        );
+      expect(numeratorObservationActualValueWithExclusion).toBe("NA");
 
-  it("mapping QDM patient based observation actual results when (denom is 1 and denex is 1) or when denom is 0", () => {
-    const populationGroup = {
-      id: "denominatorObservation0",
-      name: "denominatorObservation",
-      expected: "10",
-    };
-
-    actualCalculationResults.DENEX = 1;
-    const denominatorObservationActualValueWithExclusion =
-      calculationService.mapPatientBasedObservations(
-        populationGroup,
-        actualCalculationResults
-      );
-    expect(denominatorObservationActualValueWithExclusion).toBe("NA");
-
-    actualCalculationResults.DENOM = 1;
-    const denominatorObservationActualValue =
-      calculationService.mapPatientBasedObservations(
-        populationGroup,
-        actualCalculationResults
-      );
-    expect(denominatorObservationActualValue).toBe("NA");
-  });
-
-  it("mapping QDM patient based observation actual results when numer is 1 and numex is 0", () => {
-    const populationGroup = {
-      id: "numeratorObservation0",
-      name: "numeratorObservation",
-      expected: "12",
-    };
-
-    const numeratorObservationActualValue =
-      calculationService.mapPatientBasedObservations(
-        populationGroup,
-        actualCalculationResults
-      );
-    expect(numeratorObservationActualValue).toBe(12);
-  });
-
-  it("mapping QDM patient based observation actual results when (numer is 1 and numex is 1) or when numer is 0", () => {
-    const populationGroup = {
-      id: "numeratorObservation0",
-      name: "numeratorObservation",
-      expected: "12",
-    };
-
-    actualCalculationResults.NUMEX = 1;
-    const numeratorObservationActualValueWithExclusion =
-      calculationService.mapPatientBasedObservations(
-        populationGroup,
-        actualCalculationResults
-      );
-    expect(numeratorObservationActualValueWithExclusion).toBe("NA");
-
-    actualCalculationResults.NUMER = 1;
-    const numeratorObservationActualValue =
-      calculationService.mapPatientBasedObservations(
-        populationGroup,
-        actualCalculationResults
-      );
-    expect(numeratorObservationActualValue).toBe("NA");
+      actualCalculationResults.NUMER = 1;
+      const numeratorObservationActualValue =
+        calculationService.mapPatientBasedObservations(
+          populationGroup,
+          actualCalculationResults
+        );
+      expect(numeratorObservationActualValue).toBe("NA");
+    });
   });
 
   describe("hook", () => {

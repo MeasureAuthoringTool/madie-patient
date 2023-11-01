@@ -157,6 +157,50 @@ export class QdmCalculationService {
     }
   };
 
+  getEpisodeObservationResult(
+    population: any,
+    episodeResults: any,
+    targetIndex: any
+  ): number | undefined {
+    let counter = 0;
+    // find the next episode for the current target population
+    for (const episodeId in episodeResults) {
+      let result = undefined;
+      const episode = episodeResults[episodeId];
+      if (
+        population.name === PopulationType.DENOMINATOR_OBSERVATION &&
+        episode.DENOM === 1 &&
+        episode.DENEX === 0
+      ) {
+        result = episode?.observation_values?.[0];
+      } else if (
+        population.name === PopulationType.NUMERATOR_OBSERVATION &&
+        episode.NUMER === 1 &&
+        episode.NUMEX === 0
+      ) {
+        result =
+          episode?.observation_values?.length > 1
+            ? episode?.observation_values?.[1]
+            : episode?.observation_values?.[0];
+      } else if (
+        (population.name === PopulationType.MEASURE_POPULATION_OBSERVATION ||
+          population.name === PopulationType.MEASURE_OBSERVATION) &&
+        episode.MSRPOPL === 1 &&
+        episode.MSRPOPLEX === 0
+      ) {
+        result = episode?.observation_values?.[0];
+      }
+
+      if (result && counter === targetIndex) {
+        return result;
+      } else if (result) {
+        counter++;
+      }
+    }
+
+    return undefined;
+  }
+
   processTestCaseResults(
     testCase: TestCase,
     measureGroups: Group[],
@@ -198,6 +242,7 @@ export class QdmCalculationService {
 
       updatedTestCase.groupPopulations.forEach((groupPop, gpIndex) => {
         let obsCount = 0;
+        let obsTracker = {};
         if (groupPop.groupId === groupId) {
           groupPop.populationValues.forEach((population) => {
             if (isTestCasePopulationObservation(population)) {
@@ -211,7 +256,15 @@ export class QdmCalculationService {
                   population.actual = results?.observation_values?.[0];
                 }
               } else if (obsCount < results?.observation_values?.length) {
-                population.actual = results?.observation_values?.[obsCount];
+                const obsResult = this.getEpisodeObservationResult(
+                  population,
+                  results.episode_results,
+                  obsTracker[population.name] ?? 0
+                );
+                if (!_.isNil(obsResult)) {
+                  population.actual = obsResult;
+                  obsTracker[population.name] = obsTracker[population.name] + 1;
+                }
               }
               obsCount++;
             } else {
