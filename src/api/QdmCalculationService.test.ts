@@ -1395,7 +1395,7 @@ describe("QDM CalculationService Tests", () => {
           DENOM: 1,
           DENEX: 0,
           NUMER: 1,
-          NUMEX:0,
+          NUMEX: 0,
           observation_values: [3, 8],
         },
       };
