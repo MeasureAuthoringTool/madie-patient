@@ -158,9 +158,9 @@ export class QdmCalculationService {
   };
 
   getEpisodeObservationResult(
-    population: any,
+    population: PopulationExpectedValue,
     episodeResults: any,
-    targetIndex: any
+    targetIndex: number
   ): number | undefined {
     let counter = 0;
     // find the next episode for the current target population
@@ -263,7 +263,8 @@ export class QdmCalculationService {
                 );
                 if (!_.isNil(obsResult)) {
                   population.actual = obsResult;
-                  obsTracker[population.name] = obsTracker[population.name] + 1;
+                  obsTracker[population.name] =
+                    (obsTracker[population.name] ?? 0) + 1;
                 }
               }
               obsCount++;

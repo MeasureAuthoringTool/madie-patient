@@ -1323,6 +1323,195 @@ describe("QDM CalculationService Tests", () => {
     });
   });
 
+  describe("getEpisodeObservationResult", () => {
+    it("should return undefined for no episode results", () => {
+      const population = {
+        id: "pop1",
+        name: PopulationType.DENOMINATOR_OBSERVATION,
+        expected: 2,
+      } as unknown as PopulationExpectedValue;
+      const episodeResults = {};
+
+      const output = calculationService.getEpisodeObservationResult(
+        population,
+        episodeResults,
+        0
+      );
+
+      expect(output).toBeFalsy();
+    });
+
+    it("should return first observation result for denominator obs", () => {
+      const population = {
+        id: "pop1",
+        name: PopulationType.DENOMINATOR_OBSERVATION,
+        expected: 2,
+      } as unknown as PopulationExpectedValue;
+      const episodeResults = {
+        "6540f0cad9f99000000a50d5": {
+          IPP: 1,
+          DENOM: 1,
+          DENEX: 0,
+          NUMER: 1,
+          NUMEX: 0,
+          observation_values: [2, 5],
+        },
+        "654275f7fb870d00005a0a35": {
+          IPP: 1,
+          DENOM: 1,
+          DENEX: 0,
+          NUMER: 1,
+          NUMEX: 0,
+          observation_values: [],
+        },
+      };
+
+      const output = calculationService.getEpisodeObservationResult(
+        population,
+        episodeResults,
+        0
+      );
+
+      expect(output).toEqual(2);
+    });
+
+    it("should return second observation result for denominator obs", () => {
+      const population = {
+        id: "pop1",
+        name: PopulationType.DENOMINATOR_OBSERVATION,
+        expected: 2,
+      } as unknown as PopulationExpectedValue;
+      const episodeResults = {
+        "6540f0cad9f99000000a50d5": {
+          IPP: 1,
+          DENOM: 1,
+          DENEX: 0,
+          NUMER: 1,
+          NUMEX: 0,
+          observation_values: [2, 5],
+        },
+        "654275f7fb870d00005a0a35": {
+          IPP: 1,
+          DENOM: 1,
+          DENEX: 0,
+          NUMER: 1,
+          NUMEX:0,
+          observation_values: [3, 8],
+        },
+      };
+
+      const output = calculationService.getEpisodeObservationResult(
+        population,
+        episodeResults,
+        1
+      );
+
+      expect(output).toEqual(3);
+    });
+
+    it("should skip first observation result for denex", () => {
+      const population = {
+        id: "pop1",
+        name: PopulationType.DENOMINATOR_OBSERVATION,
+        expected: 2,
+      } as unknown as PopulationExpectedValue;
+      const episodeResults = {
+        "6540f0cad9f99000000a50d5": {
+          IPP: 1,
+          DENOM: 1,
+          DENEX: 1,
+          NUMER: 1,
+          NUMEX: 0,
+          observation_values: [0, 5],
+        },
+        "654275f7fb870d00005a0a35": {
+          IPP: 1,
+          DENOM: 1,
+          DENEX: 0,
+          NUMER: 1,
+          NUMEX: 0,
+          observation_values: [3, 8],
+        },
+      };
+
+      const output = calculationService.getEpisodeObservationResult(
+        population,
+        episodeResults,
+        0
+      );
+
+      expect(output).toEqual(3);
+    });
+
+    it("should return first numerator for numerator obs", () => {
+      const population = {
+        id: "pop1",
+        name: PopulationType.NUMERATOR_OBSERVATION,
+        expected: 2,
+      } as unknown as PopulationExpectedValue;
+      const episodeResults = {
+        "6540f0cad9f99000000a50d5": {
+          IPP: 1,
+          DENOM: 1,
+          DENEX: 0,
+          NUMER: 1,
+          NUMEX: 0,
+          observation_values: [2, 5],
+        },
+        "654275f7fb870d00005a0a35": {
+          IPP: 1,
+          DENOM: 1,
+          DENEX: 0,
+          NUMER: 1,
+          NUMEX: 0,
+          observation_values: [3, 8],
+        },
+      };
+
+      const output = calculationService.getEpisodeObservationResult(
+        population,
+        episodeResults,
+        0
+      );
+
+      expect(output).toEqual(5);
+    });
+
+    it("should return first numerator for numerator obs without denom obs", () => {
+      const population = {
+        id: "pop1",
+        name: PopulationType.NUMERATOR_OBSERVATION,
+        expected: 2,
+      } as unknown as PopulationExpectedValue;
+      const episodeResults = {
+        "6540f0cad9f99000000a50d5": {
+          IPP: 1,
+          DENOM: 1,
+          DENEX: 0,
+          NUMER: 1,
+          NUMEX: 0,
+          observation_values: [5],
+        },
+        "654275f7fb870d00005a0a35": {
+          IPP: 1,
+          DENOM: 1,
+          DENEX: 0,
+          NUMER: 1,
+          NUMEX: 0,
+          observation_values: [8],
+        },
+      };
+
+      const output = calculationService.getEpisodeObservationResult(
+        population,
+        episodeResults,
+        0
+      );
+
+      expect(output).toEqual(5);
+    });
+  });
+
   describe("mapPatientBasedObservations", () => {
     it("mapping QDM patient based observation actual results when denom is 1 and denex is 0", () => {
       const populationGroup = {
