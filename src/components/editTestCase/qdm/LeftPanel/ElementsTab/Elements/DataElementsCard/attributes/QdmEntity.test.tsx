@@ -246,7 +246,7 @@ describe("QdmEntity Component", () => {
     ).toBeTruthy();
     userEvent.paste(
       screen.getByRole("textbox", {
-        name: "Value Set / Direct Reference Code",
+        name: "Naming System",
       }),
       "ValueSet"
     );

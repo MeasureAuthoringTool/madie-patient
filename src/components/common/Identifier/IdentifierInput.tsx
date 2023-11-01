@@ -16,7 +16,7 @@ export interface IdentifierProps {
 const IdentifierInput = ({
   onIdentifierChange,
   canEdit,
-  namingLabel = "Value Set / Direct Reference Code",
+  namingLabel = "Naming System",
   namingPlaceholder = "Naming System",
   valueLabel = "Value",
   //idenfifier is an object of {namingSystem,value}
