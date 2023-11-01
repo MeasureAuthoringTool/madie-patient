@@ -107,7 +107,7 @@ const DataElementsCard = (props: {
     setCardActiveTab,
     selectedDataElement,
     setSelectedDataElement,
-    canEdit,
+    canEdit = false,
     onChange,
   } = props;
   const [codeSystemMap, setCodeSystemMap] = useState(null);
