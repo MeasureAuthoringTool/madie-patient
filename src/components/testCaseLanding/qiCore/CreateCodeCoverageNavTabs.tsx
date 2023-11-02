@@ -188,7 +188,6 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           hasErrors={hasErrors}
           isExecutionContextReady={executionContextReady}
           onRunTests={executeTestCases}
-          measure={measure}
         />
         <Button
           variant={featureFlags?.exportQiCoreBundleType ? "outline" : "filled"}

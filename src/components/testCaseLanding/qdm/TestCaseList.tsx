@@ -356,6 +356,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                 testCasePassFailStats={testCasePassFailStats}
                 coveragePercentage={coveragePercentage}
                 validTestCases={testCases?.filter((tc) => tc.validResource)}
+                selectedPopCriteria={selectedPopCriteria}
               />
             </div>
             <CreateNewTestCaseDialog open={createOpen} onClose={handleClose} />

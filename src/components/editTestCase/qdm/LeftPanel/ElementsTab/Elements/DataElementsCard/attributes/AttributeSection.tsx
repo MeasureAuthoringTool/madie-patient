@@ -10,15 +10,19 @@ import { useFormik } from "formik";
 import DisplayAttributeInputs from "./DisplayAttributeInputs";
 import AttributeChipList from "../AttributeChipList";
 
-interface Chip {
-  title: String;
+export interface Chip {
+  title?: String;
   name?: String;
   value?: String;
+  additionalElements?: Array<Chip>;
+  isMultiple?: boolean;
+  id?: string;
 }
 interface AttributeSectionProps {
   selectedDataElement: DataElement;
   onAddClicked?: (attribute, type, attributeValue) => void;
   attributeChipList?: Array<Chip>;
+  canEdit: boolean;
   onDeleteAttributeChip?: (deletedChip) => void;
 }
 
@@ -26,11 +30,9 @@ const AttributeSection = ({
   attributeChipList = [],
   selectedDataElement,
   onAddClicked,
+  canEdit,
   onDeleteAttributeChip,
 }: AttributeSectionProps) => {
-  const mappedAttributeList = attributeChipList.map((chip, index) => ({
-    text: `${chip.title}: ${chip.value}`,
-  }));
   const [attributes, setAttributes] = useState([]);
   const [types, setTypes] = useState([]);
 
@@ -97,7 +99,7 @@ const AttributeSection = ({
   return (
     <form id="add-attribute-form" onSubmit={formik.handleSubmit}>
       <AttributeSelector
-        canEdit={true}
+        canEdit={canEdit}
         attributeProps={{
           label: "Attribute",
           options: attributes.map((attr) => attr.displayName),
@@ -113,13 +115,16 @@ const AttributeSection = ({
           disabled: _.isEmpty(types),
         }}
       />
-      <DisplayAttributeInputs
-        selectedDataElement={selectedDataElement}
-        attributeType={formik.values.type}
-        onInputAdd={onInputAdd}
-      />
+      {canEdit && (
+        <DisplayAttributeInputs
+          selectedDataElement={selectedDataElement}
+          attributeType={formik.values.type}
+          onInputAdd={onInputAdd}
+        />
+      )}
       <AttributeChipList
-        items={mappedAttributeList}
+        attributeChipList={attributeChipList}
+        canEdit={canEdit}
         onDeleteAttributeChip={onDeleteAttributeChip}
       />
     </form>

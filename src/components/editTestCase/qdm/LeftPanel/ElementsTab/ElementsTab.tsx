@@ -7,13 +7,20 @@ import {
 } from "../../../../../util/QdmPatientContext";
 import { useFormikContext } from "formik";
 import * as _ from "lodash";
-import { QDMPatient } from "cqm-models";
+import { QDMPatient, DataElement } from "cqm-models";
 
 const ElementsTab = (props: {
   canEdit: boolean;
   handleTestCaseErrors: Function;
+  selectedDataElement: DataElement;
+  setSelectedDataElement: Function;
 }) => {
-  const { canEdit, handleTestCaseErrors } = props;
+  const {
+    canEdit,
+    handleTestCaseErrors,
+    selectedDataElement,
+    setSelectedDataElement,
+  } = props;
   const { state, dispatch } = useQdmPatient();
   const formik: any = useFormikContext();
   const lastJsonRef = useRef(null);
@@ -44,7 +51,12 @@ const ElementsTab = (props: {
   return (
     <>
       <DemographicsSection canEdit={canEdit} />
-      <ElementsSection handleTestCaseErrors={handleTestCaseErrors} />
+      <ElementsSection
+        handleTestCaseErrors={handleTestCaseErrors}
+        canEdit={canEdit}
+        selectedDataElement={selectedDataElement}
+        setSelectedDataElement={setSelectedDataElement}
+      />
     </>
   );
 };

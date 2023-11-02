@@ -1,13 +1,21 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Tabs, Tab } from "@madie/madie-design-system/dist/react";
 import AddIcon from "@mui/icons-material/Add";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import * as _ from "lodash";
-import { Measure, MeasureErrorType, TestCase } from "@madie/madie-models";
+import {
+  Measure,
+  MeasureErrorType,
+  TestCase,
+  Group,
+  MeasureObservation,
+  Stratification,
+} from "@madie/madie-models";
 import { TestCasesPassingDetailsProps } from "../common/interfaces";
 import { useFeatureFlags } from "@madie/madie-util";
 import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
 import RunTestButton from "../common/runTestsButton/RunTestsButton";
+import { disableRunTestButtonText } from "../../../util/Utils";
 
 export interface NavTabProps {
   activeTab: string;
@@ -21,6 +29,7 @@ export interface NavTabProps {
   testCasePassFailStats: TestCasesPassingDetailsProps;
   coveragePercentage: number;
   validTestCases: TestCase[];
+  selectedPopCriteria: Group;
 }
 
 const defaultStyle = {
@@ -50,9 +59,35 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     testCasePassFailStats,
     coveragePercentage,
     validTestCases,
+    selectedPopCriteria,
   } = props;
 
   const featureFlags = useFeatureFlags();
+  const [shouldDisableRunTestsButton, setShouldDisableRunTestsButton] =
+    useState(false);
+  useEffect(() => {
+    if (featureFlags?.disableRunTestCaseWithObservStrat) {
+      const groups: Group[] = measure?.groups;
+      groups?.forEach((group) => {
+        const measureObservations: MeasureObservation[] =
+          group?.measureObservations;
+        const measureStratifications: Stratification[] = group?.stratifications;
+        if (
+          (measureObservations && measureObservations.length > 0) ||
+          (measureStratifications && measureStratifications.length > 0)
+        ) {
+          setShouldDisableRunTestsButton(true);
+        }
+      });
+    } else {
+      setShouldDisableRunTestsButton(false);
+    }
+  }, [
+    measure,
+    measure?.groups,
+    featureFlags?.disableRunTestCaseWithObservStrat,
+  ]);
+
   const executionResultsDisplayTemplate = (label) => {
     const codeCoverage = executeAllTestCases ? coveragePercentage : "-";
     const displayPercentage =
@@ -85,78 +120,85 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     contextFailure;
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        flexGrow: 1,
-        alignItems: "center",
-      }}
-    >
-      <Tabs
-        value={activeTab}
-        onChange={(e, v) => {
-          setActiveTab(v);
+    <>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          flexGrow: 1,
+          alignItems: "center",
         }}
-        type="B"
-        orientation="horizontal"
       >
-        <Tab
+        <Tabs
+          value={activeTab}
+          onChange={(e, v) => {
+            setActiveTab(v);
+          }}
           type="B"
-          tabIndex={0}
-          aria-label="Passing tab panel"
-          sx={defaultStyle}
-          label={executionResultsDisplayTemplate("Passing")}
-          data-testid="passing-tab"
-          value="passing"
-        />
-        <Tab
-          type="B"
-          tabIndex={0}
-          aria-label="Coverage tab panel"
-          sx={defaultStyle}
-          label={executionResultsDisplayTemplate("Coverage")}
-          data-testid="coverage-tab"
-          value="coverage"
-        />
-      </Tabs>
-      <div style={{ margin: "6px 0 0 auto", display: "flex" }}>
-        {featureFlags?.importTestCases && (
-          <div>
+          orientation="horizontal"
+        >
+          <Tab
+            type="B"
+            tabIndex={0}
+            aria-label="Passing tab panel"
+            sx={defaultStyle}
+            label={executionResultsDisplayTemplate("Passing")}
+            data-testid="passing-tab"
+            value="passing"
+          />
+          <Tab
+            type="B"
+            tabIndex={0}
+            aria-label="Coverage tab panel"
+            sx={defaultStyle}
+            label={executionResultsDisplayTemplate("Coverage")}
+            data-testid="coverage-tab"
+            value="coverage"
+          />
+        </Tabs>
+        <div style={{ margin: "6px 0 0 auto", display: "flex" }}>
+          {featureFlags?.importTestCases && (
+            <div>
+              <Button
+                onClick={() => {
+                  if (onImportTestCases) {
+                    onImportTestCases();
+                  }
+                }}
+                disabled={!canEdit}
+                data-testid="show-import-test-cases-button"
+              >
+                <FileUploadIcon
+                  style={{ margin: "0 5px 0 -2px" }}
+                  fontSize="small"
+                />
+                Import Test Cases
+              </Button>
+            </div>
+          )}
+          <div style={{ margin: "0 6px 0 26px" }}>
             <Button
-              onClick={() => {
-                if (onImportTestCases) {
-                  onImportTestCases();
-                }
-              }}
               disabled={!canEdit}
-              data-testid="show-import-test-cases-button"
+              onClick={createNewTestCase}
+              data-testid="create-new-test-case-button"
             >
-              <FileUploadIcon
-                style={{ margin: "0 5px 0 -2px" }}
-                fontSize="small"
-              />
-              Import Test Cases
+              <AddIcon style={{ margin: "0 5px 0 -2px" }} fontSize="small" />
+              New Test Case
             </Button>
           </div>
-        )}
-        <div style={{ margin: "0 6px 0 26px" }}>
-          <Button
-            disabled={!canEdit}
-            onClick={createNewTestCase}
-            data-testid="create-new-test-case-button"
-          >
-            <AddIcon style={{ margin: "0 5px 0 -2px" }} fontSize="small" />
-            New Test Case
-          </Button>
+          <RunTestButton
+            hasErrors={hasErrors}
+            isExecutionContextReady={executionContextReady}
+            onRunTests={executeTestCases}
+            shouldDisableRunTestsButton={shouldDisableRunTestsButton}
+          />
         </div>
-        <RunTestButton
-          hasErrors={hasErrors}
-          isExecutionContextReady={executionContextReady}
-          onRunTests={executeTestCases}
-          measure={measure}
-        />
       </div>
-    </div>
+      {shouldDisableRunTestsButton && (
+        <div style={{ textAlign: "right", color: "grey", fontSize: "9px" }}>
+          {disableRunTestButtonText}
+        </div>
+      )}
+    </>
   );
 }

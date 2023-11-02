@@ -3,6 +3,7 @@ import { CqmMeasure, IndividualResult } from "cqm-models";
 import {
   Group,
   Measure,
+  MeasureScoring,
   PopulationExpectedValue,
   PopulationType,
   TestCase,
@@ -133,6 +134,73 @@ export class QdmCalculationService {
     return groupPass;
   }
 
+  mapPatientBasedObservations = (population, results) => {
+    if (population.name === PopulationType.DENOMINATOR_OBSERVATION) {
+      if (results.DENOM === 1 && results.DENEX === 0) {
+        return results?.observation_values?.[0];
+      }
+      if ((results.DENOM === 1 && results.DENEX === 1) || results.DENOM === 0) {
+        return "NA";
+      }
+    }
+
+    if (population.name === PopulationType.NUMERATOR_OBSERVATION) {
+      if (results.NUMER === 1 && results.NUMEX === 0) {
+        //check if both observations are present
+        return results?.observation_values?.length > 1
+          ? results?.observation_values?.[1]
+          : results?.observation_values?.[0];
+      }
+      if ((results.NUMER === 1 && results.NUMEX === 1) || results.NUMER === 0) {
+        return "NA";
+      }
+    }
+  };
+
+  getEpisodeObservationResult(
+    population: PopulationExpectedValue,
+    episodeResults: any,
+    targetIndex: number
+  ): number | undefined {
+    let counter = 0;
+    // find the next episode for the current target population
+    for (const episodeId in episodeResults) {
+      let result = undefined;
+      const episode = episodeResults[episodeId];
+      if (
+        population.name === PopulationType.DENOMINATOR_OBSERVATION &&
+        episode.DENOM === 1 &&
+        episode.DENEX === 0
+      ) {
+        result = episode?.observation_values?.[0];
+      } else if (
+        population.name === PopulationType.NUMERATOR_OBSERVATION &&
+        episode.NUMER === 1 &&
+        episode.NUMEX === 0
+      ) {
+        result =
+          episode?.observation_values?.length > 1
+            ? episode?.observation_values?.[1]
+            : episode?.observation_values?.[0];
+      } else if (
+        (population.name === PopulationType.MEASURE_POPULATION_OBSERVATION ||
+          population.name === PopulationType.MEASURE_OBSERVATION) &&
+        episode.MSRPOPL === 1 &&
+        episode.MSRPOPLEX === 0
+      ) {
+        result = episode?.observation_values?.[0];
+      }
+
+      if (result && counter === targetIndex) {
+        return result;
+      } else if (result) {
+        counter++;
+      }
+    }
+
+    return undefined;
+  }
+
   processTestCaseResults(
     testCase: TestCase,
     measureGroups: Group[],
@@ -174,13 +242,30 @@ export class QdmCalculationService {
 
       updatedTestCase.groupPopulations.forEach((groupPop, gpIndex) => {
         let obsCount = 0;
+        let obsTracker = {};
         if (groupPop.groupId === groupId) {
           groupPop.populationValues.forEach((population) => {
             if (isTestCasePopulationObservation(population)) {
               if (patientBased) {
-                population.actual = results?.observation_values?.[0];
+                if (groupPop.scoring === MeasureScoring.RATIO) {
+                  population.actual = this.mapPatientBasedObservations(
+                    population,
+                    results
+                  );
+                } else {
+                  population.actual = results?.observation_values?.[0];
+                }
               } else if (obsCount < results?.observation_values?.length) {
-                population.actual = results?.observation_values?.[obsCount];
+                const obsResult = this.getEpisodeObservationResult(
+                  population,
+                  results.episode_results,
+                  obsTracker[population.name] ?? 0
+                );
+                if (!_.isNil(obsResult)) {
+                  population.actual = obsResult;
+                  obsTracker[population.name] =
+                    (obsTracker[population.name] ?? 0) + 1;
+                }
               }
               obsCount++;
             } else {

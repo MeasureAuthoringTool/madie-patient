@@ -22,6 +22,7 @@ import StringInput from "../../../../../../../common/string/StringInput";
 import DataElementSelector from "../../../../../../../common/DataElementSelector/DataElementSelector";
 import DiagnosisComponent from "../../../../../../../common/DiagnosisComponent/DiagnosisComponent";
 import ComponentType from "../../../../../../../common/componentDataType/ComponentType";
+import FacilityLocation from "../../../../../../../common/facilityLocation/FacilityLocation";
 
 interface DisplayAttributeInputsProps {
   attributeType?: string;
@@ -260,6 +261,14 @@ const DisplayAttributeInputs = ({
             valueSets={cqmMeasure?.value_sets}
             selectedDataElement={selectedDataElement}
             onInputAdd={onInputAdd}
+          />
+        );
+      case "FacilityLocation":
+        return (
+          <FacilityLocation
+            canEdit={true}
+            onChange={(val) => setAttributeValue(val)}
+            valueSets={cqmMeasure?.value_sets}
           />
         );
       default:

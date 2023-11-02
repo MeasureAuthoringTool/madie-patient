@@ -21,8 +21,18 @@ import {
   getDataElementClass,
 } from "../../../../../../util/DataElementHelper";
 
-const ElementsSection = (props: { handleTestCaseErrors: Function }) => {
-  const { handleTestCaseErrors } = props;
+const ElementsSection = (props: {
+  handleTestCaseErrors: Function;
+  canEdit: boolean;
+  selectedDataElement: DataElement;
+  setSelectedDataElement: Function;
+}) => {
+  const {
+    handleTestCaseErrors,
+    canEdit,
+    selectedDataElement,
+    setSelectedDataElement,
+  } = props;
   const cqmService = useRef(useCqmConversionService());
   const [measure, setMeasure] = useState<any>(measureStore.state);
   useEffect(() => {
@@ -42,8 +52,12 @@ const ElementsSection = (props: { handleTestCaseErrors: Function }) => {
 
   const checkForMissingDataElements = useCallback(() => {
     const types = {};
-    // skip birthday as type
+    // skip demographics
     types["QDM::PatientCharacteristicBirthdate"] = true;
+    types["QDM::PatientCharacteristicRace"] = true;
+    types["QDM::PatientCharacteristicEthnicity"] = true;
+    types["QDM::PatientCharacteristicSex"] = true;
+    types["QDM::PatientCharacteristicExpired"] = true;
     // compile types from typesfromCQL
     typesFromCql.forEach((item) => {
       types[item] = true;
@@ -95,7 +109,6 @@ const ElementsSection = (props: { handleTestCaseErrors: Function }) => {
 
   const [availableDataElements, setAvailableDataElements] =
     useState<DataElement[]>();
-  const [selectedDataElement, setSelectedDataElement] = useState<DataElement>();
 
   useEffect(() => {
     if (activeTab) {
@@ -135,7 +148,7 @@ const ElementsSection = (props: { handleTestCaseErrors: Function }) => {
   return (
     <ElementSection title="Elements">
       <div id="elements-section" data-testid="elements-section">
-        {categories.length > 0 && (
+        {categories.length > 0 && canEdit && (
           <DynamicElementTabs
             categories={categories}
             activeTab={activeTab}
@@ -149,6 +162,7 @@ const ElementsSection = (props: { handleTestCaseErrors: Function }) => {
         >
           {selectedDataElement && (
             <DataElementsCard
+              canEdit={canEdit}
               selectedDataElement={selectedDataElement}
               setSelectedDataElement={setSelectedDataElement}
               cardActiveTab={cardActiveTab}
@@ -176,6 +190,7 @@ const ElementsSection = (props: { handleTestCaseErrors: Function }) => {
           allowedTypes={allowedTypes}
           dataElements={filterDataElements(patient?.dataElements)}
           onView={(dataElement) => setSelectedDataElement(dataElement)}
+          canEdit={canEdit}
           onDelete={deleteDataElement}
         />
       </div>
