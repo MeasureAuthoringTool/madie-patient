@@ -70,14 +70,14 @@ function parseNode(node, localIdToTypeMap) {
       if (child?.r) {
         nodeType = localIdToTypeMap[child.r];
       }
-      node = parseNode(child, localIdToTypeMap);
+      let nextNode = parseNode(child, localIdToTypeMap);
       if (nodeType) {
-        node.node_type = nodeType;
+        nextNode["node_type"] = nodeType;
       }
       if (child.r) {
-        node.ref_id = child.r;
+        nextNode["ref_id"] = child.r;
       }
-      parsedNode.children.push(node);
+      parsedNode.children.push(nextNode);
     }
   });
   return parsedNode;
