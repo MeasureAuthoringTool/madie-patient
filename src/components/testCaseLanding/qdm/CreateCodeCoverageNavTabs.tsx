@@ -79,8 +79,14 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           setShouldDisableRunTestsButton(true);
         }
       });
+    } else {
+      setShouldDisableRunTestsButton(false);
     }
-  }, [measure, measure?.groups]);
+  }, [
+    measure,
+    measure?.groups,
+    featureFlags?.disableRunTestCaseWithObservStrat,
+  ]);
 
   const executionResultsDisplayTemplate = (label) => {
     const codeCoverage = executeAllTestCases ? coveragePercentage : "-";
