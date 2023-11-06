@@ -19,8 +19,10 @@ const QdmEntity = ({
   valueSets,
 }) => {
   useEffect(() => {
-    if (attributeType) {
-      setAttributeValue(new cqmModels[attributeType]());
+    if (attributeType && !attributeValue) {
+      const newAttribute = new cqmModels[attributeType]();
+      newAttribute["id"] = null;
+      setAttributeValue(newAttribute);
     }
   }, [attributeType]);
 

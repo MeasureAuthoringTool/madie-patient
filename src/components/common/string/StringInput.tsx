@@ -1,14 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import "twin.macro";
 import "styled-components/macro";
-import { InputLabel } from "@madie/madie-design-system/dist/react/";
 import { FormControl } from "@mui/material";
 import { TextField } from "@madie/madie-design-system/dist/react";
 import { kebabCase } from "lodash";
-
-const labelStyle = {
-  color: "#125496",
-};
 
 export interface StringInputProps {
   label: string;
@@ -27,10 +22,7 @@ const StringInput = ({
   required = false,
   title,
 }: StringInputProps) => {
-  const [field, setField] = useState<string>(fieldValue);
-
   const handleStringValueChange = (value: string) => {
-    setField(value);
     onStringValueChange(value);
   };
   return (
@@ -56,7 +48,7 @@ const StringInput = ({
           onChange={(event) => {
             handleStringValueChange(event.target.value);
           }}
-          value={field}
+          value={fieldValue}
         />
       </FormControl>
     </div>
