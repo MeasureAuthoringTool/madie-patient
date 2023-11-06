@@ -219,7 +219,7 @@ const EditTestCase = () => {
                 ? qdmCalculation.current.mapMeasureGroup(measure, group)
                 : addDefaultObservationsForExistingTestCase(
                     existingTestCasePC,
-                    measure?.groups
+                    group
                   );
             });
           } else {

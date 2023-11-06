@@ -426,11 +426,8 @@ export function getPopulationTypesForScoring(group: Group) {
 
 export const addDefaultObservationsForExistingTestCase = (
   existingTestCasePC,
-  groups
+  group
 ) => {
-  const group = groups?.find(
-    (group) => group?.id === existingTestCasePC?.groupId
-  );
   const isBooleanOrPatientBasis =
     group.populationBasis === "true" || group.populationBasis === "boolean";
   const isScoringRatio = existingTestCasePC?.scoring === MeasureScoring.RATIO;
