@@ -122,6 +122,8 @@ const ElementsSection = (props: {
   };
 
   const handleAddDataElement = (sourceCriteria) => {
+    delete sourceCriteria._id;
+
     const data = { ...sourceCriteria, id: new ObjectID().toString() };
     const modelClass = getDataElementClass(sourceCriteria);
     const newDataElement = new modelClass(data);
