@@ -1,0 +1,31 @@
+.data-types {
+  display: flex;
+  flex-direction: row;
+  column-gap: 16px;
+  align-items: inherit;
+  overflow: scroll;
+  > div {
+    > .data-types-button {
+      border: 1px solid #ddd;
+      width: 224px;
+      display: flex;
+      margin-top: 16px;
+      text-align: left;
+      padding: 8px 40px 8px 16px; //excess padding for Absolute icon
+      min-height: 53px;
+      position: relative;
+      align-items: flex-start;
+      > div {
+        > .text-container {
+          max-width: 200px;
+        }
+      }
+      .data-types-icon {
+        color: #0073c8;
+        position: absolute;
+        right: 5px;
+        top: 5px;
+      }
+    }
+  }
+}
