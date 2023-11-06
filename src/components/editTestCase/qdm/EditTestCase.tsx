@@ -38,7 +38,10 @@ import {
 } from "../../../util/Utils";
 import * as _ from "lodash";
 import "styled-components/macro";
-import { triggerPopChanges } from "../../../util/PopulationsMap";
+import {
+  triggerPopChanges,
+  addDefaultObservationsForExistingTestCase,
+} from "../../../util/PopulationsMap";
 import { QDMPatient, DataElement } from "cqm-models";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -214,9 +217,10 @@ const EditTestCase = () => {
               );
               return _.isNil(existingTestCasePC)
                 ? qdmCalculation.current.mapMeasureGroup(measure, group)
-                : {
-                    ...existingTestCasePC,
-                  };
+                : addDefaultObservationsForExistingTestCase(
+                    existingTestCasePC,
+                    measure?.groups
+                  );
             });
           } else {
             nextTc.groupPopulations = [];
