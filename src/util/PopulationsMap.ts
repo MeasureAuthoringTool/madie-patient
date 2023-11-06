@@ -8,6 +8,7 @@ import {
   DisplayStratificationValue,
   StratificationExpectedValue,
   MeasureScoring,
+  TestCase,
 } from "@madie/madie-models";
 
 import _ from "lodash";
@@ -425,8 +426,8 @@ export function getPopulationTypesForScoring(group: Group) {
 }
 
 export const addDefaultObservationsForExistingTestCase = (
-  existingTestCasePC,
-  group
+  existingTestCasePC: GroupPopulation,
+  group: Group
 ) => {
   const isBooleanOrPatientBasis =
     group.populationBasis === "true" || group.populationBasis === "boolean";
@@ -455,7 +456,7 @@ export const addDefaultObservationsForExistingTestCase = (
 
 export const addDefaultsObservationsForBooleanAndPatientBasedTestcases = (
   existingTestCasePC,
-  group
+  group: Group
 ) => {
   const findPopulation = (name, expected) =>
     existingTestCasePC.populationValues.find(

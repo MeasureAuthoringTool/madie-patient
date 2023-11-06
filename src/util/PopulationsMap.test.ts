@@ -2617,25 +2617,11 @@ it("add defaults observations for boolean and Patient based testcases", () => {
         actual: false,
       },
       {
-        name: "denominatorObservation",
-        expected: 0,
-        actual: null,
-        id: "denominatorObservation0",
-        criteriaReference: "735bdb59-0923-444f-b912-f61837b6f57c",
-      },
-      {
         id: "c9a5915a-cdea-43f0-bab0-af5e3b63d261",
         criteriaReference: null,
         name: "numerator",
         expected: true,
         actual: false,
-      },
-      {
-        name: "numeratorObservation",
-        expected: 0,
-        actual: null,
-        id: "numeratorObservation0",
-        criteriaReference: "735bdb59-0923-444f-b912-f61837b6f57c",
       },
     ],
     stratificationValues: [],
@@ -2705,6 +2691,8 @@ it("add defaults observations for boolean and Patient based testcases", () => {
     stratifications: [],
     populationBasis: "true",
   };
+
+  expect(testCase.populationValues.length).toBe(3);
 
   const updatedTestCase = addDefaultObservationsForExistingTestCase(
     testCase,
