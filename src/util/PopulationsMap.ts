@@ -426,7 +426,7 @@ export function getPopulationTypesForScoring(group: Group) {
 }
 
 export const addDefaultObservationsForExistingTestCase = (
-  existingTestCasePC: GroupPopulation,
+  existingTestCasePC,
   group: Group
 ) => {
   const isBooleanOrPatientBasis =

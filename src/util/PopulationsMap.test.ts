@@ -2599,27 +2599,27 @@ it("test proportion scoring with numeratorExclusion as changedPopulationName, wh
 it("add defaults observations for boolean and Patient based testcases", () => {
   const testCase = {
     groupId: "654955e5cda7fe554f6ba792",
-    scoring: "Ratio",
+    scoring: MeasureScoring.RATIO,
     populationBasis: "true",
     populationValues: [
       {
         id: "2c1b199a-ba0f-4932-bf19-65c58968e3d5",
         criteriaReference: null,
-        name: "initialPopulation",
+        name: PopulationType.INITIAL_POPULATION,
         expected: true,
         actual: false,
       },
       {
         id: "735bdb59-0923-444f-b912-f61837b6f57c",
         criteriaReference: null,
-        name: "denominator",
+        name: PopulationType.DENOMINATOR,
         expected: true,
         actual: false,
       },
       {
         id: "c9a5915a-cdea-43f0-bab0-af5e3b63d261",
         criteriaReference: null,
-        name: "numerator",
+        name: PopulationType.NUMERATOR,
         expected: true,
         actual: false,
       },
@@ -2629,39 +2629,39 @@ it("add defaults observations for boolean and Patient based testcases", () => {
 
   const ratioGroup = {
     id: "654955f6cda7fe554f6ba793",
-    scoring: "Ratio",
+    scoring: MeasureScoring.RATIO,
     populations: [
       {
         id: "545eaef1-b058-4d35-9073-c5584edaf746",
-        name: "initialPopulation",
+        name: PopulationType.INITIAL_POPULATION,
         definition: "Initial Population",
         associationType: null,
         description: "",
       },
       {
         id: "72637712-fd6f-4289-a031-6eab4d901dac",
-        name: "denominator",
+        name: PopulationType.DENOMINATOR,
         definition: "Denominator",
         associationType: null,
         description: "",
       },
       {
         id: "ef08c1d8-edad-416f-a0d0-dd976ca0a82f",
-        name: "denominatorExclusion",
+        name: PopulationType.DENOMINATOR_EXCLUSION,
         definition: "Denonimator Exclusion",
         associationType: null,
         description: "",
       },
       {
         id: "7674b5e2-5629-4ab3-9d0b-a4e7a1cf1df4",
-        name: "numerator",
+        name: PopulationType.NUMERATOR,
         definition: "Numerator",
         associationType: null,
         description: "",
       },
       {
         id: "e2d29b07-42f6-4b44-af3b-3f9879d6fb4c",
-        name: "numeratorExclusion",
+        name: PopulationType.NUMERATOR_EXCLUSION,
         definition: "Numerator",
         associationType: null,
         description: "",
@@ -2670,14 +2670,14 @@ it("add defaults observations for boolean and Patient based testcases", () => {
     measureObservations: [
       {
         id: "8cb5dd6f-b263-4755-851d-9b6c44975569",
-        definition: "Denom Observation",
+        definition: PopulationType.DENOMINATOR_OBSERVATION,
         description: null,
         criteriaReference: "72637712-fd6f-4289-a031-6eab4d901dac",
         aggregateMethod: "Average",
       },
       {
         id: "ee3c1f30-a7ac-4952-b208-85ae61cdaca0",
-        definition: "Numer Observation",
+        definition: PopulationType.NUMERATOR_OBSERVATION,
         description: null,
         criteriaReference: "7674b5e2-5629-4ab3-9d0b-a4e7a1cf1df4",
         aggregateMethod: "Maximum",
