@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import { FormControl } from "@mui/material";
@@ -22,7 +22,10 @@ const StringInput = ({
   required = false,
   title,
 }: StringInputProps) => {
+  const [field, setField] = useState<string>(fieldValue);
+
   const handleStringValueChange = (value: string) => {
+    setField(value);
     onStringValueChange(value);
   };
   return (
@@ -48,7 +51,7 @@ const StringInput = ({
           onChange={(event) => {
             handleStringValueChange(event.target.value);
           }}
-          value={fieldValue}
+          value={field}
         />
       </FormControl>
     </div>
