@@ -441,15 +441,19 @@ export const addDefaultObservationsForExistingTestCase = (
     group?.measureObservations?.length > 0
   ) {
     if (isBooleanOrPatientBasis) {
-      addDefaultsForBooleanAndPatientBasedTestcases(existingTestCasePC, group);
+      addDefaultsObservationsForBooleanAndPatientBasedTestcases(
+        existingTestCasePC,
+        group
+      );
     } else {
+      // need to implement for non-boolean and episode based measures
       return { ...existingTestCasePC };
     }
   }
   return { ...existingTestCasePC };
 };
 
-export const addDefaultsForBooleanAndPatientBasedTestcases = (
+export const addDefaultsObservationsForBooleanAndPatientBasedTestcases = (
   existingTestCasePC,
   group
 ) => {
