@@ -75,7 +75,7 @@ export class CqmConversionService {
     cqmMeasure.description = measure.measureMetaData?.description;
     cqmMeasure.cms_id = measure.cmsId;
     cqmMeasure.main_cql_library = measure.cqlLibraryName;
-    cqmMeasure.measure_scoring = measure.scoring;
+    cqmMeasure.measure_scoring = measure.scoring.toUpperCase();
     cqmMeasure.hqmf_set_id = measure.measureSetId;
     cqmMeasure.calculation_method = measure.patientBasis
       ? CalculationMethod.PATIENT
