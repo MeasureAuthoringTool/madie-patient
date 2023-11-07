@@ -473,6 +473,13 @@ const countObservations = (
   return expectedRelatedPopulationValue;
 };
 
+const findObservation = (name, group) =>
+  group.measureObservations.find(
+    (observation) =>
+      observation.criteriaReference ===
+      group.populations.find((popVal) => popVal.name === name)?.id
+  );
+
 const addDefaultObservationsForEpisodeBasedPopulations = (
   existingTestCasePC,
   group
@@ -480,13 +487,6 @@ const addDefaultObservationsForEpisodeBasedPopulations = (
   const findPopulation = (name) =>
     existingTestCasePC.populationValues.find(
       (popVal) => popVal.name === name && popVal.expected > 0
-    );
-
-  const findObservation = (name) =>
-    group.measureObservations.find(
-      (observation) =>
-        observation.criteriaReference ===
-        group.populations.find((popVal) => popVal.name === name)?.id
     );
 
   const addObservation = (
@@ -539,7 +539,7 @@ const addDefaultObservationsForEpisodeBasedPopulations = (
     findPopulation("numeratorExclusion");
 
   if (denominatorExpectedHasValue) {
-    const denominatorObservation = findObservation("denominator");
+    const denominatorObservation = findObservation("denominator", group);
 
     if (denominatorObservation) {
       addObservation(
@@ -551,7 +551,7 @@ const addDefaultObservationsForEpisodeBasedPopulations = (
   }
 
   if (numeratorExpectedHasValue) {
-    const numeratorObservation = findObservation("numerator");
+    const numeratorObservation = findObservation("numerator", group);
     if (numeratorObservation) {
       addObservation(
         "numerator",
@@ -570,13 +570,6 @@ const addDefaultObservationsForPatientBasedPopulations = (
   const findPopulation = (name, expected) =>
     existingTestCasePC.populationValues.find(
       (popVal) => popVal.name === name && popVal.expected === expected
-    );
-
-  const findObservation = (name) =>
-    group.measureObservations.find(
-      (observation) =>
-        observation.criteriaReference ===
-        group.populations.find((popVal) => popVal.name === name)?.id
     );
 
   const addObservation = (name, criteriaRefId) => {
@@ -619,7 +612,7 @@ const addDefaultObservationsForPatientBasedPopulations = (
   );
 
   if (denominatorExpectedTrue && !denominatorExclusionExpectedTrue) {
-    const denominatorObservation = findObservation("denominator");
+    const denominatorObservation = findObservation("denominator", group);
 
     if (denominatorObservation) {
       addObservation("denominator", denominatorExpectedTrue.id);
@@ -627,7 +620,7 @@ const addDefaultObservationsForPatientBasedPopulations = (
   }
 
   if (numeratorExpectedTrue && !numeratorExclusionExpectedTrue) {
-    const numeratorObservation = findObservation("numerator");
+    const numeratorObservation = findObservation("numerator", group);
 
     if (numeratorObservation) {
       addObservation("numerator", numeratorExpectedTrue.id);
