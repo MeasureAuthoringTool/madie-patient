@@ -292,10 +292,10 @@ const EditTestCase = () => {
     setDiscardDialogOpen(false);
   };
 
-  const [testCaseErrors, setTestCaseErrors] = useState([]);
+  const [testCaseErrors, setTestCaseErrors] = useState(null);
 
   const handleTestCaseErrors = (value) => {
-    setTestCaseErrors([value]);
+    setTestCaseErrors(value);
   };
 
   return (
@@ -307,10 +307,10 @@ const EditTestCase = () => {
           testDataId="test_case_execution_errors"
         />
       )}
-      {testCaseErrors && (
+      {!_.isNull(testCaseErrors) && (
         <StatusHandler
           error={true}
-          errorMessages={testCaseErrors}
+          errorMessages={[testCaseErrors]}
           testDataId="test_case_execution_errors"
         />
       )}
