@@ -10,7 +10,7 @@ import {
 import {
   triggerPopChanges,
   getValueFromBoolOrNum,
-  mapExistingTestCase,
+  mapExistingTestCasePopulations,
 } from "../util/PopulationsMap";
 
 let measureGroup = [
@@ -2694,7 +2694,7 @@ it("add defaults observations for boolean and Patient based testcases when loadi
 
   expect(testCase.populationValues.length).toBe(3);
 
-  const updatedTestCase = mapExistingTestCase(testCase, ratioGroup);
+  const updatedTestCase = mapExistingTestCasePopulations(testCase, ratioGroup);
   expect(updatedTestCase.populationValues.length).toBe(5);
   expect(updatedTestCase.populationValues[2].name).toBe(
     "denominatorObservation"
