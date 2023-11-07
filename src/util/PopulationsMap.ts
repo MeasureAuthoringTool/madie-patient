@@ -7,6 +7,8 @@ import {
   MeasureObservation,
   DisplayStratificationValue,
   StratificationExpectedValue,
+  MeasureScoring,
+  TestCase,
 } from "@madie/madie-models";
 
 import _ from "lodash";
@@ -422,6 +424,105 @@ export function getPopulationTypesForScoring(group: Group) {
 
   return populationTypesForScoring;
 }
+
+export const mapExistingTestCase = (existingTestCasePC, group: Group) => {
+  const isBooleanOrPatientBasis =
+    group.populationBasis === "true" || group.populationBasis === "boolean";
+  const isScoringRatio = existingTestCasePC?.scoring === MeasureScoring.RATIO;
+  const hasPopulationValues =
+    existingTestCasePC?.populationValues &&
+    existingTestCasePC.populationValues.length > 0;
+
+  if (
+    isScoringRatio &&
+    hasPopulationValues &&
+    group?.measureObservations?.length > 0
+  ) {
+    if (isBooleanOrPatientBasis) {
+      return addDefaultObservationsForBooleanAndPatientBasedTestcases(
+        existingTestCasePC,
+        group
+      );
+    } else {
+      // need to implement for non-boolean and episode based measures
+      return { ...existingTestCasePC };
+    }
+  }
+  return { ...existingTestCasePC };
+};
+
+export const addDefaultObservationsForBooleanAndPatientBasedTestcases = (
+  existingTestCasePC,
+  group: Group
+) => {
+  const findPopulation = (name, expected) =>
+    existingTestCasePC.populationValues.find(
+      (popVal) => popVal.name === name && popVal.expected === expected
+    );
+
+  const findObservation = (name) =>
+    group.measureObservations.find(
+      (observation) =>
+        observation.criteriaReference ===
+        group.populations.find((popVal) => popVal.name === name)?.id
+    );
+
+  const addObservation = (name, criteriaRefId) => {
+    const observationName = `${name}Observation`;
+    const isObservationPresent = existingTestCasePC.populationValues.find(
+      (popVal) => popVal.name === observationName
+    );
+
+    if (!isObservationPresent) {
+      const defaultObservation = {
+        name: observationName,
+        expected: 0,
+        actual: null,
+        id: `${observationName}0`,
+        criteriaReference: criteriaRefId,
+      };
+
+      const populationIndex = existingTestCasePC.populationValues.findIndex(
+        (item) => item.name === name
+      );
+      if (populationIndex !== -1) {
+        existingTestCasePC.populationValues.splice(
+          populationIndex + 1,
+          0,
+          defaultObservation
+        );
+      }
+    }
+  };
+
+  const denominatorExpectedTrue = findPopulation("denominator", true);
+  const denominatorExclusionExpectedTrue = findPopulation(
+    "denominatorExclusion",
+    true
+  );
+  const numeratorExpectedTrue = findPopulation("numerator", true);
+  const numeratorExclusionExpectedTrue = findPopulation(
+    "numeratorExclusion",
+    true
+  );
+
+  if (denominatorExpectedTrue && !denominatorExclusionExpectedTrue) {
+    const denominatorObservation = findObservation("denominator");
+
+    if (denominatorObservation) {
+      addObservation("denominator", denominatorExpectedTrue.id);
+    }
+  }
+
+  if (numeratorExpectedTrue && !numeratorExclusionExpectedTrue) {
+    const numeratorObservation = findObservation("numerator");
+
+    if (numeratorObservation) {
+      addObservation("numerator", denominatorExpectedTrue.id);
+    }
+  }
+  return { ...existingTestCasePC };
+};
 
 // for every MeasurePopulation value
 // this method returns its equivalent fqm-execution PopulationResult identifier.

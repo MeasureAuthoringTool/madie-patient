@@ -38,7 +38,10 @@ import {
 } from "../../../util/Utils";
 import * as _ from "lodash";
 import "styled-components/macro";
-import { triggerPopChanges } from "../../../util/PopulationsMap";
+import {
+  triggerPopChanges,
+  mapExistingTestCase,
+} from "../../../util/PopulationsMap";
 import { QDMPatient, DataElement } from "cqm-models";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -214,9 +217,7 @@ const EditTestCase = () => {
               );
               return _.isNil(existingTestCasePC)
                 ? qdmCalculation.current.mapMeasureGroup(measure, group)
-                : {
-                    ...existingTestCasePC,
-                  };
+                : mapExistingTestCase(existingTestCasePC, group);
             });
           } else {
             nextTc.groupPopulations = [];
@@ -291,10 +292,10 @@ const EditTestCase = () => {
     setDiscardDialogOpen(false);
   };
 
-  const [testCaseErrors, setTestCaseErrors] = useState([]);
+  const [testCaseErrors, setTestCaseErrors] = useState(null);
 
   const handleTestCaseErrors = (value) => {
-    setTestCaseErrors([value]);
+    setTestCaseErrors(value);
   };
 
   return (
@@ -306,10 +307,10 @@ const EditTestCase = () => {
           testDataId="test_case_execution_errors"
         />
       )}
-      {testCaseErrors && (
+      {!_.isNull(testCaseErrors) && (
         <StatusHandler
           error={true}
-          errorMessages={testCaseErrors}
+          errorMessages={[testCaseErrors]}
           testDataId="test_case_execution_errors"
         />
       )}
