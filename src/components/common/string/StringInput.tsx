@@ -1,14 +1,9 @@
 import React, { useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
-import { InputLabel } from "@madie/madie-design-system/dist/react/";
 import { FormControl } from "@mui/material";
 import { TextField } from "@madie/madie-design-system/dist/react";
 import { kebabCase } from "lodash";
-
-const labelStyle = {
-  color: "#125496",
-};
 
 export interface StringInputProps {
   label: string;
