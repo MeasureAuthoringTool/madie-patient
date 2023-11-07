@@ -11,7 +11,7 @@ import {
   triggerPopChanges,
   getValueFromBoolOrNum,
   mapExistingTestCasePopulations,
-} from "../util/PopulationsMap";
+} from "./PopulationsMap";
 
 let measureGroup = [
   {
@@ -2627,7 +2627,7 @@ it("add defaults observations for Patient based testcases when loading the test 
     stratificationValues: [],
   };
 
-  const ratioGroup = {
+  const ratioGroup: Group = {
     id: "654955f6cda7fe554f6ba793",
     scoring: MeasureScoring.RATIO,
     populations: [
@@ -2635,35 +2635,35 @@ it("add defaults observations for Patient based testcases when loading the test 
         id: "545eaef1-b058-4d35-9073-c5584edaf746",
         name: PopulationType.INITIAL_POPULATION,
         definition: "Initial Population",
-        associationType: null,
+        associationType: "",
         description: "",
       },
       {
         id: "72637712-fd6f-4289-a031-6eab4d901dac",
         name: PopulationType.DENOMINATOR,
         definition: "Denominator",
-        associationType: null,
+        associationType: "",
         description: "",
       },
       {
         id: "ef08c1d8-edad-416f-a0d0-dd976ca0a82f",
         name: PopulationType.DENOMINATOR_EXCLUSION,
         definition: "Denonimator Exclusion",
-        associationType: null,
+        associationType: "",
         description: "",
       },
       {
         id: "7674b5e2-5629-4ab3-9d0b-a4e7a1cf1df4",
         name: PopulationType.NUMERATOR,
         definition: "Numerator",
-        associationType: null,
+        associationType: "",
         description: "",
       },
       {
         id: "e2d29b07-42f6-4b44-af3b-3f9879d6fb4c",
         name: PopulationType.NUMERATOR_EXCLUSION,
         definition: "Numerator",
-        associationType: null,
+        associationType: "",
         description: "",
       },
     ],
@@ -2671,14 +2671,14 @@ it("add defaults observations for Patient based testcases when loading the test 
       {
         id: "8cb5dd6f-b263-4755-851d-9b6c44975569",
         definition: PopulationType.DENOMINATOR_OBSERVATION,
-        description: null,
+        description: "",
         criteriaReference: "72637712-fd6f-4289-a031-6eab4d901dac",
         aggregateMethod: "Average",
       },
       {
         id: "ee3c1f30-a7ac-4952-b208-85ae61cdaca0",
         definition: PopulationType.NUMERATOR_OBSERVATION,
-        description: null,
+        description: "",
         criteriaReference: "7674b5e2-5629-4ab3-9d0b-a4e7a1cf1df4",
         aggregateMethod: "Maximum",
       },
@@ -2754,7 +2754,7 @@ it("add defaults observations for Episode based testcases when loading the test 
     stratificationValues: [],
   };
 
-  const ratioGroup = {
+  const ratioGroup: Group = {
     id: "654955f6cda7fe554f6ba793",
     scoring: MeasureScoring.RATIO,
     populations: [
@@ -2762,35 +2762,35 @@ it("add defaults observations for Episode based testcases when loading the test 
         id: "545eaef1-b058-4d35-9073-c5584edaf746",
         name: PopulationType.INITIAL_POPULATION,
         definition: "Initial Population",
-        associationType: null,
+        associationType: "",
         description: "",
       },
       {
         id: "72637712-fd6f-4289-a031-6eab4d901dac",
         name: PopulationType.DENOMINATOR,
         definition: "Denominator",
-        associationType: null,
+        associationType: "null",
         description: "",
       },
       {
         id: "ef08c1d8-edad-416f-a0d0-dd976ca0a82f",
         name: PopulationType.DENOMINATOR_EXCLUSION,
         definition: "Denonimator Exclusion",
-        associationType: null,
+        associationType: "",
         description: "",
       },
       {
         id: "7674b5e2-5629-4ab3-9d0b-a4e7a1cf1df4",
         name: PopulationType.NUMERATOR,
         definition: "Numerator",
-        associationType: null,
+        associationType: "",
         description: "",
       },
       {
         id: "e2d29b07-42f6-4b44-af3b-3f9879d6fb4c",
         name: PopulationType.NUMERATOR_EXCLUSION,
         definition: "Numerator",
-        associationType: null,
+        associationType: "",
         description: "",
       },
     ],
@@ -2798,14 +2798,14 @@ it("add defaults observations for Episode based testcases when loading the test 
       {
         id: "8cb5dd6f-b263-4755-851d-9b6c44975569",
         definition: PopulationType.DENOMINATOR_OBSERVATION,
-        description: null,
+        description: "",
         criteriaReference: "72637712-fd6f-4289-a031-6eab4d901dac",
         aggregateMethod: "Average",
       },
       {
         id: "ee3c1f30-a7ac-4952-b208-85ae61cdaca0",
         definition: PopulationType.NUMERATOR_OBSERVATION,
-        description: null,
+        description: "",
         criteriaReference: "7674b5e2-5629-4ab3-9d0b-a4e7a1cf1df4",
         aggregateMethod: "Maximum",
       },

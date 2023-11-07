@@ -442,12 +442,12 @@ export const mapExistingTestCasePopulations = (
     group?.measureObservations?.length > 0
   ) {
     if (isBooleanOrPatientBasis) {
-      return addDefaultObservationsForPatientBasedTestcases(
+      return addDefaultObservationsForPatientBasedPopulations(
         existingTestCasePC,
         group
       );
     } else {
-      return addDefaultObservationsForEpisodeBasedTestcases(
+      return addDefaultObservationsForEpisodeBasedPopulations(
         existingTestCasePC,
         group
       );
@@ -473,7 +473,7 @@ const countObservations = (
   return expectedRelatedPopulationValue;
 };
 
-const addDefaultObservationsForEpisodeBasedTestcases = (
+const addDefaultObservationsForEpisodeBasedPopulations = (
   existingTestCasePC,
   group
 ) => {
@@ -563,7 +563,7 @@ const addDefaultObservationsForEpisodeBasedTestcases = (
   return { ...existingTestCasePC };
 };
 
-const addDefaultObservationsForPatientBasedTestcases = (
+const addDefaultObservationsForPatientBasedPopulations = (
   existingTestCasePC,
   group: Group
 ) => {
