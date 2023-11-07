@@ -425,7 +425,10 @@ export function getPopulationTypesForScoring(group: Group) {
   return populationTypesForScoring;
 }
 
-export const mapExistingTestCase = (existingTestCasePC, group: Group) => {
+export const mapExistingTestCasePopulations = (
+  existingTestCasePC,
+  group: Group
+) => {
   const isBooleanOrPatientBasis =
     group.populationBasis === "true" || group.populationBasis === "boolean";
   const isScoringRatio = existingTestCasePC?.scoring === MeasureScoring.RATIO;
@@ -439,19 +442,128 @@ export const mapExistingTestCase = (existingTestCasePC, group: Group) => {
     group?.measureObservations?.length > 0
   ) {
     if (isBooleanOrPatientBasis) {
-      return addDefaultObservationsForBooleanAndPatientBasedTestcases(
+      return addDefaultObservationsForPatientBasedTestcases(
         existingTestCasePC,
         group
       );
     } else {
-      // need to implement for non-boolean and episode based measures
-      return { ...existingTestCasePC };
+      return addDefaultObservationsForEpisodeBasedTestcases(
+        existingTestCasePC,
+        group
+      );
     }
   }
   return { ...existingTestCasePC };
 };
 
-export const addDefaultObservationsForBooleanAndPatientBasedTestcases = (
+const countObservations = (
+  expectedRelatedPopulationValue,
+  expectedRelatedPopulationExclusionValue
+) => {
+  if (
+    expectedRelatedPopulationValue &&
+    expectedRelatedPopulationExclusionValue
+  ) {
+    const observationsCount = Math.max(
+      expectedRelatedPopulationValue - expectedRelatedPopulationExclusionValue,
+      0
+    );
+    return observationsCount;
+  }
+  return expectedRelatedPopulationValue;
+};
+
+const addDefaultObservationsForEpisodeBasedTestcases = (
+  existingTestCasePC,
+  group
+) => {
+  const findPopulation = (name) =>
+    existingTestCasePC.populationValues.find(
+      (popVal) => popVal.name === name && popVal.expected > 0
+    );
+
+  const findObservation = (name) =>
+    group.measureObservations.find(
+      (observation) =>
+        observation.criteriaReference ===
+        group.populations.find((popVal) => popVal.name === name)?.id
+    );
+
+  const addObservation = (
+    name,
+    relatedPopulation,
+    relatedPopulationExclusion
+  ) => {
+    const observationName = `${name}Observation`;
+    const isObservationPresent = existingTestCasePC.populationValues.find(
+      (popVal) => popVal.name === observationName
+    );
+
+    if (!isObservationPresent) {
+      const observationsCount = countObservations(
+        relatedPopulation?.expected,
+        relatedPopulationExclusion?.expected
+      );
+      if (observationsCount) {
+        const defaultObservations = Array.from(
+          { length: observationsCount },
+          (_, i) => ({
+            name: observationName,
+            expected: 0,
+            actual: null,
+            id: `${observationName}${i}`,
+            criteriaReference: relatedPopulation?.id,
+          })
+        );
+
+        const populationIndex = existingTestCasePC.populationValues.findIndex(
+          (item) => item.name === name
+        );
+        if (populationIndex !== -1) {
+          existingTestCasePC.populationValues.splice(
+            populationIndex + 1,
+            0,
+            ...defaultObservations
+          );
+        }
+      }
+    }
+  };
+
+  const denominatorExpectedHasValue = findPopulation("denominator");
+  const denominatorExclusionExpectedHasValue = findPopulation(
+    "denominatorExclusion"
+  );
+  const numeratorExpectedHasValue = findPopulation("numerator");
+  const numeratorExclusionExpectedHasValue =
+    findPopulation("numeratorExclusion");
+
+  if (denominatorExpectedHasValue) {
+    const denominatorObservation = findObservation("denominator");
+
+    if (denominatorObservation) {
+      addObservation(
+        "denominator",
+        denominatorExpectedHasValue,
+        denominatorExclusionExpectedHasValue
+      );
+    }
+  }
+
+  if (numeratorExpectedHasValue) {
+    const numeratorObservation = findObservation("numerator");
+    if (numeratorObservation) {
+      addObservation(
+        "numerator",
+        numeratorExpectedHasValue,
+        numeratorExclusionExpectedHasValue
+      );
+    }
+  }
+  return { ...existingTestCasePC };
+};
+
+const addDefaultObservationsForPatientBasedTestcases = (
   existingTestCasePC,
   group: Group
 ) => {

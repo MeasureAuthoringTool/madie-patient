@@ -34,7 +34,7 @@ import * as _ from "lodash";
 import { Ace } from "ace-builds";
 import {
   FHIR_POPULATION_CODES,
-  mapExistingTestCase,
+  mapExistingTestCasePopulations,
   getPopulationTypesForScoring,
   triggerPopChanges,
 } from "../../../util/PopulationsMap";
@@ -369,7 +369,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
             return _.isNil(existingGroupPop)
               ? mapMeasureGroup(group)
               : {
-                  ...mapExistingTestCase(existingGroupPop, group),
+                  ...mapExistingTestCasePopulations(existingGroupPop, group),
                   populationBasis: group?.populationBasis,
                 };
           });
