@@ -65,8 +65,8 @@ describe("QDM Patient Context", () => {
     expect(output.patient).toEqual(patient);
     expect(output.patient.dataElements).toBeTruthy();
     expect(output.patient.dataElements.length).toEqual(2);
-    expect(output.patient.dataElements[0]).toEqual(assessment);
-    expect(output.patient.dataElements[1]).toEqual(encounter);
+    expect(output.patient.dataElements[1]).toEqual(assessment);
+    expect(output.patient.dataElements[0]).toEqual(encounter);
   });
 
   test("patientReducer REMOVE_DATA_ELEMENT should return state elements array with target removed", () => {

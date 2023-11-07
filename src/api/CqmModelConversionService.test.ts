@@ -127,7 +127,7 @@ describe("CqmConversionService", () => {
     const cqmMeasure = await cqmConversionService.convertToCqmMeasure(measure);
     expect(cqmMeasure.title).toEqual(measure.measureName);
     expect(cqmMeasure.main_cql_library).toEqual(measure.cqlLibraryName);
-    expect(cqmMeasure.measure_scoring).toEqual(measure.scoring);
+    expect(cqmMeasure.measure_scoring).toEqual(measure.scoring?.toUpperCase());
     expect(cqmMeasure.composite).toEqual(false);
 
     expect(cqmMeasure.source_data_criteria.length).toEqual(3);

@@ -7,10 +7,9 @@ import ElementSection from "../../../../../common/ElementSection";
 import DynamicElementTabs from "./DynamicElementTabs";
 import useCqmConversionService from "../../../../../../api/CqmModelConversionService";
 import { measureStore } from "@madie/madie-util";
-import DataElementsList from "./DataElementsList";
+import DataElementsList from "./dataElementsList/DataElementsList";
 import DataElementsCard from "./DataElementsCard/DataElementsCard";
 import "./ElementsSection.scss";
-import "./DataElementsList.scss";
 import {
   PatientActionType,
   useQdmPatient,
@@ -124,6 +123,8 @@ const ElementsSection = (props: {
   };
 
   const handleAddDataElement = (sourceCriteria) => {
+    delete sourceCriteria._id;
+
     const data = { ...sourceCriteria, id: new ObjectID().toString() };
     const modelClass = getDataElementClass(sourceCriteria);
     const newDataElement = new modelClass(data);
@@ -176,15 +177,11 @@ const ElementsSection = (props: {
             />
           )}
         </div>
-        {/* data elements list */}
         {availableDataElements && !selectedDataElement && (
-          <div className="data-types" data-testid="data-elementslist-container">
-            {/* @ts-ignore-line */}
-            <DataElementsList
-              availableDataElements={availableDataElements}
-              setSelectedDataElement={handleAddDataElement}
-            />
-          </div>
+          <DataElementsList
+            availableDataElements={availableDataElements}
+            setSelectedDataElement={handleAddDataElement}
+          />
         )}
         <DataElementsTable
           allowedTypes={allowedTypes}
