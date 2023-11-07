@@ -630,7 +630,7 @@ const addDefaultObservationsForPatientBasedTestcases = (
     const numeratorObservation = findObservation("numerator");
 
     if (numeratorObservation) {
-      addObservation("numerator", denominatorExpectedTrue.id);
+      addObservation("numerator", numeratorExpectedTrue.id);
     }
   }
   return { ...existingTestCasePC };
