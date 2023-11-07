@@ -473,6 +473,7 @@ const countObservations = (
   return expectedRelatedPopulationValue;
 };
 
+// checks if denomintor, numerator has any associated observations
 const findObservation = (name, group) =>
   group.measureObservations.find(
     (observation) =>
