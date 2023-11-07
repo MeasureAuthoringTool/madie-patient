@@ -52,6 +52,7 @@ const DisplayAttributeInputs = ({
     e.preventDefault();
     if (attributeValue) {
       onInputAdd(attributeValue);
+      setAttributeValue(null);
     }
   };
   const { cqmMeasureState } = useQdmExecutionContext();
