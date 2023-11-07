@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import tw from "twin.macro";
+import "twin.macro";
 import "styled-components/macro";
 import * as _ from "lodash";
 import { Group, TestCase, MeasureErrorType } from "@madie/madie-models";
+import { QDMPatient } from "cqm-models";
 import { useParams } from "react-router-dom";
 import calculationService from "../../../api/CalculationService";
 import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calculator";
@@ -13,7 +14,6 @@ import CreateNewTestCaseDialog from "../../createTestCase/CreateNewTestCaseDialo
 import { MadieSpinner, Toast } from "@madie/madie-design-system/dist/react";
 import TestCaseListSideBarNav from "../common/TestCaseListSideBarNav";
 import Typography from "@mui/material/Typography";
-import TestCaseImportFromBonnieDialog from "../common/import/TestCaseImportFromBonnieDialog";
 import {
   TestCasesPassingDetailsProps,
   TestCaseListProps,
@@ -25,10 +25,7 @@ import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
 import qdmCalculationService, {
   CqmExecutionResultsByPatient,
 } from "../../../api/QdmCalculationService";
-import { JSONPath } from "jsonpath-plus";
 import TestCaseImportFromBonnieDialogQDM from "../common/import/TestCaseImportFromBonnieDialogQDM";
-
-const TH = tw.th`p-3 border-b text-left text-sm font-bold capitalize`;
 
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
@@ -186,10 +183,9 @@ const TestCaseList = (props: TestCaseListProps) => {
         removeHtmlCoverageHeader(calculationOutput["groupClauseCoverageHTML"])
       );
       const executionResults: CqmExecutionResultsByPatient = calculationOutput;
-      const nextExecutionResults = {};
 
-      validTestCases.forEach((testCase, i) => {
-        const patient = JSON.parse(testCase.json);
+      validTestCases.forEach((testCase) => {
+        const patient: QDMPatient = JSON.parse(testCase.json);
         const patientResults = executionResults[patient._id];
 
         const processedTC = qdmCalculation.current.processTestCaseResults(
