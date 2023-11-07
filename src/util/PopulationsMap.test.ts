@@ -10,7 +10,7 @@ import {
 import {
   triggerPopChanges,
   getValueFromBoolOrNum,
-  addDefaultObservationsForExistingTestCase,
+  loadExistingTestCase,
 } from "../util/PopulationsMap";
 
 let measureGroup = [
@@ -2596,7 +2596,7 @@ it("test proportion scoring with numeratorExclusion as changedPopulationName, wh
   ).toBeFalsy();
 });
 
-it("add defaults observations for boolean and Patient based testcases", () => {
+it("add defaults observations for boolean and Patient based testcases when loading the test case", () => {
   const testCase = {
     groupId: "654955e5cda7fe554f6ba792",
     scoring: MeasureScoring.RATIO,
@@ -2694,10 +2694,7 @@ it("add defaults observations for boolean and Patient based testcases", () => {
 
   expect(testCase.populationValues.length).toBe(3);
 
-  const updatedTestCase = addDefaultObservationsForExistingTestCase(
-    testCase,
-    ratioGroup
-  );
+  const updatedTestCase = loadExistingTestCase(testCase, ratioGroup);
   expect(updatedTestCase.populationValues.length).toBe(5);
   expect(updatedTestCase.populationValues[2].name).toBe(
     "denominatorObservation"

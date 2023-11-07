@@ -425,10 +425,7 @@ export function getPopulationTypesForScoring(group: Group) {
   return populationTypesForScoring;
 }
 
-export const addDefaultObservationsForExistingTestCase = (
-  existingTestCasePC,
-  group: Group
-) => {
+export const loadExistingTestCase = (existingTestCasePC, group: Group) => {
   const isBooleanOrPatientBasis =
     group.populationBasis === "true" || group.populationBasis === "boolean";
   const isScoringRatio = existingTestCasePC?.scoring === MeasureScoring.RATIO;
@@ -442,7 +439,7 @@ export const addDefaultObservationsForExistingTestCase = (
     group?.measureObservations?.length > 0
   ) {
     if (isBooleanOrPatientBasis) {
-      addDefaultsObservationsForBooleanAndPatientBasedTestcases(
+      addDefaultObservationsForBooleanAndPatientBasedTestcases(
         existingTestCasePC,
         group
       );
@@ -454,7 +451,7 @@ export const addDefaultObservationsForExistingTestCase = (
   return { ...existingTestCasePC };
 };
 
-export const addDefaultsObservationsForBooleanAndPatientBasedTestcases = (
+export const addDefaultObservationsForBooleanAndPatientBasedTestcases = (
   existingTestCasePC,
   group: Group
 ) => {

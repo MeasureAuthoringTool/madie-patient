@@ -40,7 +40,7 @@ import * as _ from "lodash";
 import "styled-components/macro";
 import {
   triggerPopChanges,
-  addDefaultObservationsForExistingTestCase,
+  loadExistingTestCase,
 } from "../../../util/PopulationsMap";
 import { QDMPatient, DataElement } from "cqm-models";
 import dayjs from "dayjs";
@@ -217,10 +217,7 @@ const EditTestCase = () => {
               );
               return _.isNil(existingTestCasePC)
                 ? qdmCalculation.current.mapMeasureGroup(measure, group)
-                : addDefaultObservationsForExistingTestCase(
-                    existingTestCasePC,
-                    group
-                  );
+                : loadExistingTestCase(existingTestCasePC, group);
             });
           } else {
             nextTc.groupPopulations = [];
