@@ -1,5 +1,5 @@
 import moment from "moment";
-import cqmModels from "cqm-models";
+import cqmModels, { CQL } from "cqm-models";
 import * as _ from "lodash";
 import { getDataElementClass } from "./DataElementHelper";
 
@@ -167,7 +167,7 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
     return `${title} : ${value.code}`;
   } else if (value.unit == "%") {
     return `${value.value} ${value.unit}`;
-  } else if (value.low || value.high) {
+  } else if (value instanceof CQL.Interval) {
     let lowString = value.low ? stringifyValue(value.low) : "N/A";
     let highString = value.high ? stringifyValue(value.high) : "N/A";
     return `${lowString} - ${highString}`;

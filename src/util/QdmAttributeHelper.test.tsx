@@ -3,7 +3,7 @@ import {
   getDisplayFromId,
   generateAttributesToDisplay,
 } from "./QdmAttributeHelpers";
-import cqmModels from "cqm-models";
+import cqmModels, { CQL } from "cqm-models";
 
 describe("StringifyValue", () => {
   it("stringify value stringifies a number to a string without thinking it's a date", () => {
@@ -58,14 +58,15 @@ describe("StringifyValue", () => {
     expect(stringifyValue("alreadyAString")).toBe("alreadyAString");
   });
   it("stringifyValue stringifies interval strings", () => {
-    expect(
-      stringifyValue({
-        low: "2012-04-05T08:00:00.000",
-        high: "2012-04-05T08:15:00.000",
-        lowClosed: true,
-        highClosed: true,
-      })
-    ).toBe("04/05/2012 8:00 AM - 04/05/2012 8:15 AM");
+    const testInterval = new CQL.Interval(
+      "2012-04-05T08:00:00.000",
+      "2012-04-05T08:15:00.000",
+      true,
+      true
+    );
+    expect(stringifyValue(testInterval)).toBe(
+      "04/05/2012 8:00 AM - 04/05/2012 8:15 AM"
+    );
   });
 
   test("is it just time?", () => {

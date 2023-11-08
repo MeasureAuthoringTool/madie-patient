@@ -1,6 +1,7 @@
 import { useCallback, useState, useEffect, useRef } from "react";
 import useTestCaseServiceApi from "../../../../api/useTestCaseServiceApi";
 import { TestCase } from "@madie/madie-models";
+import { QDMPatient } from "cqm-models";
 
 function UseFetchTestCases({ measureId, setErrors }) {
   const testCaseService = useRef(useTestCaseServiceApi());
@@ -10,6 +11,7 @@ function UseFetchTestCases({ measureId, setErrors }) {
     message: "",
   });
 
+  // We need testCase.json to be a QDMPatient object for execution
   const retrieveTestCases = useCallback(() => {
     setLoadingState(() => ({
       loading: true,
@@ -20,6 +22,11 @@ function UseFetchTestCases({ measureId, setErrors }) {
       .then((testCaseList: TestCase[]) => {
         testCaseList.forEach((testCase: any) => {
           testCase.executionStatus = testCase.validResource ? "NA" : "Invalid";
+          if (testCase.json) {
+            testCase.json = JSON.stringify(
+              new QDMPatient(JSON.parse(testCase.json))
+            );
+          }
         });
         setTestCases(testCaseList);
       })
