@@ -6,11 +6,13 @@ import {
   Measure,
   Group,
   MeasureScoring,
+  AggregateFunctionType,
 } from "@madie/madie-models";
 import {
   triggerPopChanges,
   getValueFromBoolOrNum,
-} from "../util/PopulationsMap";
+  mapExistingTestCasePopulations,
+} from "./PopulationsMap";
 
 let measureGroup = [
   {
@@ -2593,4 +2595,239 @@ it("test proportion scoring with numeratorExclusion as changedPopulationName, wh
       "Proportion"
     )
   ).toBeFalsy();
+});
+
+it("add defaults observations for Patient based testcases when loading the test case", () => {
+  const testCase = {
+    groupId: "654955e5cda7fe554f6ba792",
+    scoring: MeasureScoring.RATIO,
+    populationBasis: "true",
+    populationValues: [
+      {
+        id: "2c1b199a-ba0f-4932-bf19-65c58968e3d5",
+        criteriaReference: null,
+        name: PopulationType.INITIAL_POPULATION,
+        expected: true,
+        actual: false,
+      },
+      {
+        id: "735bdb59-0923-444f-b912-f61837b6f57c",
+        criteriaReference: null,
+        name: PopulationType.DENOMINATOR,
+        expected: true,
+        actual: false,
+      },
+      {
+        id: "c9a5915a-cdea-43f0-bab0-af5e3b63d261",
+        criteriaReference: null,
+        name: PopulationType.NUMERATOR,
+        expected: true,
+        actual: false,
+      },
+    ],
+    stratificationValues: [],
+  };
+
+  const ratioGroup: Group = {
+    id: "654955f6cda7fe554f6ba793",
+    scoring: MeasureScoring.RATIO,
+    populations: [
+      {
+        id: "545eaef1-b058-4d35-9073-c5584edaf746",
+        name: PopulationType.INITIAL_POPULATION,
+        definition: "Initial Population",
+        associationType: "",
+        description: "",
+      },
+      {
+        id: "72637712-fd6f-4289-a031-6eab4d901dac",
+        name: PopulationType.DENOMINATOR,
+        definition: "Denominator",
+        associationType: "",
+        description: "",
+      },
+      {
+        id: "ef08c1d8-edad-416f-a0d0-dd976ca0a82f",
+        name: PopulationType.DENOMINATOR_EXCLUSION,
+        definition: "Denonimator Exclusion",
+        associationType: "",
+        description: "",
+      },
+      {
+        id: "7674b5e2-5629-4ab3-9d0b-a4e7a1cf1df4",
+        name: PopulationType.NUMERATOR,
+        definition: "Numerator",
+        associationType: "",
+        description: "",
+      },
+      {
+        id: "e2d29b07-42f6-4b44-af3b-3f9879d6fb4c",
+        name: PopulationType.NUMERATOR_EXCLUSION,
+        definition: "Numerator",
+        associationType: "",
+        description: "",
+      },
+    ],
+    measureObservations: [
+      {
+        id: "8cb5dd6f-b263-4755-851d-9b6c44975569",
+        definition: PopulationType.DENOMINATOR_OBSERVATION,
+        description: "",
+        criteriaReference: "72637712-fd6f-4289-a031-6eab4d901dac",
+        aggregateMethod: AggregateFunctionType.MAXIMUM,
+      },
+      {
+        id: "ee3c1f30-a7ac-4952-b208-85ae61cdaca0",
+        definition: PopulationType.NUMERATOR_OBSERVATION,
+        description: "",
+        criteriaReference: "7674b5e2-5629-4ab3-9d0b-a4e7a1cf1df4",
+        aggregateMethod: AggregateFunctionType.MAXIMUM,
+      },
+    ],
+    groupDescription: "",
+    improvementNotation: "",
+    rateAggregation: "",
+    measureGroupTypes: [],
+    scoringUnit: "",
+    stratifications: [],
+    populationBasis: "true",
+  };
+
+  expect(testCase.populationValues.length).toBe(3);
+
+  const updatedTestCase = mapExistingTestCasePopulations(testCase, ratioGroup);
+  expect(updatedTestCase.populationValues.length).toBe(5);
+  expect(updatedTestCase.populationValues[2].name).toBe(
+    "denominatorObservation"
+  );
+  expect(updatedTestCase.populationValues[4].name).toBe("numeratorObservation");
+});
+
+it("add defaults observations for Episode based testcases when loading the test case", () => {
+  const testCase = {
+    groupId: "654a77facda7fe554f6ba799",
+    scoring: "Ratio",
+    populationBasis: "false",
+    populationValues: [
+      {
+        id: "65dc5880-0161-476a-a3eb-888ddf47c636",
+        criteriaReference: null,
+        name: "initialPopulation",
+        expected: "1",
+        actual: null,
+      },
+      {
+        id: "c1af4146-b8a0-4e33-8eac-eba5daa07d2d",
+        criteriaReference: null,
+        name: "denominator",
+        expected: "6",
+        actual: null,
+      },
+      {
+        id: "c826a547-d457-47f1-a6cb-13b46ded0f48",
+        criteriaReference: null,
+        name: "denominatorExclusion",
+        expected: "2",
+        actual: null,
+      },
+      {
+        id: "b6c3659b-4dfa-4f07-864b-44562e0d2b2a",
+        criteriaReference: null,
+        name: "numerator",
+        expected: "4",
+        actual: null,
+      },
+      {
+        id: "numeratorObservation0",
+        criteriaReference: "b6c3659b-4dfa-4f07-864b-44562e0d2b2a",
+        name: "numeratorObservation",
+        expected: 0,
+        actual: null,
+      },
+      {
+        id: "061eec61-a363-4f9e-9999-0f62fc8a615f",
+        criteriaReference: null,
+        name: "numeratorExclusion",
+        expected: "3",
+        actual: null,
+      },
+    ],
+    stratificationValues: [],
+  };
+
+  const ratioGroup: Group = {
+    id: "654955f6cda7fe554f6ba793",
+    scoring: MeasureScoring.RATIO,
+    populations: [
+      {
+        id: "545eaef1-b058-4d35-9073-c5584edaf746",
+        name: PopulationType.INITIAL_POPULATION,
+        definition: "Initial Population",
+        associationType: "",
+        description: "",
+      },
+      {
+        id: "72637712-fd6f-4289-a031-6eab4d901dac",
+        name: PopulationType.DENOMINATOR,
+        definition: "Denominator",
+        associationType: "null",
+        description: "",
+      },
+      {
+        id: "ef08c1d8-edad-416f-a0d0-dd976ca0a82f",
+        name: PopulationType.DENOMINATOR_EXCLUSION,
+        definition: "Denonimator Exclusion",
+        associationType: "",
+        description: "",
+      },
+      {
+        id: "7674b5e2-5629-4ab3-9d0b-a4e7a1cf1df4",
+        name: PopulationType.NUMERATOR,
+        definition: "Numerator",
+        associationType: "",
+        description: "",
+      },
+      {
+        id: "e2d29b07-42f6-4b44-af3b-3f9879d6fb4c",
+        name: PopulationType.NUMERATOR_EXCLUSION,
+        definition: "Numerator",
+        associationType: "",
+        description: "",
+      },
+    ],
+    measureObservations: [
+      {
+        id: "8cb5dd6f-b263-4755-851d-9b6c44975569",
+        definition: PopulationType.DENOMINATOR_OBSERVATION,
+        description: "",
+        criteriaReference: "72637712-fd6f-4289-a031-6eab4d901dac",
+        aggregateMethod: AggregateFunctionType.MAXIMUM,
+      },
+      {
+        id: "ee3c1f30-a7ac-4952-b208-85ae61cdaca0",
+        definition: PopulationType.NUMERATOR_OBSERVATION,
+        description: "",
+        criteriaReference: "7674b5e2-5629-4ab3-9d0b-a4e7a1cf1df4",
+        aggregateMethod: AggregateFunctionType.MAXIMUM,
+      },
+    ],
+    groupDescription: "",
+    improvementNotation: "",
+    rateAggregation: "",
+    measureGroupTypes: [],
+    scoringUnit: "",
+    stratifications: [],
+    populationBasis: "false",
+  };
+
+  expect(testCase.populationValues.length).toBe(6);
+  const updatedTestCase = mapExistingTestCasePopulations(testCase, ratioGroup);
+  expect(updatedTestCase.populationValues.length).toBe(10);
+  expect(updatedTestCase.populationValues[2].id).toBe(
+    "denominatorObservation0"
+  );
+  expect(updatedTestCase.populationValues[4].id).toBe(
+    "denominatorObservation2"
+  );
+  expect(updatedTestCase.populationValues[8].id).toBe("numeratorObservation0");
 });
