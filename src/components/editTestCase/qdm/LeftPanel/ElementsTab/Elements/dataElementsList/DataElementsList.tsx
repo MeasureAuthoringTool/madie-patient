@@ -13,7 +13,7 @@ const DataElementsList = (props: {
   return (
     <div className="data-types" data-testid="data-elementslist-container">
       {availableDataElements?.map((element) => (
-        <div key={`element - ${element.qdmStatus}`}>
+        <div key={element.description}>
           <DataElementsTile
             element={element}
             setSelectedDataElement={setSelectedDataElement}
