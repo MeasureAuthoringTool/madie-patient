@@ -365,14 +365,19 @@ const TestCaseList = (props: TestCaseListProps) => {
                         <div
                           role="alert"
                           style={{
-                            width: "1px",
                             position: "absolute",
                             zIndex: "-1",
                             overflow: "hidden",
                           }}
                           data-testid="sr-div"
                         >
-                          <span>{readerString}</span>
+                          <span
+                            style={{
+                              fontSize: "1%",
+                            }}
+                          >
+                            {readerString}
+                          </span>
                         </div>
                       )}
 
