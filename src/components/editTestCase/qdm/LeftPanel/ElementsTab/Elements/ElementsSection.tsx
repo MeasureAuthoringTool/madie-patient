@@ -88,7 +88,7 @@ const ElementsSection = (props: {
   }, [dataElements, patient?.dataElements]);
 
   const retrieveCategories = useCallback(() => {
-    cqmService.current.fetchSourceDataCriteria(measure.cql).then((r) => {
+    cqmService.current.fetchRelevantDataElements(measure).then((r) => {
       const categories = r.map((r) => r.qdmCategory).sort();
       const sourceDataCriteriaTypes = r.map((c) => c._type);
       setTypesFromCql(sourceDataCriteriaTypes);
