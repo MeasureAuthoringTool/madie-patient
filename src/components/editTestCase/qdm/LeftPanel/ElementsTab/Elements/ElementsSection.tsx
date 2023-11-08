@@ -68,10 +68,12 @@ const ElementsSection = (props: {
         failedLookupCount++;
       }
     });
-    if (failedLookupCount) {
+    if (failedLookupCount > 0) {
       handleTestCaseErrors(
         "There are data elements in this test case not relevant to the measure.  Those data elements are not editable and can only be deleted from the Elements table."
       );
+    } else {
+      handleTestCaseErrors(null);
     }
   }, [
     setAllowedTypes,
@@ -82,10 +84,10 @@ const ElementsSection = (props: {
   ]);
 
   useEffect(() => {
-    if (dataElements?.length > 0 && patient?.dataElements?.length > 0) {
+    if (patient?.dataElements?.length > 0) {
       checkForMissingDataElements();
     }
-  }, [dataElements, patient?.dataElements]);
+  }, [typesFromCql, patient?.dataElements]);
 
   const retrieveCategories = useCallback(() => {
     cqmService.current.fetchRelevantDataElements(measure).then((r) => {

@@ -7,6 +7,8 @@ import {
   MeasureObservation,
   DisplayStratificationValue,
   StratificationExpectedValue,
+  MeasureScoring,
+  TestCase,
 } from "@madie/madie-models";
 
 import _ from "lodash";
@@ -422,6 +424,211 @@ export function getPopulationTypesForScoring(group: Group) {
 
   return populationTypesForScoring;
 }
+
+export const mapExistingTestCasePopulations = (
+  existingTestCasePC,
+  group: Group
+) => {
+  const isBooleanOrPatientBasis =
+    group.populationBasis === "true" || group.populationBasis === "boolean";
+  const isScoringRatio = existingTestCasePC?.scoring === MeasureScoring.RATIO;
+  const hasPopulationValues =
+    existingTestCasePC?.populationValues &&
+    existingTestCasePC.populationValues.length > 0;
+
+  if (
+    isScoringRatio &&
+    hasPopulationValues &&
+    group?.measureObservations?.length > 0
+  ) {
+    if (isBooleanOrPatientBasis) {
+      return addDefaultObservationsForPatientBasedPopulations(
+        existingTestCasePC,
+        group
+      );
+    } else {
+      return addDefaultObservationsForEpisodeBasedPopulations(
+        existingTestCasePC,
+        group
+      );
+    }
+  }
+  return { ...existingTestCasePC };
+};
+
+const countObservations = (
+  expectedRelatedPopulationValue,
+  expectedRelatedPopulationExclusionValue
+) => {
+  if (
+    expectedRelatedPopulationValue &&
+    expectedRelatedPopulationExclusionValue
+  ) {
+    const observationsCount = Math.max(
+      expectedRelatedPopulationValue - expectedRelatedPopulationExclusionValue,
+      0
+    );
+    return observationsCount;
+  }
+  return expectedRelatedPopulationValue;
+};
+
+// checks if denomintor, numerator has any associated observations
+const findObservation = (name, group) =>
+  group.measureObservations.find(
+    (observation) =>
+      observation.criteriaReference ===
+      group.populations.find((popVal) => popVal.name === name)?.id
+  );
+
+const addDefaultObservationsForEpisodeBasedPopulations = (
+  existingTestCasePC,
+  group
+) => {
+  const findPopulation = (name) =>
+    existingTestCasePC.populationValues.find(
+      (popVal) => popVal.name === name && popVal.expected > 0
+    );
+
+  const addObservation = (
+    name,
+    relatedPopulation,
+    relatedPopulationExclusion
+  ) => {
+    const observationName = `${name}Observation`;
+    const isObservationPresent = existingTestCasePC.populationValues.find(
+      (popVal) => popVal.name === observationName
+    );
+
+    if (!isObservationPresent) {
+      const observationsCount = countObservations(
+        relatedPopulation?.expected,
+        relatedPopulationExclusion?.expected
+      );
+      if (observationsCount) {
+        const defaultObservations = Array.from(
+          { length: observationsCount },
+          (_, i) => ({
+            name: observationName,
+            expected: 0,
+            actual: null,
+            id: `${observationName}${i}`,
+            criteriaReference: relatedPopulation?.id,
+          })
+        );
+
+        const populationIndex = existingTestCasePC.populationValues.findIndex(
+          (item) => item.name === name
+        );
+        if (populationIndex !== -1) {
+          existingTestCasePC.populationValues.splice(
+            populationIndex + 1,
+            0,
+            ...defaultObservations
+          );
+        }
+      }
+    }
+  };
+
+  const denominatorExpectedHasValue = findPopulation("denominator");
+  const denominatorExclusionExpectedHasValue = findPopulation(
+    "denominatorExclusion"
+  );
+  const numeratorExpectedHasValue = findPopulation("numerator");
+  const numeratorExclusionExpectedHasValue =
+    findPopulation("numeratorExclusion");
+
+  if (denominatorExpectedHasValue) {
+    const denominatorObservation = findObservation("denominator", group);
+
+    if (denominatorObservation) {
+      addObservation(
+        "denominator",
+        denominatorExpectedHasValue,
+        denominatorExclusionExpectedHasValue
+      );
+    }
+  }
+
+  if (numeratorExpectedHasValue) {
+    const numeratorObservation = findObservation("numerator", group);
+    if (numeratorObservation) {
+      addObservation(
+        "numerator",
+        numeratorExpectedHasValue,
+        numeratorExclusionExpectedHasValue
+      );
+    }
+  }
+  return { ...existingTestCasePC };
+};
+
+const addDefaultObservationsForPatientBasedPopulations = (
+  existingTestCasePC,
+  group: Group
+) => {
+  const findPopulation = (name, expected) =>
+    existingTestCasePC.populationValues.find(
+      (popVal) => popVal.name === name && popVal.expected === expected
+    );
+
+  const addObservation = (name, criteriaRefId) => {
+    const observationName = `${name}Observation`;
+    const isObservationPresent = existingTestCasePC.populationValues.find(
+      (popVal) => popVal.name === observationName
+    );
+
+    if (!isObservationPresent) {
+      const defaultObservation = {
+        name: observationName,
+        expected: 0,
+        actual: null,
+        id: `${observationName}0`,
+        criteriaReference: criteriaRefId,
+      };
+
+      const populationIndex = existingTestCasePC.populationValues.findIndex(
+        (item) => item.name === name
+      );
+      if (populationIndex !== -1) {
+        existingTestCasePC.populationValues.splice(
+          populationIndex + 1,
+          0,
+          defaultObservation
+        );
+      }
+    }
+  };
+
+  const denominatorExpectedTrue = findPopulation("denominator", true);
+  const denominatorExclusionExpectedTrue = findPopulation(
+    "denominatorExclusion",
+    true
+  );
+  const numeratorExpectedTrue = findPopulation("numerator", true);
+  const numeratorExclusionExpectedTrue = findPopulation(
+    "numeratorExclusion",
+    true
+  );
+
+  if (denominatorExpectedTrue && !denominatorExclusionExpectedTrue) {
+    const denominatorObservation = findObservation("denominator", group);
+
+    if (denominatorObservation) {
+      addObservation("denominator", denominatorExpectedTrue.id);
+    }
+  }
+
+  if (numeratorExpectedTrue && !numeratorExclusionExpectedTrue) {
+    const numeratorObservation = findObservation("numerator", group);
+
+    if (numeratorObservation) {
+      addObservation("numerator", numeratorExpectedTrue.id);
+    }
+  }
+  return { ...existingTestCasePC };
+};
 
 // for every MeasurePopulation value
 // this method returns its equivalent fqm-execution PopulationResult identifier.
