@@ -46,10 +46,17 @@ export const deleteAttribute = (chip, dataElement) => {
     );
     const pathInfo = updatedDataElement.schema.paths[attributePath];
     if (_.upperCase(pathInfo?.instance) === "ARRAY") {
-      updatedDataElement[attributePath] = _.filter(
-        updatedDataElement[attributePath],
-        (a) => a._id.toString() !== chip.id
-      );
+      if (attributePath === "relatedTo") {
+        updatedDataElement[attributePath] = _.filter(
+          updatedDataElement[attributePath],
+          (a) => a !== chip.id
+        );
+      } else {
+        updatedDataElement[attributePath] = _.filter(
+          updatedDataElement[attributePath],
+          (a) => a._id.toString() !== chip.id
+        );
+      }
     }
   } else {
     const attributePath = _.camelCase(_.split(chip.text, ":", 1)[0]);

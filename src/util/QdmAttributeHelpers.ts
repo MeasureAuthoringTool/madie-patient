@@ -110,15 +110,13 @@ export const generateAttributesToDisplay = (
         dataElement[path].forEach((elem) => {
           if (path == "relatedTo") {
             const display = getDisplayFromId(dataElements, elem);
-            let value = `${stringifyValue(
-              display?.description,
-              true
-            )} ${stringifyValue(display?.timing, true, codeSystemMap)}}`;
+            let value = `${stringifyValue(elem, true, codeSystemMap)}`;
+
             multipleDataTypes.push({
               name: _.replace(elem._type, "QDM::", ""),
               title: _.startCase(path),
               value: value,
-              id: elem._id?.toString(),
+              id: elem?.toString(),
             });
           } else {
             multipleDataTypes.push({

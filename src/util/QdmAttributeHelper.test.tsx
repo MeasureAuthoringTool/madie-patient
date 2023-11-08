@@ -1,4 +1,8 @@
-import { stringifyValue, getDisplayFromId } from "./QdmAttributeHelpers";
+import {
+  stringifyValue,
+  getDisplayFromId,
+  generateAttributesToDisplay,
+} from "./QdmAttributeHelpers";
 import cqmModels from "cqm-models";
 
 describe("StringifyValue", () => {
@@ -382,5 +386,106 @@ describe("getDisplayFromId", () => {
         highClosed: true,
       },
     });
+  });
+});
+
+describe("generateAttributesToDisplay", () => {
+  test("generateAttributesToDisplay for RelatedTo", () => {
+    const dataElement = {
+      dataElementCodes: [
+        {
+          code: "28568-4",
+          system: "2.16.840.1.113883.6.1",
+          version: null,
+          display: "Physician Emergency department Note",
+        },
+      ],
+      _id: "6545107d39e8a400008d7a68",
+      relatedTo: [
+        "654a289b170fde0000137c07 - Encounter, Performed: Outpatient Surgery Service",
+      ],
+      performer: [],
+      qdmTitle: "Assessment, Performed",
+      hqmfOid: "2.16.840.1.113883.10.20.28.4.117",
+      qdmCategory: "assessment",
+      qdmStatus: "performed",
+      qdmVersion: "5.6",
+      _type: "QDM::AssessmentPerformed",
+      description: "Assessment, Performed: Emergency Department Evaluation",
+      codeListId: "2.16.840.1.113762.1.4.1111.163",
+      id: "6545108039e8a400008d7a6c",
+      components: [],
+    };
+    const dataElements = [
+      {
+        dataElementCodes: [
+          {
+            code: "28568-4",
+            system: "2.16.840.1.113883.6.1",
+            version: null,
+            display: "Physician Emergency department Note",
+          },
+        ],
+        _id: "6545107d39e8a400008d7a68",
+        relatedTo: [
+          "654a289b170fde0000137c07 - Encounter, Performed: Outpatient Surgery Service",
+        ],
+        performer: [],
+        qdmTitle: "Assessment, Performed",
+        hqmfOid: "2.16.840.1.113883.10.20.28.4.117",
+        qdmCategory: "assessment",
+        qdmStatus: "performed",
+        qdmVersion: "5.6",
+        _type: "QDM::AssessmentPerformed",
+        description: "Assessment, Performed: Emergency Department Evaluation",
+        codeListId: "2.16.840.1.113762.1.4.1111.163",
+        id: "6545108039e8a400008d7a6c",
+        components: [],
+      },
+      {
+        dataElementCodes: [
+          {
+            code: "110468005",
+            system: "2.16.840.1.113883.6.96",
+            version: null,
+            display: "Ambulatory surgery (procedure)",
+          },
+        ],
+        _id: "654a2885170fde0000137be5",
+        participant: [],
+        relatedTo: [],
+        qdmTitle: "Encounter, Performed",
+        hqmfOid: "2.16.840.1.113883.10.20.28.4.5",
+        qdmCategory: "encounter",
+        qdmStatus: "performed",
+        qdmVersion: "5.6",
+        _type: "QDM::EncounterPerformed",
+        description: "Encounter, Performed: Outpatient Surgery Service",
+        codeListId: "2.16.840.1.113762.1.4.1110.38",
+        id: "654a289b170fde0000137c07",
+        facilityLocations: [],
+        diagnoses: [],
+      },
+    ];
+
+    const codeSystemMap = {
+      "2.16.840.1.113883.6.96": "SNOMEDCT",
+      "2.16.840.1.113883.6.259": "HSLOC",
+      "2.16.840.1.113883.6.1": "LOINC",
+      "2.16.840.1.113883.6.238": "CDCREC",
+      "2.16.840.1.113883.5.1": "AdministrativeGender",
+      "2.16.840.1.113883.3.221.5": "SOP",
+      "2.16.840.1.113883.6.90": "ICD10CM",
+    };
+    const result = generateAttributesToDisplay(
+      dataElement,
+      dataElements,
+      codeSystemMap
+    );
+    expect(result[0].isMultiple).toBe(true);
+    expect(result[0].additionalElements[0].title).toBe("Related To");
+    expect(result[0].additionalElements[0].value).toBe(
+      "654a289b170fde0000137c07 - Encounter, Performed: Outpatient Surgery Service"
+    );
   });
 });
