@@ -52,6 +52,7 @@ const EditTestCase = () => {
   useDocumentTitle("MADiE Edit Measure Edit Test Case");
 
   const [measure, setMeasure] = useState<any>(measureStore.state);
+  const { updateMeasure } = measureStore;
   useEffect(() => {
     const subscription = measureStore.subscribe(setMeasure);
     return () => {
@@ -198,7 +199,7 @@ const EditTestCase = () => {
       measureCopy.testCases = [testCase];
     }
     // update measure store
-    setMeasure(measureCopy);
+    updateMeasure(measureCopy);
   }
 
   // Fetches test case based on ID, identifies measure.group converts it to testcase.groupPopulation
