@@ -19,9 +19,30 @@ import {
 } from "../../../util/GroupCoverageHelpers";
 import "./QiCoreGroupCoverage.scss";
 
+export interface CqlDefinitionExpression {
+  id?: string;
+  definitionName: string;
+  definitionLogic: string;
+  context: string;
+  supplDataElement: boolean;
+  popDefinition: boolean;
+  commentString: string;
+  returnType: string | null;
+  parentLibrary: string | null;
+  libraryDisplayName: string | null;
+  libraryVersion: string | null;
+  name: string;
+  logic: string;
+}
+
+export interface CqlDefinitionCallstack {
+  [key: string]: Array<CqlDefinitionExpression>;
+}
+
 interface Props {
   groupPopulations: GroupPopulation[];
   mappedCalculationResults: MappedCalculationResults;
+  cqlDefinitionCallstack?: CqlDefinitionCallstack;
 }
 
 interface Statement {
@@ -29,6 +50,7 @@ interface Statement {
   relevance: Relevance;
   statementLevelHTML?: string | undefined;
   pretty?: string;
+  name?: string;
 }
 
 interface PopulationStatement extends Statement {
@@ -50,6 +72,7 @@ const allDefinitions = [
 const QiCoreGroupCoverage = ({
   groupPopulations,
   mappedCalculationResults,
+  cqlDefinitionCallstack,
 }: Props) => {
   // selected group/criteria
   const [selectedCriteria, setSelectedCriteria] = useState<string>("");
@@ -115,6 +138,7 @@ const QiCoreGroupCoverage = ({
               populationName:
                 FHIR_POPULATION_CODES[relevantPopulations[key].populationType],
               id: relevantPopulations[key].populationId,
+              name: key,
             };
             return output;
           }, {});
@@ -224,6 +248,39 @@ const QiCoreGroupCoverage = ({
     }
   };
 
+  const generateCallstackText = (selectedDefinition: Statement): string => {
+    let text = "";
+    cqlDefinitionCallstack[selectedDefinition.name]?.forEach(
+      (calledDefinition) => {
+        // Get Highlighted HTML from execution results
+        text +=
+          mappedCalculationResults[selectedCriteria]["statementResults"][
+            calledDefinition.name
+          ].statementLevelHTML;
+        // Get the callstack for each definition called by the parent statement
+        getCallstack(calledDefinition.id).forEach((name) => {
+          text +=
+            mappedCalculationResults[selectedCriteria]["statementResults"][name]
+              .statementLevelHTML;
+        });
+      }
+    );
+    return text;
+  };
+
+  const getCallstack = (defId: string): string[] => {
+    let calledDefinitions: string[] = [];
+    cqlDefinitionCallstack[defId]?.forEach((calledDefinition) => {
+      calledDefinitions.push(calledDefinition.name);
+      if (cqlDefinitionCallstack[calledDefinition.id]) {
+        calledDefinitions = calledDefinitions.concat(
+          getCallstack(calledDefinition.id)
+        );
+      }
+    });
+    return calledDefinitions;
+  };
+
   return (
     <>
       <div tw="border-b pb-2">
@@ -300,12 +357,38 @@ const QiCoreGroupCoverage = ({
             data-testid={`${selectedHighlightingTab.abbreviation}-highlighting`}
           >
             {selectedPopulationDefinitionResults ? (
-              <div>
-                {parse(selectedPopulationDefinitionResults?.statementLevelHTML)}
-                <GroupCoverageResultsSection
-                  results={selectedPopulationDefinitionResults.pretty}
-                />
-              </div>
+              <>
+                <div>
+                  {parse(
+                    selectedPopulationDefinitionResults?.statementLevelHTML
+                  )}
+                  <GroupCoverageResultsSection
+                    results={selectedPopulationDefinitionResults.pretty}
+                  />
+                </div>
+                <div
+                  style={{
+                    fontFamily: "Rubik",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    color: "#0073C8",
+                  }}
+                >
+                  Definition Used
+                </div>
+                <div
+                  style={{
+                    fontFamily: "Rubik",
+                    fontSize: "12px",
+                    fontWeight: "500",
+                    whiteSpace: "pre-wrap",
+                  }}
+                >
+                  {parse(
+                    generateCallstackText(selectedPopulationDefinitionResults)
+                  )}
+                </div>
+              </>
             ) : (
               "No results available"
             )}

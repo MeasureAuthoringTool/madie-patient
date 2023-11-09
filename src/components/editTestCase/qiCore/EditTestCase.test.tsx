@@ -41,6 +41,7 @@ import { TestCaseValidator } from "../../../validators/TestCaseValidator";
 import { checkUserCanEdit } from "@madie/madie-util";
 import { PopulationType as FqmPopulationType } from "fqm-execution/build/types/Enums";
 import { addValues } from "../../../util/DefaultValueProcessor";
+import { defineElm } from "../../../__mocks__/define-elm-fixture";
 
 //temporary solution (after jest updated to version 27) for error: thrown: "Exceeded timeout of 5000 ms for a test.
 jest.setTimeout(60000);
