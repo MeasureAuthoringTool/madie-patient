@@ -211,28 +211,30 @@ describe("CqmConversionService", () => {
     }
   });
 
-  it("handle fetchSourceDataCriteria error", async () => {
+  it("handle fetchRelevantDataElements error", async () => {
     axiosMock.put.mockRejectedValueOnce({
       status: 500,
       data: "failure",
       error: { message: "error" },
     });
     try {
-      await cqmConversionService.fetchSourceDataCriteria("cal");
+      await cqmConversionService.fetchRelevantDataElements(measure);
     } catch (e) {
       expect(e.message).toEqual(
-        "An Error occurred while fetching source data criteria"
+        "An Error occurred while fetching relevant data elements"
       );
     }
   });
 
-  it("handle fetchSourceDataCriteria success", async () => {
+  it("handle fetchRelevantDataElements success", async () => {
     axios.put = jest.fn().mockResolvedValueOnce({
       status: 200,
       data: dataCriteria,
     });
 
-    const result = await cqmConversionService.fetchSourceDataCriteria("cql");
+    const result = await cqmConversionService.fetchRelevantDataElements(
+      measure
+    );
     expect(result.length).toBe(3);
     expect(result[0].codeListId).toBe("2.16.840.1.114222.4.11.837");
     expect(result[1].codeListId).toBe("2.16.840.1.113883.3.666.5.307");

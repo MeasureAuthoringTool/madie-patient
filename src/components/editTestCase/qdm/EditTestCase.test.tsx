@@ -236,7 +236,7 @@ jest.mock("../../../api/CqmModelConversionService");
 const CQMConversionMock =
   useCqmConversionService as unknown as jest.Mock<TestCaseServiceApi>;
 const useCqmConversionServiceMockResolved = {
-  fetchSourceDataCriteria: jest.fn().mockResolvedValue([
+  fetchRelevantDataElements: jest.fn().mockResolvedValue([
     {
       qdmCategory: "symptom",
       _type: "",
