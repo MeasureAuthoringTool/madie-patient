@@ -46,22 +46,25 @@ export class CqmConversionService {
     }
   }
 
-  async fetchSourceDataCriteria(cql: string): Promise<Array<DataElement>> {
+  async fetchRelevantDataElements(
+    measure: Measure
+  ): Promise<Array<DataElement>> {
     try {
       const response = await axios.put(
-        `${this.baseUrl}/cql/source-data-criteria`,
-        cql,
+        `${this.baseUrl}/qdm/relevant-elements`,
+        measure,
         {
           headers: {
             Authorization: `Bearer ${this.getAccessToken()}`,
-            "Content-Type": "text/plain",
+            "Content-Type": "application/json",
           },
         }
       );
       return response.data.map((dc) => this.buildSourceDataCriteria(dc));
     } catch (error) {
       throw new Error(
-        error.message || "An Error occurred while fetching source data criteria"
+        error.message ||
+          "An Error occurred while fetching relevant data elements"
       );
     }
   }
@@ -83,8 +86,8 @@ export class CqmConversionService {
     cqmMeasure.composite = false; // for now
     cqmMeasure.component = false; // for now
     cqmMeasure.id = measure.id;
-    cqmMeasure.source_data_criteria = await this.fetchSourceDataCriteria(
-      measure.cql
+    cqmMeasure.source_data_criteria = await this.fetchRelevantDataElements(
+      measure
     );
     const elms = await this.fetchElmForCql(measure.cql);
     // Fetch statement dependencies

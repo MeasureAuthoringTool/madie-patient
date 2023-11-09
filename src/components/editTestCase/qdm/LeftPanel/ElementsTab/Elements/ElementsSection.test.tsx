@@ -326,7 +326,7 @@ const renderElementsSectionComponent = (render, selectedDataElement) => {
 };
 
 const useCqmConversionServiceMockResolved = {
-  fetchSourceDataCriteria: jest.fn().mockResolvedValue(testDataElements),
+  fetchRelevantDataElements: jest.fn().mockResolvedValue(testDataElements),
 } as unknown as TestCaseServiceApi;
 let mockApplyDefaults = false;
 
