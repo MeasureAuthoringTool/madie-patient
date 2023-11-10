@@ -292,7 +292,14 @@ const TestCaseList = (props: TestCaseListProps) => {
       loading: true,
       message: "Importing Test Cases...",
     }));
-
+    testCases = testCases.map((testCase) => {
+      if (testCase.json) {
+        testCase.json = JSON.stringify(
+          new QDMPatient(JSON.parse(testCase.json))
+        );
+      }
+      return testCase;
+    });
     try {
       await testCaseService.current.createTestCases(measureId, testCases);
       retrieveTestCases();
