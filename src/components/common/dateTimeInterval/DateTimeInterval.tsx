@@ -23,6 +23,7 @@ const DateTimeInterval = ({
   displayAttributeName,
 }: DateTimeIntervalProps) => {
   const handleStartDateTimeChange = (newValue) => {
+    console.log(newValue)
     onDateTimeIntervalChange(
       {
         ...dateTimeInterval,
@@ -53,6 +54,7 @@ const DateTimeInterval = ({
             attributeName={attributeName}
             onDateTimeChange={handleStartDateTimeChange}
             dateTime={dateTimeInterval?.low}
+            // utcConvert={true}
           />
           <DateTimeInput
             canEdit={canEdit}
@@ -60,6 +62,7 @@ const DateTimeInterval = ({
             attributeName={attributeName}
             onDateTimeChange={handleEndDateTimeChange}
             dateTime={dateTimeInterval?.high}
+            // utcConvert={true}
           />
         </div>
       </FormControl>
