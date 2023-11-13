@@ -22,11 +22,6 @@ function UseFetchTestCases({ measureId, setErrors }) {
       .then((testCaseList: TestCase[]) => {
         testCaseList.forEach((testCase: any) => {
           testCase.executionStatus = testCase.validResource ? "NA" : "Invalid";
-          if (testCase.json) {
-            testCase.json = JSON.stringify(
-              new QDMPatient(JSON.parse(testCase.json))
-            );
-          }
         });
         setTestCases(testCaseList);
       })
