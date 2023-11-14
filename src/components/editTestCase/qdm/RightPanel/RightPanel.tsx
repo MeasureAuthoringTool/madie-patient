@@ -4,13 +4,16 @@ import KeyboardTabIcon from "@mui/icons-material/KeyboardTab";
 import { IconButton } from "@mui/material";
 import GroupPopulations from "../populations/GroupPopulations";
 import DetailsSection from "./DetailsTab/DetailsSection";
+import CalculationResults from "./calculationResults/CalculationResults";
 
 const RightPanel = ({
   canEdit,
   groupPopulations,
   executionRun,
   errors,
+  calculationResults,
   onChange,
+  measureCql,
   measureName,
   birthDateTime,
 }) => {
@@ -29,6 +32,14 @@ const RightPanel = ({
         </IconButton>
       </div>
       <div className="panel-content">
+        {activeTab === "highlighting" && (
+          <CalculationResults
+            calculationResults={calculationResults}
+            groupPopulations={groupPopulations}
+            measureCql={measureCql}
+            errors={errors}
+          />
+        )}
         {activeTab === "expectoractual" && (
           <GroupPopulations
             disableExpected={!canEdit}

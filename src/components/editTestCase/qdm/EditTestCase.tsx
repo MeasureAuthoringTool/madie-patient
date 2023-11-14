@@ -102,6 +102,7 @@ const EditTestCase = () => {
     []
   );
   const [selectedDataElement, setSelectedDataElement] = useState<DataElement>();
+  const [calculationResults, setCalculationResults] = useState(null);
 
   dayjs.extend(utc);
   dayjs.utc().format(); // utc format
@@ -263,6 +264,7 @@ const EditTestCase = () => {
         patientResults
       );
       setCurrentTestCase(output);
+      setCalculationResults(calculationOutput);
 
       calculationOutput &&
         showToast(
@@ -338,6 +340,7 @@ const EditTestCase = () => {
                   groupPopulations={currentTestCase?.groupPopulations}
                   executionRun={executionRun}
                   errors={formik.errors.groupPopulations}
+                  calculationResults={calculationResults}
                   onChange={(
                     groupPopulations,
                     changedGroupId,
@@ -363,6 +366,7 @@ const EditTestCase = () => {
                         : null
                     );
                   }}
+                  measureCql={measure?.cql}
                   measureName={measure?.measureName}
                   birthDateTime={
                     formik.values?.birthDate
