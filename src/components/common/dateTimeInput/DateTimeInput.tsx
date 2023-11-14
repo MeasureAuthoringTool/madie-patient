@@ -53,10 +53,17 @@ const DateTimeInput = ({
   attributeName,
 }: DateTimeInputProps) => {
   const handleDateTimeChange = (newValue) => {
-    onDateTimeChange(
-      getCQLDateTime(newValue, dateTime ? false : true),
-      attributeName
-    );
+    for (const prop in newValue) {
+      if (Number.isNaN(newValue[prop])) {
+        return;
+      }
+    }
+    if (newValue) {
+      onDateTimeChange(
+        getCQLDateTime(newValue, dateTime ? false : true),
+        attributeName
+      );
+    }
   };
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
