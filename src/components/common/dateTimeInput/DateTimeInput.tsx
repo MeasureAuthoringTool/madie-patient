@@ -11,7 +11,6 @@ dayjs.utc();
 
 export const getCQLDateTime = (value, first = false) => {
   const newDateTime = first ? dayjs(value) : dayjs.utc(value);
-  console.log(first)
   const newCQLDateTime: CQL.DateTime = new CQL.DateTime(
     newDateTime.year(),
     newDateTime.month() + 1,
@@ -20,9 +19,8 @@ export const getCQLDateTime = (value, first = false) => {
     newDateTime.minute(),
     newDateTime.second(),
     0,
-    0,
+    0
   );
-  console.log(newCQLDateTime)
   return newCQLDateTime;
 };
 
@@ -45,7 +43,6 @@ interface DateTimeInputProps {
   onDateTimeChange: Function;
   canEdit: boolean;
   attributeName: string;
-  utcConvert? :boolean;
 }
 
 const DateTimeInput = ({
@@ -54,14 +51,19 @@ const DateTimeInput = ({
   onDateTimeChange,
   canEdit,
   attributeName,
-  utcConvert=false,
 }: DateTimeInputProps) => {
   const handleDateTimeChange = (newValue) => {
-    console.log(dateTime)
-    onDateTimeChange(
-      getCQLDateTime(newValue, utcConvert ? false : true),
-      attributeName
-    );
+    for (const prop in newValue) {
+      if (Number.isNaN(newValue[prop])) {
+        return;
+      }
+    }
+    if (newValue) {
+      onDateTimeChange(
+        getCQLDateTime(newValue, dateTime ? false : true),
+        attributeName
+      );
+    }
   };
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
