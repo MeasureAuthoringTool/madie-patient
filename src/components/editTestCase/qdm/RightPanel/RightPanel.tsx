@@ -5,6 +5,7 @@ import { IconButton } from "@mui/material";
 import GroupPopulations from "../populations/GroupPopulations";
 import DetailsSection from "./DetailsTab/DetailsSection";
 import CalculationResults from "./calculationResults/CalculationResults";
+import { useFeatureFlags } from "@madie/madie-util";
 
 const RightPanel = ({
   canEdit,
@@ -19,6 +20,8 @@ const RightPanel = ({
   birthDateTime,
 }) => {
   const [activeTab, setActiveTab] = useState<string>("highlighting");
+  const featureFlags = useFeatureFlags();
+
   return (
     <div className="right-panel">
       <div className="tab-container">
@@ -33,7 +36,7 @@ const RightPanel = ({
         </IconButton>
       </div>
       <div className="panel-content">
-        {activeTab === "highlighting" && (
+        {featureFlags.qdmHighlightingTabs && activeTab === "highlighting" && (
           <CalculationResults
             calculationResults={calculationResults}
             groupPopulations={groupPopulations}

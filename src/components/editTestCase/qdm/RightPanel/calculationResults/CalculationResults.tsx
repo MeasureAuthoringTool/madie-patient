@@ -14,7 +14,7 @@ const CalculationResults = ({
 }) => {
   return (
     <div tw="p-5" style={{ paddingRight: ".25rem" }}>
-      {!calculationResults && !calculationErrors && (
+      {!calculationResults && isEmpty(calculationErrors) && (
         <MadieAlert
           type="info"
           content="To see the logic highlights, click 'Run Test'"

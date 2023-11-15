@@ -355,6 +355,7 @@ jest.mock("@madie/madie-util", () => ({
       applyDefaults: mockApplyDefaults,
       disableRunTestCaseWithObservStrat: true,
       qdmHideJson: false,
+      qdmHighlightingTabs: true,
     };
   }),
   measureStore: {
