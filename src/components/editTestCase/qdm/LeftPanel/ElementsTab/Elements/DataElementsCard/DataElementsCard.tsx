@@ -54,7 +54,7 @@ export const deleteAttribute = (chip, dataElement) => {
       } else {
         updatedDataElement[attributePath] = _.filter(
           updatedDataElement[attributePath],
-          (a) => a._id.toString() !== chip.id
+          (a) => a.id !== chip.id
         );
       }
     }
