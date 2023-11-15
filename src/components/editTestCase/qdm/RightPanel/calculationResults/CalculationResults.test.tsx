@@ -84,78 +84,82 @@ const renderCoverageComponent = (
   );
 };
 
-test("display info message when test case has not been ran yet", () => {
-  renderCoverageComponent();
-  expect(
-    screen.getByText("To see the logic highlights, click 'Run Test'")
-  ).toBeInTheDocument();
-});
-
-test("render calculation results", () => {
-  renderCoverageComponent();
-  expect(screen.getByText("Population Criteria 1")).toBeInTheDocument();
-});
-
-test("highlighting tab if no groups available", () => {
-  render(
-    <CalculationResults
-      calculationResults={null}
-      groupPopulations={groups}
-      measureCql={""}
-      calculationErrors={null}
-    />
-  );
-  expect(
-    screen.getByText("To see the logic highlights, click 'Run Test'")
-  ).toBeInTheDocument();
-});
-
-test("render default highlighting view", async () => {
-  renderCoverageComponent();
-  expect(screen.getByText("Population Criteria 1")).toBeInTheDocument();
-
-  await assertPopulationTabs();
-
-  // switch population criteria/group
-  const criteriaOptions = await getCriteriaOptions();
-  // options to select groups
-  expect(criteriaOptions).toHaveLength(2);
-  userEvent.click(criteriaOptions[1]);
-  // check tabs are rendered for all populations of a group
-  expect(await getByRole("IP 1")).toBeInTheDocument();
-  expect(await getByRole("IP 2")).toBeInTheDocument();
-  expect(await getByRole("DENOM")).toBeInTheDocument();
-  expect(await getByRole("NUMER")).toBeInTheDocument();
-});
-
-test("render highlighting view with coverage results for 2 groups", async () => {
-  renderCoverageComponent();
-  await assertPopulationTabs();
-  expect(screen.getByTestId("IP-highlighting")).toHaveTextContent(
-    `define "Initial Population": ["Encounter, Performed": "Emergency Department Visit"] //Encounter union ["Encounter, Performed": "Closed Head and Facial Trauma"] //Encounter union ["Encounter, Performed": "Dementia"]`
-  );
-
-  // switch to denominator tab
-  const denom = await getByRole("DENOM");
-  userEvent.click(denom);
-  expect(screen.getByTestId("DENOM-highlighting")).toHaveTextContent(
-    `"Denominator": "Initial Population"`
-  );
-
-  // switch to numerator tab
-  const numer = await getByRole("NUMER");
-  userEvent.click(numer);
-  expect(screen.getByTestId("NUMER-highlighting")).toHaveTextContent(
-    `define "Numerator": ["Encounter, Performed"] E where E.relevantPeriod starts during day of "Measurement Period"`
-  );
-
-  // select population criteria 2
-  const criteriaOptions = await getCriteriaOptions();
-  userEvent.click(criteriaOptions[1]);
-  await waitFor(() => {
-    expect(screen.getByText("Population Criteria 2")).toBeInTheDocument();
+describe("CalculationResults with tabbed highlighting layout off", () => {
+  test("display info message when test case has not been ran yet", () => {
+    renderCoverageComponent();
+    expect(
+      screen.getByText("To see the logic highlights, click 'Run Test'")
+    ).toBeInTheDocument();
   });
-  expect(screen.getByTestId("IP-highlighting")).toHaveTextContent(
-    `define "Initial Population": ["Encounter, Performed": "Emergency Department Visit"] //Encounter union ["Encounter, Performed": "Closed Head and Facial Trauma"] //Encounter union ["Encounter, Performed": "Dementia"]`
-  );
+
+  test("render calculation results", () => {
+    renderCoverageComponent();
+    expect(screen.getByText("Population Criteria 1")).toBeInTheDocument();
+  });
+});
+
+describe("CalculationResults with new tabbed highlighting layout on", () => {
+  test("highlighting tab if no groups available", () => {
+    render(
+      <CalculationResults
+        calculationResults={null}
+        groupPopulations={groups}
+        measureCql={""}
+        calculationErrors={null}
+      />
+    );
+    expect(
+      screen.getByText("To see the logic highlights, click 'Run Test'")
+    ).toBeInTheDocument();
+  });
+
+  test("render default highlighting view", async () => {
+    renderCoverageComponent();
+    expect(screen.getByText("Population Criteria 1")).toBeInTheDocument();
+
+    await assertPopulationTabs();
+
+    // switch population criteria/group
+    const criteriaOptions = await getCriteriaOptions();
+    // options to select groups
+    expect(criteriaOptions).toHaveLength(2);
+    userEvent.click(criteriaOptions[1]);
+    // check tabs are rendered for all populations of a group
+    expect(await getByRole("IP 1")).toBeInTheDocument();
+    expect(await getByRole("IP 2")).toBeInTheDocument();
+    expect(await getByRole("DENOM")).toBeInTheDocument();
+    expect(await getByRole("NUMER")).toBeInTheDocument();
+  });
+
+  test("render highlighting view with coverage results for 2 groups", async () => {
+    renderCoverageComponent();
+    await assertPopulationTabs();
+    expect(screen.getByTestId("IP-highlighting")).toHaveTextContent(
+      `define "Initial Population": ["Encounter, Performed": "Emergency Department Visit"] //Encounter union ["Encounter, Performed": "Closed Head and Facial Trauma"] //Encounter union ["Encounter, Performed": "Dementia"]`
+    );
+
+    // switch to denominator tab
+    const denom = await getByRole("DENOM");
+    userEvent.click(denom);
+    expect(screen.getByTestId("DENOM-highlighting")).toHaveTextContent(
+      `"Denominator": "Initial Population"`
+    );
+
+    // switch to numerator tab
+    const numer = await getByRole("NUMER");
+    userEvent.click(numer);
+    expect(screen.getByTestId("NUMER-highlighting")).toHaveTextContent(
+      `define "Numerator": ["Encounter, Performed"] E where E.relevantPeriod starts during day of "Measurement Period"`
+    );
+
+    // select population criteria 2
+    const criteriaOptions = await getCriteriaOptions();
+    userEvent.click(criteriaOptions[1]);
+    await waitFor(() => {
+      expect(screen.getByText("Population Criteria 2")).toBeInTheDocument();
+    });
+    expect(screen.getByTestId("IP-highlighting")).toHaveTextContent(
+      `define "Initial Population": ["Encounter, Performed": "Emergency Department Visit"] //Encounter union ["Encounter, Performed": "Closed Head and Facial Trauma"] //Encounter union ["Encounter, Performed": "Dementia"]`
+    );
+  });
 });
