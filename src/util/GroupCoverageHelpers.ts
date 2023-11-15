@@ -14,14 +14,15 @@ export interface Population {
 }
 
 export interface SelectedPopulationResult {
-  name: PopulationType;
   criteriaReference: string;
   text: string;
 }
 
 export interface MappedCql {
   [groupId: string]: {
-    populationDefinitions: SelectedPopulationResult;
+    populationDefinitions: {
+      [populationName: string]: SelectedPopulationResult;
+    };
   };
 }
 
@@ -71,7 +72,6 @@ export const mapCql = (
             );
 
             populationDefinition[name] = {
-              name,
               criteriaReference: criteriaReference || null,
               text: matchingDefinition?.text || null,
             };

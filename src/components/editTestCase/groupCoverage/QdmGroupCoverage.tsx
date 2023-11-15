@@ -70,11 +70,11 @@ const QdmGroupCoverage = ({ groupPopulations, mappedCql }: Props) => {
     setSelectedHighlightingTab(population);
     const result =
       populationResults &&
-      Object.values(populationResults).find(
-        (result: any) => result.name === population.name
+      Object.entries(populationResults).find(
+        ([key]) => key === population.name
       );
     if (result) {
-      setSelectedPopulationDefinitionResults(result);
+      setSelectedPopulationDefinitionResults(result[1]);
     }
   };
 
@@ -186,6 +186,7 @@ const QdmGroupCoverage = ({ groupPopulations, mappedCql }: Props) => {
           <GroupCoverageNav
             id={selectedCriteria}
             populations={getRelevantPopulations()}
+            // used for definitions, functions and unused
             allDefinitions={[]}
             selectedHighlightingTab={selectedHighlightingTab}
             onClick={onHighlightingNavTabClick}
