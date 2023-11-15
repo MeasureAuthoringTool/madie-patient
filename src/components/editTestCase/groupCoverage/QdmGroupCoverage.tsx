@@ -198,9 +198,7 @@ const QdmGroupCoverage = ({ groupPopulations, mappedCql }: Props) => {
           data-testid={`${selectedHighlightingTab.abbreviation}-highlighting`}
         >
           {selectedPopulationDefinitionResults
-            ? parse(
-                `<code><span> ${selectedPopulationDefinitionResults?.text}</span></code>`
-              )
+            ? parse(`<pre>${selectedPopulationDefinitionResults?.text}</pre>`)
             : "No results available"}
         </div>
       </div>
