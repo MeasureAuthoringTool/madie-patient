@@ -9,7 +9,7 @@ import {
   TextArea,
 } from "@madie/madie-design-system/dist/react";
 import { Box } from "@mui/system";
-import { InputLabel } from "@mui/material";
+import { InputLabel, Typography } from "@mui/material";
 import { useFormik } from "formik";
 import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import * as _ from "lodash";
@@ -214,6 +214,30 @@ const CreateNewTestCaseDialog = ({ open, onClose }) => {
             }}
             autoHideDuration={6000}
           />
+          <div
+            style={{
+              marginBottom: -15,
+              marginTop: 5,
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "flex-end",
+            }}
+          >
+            <Typography
+              style={{ fontSize: 14, fontWeight: 300, fontFamily: "Rubik" }}
+            >
+              <span
+                style={{
+                  color: "rgb(174, 28, 28)",
+                  marginRight: 3,
+                  fontWeight: 400,
+                }}
+              >
+                *
+              </span>
+              Indicates required field
+            </Typography>
+          </div>
           <Box sx={formRow}>
             <TextField
               placeholder="Enter Title"
