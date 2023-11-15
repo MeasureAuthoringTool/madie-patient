@@ -73,9 +73,9 @@ const QdmGroupCoverage = ({ groupPopulations, mappedCql }: Props) => {
       Object.entries(populationResults).find(
         ([key]) => key === population.name
       );
-    if (result) {
-      setSelectedPopulationDefinitionResults(result[1]);
-    }
+    setSelectedPopulationDefinitionResults(
+      result?.[1].text ? result[1] : undefined
+    );
   };
 
   const onHighlightingNavTabClick = (selectedTab) => {
