@@ -4,22 +4,37 @@ import { Select } from "@madie/madie-design-system/dist/react";
 import { MenuItem } from "@mui/material";
 import { isEmpty } from "lodash";
 import {
+  MappedCql,
   Population,
+  SelectedPopulationResult,
   getFirstPopulation,
   getPopulationAbbreviation,
 } from "../../../util/GroupCoverageHelpers";
+import "twin.macro";
+import "styled-components/macro";
+import parse from "html-react-parser";
+import { GroupPopulation } from "@madie/madie-models";
+
+interface Props {
+  groupPopulations: GroupPopulation[];
+  mappedCql: MappedCql;
+}
+
+type PopulationResult = Record<string, SelectedPopulationResult>;
 
 const populationCriteriaLabel = "Population Criteria";
 
-const QdmGroupCoverage = ({ groupPopulations, mappedCql }) => {
+const QdmGroupCoverage = ({ groupPopulations, mappedCql }: Props) => {
   const [selectedHighlightingTab, setSelectedHighlightingTab] =
     useState<Population>(getFirstPopulation(groupPopulations[0]));
   const [selectedCriteria, setSelectedCriteria] = useState<string>("");
-  const [populationResults, setPopulationResults] = useState({});
+  const [populationResults, setPopulationResults] = useState<
+    PopulationResult | {}
+  >();
   const [
     selectedPopulationDefinitionResults,
     setSelectedPopulationDefinitionResults,
-  ] = useState(null);
+  ] = useState<SelectedPopulationResult>();
 
   useEffect(() => {
     if (!isEmpty(groupPopulations)) {
@@ -182,7 +197,9 @@ const QdmGroupCoverage = ({ groupPopulations, mappedCql }) => {
           data-testid={`${selectedHighlightingTab.abbreviation}-highlighting`}
         >
           {selectedPopulationDefinitionResults
-            ? selectedPopulationDefinitionResults.text
+            ? parse(
+                `<code><span> ${selectedPopulationDefinitionResults?.text}</span></code>`
+              )
             : "No results available"}
         </div>
       </div>

@@ -3,6 +3,8 @@ import QdmGroupCoverage from "../../../groupCoverage/QdmGroupCoverage";
 import { isEmpty } from "lodash";
 import { MadieAlert } from "@madie/madie-design-system/dist/react";
 import { mapCql } from "../../../../../util/GroupCoverageHelpers";
+import "twin.macro";
+import "styled-components/macro";
 
 const CalculationResults = ({
   calculationResults,

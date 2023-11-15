@@ -1,5 +1,9 @@
 import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
-import { PopulationType, PopulationExpectedValue } from "@madie/madie-models";
+import {
+  PopulationType,
+  PopulationExpectedValue,
+  GroupPopulation,
+} from "@madie/madie-models";
 import _ from "lodash";
 
 export interface Population {
@@ -7,6 +11,18 @@ export interface Population {
   id: string;
   criteriaReference?: string;
   name: PopulationType;
+}
+
+export interface SelectedPopulationResult {
+  name: PopulationType;
+  criteriaReference: string;
+  text: string;
+}
+
+export interface MappedCql {
+  [groupId: string]: {
+    populationDefinitions: SelectedPopulationResult;
+  };
 }
 
 export const abbreviatedPopulations = {
@@ -39,7 +55,10 @@ export const getFirstPopulation = (group) => {
   };
 };
 
-export const mapCql = (measureCql, groupPopulations) => {
+export const mapCql = (
+  measureCql: string,
+  groupPopulations: GroupPopulation[]
+): MappedCql => {
   if (measureCql && groupPopulations) {
     const definitions = new CqlAntlr(measureCql).parse().expressionDefinitions;
 
