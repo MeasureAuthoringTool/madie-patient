@@ -12,6 +12,7 @@ const RightPanel = ({
   executionRun,
   errors,
   calculationResults,
+  calculationErrors,
   onChange,
   measureCql,
   measureName,
@@ -37,7 +38,7 @@ const RightPanel = ({
             calculationResults={calculationResults}
             groupPopulations={groupPopulations}
             measureCql={measureCql}
-            errors={errors}
+            calculationErrors={calculationErrors}
           />
         )}
         {activeTab === "expectoractual" && (

@@ -341,6 +341,7 @@ const EditTestCase = () => {
                   executionRun={executionRun}
                   errors={formik.errors.groupPopulations}
                   calculationResults={calculationResults}
+                  calculationErrors={qdmExecutionErrors}
                   onChange={(
                     groupPopulations,
                     changedGroupId,

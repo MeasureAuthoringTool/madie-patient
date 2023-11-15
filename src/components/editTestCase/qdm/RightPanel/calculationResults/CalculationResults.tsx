@@ -10,11 +10,11 @@ const CalculationResults = ({
   calculationResults,
   groupPopulations,
   measureCql,
-  errors,
+  calculationErrors,
 }) => {
   return (
     <div tw="p-5" style={{ paddingRight: ".25rem" }}>
-      {!calculationResults && !errors && (
+      {!calculationResults && !calculationErrors && (
         <MadieAlert
           type="info"
           content="To see the logic highlights, click 'Run Test'"
