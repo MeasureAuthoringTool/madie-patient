@@ -10,6 +10,7 @@ const CalculationResults = ({
   calculationResults,
   groupPopulations,
   measureCql,
+  measureGroups,
   calculationErrors,
 }) => {
   return (
@@ -28,6 +29,7 @@ const CalculationResults = ({
         <QdmGroupCoverage
           groupPopulations={groupPopulations}
           mappedCql={mapCql(measureCql, groupPopulations)}
+          measureGroups={measureGroups}
         />
       )}
     </div>

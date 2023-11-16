@@ -368,6 +368,7 @@ const EditTestCase = () => {
                     );
                   }}
                   measureCql={measure?.cql}
+                  measureGroups={measure?.groups}
                   measureName={measure?.measureName}
                   birthDateTime={
                     formik.values?.birthDate

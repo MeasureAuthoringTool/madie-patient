@@ -46,6 +46,86 @@ const groups = [
   },
 ] as Array<GroupPopulation>;
 
+const measureGroups = [
+  {
+    id: "64ef",
+    scoring: "Ratio",
+    populations: [
+      {
+        id: "914d",
+        name: "initialPopulation",
+        definition: "Denominator",
+        associationType: "Denominator",
+        description: "",
+      },
+      {
+        id: "19c0",
+        name: "denominator",
+        definition: "Initial Population",
+        associationType: null,
+        description: "",
+      },
+      {
+        id: "3fdd",
+        name: "numerator",
+        definition: "Numerator",
+        associationType: null,
+        description: "",
+      },
+    ],
+    measureObservations: [],
+    groupDescription: "",
+    improvementNotation: "",
+    rateAggregation: "",
+    measureGroupTypes: null,
+    scoringUnit: "",
+    stratifications: [],
+    populationBasis: "false",
+  },
+  {
+    id: "64ec",
+    scoring: "Ratio",
+    populations: [
+      {
+        id: "914a",
+        name: "initialPopulation",
+        definition: "Initial Population",
+        associationType: "Denominator",
+        description: "",
+      },
+      {
+        id: "915a",
+        name: "initialPopulation",
+        definition: "Denominator",
+        associationType: "Numerator",
+        description: "",
+      },
+      {
+        id: "19cb",
+        name: "denominator",
+        definition: "Initial Population",
+        associationType: null,
+        description: "",
+      },
+      {
+        id: "3fdc",
+        name: "numerator",
+        definition: "Initial Population",
+        associationType: null,
+        description: "",
+      },
+    ],
+    measureObservations: [],
+    groupDescription: "",
+    improvementNotation: "",
+    rateAggregation: "",
+    measureGroupTypes: null,
+    scoringUnit: "",
+    stratifications: [],
+    populationBasis: "false",
+  },
+];
+
 const getByRole = (name) => screen.findByRole("tab", { name: name });
 const getCriteriaOptions = () => {
   const criteriaSelector = screen.getByTestId("population-criterion-selector");
@@ -79,6 +159,7 @@ const renderCoverageComponent = (
       calculationResults={calculationResults}
       groupPopulations={groups}
       measureCql={measureCql}
+      measureGroups={measureGroups}
       calculationErrors={calculationErrors}
     />
   );
@@ -105,6 +186,7 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
         calculationResults={null}
         groupPopulations={groups}
         measureCql={""}
+        measureGroups={measureGroups}
         calculationErrors={null}
       />
     );
@@ -135,14 +217,14 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     renderCoverageComponent();
     await assertPopulationTabs();
     expect(screen.getByTestId("IP-highlighting")).toHaveTextContent(
-      `define "Initial Population": ["Encounter, Performed": "Emergency Department Visit"] //Encounter union ["Encounter, Performed": "Closed Head and Facial Trauma"] //Encounter union ["Encounter, Performed": "Dementia"]`
+      `define "Denominator": "Initial Population"`
     );
 
     // switch to denominator tab
     const denom = await getByRole("DENOM");
     userEvent.click(denom);
     expect(screen.getByTestId("DENOM-highlighting")).toHaveTextContent(
-      `"Denominator": "Initial Population"`
+      `define "Initial Population": ["Encounter, Performed": "Emergency Department Visit"] //Encounter union ["Encounter, Performed": "Closed Head and Facial Trauma"] //Encounter union ["Encounter, Performed": "Dementia"]`
     );
 
     // switch to numerator tab

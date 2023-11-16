@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import GroupCoverageNav from "./groupCoverageNav/GroupCoverageNav";
 import { Select } from "@madie/madie-design-system/dist/react";
 import { MenuItem } from "@mui/material";
-import { isEmpty } from "lodash";
+import _, { isEmpty } from "lodash";
 import {
   MappedCql,
   Population,
@@ -13,18 +13,23 @@ import {
 import "twin.macro";
 import "styled-components/macro";
 import parse from "html-react-parser";
-import { GroupPopulation } from "@madie/madie-models";
+import { Group, GroupPopulation } from "@madie/madie-models";
 
 interface Props {
   groupPopulations: GroupPopulation[];
   mappedCql: MappedCql;
+  measureGroups: Group[];
 }
 
 type PopulationResult = Record<string, SelectedPopulationResult>;
 
 const populationCriteriaLabel = "Population Criteria";
 
-const QdmGroupCoverage = ({ groupPopulations, mappedCql }: Props) => {
+const QdmGroupCoverage = ({
+  groupPopulations,
+  mappedCql,
+  measureGroups,
+}: Props) => {
   const [selectedHighlightingTab, setSelectedHighlightingTab] =
     useState<Population>(getFirstPopulation(groupPopulations[0]));
   const [selectedCriteria, setSelectedCriteria] = useState<string>("");
@@ -67,15 +72,23 @@ const QdmGroupCoverage = ({ groupPopulations, mappedCql }: Props) => {
   ];
 
   const changePopulation = (population: Population) => {
-    setSelectedHighlightingTab(population);
-    const result =
-      populationResults &&
-      Object.entries(populationResults).find(
-        ([key]) => key === population.name
+    if (!isEmpty(measureGroups)) {
+      setSelectedHighlightingTab(population);
+      const selectedGroup = measureGroups?.find(
+        (group) => group.id === selectedCriteria
       );
-    setSelectedPopulationDefinitionResults(
-      result?.[1].text ? result[1] : undefined
-    );
+      const selectedPopulationDefinition = selectedGroup?.populations?.find(
+        (pop) => pop.id === population.id
+      )?.definition;
+      const result =
+        populationResults &&
+        Object.entries(populationResults).find(
+          ([key]) => key === _.camelCase(selectedPopulationDefinition)
+        );
+      setSelectedPopulationDefinitionResults(
+        result?.[1].text ? result[1] : undefined
+      );
+    }
   };
 
   const onHighlightingNavTabClick = (selectedTab) => {

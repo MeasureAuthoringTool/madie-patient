@@ -16,6 +16,7 @@ const RightPanel = ({
   calculationErrors,
   onChange,
   measureCql,
+  measureGroups,
   measureName,
   birthDateTime,
 }) => {
@@ -41,6 +42,7 @@ const RightPanel = ({
             calculationResults={calculationResults}
             groupPopulations={groupPopulations}
             measureCql={measureCql}
+            measureGroups={measureGroups}
             calculationErrors={calculationErrors}
           />
         )}
