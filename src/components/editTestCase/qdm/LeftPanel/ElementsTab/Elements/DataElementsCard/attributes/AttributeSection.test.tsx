@@ -664,14 +664,14 @@ describe("AttributeSection", () => {
     const dataElInput = await screen.findByTestId(
       "data-element-selector-input"
     );
-    expect(dataElInput).toHaveValue("faketest");
+    expect(dataElInput).toHaveValue("faketest - faketestdescription");
     act(() => {
       userEvent.click(DataElementSelectBtn);
     });
     act(() => {
       userEvent.click(screen.getByText("faketestdescription1"));
     });
-    expect(dataElInput).toHaveValue("faketest1");
+    expect(dataElInput).toHaveValue("faketest1 - faketestdescription1");
   });
 
   it("renders code component on selecting the code type attribute", async () => {

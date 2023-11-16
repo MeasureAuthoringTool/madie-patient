@@ -41,7 +41,7 @@ const DataElementSelector = ({
       ...options.map(({ value, label }) => (
         <MenuItem
           key={`${label}-option`}
-          value={value}
+          value={`${value} - ${label}`}
           data-testid={`${label}-option`}
         >
           {label}
@@ -54,7 +54,7 @@ const DataElementSelector = ({
     let result = "--";
     if (value && options) {
       options.forEach((opt) => {
-        if (opt.value === value) {
+        if (opt.value + " - " + opt.label === value) {
           result = opt.label;
         }
       });
