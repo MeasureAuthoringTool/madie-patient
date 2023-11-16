@@ -801,6 +801,31 @@ export const testDataElements = [
     relevantDatetime: "2023-10-30T00:00:00.000+00:00",
     authorDatetime: "2023-10-23T00:00:00.000+00:00",
   },
+  {
+    dataElementCodes: [
+      {
+        code: "28568-4",
+        system: "2.16.840.1.113883.6.1",
+        version: null,
+        display: "Physician Emergency department Note",
+      },
+    ],
+    _id: "6545107d39e8a400008d7a68",
+    relatedTo: [
+      "654a289b170fde0000137c07 - Encounter, Performed: Outpatient Surgery Service",
+    ],
+    performer: [],
+    qdmTitle: "Assessment, Performed",
+    hqmfOid: "2.16.840.1.113883.10.20.28.4.117",
+    qdmCategory: "assessment",
+    qdmStatus: "performed",
+    qdmVersion: "5.6",
+    _type: "QDM::AssessmentPerformed",
+    description: "Assessment, Performed: Emergency Department Evaluation",
+    codeListId: "2.16.840.1.113762.1.4.1111.163",
+    id: "6545108039e8a400008d7a6c",
+    components: [],
+  },
 ];
 
 //@ts-ignore
@@ -905,6 +930,26 @@ describe("DataElementsCard", () => {
       mockSetSelectedElement
     );
     const resultChip = await screen.findByText("Result: 1");
+    expect(resultChip).toBeInTheDocument();
+    const closeButton = await screen.findByTestId("delete-chip-button-0");
+    expect(closeButton).toBeInTheDocument();
+    userEvent.click(closeButton);
+
+    expect(mockSetSelectedElement).toHaveBeenCalledTimes(1);
+  });
+
+  it("Should render Attribute chip for RelatedTo and delete it", async () => {
+    const mockSetSelectedElement = jest.fn();
+    renderDataElementsCard(
+      "attributes",
+      jest.fn,
+      testDataElements[4],
+      mockSetSelectedElement
+    );
+
+    const resultChip = await screen.findByText(
+      "Related To - : 654a289b170fde0000137c07 - Encounter, Performed: Outpatient Surgery Service"
+    );
     expect(resultChip).toBeInTheDocument();
     const closeButton = await screen.findByTestId("delete-chip-button-0");
     expect(closeButton).toBeInTheDocument();
