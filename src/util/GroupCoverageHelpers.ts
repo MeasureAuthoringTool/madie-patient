@@ -65,10 +65,10 @@ export const mapCql = (
 
     return groupPopulations.reduce((output, { groupId, populationValues }) => {
       output[groupId] = {
-        populationDefinitions: populationValues.reduce(
+        populationDefinitions: populationValues?.reduce(
           (populationDefinition, { name, criteriaReference }) => {
-            const matchingDefinition: any = definitions.find(
-              (def) => _.camelCase(def.name.slice(1, -1)) === name
+            const matchingDefinition: any = definitions?.find(
+              (def) => _.camelCase(def?.name?.slice(1, -1)) === name
             );
 
             populationDefinition[name] = {
