@@ -220,6 +220,25 @@ export class TestCaseServiceApi {
     }
   }
 
+  async importTestCasesQDM(
+    measureId: string,
+    testCasesImportRequest: TestCaseImportRequest[]
+  ): Promise<TestCase[]> {
+    try {
+      return await axios.put(
+        `${this.baseUrl}/measures/${measureId}/test-cases/imports/qdm`,
+        testCasesImportRequest,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
+        }
+      );
+    } catch (err) {
+      throw new Error(`Unable to create new test cases`);
+    }
+  }
+
   async scanImportFile(file: any): Promise<ScanValidationDto> {
     try {
       const formData = new FormData();

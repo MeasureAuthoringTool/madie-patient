@@ -157,25 +157,23 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           />
         </Tabs>
         <div style={{ margin: "6px 0 0 auto", display: "flex" }}>
-          {featureFlags?.importTestCases && (
-            <div>
-              <Button
-                onClick={() => {
-                  if (onImportTestCases) {
-                    onImportTestCases();
-                  }
-                }}
-                disabled={!canEdit}
-                data-testid="show-import-test-cases-button"
-              >
-                <FileUploadIcon
-                  style={{ margin: "0 5px 0 -2px" }}
-                  fontSize="small"
-                />
-                Import Test Cases
-              </Button>
-            </div>
-          )}
+          <div>
+            <Button
+              onClick={() => {
+                if (onImportTestCases) {
+                  onImportTestCases();
+                }
+              }}
+              disabled={!canEdit}
+              data-testid="show-import-test-cases-button"
+            >
+              <FileUploadIcon
+                style={{ margin: "0 5px 0 -2px" }}
+                fontSize="small"
+              />
+              Import Test Cases
+            </Button>
+          </div>
           <div style={{ margin: "0 6px 0 26px" }}>
             <Button
               disabled={!canEdit}

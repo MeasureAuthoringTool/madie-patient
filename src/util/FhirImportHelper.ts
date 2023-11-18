@@ -31,25 +31,6 @@ export function processPatientBundles(patientBundles): TestCase[] {
   return testCases;
 }
 
-export function processPatientBundlesForQDM(bonniePatients): TestCase[] {
-  const testCases: TestCase[] = [];
-  for (const patient of bonniePatients) {
-    const familyName = patient?.familyName || "";
-    const givenName = patient?.givenNames?.[0] || "";
-
-    testCases.push({
-      id: "",
-      title: givenName,
-      series: familyName,
-      description: patient?.notes,
-      createdAt: new Date().toISOString(),
-      json: JSON.stringify(patient.qdmPatient, null, 4),
-      groupPopulations: [],
-    } as TestCase);
-  }
-  return testCases;
-}
-
 // TODO: Refactor to dedup with useTestCaseService::readTestCaseFile
 export function readImportFile(importFile): Promise<string> {
   return new Promise((resolve, reject) => {
