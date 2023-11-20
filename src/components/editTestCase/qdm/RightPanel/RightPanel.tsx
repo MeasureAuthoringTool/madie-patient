@@ -9,7 +9,7 @@ import { useFeatureFlags } from "@madie/madie-util";
 
 const RightPanel = ({
   canEdit,
-  groupPopulations,
+  testCaseGroups,
   executionRun,
   errors,
   calculationResults,
@@ -40,7 +40,7 @@ const RightPanel = ({
         {featureFlags.qdmHighlightingTabs && activeTab === "highlighting" && (
           <CalculationResults
             calculationResults={calculationResults}
-            groupPopulations={groupPopulations}
+            testCaseGroups={testCaseGroups}
             measureCql={measureCql}
             measureGroups={measureGroups}
             calculationErrors={calculationErrors}
@@ -49,7 +49,7 @@ const RightPanel = ({
         {activeTab === "expectoractual" && (
           <GroupPopulations
             disableExpected={!canEdit}
-            groupPopulations={groupPopulations}
+            groupPopulations={testCaseGroups}
             onChange={onChange}
             errors={errors}
             executionRun={executionRun}

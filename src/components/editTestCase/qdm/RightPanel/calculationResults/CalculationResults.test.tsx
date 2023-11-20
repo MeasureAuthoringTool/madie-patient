@@ -157,7 +157,7 @@ const renderCoverageComponent = (
   render(
     <CalculationResults
       calculationResults={calculationResults}
-      groupPopulations={groups}
+      testCaseGroups={groups}
       measureCql={measureCql}
       measureGroups={measureGroups}
       calculationErrors={calculationErrors}
@@ -184,7 +184,7 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     render(
       <CalculationResults
         calculationResults={null}
-        groupPopulations={groups}
+        testCaseGroups={groups}
         measureCql={""}
         measureGroups={measureGroups}
         calculationErrors={null}

@@ -16,8 +16,8 @@ import parse from "html-react-parser";
 import { Group, GroupPopulation } from "@madie/madie-models";
 
 interface Props {
-  groupPopulations: GroupPopulation[];
-  mappedCql: MappedCql;
+  testCaseGroups: GroupPopulation[];
+  cqlPopulationDefinitions: MappedCql;
   measureGroups: Group[];
 }
 
@@ -26,12 +26,12 @@ type PopulationResult = Record<string, SelectedPopulationResult>;
 const populationCriteriaLabel = "Population Criteria";
 
 const QdmGroupCoverage = ({
-  groupPopulations,
-  mappedCql,
+  testCaseGroups,
+  cqlPopulationDefinitions,
   measureGroups,
 }: Props) => {
   const [selectedHighlightingTab, setSelectedHighlightingTab] =
-    useState<Population>(getFirstPopulation(groupPopulations[0]));
+    useState<Population>(getFirstPopulation(testCaseGroups[0]));
   const [selectedCriteria, setSelectedCriteria] = useState<string>("");
   const [populationResults, setPopulationResults] = useState<
     PopulationResult | {}
@@ -42,23 +42,23 @@ const QdmGroupCoverage = ({
   ] = useState<SelectedPopulationResult>();
 
   useEffect(() => {
-    if (!isEmpty(groupPopulations)) {
-      changeCriteria(groupPopulations[0].groupId);
+    if (!isEmpty(testCaseGroups)) {
+      changeCriteria(testCaseGroups[0].groupId);
     }
-  }, [groupPopulations]);
+  }, [testCaseGroups]);
 
   useEffect(() => {
     changePopulation(selectedHighlightingTab);
   }, [populationResults]);
 
   const getCriteriaLabel = (index) => {
-    return groupPopulations.length > 1
+    return testCaseGroups.length > 1
       ? `${populationCriteriaLabel} ${index + 1}`
       : populationCriteriaLabel;
   };
 
   const populationCriteriaOptions = [
-    ...groupPopulations?.map((gp, index) => {
+    ...testCaseGroups?.map((gp, index) => {
       return (
         <MenuItem
           key={gp.groupId}
@@ -96,8 +96,8 @@ const QdmGroupCoverage = ({
   };
 
   const getPopulationResults = (groupId: string) => {
-    if (mappedCql) {
-      const selectedGroupParsedResults = mappedCql[groupId];
+    if (cqlPopulationDefinitions) {
+      const selectedGroupParsedResults = cqlPopulationDefinitions[groupId];
       if (selectedGroupParsedResults) {
         const relevantPopulations =
           selectedGroupParsedResults.populationDefinitions;
@@ -111,12 +111,12 @@ const QdmGroupCoverage = ({
     setSelectedCriteria(criteriaId);
     const populationResults = getPopulationResults(criteriaId);
     setPopulationResults(populationResults);
-    const group = groupPopulations.find((gp) => gp.groupId === criteriaId);
+    const group = testCaseGroups.find((gp) => gp.groupId === criteriaId);
     setSelectedHighlightingTab(getFirstPopulation(group));
   };
 
   const getRelevantPopulations = () => {
-    const selectedGroup = groupPopulations.find(
+    const selectedGroup = testCaseGroups.find(
       (gp) => gp.groupId === selectedCriteria
     );
     return selectedGroup?.populationValues
@@ -186,7 +186,7 @@ const QdmGroupCoverage = ({
           defaultOptions={selectedCriteria}
           value={selectedCriteria}
           renderValue={(value) => {
-            const index = groupPopulations.findIndex(
+            const index = testCaseGroups.findIndex(
               (gp) => gp.groupId === value
             );
             return getCriteriaLabel(index);
@@ -211,7 +211,9 @@ const QdmGroupCoverage = ({
           data-testid={`${selectedHighlightingTab.abbreviation}-highlighting`}
         >
           {selectedPopulationDefinitionResults
-            ? parse(`<pre>${selectedPopulationDefinitionResults?.text}</pre>`)
+            ? parse(
+                `<pre><code>${selectedPopulationDefinitionResults?.text}</code></pre>`
+              )
             : "No results available"}
         </div>
       </div>

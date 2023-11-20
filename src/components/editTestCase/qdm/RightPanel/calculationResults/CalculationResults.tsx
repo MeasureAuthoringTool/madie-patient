@@ -8,12 +8,11 @@ import "styled-components/macro";
 
 const CalculationResults = ({
   calculationResults,
-  groupPopulations,
+  testCaseGroups,
   measureCql,
   measureGroups,
   calculationErrors,
 }) => {
-  console.log(calculationResults)
   return (
     <div tw="p-5" style={{ paddingRight: ".25rem" }}>
       {!calculationResults && isEmpty(calculationErrors) && (
@@ -26,10 +25,10 @@ const CalculationResults = ({
           }}
         />
       )}
-      {!isEmpty(groupPopulations) && (
+      {!isEmpty(testCaseGroups) && (
         <QdmGroupCoverage
-          groupPopulations={groupPopulations}
-          mappedCql={mapCql(measureCql, groupPopulations)}
+          testCaseGroups={testCaseGroups}
+          cqlPopulationDefinitions={mapCql(measureCql, testCaseGroups)}
           measureGroups={measureGroups}
         />
       )}

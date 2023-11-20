@@ -337,7 +337,7 @@ const EditTestCase = () => {
               <Allotment.Pane>
                 <RightPanel
                   canEdit={canEdit}
-                  groupPopulations={currentTestCase?.groupPopulations}
+                  testCaseGroups={currentTestCase?.groupPopulations}
                   executionRun={executionRun}
                   errors={formik.errors.groupPopulations}
                   calculationResults={calculationResults}
