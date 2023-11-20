@@ -13,6 +13,7 @@ const CalculationResults = ({
   measureGroups,
   calculationErrors,
 }) => {
+  console.log(calculationResults)
   return (
     <div tw="p-5" style={{ paddingRight: ".25rem" }}>
       {!calculationResults && isEmpty(calculationErrors) && (

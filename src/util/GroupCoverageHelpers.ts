@@ -63,6 +63,7 @@ export const mapCql = (
   if (measureCql && groupPopulations) {
     const definitions = new CqlAntlr(measureCql).parse().expressionDefinitions;
 
+    console.log(definitions)
     return groupPopulations.reduce((output, { groupId, populationValues }) => {
       output[groupId] = {
         populationDefinitions: populationValues?.reduce(
