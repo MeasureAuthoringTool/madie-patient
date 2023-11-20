@@ -3,11 +3,7 @@ import "twin.macro";
 import "styled-components/macro";
 import parse from "html-react-parser";
 import _, { isEmpty } from "lodash";
-import {
-  GroupPopulation,
-  PopulationType,
-  PopulationExpectedValue,
-} from "@madie/madie-models";
+import { GroupPopulation, PopulationType } from "@madie/madie-models";
 import { Select } from "@madie/madie-design-system/dist/react";
 import GroupCoverageNav, {
   Population,
@@ -17,6 +13,10 @@ import { FHIR_POPULATION_CODES } from "../../../util/PopulationsMap";
 import { MappedCalculationResults } from "../qiCore/calculationResults/CalculationResults";
 import { Relevance } from "fqm-execution/build/types/Enums";
 import GroupCoverageResultsSection from "./GroupCoverageResultsSection";
+import {
+  getFirstPopulation,
+  getPopulationAbbreviation,
+} from "../../../util/GroupCoverageHelpers";
 
 interface Props {
   groupPopulations: GroupPopulation[];
@@ -39,15 +39,6 @@ type PopulationResult = Record<string, PopulationStatement>;
 type AllDefinitions = Record<string, Statement>;
 
 const populationCriteriaLabel = "Population Criteria";
-const abbreviatedPopulations = {
-  initialPopulation: "IP",
-  denominator: "DENOM",
-  denominatorExclusion: "DENEX",
-  numerator: "NUMER",
-  numeratorExclusion: "NUMEX",
-  denominatorException: "DENEXCEP",
-  measurePopulation: "MSRPOPL",
-};
 
 const allDefinitions = [
   { name: "Definitions" },
@@ -55,16 +46,7 @@ const allDefinitions = [
   { name: "Unused" },
 ];
 
-const getFirstPopulation = (group) => {
-  return {
-    abbreviation: "IP",
-    criteriaReference: group.populationValues[0].criteriaReference,
-    name: group.populationValues[0].name,
-    id: group.populationValues[0].id,
-  };
-};
-
-const GroupCoverage = ({
+const QiCoreGroupCoverage = ({
   groupPopulations,
   mappedCalculationResults,
 }: Props) => {
@@ -93,17 +75,6 @@ const GroupCoverage = ({
   useEffect(() => {
     changePopulation(selectedHighlightingTab);
   }, [populationResults]);
-
-  const getPopulationAbbreviation = (
-    populations: PopulationExpectedValue[],
-    name: string,
-    index: number
-  ) => {
-    const count = populations.filter((p) => p.name === name).length;
-    return count > 1
-      ? `${abbreviatedPopulations[name]} ${index + 1}`
-      : abbreviatedPopulations[name];
-  };
 
   const getRelevantPopulations = () => {
     const selectedGroup = groupPopulations.find(
@@ -365,4 +336,4 @@ const GroupCoverage = ({
   );
 };
 
-export default GroupCoverage;
+export default QiCoreGroupCoverage;

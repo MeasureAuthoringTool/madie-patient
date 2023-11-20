@@ -17,6 +17,7 @@ declare module "@madie/madie-util" {
     qiCoreElementsTab: boolean;
     exportQiCoreBundleType: boolean;
     highlightingTabs: boolean;
+    qdmHighlightingTabs: boolean;
     disableRunTestCaseWithObservStrat: boolean;
     qdmHideJson: boolean;
   }
