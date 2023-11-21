@@ -26,6 +26,7 @@ import qdmCalculationService, {
 } from "../../../api/QdmCalculationService";
 import TestCaseImportFromBonnieDialogQDM from "../common/import/TestCaseImportFromBonnieDialogQDM";
 import TestCaseCoverage from "./TestCaseCoverage/TestCaseCoverage";
+import CodeCoverageHighlighting from "../common/CodeCoverageHighlighting";
 
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
@@ -407,17 +408,23 @@ const TestCaseList = (props: TestCaseListProps) => {
               </div>
             )}
             {activeTab === "coverage" && (
-              <div tw="overflow-x-auto sm:-mx-6 lg:-mx-8">
-                <div tw="py-2 inline-block min-w-full sm:px-6 lg:px-8">
-                  <div style={{ display: "flex" }}>
-                    Hello!
-                    <TestCaseCoverage
-                      calculationResults={calculationOutput}
-                      groupPopulations={selectedPopCriteria}
-                      measureCql={measure.cql}
-                      calculationErrors={errors}
-                      measureGroups={measure?.groups}
-                    />
+              <div>
+                {coverageHTML && (
+                  <CodeCoverageHighlighting
+                    coverageHTML={coverageHTML[selectedPopCriteria.id]}
+                  />
+                )}
+                <div tw="overflow-x-auto sm:-mx-6 lg:-mx-8">
+                  <div tw="py-2 inline-block min-w-full sm:px-6 lg:px-8">
+                    <div style={{ display: "flex" }}>
+                      <TestCaseCoverage
+                        calculationResults={calculationOutput}
+                        groupPopulations={selectedPopCriteria}
+                        measureCql={measure.cql}
+                        calculationErrors={errors}
+                        measureGroups={measure?.groups}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
