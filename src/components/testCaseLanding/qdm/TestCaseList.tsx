@@ -9,7 +9,6 @@ import calculationService from "../../../api/CalculationService";
 import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calculator";
 import { checkUserCanEdit, measureStore } from "@madie/madie-util";
 import CreateCodeCoverageNavTabs from "./CreateCodeCoverageNavTabs";
-import CodeCoverageHighlighting from "../common/CodeCoverageHighlighting";
 import CreateNewTestCaseDialog from "../../createTestCase/CreateNewTestCaseDialog";
 import { MadieSpinner, Toast } from "@madie/madie-design-system/dist/react";
 import TestCaseListSideBarNav from "../common/TestCaseListSideBarNav";
@@ -26,6 +25,7 @@ import qdmCalculationService, {
   CqmExecutionResultsByPatient,
 } from "../../../api/QdmCalculationService";
 import TestCaseImportFromBonnieDialogQDM from "../common/import/TestCaseImportFromBonnieDialogQDM";
+import TestCaseCoverage from "./TestCaseCoverage/TestCaseCoverage";
 
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
@@ -57,7 +57,7 @@ export const getCoverageValueFromHtml = (
 };
 
 const TestCaseList = (props: TestCaseListProps) => {
-  const { setErrors } = props;
+  const { setErrors, errors } = props;
   const { measureId } = useParams<{ measureId: string }>();
   const {
     testCases,
@@ -406,11 +406,21 @@ const TestCaseList = (props: TestCaseListProps) => {
                 </div>
               </div>
             )}
-
-            {activeTab === "coverage" && coverageHTML && (
-              <CodeCoverageHighlighting
-                coverageHTML={coverageHTML[selectedPopCriteria.id]}
-              />
+            {activeTab === "coverage" && (
+              <div tw="overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div tw="py-2 inline-block min-w-full sm:px-6 lg:px-8">
+                  <div style={{ display: "flex" }}>
+                    Hello!
+                    <TestCaseCoverage
+                      calculationResults={calculationOutput}
+                      groupPopulations={selectedPopCriteria}
+                      measureCql={measure.cql}
+                      calculationErrors={errors}
+                      measureGroups={measure?.groups}
+                    />
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         </>

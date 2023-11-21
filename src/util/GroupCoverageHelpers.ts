@@ -62,7 +62,6 @@ export const mapCql = (
 ): MappedCql => {
   if (measureCql && groupPopulations) {
     const definitions = new CqlAntlr(measureCql).parse().expressionDefinitions;
-
     return groupPopulations.reduce((output, { groupId, populationValues }) => {
       output[groupId] = {
         populationDefinitions: populationValues?.reduce(
@@ -82,6 +81,26 @@ export const mapCql = (
         ),
       };
       return output;
+    }, {});
+  }
+};
+
+export const mapCoverageCql = (measureCql: string, groupPopulations) => {
+  const filteredPopulations = groupPopulations.populations.filter(
+    (population) => population.definition
+  );
+  const result = { ...groupPopulations, populations: filteredPopulations };
+  if (measureCql && result) {
+    const definitions = new CqlAntlr(measureCql).parse().expressionDefinitions;
+    return result.populations.reduce((acc, population) => {
+      const matchingDef = definitions.find(
+        (def) => def.name.replace(/"/g, "") === population.definition
+      );
+      if (matchingDef) {
+        acc[population.name] = { id: population.id, text: matchingDef.text };
+      }
+
+      return acc;
     }, {});
   }
 };
