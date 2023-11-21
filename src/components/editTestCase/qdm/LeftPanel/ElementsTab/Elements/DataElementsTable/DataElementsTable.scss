@@ -36,7 +36,7 @@ $header-weight: 500;
 
   > thead {
     background-color: #ededed;
-    border-bottom: solid 1px #cacaca;
+    border-bottom: solid 1px #8c8c8c;
     // maybe overflow here.
 
     > tr > th {
@@ -45,7 +45,7 @@ $header-weight: 500;
       font-weight: $header-weight;
       padding: 16px;
       text-align: left;
-      border-bottom: 1px solid #cacaca;
+      border-bottom: 1px solid #8c8c8c;
       background-color: #ededed;
     }
 
@@ -79,7 +79,7 @@ $header-weight: 500;
 
     tr > td {
       padding: 16px;
-      border-bottom: 1px solid #cacaca;
+      border-bottom: 1px solid #8c8c8c;
 
       > .timing-cell-container {
         display: flex;
@@ -141,7 +141,7 @@ $header-weight: 500;
 
       .view-button {
         color: #242424;
-        border: 1px solid #b0b0b0;
+        border: 1px solid #8c8c8c;
         border-radius: 4px;
         background: #fff;
         font-family: Rubik;
@@ -155,7 +155,7 @@ $header-weight: 500;
         align-items: center;
 
         > div {
-          border-right: solid 1px #b0b0b0;
+          border-right: solid 1px #8c8c8c;
           padding: 8px 16px;
           flex-direction: row;
           flex-grow: 1;

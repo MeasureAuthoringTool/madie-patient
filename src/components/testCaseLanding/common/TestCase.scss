@@ -1,18 +1,24 @@
 .tcl-tr {
-  border-bottom: solid 1px #ddd;
+  border-bottom: solid 1px #8c8c8c;
 
   > td {
     padding: 10px;
     max-width: 10vw;
     white-space: normal;
     vertical-align: top;
-    border-bottom: solid 1px #ddd;
+    border-bottom: solid 1px #8c8c8c;
   }
 }
 
 .tcl-table {
   border-collapse: collapse;
   border-spacing: 0 1em;
+  border: solid 1px #8c8c8c;
+  border-radius: 3px;
+  > .table-body {
+    border-top: solid 1px #8c8c8c;
+    border-radius: 3px;
+  }
 }
 
 .chip-draft {
@@ -53,7 +59,7 @@
 
   .action {
     padding: 7px 21px;
-    border-right: solid 1px #c4c4c4;
+    border-right: solid 1px #8c8c8c;
   }
   .chevron-container {
     display: flex;

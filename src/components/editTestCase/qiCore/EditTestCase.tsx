@@ -100,12 +100,21 @@ interface navigationParams {
 }
 
 const styles = {
-  success: tw`bg-green-100 text-green-700`,
-  warning: tw`bg-yellow-100 text-yellow-700`,
-  error: tw`bg-red-100 text-red-700`,
+  success: `color #006400; background-color: #90EE90`,
+  warning: `color #B0350C; background-color: #ECDF27`,
+  error: `color #C03030; background-color: #FFF829`,
   meta: tw`bg-blue-100 text-black`,
-  default: tw`bg-blue-100 text-blue-700`,
+  default: `color #00688B; background-color: #E0FFFF`,
 };
+
+/*
+previous color system based off of tw.
+success #249A5B vs #A4FAA8, 3:1 fail dark green to light green
+warning #B87A06 vs #FCEB9D, 3:1 fail, orange yellow
+error: #BA1C32 vs #FBC4AB 4.1 fail red to red orange
+// meta: 000 #b0EEFF: pass 
+default: #2469B7 vs #b0EEFF  d-L  teal 4.4:1 
+*/
 
 const Alert = styled.div<AlertProps>(({ status = "default" }) => [
   styles[status],
@@ -128,7 +137,7 @@ const StyledIcon = styled(FontAwesomeIcon)(
 );
 
 const testCaseSeriesStyles = {
-  border: "1px solid #DDDDDD",
+  border: "1px solid #8c8c8c",
   "& .MuiOutlinedInput-notchedOutline": {
     borderRadius: "3px",
     "& legend": {

@@ -195,7 +195,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
         </div>
       </div>
       {shouldDisableRunTestsButton && (
-        <div style={{ textAlign: "right", color: "grey", fontSize: "9px" }}>
+        <div style={{ textAlign: "right", color: "#717171", fontSize: "9px" }}>
           {disableRunTestButtonText}
         </div>
       )}

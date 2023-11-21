@@ -150,7 +150,7 @@
     font-size: 15px;
     line-height: 20px;
     text-align: left;
-    border-bottom: solid 1px #ddd;
+    border-bottom: solid 1px #8c8c8c;
     padding: 16px 23px;
 
     .caption {
@@ -182,7 +182,7 @@
     td:nth-of-type(3),
     td:nth-of-type(4),
     tr:last-of-type > td:first-of-type {
-      border-bottom: solid 1px #ddd;
+      border-bottom: solid 1px #8c8c8c;
     }
   }
 
@@ -204,7 +204,7 @@
     }
 
     &:last-of-type {
-      border-bottom: solid 1px #ddd;
+      border-bottom: solid 1px #8c8c8c;
     }
   }
 }
