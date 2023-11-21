@@ -15,6 +15,7 @@ export class CqlParsingService {
         {
           headers: {
             Authorization: `Bearer ${this.getAccessToken()}`,
+            "Content-Type": "text/plain",
           },
         }
       );

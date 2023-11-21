@@ -31,6 +31,7 @@ export interface CqlDefinitionExpression {
   parentLibrary: string | null;
   libraryDisplayName: string | null;
   libraryVersion: string | null;
+  function: boolean;
   name: string;
   logic: string;
 }
