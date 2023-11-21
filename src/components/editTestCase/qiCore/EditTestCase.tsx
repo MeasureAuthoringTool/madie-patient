@@ -76,725 +76,492 @@ import { Allotment } from "allotment";
 import ElementsTab from "./LeftPanel/ElementsTab/ElementsTab";
 import { QiCoreResourceProvider } from "../../../util/QiCorePatientProvider";
 import { CqlDefinitionCallstack } from "../groupCoverage/GroupCoverage";
+import useCqlParsingService from "../../../api/useCqlParsingService";
 
-const callstackMap: CqlDefinitionCallstack = {
-  "AHAOverall-2.5.000|AHA|Has Two Qualifying Outpatient Encounters and Heart Failure Outpatient Encounter During the Measurement Period":
-    [
-      {
-        id: "AHAOverall-2.5.000|AHA|Qualifying Outpatient Encounter During Measurement Period",
-        definitionName:
-          "Qualifying Outpatient Encounter During Measurement Period",
-        definitionLogic:
-          'define "Qualifying Outpatient Encounter During Measurement Period":\n    ( [Encounter: "Care Services in Long Term Residential Facility"]\n              union [Encounter: "Home Healthcare Services"]\n              union [Encounter: "Nursing Facility Visit"]\n              union [Encounter: "Office Visit"]\n              union [Encounter: "Outpatient Consultation"]\n              union [Encounter: "Patient Provider Interaction"]\n     ) ValidEncounter\n      where ValidEncounter.period during "Measurement Period"\n        and ValidEncounter.isFinished()',
-        context: "Patient",
-        supplDataElement: false,
-        popDefinition: false,
-        commentString: "",
-        returnType: null,
-        parentLibrary: "AHAOverall",
-        libraryDisplayName: "AHA",
-        libraryVersion: "2.5.000",
-        name: "Qualifying Outpatient Encounter During Measurement Period",
-        logic:
-          'define "Qualifying Outpatient Encounter During Measurement Period":\n    ( [Encounter: "Care Services in Long Term Residential Facility"]\n              union [Encounter: "Home Healthcare Services"]\n              union [Encounter: "Nursing Facility Visit"]\n              union [Encounter: "Office Visit"]\n              union [Encounter: "Outpatient Consultation"]\n              union [Encounter: "Patient Provider Interaction"]\n     ) ValidEncounter\n      where ValidEncounter.period during "Measurement Period"\n        and ValidEncounter.isFinished()',
-      },
-      {
-        id: "AHAOverall-2.5.000|AHA|Heart Failure Outpatient Encounter",
-        definitionName: "Heart Failure Outpatient Encounter",
-        definitionLogic:
-          'define "Heart Failure Outpatient Encounter":\n  ( [Encounter: "Care Services in Long Term Residential Facility"]\n      union [Encounter: "Home Healthcare Services"]\n      union [Encounter: "Nursing Facility Visit"]\n      union [Encounter: "Office Visit"]\n      union [Encounter: "Outpatient Consultation"]\n     ) QualifyingEncounter\n    with [Condition: "Heart Failure"] HeartFailure\n      such that HeartFailure.prevalenceInterval() overlaps QualifyingEncounter.period  \n        and HeartFailure.isConfirmedActiveDiagnosis()\n    where QualifyingEncounter.period during "Measurement Period"\n      and QualifyingEncounter.isFinished()',
-        context: "Patient",
-        supplDataElement: false,
-        popDefinition: false,
-        commentString: "",
-        returnType: null,
-        parentLibrary: "AHAOverall",
-        libraryDisplayName: "AHA",
-        libraryVersion: "2.5.000",
-        name: "Heart Failure Outpatient Encounter",
-        logic:
-          'define "Heart Failure Outpatient Encounter":\n  ( [Encounter: "Care Services in Long Term Residential Facility"]\n      union [Encounter: "Home Healthcare Services"]\n      union [Encounter: "Nursing Facility Visit"]\n      union [Encounter: "Office Visit"]\n      union [Encounter: "Outpatient Consultation"]\n     ) QualifyingEncounter\n    with [Condition: "Heart Failure"] HeartFailure\n      such that HeartFailure.prevalenceInterval() overlaps QualifyingEncounter.period  \n        and HeartFailure.isConfirmedActiveDiagnosis()\n    where QualifyingEncounter.period during "Measurement Period"\n      and QualifyingEncounter.isFinished()',
-      },
-    ],
-  "FHIRHelpers-4.3.000|FHIRHelpers|ToValue": [
-    {
-      id: "FHIRHelpers-4.3.000|FHIRHelpers|ToInterval",
-      definitionName: "ToInterval",
-      definitionLogic: null,
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: "FHIRHelpers",
-      libraryDisplayName: "FHIRHelpers",
-      libraryVersion: "4.3.000",
-      name: "ToInterval",
-      logic: null,
-    },
-    {
-      id: "FHIRHelpers-4.3.000|FHIRHelpers|ToQuantity",
-      definitionName: "ToQuantity",
-      definitionLogic: null,
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: "FHIRHelpers",
-      libraryDisplayName: "FHIRHelpers",
-      libraryVersion: "4.3.000",
-      name: "ToQuantity",
-      logic: null,
-    },
-    {
-      id: "FHIRHelpers-4.3.000|FHIRHelpers|ToRatio",
-      definitionName: "ToRatio",
-      definitionLogic: null,
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: "FHIRHelpers",
-      libraryDisplayName: "FHIRHelpers",
-      libraryVersion: "4.3.000",
-      name: "ToRatio",
-      logic: null,
-    },
-    {
-      id: "FHIRHelpers-4.3.000|FHIRHelpers|ToConcept",
-      definitionName: "ToConcept",
-      definitionLogic: null,
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: "FHIRHelpers",
-      libraryDisplayName: "FHIRHelpers",
-      libraryVersion: "4.3.000",
-      name: "ToConcept",
-      logic: null,
-    },
-  ],
-  "FHIRHelpers-4.3.000|FHIRHelpers|ToRatio": [
-    {
-      id: "FHIRHelpers-4.3.000|FHIRHelpers|ToQuantity",
-      definitionName: "ToQuantity",
-      definitionLogic: null,
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: "FHIRHelpers",
-      libraryDisplayName: "FHIRHelpers",
-      libraryVersion: "4.3.000",
-      name: "ToQuantity",
-      logic: null,
-    },
-  ],
-  "AHAOverall-2.5.000|AHA|Moderate or Severe LVSD Dates": [
-    {
-      id: "AHAOverall-2.5.000|AHA|isConfirmedActiveDiagnosis",
-      definitionName: "isConfirmedActiveDiagnosis",
-      definitionLogic: null,
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: "AHAOverall",
-      libraryDisplayName: "AHA",
-      libraryVersion: "2.5.000",
-      name: "isConfirmedActiveDiagnosis",
-      logic: null,
-    },
-  ],
-  "AHAOverall-2.5.000|AHA|overlapsAfterHeartFailureOutpatientEncounter": [
-    {
-      id: "AHAOverall-2.5.000|AHA|Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      definitionName:
-        "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      definitionLogic:
-        'define "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD":\n    "Heart Failure Outpatient Encounter" HFOutpatientEncounter\n        with "Moderate or Severe LVSD Dates" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period',
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: "AHAOverall",
-      libraryDisplayName: "AHA",
-      libraryVersion: "2.5.000",
-      name: "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      logic:
-        'define "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD":\n    "Heart Failure Outpatient Encounter" HFOutpatientEncounter\n        with "Moderate or Severe LVSD Dates" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period',
-    },
-    {
-      id: "AHAOverall-2.5.000|AHA|isConfirmedActiveDiagnosis",
-      definitionName: "isConfirmedActiveDiagnosis",
-      definitionLogic: null,
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: "AHAOverall",
-      libraryDisplayName: "AHA",
-      libraryVersion: "2.5.000",
-      name: "isConfirmedActiveDiagnosis",
-      logic: null,
-    },
-  ],
-  Numerator: [
-    {
-      id: "Is Currently Taking ACEI or ARB or ARNI",
-      definitionName: "Is Currently Taking ACEI or ARB or ARNI",
-      definitionLogic:
-        'define "Is Currently Taking ACEI or ARB or ARNI":\n  exists (\n          [MedicationRequest: medication in "ACE Inhibitor or ARB or ARNI"] ActiveACEIOrARBOrARNI\n            where ActiveACEIOrARBOrARNI.overlapsAfterHeartFailureOutpatientEncounter()\n          )',
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: null,
-      libraryDisplayName: null,
-      libraryVersion: null,
-      name: "Is Currently Taking ACEI or ARB or ARNI",
-      logic:
-        'define "Is Currently Taking ACEI or ARB or ARNI":\n  exists (\n          [MedicationRequest: medication in "ACE Inhibitor or ARB or ARNI"] ActiveACEIOrARBOrARNI\n            where ActiveACEIOrARBOrARNI.overlapsAfterHeartFailureOutpatientEncounter()\n          )',
-    },
-    {
-      id: "Has ACEI or ARB or ARNI Ordered",
-      definitionName: "Has ACEI or ARB or ARNI Ordered",
-      definitionLogic:
-        'define "Has ACEI or ARB or ARNI Ordered":\n  exists ( \n            [MedicationRequest: medication in "ACE Inhibitor or ARB or ARNI"] ACEIOrARBOrARNIOrdered\n             where ACEIOrARBOrARNIOrdered.isOrderedDuringHeartFailureOutpatientEncounter()\n           )',
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: null,
-      libraryDisplayName: null,
-      libraryVersion: null,
-      name: "Has ACEI or ARB or ARNI Ordered",
-      logic:
-        'define "Has ACEI or ARB or ARNI Ordered":\n  exists ( \n            [MedicationRequest: medication in "ACE Inhibitor or ARB or ARNI"] ACEIOrARBOrARNIOrdered\n             where ACEIOrARBOrARNIOrdered.isOrderedDuringHeartFailureOutpatientEncounter()\n           )',
-    },
-  ],
-  "AHAOverall-2.5.000|AHA|Has Left Ventricular Assist Device": [
-    {
-      id: "AHAOverall-2.5.000|AHA|Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      definitionName:
-        "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      definitionLogic:
-        'define "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD":\n    "Heart Failure Outpatient Encounter" HFOutpatientEncounter\n        with "Moderate or Severe LVSD Dates" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period',
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: "AHAOverall",
-      libraryDisplayName: "AHA",
-      libraryVersion: "2.5.000",
-      name: "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      logic:
-        'define "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD":\n    "Heart Failure Outpatient Encounter" HFOutpatientEncounter\n        with "Moderate or Severe LVSD Dates" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period',
-    },
-  ],
-  "AHAOverall-2.5.000|AHA|Has Heart Transplant": [
-    {
-      id: "AHAOverall-2.5.000|AHA|Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      definitionName:
-        "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      definitionLogic:
-        'define "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD":\n    "Heart Failure Outpatient Encounter" HFOutpatientEncounter\n        with "Moderate or Severe LVSD Dates" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period',
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: "AHAOverall",
-      libraryDisplayName: "AHA",
-      libraryVersion: "2.5.000",
-      name: "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      logic:
-        'define "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD":\n    "Heart Failure Outpatient Encounter" HFOutpatientEncounter\n        with "Moderate or Severe LVSD Dates" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period',
-    },
-  ],
-  Denominator: [
-    {
-      id: "Initial Population",
-      definitionName: "Initial Population",
-      definitionLogic:
-        'define "Initial Population":\n    AHA."Has Two Qualifying Outpatient Encounters and Heart Failure Outpatient Encounter During the Measurement Period"',
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: null,
-      libraryDisplayName: null,
-      libraryVersion: null,
-      name: "Initial Population",
-      logic:
-        'define "Initial Population":\n    AHA."Has Two Qualifying Outpatient Encounters and Heart Failure Outpatient Encounter During the Measurement Period"',
-    },
-    {
-      id: "AHAOverall-2.5.000|AHA|Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      definitionName:
-        "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      definitionLogic:
-        'define "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD":\n    "Heart Failure Outpatient Encounter" HFOutpatientEncounter\n        with "Moderate or Severe LVSD Dates" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period',
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: "AHAOverall",
-      libraryDisplayName: "AHA",
-      libraryVersion: "2.5.000",
-      name: "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      logic:
-        'define "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD":\n    "Heart Failure Outpatient Encounter" HFOutpatientEncounter\n        with "Moderate or Severe LVSD Dates" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period',
-    },
-  ],
-  "AHAOverall-2.5.000|AHA|isOrderedDuringHeartFailureOutpatientEncounter": [
-    {
-      id: "AHAOverall-2.5.000|AHA|Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      definitionName:
-        "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      definitionLogic:
-        'define "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD":\n    "Heart Failure Outpatient Encounter" HFOutpatientEncounter\n        with "Moderate or Severe LVSD Dates" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period',
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: "AHAOverall",
-      libraryDisplayName: "AHA",
-      libraryVersion: "2.5.000",
-      name: "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      logic:
-        'define "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD":\n    "Heart Failure Outpatient Encounter" HFOutpatientEncounter\n        with "Moderate or Severe LVSD Dates" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period',
-    },
-  ],
-  "SDE Payer": [
-    {
-      id: "SupplementalDataElements-3.4.000|SDE|SDE Payer",
-      definitionName: "SDE Payer",
-      definitionLogic:
-        'define "SDE Payer":\r\n  [Coverage: type in "Payer Type"] Payer\r\n    return {\r\n      code: Payer.type,\r\n      period: Payer.period\r\n    }',
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: "SupplementalDataElements",
-      libraryDisplayName: "SDE",
-      libraryVersion: "3.4.000",
-      name: "SDE Payer",
-      logic:
-        'define "SDE Payer":\r\n  [Coverage: type in "Payer Type"] Payer\r\n    return {\r\n      code: Payer.type,\r\n      period: Payer.period\r\n    }',
-    },
-  ],
-  "AHAOverall-2.5.000|AHA|Has Heart Transplant Complications": [
-    {
-      id: "AHAOverall-2.5.000|AHA|Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      definitionName:
-        "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      definitionLogic:
-        'define "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD":\n    "Heart Failure Outpatient Encounter" HFOutpatientEncounter\n        with "Moderate or Severe LVSD Dates" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period',
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: "AHAOverall",
-      libraryDisplayName: "AHA",
-      libraryVersion: "2.5.000",
-      name: "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      logic:
-        'define "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD":\n    "Heart Failure Outpatient Encounter" HFOutpatientEncounter\n        with "Moderate or Severe LVSD Dates" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period',
-    },
-    {
-      id: "AHAOverall-2.5.000|AHA|isConfirmedActiveDiagnosis",
-      definitionName: "isConfirmedActiveDiagnosis",
-      definitionLogic: null,
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: "AHAOverall",
-      libraryDisplayName: "AHA",
-      libraryVersion: "2.5.000",
-      name: "isConfirmedActiveDiagnosis",
-      logic: null,
-    },
-  ],
-  "AHAOverall-2.5.000|AHA|Heart Failure Outpatient Encounter": [
-    {
-      id: "AHAOverall-2.5.000|AHA|isConfirmedActiveDiagnosis",
-      definitionName: "isConfirmedActiveDiagnosis",
-      definitionLogic: null,
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: "AHAOverall",
-      libraryDisplayName: "AHA",
-      libraryVersion: "2.5.000",
-      name: "isConfirmedActiveDiagnosis",
-      logic: null,
-    },
-  ],
-  "AHAOverall-2.5.000|AHA|Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD":
-    [
-      {
-        id: "AHAOverall-2.5.000|AHA|Moderate or Severe LVSD Dates",
-        definitionName: "Moderate or Severe LVSD Dates",
-        definitionLogic:
-          'define "Moderate or Severe LVSD Dates":\n    ( [Observation: "Ejection Fraction"] EjectionFraction\n        let dateOfFinding: start of ( EjectionFraction Fraction\n                                 where Fraction.value as Quantity <= 40 \'%\'\n                                   and Fraction.status in {\'final\', \'amended\', \'corrected\'} \n                                 return Fraction.effective.toInterval()\n                                   )\n        return dateOfFinding \n      )\n    union\n    ( \n        ( [Condition: "Moderate or Severe LVSD"]\n            union ( [Condition: "Left ventricular systolic dysfunction (disorder)"] LVSDDiagnosis\n                       where LVSDDiagnosis.severity in "Moderate or Severe"\n                    ) \n          ) ModerateOrSevereLVSD\n        let dateOfFinding: start of ( ModerateOrSevereLVSD LVSD\n                                  where LVSD.isConfirmedActiveDiagnosis()\n                                  return LVSD.prevalenceInterval()\n                                )\n        return dateOfFinding \n      )',
-        context: "Patient",
-        supplDataElement: false,
-        popDefinition: false,
-        commentString: "",
-        returnType: null,
-        parentLibrary: "AHAOverall",
-        libraryDisplayName: "AHA",
-        libraryVersion: "2.5.000",
-        name: "Moderate or Severe LVSD Dates",
-        logic:
-          'define "Moderate or Severe LVSD Dates":\n    ( [Observation: "Ejection Fraction"] EjectionFraction\n        let dateOfFinding: start of ( EjectionFraction Fraction\n                                 where Fraction.value as Quantity <= 40 \'%\'\n                                   and Fraction.status in {\'final\', \'amended\', \'corrected\'} \n                                 return Fraction.effective.toInterval()\n                                   )\n        return dateOfFinding \n      )\n    union\n    ( \n        ( [Condition: "Moderate or Severe LVSD"]\n            union ( [Condition: "Left ventricular systolic dysfunction (disorder)"] LVSDDiagnosis\n                       where LVSDDiagnosis.severity in "Moderate or Severe"\n                    ) \n          ) ModerateOrSevereLVSD\n        let dateOfFinding: start of ( ModerateOrSevereLVSD LVSD\n                                  where LVSD.isConfirmedActiveDiagnosis()\n                                  return LVSD.prevalenceInterval()\n                                )\n        return dateOfFinding \n      )',
-      },
-      {
-        id: "AHAOverall-2.5.000|AHA|Heart Failure Outpatient Encounter",
-        definitionName: "Heart Failure Outpatient Encounter",
-        definitionLogic:
-          'define "Heart Failure Outpatient Encounter":\n  ( [Encounter: "Care Services in Long Term Residential Facility"]\n      union [Encounter: "Home Healthcare Services"]\n      union [Encounter: "Nursing Facility Visit"]\n      union [Encounter: "Office Visit"]\n      union [Encounter: "Outpatient Consultation"]\n     ) QualifyingEncounter\n    with [Condition: "Heart Failure"] HeartFailure\n      such that HeartFailure.prevalenceInterval() overlaps QualifyingEncounter.period  \n        and HeartFailure.isConfirmedActiveDiagnosis()\n    where QualifyingEncounter.period during "Measurement Period"\n      and QualifyingEncounter.isFinished()',
-        context: "Patient",
-        supplDataElement: false,
-        popDefinition: false,
-        commentString: "",
-        returnType: null,
-        parentLibrary: "AHAOverall",
-        libraryDisplayName: "AHA",
-        libraryVersion: "2.5.000",
-        name: "Heart Failure Outpatient Encounter",
-        logic:
-          'define "Heart Failure Outpatient Encounter":\n  ( [Encounter: "Care Services in Long Term Residential Facility"]\n      union [Encounter: "Home Healthcare Services"]\n      union [Encounter: "Nursing Facility Visit"]\n      union [Encounter: "Office Visit"]\n      union [Encounter: "Outpatient Consultation"]\n     ) QualifyingEncounter\n    with [Condition: "Heart Failure"] HeartFailure\n      such that HeartFailure.prevalenceInterval() overlaps QualifyingEncounter.period  \n        and HeartFailure.isConfirmedActiveDiagnosis()\n    where QualifyingEncounter.period during "Measurement Period"\n      and QualifyingEncounter.isFinished()',
-      },
-    ],
-  "Initial Population": [
-    {
-      id: "AHAOverall-2.5.000|AHA|Has Two Qualifying Outpatient Encounters and Heart Failure Outpatient Encounter During the Measurement Period",
-      definitionName:
-        "Has Two Qualifying Outpatient Encounters and Heart Failure Outpatient Encounter During the Measurement Period",
-      definitionLogic:
-        'define "Has Two Qualifying Outpatient Encounters and Heart Failure Outpatient Encounter During the Measurement Period":\n  AgeInYearsAt(date from start of "Measurement Period") >= 18\n    and exists ( "Qualifying Outpatient Encounter During Measurement Period" Encounter1\n        with "Qualifying Outpatient Encounter During Measurement Period" Encounter2\n          such that Encounter2.id !~ Encounter1.id\n    )\n    and exists "Heart Failure Outpatient Encounter"',
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: "AHAOverall",
-      libraryDisplayName: "AHA",
-      libraryVersion: "2.5.000",
-      name: "Has Two Qualifying Outpatient Encounters and Heart Failure Outpatient Encounter During the Measurement Period",
-      logic:
-        'define "Has Two Qualifying Outpatient Encounters and Heart Failure Outpatient Encounter During the Measurement Period":\n  AgeInYearsAt(date from start of "Measurement Period") >= 18\n    and exists ( "Qualifying Outpatient Encounter During Measurement Period" Encounter1\n        with "Qualifying Outpatient Encounter During Measurement Period" Encounter2\n          such that Encounter2.id !~ Encounter1.id\n    )\n    and exists "Heart Failure Outpatient Encounter"',
-    },
-  ],
-  "AHAOverall-2.5.000|AHA|overlapsHeartFailureOutpatientEncounter": [
-    {
-      id: "AHAOverall-2.5.000|AHA|Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      definitionName:
-        "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      definitionLogic:
-        'define "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD":\n    "Heart Failure Outpatient Encounter" HFOutpatientEncounter\n        with "Moderate or Severe LVSD Dates" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period',
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: "AHAOverall",
-      libraryDisplayName: "AHA",
-      libraryVersion: "2.5.000",
-      name: "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      logic:
-        'define "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD":\n    "Heart Failure Outpatient Encounter" HFOutpatientEncounter\n        with "Moderate or Severe LVSD Dates" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period',
-    },
-    {
-      id: "AHAOverall-2.5.000|AHA|isConfirmedActiveDiagnosis",
-      definitionName: "isConfirmedActiveDiagnosis",
-      definitionLogic: null,
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: "AHAOverall",
-      libraryDisplayName: "AHA",
-      libraryVersion: "2.5.000",
-      name: "isConfirmedActiveDiagnosis",
-      logic: null,
-    },
-  ],
-  "Has Diagnosis of Pregnancy": [
-    {
-      id: "AHAOverall-2.5.000|AHA|Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      definitionName:
-        "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      definitionLogic:
-        'define "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD":\n    "Heart Failure Outpatient Encounter" HFOutpatientEncounter\n        with "Moderate or Severe LVSD Dates" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period',
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: "AHAOverall",
-      libraryDisplayName: "AHA",
-      libraryVersion: "2.5.000",
-      name: "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      logic:
-        'define "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD":\n    "Heart Failure Outpatient Encounter" HFOutpatientEncounter\n        with "Moderate or Severe LVSD Dates" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period',
-    },
-  ],
-  "Denominator Exclusions": [
-    {
-      id: "AHAOverall-2.5.000|AHA|Has Left Ventricular Assist Device Complications",
-      definitionName: "Has Left Ventricular Assist Device Complications",
-      definitionLogic:
-        'define "Has Left Ventricular Assist Device Complications":\n  exists (\n            [Condition: "Left Ventricular Assist Device Complications"] LVADComplications\n              with "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD" ModerateOrSevereLVSDHFOutpatientEncounter\n                such that ( Coalesce( LVADComplications.recordedDate.toInterval(), LVADComplications.prevalenceInterval() ) ) starts before end of ModerateOrSevereLVSDHFOutpatientEncounter.period  \n              where LVADComplications.isConfirmedActiveDiagnosis()\n          )',
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: "AHAOverall",
-      libraryDisplayName: "AHA",
-      libraryVersion: "2.5.000",
-      name: "Has Left Ventricular Assist Device Complications",
-      logic:
-        'define "Has Left Ventricular Assist Device Complications":\n  exists (\n            [Condition: "Left Ventricular Assist Device Complications"] LVADComplications\n              with "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD" ModerateOrSevereLVSDHFOutpatientEncounter\n                such that ( Coalesce( LVADComplications.recordedDate.toInterval(), LVADComplications.prevalenceInterval() ) ) starts before end of ModerateOrSevereLVSDHFOutpatientEncounter.period  \n              where LVADComplications.isConfirmedActiveDiagnosis()\n          )',
-    },
-    {
-      id: "AHAOverall-2.5.000|AHA|Has Heart Transplant",
-      definitionName: "Has Heart Transplant",
-      definitionLogic:
-        'define "Has Heart Transplant":\n  exists (\n          [Procedure: "Heart Transplant"] HeartTransplant\n            with "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD" ModerateOrSevereLVSDHFOutpatientEncounter\n              such that HeartTransplant.performed.toInterval() starts before end of ModerateOrSevereLVSDHFOutpatientEncounter.period\n            where HeartTransplant.status = \'completed\'\n          )',
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: "AHAOverall",
-      libraryDisplayName: "AHA",
-      libraryVersion: "2.5.000",
-      name: "Has Heart Transplant",
-      logic:
-        'define "Has Heart Transplant":\n  exists (\n          [Procedure: "Heart Transplant"] HeartTransplant\n            with "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD" ModerateOrSevereLVSDHFOutpatientEncounter\n              such that HeartTransplant.performed.toInterval() starts before end of ModerateOrSevereLVSDHFOutpatientEncounter.period\n            where HeartTransplant.status = \'completed\'\n          )',
-    },
-    {
-      id: "AHAOverall-2.5.000|AHA|Has Heart Transplant Complications",
-      definitionName: "Has Heart Transplant Complications",
-      definitionLogic:
-        'define "Has Heart Transplant Complications":\n  exists ( \n          [Condition: "Heart Transplant Complications"] HeartTransplantComplications\n            with "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD" ModerateOrSevereLVSDHFOutpatientEncounter\n              such that ( Coalesce( HeartTransplantComplications.recordedDate.toInterval(), HeartTransplantComplications.prevalenceInterval() ) ) starts before end of ModerateOrSevereLVSDHFOutpatientEncounter.period\n            where HeartTransplantComplications.isConfirmedActiveDiagnosis()\n          )',
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: "AHAOverall",
-      libraryDisplayName: "AHA",
-      libraryVersion: "2.5.000",
-      name: "Has Heart Transplant Complications",
-      logic:
-        'define "Has Heart Transplant Complications":\n  exists ( \n          [Condition: "Heart Transplant Complications"] HeartTransplantComplications\n            with "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD" ModerateOrSevereLVSDHFOutpatientEncounter\n              such that ( Coalesce( HeartTransplantComplications.recordedDate.toInterval(), HeartTransplantComplications.prevalenceInterval() ) ) starts before end of ModerateOrSevereLVSDHFOutpatientEncounter.period\n            where HeartTransplantComplications.isConfirmedActiveDiagnosis()\n          )',
-    },
-    {
-      id: "AHAOverall-2.5.000|AHA|Has Left Ventricular Assist Device",
-      definitionName: "Has Left Ventricular Assist Device",
-      definitionLogic:
-        'define "Has Left Ventricular Assist Device":\n  exists (\n            [Procedure: "Left Ventricular Assist Device Placement"] LVADOutpatient\n              with "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD" ModerateOrSevereLVSDHFOutpatientEncounter\n                such that LVADOutpatient.performed.toInterval() starts before end of ModerateOrSevereLVSDHFOutpatientEncounter.period\n              where LVADOutpatient.status = \'completed\'\n            )',
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: "AHAOverall",
-      libraryDisplayName: "AHA",
-      libraryVersion: "2.5.000",
-      name: "Has Left Ventricular Assist Device",
-      logic:
-        'define "Has Left Ventricular Assist Device":\n  exists (\n            [Procedure: "Left Ventricular Assist Device Placement"] LVADOutpatient\n              with "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD" ModerateOrSevereLVSDHFOutpatientEncounter\n                such that LVADOutpatient.performed.toInterval() starts before end of ModerateOrSevereLVSDHFOutpatientEncounter.period\n              where LVADOutpatient.status = \'completed\'\n            )',
-    },
-  ],
-  "Has Medical or Patient Reason for Not Ordering ACEI or ARB or ARNI": [
-    {
-      id: "AHAOverall-2.5.000|AHA|Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      definitionName:
-        "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      definitionLogic:
-        'define "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD":\n    "Heart Failure Outpatient Encounter" HFOutpatientEncounter\n        with "Moderate or Severe LVSD Dates" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period',
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: "AHAOverall",
-      libraryDisplayName: "AHA",
-      libraryVersion: "2.5.000",
-      name: "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      logic:
-        'define "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD":\n    "Heart Failure Outpatient Encounter" HFOutpatientEncounter\n        with "Moderate or Severe LVSD Dates" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period',
-    },
-  ],
-  "AHAOverall-2.5.000|AHA|Has Left Ventricular Assist Device Complications": [
-    {
-      id: "AHAOverall-2.5.000|AHA|Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      definitionName:
-        "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      definitionLogic:
-        'define "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD":\n    "Heart Failure Outpatient Encounter" HFOutpatientEncounter\n        with "Moderate or Severe LVSD Dates" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period',
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: "AHAOverall",
-      libraryDisplayName: "AHA",
-      libraryVersion: "2.5.000",
-      name: "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
-      logic:
-        'define "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD":\n    "Heart Failure Outpatient Encounter" HFOutpatientEncounter\n        with "Moderate or Severe LVSD Dates" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period',
-    },
-    {
-      id: "AHAOverall-2.5.000|AHA|isConfirmedActiveDiagnosis",
-      definitionName: "isConfirmedActiveDiagnosis",
-      definitionLogic: null,
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: "AHAOverall",
-      libraryDisplayName: "AHA",
-      libraryVersion: "2.5.000",
-      name: "isConfirmedActiveDiagnosis",
-      logic: null,
-    },
-  ],
-  "Denominator Exceptions": [
-    {
-      id: "Has Diagnosis of Pregnancy",
-      definitionName: "Has Diagnosis of Pregnancy",
-      definitionLogic:
-        'define "Has Diagnosis of Pregnancy":\n    exists (\n            [Condition: "Pregnancy"] PregnancyDiagnosis\n              with AHA."Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD" ModerateOrSevereLVSDHFOutpatientEncounter\n                such that PregnancyDiagnosis.prevalenceInterval() starts 9 months or less before or on start of ModerateOrSevereLVSDHFOutpatientEncounter.period\n           )',
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: null,
-      libraryDisplayName: null,
-      libraryVersion: null,
-      name: "Has Diagnosis of Pregnancy",
-      logic:
-        'define "Has Diagnosis of Pregnancy":\n    exists (\n            [Condition: "Pregnancy"] PregnancyDiagnosis\n              with AHA."Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD" ModerateOrSevereLVSDHFOutpatientEncounter\n                such that PregnancyDiagnosis.prevalenceInterval() starts 9 months or less before or on start of ModerateOrSevereLVSDHFOutpatientEncounter.period\n           )',
-    },
-    {
-      id: "Has Diagnosis of Renal Failure Due to ACEI",
-      definitionName: "Has Diagnosis of Renal Failure Due to ACEI",
-      definitionLogic:
-        'define "Has Diagnosis of Renal Failure Due to ACEI":\n    exists (\n            [Condition: "Acute renal failure caused by angiotensin-converting-enzyme inhibitor (disorder)"] RenalFailureDueToACEI\n              where RenalFailureDueToACEI.overlapsAfterHeartFailureOutpatientEncounter()\n           )',
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: null,
-      libraryDisplayName: null,
-      libraryVersion: null,
-      name: "Has Diagnosis of Renal Failure Due to ACEI",
-      logic:
-        'define "Has Diagnosis of Renal Failure Due to ACEI":\n    exists (\n            [Condition: "Acute renal failure caused by angiotensin-converting-enzyme inhibitor (disorder)"] RenalFailureDueToACEI\n              where RenalFailureDueToACEI.overlapsAfterHeartFailureOutpatientEncounter()\n           )',
-    },
-    {
-      id: "Has Diagnosis of Allergy or Intolerance to ACEI or ARB",
-      definitionName: "Has Diagnosis of Allergy or Intolerance to ACEI or ARB",
-      definitionLogic:
-        'define "Has Diagnosis of Allergy or Intolerance to ACEI or ARB":\n    exists (\n            ( ["Condition": "Allergy to ACE Inhibitor or ARB"]\n               union ["Condition": "Intolerance to ACE Inhibitor or ARB"] ) ACEIOrARBAllergyOrIntoleranceDiagnosis\n                where ACEIOrARBAllergyOrIntoleranceDiagnosis.overlapsAfterHeartFailureOutpatientEncounter()\n           )',
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: null,
-      libraryDisplayName: null,
-      libraryVersion: null,
-      name: "Has Diagnosis of Allergy or Intolerance to ACEI or ARB",
-      logic:
-        'define "Has Diagnosis of Allergy or Intolerance to ACEI or ARB":\n    exists (\n            ( ["Condition": "Allergy to ACE Inhibitor or ARB"]\n               union ["Condition": "Intolerance to ACE Inhibitor or ARB"] ) ACEIOrARBAllergyOrIntoleranceDiagnosis\n                where ACEIOrARBAllergyOrIntoleranceDiagnosis.overlapsAfterHeartFailureOutpatientEncounter()\n           )',
-    },
-    {
-      id: "Has Allergy or Intolerance to ACEI or ARB or ARNI Ingredient",
-      definitionName:
-        "Has Allergy or Intolerance to ACEI or ARB or ARNI Ingredient",
-      definitionLogic:
-        'define "Has Allergy or Intolerance to ACEI or ARB or ARNI Ingredient":\n  exists (\n          ( [AllergyIntolerance: "ACE Inhibitor or ARB or ARNI Ingredient"]\n             union [AllergyIntolerance: "Substance with angiotensin-converting enzyme inhibitor mechanism of action (substance)"]\n             union [AllergyIntolerance: "Substance with angiotensin II receptor antagonist mechanism of action (substance)"]\n             union [AllergyIntolerance: "Substance with neprilysin inhibitor mechanism of action (substance)"] ) ACEIOrARBOrARNIAllergyIntolerance\n              where ACEIOrARBOrARNIAllergyIntolerance.overlapsAfterHeartFailureOutpatientEncounter()\n            )',
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: null,
-      libraryDisplayName: null,
-      libraryVersion: null,
-      name: "Has Allergy or Intolerance to ACEI or ARB or ARNI Ingredient",
-      logic:
-        'define "Has Allergy or Intolerance to ACEI or ARB or ARNI Ingredient":\n  exists (\n          ( [AllergyIntolerance: "ACE Inhibitor or ARB or ARNI Ingredient"]\n             union [AllergyIntolerance: "Substance with angiotensin-converting enzyme inhibitor mechanism of action (substance)"]\n             union [AllergyIntolerance: "Substance with angiotensin II receptor antagonist mechanism of action (substance)"]\n             union [AllergyIntolerance: "Substance with neprilysin inhibitor mechanism of action (substance)"] ) ACEIOrARBOrARNIAllergyIntolerance\n              where ACEIOrARBOrARNIAllergyIntolerance.overlapsAfterHeartFailureOutpatientEncounter()\n            )',
-    },
-    {
-      id: "Has Medical or Patient Reason for Not Ordering ACEI or ARB or ARNI",
-      definitionName:
-        "Has Medical or Patient Reason for Not Ordering ACEI or ARB or ARNI",
-      definitionLogic:
-        "define \"Has Medical or Patient Reason for Not Ordering ACEI or ARB or ARNI\":\n  exists (\n          [MedicationNotRequested: medication in \"ACE Inhibitor or ARB or ARNI\"] NoACEIOrARBOrARNIOrdered\n            with AHA.\"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\" ModerateOrSevereLVSDHFOutpatientEncounter\n              such that NoACEIOrARBOrARNIOrdered.authoredOn during day of ModerateOrSevereLVSDHFOutpatientEncounter.period\n            where NoACEIOrARBOrARNIOrdered.status = 'completed'\n              and NoACEIOrARBOrARNIOrdered.intent in { 'order', 'original-order', 'reflex-order', 'filler-order', 'instance-order' } \n              and ( NoACEIOrARBOrARNIOrdered.reasonCode in \"Medical Reason\"\n                     or NoACEIOrARBOrARNIOrdered.reasonCode in \"Patient Reason\"\n                     or NoACEIOrARBOrARNIOrdered.reasonCode in \"Patient Reason for ACE Inhibitor or ARB Decline\"\n                   )\n            )",
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: null,
-      libraryDisplayName: null,
-      libraryVersion: null,
-      name: "Has Medical or Patient Reason for Not Ordering ACEI or ARB or ARNI",
-      logic:
-        "define \"Has Medical or Patient Reason for Not Ordering ACEI or ARB or ARNI\":\n  exists (\n          [MedicationNotRequested: medication in \"ACE Inhibitor or ARB or ARNI\"] NoACEIOrARBOrARNIOrdered\n            with AHA.\"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\" ModerateOrSevereLVSDHFOutpatientEncounter\n              such that NoACEIOrARBOrARNIOrdered.authoredOn during day of ModerateOrSevereLVSDHFOutpatientEncounter.period\n            where NoACEIOrARBOrARNIOrdered.status = 'completed'\n              and NoACEIOrARBOrARNIOrdered.intent in { 'order', 'original-order', 'reflex-order', 'filler-order', 'instance-order' } \n              and ( NoACEIOrARBOrARNIOrdered.reasonCode in \"Medical Reason\"\n                     or NoACEIOrARBOrARNIOrdered.reasonCode in \"Patient Reason\"\n                     or NoACEIOrARBOrARNIOrdered.reasonCode in \"Patient Reason for ACE Inhibitor or ARB Decline\"\n                   )\n            )",
-    },
-  ],
-  "FHIRHelpers-4.3.000|FHIRHelpers|ToInterval": [
-    {
-      id: "FHIRHelpers-4.3.000|FHIRHelpers|ToQuantity",
-      definitionName: "ToQuantity",
-      definitionLogic: null,
-      context: "Patient",
-      supplDataElement: false,
-      popDefinition: false,
-      commentString: "",
-      returnType: null,
-      parentLibrary: "FHIRHelpers",
-      libraryDisplayName: "FHIRHelpers",
-      libraryVersion: "4.3.000",
-      name: "ToQuantity",
-      logic: null,
-    },
-  ],
-};
+// const callstackMap: CqlDefinitionCallstack = {
+//   "AHAOverall-2.5.000|AHA|overlapsAfterHeartFailureOutpatientEncounter|function": [
+//       {
+//           "id": "AHAOverall-2.5.000|AHA|Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "definitionName": "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "definitionLogic": "define \"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\":\n    \"Heart Failure Outpatient Encounter\" HFOutpatientEncounter\n        with \"Moderate or Severe LVSD Dates\" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period",
+//           "context": "Patient",
+//           "supplDataElement": false,
+//           "popDefinition": false,
+//           "commentString": "",
+//           "returnType": null,
+//           "parentLibrary": "AHAOverall",
+//           "libraryDisplayName": "AHA",
+//           "libraryVersion": "2.5.000",
+//           "name": "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "function": false,
+//           "logic": "define \"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\":\n    \"Heart Failure Outpatient Encounter\" HFOutpatientEncounter\n        with \"Moderate or Severe LVSD Dates\" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period"
+//       }
+//   ],
+//   "AHAOverall-2.5.000|AHA|Has Two Qualifying Outpatient Encounters and Heart Failure Outpatient Encounter During the Measurement Period": [
+//       {
+//           "id": "AHAOverall-2.5.000|AHA|Heart Failure Outpatient Encounter",
+//           "definitionName": "Heart Failure Outpatient Encounter",
+//           "definitionLogic": "define \"Heart Failure Outpatient Encounter\":\n  ( [Encounter: \"Care Services in Long Term Residential Facility\"]\n      union [Encounter: \"Home Healthcare Services\"]\n      union [Encounter: \"Nursing Facility Visit\"]\n      union [Encounter: \"Office Visit\"]\n      union [Encounter: \"Outpatient Consultation\"]\n     ) QualifyingEncounter\n    with [Condition: \"Heart Failure\"] HeartFailure\n      such that HeartFailure.prevalenceInterval() overlaps QualifyingEncounter.period  \n        and HeartFailure.isConfirmedActiveDiagnosis()\n    where QualifyingEncounter.period during \"Measurement Period\"\n      and QualifyingEncounter.isFinished()",
+//           "context": "Patient",
+//           "supplDataElement": false,
+//           "popDefinition": false,
+//           "commentString": "",
+//           "returnType": null,
+//           "parentLibrary": "AHAOverall",
+//           "libraryDisplayName": "AHA",
+//           "libraryVersion": "2.5.000",
+//           "name": "Heart Failure Outpatient Encounter",
+//           "function": false,
+//           "logic": "define \"Heart Failure Outpatient Encounter\":\n  ( [Encounter: \"Care Services in Long Term Residential Facility\"]\n      union [Encounter: \"Home Healthcare Services\"]\n      union [Encounter: \"Nursing Facility Visit\"]\n      union [Encounter: \"Office Visit\"]\n      union [Encounter: \"Outpatient Consultation\"]\n     ) QualifyingEncounter\n    with [Condition: \"Heart Failure\"] HeartFailure\n      such that HeartFailure.prevalenceInterval() overlaps QualifyingEncounter.period  \n        and HeartFailure.isConfirmedActiveDiagnosis()\n    where QualifyingEncounter.period during \"Measurement Period\"\n      and QualifyingEncounter.isFinished()"
+//       },
+//       {
+//           "id": "AHAOverall-2.5.000|AHA|Qualifying Outpatient Encounter During Measurement Period",
+//           "definitionName": "Qualifying Outpatient Encounter During Measurement Period",
+//           "definitionLogic": "define \"Qualifying Outpatient Encounter During Measurement Period\":\n    ( [Encounter: \"Care Services in Long Term Residential Facility\"]\n              union [Encounter: \"Home Healthcare Services\"]\n              union [Encounter: \"Nursing Facility Visit\"]\n              union [Encounter: \"Office Visit\"]\n              union [Encounter: \"Outpatient Consultation\"]\n              union [Encounter: \"Patient Provider Interaction\"]\n     ) ValidEncounter\n      where ValidEncounter.period during \"Measurement Period\"\n        and ValidEncounter.isFinished()",
+//           "context": "Patient",
+//           "supplDataElement": false,
+//           "popDefinition": false,
+//           "commentString": "",
+//           "returnType": null,
+//           "parentLibrary": "AHAOverall",
+//           "libraryDisplayName": "AHA",
+//           "libraryVersion": "2.5.000",
+//           "name": "Qualifying Outpatient Encounter During Measurement Period",
+//           "function": false,
+//           "logic": "define \"Qualifying Outpatient Encounter During Measurement Period\":\n    ( [Encounter: \"Care Services in Long Term Residential Facility\"]\n              union [Encounter: \"Home Healthcare Services\"]\n              union [Encounter: \"Nursing Facility Visit\"]\n              union [Encounter: \"Office Visit\"]\n              union [Encounter: \"Outpatient Consultation\"]\n              union [Encounter: \"Patient Provider Interaction\"]\n     ) ValidEncounter\n      where ValidEncounter.period during \"Measurement Period\"\n        and ValidEncounter.isFinished()"
+//       }
+//   ],
+//   "AHAOverall-2.5.000|AHA|overlapsHeartFailureOutpatientEncounter|function": [
+//       {
+//           "id": "AHAOverall-2.5.000|AHA|Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "definitionName": "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "definitionLogic": "define \"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\":\n    \"Heart Failure Outpatient Encounter\" HFOutpatientEncounter\n        with \"Moderate or Severe LVSD Dates\" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period",
+//           "context": "Patient",
+//           "supplDataElement": false,
+//           "popDefinition": false,
+//           "commentString": "",
+//           "returnType": null,
+//           "parentLibrary": "AHAOverall",
+//           "libraryDisplayName": "AHA",
+//           "libraryVersion": "2.5.000",
+//           "name": "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "function": false,
+//           "logic": "define \"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\":\n    \"Heart Failure Outpatient Encounter\" HFOutpatientEncounter\n        with \"Moderate or Severe LVSD Dates\" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period"
+//       }
+//   ],
+//   "Numerator": [
+//       {
+//           "id": "Is Currently Taking ACEI or ARB or ARNI",
+//           "definitionName": "Is Currently Taking ACEI or ARB or ARNI",
+//           "definitionLogic": "define \"Is Currently Taking ACEI or ARB or ARNI\":\n  exists (\n          [MedicationRequest: medication in \"ACE Inhibitor or ARB or ARNI\"] ActiveACEIOrARBOrARNI\n            where ActiveACEIOrARBOrARNI.overlapsAfterHeartFailureOutpatientEncounter()\n          )",
+//           "context": "Patient",
+//           "supplDataElement": false,
+//           "popDefinition": false,
+//           "commentString": "",
+//           "returnType": null,
+//           "parentLibrary": null,
+//           "libraryDisplayName": null,
+//           "libraryVersion": null,
+//           "name": "Is Currently Taking ACEI or ARB or ARNI",
+//           "function": false,
+//           "logic": "define \"Is Currently Taking ACEI or ARB or ARNI\":\n  exists (\n          [MedicationRequest: medication in \"ACE Inhibitor or ARB or ARNI\"] ActiveACEIOrARBOrARNI\n            where ActiveACEIOrARBOrARNI.overlapsAfterHeartFailureOutpatientEncounter()\n          )"
+//       },
+//       {
+//           "id": "Has ACEI or ARB or ARNI Ordered",
+//           "definitionName": "Has ACEI or ARB or ARNI Ordered",
+//           "definitionLogic": "define \"Has ACEI or ARB or ARNI Ordered\":\n  exists ( \n            [MedicationRequest: medication in \"ACE Inhibitor or ARB or ARNI\"] ACEIOrARBOrARNIOrdered\n             where ACEIOrARBOrARNIOrdered.isOrderedDuringHeartFailureOutpatientEncounter()\n           )",
+//           "context": "Patient",
+//           "supplDataElement": false,
+//           "popDefinition": false,
+//           "commentString": "",
+//           "returnType": null,
+//           "parentLibrary": null,
+//           "libraryDisplayName": null,
+//           "libraryVersion": null,
+//           "name": "Has ACEI or ARB or ARNI Ordered",
+//           "function": false,
+//           "logic": "define \"Has ACEI or ARB or ARNI Ordered\":\n  exists ( \n            [MedicationRequest: medication in \"ACE Inhibitor or ARB or ARNI\"] ACEIOrARBOrARNIOrdered\n             where ACEIOrARBOrARNIOrdered.isOrderedDuringHeartFailureOutpatientEncounter()\n           )"
+//       }
+//   ],
+//   "AHAOverall-2.5.000|AHA|isOrderedDuringHeartFailureOutpatientEncounter|function": [
+//       {
+//           "id": "AHAOverall-2.5.000|AHA|Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "definitionName": "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "definitionLogic": "define \"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\":\n    \"Heart Failure Outpatient Encounter\" HFOutpatientEncounter\n        with \"Moderate or Severe LVSD Dates\" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period",
+//           "context": "Patient",
+//           "supplDataElement": false,
+//           "popDefinition": false,
+//           "commentString": "",
+//           "returnType": null,
+//           "parentLibrary": "AHAOverall",
+//           "libraryDisplayName": "AHA",
+//           "libraryVersion": "2.5.000",
+//           "name": "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "function": false,
+//           "logic": "define \"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\":\n    \"Heart Failure Outpatient Encounter\" HFOutpatientEncounter\n        with \"Moderate or Severe LVSD Dates\" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period"
+//       }
+//   ],
+//   "AHAOverall-2.5.000|AHA|Has Left Ventricular Assist Device": [
+//       {
+//           "id": "AHAOverall-2.5.000|AHA|Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "definitionName": "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "definitionLogic": "define \"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\":\n    \"Heart Failure Outpatient Encounter\" HFOutpatientEncounter\n        with \"Moderate or Severe LVSD Dates\" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period",
+//           "context": "Patient",
+//           "supplDataElement": false,
+//           "popDefinition": false,
+//           "commentString": "",
+//           "returnType": null,
+//           "parentLibrary": "AHAOverall",
+//           "libraryDisplayName": "AHA",
+//           "libraryVersion": "2.5.000",
+//           "name": "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "function": false,
+//           "logic": "define \"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\":\n    \"Heart Failure Outpatient Encounter\" HFOutpatientEncounter\n        with \"Moderate or Severe LVSD Dates\" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period"
+//       }
+//   ],
+//   "AHAOverall-2.5.000|AHA|Has Heart Transplant": [
+//       {
+//           "id": "AHAOverall-2.5.000|AHA|Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "definitionName": "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "definitionLogic": "define \"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\":\n    \"Heart Failure Outpatient Encounter\" HFOutpatientEncounter\n        with \"Moderate or Severe LVSD Dates\" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period",
+//           "context": "Patient",
+//           "supplDataElement": false,
+//           "popDefinition": false,
+//           "commentString": "",
+//           "returnType": null,
+//           "parentLibrary": "AHAOverall",
+//           "libraryDisplayName": "AHA",
+//           "libraryVersion": "2.5.000",
+//           "name": "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "function": false,
+//           "logic": "define \"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\":\n    \"Heart Failure Outpatient Encounter\" HFOutpatientEncounter\n        with \"Moderate or Severe LVSD Dates\" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period"
+//       }
+//   ],
+//   "Denominator": [
+//       {
+//           "id": "AHAOverall-2.5.000|AHA|Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "definitionName": "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "definitionLogic": "define \"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\":\n    \"Heart Failure Outpatient Encounter\" HFOutpatientEncounter\n        with \"Moderate or Severe LVSD Dates\" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period",
+//           "context": "Patient",
+//           "supplDataElement": false,
+//           "popDefinition": false,
+//           "commentString": "",
+//           "returnType": null,
+//           "parentLibrary": "AHAOverall",
+//           "libraryDisplayName": "AHA",
+//           "libraryVersion": "2.5.000",
+//           "name": "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "function": false,
+//           "logic": "define \"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\":\n    \"Heart Failure Outpatient Encounter\" HFOutpatientEncounter\n        with \"Moderate or Severe LVSD Dates\" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period"
+//       },
+//       {
+//           "id": "Initial Population",
+//           "definitionName": "Initial Population",
+//           "definitionLogic": "define \"Initial Population\":\n    AHA.\"Has Two Qualifying Outpatient Encounters and Heart Failure Outpatient Encounter During the Measurement Period\"",
+//           "context": "Patient",
+//           "supplDataElement": false,
+//           "popDefinition": false,
+//           "commentString": "",
+//           "returnType": null,
+//           "parentLibrary": null,
+//           "libraryDisplayName": null,
+//           "libraryVersion": null,
+//           "name": "Initial Population",
+//           "function": false,
+//           "logic": "define \"Initial Population\":\n    AHA.\"Has Two Qualifying Outpatient Encounters and Heart Failure Outpatient Encounter During the Measurement Period\""
+//       }
+//   ],
+//   "SDE Payer": [
+//       {
+//           "id": "SupplementalDataElements-3.4.000|SDE|SDE Payer",
+//           "definitionName": "SDE Payer",
+//           "definitionLogic": "define \"SDE Payer\":\r\n  [Coverage: type in \"Payer Type\"] Payer\r\n    return {\r\n      code: Payer.type,\r\n      period: Payer.period\r\n    }",
+//           "context": "Patient",
+//           "supplDataElement": false,
+//           "popDefinition": false,
+//           "commentString": "",
+//           "returnType": null,
+//           "parentLibrary": "SupplementalDataElements",
+//           "libraryDisplayName": "SDE",
+//           "libraryVersion": "3.4.000",
+//           "name": "SDE Payer",
+//           "function": false,
+//           "logic": "define \"SDE Payer\":\r\n  [Coverage: type in \"Payer Type\"] Payer\r\n    return {\r\n      code: Payer.type,\r\n      period: Payer.period\r\n    }"
+//       }
+//   ],
+//   "AHAOverall-2.5.000|AHA|Has Heart Transplant Complications": [
+//       {
+//           "id": "AHAOverall-2.5.000|AHA|Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "definitionName": "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "definitionLogic": "define \"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\":\n    \"Heart Failure Outpatient Encounter\" HFOutpatientEncounter\n        with \"Moderate or Severe LVSD Dates\" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period",
+//           "context": "Patient",
+//           "supplDataElement": false,
+//           "popDefinition": false,
+//           "commentString": "",
+//           "returnType": null,
+//           "parentLibrary": "AHAOverall",
+//           "libraryDisplayName": "AHA",
+//           "libraryVersion": "2.5.000",
+//           "name": "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "function": false,
+//           "logic": "define \"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\":\n    \"Heart Failure Outpatient Encounter\" HFOutpatientEncounter\n        with \"Moderate or Severe LVSD Dates\" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period"
+//       }
+//   ],
+//   "AHAOverall-2.5.000|AHA|Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD": [
+//       {
+//           "id": "AHAOverall-2.5.000|AHA|Heart Failure Outpatient Encounter",
+//           "definitionName": "Heart Failure Outpatient Encounter",
+//           "definitionLogic": "define \"Heart Failure Outpatient Encounter\":\n  ( [Encounter: \"Care Services in Long Term Residential Facility\"]\n      union [Encounter: \"Home Healthcare Services\"]\n      union [Encounter: \"Nursing Facility Visit\"]\n      union [Encounter: \"Office Visit\"]\n      union [Encounter: \"Outpatient Consultation\"]\n     ) QualifyingEncounter\n    with [Condition: \"Heart Failure\"] HeartFailure\n      such that HeartFailure.prevalenceInterval() overlaps QualifyingEncounter.period  \n        and HeartFailure.isConfirmedActiveDiagnosis()\n    where QualifyingEncounter.period during \"Measurement Period\"\n      and QualifyingEncounter.isFinished()",
+//           "context": "Patient",
+//           "supplDataElement": false,
+//           "popDefinition": false,
+//           "commentString": "",
+//           "returnType": null,
+//           "parentLibrary": "AHAOverall",
+//           "libraryDisplayName": "AHA",
+//           "libraryVersion": "2.5.000",
+//           "name": "Heart Failure Outpatient Encounter",
+//           "function": false,
+//           "logic": "define \"Heart Failure Outpatient Encounter\":\n  ( [Encounter: \"Care Services in Long Term Residential Facility\"]\n      union [Encounter: \"Home Healthcare Services\"]\n      union [Encounter: \"Nursing Facility Visit\"]\n      union [Encounter: \"Office Visit\"]\n      union [Encounter: \"Outpatient Consultation\"]\n     ) QualifyingEncounter\n    with [Condition: \"Heart Failure\"] HeartFailure\n      such that HeartFailure.prevalenceInterval() overlaps QualifyingEncounter.period  \n        and HeartFailure.isConfirmedActiveDiagnosis()\n    where QualifyingEncounter.period during \"Measurement Period\"\n      and QualifyingEncounter.isFinished()"
+//       },
+//       {
+//           "id": "AHAOverall-2.5.000|AHA|Moderate or Severe LVSD Dates",
+//           "definitionName": "Moderate or Severe LVSD Dates",
+//           "definitionLogic": "define \"Moderate or Severe LVSD Dates\":\n    ( [Observation: \"Ejection Fraction\"] EjectionFraction\n        let dateOfFinding: start of ( EjectionFraction Fraction\n                                 where Fraction.value as Quantity <= 40 '%'\n                                   and Fraction.status in {'final', 'amended', 'corrected'} \n                                 return Fraction.effective.toInterval()\n                                   )\n        return dateOfFinding \n      )\n    union\n    ( \n        ( [Condition: \"Moderate or Severe LVSD\"]\n            union ( [Condition: \"Left ventricular systolic dysfunction (disorder)\"] LVSDDiagnosis\n                       where LVSDDiagnosis.severity in \"Moderate or Severe\"\n                    ) \n          ) ModerateOrSevereLVSD\n        let dateOfFinding: start of ( ModerateOrSevereLVSD LVSD\n                                  where LVSD.isConfirmedActiveDiagnosis()\n                                  return LVSD.prevalenceInterval()\n                                )\n        return dateOfFinding \n      )",
+//           "context": "Patient",
+//           "supplDataElement": false,
+//           "popDefinition": false,
+//           "commentString": "",
+//           "returnType": null,
+//           "parentLibrary": "AHAOverall",
+//           "libraryDisplayName": "AHA",
+//           "libraryVersion": "2.5.000",
+//           "name": "Moderate or Severe LVSD Dates",
+//           "function": false,
+//           "logic": "define \"Moderate or Severe LVSD Dates\":\n    ( [Observation: \"Ejection Fraction\"] EjectionFraction\n        let dateOfFinding: start of ( EjectionFraction Fraction\n                                 where Fraction.value as Quantity <= 40 '%'\n                                   and Fraction.status in {'final', 'amended', 'corrected'} \n                                 return Fraction.effective.toInterval()\n                                   )\n        return dateOfFinding \n      )\n    union\n    ( \n        ( [Condition: \"Moderate or Severe LVSD\"]\n            union ( [Condition: \"Left ventricular systolic dysfunction (disorder)\"] LVSDDiagnosis\n                       where LVSDDiagnosis.severity in \"Moderate or Severe\"\n                    ) \n          ) ModerateOrSevereLVSD\n        let dateOfFinding: start of ( ModerateOrSevereLVSD LVSD\n                                  where LVSD.isConfirmedActiveDiagnosis()\n                                  return LVSD.prevalenceInterval()\n                                )\n        return dateOfFinding \n      )"
+//       }
+//   ],
+//   "Initial Population": [
+//       {
+//           "id": "AHAOverall-2.5.000|AHA|Has Two Qualifying Outpatient Encounters and Heart Failure Outpatient Encounter During the Measurement Period",
+//           "definitionName": "Has Two Qualifying Outpatient Encounters and Heart Failure Outpatient Encounter During the Measurement Period",
+//           "definitionLogic": "define \"Has Two Qualifying Outpatient Encounters and Heart Failure Outpatient Encounter During the Measurement Period\":\n  AgeInYearsAt(date from start of \"Measurement Period\") >= 18\n    and exists ( \"Qualifying Outpatient Encounter During Measurement Period\" Encounter1\n        with \"Qualifying Outpatient Encounter During Measurement Period\" Encounter2\n          such that Encounter2.id !~ Encounter1.id\n    )\n    and exists \"Heart Failure Outpatient Encounter\"",
+//           "context": "Patient",
+//           "supplDataElement": false,
+//           "popDefinition": false,
+//           "commentString": "",
+//           "returnType": null,
+//           "parentLibrary": "AHAOverall",
+//           "libraryDisplayName": "AHA",
+//           "libraryVersion": "2.5.000",
+//           "name": "Has Two Qualifying Outpatient Encounters and Heart Failure Outpatient Encounter During the Measurement Period",
+//           "function": false,
+//           "logic": "define \"Has Two Qualifying Outpatient Encounters and Heart Failure Outpatient Encounter During the Measurement Period\":\n  AgeInYearsAt(date from start of \"Measurement Period\") >= 18\n    and exists ( \"Qualifying Outpatient Encounter During Measurement Period\" Encounter1\n        with \"Qualifying Outpatient Encounter During Measurement Period\" Encounter2\n          such that Encounter2.id !~ Encounter1.id\n    )\n    and exists \"Heart Failure Outpatient Encounter\""
+//       }
+//   ],
+//   "Has Diagnosis of Pregnancy": [
+//       {
+//           "id": "AHAOverall-2.5.000|AHA|Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "definitionName": "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "definitionLogic": "define \"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\":\n    \"Heart Failure Outpatient Encounter\" HFOutpatientEncounter\n        with \"Moderate or Severe LVSD Dates\" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period",
+//           "context": "Patient",
+//           "supplDataElement": false,
+//           "popDefinition": false,
+//           "commentString": "",
+//           "returnType": null,
+//           "parentLibrary": "AHAOverall",
+//           "libraryDisplayName": "AHA",
+//           "libraryVersion": "2.5.000",
+//           "name": "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "function": false,
+//           "logic": "define \"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\":\n    \"Heart Failure Outpatient Encounter\" HFOutpatientEncounter\n        with \"Moderate or Severe LVSD Dates\" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period"
+//       }
+//   ],
+//   "Denominator Exclusions": [
+//       {
+//           "id": "AHAOverall-2.5.000|AHA|Has Left Ventricular Assist Device",
+//           "definitionName": "Has Left Ventricular Assist Device",
+//           "definitionLogic": "define \"Has Left Ventricular Assist Device\":\n  exists (\n            [Procedure: \"Left Ventricular Assist Device Placement\"] LVADOutpatient\n              with \"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\" ModerateOrSevereLVSDHFOutpatientEncounter\n                such that LVADOutpatient.performed.toInterval() starts before end of ModerateOrSevereLVSDHFOutpatientEncounter.period\n              where LVADOutpatient.status = 'completed'\n            )",
+//           "context": "Patient",
+//           "supplDataElement": false,
+//           "popDefinition": false,
+//           "commentString": "",
+//           "returnType": null,
+//           "parentLibrary": "AHAOverall",
+//           "libraryDisplayName": "AHA",
+//           "libraryVersion": "2.5.000",
+//           "name": "Has Left Ventricular Assist Device",
+//           "function": false,
+//           "logic": "define \"Has Left Ventricular Assist Device\":\n  exists (\n            [Procedure: \"Left Ventricular Assist Device Placement\"] LVADOutpatient\n              with \"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\" ModerateOrSevereLVSDHFOutpatientEncounter\n                such that LVADOutpatient.performed.toInterval() starts before end of ModerateOrSevereLVSDHFOutpatientEncounter.period\n              where LVADOutpatient.status = 'completed'\n            )"
+//       },
+//       {
+//           "id": "AHAOverall-2.5.000|AHA|Has Left Ventricular Assist Device Complications",
+//           "definitionName": "Has Left Ventricular Assist Device Complications",
+//           "definitionLogic": "define \"Has Left Ventricular Assist Device Complications\":\n  exists (\n            [Condition: \"Left Ventricular Assist Device Complications\"] LVADComplications\n              with \"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\" ModerateOrSevereLVSDHFOutpatientEncounter\n                such that ( Coalesce( LVADComplications.recordedDate.toInterval(), LVADComplications.prevalenceInterval() ) ) starts before end of ModerateOrSevereLVSDHFOutpatientEncounter.period  \n              where LVADComplications.isConfirmedActiveDiagnosis()\n          )",
+//           "context": "Patient",
+//           "supplDataElement": false,
+//           "popDefinition": false,
+//           "commentString": "",
+//           "returnType": null,
+//           "parentLibrary": "AHAOverall",
+//           "libraryDisplayName": "AHA",
+//           "libraryVersion": "2.5.000",
+//           "name": "Has Left Ventricular Assist Device Complications",
+//           "function": false,
+//           "logic": "define \"Has Left Ventricular Assist Device Complications\":\n  exists (\n            [Condition: \"Left Ventricular Assist Device Complications\"] LVADComplications\n              with \"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\" ModerateOrSevereLVSDHFOutpatientEncounter\n                such that ( Coalesce( LVADComplications.recordedDate.toInterval(), LVADComplications.prevalenceInterval() ) ) starts before end of ModerateOrSevereLVSDHFOutpatientEncounter.period  \n              where LVADComplications.isConfirmedActiveDiagnosis()\n          )"
+//       },
+//       {
+//           "id": "AHAOverall-2.5.000|AHA|Has Heart Transplant",
+//           "definitionName": "Has Heart Transplant",
+//           "definitionLogic": "define \"Has Heart Transplant\":\n  exists (\n          [Procedure: \"Heart Transplant\"] HeartTransplant\n            with \"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\" ModerateOrSevereLVSDHFOutpatientEncounter\n              such that HeartTransplant.performed.toInterval() starts before end of ModerateOrSevereLVSDHFOutpatientEncounter.period\n            where HeartTransplant.status = 'completed'\n          )",
+//           "context": "Patient",
+//           "supplDataElement": false,
+//           "popDefinition": false,
+//           "commentString": "",
+//           "returnType": null,
+//           "parentLibrary": "AHAOverall",
+//           "libraryDisplayName": "AHA",
+//           "libraryVersion": "2.5.000",
+//           "name": "Has Heart Transplant",
+//           "function": false,
+//           "logic": "define \"Has Heart Transplant\":\n  exists (\n          [Procedure: \"Heart Transplant\"] HeartTransplant\n            with \"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\" ModerateOrSevereLVSDHFOutpatientEncounter\n              such that HeartTransplant.performed.toInterval() starts before end of ModerateOrSevereLVSDHFOutpatientEncounter.period\n            where HeartTransplant.status = 'completed'\n          )"
+//       },
+//       {
+//           "id": "AHAOverall-2.5.000|AHA|Has Heart Transplant Complications",
+//           "definitionName": "Has Heart Transplant Complications",
+//           "definitionLogic": "define \"Has Heart Transplant Complications\":\n  exists ( \n          [Condition: \"Heart Transplant Complications\"] HeartTransplantComplications\n            with \"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\" ModerateOrSevereLVSDHFOutpatientEncounter\n              such that ( Coalesce( HeartTransplantComplications.recordedDate.toInterval(), HeartTransplantComplications.prevalenceInterval() ) ) starts before end of ModerateOrSevereLVSDHFOutpatientEncounter.period\n            where HeartTransplantComplications.isConfirmedActiveDiagnosis()\n          )",
+//           "context": "Patient",
+//           "supplDataElement": false,
+//           "popDefinition": false,
+//           "commentString": "",
+//           "returnType": null,
+//           "parentLibrary": "AHAOverall",
+//           "libraryDisplayName": "AHA",
+//           "libraryVersion": "2.5.000",
+//           "name": "Has Heart Transplant Complications",
+//           "function": false,
+//           "logic": "define \"Has Heart Transplant Complications\":\n  exists ( \n          [Condition: \"Heart Transplant Complications\"] HeartTransplantComplications\n            with \"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\" ModerateOrSevereLVSDHFOutpatientEncounter\n              such that ( Coalesce( HeartTransplantComplications.recordedDate.toInterval(), HeartTransplantComplications.prevalenceInterval() ) ) starts before end of ModerateOrSevereLVSDHFOutpatientEncounter.period\n            where HeartTransplantComplications.isConfirmedActiveDiagnosis()\n          )"
+//       }
+//   ],
+//   "Has Medical or Patient Reason for Not Ordering ACEI or ARB or ARNI": [
+//       {
+//           "id": "AHAOverall-2.5.000|AHA|Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "definitionName": "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "definitionLogic": "define \"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\":\n    \"Heart Failure Outpatient Encounter\" HFOutpatientEncounter\n        with \"Moderate or Severe LVSD Dates\" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period",
+//           "context": "Patient",
+//           "supplDataElement": false,
+//           "popDefinition": false,
+//           "commentString": "",
+//           "returnType": null,
+//           "parentLibrary": "AHAOverall",
+//           "libraryDisplayName": "AHA",
+//           "libraryVersion": "2.5.000",
+//           "name": "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "function": false,
+//           "logic": "define \"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\":\n    \"Heart Failure Outpatient Encounter\" HFOutpatientEncounter\n        with \"Moderate or Severe LVSD Dates\" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period"
+//       }
+//   ],
+//   "AHAOverall-2.5.000|AHA|Has Left Ventricular Assist Device Complications": [
+//       {
+//           "id": "AHAOverall-2.5.000|AHA|Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "definitionName": "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "definitionLogic": "define \"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\":\n    \"Heart Failure Outpatient Encounter\" HFOutpatientEncounter\n        with \"Moderate or Severe LVSD Dates\" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period",
+//           "context": "Patient",
+//           "supplDataElement": false,
+//           "popDefinition": false,
+//           "commentString": "",
+//           "returnType": null,
+//           "parentLibrary": "AHAOverall",
+//           "libraryDisplayName": "AHA",
+//           "libraryVersion": "2.5.000",
+//           "name": "Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD",
+//           "function": false,
+//           "logic": "define \"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\":\n    \"Heart Failure Outpatient Encounter\" HFOutpatientEncounter\n        with \"Moderate or Severe LVSD Dates\" ModerateSevereLVSDDate\n            such that ModerateSevereLVSDDate before end of HFOutpatientEncounter.period"
+//       }
+//   ],
+//   "Denominator Exceptions": [
+//       {
+//           "id": "Has Allergy or Intolerance to ACEI or ARB or ARNI Ingredient",
+//           "definitionName": "Has Allergy or Intolerance to ACEI or ARB or ARNI Ingredient",
+//           "definitionLogic": "define \"Has Allergy or Intolerance to ACEI or ARB or ARNI Ingredient\":\n  exists (\n          ( [AllergyIntolerance: \"ACE Inhibitor or ARB or ARNI Ingredient\"]\n             union [AllergyIntolerance: \"Substance with angiotensin-converting enzyme inhibitor mechanism of action (substance)\"]\n             union [AllergyIntolerance: \"Substance with angiotensin II receptor antagonist mechanism of action (substance)\"]\n             union [AllergyIntolerance: \"Substance with neprilysin inhibitor mechanism of action (substance)\"] ) ACEIOrARBOrARNIAllergyIntolerance\n              where ACEIOrARBOrARNIAllergyIntolerance.overlapsAfterHeartFailureOutpatientEncounter()\n            )",
+//           "context": "Patient",
+//           "supplDataElement": false,
+//           "popDefinition": false,
+//           "commentString": "",
+//           "returnType": null,
+//           "parentLibrary": null,
+//           "libraryDisplayName": null,
+//           "libraryVersion": null,
+//           "name": "Has Allergy or Intolerance to ACEI or ARB or ARNI Ingredient",
+//           "function": false,
+//           "logic": "define \"Has Allergy or Intolerance to ACEI or ARB or ARNI Ingredient\":\n  exists (\n          ( [AllergyIntolerance: \"ACE Inhibitor or ARB or ARNI Ingredient\"]\n             union [AllergyIntolerance: \"Substance with angiotensin-converting enzyme inhibitor mechanism of action (substance)\"]\n             union [AllergyIntolerance: \"Substance with angiotensin II receptor antagonist mechanism of action (substance)\"]\n             union [AllergyIntolerance: \"Substance with neprilysin inhibitor mechanism of action (substance)\"] ) ACEIOrARBOrARNIAllergyIntolerance\n              where ACEIOrARBOrARNIAllergyIntolerance.overlapsAfterHeartFailureOutpatientEncounter()\n            )"
+//       },
+//       {
+//           "id": "Has Diagnosis of Renal Failure Due to ACEI",
+//           "definitionName": "Has Diagnosis of Renal Failure Due to ACEI",
+//           "definitionLogic": "define \"Has Diagnosis of Renal Failure Due to ACEI\":\n    exists (\n            [Condition: \"Acute renal failure caused by angiotensin-converting-enzyme inhibitor (disorder)\"] RenalFailureDueToACEI\n              where RenalFailureDueToACEI.overlapsAfterHeartFailureOutpatientEncounter()\n           )",
+//           "context": "Patient",
+//           "supplDataElement": false,
+//           "popDefinition": false,
+//           "commentString": "",
+//           "returnType": null,
+//           "parentLibrary": null,
+//           "libraryDisplayName": null,
+//           "libraryVersion": null,
+//           "name": "Has Diagnosis of Renal Failure Due to ACEI",
+//           "function": false,
+//           "logic": "define \"Has Diagnosis of Renal Failure Due to ACEI\":\n    exists (\n            [Condition: \"Acute renal failure caused by angiotensin-converting-enzyme inhibitor (disorder)\"] RenalFailureDueToACEI\n              where RenalFailureDueToACEI.overlapsAfterHeartFailureOutpatientEncounter()\n           )"
+//       },
+//       {
+//           "id": "Has Medical or Patient Reason for Not Ordering ACEI or ARB or ARNI",
+//           "definitionName": "Has Medical or Patient Reason for Not Ordering ACEI or ARB or ARNI",
+//           "definitionLogic": "define \"Has Medical or Patient Reason for Not Ordering ACEI or ARB or ARNI\":\n  exists (\n          [MedicationNotRequested: medication in \"ACE Inhibitor or ARB or ARNI\"] NoACEIOrARBOrARNIOrdered\n            with AHA.\"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\" ModerateOrSevereLVSDHFOutpatientEncounter\n              such that NoACEIOrARBOrARNIOrdered.authoredOn during day of ModerateOrSevereLVSDHFOutpatientEncounter.period\n            where NoACEIOrARBOrARNIOrdered.status = 'completed'\n              and NoACEIOrARBOrARNIOrdered.intent in { 'order', 'original-order', 'reflex-order', 'filler-order', 'instance-order' } \n              and ( NoACEIOrARBOrARNIOrdered.reasonCode in \"Medical Reason\"\n                     or NoACEIOrARBOrARNIOrdered.reasonCode in \"Patient Reason\"\n                     or NoACEIOrARBOrARNIOrdered.reasonCode in \"Patient Reason for ACE Inhibitor or ARB Decline\"\n                   )\n            )",
+//           "context": "Patient",
+//           "supplDataElement": false,
+//           "popDefinition": false,
+//           "commentString": "",
+//           "returnType": null,
+//           "parentLibrary": null,
+//           "libraryDisplayName": null,
+//           "libraryVersion": null,
+//           "name": "Has Medical or Patient Reason for Not Ordering ACEI or ARB or ARNI",
+//           "function": false,
+//           "logic": "define \"Has Medical or Patient Reason for Not Ordering ACEI or ARB or ARNI\":\n  exists (\n          [MedicationNotRequested: medication in \"ACE Inhibitor or ARB or ARNI\"] NoACEIOrARBOrARNIOrdered\n            with AHA.\"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\" ModerateOrSevereLVSDHFOutpatientEncounter\n              such that NoACEIOrARBOrARNIOrdered.authoredOn during day of ModerateOrSevereLVSDHFOutpatientEncounter.period\n            where NoACEIOrARBOrARNIOrdered.status = 'completed'\n              and NoACEIOrARBOrARNIOrdered.intent in { 'order', 'original-order', 'reflex-order', 'filler-order', 'instance-order' } \n              and ( NoACEIOrARBOrARNIOrdered.reasonCode in \"Medical Reason\"\n                     or NoACEIOrARBOrARNIOrdered.reasonCode in \"Patient Reason\"\n                     or NoACEIOrARBOrARNIOrdered.reasonCode in \"Patient Reason for ACE Inhibitor or ARB Decline\"\n                   )\n            )"
+//       },
+//       {
+//           "id": "Has Diagnosis of Pregnancy",
+//           "definitionName": "Has Diagnosis of Pregnancy",
+//           "definitionLogic": "define \"Has Diagnosis of Pregnancy\":\n    exists (\n            [Condition: \"Pregnancy\"] PregnancyDiagnosis\n              with AHA.\"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\" ModerateOrSevereLVSDHFOutpatientEncounter\n                such that PregnancyDiagnosis.prevalenceInterval() starts 9 months or less before or on start of ModerateOrSevereLVSDHFOutpatientEncounter.period\n           )",
+//           "context": "Patient",
+//           "supplDataElement": false,
+//           "popDefinition": false,
+//           "commentString": "",
+//           "returnType": null,
+//           "parentLibrary": null,
+//           "libraryDisplayName": null,
+//           "libraryVersion": null,
+//           "name": "Has Diagnosis of Pregnancy",
+//           "function": false,
+//           "logic": "define \"Has Diagnosis of Pregnancy\":\n    exists (\n            [Condition: \"Pregnancy\"] PregnancyDiagnosis\n              with AHA.\"Heart Failure Outpatient Encounter with History of Moderate or Severe LVSD\" ModerateOrSevereLVSDHFOutpatientEncounter\n                such that PregnancyDiagnosis.prevalenceInterval() starts 9 months or less before or on start of ModerateOrSevereLVSDHFOutpatientEncounter.period\n           )"
+//       },
+//       {
+//           "id": "Has Diagnosis of Allergy or Intolerance to ACEI or ARB",
+//           "definitionName": "Has Diagnosis of Allergy or Intolerance to ACEI or ARB",
+//           "definitionLogic": "define \"Has Diagnosis of Allergy or Intolerance to ACEI or ARB\":\n    exists (\n            ( [\"Condition\": \"Allergy to ACE Inhibitor or ARB\"]\n               union [\"Condition\": \"Intolerance to ACE Inhibitor or ARB\"] ) ACEIOrARBAllergyOrIntoleranceDiagnosis\n                where ACEIOrARBAllergyOrIntoleranceDiagnosis.overlapsAfterHeartFailureOutpatientEncounter()\n           )",
+//           "context": "Patient",
+//           "supplDataElement": false,
+//           "popDefinition": false,
+//           "commentString": "",
+//           "returnType": null,
+//           "parentLibrary": null,
+//           "libraryDisplayName": null,
+//           "libraryVersion": null,
+//           "name": "Has Diagnosis of Allergy or Intolerance to ACEI or ARB",
+//           "function": false,
+//           "logic": "define \"Has Diagnosis of Allergy or Intolerance to ACEI or ARB\":\n    exists (\n            ( [\"Condition\": \"Allergy to ACE Inhibitor or ARB\"]\n               union [\"Condition\": \"Intolerance to ACE Inhibitor or ARB\"] ) ACEIOrARBAllergyOrIntoleranceDiagnosis\n                where ACEIOrARBAllergyOrIntoleranceDiagnosis.overlapsAfterHeartFailureOutpatientEncounter()\n           )"
+//       }
+//   ]
+// };
 
 const TestCaseForm = tw.form`m-3`;
 const ValidationErrorsButton = tw.button`
@@ -925,6 +692,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
   // Avoid infinite dependency render. May require additional error handling for timeouts.
   const testCaseService = useRef(useTestCaseServiceApi());
   const calculation = useRef(calculationService());
+  const cqlParsingService = useRef(useCqlParsingService());
   const [alert, setAlert] = useState<AlertProps>(null);
   const { errors, setErrors } = props;
   if (!errors) {
@@ -982,6 +750,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
   const [groupPopulations, setGroupPopulations] = useState<GroupPopulation[]>(
     []
   );
+  const [callstackMap, setCallstackMap] = useState<CqlDefinitionCallstack>();
 
   const {
     measureState,
@@ -1136,6 +905,17 @@ const EditTestCase = (props: EditTestCaseProps) => {
       load.current = +1;
       loadTestCase();
     }
+
+    if (_.isNil(callstackMap) && measure?.cql) {
+      cqlParsingService.current
+        .getDefinitionCallstacks(measure.cql)
+        .then((callstack: CqlDefinitionCallstack) => {
+          setCallstackMap(callstack);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
   }, [
     id,
     measureId,
@@ -1278,19 +1058,6 @@ const EditTestCase = (props: EditTestCaseProps) => {
       setPopulationGroupResults(
         executionResults[0].detailedResults as DetailedPopulationGroupResult[]
       );
-      // if (measure?.cql) {
-      // const definitions = new Array<ExpressionDefinition>();
-      // const expressions = new CqlAntlr(measure.cql).parse()
-      //   .expressionDefinitions;
-      // expressions.forEach(expression => {
-      //   const defName = expression.name.slice(1, -1);
-      //   definitions.push(
-      //     {...expression,
-      //       callstack: callstackMap[defName]
-      //     });
-      // });
-      // setExpressionDefinitions(definitions);
-      // }
     } catch (error) {
       setCalculationErrors({
         status: "error",
