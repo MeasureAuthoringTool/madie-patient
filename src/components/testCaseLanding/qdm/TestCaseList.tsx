@@ -416,7 +416,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                 )}
                 <div tw="overflow-x-auto sm:-mx-6 lg:-mx-8">
                   <div tw="py-2 inline-block min-w-full sm:px-6 lg:px-8">
-                    <div style={{ display: "flex" }}>
+                    <div>
                       <TestCaseCoverage
                         calculationResults={calculationOutput}
                         groupPopulations={selectedPopCriteria}
