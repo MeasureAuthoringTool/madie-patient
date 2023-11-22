@@ -173,16 +173,6 @@ const TestCaseList = (props: TestCaseListProps) => {
   useEffect(() => {
     const validTestCases = testCases?.filter((tc) => tc.validResource);
     if (validTestCases && calculationOutput) {
-      // Pull Clause Coverage from coverage HTML
-      setCoveragePercentage(
-        getCoverageValueFromHtml(
-          calculationOutput["groupClauseCoverageHTML"],
-          selectedPopCriteria.id
-        )
-      );
-      setCoverageHTML(
-        removeHtmlCoverageHeader(calculationOutput["groupClauseCoverageHTML"])
-      );
       const executionResults: CqmExecutionResultsByPatient = calculationOutput;
 
       validTestCases.forEach((testCase) => {
@@ -244,7 +234,6 @@ const TestCaseList = (props: TestCaseListProps) => {
       return null;
     }
     const validTestCases = testCases?.filter((tc) => tc.validResource);
-
     if (validTestCases && validTestCases.length > 0 && cqmMeasure) {
       setExecuting(true);
       try {
@@ -255,7 +244,6 @@ const TestCaseList = (props: TestCaseListProps) => {
             cqmMeasure,
             patients
           );
-
         setCalculationOutput(calculationOutput);
       } catch (error) {
         console.error("calculateTestCases: error.message = " + error.message);
@@ -408,22 +396,13 @@ const TestCaseList = (props: TestCaseListProps) => {
               </div>
             )}
             {activeTab === "coverage" && (
-              <div>
-                {coverageHTML && (
-                  <CodeCoverageHighlighting
-                    coverageHTML={coverageHTML[selectedPopCriteria.id]}
+              <div tw="overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div tw="py-2 inline-block min-w-full sm:px-6 lg:px-8">
+                  <TestCaseCoverage
+                    data-testid="test-case-coverage"
+                    groupPopulations={selectedPopCriteria}
+                    measureCql={measure.cql}
                   />
-                )}
-                <div tw="overflow-x-auto sm:-mx-6 lg:-mx-8">
-                  <div tw="py-2 inline-block min-w-full sm:px-6 lg:px-8">
-                    <TestCaseCoverage
-                      calculationResults={calculationOutput}
-                      groupPopulations={selectedPopCriteria}
-                      measureCql={measure.cql}
-                      calculationErrors={errors}
-                      measureGroups={measure?.groups}
-                    />
-                  </div>
                 </div>
               </div>
             )}

@@ -42,6 +42,7 @@ import { ValueSet } from "cqm-models";
 import qdmCalculationService, {
   QdmCalculationService,
 } from "../../../api/QdmCalculationService";
+import { measureCql } from "../../editTestCase/groupCoverage/_mocks_/QdmMeasureCql";
 
 const serviceConfig: ServiceConfig = {
   elmTranslationService: { baseUrl: "translator.url" },
@@ -55,13 +56,31 @@ const serviceConfig: ServiceConfig = {
     baseUrl: "http.com",
   },
 };
-
+const mappedCql = {
+  initialPopulation: {
+    id: "0223850b-df35-4d0d-98f1-df993f7de328",
+    text: 'define "Initial Population":\r\n  ["Encounter, Performed": "Emergency Department Visit"]',
+  },
+  denominator: {
+    id: "91ae58e2-aa5a-4163-ad39-835ff7d0822b",
+    text: 'define "IP2":\r\n    ["Encounter, Performed"] E',
+  },
+  numerator: {
+    id: "dc788738-8c66-4538-990c-7a57430c55e3",
+    text: 'define "IP2":\r\n    ["Encounter, Performed"] E',
+  },
+};
 const MEASURE_CREATEDBY = "testuser";
 // Mock data for Measure retrieved from MeasureService
 const measure = {
   id: "1",
   measureName: "measureName",
   createdBy: MEASURE_CREATEDBY,
+  cqlLibraryName: "testLibrary",
+  cmsId: "1234",
+  measureSetId: "1234",
+
+  scoring: MeasureScoring.PROPORTION,
   groups: [
     {
       id: "1",
@@ -88,6 +107,7 @@ const measure = {
   ],
   model: Model.QDM_5_6,
   acls: [{ userId: "othertestuser@example.com", roles: ["SHARED_WITH"] }],
+  cql: { measureCql },
 } as unknown as Measure;
 
 jest.mock("@madie/madie-util", () => ({
@@ -102,6 +122,9 @@ jest.mock("@madie/madie-util", () => ({
   })),
 }));
 
+jest.mock("../../../util/GroupCoverageHelpers", () => ({
+  mapCoverageCql: jest.fn().mockImplementation(() => mappedCql),
+}));
 let importingTestCases = [];
 jest.mock(
   "../common/import/TestCaseImportFromBonnieDialogQDM",
@@ -486,7 +509,7 @@ const useMeasureServiceMockResolved = {
 
 const getAccessToken = jest.fn();
 let cqmConversionService = new CqmConversionService("url", getAccessToken);
-const cqmMeasure = cqmConversionService.convertToCqmMeasure(measure);
+const cqmMeasure = {};
 const valueSets = [] as ValueSet[];
 const setMeasure = jest.fn();
 const setCqmMeasure = jest.fn();
@@ -731,13 +754,19 @@ describe("TestCaseList component", () => {
     });
 
     userEvent.click(screen.getByTestId("coverage-tab"));
-    await waitFor(() => {
-      expect(
-        screen.getByTestId("code-coverage-highlighting")
-      ).toBeInTheDocument();
-    });
     userEvent.click(screen.getByTestId("passing-tab"));
     expect(screen.getByTestId("test-case-tbl")).toBeInTheDocument();
+  });
+
+  it("accordions for cql parts", async () => {
+    measure.createdBy = MEASURE_CREATEDBY;
+    renderTestCaseListComponent();
+
+    const table = await screen.findByTestId("test-case-tbl");
+
+    userEvent.click(screen.getByTestId("coverage-tab"));
+    const coverageTabList = await screen.findByTestId("coverage-tab-list");
+    expect(coverageTabList).toBeInTheDocument();
   });
 
   it("Run Test Cases button should be disabled if no valid test cases", async () => {
@@ -876,9 +905,6 @@ describe("TestCaseList component", () => {
 
   it("should render New Test Case button and navigate to the Create New Test Case page when button clicked", async () => {
     const { getByTestId } = renderTestCaseListComponent();
-
-    const codeCoverageTabs = await screen.findByTestId("code-coverage-tabs");
-    expect(codeCoverageTabs).toBeInTheDocument();
     const passingTab = await screen.findByTestId("passing-tab");
     expect(passingTab).toBeInTheDocument();
     const testCaseList = await screen.findByTestId("test-case-tbl");
@@ -953,7 +979,7 @@ describe("TestCaseList component", () => {
     });
 
     userEvent.click(executeButton);
-    await waitFor(() => expect(screen.getByText("50%")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText("0%")).toBeInTheDocument());
 
     const table = await screen.findByTestId("test-case-tbl");
     const tableRows = table.querySelectorAll("tbody tr");

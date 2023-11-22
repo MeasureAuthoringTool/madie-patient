@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 interface Props {
   population: string;
   populationText: any;

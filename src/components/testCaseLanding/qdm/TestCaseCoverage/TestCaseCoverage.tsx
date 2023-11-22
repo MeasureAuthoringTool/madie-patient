@@ -1,22 +1,14 @@
 import React from "react";
-// import QdmGroupCoverage from "../../../groupCoverage/QdmGroupCoverage";
-import { isEmpty } from "lodash";
-import { MadieAlert } from "@madie/madie-design-system/dist/react";
-import { mapCql, mapCoverageCql } from "../../../../util/GroupCoverageHelpers";
+import { mapCoverageCql } from "../../../../util/GroupCoverageHelpers";
 import "twin.macro";
 import "styled-components/macro";
 import CoverageTabList from "./CoverageTabs/CoverageTabList";
 
-const TestCaseCoverage = ({
-  calculationResults,
-  groupPopulations,
-  measureCql,
-  measureGroups,
-  calculationErrors,
-}) => {
+const TestCaseCoverage = ({ groupPopulations, measureCql }) => {
   return (
     <div tw="p-5" style={{ paddingRight: ".25rem" }}>
       <CoverageTabList
+        data-testid="coverage-tab-list"
         groupPopulations={groupPopulations.populations.filter(
           (pop) => pop.definition
         )}

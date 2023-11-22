@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import _, { isEmpty } from "lodash";
+import _ from "lodash";
 import CoverageTab from "./CoverageTab";
 
 import { MappedCql } from "../../../../../util/GroupCoverageHelpers";
@@ -12,9 +12,7 @@ interface Props {
 
 const CoverageTabList = ({ groupPopulations, mappedCql }: Props) => {
   return (
-    <>
-      <div tw="border-b pb-2">{}</div>
-
+    <div data-testid="coverage-tab-list">
       {mappedCql &&
         groupPopulations.map((pop) => {
           return (
@@ -28,7 +26,7 @@ const CoverageTabList = ({ groupPopulations, mappedCql }: Props) => {
         <div tw="flex-none w-1/5"></div>
         <div></div>
       </div>
-    </>
+    </div>
   );
 };
 
