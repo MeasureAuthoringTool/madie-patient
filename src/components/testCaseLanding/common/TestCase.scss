@@ -6,7 +6,7 @@
     max-width: 10vw;
     white-space: normal;
     vertical-align: top;
-    border-bottom: solid 1px #8c8c8c;
+    border-bottom: inherit;
   }
 }
 
@@ -16,7 +16,7 @@
   border: solid 1px #8c8c8c;
   border-radius: 3px;
   > .table-body {
-    border-top: solid 1px #8c8c8c;
+    border-top: inherit;
     border-radius: 3px;
   }
 }
