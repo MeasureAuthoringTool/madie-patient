@@ -241,7 +241,7 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
       expect(screen.getByText("Population Criteria 2")).toBeInTheDocument();
     });
     expect(screen.getByTestId("IP-highlighting")).toHaveTextContent(
-      `define "Initial Population": ["Encounter, Performed": "Emergency Department Visit"] //Encounter union ["Encounter, Performed": "Closed Head and Facial Trauma"] //Encounter union ["Encounter, Performed": "Dementia"]`
+      `define "Denominator": "Initial Population"`
     );
   });
 });
