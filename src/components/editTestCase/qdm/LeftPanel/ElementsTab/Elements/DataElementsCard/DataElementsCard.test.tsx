@@ -854,6 +854,18 @@ export const testValueSets = [
 
 const mockOnChange = jest.fn();
 
+jest.mock("@madie/madie-util", () => ({
+  routeHandlerStore: {
+    subscribe: (set) => {
+      set();
+      return { unsubscribe: () => null };
+    },
+    updateRouteHandlerState: () => null,
+    state: { canTravel: true, pendingPath: "" },
+    initialState: { canTravel: true, pendingPath: "" },
+  },
+}));
+
 const renderDataElementsCard = (
   activeTab,
   setCardActiveTab,

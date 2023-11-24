@@ -9,6 +9,8 @@ import {
 import { useFormik } from "formik";
 import DisplayAttributeInputs from "./DisplayAttributeInputs";
 import AttributeChipList from "../AttributeChipList";
+import { MadieDiscardDialog } from "@madie/madie-design-system/dist/react";
+import { routeHandlerStore } from "@madie/madie-util";
 
 export interface Chip {
   title?: String;
@@ -46,6 +48,17 @@ const AttributeSection = ({
       onAddClicked(values.attribute, values.type, values.attributeValue);
     },
   });
+  const { resetForm } = formik;
+
+  const { updateRouteHandlerState } = routeHandlerStore;
+  const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
+
+  useEffect(() => {
+    updateRouteHandlerState({
+      canTravel: !formik.dirty,
+      pendingRoute: "",
+    });
+  }, [formik.dirty]);
 
   useEffect(() => {
     if (selectedDataElement && selectedDataElement.schema) {
@@ -126,6 +139,14 @@ const AttributeSection = ({
         attributeChipList={attributeChipList}
         canEdit={canEdit}
         onDeleteAttributeChip={onDeleteAttributeChip}
+      />
+      <MadieDiscardDialog
+        open={discardDialogOpen}
+        onContinue={() => {
+          resetForm();
+          setDiscardDialogOpen(false);
+        }}
+        onClose={() => setDiscardDialogOpen(false)}
       />
     </form>
   );

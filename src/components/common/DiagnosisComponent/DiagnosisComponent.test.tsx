@@ -51,6 +51,18 @@ const valueSets = [
 
 let handleDiagnosisChange = jest.fn();
 
+jest.mock("@madie/madie-util", () => ({
+  routeHandlerStore: {
+    subscribe: (set) => {
+      set();
+      return { unsubscribe: () => null };
+    },
+    updateRouteHandlerState: () => null,
+    state: { canTravel: true, pendingPath: "" },
+    initialState: { canTravel: true, pendingPath: "" },
+  },
+}));
+
 describe("Diagnosis Component", () => {
   beforeEach(() => {
     handleDiagnosisChange = jest.fn((diagnoses) => {
@@ -183,7 +195,7 @@ describe("Diagnosis Component", () => {
 
     const rankInput = screen.getByTestId(
       "integer-input-field-Rank"
-    ) as HTMLElement;
+    ) as HTMLInputElement;
     expect(rankInput).toBeInTheDocument();
     expect(rankInput.value).toBe("");
 
@@ -288,7 +300,7 @@ describe("Diagnosis Component", () => {
 
     const rankInput = screen.getByTestId(
       "integer-input-field-Rank"
-    ) as HTMLElement;
+    ) as HTMLInputElement;
     expect(rankInput).toBeInTheDocument();
     expect(rankInput.value).toBe("");
 
@@ -444,7 +456,7 @@ describe("Diagnosis Component", () => {
 
     const rankInput = screen.getByTestId(
       "integer-input-field-Rank"
-    ) as HTMLElement;
+    ) as HTMLInputElement;
     expect(rankInput).toBeInTheDocument();
     expect(rankInput.value).toBe("");
 
@@ -533,7 +545,7 @@ describe("Diagnosis Component", () => {
 
     const rankInput = screen.getByTestId(
       "integer-input-field-Rank"
-    ) as HTMLElement;
+    ) as HTMLInputElement;
     expect(rankInput).toBeInTheDocument();
     expect(rankInput.value).toBe("");
 

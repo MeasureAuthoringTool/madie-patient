@@ -41,10 +41,26 @@ export const mockValueSets = [
 ];
 const mockOnChange = jest.fn();
 
+jest.mock("@madie/madie-util", () => ({
+  routeHandlerStore: {
+    subscribe: (set) => {
+      set();
+      return { unsubscribe: () => null };
+    },
+    updateRouteHandlerState: () => null,
+    state: { canTravel: true, pendingPath: "" },
+    initialState: { canTravel: true, pendingPath: "" },
+  },
+}));
+
 describe("FacilityLocation Component", () => {
   it("should render FacilityLocation view", () => {
     render(
-      <FacilityLocation onChange={mockOnChange} valueSets={mockValueSets} />
+      <FacilityLocation
+        onChange={mockOnChange}
+        valueSets={mockValueSets}
+        canEdit
+      />
     );
     expect(screen.getByTestId("value-set-selector")).toBeInTheDocument();
     expect(screen.getByTestId("location-period-start")).toBeInTheDocument();
