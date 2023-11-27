@@ -2,8 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import * as _ from "lodash";
-import { Group, TestCase, MeasureErrorType } from "@madie/madie-models";
-import { QDMPatient } from "cqm-models";
+import {
+  Group,
+  MeasureErrorType,
+  TestCaseImportRequest,
+} from "@madie/madie-models";
 import { useParams } from "react-router-dom";
 import calculationService from "../../../api/CalculationService";
 import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calculator";
@@ -26,6 +29,7 @@ import qdmCalculationService, {
   CqmExecutionResultsByPatient,
 } from "../../../api/QdmCalculationService";
 import TestCaseImportFromBonnieDialogQDM from "../common/import/TestCaseImportFromBonnieDialogQDM";
+import { QDMPatient, DataElement } from "cqm-models";
 
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
@@ -286,22 +290,15 @@ const TestCaseList = (props: TestCaseListProps) => {
     ? Object.keys(calculationOutput).length
     : 0;
 
-  const onTestCaseImport = async (testCases: TestCase[]) => {
+  const onTestCaseImport = async (testCases: TestCaseImportRequest[]) => {
     setImportDialogState({ ...importDialogState, open: false });
     setLoadingState(() => ({
       loading: true,
       message: "Importing Test Cases...",
     }));
-    testCases = testCases.map((testCase) => {
-      if (testCase.json) {
-        testCase.json = JSON.stringify(
-          new QDMPatient(JSON.parse(testCase.json))
-        );
-      }
-      return testCase;
-    });
+
     try {
-      await testCaseService.current.createTestCases(measureId, testCases);
+      await testCaseService.current.importTestCasesQDM(measureId, testCases);
       retrieveTestCases();
     } catch (error) {
       setErrors((prevState) => [...prevState, IMPORT_ERROR]);
