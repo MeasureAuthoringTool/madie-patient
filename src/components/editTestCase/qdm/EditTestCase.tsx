@@ -416,7 +416,6 @@ const EditTestCase = () => {
               disabled={!formik.dirty || !canEdit}
               onClick={() => setDiscardDialogOpen(true)}
             >
-              {/* variant="outline-filled" */}
               Discard Changes
             </Button>
           </div>
@@ -424,7 +423,7 @@ const EditTestCase = () => {
             <div
               style={{
                 textAlign: "center",
-                color: "grey",
+                color: "#717171",
                 fontSize: "14px",
                 paddingBottom: "30px",
               }}

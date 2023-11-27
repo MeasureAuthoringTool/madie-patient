@@ -14,7 +14,7 @@ export const InputLabelStyle = [
 ];
 
 export const seriesStyles = {
-  border: "1px solid #DDDDDD",
+  border: "1px solid #8c8c8c",
   "& .MuiOutlinedInput-notchedOutline": {
     borderRadius: "3px",
     "& legend": {

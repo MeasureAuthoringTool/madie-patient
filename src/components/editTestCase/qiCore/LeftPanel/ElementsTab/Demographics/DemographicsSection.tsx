@@ -165,6 +165,7 @@ const DemographicsSection = ({ canEdit }) => {
                     const formattedDate = `${year}-${month}-${day}`;
                     handleBirthDateChange(formattedDate);
                   }}
+                  required
                   disabled={!canEdit}
                   label="Date of Birth"
                 />
