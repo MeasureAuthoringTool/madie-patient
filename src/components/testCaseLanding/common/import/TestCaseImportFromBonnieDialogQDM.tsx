@@ -104,9 +104,11 @@ const TestCaseImportFromBonnieDialogQDM = ({ open, handleClose, onImport }) => {
             {...getInputProps()}
           />
           {isDragActive ? (
-            <p>Drop the files here ...</p>
+            <p style={{ color: "#666666" }}>Drop the files here ...</p>
           ) : (
-            <p>Drag 'n' drop some files here, or click to select files</p>
+            <p style={{ color: "#666666" }}>
+              Drag 'n' drop some files here, or click to select files
+            </p>
           )}
         </div>
       </Paper>
