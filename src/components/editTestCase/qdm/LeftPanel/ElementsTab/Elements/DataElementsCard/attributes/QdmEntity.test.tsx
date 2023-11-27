@@ -58,6 +58,18 @@ const valueSets = [
   },
 ];
 
+jest.mock("@madie/madie-util", () => ({
+  routeHandlerStore: {
+    subscribe: (set) => {
+      set();
+      return { unsubscribe: () => null };
+    },
+    updateRouteHandlerState: () => null,
+    state: { canTravel: true, pendingPath: "" },
+    initialState: { canTravel: true, pendingPath: "" },
+  },
+}));
+
 describe("QdmEntity Component", () => {
   beforeEach(() => {});
 
