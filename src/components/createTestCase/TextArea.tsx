@@ -95,7 +95,7 @@ const TextArea = ({
           // resize: "vertical",
           borderRadius: "3px",
           height: "auto",
-          border: "1px solid #DDDDDD",
+          border: "1px solid #8c8c8c",
           marginTop: "8px",
           // remove weird line break from legend
           "& .MuiOutlinedInput-notchedOutline": {

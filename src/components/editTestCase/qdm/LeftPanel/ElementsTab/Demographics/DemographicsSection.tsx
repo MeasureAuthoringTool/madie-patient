@@ -218,7 +218,6 @@ const DemographicsSection = ({ canEdit }) => {
                 <FormControl>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <InputLabel
-                      required
                       htmlFor={"birth-date"}
                       style={{ marginBottom: 0, height: 16 }} // force a heignt
                       sx={birthDateLabelStyle}
