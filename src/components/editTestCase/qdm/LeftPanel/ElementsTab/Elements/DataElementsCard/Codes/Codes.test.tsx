@@ -58,6 +58,18 @@ let selectedDataElement = {
 const handleChange = jest.fn();
 const deleteCode = jest.fn();
 
+jest.mock("@madie/madie-util", () => ({
+  routeHandlerStore: {
+    subscribe: (set) => {
+      set();
+      return { unsubscribe: () => null };
+    },
+    updateRouteHandlerState: () => null,
+    state: { canTravel: true, pendingPath: "" },
+    initialState: { canTravel: true, pendingPath: "" },
+  },
+}));
+
 describe("Codes section", () => {
   it("Should render Codes component with provided props", async () => {
     render(

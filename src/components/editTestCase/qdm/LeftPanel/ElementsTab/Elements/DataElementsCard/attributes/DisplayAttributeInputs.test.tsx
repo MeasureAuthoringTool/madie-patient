@@ -60,6 +60,18 @@ const mockFormik: FormikContextType<any> = {
   },
 };
 
+jest.mock("@madie/madie-util", () => ({
+  routeHandlerStore: {
+    subscribe: (set) => {
+      set();
+      return { unsubscribe: () => null };
+    },
+    updateRouteHandlerState: () => null,
+    state: { canTravel: true, pendingPath: "" },
+    initialState: { canTravel: true, pendingPath: "" },
+  },
+}));
+
 describe("DisplayAttributeInputs component", () => {
   let encounterElement;
   let assessmentElement;
