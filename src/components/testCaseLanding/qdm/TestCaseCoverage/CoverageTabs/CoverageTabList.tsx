@@ -14,9 +14,10 @@ const CoverageTabList = ({ groupPopulations, mappedCql }: Props) => {
   return (
     <div data-testid="coverage-tab-list">
       {mappedCql &&
-        groupPopulations.map((pop) => {
+        groupPopulations.map((pop, i) => {
           return (
             <CoverageTab
+              key={i}
               population={pop.name}
               populationText={mappedCql[pop.name]}
             />

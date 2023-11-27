@@ -767,6 +767,10 @@ describe("TestCaseList component", () => {
     userEvent.click(screen.getByTestId("coverage-tab"));
     const coverageTabList = await screen.findByTestId("coverage-tab-list");
     expect(coverageTabList).toBeInTheDocument();
+    const allAccordions = await screen.findAllByTestId("accordion");
+    expect(allAccordions[0]).toBeInTheDocument();
+    const firstAccordion = await screen.queryByText("initialPopulation");
+    expect(firstAccordion).toBeInTheDocument();
   });
 
   it("Run Test Cases button should be disabled if no valid test cases", async () => {
