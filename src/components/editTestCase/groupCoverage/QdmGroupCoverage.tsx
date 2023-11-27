@@ -6,7 +6,6 @@ import _, { isEmpty } from "lodash";
 import {
   MappedCql,
   Population,
-  SelectedPopulationResult,
   getFirstPopulation,
   getPopulationAbbreviation,
 } from "../../../util/GroupCoverageHelpers";
@@ -21,7 +20,7 @@ interface Props {
   measureGroups: Group[];
 }
 
-type PopulationResult = Record<string, SelectedPopulationResult>;
+type PopulationResult = Record<string, string>;
 
 const populationCriteriaLabel = "Population Criteria";
 
@@ -39,7 +38,7 @@ const QdmGroupCoverage = ({
   const [
     selectedPopulationDefinitionResults,
     setSelectedPopulationDefinitionResults,
-  ] = useState<SelectedPopulationResult>();
+  ] = useState<string>();
 
   useEffect(() => {
     if (!isEmpty(testCaseGroups)) {
@@ -79,14 +78,14 @@ const QdmGroupCoverage = ({
       );
       const selectedPopulationDefinition = selectedGroup?.populations?.find(
         (pop) => pop.id === population.id
-      )?.definition;
+      )?.name;
       const result =
         populationResults &&
         Object.entries(populationResults).find(
           ([key]) => key === _.camelCase(selectedPopulationDefinition)
         );
       setSelectedPopulationDefinitionResults(
-        result?.[1].text ? result[1] : undefined
+        result?.[1] ? result[1] : undefined
       );
     }
   };
@@ -212,7 +211,7 @@ const QdmGroupCoverage = ({
         >
           {selectedPopulationDefinitionResults
             ? parse(
-                `<pre><code>${selectedPopulationDefinitionResults?.text}</code></pre>`
+                `<pre><code>${selectedPopulationDefinitionResults}</code></pre>`
               )
             : "No results available"}
         </div>

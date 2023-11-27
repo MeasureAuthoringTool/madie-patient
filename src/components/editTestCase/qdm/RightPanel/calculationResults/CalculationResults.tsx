@@ -28,7 +28,7 @@ const CalculationResults = ({
       {!isEmpty(testCaseGroups) && (
         <QdmGroupCoverage
           testCaseGroups={testCaseGroups}
-          cqlPopulationDefinitions={mapCql(measureCql, testCaseGroups)}
+          cqlPopulationDefinitions={mapCql(measureCql, measureGroups)}
           measureGroups={measureGroups}
         />
       )}

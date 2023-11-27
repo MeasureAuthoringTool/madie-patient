@@ -1,9 +1,5 @@
 import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
-import {
-  PopulationType,
-  PopulationExpectedValue,
-  GroupPopulation,
-} from "@madie/madie-models";
+import { PopulationType, PopulationExpectedValue } from "@madie/madie-models";
 import _ from "lodash";
 
 export interface Population {
@@ -12,16 +8,10 @@ export interface Population {
   criteriaReference?: string;
   name: PopulationType;
 }
-
-export interface SelectedPopulationResult {
-  criteriaReference: string;
-  text: string;
-}
-
 export interface MappedCql {
   [groupId: string]: {
     populationDefinitions: {
-      [populationName: string]: SelectedPopulationResult;
+      [populationName: string]: string;
     };
   };
 }
@@ -56,31 +46,26 @@ export const getFirstPopulation = (group) => {
   };
 };
 
-export const mapCql = (
-  measureCql: string,
-  groupPopulations: GroupPopulation[]
-): MappedCql => {
-  if (measureCql && groupPopulations) {
+export const mapCql = (measureCql: string, measureGroups): MappedCql => {
+  if (measureCql && measureGroups) {
     const definitions = new CqlAntlr(measureCql).parse().expressionDefinitions;
-    return groupPopulations.reduce((output, { groupId, populationValues }) => {
-      output[groupId] = {
-        populationDefinitions: populationValues?.reduce(
-          (populationDefinition, { name, criteriaReference }) => {
-            const matchingDefinition: any = definitions?.find(
-              (def) => _.camelCase(def?.name?.slice(1, -1)) === name
-            );
-
-            populationDefinition[name] = {
-              criteriaReference: criteriaReference || null,
-              text: matchingDefinition?.text || null,
-            };
-
-            return populationDefinition;
-          },
-          {}
-        ),
-      };
-      return output;
+    return measureGroups.reduce((acc, group) => {
+      const populationDetails = group.populations.reduce(
+        (output, population) => {
+          const matchingDefinition: any = definitions?.find(
+            (def) =>
+              _.camelCase(def?.name?.slice(1, -1)) ===
+              _.camelCase(population.definition)
+          );
+          if (matchingDefinition) {
+            output[population.name] = matchingDefinition.text;
+          }
+          return output;
+        },
+        {}
+      );
+      acc[group.id] = { populationDefinitions: populationDetails };
+      return acc;
     }, {});
   }
 };
