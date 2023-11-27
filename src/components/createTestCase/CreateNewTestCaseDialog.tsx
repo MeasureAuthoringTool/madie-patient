@@ -29,10 +29,9 @@ interface navigationParams {
 
 const testCaseSeriesStyles = {
   width: "50%",
-  borderRadius: "3px",
-  borderWidth: "1px",
   // remove weird line break from legend
   "& .MuiOutlinedInput-notchedOutline": {
+    borderColor: "#8c8c8c",
     borderRadius: "3px",
     "& legend": {
       width: 0,
@@ -53,7 +52,9 @@ const testCaseSeriesStyles = {
     borderRadius: "3px",
     padding: "9px 14px",
     "&::placeholder": {
-      opacity: 0.6,
+      opacity: 1,
+      color: "#717171",
+      fontFamily: "Rubik",
       paddingLeft: "5px",
     },
   },

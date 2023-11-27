@@ -5,10 +5,7 @@ $grey-19: #dddddd;
   flex-direction: column;
   position: relative;
   > div:first-of-type {
-    border-bottom: solid 1px $grey-19;
-  }
-  .tabs-container {
-    border-bottom: solid 1px $grey-19;
+    border-bottom: solid 1px #8c8c8c;
   }
   .madie-icon {
     &.cyan {

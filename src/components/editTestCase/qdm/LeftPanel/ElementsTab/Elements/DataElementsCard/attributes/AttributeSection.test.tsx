@@ -28,6 +28,18 @@ const mockCqmMeasure = {
   value_sets: [],
 };
 
+jest.mock("@madie/madie-util", () => ({
+  routeHandlerStore: {
+    subscribe: (set) => {
+      set();
+      return { unsubscribe: () => null };
+    },
+    updateRouteHandlerState: () => null,
+    state: { canTravel: true, pendingPath: "" },
+    initialState: { canTravel: true, pendingPath: "" },
+  },
+}));
+
 describe("AttributeSection", () => {
   let encounterElement;
   let assessmentElement;

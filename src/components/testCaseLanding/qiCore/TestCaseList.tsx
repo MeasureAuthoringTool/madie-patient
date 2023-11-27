@@ -459,8 +459,13 @@ const TestCaseList = (props: TestCaseListProps) => {
 
   return (
     <div
-      tw="grid lg:grid-cols-6 gap-4 mx-8 my-6 shadow-lg rounded-md border border-slate bg-white"
-      style={{ marginTop: 16 }}
+      tw="grid lg:grid-cols-6 gap-4 mx-8 my-6 shadow-lg rounded-md border bg-white"
+      style={{
+        marginTop: 16,
+        borderColor: "#8c8c8c",
+        borderRadius: 3,
+        overflow: "hidden",
+      }}
     >
       {!loadingState.loading && (
         <>
