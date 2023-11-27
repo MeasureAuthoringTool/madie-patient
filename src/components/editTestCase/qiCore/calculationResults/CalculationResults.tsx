@@ -7,7 +7,7 @@ import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calcula
 import { MadieAlert } from "@madie/madie-design-system/dist/react";
 import { GroupPopulation, PopulationType } from "@madie/madie-models";
 import { useFeatureFlags } from "@madie/madie-util";
-import GroupCoverage from "../../groupCoverage/GroupCoverage";
+import QiCoreGroupCoverage from "../../groupCoverage/QiCoreGroupCoverage";
 import { Relevance } from "fqm-execution";
 
 type ErrorProps = {
@@ -137,7 +137,7 @@ const CalculationResults = ({
         />
       )}
       {featureFlags.highlightingTabs && !isEmpty(groupPopulations) && (
-        <GroupCoverage
+        <QiCoreGroupCoverage
           groupPopulations={groupPopulations}
           mappedCalculationResults={mapCalculationResults(calculationResults)}
         />
