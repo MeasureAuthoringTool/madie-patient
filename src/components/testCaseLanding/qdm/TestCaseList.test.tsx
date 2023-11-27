@@ -472,6 +472,7 @@ const useTestCaseServiceMockResolved = {
     .fn()
     .mockResolvedValue(["Series 1", "Series 2"]),
   createTestCases: jest.fn().mockResolvedValue([]),
+  importTestCasesQDM: jest.fn().mockResolvedValue([]),
 } as unknown as TestCaseServiceApi;
 
 // mocking measureService
@@ -1111,7 +1112,7 @@ describe("TestCaseList component", () => {
     expect(nextState).toEqual([]);
   });
 
-  it("should display import error when createTestCases call fails", async () => {
+  it("should display import error when importTestCasesQDM call fails", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
       importTestCases: true,
@@ -1122,7 +1123,9 @@ describe("TestCaseList component", () => {
       getTestCaseSeriesForMeasure: jest
         .fn()
         .mockResolvedValue(["Series 1", "Series 2"]),
-      createTestCases: jest.fn().mockRejectedValueOnce(new Error("BAD THINGS")),
+      importTestCasesQDM: jest
+        .fn()
+        .mockRejectedValueOnce(new Error("BAD THINGS")),
     } as unknown as TestCaseServiceApi;
 
     useTestCaseServiceMock.mockImplementation(() => {
