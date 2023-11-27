@@ -120,7 +120,7 @@ const TestCaseImportFromBonnieDialog = ({ open, handleClose, onImport }) => {
           [{testCases?.length | 0}] Test Case
           {testCases?.length === 1 ? "" : "s"} from File: {file.name}
         </div>
-        <Divider />
+        <Divider style={{ borderColor: "#8c8c8c" }} />
         <div
           data-testid="test-case-preview-list"
           style={{ maxHeight: 450, overflowY: "scroll" }}

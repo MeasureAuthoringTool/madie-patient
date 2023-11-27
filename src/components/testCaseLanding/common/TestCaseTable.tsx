@@ -25,7 +25,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     exportTestCase,
     measure,
   } = props;
-  const TH = tw.th`p-3 border-b text-left text-sm font-bold capitalize`;
+  const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
 
   return (
     <table
@@ -33,7 +33,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
       data-testid="test-case-tbl"
       className="tcl-table"
       style={{
-        borderTop: "solid 1px #DDD",
+        borderTop: "solid 1px #8c8c8c",
         borderSpacing: "0 2em !important",
       }}
     >
