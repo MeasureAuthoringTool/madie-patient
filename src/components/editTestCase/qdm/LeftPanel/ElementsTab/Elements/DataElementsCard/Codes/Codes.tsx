@@ -5,6 +5,7 @@ import {
   Select,
   TextField,
   Button,
+  MadieDiscardDialog,
 } from "@madie/madie-design-system/dist/react";
 import { MenuItem, Chip } from "@mui/material";
 import _ from "lodash";
@@ -18,6 +19,7 @@ import {
   Code,
 } from "cqm-models";
 import { makeStyles } from "@mui/styles";
+import { routeHandlerStore } from "@madie/madie-util";
 
 interface Chip {
   title: String;
@@ -68,6 +70,9 @@ const Codes = ({
   const [savedCode, setSavedCode] = useState<Code>(null);
 
   const [chips, setChips] = useState([]);
+
+  const { updateRouteHandlerState } = routeHandlerStore;
+  const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
 
   // filters out the appropriate value set for the selected data element and gets all code concepts
   // Also creates an object for CodeSystems oid as key and display name as value
@@ -126,6 +131,10 @@ const Codes = ({
   };
 
   const handleCodeSystemChange = (event) => {
+    updateRouteHandlerState({
+      canTravel: false,
+      pendingRoute: "",
+    });
     setSelectedCodeConcept(null);
     const selectedCodeSystemName = event.target.value;
     setSelectedCodeSystemName(selectedCodeSystemName);
@@ -171,9 +180,9 @@ const Codes = ({
       const existingCode = _.find(chips, _.matches({ id: newCodeId }));
       if (_.isEmpty(existingCode)) {
         handleChange(savedCode);
-        setSelectedCodeSystemName("");
-        setSelectedCodeConcept(null);
       }
+      setSelectedCodeSystemName("");
+      setSelectedCodeConcept(null);
     }
   };
 
@@ -327,6 +336,13 @@ const Codes = ({
           );
         })}
       </div>
+      <MadieDiscardDialog
+        open={discardDialogOpen}
+        onContinue={() => {
+          setDiscardDialogOpen(false);
+        }}
+        onClose={() => setDiscardDialogOpen(false)}
+      />
     </div>
   );
 };

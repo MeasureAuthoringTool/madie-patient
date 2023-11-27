@@ -87,6 +87,18 @@ const mockFormik: FormikContextType<any> = {
   },
 };
 
+jest.mock("@madie/madie-util", () => ({
+  routeHandlerStore: {
+    subscribe: (set) => {
+      set();
+      return { unsubscribe: () => null };
+    },
+    updateRouteHandlerState: () => null,
+    state: { canTravel: true, pendingPath: "" },
+    initialState: { canTravel: true, pendingPath: "" },
+  },
+}));
+
 describe("Component Type Component", () => {
   let assessmentPerformed;
   beforeEach(() => {

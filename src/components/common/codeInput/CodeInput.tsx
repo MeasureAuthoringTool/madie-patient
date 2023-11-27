@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
-import { Select, TextField } from "@madie/madie-design-system/dist/react";
+import {
+  Select,
+  TextField,
+  MadieDiscardDialog,
+} from "@madie/madie-design-system/dist/react";
 import { MenuItem } from "@mui/material";
 import { CQL, ValueSet, Concept } from "cqm-models";
+import { routeHandlerStore } from "@madie/madie-util";
 
 type CodeSystems = {
   [name: string]: string;
@@ -38,6 +43,9 @@ const CodeInput = ({
   const [isCustom, setCustom] = useState<boolean>(false);
   const [customCode, setCustomCode] = useState<string>();
 
+  const { updateRouteHandlerState } = routeHandlerStore;
+  const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
+
   useEffect(() => {
     if (selectedCodeSystemName && customCode) {
       const cqlCode = new CQL.Code(
@@ -51,6 +59,10 @@ const CodeInput = ({
   }, [selectedCodeSystemName, customCode]);
 
   const handleValueSetChange = (event) => {
+    updateRouteHandlerState({
+      canTravel: false,
+      pendingRoute: "",
+    });
     const oid = event.target.value;
     // clear value set, code systems, code concepts and selected code
     setSelectedValueSet(undefined);
@@ -251,6 +263,13 @@ const CodeInput = ({
           )}
         </div>
       )}
+      <MadieDiscardDialog
+        open={discardDialogOpen}
+        onContinue={() => {
+          setDiscardDialogOpen(false);
+        }}
+        onClose={() => setDiscardDialogOpen(false)}
+      />
     </div>
   );
 };
