@@ -268,7 +268,10 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
         >
           <input data-testid="file-drop-input" {...getInputProps()} />
           <span tw="text-black">Drag 'n' drop file to upload </span>
-          <span tw="pb-3"> or </span>
+          <span tw="pb-3" style={{ color: "#666666" }}>
+            {" "}
+            or{" "}
+          </span>
           <Button
             variant="outline-filled"
             data-testid="select-file-button"
@@ -276,7 +279,9 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
           >
             Select File
           </Button>
-          <span tw="pt-3">(.zip)</span>
+          <span tw="pt-3" style={{ color: "#666666" }}>
+            (.zip)
+          </span>
         </div>
         {uploadedFile && renderUploadedFileStatus()}
         {uploadingFileSpinner && (
@@ -294,7 +299,9 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
         tw="flex items-center ml-20"
         data-testid="test-case-import-error-div"
       >
-        {errorMessage && <small tw="text-red">{errorMessage}</small>}
+        {errorMessage && (
+          <small style={{ color: "#990000" }}>{errorMessage}</small>
+        )}
       </div>
       <Toast
         toastKey="import-tests-toast"

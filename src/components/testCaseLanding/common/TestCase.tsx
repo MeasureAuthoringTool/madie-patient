@@ -115,7 +115,7 @@ const TestCase = ({
       <tr
         key={`test-case-row-${testCase.id}`}
         data-testid={`test-case-row-${testCase.id}`}
-        style={{ borderBottom: "solid 1px #DDD !important" }}
+        style={{ borderBottom: "solid 1px #8c8c8c !important" }}
         className="tcl-tr"
       >
         <td style={{ width: 140 }}>{TestCaseStatus(status)}</td>

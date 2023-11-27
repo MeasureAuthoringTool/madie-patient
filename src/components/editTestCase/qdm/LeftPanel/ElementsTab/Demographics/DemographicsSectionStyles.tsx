@@ -19,12 +19,11 @@ export const birthDateLabelStyle = [
   },
 ];
 export const textFieldStyle = {
-  borderRadius: "3px",
   height: 40,
-  border: "1px solid #DDDDDD",
   marginTop: "8px",
   "& .MuiOutlinedInput-notchedOutline": {
     borderRadius: "3px",
+    border: "1px solid #8c8c8c",
     "& legend": {
       width: 0,
     },
@@ -53,12 +52,11 @@ export const textFieldStyle = {
 };
 
 export const timeTextFieldStyle = {
-  borderRadius: "3px",
   height: 40,
-  border: "1px solid #DDD",
   width: "110px",
   marginTop: "8px",
   "& .MuiOutlinedInput-notchedOutline": {
+    border: "1px solid #8c8c8c",
     borderRadius: "3px",
     "& legend": {
       width: 0,
