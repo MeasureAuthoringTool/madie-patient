@@ -6,16 +6,16 @@ import { MappedCql } from "../../../../../util/GroupCoverageHelpers";
 import "twin.macro";
 import "styled-components/macro";
 interface Props {
-  groupPopulations: any;
+  populationCriteria: any;
   mappedCql: MappedCql;
 }
 
-const CoverageTabList = ({ groupPopulations, mappedCql }: Props) => {
+const CoverageTabList = ({ populationCriteria, mappedCql }: Props) => {
   return (
     <div data-testid="coverage-tab-list">
       {mappedCql &&
-        groupPopulations.length &&
-        groupPopulations.map((pop, i) => {
+        populationCriteria.length &&
+        populationCriteria.map((pop, i) => {
           return (
             <CoverageTab
               key={i}

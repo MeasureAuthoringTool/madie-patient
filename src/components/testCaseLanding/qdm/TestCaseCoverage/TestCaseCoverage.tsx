@@ -9,7 +9,7 @@ const TestCaseCoverage = ({ populationCriteria, measureCql }) => {
     <div tw="p-5" style={{ paddingRight: ".25rem" }}>
       <CoverageTabList
         data-testid="coverage-tab-list"
-        groupPopulations={
+        populationCriteria={
           populationCriteria?.populations.filter((pop) => pop.definition) || {}
         }
         mappedCql={mapCoverageCql(measureCql, populationCriteria)}
