@@ -81,6 +81,7 @@ const DataElementsTablePopover = (props: {
           <div className="btn-container">
             {canView && (
               <button
+                key={editSelectOptionProps.dataTestId}
                 data-testid={editSelectOptionProps.dataTestId}
                 onClick={editSelectOptionProps.toImplementFunction}
               >

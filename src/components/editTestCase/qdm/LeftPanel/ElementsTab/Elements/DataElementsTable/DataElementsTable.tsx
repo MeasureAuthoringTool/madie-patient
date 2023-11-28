@@ -11,9 +11,9 @@ import {
 } from "@tanstack/react-table";
 import useQdmExecutionContext from "../../../../../../routes/qdm/useQdmExecutionContext";
 import TimingCell from "./TimingCell";
-import DatElementActions from "./DatElementActions";
 import { generateAttributesToDisplay } from "../../../../../../../util/QdmAttributeHelpers";
 import AttributesCell from "./AttributesCell";
+import DataElementActions from "./dataElementActions/DataElementActions";
 
 const columnHelper = createColumnHelper<DataElement>();
 
@@ -142,7 +142,7 @@ const DataElementTable = ({
         cell: (info) => {
           const el = info.getValue();
           return (
-            <DatElementActions
+            <DataElementActions
               elementId={el.id}
               canEdit={canEdit}
               canView={allowedTypes.hasOwnProperty(el._type)}

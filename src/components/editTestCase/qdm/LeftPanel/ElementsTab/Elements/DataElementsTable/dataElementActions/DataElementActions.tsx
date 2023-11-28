@@ -1,10 +1,10 @@
 import React from "react";
-import DataElementsTablePopover from "./DataElementsTablePopover";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import "./DataElementsTable.scss";
+import "../DataElementsTable.scss";
 import { Button } from "@madie/madie-design-system/dist/react";
+import DataElementsTablePopover from "./DataElementsTablePopover";
 
-type DatElementMenuProps = {
+type DataElementActionsProps = {
   elementId: string;
   canView: boolean;
   onDelete: Function;
@@ -12,7 +12,7 @@ type DatElementMenuProps = {
   canEdit: boolean;
 };
 
-export default function DatElementActions(props: DatElementMenuProps) {
+export default function DataElementActions(props: DataElementActionsProps) {
   const { elementId, canView, onDelete, onView, canEdit } = props;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
