@@ -138,7 +138,7 @@ $header-weight: 500;
         }
       }
 
-      .view-button {
+      .view-with-dropdown-button {
         color: #242424;
         border: 1px solid #8c8c8c;
         border-radius: 4px;
@@ -155,14 +155,14 @@ $header-weight: 500;
 
         > div {
           border-right: solid 1px #8c8c8c;
-          padding: 8px 16px;
+          padding: 8px 20px 8px 4px;
           flex-direction: row;
           flex-grow: 1;
           height: 100%;
         }
 
         > svg {
-          margin: 0 6px;
+          margin: 0 8px;
         }
       }
     }

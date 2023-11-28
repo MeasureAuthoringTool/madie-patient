@@ -147,8 +147,7 @@ const DataElementTable = ({
               canEdit={canEdit}
               canView={allowedTypes.hasOwnProperty(el._type)}
               onDelete={onDelete}
-              onView={(e) => {
-                // e.preventDefault();
+              onView={() => {
                 onView && onView(el);
               }}
             />

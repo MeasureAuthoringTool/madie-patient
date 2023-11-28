@@ -2,6 +2,7 @@ import React from "react";
 import DataElementsTablePopover from "./DataElementsTablePopover";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import "./DataElementsTable.scss";
+import { Button } from "@madie/madie-design-system/dist/react";
 
 type DatElementMenuProps = {
   elementId: string;
@@ -15,23 +16,25 @@ export default function DatElementActions(props: DatElementMenuProps) {
   const { elementId, canView, onDelete, onView, canEdit } = props;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    event.preventDefault();
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
+
+  const handleViewButtonClick = (event: React.MouseEvent<HTMLElement>) => {
+    if (canEdit) {
+      event.preventDefault();
+      setAnchorEl(event.currentTarget);
+    } else {
+      onView();
+    }
   };
 
-  const viewDataElement = () => {
-    onView();
-    // handleClose();
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   const deleteDataElement = () => {
     handleClose();
     onDelete(elementId);
   };
+
   const deleteElement = canEdit
     ? {
         label: "Delete",
@@ -42,18 +45,30 @@ export default function DatElementActions(props: DatElementMenuProps) {
 
   return (
     <div>
-      <button
-        id={`view-element-btn-${elementId}`}
-        data-testid={`view-element-btn-${elementId}`}
-        className="view-button"
-        aria-controls={open ? `view-element-menu-${elementId}` : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? "true" : undefined}
-        onClick={handleClick}
-      >
-        <div>View</div>
-        <ExpandMoreIcon />
-      </button>
+      {canEdit ? (
+        <Button
+          id={`view-element-btn-${elementId}`}
+          data-testid={`view-element-btn-${elementId}`}
+          className="view-with-dropdown-button"
+          aria-controls={open ? `view-element-menu-${elementId}` : undefined}
+          aria-haspopup="true"
+          aria-expanded={open ? "true" : undefined}
+          onClick={handleViewButtonClick}
+        >
+          <div>View</div>
+          <ExpandMoreIcon />
+        </Button>
+      ) : (
+        <Button
+          id={`view-element-btn-${elementId}`}
+          data-testid={`view-element-btn-${elementId}`}
+          onClick={handleViewButtonClick}
+          loading={!canView} //disabled state
+          variant="primary"
+        >
+          View
+        </Button>
+      )}
       <DataElementsTablePopover
         id={`view-element-menu-${elementId}`}
         anchorEl={anchorEl}
@@ -61,12 +76,14 @@ export default function DatElementActions(props: DatElementMenuProps) {
         handleClose={handleClose}
         canEdit={true}
         canView={canView}
-        editViewSelectOptionProps={{
-          label: "View",
-          toImplementFunction: viewDataElement,
-          dataTestId: `view-element-${elementId}`,
+        editSelectOptionProps={{
+          label: "Edit",
+          toImplementFunction: () => {
+            return onView();
+          },
+          dataTestId: `edit-element-${elementId}`,
         }}
-        otherSelectOptionProps={[deleteElement]}
+        additionalSelectOptionProps={[deleteElement]}
       />
     </div>
   );
