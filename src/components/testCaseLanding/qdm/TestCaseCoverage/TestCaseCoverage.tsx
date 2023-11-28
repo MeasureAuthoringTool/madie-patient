@@ -4,15 +4,15 @@ import "twin.macro";
 import "styled-components/macro";
 import CoverageTabList from "./CoverageTabs/CoverageTabList";
 
-const TestCaseCoverage = ({ groupPopulations, measureCql }) => {
+const TestCaseCoverage = ({ populationCriteria, measureCql }) => {
   return (
     <div tw="p-5" style={{ paddingRight: ".25rem" }}>
       <CoverageTabList
         data-testid="coverage-tab-list"
-        groupPopulations={groupPopulations.populations.filter(
-          (pop) => pop.definition
-        )}
-        mappedCql={mapCoverageCql(measureCql, groupPopulations)}
+        groupPopulations={
+          populationCriteria?.populations.filter((pop) => pop.definition) || {}
+        }
+        mappedCql={mapCoverageCql(measureCql, populationCriteria)}
       />
     </div>
   );

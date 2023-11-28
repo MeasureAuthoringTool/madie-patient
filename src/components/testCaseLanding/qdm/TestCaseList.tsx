@@ -397,7 +397,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                 <div tw="py-2 inline-block min-w-full sm:px-6 lg:px-8">
                   <TestCaseCoverage
                     data-testid="test-case-coverage"
-                    groupPopulations={selectedPopCriteria}
+                    populationCriteria={selectedPopCriteria}
                     measureCql={measure.cql}
                   />
                 </div>
