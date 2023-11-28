@@ -9,16 +9,14 @@ import {
   Paper,
 } from "@mui/material";
 import Button from "@mui/material/Button";
-import {
-  processPatientBundlesForQDM,
-  readImportFile,
-} from "../../../../util/FhirImportHelper";
+import { readImportFile } from "../../../../util/FhirImportHelper";
 import { useDropzone } from "react-dropzone";
 import { Toast } from "@madie/madie-design-system/dist/react";
 import "./TestCaseImportDialog.css";
 import * as _ from "lodash";
 import useTestCaseServiceApi from "../../../../api/useTestCaseServiceApi";
 import { ScanValidationDto } from "../../../../api/models/ScanValidationDto";
+import { TestCaseImportRequest } from "@madie/madie-models";
 
 const TestCaseImportFromBonnieDialogQDM = ({ open, handleClose, onImport }) => {
   const [file, setFile] = useState(null);
@@ -91,6 +89,19 @@ const TestCaseImportFromBonnieDialogQDM = ({ open, handleClose, onImport }) => {
     },
   });
 
+  function processPatientBundlesForQDM(
+    bonniePatients
+  ): TestCaseImportRequest[] {
+    const testCases: TestCaseImportRequest[] = [];
+    for (const patient of bonniePatients) {
+      testCases.push({
+        patientId: "",
+        json: JSON.stringify(patient),
+      } as TestCaseImportRequest);
+    }
+    return testCases;
+  }
+
   const renderFileDrop = () => {
     return (
       <Paper style={{ padding: 20 }}>
@@ -104,9 +115,11 @@ const TestCaseImportFromBonnieDialogQDM = ({ open, handleClose, onImport }) => {
             {...getInputProps()}
           />
           {isDragActive ? (
-            <p>Drop the files here ...</p>
+            <p style={{ color: "#666666" }}>Drop the files here ...</p>
           ) : (
-            <p>Drag 'n' drop some files here, or click to select files</p>
+            <p style={{ color: "#666666" }}>
+              Drag 'n' drop some files here, or click to select files
+            </p>
           )}
         </div>
       </Paper>
