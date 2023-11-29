@@ -81,6 +81,8 @@ export const mapCoverageCql = (measureCql: string, groupPopulations) => {
       const matchingDef = definitions.find(
         (def) => def.name.replace(/"/g, "") === population.definition
       );
+      console.log("findhere")
+      console.log(definitions)
       if (matchingDef) {
         acc[population.name] = { id: population.id, text: matchingDef.text };
       }

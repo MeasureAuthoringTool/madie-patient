@@ -107,7 +107,7 @@ const measure = {
   ],
   model: Model.QDM_5_6,
   acls: [{ userId: "othertestuser@example.com", roles: ["SHARED_WITH"] }],
-  cql: { measureCql },
+  cql:  measureCql ,
 } as unknown as Measure;
 
 jest.mock("@madie/madie-util", () => ({
@@ -122,9 +122,6 @@ jest.mock("@madie/madie-util", () => ({
   })),
 }));
 
-jest.mock("../../../util/GroupCoverageHelpers", () => ({
-  mapCoverageCql: jest.fn().mockImplementation(() => mappedCql),
-}));
 let importingTestCases = [];
 jest.mock(
   "../common/import/TestCaseImportFromBonnieDialogQDM",
@@ -762,7 +759,7 @@ describe("TestCaseList component", () => {
   it("accordions for cql parts", async () => {
     measure.createdBy = MEASURE_CREATEDBY;
     renderTestCaseListComponent();
-
+    debugger
     const table = await screen.findByTestId("test-case-tbl");
 
     userEvent.click(screen.getByTestId("coverage-tab"));
