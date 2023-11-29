@@ -64,5 +64,14 @@ define function denomObs(Encounter "Encounter, Performed"):
 define function numerObs(Encounter "Encounter, Performed"):
   duration in days of Encounter.relevantPeriod
   
+define "ipp":
+    exists ["Encounter, Performed"] E
+
+define "denom":
+    exists ["Encounter, Performed"] E
+    
+define "num":
+    exists ["Encounter, Performed"] E
+
 define "IP2":
     exists ["Encounter, Performed"] E`;
