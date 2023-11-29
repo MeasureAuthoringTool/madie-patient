@@ -5,6 +5,7 @@ import * as _ from "lodash";
 import {
   Group,
   MeasureErrorType,
+  TestCaseImportOutcome,
   TestCaseImportRequest,
 } from "@madie/madie-models";
 import { useParams } from "react-router-dom";
@@ -62,7 +63,8 @@ export const getCoverageValueFromHtml = (
 };
 
 const TestCaseList = (props: TestCaseListProps) => {
-  const { setErrors, errors } = props;
+
+  const { errors, setErrors, setWarnings } = props;
   const { measureId } = useParams<{ measureId: string }>();
   const {
     testCases,
@@ -81,6 +83,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     toastMessage,
     setToastMessage,
     toastType,
+    setToastType,
     onToastClose,
   } = UseToast();
 
@@ -280,6 +283,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     : 0;
 
   const onTestCaseImport = async (testCases: TestCaseImportRequest[]) => {
+    setWarnings(null);
     setImportDialogState({ ...importDialogState, open: false });
     setLoadingState(() => ({
       loading: true,
@@ -287,7 +291,25 @@ const TestCaseList = (props: TestCaseListProps) => {
     }));
 
     try {
-      await testCaseService.current.importTestCasesQDM(measureId, testCases);
+      const res = await testCaseService.current.importTestCasesQDM(
+        measureId,
+        testCases
+      );
+      const testCaseImportOutcome: TestCaseImportOutcome[] = res.data;
+      const failedImports = testCaseImportOutcome.filter((outcome) => {
+        if (outcome.message) return outcome;
+      });
+      if (failedImports && failedImports.length > 0) {
+        setWarnings(testCaseImportOutcome);
+      } else {
+        const successfulImports =
+          testCaseImportOutcome.length - failedImports.length;
+        setToastOpen(true);
+        setToastType("success");
+        setToastMessage(
+          `(${successfulImports}) Test cases imported successfully`
+        );
+      }
       retrieveTestCases();
     } catch (error) {
       setErrors((prevState) => [...prevState, IMPORT_ERROR]);

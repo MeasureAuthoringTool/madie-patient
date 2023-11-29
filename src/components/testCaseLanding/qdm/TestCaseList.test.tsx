@@ -513,6 +513,7 @@ const setMeasure = jest.fn();
 const setCqmMeasure = jest.fn();
 const setValueSets = jest.fn();
 const setError = jest.fn();
+const setWarnings = jest.fn();
 
 describe("TestCaseList component", () => {
   beforeEach(() => {
@@ -562,7 +563,11 @@ describe("TestCaseList component", () => {
               contextFailure: contextFailure,
             }}
           >
-            <TestCaseList errors={errors} setErrors={setError} />
+            <TestCaseList
+              errors={errors}
+              setErrors={setError}
+              setWarnings={setWarnings}
+            />
           </QdmExecutionContextProvider>
         </ApiContextProvider>
       </MemoryRouter>
