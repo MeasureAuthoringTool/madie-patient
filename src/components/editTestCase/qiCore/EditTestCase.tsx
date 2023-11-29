@@ -75,8 +75,8 @@ import { Bundle } from "fhir/r4";
 import { Allotment } from "allotment";
 import ElementsTab from "./LeftPanel/ElementsTab/ElementsTab";
 import { QiCoreResourceProvider } from "../../../util/QiCorePatientProvider";
-import { CqlDefinitionCallstack } from "../groupCoverage/GroupCoverage";
 import useCqlParsingService from "../../../api/useCqlParsingService";
+import { CqlDefinitionCallstack } from "../groupCoverage/QiCoreGroupCoverage";
 
 // const callstackMap: CqlDefinitionCallstack = {
 //   "AHAOverall-2.5.000|AHA|overlapsAfterHeartFailureOutpatientEncounter|function": [

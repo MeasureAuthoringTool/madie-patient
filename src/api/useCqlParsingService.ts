@@ -2,7 +2,7 @@ import axios from "axios";
 import useServiceConfig from "./useServiceConfig";
 import { ServiceConfig } from "./ServiceContext";
 import { useOktaTokens } from "@madie/madie-util";
-import { CqlDefinitionCallstack } from "../components/editTestCase/groupCoverage/GroupCoverage";
+import { CqlDefinitionCallstack } from "../components/editTestCase/groupCoverage/QiCoreGroupCoverage";
 
 export class CqlParsingService {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}

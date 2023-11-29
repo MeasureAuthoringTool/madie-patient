@@ -7,10 +7,10 @@ import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calcula
 import { MadieAlert } from "@madie/madie-design-system/dist/react";
 import { GroupPopulation, PopulationType } from "@madie/madie-models";
 import { useFeatureFlags } from "@madie/madie-util";
-import GroupCoverage, {
-  CqlDefinitionCallstack,
-} from "../../groupCoverage/GroupCoverage";
 import { Relevance } from "fqm-execution";
+import QiCoreGroupCoverage, {
+  CqlDefinitionCallstack,
+} from "../../groupCoverage/QiCoreGroupCoverage";
 
 type ErrorProps = {
   status?: "success" | "warning" | "error" | "info" | "meta";
