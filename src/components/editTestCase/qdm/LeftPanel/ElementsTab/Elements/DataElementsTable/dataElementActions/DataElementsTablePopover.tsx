@@ -8,20 +8,18 @@ const DataElementsTablePopover = (props: {
   handleClose: any;
   canView: boolean;
   canEdit: boolean;
-  editViewSelectOptionProps: any;
+  editSelectOptionProps: any;
   additionalSelectOptionProps?: any;
-  otherSelectOptionProps: any;
 }) => {
+  // canView prop defines if the data Element is still available and is not deleted from CQL
   const {
     id,
     optionsOpen,
     anchorEl,
     handleClose,
     canView,
-    canEdit,
-    editViewSelectOptionProps,
+    editSelectOptionProps,
     additionalSelectOptionProps,
-    otherSelectOptionProps,
   } = props;
   return (
     <div>
@@ -83,26 +81,15 @@ const DataElementsTablePopover = (props: {
           <div className="btn-container">
             {canView && (
               <button
-                data-testid={editViewSelectOptionProps.dataTestId}
-                onClick={editViewSelectOptionProps.toImplementFunction}
+                key={editSelectOptionProps.dataTestId}
+                data-testid={editSelectOptionProps.dataTestId}
+                onClick={editSelectOptionProps.toImplementFunction}
               >
-                {editViewSelectOptionProps.label}
+                {editSelectOptionProps.label}
               </button>
             )}
             {additionalSelectOptionProps &&
               additionalSelectOptionProps.map((res) => {
-                return (
-                  <button
-                    key={res.dataTestId}
-                    data-testid={res.dataTestId}
-                    onClick={res.toImplementFunction}
-                  >
-                    {res.label}
-                  </button>
-                );
-              })}
-            {canEdit &&
-              otherSelectOptionProps.map((res) => {
                 return (
                   <button
                     key={res.dataTestId}
