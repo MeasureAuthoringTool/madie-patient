@@ -293,12 +293,13 @@ const QiCoreGroupCoverage = ({
 
         {!selectedAllDefinitions ? (
           <div
+          style={{overflowX:"scroll", paddingBottom:"5px"}}
             tw="flex-auto p-3"
             id={`${selectedHighlightingTab.abbreviation}-highlighting`}
             data-testid={`${selectedHighlightingTab.abbreviation}-highlighting`}
           >
             {selectedPopulationDefinitionResults ? (
-              <div>
+              <div style={{overflowX:"scroll"}}>
                 {parse(selectedPopulationDefinitionResults?.statementLevelHTML)}
                 <GroupCoverageResultsSection
                   results={selectedPopulationDefinitionResults.pretty}
@@ -315,6 +316,7 @@ const QiCoreGroupCoverage = ({
               .map((record, index) => {
                 return (
                   <div
+                    style={{overflowX:"scroll", paddingBottom:"5px"}}
                     key={index}
                     tw="flex-auto p-3"
                     id={`${selectedHighlightingTab.name}-highlighting`}
