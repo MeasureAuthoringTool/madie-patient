@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import _ from "lodash";
+import React from "react";
 import CoverageTab from "./CoverageTab";
 
 import { MappedCql } from "../../../../../util/GroupCoverageHelpers";
