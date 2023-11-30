@@ -149,7 +149,6 @@ const TestCaseImportFromBonnieDialogQDM = ({ open, handleClose, onImport }) => {
       </div>
     );
   };
-
   return (
     <Dialog
       open={open}
@@ -159,7 +158,12 @@ const TestCaseImportFromBonnieDialogQDM = ({ open, handleClose, onImport }) => {
       fullWidth={true}
       maxWidth="md"
     >
-      <DialogTitle id="responsive-dialog-title">Test Case Import</DialogTitle>
+      <DialogTitle
+        id="responsive-dialog-title"
+        data-testid="responsive-dialog-title"
+      >
+        Test Case Import
+      </DialogTitle>
       <DialogContent>
         <DialogContent>
           <Alert severity="warning" style={{ marginBottom: 10 }}>

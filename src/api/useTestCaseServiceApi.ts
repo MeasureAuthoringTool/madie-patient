@@ -223,7 +223,7 @@ export class TestCaseServiceApi {
   async importTestCasesQDM(
     measureId: string,
     testCasesImportRequest: TestCaseImportRequest[]
-  ): Promise<TestCase[]> {
+  ): Promise<AxiosResponse> {
     try {
       return await axios.put(
         `${this.baseUrl}/measures/${measureId}/test-cases/imports/qdm`,
