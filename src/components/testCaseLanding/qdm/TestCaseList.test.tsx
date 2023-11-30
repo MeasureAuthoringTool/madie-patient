@@ -26,6 +26,7 @@ import {
   PopulationType,
   TestCase,
   AggregateFunctionType,
+  TestCaseImportOutcome,
 } from "@madie/madie-models";
 import useTestCaseServiceApi, {
   TestCaseServiceApi,
@@ -38,11 +39,18 @@ import { buildMeasureBundle } from "../../../util/CalculationTestHelpers";
 import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
 import { checkUserCanEdit, useFeatureFlags } from "@madie/madie-util";
 import { CqmConversionService } from "../../../api/CqmModelConversionService";
+import { ScanValidationDto } from "../../../api/models/ScanValidationDto";
 import { ValueSet } from "cqm-models";
 import qdmCalculationService, {
   QdmCalculationService,
 } from "../../../api/QdmCalculationService";
 import { measureCql } from "../../editTestCase/groupCoverage/_mocks_/QdmMeasureCql";
+
+const mockScanResult: ScanValidationDto = {
+  fileName: "testcaseExample.json",
+  valid: true,
+  error: null,
+};
 
 const serviceConfig: ServiceConfig = {
   elmTranslationService: { baseUrl: "translator.url" },
@@ -1186,6 +1194,110 @@ describe("TestCaseList component", () => {
     expect(removedImportDialog).not.toBeInTheDocument();
     await waitFor(() => expect(setError).toHaveBeenCalledTimes(2));
     expect(nextState).toEqual([IMPORT_ERROR]);
+  });
+
+  it("should display warning messages when importTestCasesQDM call succeeds with warnings", async () => {
+    (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      importTestCases: true,
+    }));
+
+    const useTestCaseServiceMockRejected = {
+      getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
+      getTestCaseSeriesForMeasure: jest
+        .fn()
+        .mockResolvedValue(["Series 1", "Series 2"]),
+      importTestCasesQDM: jest.fn().mockResolvedValue({
+        data: [
+          {
+            message:
+              "The measure populations do not match the populations in the import file. The Test Case has been imported, but no expected values have been set.",
+            patientId: "testid1",
+            successful: true,
+          },
+          {
+            message:
+              "The measure populations do not match the populations in the import file. The Test Case has been imported, but no expected values have been set.",
+            patientId: "testid2",
+            successful: true,
+          },
+        ],
+      }),
+    } as unknown as TestCaseServiceApi;
+
+    useTestCaseServiceMock.mockImplementation(() => {
+      return useTestCaseServiceMockRejected;
+    });
+
+    let nextState;
+    setError.mockImplementation((callback) => {
+      nextState = callback([]);
+    });
+
+    renderTestCaseListComponent();
+    const showImportBtn = await screen.findByRole("button", {
+      name: /import test cases/i,
+    });
+    await waitFor(() => expect(showImportBtn).not.toBeDisabled());
+    userEvent.click(showImportBtn);
+    const importDialog = await screen.findByTestId("test-case-import-dialog");
+    expect(importDialog).toBeInTheDocument();
+
+    await waitFor(async () => {
+      const importBtn = within(importDialog).getByRole("button", {
+        name: "Import",
+      });
+      expect(importBtn).toBeEnabled();
+      userEvent.click(importBtn);
+      expect(setWarnings).toHaveBeenCalled();
+    });
+  });
+
+  it("should display success message when importTestCasesQDM call succeeds without", async () => {
+    (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      importTestCases: true,
+    }));
+
+    const useTestCaseServiceMockRejected = {
+      getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
+      getTestCaseSeriesForMeasure: jest
+        .fn()
+        .mockResolvedValue(["Series 1", "Series 2"]),
+      importTestCasesQDM: jest.fn().mockResolvedValue({
+        data: [
+          { patientId: "testid1", successful: true },
+          { patientId: "testid2", successful: true },
+        ],
+      }),
+    } as unknown as TestCaseServiceApi;
+
+    useTestCaseServiceMock.mockImplementation(() => {
+      return useTestCaseServiceMockRejected;
+    });
+
+    let nextState;
+    setError.mockImplementation((callback) => {
+      nextState = callback([]);
+    });
+
+    renderTestCaseListComponent();
+    const showImportBtn = await screen.findByRole("button", {
+      name: /import test cases/i,
+    });
+    await waitFor(() => expect(showImportBtn).not.toBeDisabled());
+    userEvent.click(showImportBtn);
+    const importDialog = await screen.findByTestId("test-case-import-dialog");
+    expect(importDialog).toBeInTheDocument();
+
+    await waitFor(async () => {
+      const importBtn = within(importDialog).getByRole("button", {
+        name: "Import",
+      });
+      expect(importBtn).toBeEnabled();
+      userEvent.click(importBtn);
+      expect(screen.getByText("(2) Test cases imported successfully"));
+    });
   });
 
   it("should close import dialog when cancel button is clicked", async () => {

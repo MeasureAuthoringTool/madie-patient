@@ -17,6 +17,7 @@ const TestCaseRoutes = () => {
   const [importWarnings, setImportWarnings] = useState<TestCaseImportOutcome[]>(
     []
   );
+
   const [executionContextReady, setExecutionContextReady] =
     useState<boolean>(true);
   const [executing, setExecuting] = useState<boolean>();
@@ -111,7 +112,10 @@ const TestCaseRoutes = () => {
         />
       )}
       {importWarnings && importWarnings.length > 0 && (
-        <StatusHandler importWarnings={importWarnings} />
+        <StatusHandler
+          importWarnings={importWarnings}
+          testDataId="import-warning-messages"
+        />
       )}
       <Routes>
         <Route path="/measures/:measureId/edit/test-cases">
