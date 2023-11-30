@@ -63,7 +63,6 @@ export const getCoverageValueFromHtml = (
 };
 
 const TestCaseList = (props: TestCaseListProps) => {
-
   const { errors, setErrors, setWarnings } = props;
   const { measureId } = useParams<{ measureId: string }>();
   const {
