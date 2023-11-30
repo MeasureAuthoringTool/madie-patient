@@ -4,7 +4,7 @@ import TestCaseLandingQdm from "../../testCaseLanding/qdm/TestCaseLanding";
 import EditTestCase from "../../editTestCase/qdm/EditTestCase";
 import NotFound from "../../notfound/NotFound";
 import StatusHandler from "../../statusHandler/StatusHandler";
-import { Measure } from "@madie/madie-models";
+import { Measure, TestCaseImportOutcome } from "@madie/madie-models";
 import { measureStore } from "@madie/madie-util";
 import { CqmMeasure, ValueSet } from "cqm-models";
 import useCqmConversionService from "../../../api/CqmModelConversionService";
@@ -14,6 +14,10 @@ import _ from "lodash";
 
 const TestCaseRoutes = () => {
   const [errors, setErrors] = useState<Array<string>>([]);
+  const [importWarnings, setImportWarnings] = useState<TestCaseImportOutcome[]>(
+    []
+  );
+
   const [executionContextReady, setExecutionContextReady] =
     useState<boolean>(true);
   const [executing, setExecuting] = useState<boolean>();
@@ -107,12 +111,22 @@ const TestCaseRoutes = () => {
           testDataId="execution_context_loading_errors"
         />
       )}
+      {importWarnings && importWarnings.length > 0 && (
+        <StatusHandler
+          importWarnings={importWarnings}
+          testDataId="import-warning-messages"
+        />
+      )}
       <Routes>
         <Route path="/measures/:measureId/edit/test-cases">
           <Route
             index
             element={
-              <TestCaseLandingQdm errors={errors} setErrors={setErrors} />
+              <TestCaseLandingQdm
+                errors={errors}
+                setErrors={setErrors}
+                setWarnings={setImportWarnings}
+              />
             }
           />
           <Route path=":id" element={<EditTestCase />} />
