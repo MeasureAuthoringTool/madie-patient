@@ -12,7 +12,6 @@ import calculationService from "../../../api/CalculationService";
 import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calculator";
 import { checkUserCanEdit, measureStore } from "@madie/madie-util";
 import CreateCodeCoverageNavTabs from "./CreateCodeCoverageNavTabs";
-import CodeCoverageHighlighting from "../common/CodeCoverageHighlighting";
 import CreateNewTestCaseDialog from "../../createTestCase/CreateNewTestCaseDialog";
 import { MadieSpinner, Toast } from "@madie/madie-design-system/dist/react";
 import TestCaseListSideBarNav from "../common/TestCaseListSideBarNav";
@@ -29,6 +28,8 @@ import qdmCalculationService, {
   CqmExecutionResultsByPatient,
 } from "../../../api/QdmCalculationService";
 import TestCaseImportFromBonnieDialogQDM from "../common/import/TestCaseImportFromBonnieDialogQDM";
+import TestCaseCoverage from "./TestCaseCoverage/TestCaseCoverage";
+import CodeCoverageHighlighting from "../common/CodeCoverageHighlighting";
 import { QDMPatient, DataElement } from "cqm-models";
 
 export const IMPORT_ERROR =
@@ -61,7 +62,7 @@ export const getCoverageValueFromHtml = (
 };
 
 const TestCaseList = (props: TestCaseListProps) => {
-  const { setErrors } = props;
+  const { setErrors, errors } = props;
   const { measureId } = useParams<{ measureId: string }>();
   const {
     testCases,
@@ -176,16 +177,6 @@ const TestCaseList = (props: TestCaseListProps) => {
   useEffect(() => {
     const validTestCases = testCases?.filter((tc) => tc.validResource);
     if (validTestCases && calculationOutput) {
-      // Pull Clause Coverage from coverage HTML
-      setCoveragePercentage(
-        getCoverageValueFromHtml(
-          calculationOutput["groupClauseCoverageHTML"],
-          selectedPopCriteria.id
-        )
-      );
-      setCoverageHTML(
-        removeHtmlCoverageHeader(calculationOutput["groupClauseCoverageHTML"])
-      );
       const executionResults: CqmExecutionResultsByPatient = calculationOutput;
 
       validTestCases.forEach((testCase) => {
@@ -247,7 +238,6 @@ const TestCaseList = (props: TestCaseListProps) => {
       return null;
     }
     const validTestCases = testCases?.filter((tc) => tc.validResource);
-
     if (validTestCases && validTestCases.length > 0 && cqmMeasure) {
       setExecuting(true);
       try {
@@ -258,7 +248,6 @@ const TestCaseList = (props: TestCaseListProps) => {
             cqmMeasure,
             patients
           );
-
         setCalculationOutput(calculationOutput);
       } catch (error) {
         console.error("calculateTestCases: error.message = " + error.message);
@@ -403,11 +392,16 @@ const TestCaseList = (props: TestCaseListProps) => {
                 </div>
               </div>
             )}
-
-            {activeTab === "coverage" && coverageHTML && (
-              <CodeCoverageHighlighting
-                coverageHTML={coverageHTML[selectedPopCriteria.id]}
-              />
+            {activeTab === "coverage" && (
+              <div tw="overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div tw="py-2 inline-block min-w-full sm:px-6 lg:px-8">
+                  <TestCaseCoverage
+                    data-testid="test-case-coverage"
+                    populationCriteria={selectedPopCriteria}
+                    measureCql={measure.cql}
+                  />
+                </div>
+              </div>
             )}
           </div>
         </>
