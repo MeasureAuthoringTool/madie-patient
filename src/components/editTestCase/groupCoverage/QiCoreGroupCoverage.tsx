@@ -294,7 +294,7 @@ const QiCoreGroupCoverage = ({
 
         {!selectedAllDefinitions ? (
           <div
-            style={{ overflowX: "scroll", paddingBottom: "5px" }}
+            style={{ overflowX: "scroll"}}
             tw="flex-auto p-3"
             id={`${selectedHighlightingTab.abbreviation}-highlighting`}
             data-testid={`${selectedHighlightingTab.abbreviation}-highlighting`}
