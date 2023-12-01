@@ -375,7 +375,7 @@ const QiCoreGroupCoverage = ({
                     color: "#0073C8",
                   }}
                 >
-                  Definition Used
+                  Definition(s) Used
                 </div>
                 <div
                   style={{
