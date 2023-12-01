@@ -13,7 +13,11 @@ const TestCaseLandingQdm = (props: TestCaseListProps) => {
     <div>
       <section>
         {featureFlags.qdmTestCases ? (
-          <TestCaseList errors={props.errors} setErrors={props.setErrors} />
+          <TestCaseList
+            errors={props.errors}
+            setErrors={props.setErrors}
+            setWarnings={props.setWarnings}
+          />
         ) : (
           <div data-testid="coming-soon">"QDM Test Cases are Coming Soon!"</div>
         )}
