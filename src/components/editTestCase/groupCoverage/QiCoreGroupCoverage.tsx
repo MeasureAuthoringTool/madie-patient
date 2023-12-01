@@ -17,7 +17,7 @@ import {
   getFirstPopulation,
   getPopulationAbbreviation,
 } from "../../../util/GroupCoverageHelpers";
-import "../groupCoverage/QiCoreGroupCoverage.scss";
+import "./QiCoreGroupCoverage.scss";
 
 interface Props {
   groupPopulations: GroupPopulation[];
