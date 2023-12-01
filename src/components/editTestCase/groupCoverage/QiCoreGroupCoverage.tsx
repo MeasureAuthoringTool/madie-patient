@@ -17,6 +17,7 @@ import {
   getFirstPopulation,
   getPopulationAbbreviation,
 } from "../../../util/GroupCoverageHelpers";
+import "./QiCoreGroupCoverage.scss";
 
 interface Props {
   groupPopulations: GroupPopulation[];
@@ -293,13 +294,13 @@ const QiCoreGroupCoverage = ({
 
         {!selectedAllDefinitions ? (
           <div
-          style={{overflowX:"scroll", paddingBottom:"5px"}}
+            style={{ overflowX: "scroll", paddingBottom: "5px" }}
             tw="flex-auto p-3"
             id={`${selectedHighlightingTab.abbreviation}-highlighting`}
             data-testid={`${selectedHighlightingTab.abbreviation}-highlighting`}
           >
             {selectedPopulationDefinitionResults ? (
-              <div style={{overflowX:"scroll"}}>
+              <div>
                 {parse(selectedPopulationDefinitionResults?.statementLevelHTML)}
                 <GroupCoverageResultsSection
                   results={selectedPopulationDefinitionResults.pretty}
@@ -310,13 +311,12 @@ const QiCoreGroupCoverage = ({
             )}
           </div>
         ) : (
-          <div>
+          <div style={{ overflowX: "scroll" }}>
             {Object.values(selectedAllDefinitions)
               .filter((record) => !!record.statementLevelHTML)
               .map((record, index) => {
                 return (
                   <div
-                    style={{overflowX:"scroll", paddingBottom:"5px"}}
                     key={index}
                     tw="flex-auto p-3"
                     id={`${selectedHighlightingTab.name}-highlighting`}

@@ -49,7 +49,6 @@ const GroupCoverageResultsSection = ({ results }) => {
               fontFamily: "sans-serif",
               borderRadius: "1px",
               color: "black",
-              overflowX:"scroll"
             }}
             data-testId="results-section"
             id="results"
