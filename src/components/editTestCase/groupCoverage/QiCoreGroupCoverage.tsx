@@ -281,7 +281,7 @@ const QiCoreGroupCoverage = ({
           onChange={(e) => changeCriteria(e.target.value)}
         />
       </div>
-      <div tw="flex mt-5" key={selectedCriteria}>
+      <div tw="flex mt-5" key={selectedCriteria} id="qi-core-coverage">
         <div tw="flex-none w-1/5">
           <GroupCoverageNav
             id={selectedCriteria}
