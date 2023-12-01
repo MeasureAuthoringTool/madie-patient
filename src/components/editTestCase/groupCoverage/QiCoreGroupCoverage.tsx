@@ -17,6 +17,7 @@ import {
   getFirstPopulation,
   getPopulationAbbreviation,
 } from "../../../util/GroupCoverageHelpers";
+import "./QiCoreGroupCoverage.scss";
 
 interface Props {
   groupPopulations: GroupPopulation[];
@@ -280,7 +281,7 @@ const QiCoreGroupCoverage = ({
           onChange={(e) => changeCriteria(e.target.value)}
         />
       </div>
-      <div tw="flex mt-5" key={selectedCriteria}>
+      <div tw="flex mt-5" key={selectedCriteria} id="qi-core-coverage">
         <div tw="flex-none w-1/5">
           <GroupCoverageNav
             id={selectedCriteria}
@@ -293,6 +294,7 @@ const QiCoreGroupCoverage = ({
 
         {!selectedAllDefinitions ? (
           <div
+            style={{ overflowX: "scroll" }}
             tw="flex-auto p-3"
             id={`${selectedHighlightingTab.abbreviation}-highlighting`}
             data-testid={`${selectedHighlightingTab.abbreviation}-highlighting`}
@@ -309,7 +311,7 @@ const QiCoreGroupCoverage = ({
             )}
           </div>
         ) : (
-          <div>
+          <div style={{ overflowX: "scroll" }}>
             {Object.values(selectedAllDefinitions)
               .filter((record) => !!record.statementLevelHTML)
               .map((record, index) => {
