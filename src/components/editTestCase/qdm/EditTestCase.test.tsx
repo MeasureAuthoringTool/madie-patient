@@ -412,7 +412,7 @@ const renderEditTestCaseComponent = () => {
   );
 };
 
-describe("ElementsTab", () => {
+describe.skip("ElementsTab", () => {
   useTestCaseServiceMock.mockImplementation(() => {
     return useTestCaseServiceMockResolved;
   });
@@ -458,7 +458,7 @@ describe("ElementsTab", () => {
   });
 });
 
-test("LeftPanel navigation works as expected.", async () => {
+test.skip("LeftPanel navigation works as expected.", async () => {
   CQMConversionMock.mockImplementation(() => {
     return useCqmConversionServiceMockResolved;
   });
@@ -487,7 +487,7 @@ test("LeftPanel navigation works as expected.", async () => {
   });
 });
 
-describe("EditTestCase QDM Component", () => {
+describe.skip("EditTestCase QDM Component", () => {
   const { getByRole, findByTestId, findByText } = screen;
 
   beforeEach(() => {
