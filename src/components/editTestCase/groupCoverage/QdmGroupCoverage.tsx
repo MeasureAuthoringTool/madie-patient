@@ -309,7 +309,11 @@ const QdmGroupCoverage = ({
           onChange={(e) => changeCriteria(e.target.value)}
         />
       </div>
-      <div tw="flex mt-5" key={selectedCriteria}>
+      <div
+        tw="flex mt-5"
+        key={selectedCriteria}
+        style={{ paddingBottom: "7px" }}
+      >
         <div tw="flex-none w-1/5">
           <GroupCoverageNav
             id={selectedCriteria}
@@ -324,6 +328,7 @@ const QdmGroupCoverage = ({
         {!selectedAllDefinitions ? (
           <div
             tw="flex-auto p-3"
+            style={{ overflowX: "scroll" }}
             id={`${selectedHighlightingTab.abbreviation}-highlighting`}
             data-testid={`${selectedHighlightingTab.abbreviation}-highlighting`}
           >
