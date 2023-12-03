@@ -248,6 +248,9 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     expect(await getByRole("IP 2")).toBeInTheDocument();
     expect(await getByRole("DENOM")).toBeInTheDocument();
     expect(await getByRole("NUMER")).toBeInTheDocument();
+    expect(screen.getByText("Definitions")).toBeInTheDocument();
+    expect(screen.getByText("Unused")).toBeInTheDocument();
+    expect(screen.getByText("Functions")).toBeInTheDocument();
   });
 
   test("render highlighting view with coverage results for 2 groups", async () => {
@@ -270,6 +273,10 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     expect(screen.getByTestId("NUMER-highlighting")).toHaveTextContent(
       `define "Numerator": "Initial Population"`
     );
+
+    const functions = await getByRole("Functions");
+    userEvent.click(functions);
+    expect(screen.getAllByTestId("functions-highlighting")).toHaveLength(25);
 
     // select population criteria 2
     const criteriaOptions = await getCriteriaOptions();

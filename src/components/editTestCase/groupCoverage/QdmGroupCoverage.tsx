@@ -223,6 +223,7 @@ const QdmGroupCoverage = ({
 
   const changeCriteria = (criteriaId: string) => {
     setSelectedCriteria(criteriaId);
+    setSelectedAllDefinitions(null);
     const populationResults = getPopulationResults(criteriaId);
     setPopulationResults(populationResults);
     const group = testCaseGroups.find((gp) => gp.groupId === criteriaId);
