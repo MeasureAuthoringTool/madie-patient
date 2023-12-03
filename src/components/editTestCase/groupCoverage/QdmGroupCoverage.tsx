@@ -6,8 +6,10 @@ import _, { isEmpty } from "lodash";
 import {
   MappedCql,
   Population,
+  QDMPopulationDefinition,
   getFirstPopulation,
   getPopulationAbbreviation,
+  isPopulation,
 } from "../../../util/GroupCoverageHelpers";
 import "twin.macro";
 import "styled-components/macro";
@@ -18,9 +20,16 @@ interface Props {
   testCaseGroups: GroupPopulation[];
   cqlPopulationDefinitions: MappedCql;
   measureGroups: Group[];
+  calculationResults;
 }
 
 type PopulationResult = Record<string, string>;
+
+const allDefinitions = [
+  { name: "Definitions" },
+  { name: "Functions" },
+  { name: "Unused" },
+];
 
 const populationCriteriaLabel = "Population Criteria";
 
@@ -28,6 +37,7 @@ const QdmGroupCoverage = ({
   testCaseGroups,
   cqlPopulationDefinitions,
   measureGroups,
+  calculationResults,
 }: Props) => {
   const [selectedHighlightingTab, setSelectedHighlightingTab] =
     useState<Population>(getFirstPopulation(testCaseGroups[0]));
@@ -39,6 +49,8 @@ const QdmGroupCoverage = ({
     selectedPopulationDefinitionResults,
     setSelectedPopulationDefinitionResults,
   ] = useState<string>();
+  const [selectedAllDefinitions, setSelectedAllDefinitions] =
+    useState<QDMPopulationDefinition>();
 
   useEffect(() => {
     if (!isEmpty(testCaseGroups)) {
@@ -90,8 +102,111 @@ const QdmGroupCoverage = ({
     }
   };
 
+  const getDefintionCategoryFilteringCondition = (
+    statementResults,
+    definitionName,
+    definitionCategory
+  ) => {
+    if (definitionCategory === "Definitions") {
+      return statementResults[definitionName]?.relevance !== "NA";
+    }
+    if (definitionCategory === "Unused") {
+      return statementResults[definitionName]?.relevance === "NA";
+    }
+  };
+
+  const filterBasedOnDefinitionCategories = (
+    statementResults,
+    definitionCategory
+  ) => {
+    return Object.keys(statementResults)
+      .filter((definitionName) =>
+        getDefintionCategoryFilteringCondition(
+          statementResults,
+          definitionName,
+          definitionCategory
+        )
+      )
+      .reduce((result, definitionName) => {
+        result[definitionName] = statementResults[definitionName];
+        return result;
+      }, {});
+  };
+
+  const filterDefinitions = (
+    cqlPopulationDefinitions,
+    calculationResults,
+    definitionCategory
+  ): QDMPopulationDefinition => {
+    const statementResults =
+      calculationResults[Object.keys(calculationResults)[0]][selectedCriteria];
+
+    if (Object.keys(statementResults?.statement_results)) {
+      const filteredDefinitions = Object.keys(
+        statementResults?.statement_results
+      )
+        .map((definitionName) =>
+          filterBasedOnDefinitionCategories(
+            statementResults?.statement_results[definitionName],
+            definitionCategory
+          )
+        )
+        .reduce((result, statementResult) => {
+          Object.assign(result, statementResult);
+          return result;
+        }, {});
+
+      return Object.keys(
+        cqlPopulationDefinitions[selectedCriteria]?.definitions
+      )
+        .filter((definitionName) => filteredDefinitions[definitionName])
+        .reduce((result, definitionName) => {
+          result[definitionName] =
+            cqlPopulationDefinitions[selectedCriteria]?.definitions[
+              definitionName
+            ];
+          return result;
+        }, {});
+    }
+  };
+
+  const changeDefinitions = (population) => {
+    setSelectedHighlightingTab(population);
+    let resultDefinitions: QDMPopulationDefinition;
+
+    if (cqlPopulationDefinitions && calculationResults) {
+      if (population.name === "Functions") {
+        if (cqlPopulationDefinitions[selectedCriteria]?.functions) {
+          resultDefinitions =
+            cqlPopulationDefinitions[selectedCriteria].functions;
+        }
+      }
+      if (population.name === "Definitions") {
+        resultDefinitions = filterDefinitions(
+          cqlPopulationDefinitions,
+          calculationResults,
+          population.name
+        );
+      }
+      if (population.name === "Unused") {
+        resultDefinitions = filterDefinitions(
+          cqlPopulationDefinitions,
+          calculationResults,
+          population.name
+        );
+      }
+      setSelectedAllDefinitions(resultDefinitions);
+    }
+  };
+
   const onHighlightingNavTabClick = (selectedTab) => {
-    changePopulation(selectedTab);
+    if (isPopulation(selectedTab.name)) {
+      setSelectedAllDefinitions(null);
+      changePopulation(selectedTab);
+    } else {
+      setSelectedPopulationDefinitionResults(null);
+      changeDefinitions(selectedTab);
+    }
   };
 
   const getPopulationResults = (groupId: string) => {
@@ -199,22 +314,52 @@ const QdmGroupCoverage = ({
             id={selectedCriteria}
             populations={getRelevantPopulations()}
             // used for definitions, functions and unused
-            allDefinitions={[]}
+            allDefinitions={allDefinitions}
             selectedHighlightingTab={selectedHighlightingTab}
             onClick={onHighlightingNavTabClick}
           />
         </div>
-        <div
-          tw="flex-auto p-3"
-          id={`${selectedHighlightingTab.abbreviation}-highlighting`}
-          data-testid={`${selectedHighlightingTab.abbreviation}-highlighting`}
-        >
-          {selectedPopulationDefinitionResults
-            ? parse(
-                `<pre><code>${selectedPopulationDefinitionResults}</code></pre>`
-              )
-            : "No results available"}
-        </div>
+
+        {!selectedAllDefinitions ? (
+          <div
+            tw="flex-auto p-3"
+            id={`${selectedHighlightingTab.abbreviation}-highlighting`}
+            data-testid={`${selectedHighlightingTab.abbreviation}-highlighting`}
+          >
+            {selectedPopulationDefinitionResults
+              ? parse(
+                  `<pre><code>${selectedPopulationDefinitionResults}</code></pre>`
+                )
+              : "No results available"}
+          </div>
+        ) : (
+          <div>
+            {calculationResults &&
+            Object.keys(selectedAllDefinitions).length > 0 ? (
+              Object.values(selectedAllDefinitions)
+                .filter((definition: any) => !!definition.definitionLogic)
+                .map((definition: any, index) => {
+                  return (
+                    <div
+                      key={index}
+                      tw="flex-auto p-3"
+                      id={`${selectedHighlightingTab.name}-highlighting`}
+                      data-testid={`${_.camelCase(
+                        selectedHighlightingTab.name
+                      )}-highlighting`}
+                      style={{ borderBottomWidth: "4px" }}
+                    >
+                      {parse(
+                        `<pre><code>${definition?.definitionLogic}</code></pre>`
+                      )}
+                    </div>
+                  );
+                })
+            ) : (
+              <div tw="flex-auto p-3">No results available</div>
+            )}
+          </div>
+        )}
       </div>
     </>
   );

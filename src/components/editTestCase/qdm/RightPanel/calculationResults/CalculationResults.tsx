@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import QdmGroupCoverage from "../../../groupCoverage/QdmGroupCoverage";
 import { isEmpty } from "lodash";
 import { MadieAlert } from "@madie/madie-design-system/dist/react";
-import { mapCql } from "../../../../../util/GroupCoverageHelpers";
+import {
+  CqlDefinitionExpression,
+  mapCql,
+} from "../../../../../util/GroupCoverageHelpers";
 import "twin.macro";
 import "styled-components/macro";
+import useCqlParsingService from "../../../../../api/useCqlParsingService";
 
 const CalculationResults = ({
   calculationResults,
@@ -13,6 +17,20 @@ const CalculationResults = ({
   measureGroups,
   calculationErrors,
 }) => {
+  const cqlParsingService = useRef(useCqlParsingService());
+  const [allDefinitions, setAllDefinitions] =
+    useState<CqlDefinitionExpression[]>();
+
+  useEffect(() => {
+    if (measureCql) {
+      cqlParsingService.current
+        .getAllDefinitionsAndFunctions(measureCql)
+        .then((allDefinitionsAndFunctions: CqlDefinitionExpression[]) => {
+          setAllDefinitions(allDefinitionsAndFunctions);
+        });
+    }
+  }, [measureCql]);
+
   return (
     <div tw="p-5" style={{ paddingRight: ".25rem" }}>
       {!calculationResults && isEmpty(calculationErrors) && (
@@ -28,8 +46,13 @@ const CalculationResults = ({
       {!isEmpty(testCaseGroups) && (
         <QdmGroupCoverage
           testCaseGroups={testCaseGroups}
-          cqlPopulationDefinitions={mapCql(measureCql, measureGroups)}
+          cqlPopulationDefinitions={mapCql(
+            measureCql,
+            measureGroups,
+            allDefinitions
+          )}
           measureGroups={measureGroups}
+          calculationResults={calculationResults}
         />
       )}
     </div>

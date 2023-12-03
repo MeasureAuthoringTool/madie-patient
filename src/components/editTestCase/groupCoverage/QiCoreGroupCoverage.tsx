@@ -16,6 +16,7 @@ import GroupCoverageResultsSection from "./GroupCoverageResultsSection";
 import {
   getFirstPopulation,
   getPopulationAbbreviation,
+  isPopulation,
 } from "../../../util/GroupCoverageHelpers";
 
 interface Props {
@@ -209,10 +210,6 @@ const QiCoreGroupCoverage = ({
     return Object.fromEntries(
       Object.entries(statementResults).filter(([key, value]) => filterFn(value))
     );
-  };
-
-  const isPopulation = (name: string) => {
-    return name !== "Functions" && name !== "Definitions" && name !== "Unused";
   };
 
   const onHighlightingNavTabClick = (selectedTab) => {
