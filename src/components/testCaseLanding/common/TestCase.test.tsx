@@ -75,7 +75,7 @@ const setError = jest.fn();
 let mockApplyDefaults = false;
 jest.mock("@madie/madie-util", () => ({
   useFeatureFlags: () => {
-    return { applyDefaults: mockApplyDefaults, exportQiCoreBundleType: true };
+    return { applyDefaults: mockApplyDefaults };
   },
 }));
 

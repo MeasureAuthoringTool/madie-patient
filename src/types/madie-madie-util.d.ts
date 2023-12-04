@@ -10,12 +10,9 @@ declare module "@madie/madie-util" {
   }
 
   interface FeatureFlags {
-    export: boolean;
-    populationCriteriaTabs: boolean;
     importTestCases: boolean;
     qdmTestCases: boolean;
     qiCoreElementsTab: boolean;
-    exportQiCoreBundleType: boolean;
     highlightingTabs: boolean;
     qdmHighlightingTabs: boolean;
     disableRunTestCaseWithObservStrat: boolean;
