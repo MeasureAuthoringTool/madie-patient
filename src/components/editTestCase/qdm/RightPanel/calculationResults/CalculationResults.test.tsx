@@ -6,9 +6,11 @@ import userEvent from "@testing-library/user-event";
 import { measureCql } from "../../../groupCoverage/_mocks_/QdmMeasureCql";
 import { qdmCallStack } from "../../../groupCoverage/_mocks_/QdmCallStack";
 import { qdmCalculationResults } from "../../../groupCoverage/_mocks_/QdmCalculationResults";
+import { qdmCqlPopulationsDefinitions } from "../../../groupCoverage/_mocks_/QDMCqlPopulationDefinitions";
 import useCqlParsingService, {
   CqlParsingService,
 } from "../../../../../api/useCqlParsingService";
+import QdmGroupCoverage from "../../../groupCoverage/QdmGroupCoverage";
 
 jest.mock("@madie/madie-util", () => ({
   useOktaTokens: () => ({
@@ -287,5 +289,37 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     expect(screen.getByTestId("IP-highlighting")).toHaveTextContent(
       `define "Denominator": "Initial Population"`
     );
+  });
+
+  test("render highlighting view with coverage results for definitions, used and functions", async () => {
+    render(
+      <QdmGroupCoverage
+        testCaseGroups={groups}
+        cqlPopulationDefinitions={qdmCqlPopulationsDefinitions}
+        measureGroups={measureGroups}
+        calculationResults={qdmCalculationResults}
+      />
+    );
+
+    expect(screen.getByText("Population Criteria 1")).toBeInTheDocument();
+
+    await assertPopulationTabs();
+
+    const criteriaOptions = await getCriteriaOptions();
+    expect(criteriaOptions).toHaveLength(2);
+    userEvent.click(criteriaOptions[0]);
+
+    expect(await getByRole("IP")).toBeInTheDocument();
+    expect(screen.getByText("Definitions")).toBeInTheDocument();
+    expect(screen.getByText("Unused")).toBeInTheDocument();
+    expect(screen.getByText("Functions")).toBeInTheDocument();
+
+    const definitions = await getByRole("Definitions");
+    userEvent.click(definitions);
+    expect(screen.getAllByTestId("definitions-highlighting")).toHaveLength(4);
+
+    const unused = await getByRole("Unused");
+    userEvent.click(unused);
+    expect(screen.getAllByTestId("unused-highlighting")).toHaveLength(5);
   });
 });
