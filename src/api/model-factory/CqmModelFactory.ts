@@ -57,6 +57,7 @@ import {
   SubstanceRecommended,
   InterventionRecommended,
   PhysicalExamPerformed,
+  Observation,
 } from "cqm-models";
 
 export class CqmModelFactory {
@@ -179,6 +180,8 @@ export class CqmModelFactory {
         return new PhysicalExamPerformed();
       case "CommunicationNotPerformed":
         return new CommunicationPerformed();
+      case "Observation":
+        return new Observation();
       default:
         throw new Error(`Unsupported data type: ${modelName}`);
     }
