@@ -1,30 +1,30 @@
 import Dialog from "@mui/material/Dialog";
 import React, { useCallback, useRef, useState } from "react";
+import { CircularProgress, Divider } from "@mui/material";
 import {
-  Alert,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  Paper,
-} from "@mui/material";
-import Button from "@mui/material/Button";
+  Button,
+  Toast,
+  MadieDialog,
+} from "@madie/madie-design-system/dist/react";
 import {
   processPatientBundles,
   readImportFile,
 } from "../../../../util/FhirImportHelper";
 import { useDropzone } from "react-dropzone";
-import { Toast } from "@madie/madie-design-system/dist/react";
 import "./TestCaseImportDialog.css";
 import * as _ from "lodash";
 import useTestCaseServiceApi from "../../../../api/useTestCaseServiceApi";
 import { ScanValidationDto } from "../../../../api/models/ScanValidationDto";
 
-const TestCaseImportFromBonnieDialog = ({ open, handleClose, onImport }) => {
+const TestCaseImportFromBonnieDialog = ({
+  openDialog,
+  handleClose,
+  onImport,
+}) => {
   const [file, setFile] = useState(null);
-  const [fileInputKey, setFileInputKey] = useState(Math.random().toString(36));
   const [errorMessage, setErrorMessage] = useState(null);
   const [testCases, setTestCases] = useState([]);
+  const [uploadingFileSpinner, setUploadingFileSpinner] = useState(false);
   const testCaseService = useRef(useTestCaseServiceApi());
 
   // Toast utilities
@@ -40,13 +40,14 @@ const TestCaseImportFromBonnieDialog = ({ open, handleClose, onImport }) => {
     setToastOpen(true);
     setToastType("danger");
     setToastMessage(message);
+    setErrorMessage(message);
   };
 
   const onDrop = useCallback(async (acceptedFiles) => {
     setErrorMessage(() => null);
-    setFileInputKey(Math.random().toString(36));
     const importFile = acceptedFiles[0];
     let response: ScanValidationDto;
+    setUploadingFileSpinner(true);
     try {
       response = await testCaseService.current.scanImportFile(importFile);
     } catch (error) {
@@ -56,11 +57,13 @@ const TestCaseImportFromBonnieDialog = ({ open, handleClose, onImport }) => {
       return;
     }
     if (response.valid) {
+      setUploadingFileSpinner(false);
       setFile(importFile);
       let patientBundles;
       try {
         patientBundles = await readImportFile(importFile);
       } catch (error) {
+        setUploadingFileSpinner(false);
         showErrorToast(
           "An error occurred while processing the import file. Please try to regenerate the file and re-import, or contact the Help Desk."
         );
@@ -71,19 +74,24 @@ const TestCaseImportFromBonnieDialog = ({ open, handleClose, onImport }) => {
           const testCases = processPatientBundles(patientBundles);
           setTestCases(testCases);
         } catch (error) {
+          setUploadingFileSpinner(false);
           showErrorToast(
             "An error occurred while processing the patient bundles. Please try to regenerate the file and re-import, or contact the Help Desk."
           );
         }
       } else {
+        setUploadingFileSpinner(false);
         showErrorToast("No patients were found in the selected import file!");
       }
     } else {
+      setUploadingFileSpinner(false);
       showErrorToast(response.error.defaultMessage);
     }
   }, []);
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
+    noClick: true,
+    noDrag: false,
     maxFiles: 1,
     multiple: false,
     accept: {
@@ -91,26 +99,12 @@ const TestCaseImportFromBonnieDialog = ({ open, handleClose, onImport }) => {
     },
   });
 
-  const renderFileDrop = () => {
-    return (
-      <Paper style={{ padding: 20 }}>
-        <div
-          data-testid="file-drop-div"
-          {...getRootProps({ className: "dropzone" })}
-        >
-          <input
-            data-testid="file-drop-input"
-            key={fileInputKey}
-            {...getInputProps()}
-          />
-          {isDragActive ? (
-            <p>Drop the files here ...</p>
-          ) : (
-            <p>Drag 'n' drop some files here, or click to select files</p>
-          )}
-        </div>
-      </Paper>
-    );
+  const onClose = () => {
+    setUploadingFileSpinner(false);
+    setFile(null);
+    setErrorMessage(null);
+    setTestCases([]);
+    handleClose();
   };
 
   const renderFileContent = () => {
@@ -138,53 +132,73 @@ const TestCaseImportFromBonnieDialog = ({ open, handleClose, onImport }) => {
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      data-testid="test-case-import-dialog"
-      aria-labelledby="responsive-dialog-title"
-      fullWidth={true}
-      maxWidth="md"
+    <MadieDialog
+      title="Test Case Import"
+      dialogProps={{
+        onClose,
+        open: openDialog,
+        maxWidth: "md",
+        fullWidth: true,
+      }}
+      cancelButtonProps={{
+        variant: "secondary",
+        cancelText: "Cancel",
+        "data-testid": "test-case-import-cancel-btn",
+      }}
+      continueButtonProps={{
+        variant: "cyan",
+        type: "submit",
+        "data-testid": "test-case-import-import-btn",
+        disabled:
+          _.isNil(testCases) ||
+          testCases.length === 0 ||
+          !_.isEmpty(errorMessage),
+        continueText: "Import",
+        onClick: () => onImport(testCases),
+      }}
     >
-      <DialogTitle id="responsive-dialog-title">Test Case Import</DialogTitle>
-      <DialogContent>
-        <DialogContent>
-          <Alert severity="warning" style={{ marginBottom: 10 }}>
-            Please Note: Expected Values for group populations are not imported
-            and must be manually updated!
-          </Alert>
-          <div data-testid="test-case-import-error-div">
-            {errorMessage && <span>{errorMessage}</span>}
-          </div>
-          <div data-testid="test-case-import-content-div">
-            {file ? renderFileContent() : renderFileDrop()}
-          </div>
-        </DialogContent>
-      </DialogContent>
-      <DialogActions>
-        <Button
-          autoFocus
-          data-testid="test-case-import-cancel-btn"
-          onClick={() => {
-            setFile(null);
-            setErrorMessage(null);
-            setTestCases([]);
-            setFileInputKey(Math.random().toString(36));
-            handleClose();
-          }}
+      <small>
+        Newly uploaded test cases will replace existing test cases that have
+        matching IDs.
+      </small>
+      <div data-testid="test-case-import-content-div">
+        <div
+          data-testid="file-drop-div"
+          {...getRootProps({ className: "dropzone" })}
         >
-          Cancel
-        </Button>
-        <Button
-          onClick={() => onImport(testCases)}
-          autoFocus
-          data-testid="test-case-import-import-btn"
-          disabled={_.isNil(testCases) || testCases.length === 0}
-        >
-          Import
-        </Button>
-      </DialogActions>
-
+          <input data-testid="file-drop-input" {...getInputProps()} />
+          <span tw="text-black">Drag 'n' drop file to upload </span>
+          <span tw="pb-3" style={{ color: "#666666" }}>
+            {" "}
+            or{" "}
+          </span>
+          <Button
+            variant="outline-filled"
+            data-testid="select-file-button"
+            onClick={open}
+          >
+            Select File
+          </Button>
+          <span tw="pt-3" style={{ color: "#666666" }}>
+            (.json)
+          </span>
+        </div>
+        {testCases.length > 0 && renderFileContent()}
+        {uploadingFileSpinner && (
+          <div
+            tw="flex border border-l-4 mt-5 mx-16 mb-1"
+            data-testid="test-case-preview-header"
+          >
+            <div tw="flex items-center ml-80 my-4">
+              <CircularProgress size={32} />
+            </div>
+          </div>
+        )}
+      </div>
+      <div
+        tw="flex items-center ml-20"
+        data-testid="test-case-import-error-div"
+      ></div>
       <Toast
         toastKey="import-tests-toast"
         aria-live="polite"
@@ -198,7 +212,7 @@ const TestCaseImportFromBonnieDialog = ({ open, handleClose, onImport }) => {
         onClose={onToastClose}
         autoHideDuration={10000}
       />
-    </Dialog>
+    </MadieDialog>
   );
 };
 

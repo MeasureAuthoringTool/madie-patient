@@ -610,7 +610,7 @@ const TestCaseList = (props: TestCaseListProps) => {
         />
       )}
       <TestCaseImportFromBonnieDialog
-        open={importFromBonnieDialogState.open}
+        openDialog={importFromBonnieDialogState.open}
         onImport={onTestCaseImportFromBonnie}
         handleClose={() =>
           setImportFromBonnieDialogState({
