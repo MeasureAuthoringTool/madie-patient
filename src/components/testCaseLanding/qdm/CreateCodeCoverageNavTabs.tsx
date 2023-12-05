@@ -16,6 +16,7 @@ import { useFeatureFlags } from "@madie/madie-util";
 import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
 import RunTestButton from "../common/runTestsButton/RunTestsButton";
 import { disableRunTestButtonText } from "../../../util/Utils";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 
 export interface NavTabProps {
   activeTab: string;
@@ -30,6 +31,7 @@ export interface NavTabProps {
   coveragePercentage: number;
   validTestCases: TestCase[];
   selectedPopCriteria: Group;
+  onDeleteAllTestCases?: () => void;
 }
 
 const defaultStyle = {
@@ -60,6 +62,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     coveragePercentage,
     validTestCases,
     selectedPopCriteria,
+    onDeleteAllTestCases,
   } = props;
 
   const featureFlags = useFeatureFlags();
@@ -157,6 +160,18 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           />
         </Tabs>
         <div style={{ margin: "6px 0 0 auto", display: "flex" }}>
+          <Button
+              variant="danger-primary"
+              disabled={!canEdit || measure?.testCases?.length === 0}
+              onClick={() => onDeleteAllTestCases ? onDeleteAllTestCases() : null}
+              data-testid="delete-all-test-cases-button"
+          >
+            <KeyboardArrowRightIcon
+                style={{ margin: "0 5px 0 -2px" }}
+                fontSize="small"
+            />
+            Delete All
+          </Button>
           {featureFlags?.importTestCases && (
             <div>
               <Button
