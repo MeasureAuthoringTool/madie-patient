@@ -134,8 +134,8 @@ let importingTestCases = [];
 jest.mock(
   "../common/import/TestCaseImportFromBonnieDialogQDM",
   () =>
-    ({ open, handleClose, onImport }) => {
-      return open ? (
+    ({ openDialog, handleClose, onImport }) => {
+      return openDialog ? (
         <div data-testid="test-case-import-dialog">
           <button
             data-testid="test-case-import-cancel-btn"

@@ -441,7 +441,7 @@ const TestCaseList = (props: TestCaseListProps) => {
         </div>
       )}
       <TestCaseImportFromBonnieDialogQDM
-        open={importDialogState.open}
+        openDialog={importDialogState.open}
         onImport={onTestCaseImport}
         handleClose={() =>
           setImportDialogState({ ...importDialogState, open: false })

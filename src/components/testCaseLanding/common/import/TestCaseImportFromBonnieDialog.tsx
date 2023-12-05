@@ -95,7 +95,7 @@ const TestCaseImportFromBonnieDialog = ({
       showErrorToast(response.error.defaultMessage);
     }
   }, []);
-  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
+  const { getRootProps, getInputProps, open } = useDropzone({
     onDrop,
     noClick: true,
     noDrag: false,
