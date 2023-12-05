@@ -183,6 +183,7 @@ export class CqmModelFactory {
       case "Observation":
         return new Observation();
       default:
+        console.error(`Unsupported data type: ${modelName}`);
         throw new Error(`Unsupported data type: ${modelName}`);
     }
   }
