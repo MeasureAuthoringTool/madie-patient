@@ -1,5 +1,5 @@
 import Dialog from "@mui/material/Dialog";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { CircularProgress, Divider } from "@mui/material";
 import {
   Button,
@@ -35,6 +35,13 @@ const TestCaseImportFromBonnieDialog = ({
     setToastMessage("");
     setToastOpen(false);
   };
+
+  useEffect(() => {
+    if (!openDialog) {
+      setFile(null);
+      setTestCases([]);
+    }
+  }, [openDialog]);
 
   const showErrorToast = (message: string) => {
     setToastOpen(true);
@@ -183,7 +190,7 @@ const TestCaseImportFromBonnieDialog = ({
             (.json)
           </span>
         </div>
-        {testCases.length > 0 && renderFileContent()}
+        {file && renderFileContent()}
         {uploadingFileSpinner && (
           <div
             tw="flex border border-l-4 mt-5 mx-16 mb-1"
