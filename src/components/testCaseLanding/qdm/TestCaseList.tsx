@@ -17,7 +17,7 @@ import CreateNewTestCaseDialog from "../../createTestCase/CreateNewTestCaseDialo
 import {
   MadieDeleteDialog,
   MadieSpinner,
-  Toast
+  Toast,
 } from "@madie/madie-design-system/dist/react";
 import TestCaseListSideBarNav from "../common/TestCaseListSideBarNav";
 import Typography from "@mui/material/Typography";
@@ -105,7 +105,7 @@ const TestCaseList = (props: TestCaseListProps) => {
   const [coverageHTML, setCoverageHTML] = useState<Record<string, string>>();
   const [coveragePercentage, setCoveragePercentage] = useState<number>(0);
   const [openDeleteAllTestCasesDialog, setOpenDeleteAllTestCasesDialog] =
-      useState<boolean>(false);
+    useState<boolean>(false);
   const [testCasePassFailStats, setTestCasePassFailStats] =
     useState<TestCasesPassingDetailsProps>({
       passPercentage: undefined,
@@ -290,18 +290,18 @@ const TestCaseList = (props: TestCaseListProps) => {
   const deleteAllTestCases = () => {
     const currentTestCaseIds = _.map(measure.testCases, "id");
     testCaseService.current
-        .deleteTestCases(measureId, currentTestCaseIds)
-        .then(() => {
-          retrieveTestCases();
-          setOpenDeleteAllTestCasesDialog(false);
-          setToastOpen(true);
-          setToastType("success");
-          setToastMessage("Test cases successfully deleted");
-        })
-        .catch((err) => {
-          setOpenDeleteAllTestCasesDialog(false);
-          setErrors((prevState) => [...prevState, err?.response?.data?.message]);
-        });
+      .deleteTestCases(measureId, currentTestCaseIds)
+      .then(() => {
+        retrieveTestCases();
+        setOpenDeleteAllTestCasesDialog(false);
+        setToastOpen(true);
+        setToastType("success");
+        setToastMessage("Test cases successfully deleted");
+      })
+      .catch((err) => {
+        setOpenDeleteAllTestCasesDialog(false);
+        setErrors((prevState) => [...prevState, err?.response?.data?.message]);
+      });
   };
 
   const onTestCaseImport = async (testCases: TestCaseImportRequest[]) => {
@@ -359,12 +359,12 @@ const TestCaseList = (props: TestCaseListProps) => {
       {!loadingState.loading && (
         <>
           <Toast
-            toastKey="population-criteria-toast"
+            toastKey="test-case-list-toast"
             toastType={toastType}
             testId={
               toastType === "danger"
-                ? `population-criteria-error`
-                : `population-criteria-success`
+                ? `test-case-list-error`
+                : `test-case-list-success`
             }
             open={toastOpen}
             message={toastMessage}
@@ -402,7 +402,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                 validTestCases={testCases?.filter((tc) => tc.validResource)}
                 selectedPopCriteria={selectedPopCriteria}
                 onDeleteAllTestCases={() =>
-                    setOpenDeleteAllTestCasesDialog(true)
+                  setOpenDeleteAllTestCasesDialog(true)
                 }
               />
             </div>
@@ -478,15 +478,15 @@ const TestCaseList = (props: TestCaseListProps) => {
         </div>
       )}
       <MadieDeleteDialog
-          open={openDeleteAllTestCasesDialog}
-          onContinue={() => {
-            deleteAllTestCases();
-          }}
-          onClose={() => {
-            setOpenDeleteAllTestCasesDialog(false);
-          }}
-          dialogTitle="Delete All Test Cases"
-          name="All Test Cases"
+        open={openDeleteAllTestCasesDialog}
+        onContinue={() => {
+          deleteAllTestCases();
+        }}
+        onClose={() => {
+          setOpenDeleteAllTestCasesDialog(false);
+        }}
+        dialogTitle="Delete All Test Cases"
+        name="All Test Cases"
       />
       <TestCaseImportFromBonnieDialogQDM
         openDialog={importDialogState.open}

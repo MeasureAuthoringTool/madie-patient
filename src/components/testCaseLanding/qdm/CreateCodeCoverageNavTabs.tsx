@@ -159,48 +159,46 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
             value="coverage"
           />
         </Tabs>
-        <div style={{ margin: "6px 0 0 auto", display: "flex" }}>
+        <div style={{ margin: "6px 0 0 auto", display: "flex", gap: "10px" }}>
           <Button
-              variant="danger-primary"
-              disabled={!canEdit || measure?.testCases?.length === 0}
-              onClick={() => onDeleteAllTestCases ? onDeleteAllTestCases() : null}
-              data-testid="delete-all-test-cases-button"
+            variant="danger-primary"
+            disabled={!canEdit || measure?.testCases?.length === 0}
+            onClick={() =>
+              onDeleteAllTestCases ? onDeleteAllTestCases() : null
+            }
+            data-testid="delete-all-test-cases-button"
           >
             <KeyboardArrowRightIcon
-                style={{ margin: "0 5px 0 -2px" }}
-                fontSize="small"
+              style={{ margin: "0 5px 0 -2px" }}
+              fontSize="small"
             />
             Delete All
           </Button>
           {featureFlags?.importTestCases && (
-            <div>
-              <Button
-                onClick={() => {
-                  if (onImportTestCases) {
-                    onImportTestCases();
-                  }
-                }}
-                disabled={!canEdit}
-                data-testid="show-import-test-cases-button"
-              >
-                <FileUploadIcon
-                  style={{ margin: "0 5px 0 -2px" }}
-                  fontSize="small"
-                />
-                Import Test Cases
-              </Button>
-            </div>
-          )}
-          <div style={{ margin: "0 6px 0 26px" }}>
             <Button
+              onClick={() => {
+                if (onImportTestCases) {
+                  onImportTestCases();
+                }
+              }}
               disabled={!canEdit}
-              onClick={createNewTestCase}
-              data-testid="create-new-test-case-button"
+              data-testid="show-import-test-cases-button"
             >
-              <AddIcon style={{ margin: "0 5px 0 -2px" }} fontSize="small" />
-              New Test Case
+              <FileUploadIcon
+                style={{ margin: "0 5px 0 -2px" }}
+                fontSize="small"
+              />
+              Import Test Cases
             </Button>
-          </div>
+          )}
+          <Button
+            disabled={!canEdit}
+            onClick={createNewTestCase}
+            data-testid="create-new-test-case-button"
+          >
+            <AddIcon style={{ margin: "0 5px 0 -2px" }} fontSize="small" />
+            New Test Case
+          </Button>
           <RunTestButton
             hasErrors={hasErrors}
             isExecutionContextReady={executionContextReady}
