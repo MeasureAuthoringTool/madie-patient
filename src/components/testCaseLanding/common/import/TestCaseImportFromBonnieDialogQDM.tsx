@@ -51,6 +51,7 @@ const TestCaseImportFromBonnieDialogQDM = ({
     setErrorMessage(() => null);
     const importFile = acceptedFiles[0];
     let response: ScanValidationDto;
+    setUploadingFileSpinner(true);
     try {
       response = await testCaseService.current.scanImportFile(importFile);
     } catch (error) {
@@ -60,11 +61,13 @@ const TestCaseImportFromBonnieDialogQDM = ({
       return;
     }
     if (response.valid) {
+      setUploadingFileSpinner(false);
       setFile(importFile);
       let bonniePatients;
       try {
         bonniePatients = await readImportFile(importFile);
       } catch (error) {
+        setUploadingFileSpinner(false);
         showErrorToast(
           "An error occurred while processing the import file. Please try to regenerate the file and re-import, or contact the Help Desk."
         );
@@ -72,17 +75,21 @@ const TestCaseImportFromBonnieDialogQDM = ({
       }
       if (bonniePatients && bonniePatients.length > 0) {
         try {
+          setUploadingFileSpinner(false);
           const testCases = processPatientBundlesForQDM(bonniePatients);
           setTestCases(testCases);
         } catch (error) {
+          setUploadingFileSpinner(false);
           showErrorToast(
             "An error occurred while processing the patient bundles. Please try to regenerate the file and re-import, or contact the Help Desk."
           );
         }
       } else {
+        setUploadingFileSpinner(false);
         showErrorToast("No patients were found in the selected import file!");
       }
     } else {
+      setUploadingFileSpinner(false);
       showErrorToast(response.error.defaultMessage);
     }
   }, []);
