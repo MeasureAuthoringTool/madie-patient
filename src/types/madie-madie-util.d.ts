@@ -11,6 +11,7 @@ declare module "@madie/madie-util" {
 
   interface FeatureFlags {
     importTestCases: boolean;
+    qiCoreBonnieTestCases: boolean;
     qdmTestCases: boolean;
     qiCoreElementsTab: boolean;
     highlightingTabs: boolean;

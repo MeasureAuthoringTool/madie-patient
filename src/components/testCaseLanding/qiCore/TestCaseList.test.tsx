@@ -130,7 +130,7 @@ jest.mock("@madie/madie-util", () => ({
   checkUserCanEdit: jest.fn().mockImplementation(() => true),
   useFeatureFlags: jest.fn().mockImplementation(() => ({
     applyDefaults: false,
-    importTestCases: false,
+    qiCoreBonnieTestCases: false,
   })),
 }));
 
@@ -532,7 +532,7 @@ describe("TestCaseList component", () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
       applyDefaults: false,
-      importTestCases: false,
+      qiCoreBonnieTestCases: false,
     }));
     setError.mockClear();
 
@@ -1142,7 +1142,7 @@ describe("TestCaseList component", () => {
   it("should hide the button for import test cases from bonnie when feature is disabled", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      importTestCases: false,
+      qiCoreBonnieTestCases: false,
     }));
 
     renderTestCaseListComponent();
@@ -1155,7 +1155,7 @@ describe("TestCaseList component", () => {
   it("should have a disabled button for import test cases from bonnie when feature is enabled but user cannot edit", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => false);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      importTestCases: true,
+      qiCoreBonnieTestCases: true,
     }));
 
     renderTestCaseListComponent();
@@ -1169,7 +1169,7 @@ describe("TestCaseList component", () => {
   it("should have a enabled button for import test cases when feature is enabled and user can edit", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      importTestCases: true,
+      qiCoreBonnieTestCases: true,
     }));
 
     renderTestCaseListComponent();
@@ -1183,7 +1183,7 @@ describe("TestCaseList component", () => {
   it("should display import dialog when import button is clicked", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      importTestCases: true,
+      qiCoreBonnieTestCases: true,
     }));
 
     let nextState;
@@ -1215,7 +1215,7 @@ describe("TestCaseList component", () => {
   it("should display import error when createTestCases call fails", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      importTestCases: true,
+      qiCoreBonnieTestCases: true,
     }));
 
     const useTestCaseServiceMockRejected = {
@@ -1258,7 +1258,7 @@ describe("TestCaseList component", () => {
   it("should close import dialog when cancel button is clicked", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      importTestCases: true,
+      qiCoreBonnieTestCases: true,
     }));
 
     let nextState;
