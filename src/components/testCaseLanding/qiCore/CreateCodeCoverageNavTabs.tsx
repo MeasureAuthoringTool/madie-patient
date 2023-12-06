@@ -159,7 +159,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           <FileUploadIcon style={{ margin: "0 5px 0 -2px" }} fontSize="small" />
           Import Test Cases
         </Button>
-        {featureFlags?.importTestCases && (
+        {featureFlags?.qiCoreBonnieTestCases && (
           <Button
             onClick={() => {
               if (onImportTestCasesFromBonnie) {
