@@ -45,6 +45,7 @@ import qdmCalculationService, {
   QdmCalculationService,
 } from "../../../api/QdmCalculationService";
 import { measureCql } from "../../editTestCase/groupCoverage/_mocks_/QdmMeasureCql";
+import * as _ from "lodash";
 
 const mockScanResult: ScanValidationDto = {
   fileName: "testcaseExample.json",
@@ -131,6 +132,8 @@ jest.mock("@madie/madie-util", () => ({
 }));
 
 let importingTestCases = [];
+const mockOnImportTestCases = jest.fn();
+
 jest.mock(
   "../common/import/TestCaseImportFromBonnieDialogQDM",
   () =>
@@ -144,7 +147,8 @@ jest.mock(
             Cancel
           </button>
           <button
-            onClick={() => onImport(importingTestCases)}
+            onClick={() => mockOnImportTestCases(onImport)}
+            // onClick={() => onImport(importingTestCases)}
             data-testid="test-case-import-import-btn"
             type="button"
           >
@@ -457,6 +461,261 @@ const failingTestCaseResults = [
   },
 ] as TestCase[];
 
+const bonnieQdmTestCases = [
+  {
+    expectedValues: [
+      {
+        population_index: 0,
+        IPP: 1,
+        DENOM: 1,
+        DENEX: 1,
+        NUMER: 0,
+        NUMEX: 0,
+        DENOM_OBSERV: [],
+        NUMER_OBSERV: [],
+      },
+    ],
+    familyName: "DENEXPass",
+    givenNames: ["FirstAvgDrink3PerDayB4MPSecondDuringMP"],
+    notes:
+      "Female, 60 years and 6 months, qualifying encounter. Two drinks assessment both indicating 3 drinks per day. First started before MP and second during MP.",
+    provider_ids: [],
+    qdmPatient: {
+      birthDatetime: "1951-06-07T08:00:00.000+00:00",
+      dataElements: [
+        {
+          authorDatetime: null,
+          codeListId: "2.16.840.1.113883.3.464.1003.106.12.1018",
+          components: null,
+          dataElementCodes: [
+            {
+              code: "74013-4",
+              system: "2.16.840.1.113883.6.1",
+              version: null,
+              display: null,
+            },
+          ],
+          description:
+            "Assessment, Performed: Average Number of Drinks per Drinking Day",
+          hqmfOid: "2.16.840.1.113883.10.20.28.4.117",
+          id: "5ca37846b848466e402993ac",
+          interpretation: null,
+          method: null,
+          negationRationale: null,
+          qdmCategory: "assessment",
+          qdmStatus: "performed",
+          qdmTitle: "Assessment, Performed",
+          qdmVersion: "5.6",
+          reason: null,
+          relatedTo: null,
+          relevantDatetime: null,
+          relevantPeriod: {
+            low: "2011-12-31T23:50:00.000Z",
+            high: "2012-01-01T00:15:00.000Z",
+            lowClosed: true,
+            highClosed: true,
+          },
+          result: {
+            value: 3,
+            unit: "{drinks}/d",
+          },
+          _type: "QDM::AssessmentPerformed",
+        },
+        {
+          codeListId: "2.16.840.1.113762.1.4.1",
+          dataElementCodes: [
+            {
+              code: "F",
+              system: "2.16.840.1.113883.5.1",
+              version: null,
+              display: "Female",
+            },
+          ],
+          description: "Patient Characteristic Sex: ONCAdministrativeSex",
+          hqmfOid: "2.16.840.1.113883.10.20.28.4.55",
+          id: "65425f2eb869be15aad3fd6c",
+          qdmCategory: "patient_characteristic",
+          qdmStatus: "gender",
+          qdmTitle: "Patient Characteristic Sex",
+          qdmVersion: "5.6",
+          _type: "QDM::PatientCharacteristicSex",
+        },
+        {
+          birthDatetime: "1951-06-07T08:00:00.000+00:00",
+          codeListId: null,
+          dataElementCodes: [],
+          description: null,
+          hqmfOid: "2.16.840.1.113883.10.20.28.4.54",
+          id: "6542619439ef6200001d0b3e",
+          qdmCategory: "patient_characteristic",
+          qdmStatus: "birthdate",
+          qdmTitle: "Patient Characteristic Birthdate",
+          qdmVersion: "5.6",
+          _type: "QDM::PatientCharacteristicBirthdate",
+        },
+        {
+          codeListId: "2.16.840.1.114222.4.11.836",
+          dataElementCodes: [
+            {
+              code: "2106-3",
+              system: "2.16.840.1.113883.6.238",
+              version: null,
+              display: "White",
+            },
+          ],
+          description: "Patient Characteristic Race: Race",
+          hqmfOid: "2.16.840.1.113883.10.20.28.4.59",
+          id: "65425f2eb869be15aad3fd79",
+          qdmCategory: "patient_characteristic",
+          qdmStatus: "race",
+          qdmTitle: "Patient Characteristic Race",
+          qdmVersion: "5.6",
+          _type: "QDM::PatientCharacteristicRace",
+        },
+        {
+          codeListId: "2.16.840.1.114222.4.11.837",
+          dataElementCodes: [
+            {
+              code: "2186-5",
+              system: "2.16.840.1.113883.6.238",
+              version: null,
+              display: "Not Hispanic or Latino",
+            },
+          ],
+          description: "Patient Characteristic Ethnicity: Ethnicity",
+          hqmfOid: "2.16.840.1.113883.10.20.28.4.56",
+          id: "65425f2eb869be15aad3fd94",
+          qdmCategory: "patient_characteristic",
+          qdmStatus: "ethnicity",
+          qdmTitle: "Patient Characteristic Ethnicity",
+          qdmVersion: "5.6",
+          _type: "QDM::PatientCharacteristicEthnicity",
+        },
+      ],
+      extendedData: {
+        type: null,
+        is_shared: null,
+        origin_data: null,
+        test_id: null,
+        medical_record_number:
+          "ed7fd70767e203de5a4468033e956bad5ebbee5806026b11b93baf30c68bfc18",
+        medical_record_assigner: "Bonnie",
+        description: null,
+        description_category: null,
+        insurance_providers: "[]",
+      },
+      qdmVersion: "5.6",
+    },
+  },
+  {
+    expectedValues: [
+      {
+        population_index: 0,
+        IPP: 1,
+        DENOM: 0,
+        DENEX: 0,
+        NUMER: 0,
+        NUMEX: 0,
+        DENOM_OBSERV: [],
+        NUMER_OBSERV: [],
+      },
+    ],
+    familyName: "DENEXFail",
+    givenNames: ["FirstAvgDrink4PerDayB8MPSecondDuringMP"],
+    notes:
+      "Female, 60 years and 6 months, qualifying encounter. Two drinks assessment both indicating 3 drinks per day. First started before MP and second during MP.",
+    provider_ids: [],
+    qdmPatient: {
+      birthDatetime: "1951-06-07T08:00:00.000+00:00",
+      dataElements: [
+        {
+          codeListId: "2.16.840.1.113762.1.4.1",
+          dataElementCodes: [
+            {
+              code: "F",
+              system: "2.16.840.1.113883.5.1",
+              version: null,
+              display: "Female",
+            },
+          ],
+          description: "Patient Characteristic Sex: ONCAdministrativeSex",
+          hqmfOid: "2.16.840.1.113883.10.20.28.4.55",
+          id: "65425f2eb869be15aad3fd6c",
+          qdmCategory: "patient_characteristic",
+          qdmStatus: "gender",
+          qdmTitle: "Patient Characteristic Sex",
+          qdmVersion: "5.6",
+          _type: "QDM::PatientCharacteristicSex",
+        },
+        {
+          birthDatetime: "1951-06-07T08:00:00.000+00:00",
+          codeListId: null,
+          dataElementCodes: [],
+          description: null,
+          hqmfOid: "2.16.840.1.113883.10.20.28.4.54",
+          id: "6542619439ef6200001d0b3e",
+          qdmCategory: "patient_characteristic",
+          qdmStatus: "birthdate",
+          qdmTitle: "Patient Characteristic Birthdate",
+          qdmVersion: "5.6",
+          _type: "QDM::PatientCharacteristicBirthdate",
+        },
+        {
+          codeListId: "2.16.840.1.114222.4.11.836",
+          dataElementCodes: [
+            {
+              code: "2106-3",
+              system: "2.16.840.1.113883.6.238",
+              version: null,
+              display: "White",
+            },
+          ],
+          description: "Patient Characteristic Race: Race",
+          hqmfOid: "2.16.840.1.113883.10.20.28.4.59",
+          id: "65425f2eb869be15aad3fd79",
+          qdmCategory: "patient_characteristic",
+          qdmStatus: "race",
+          qdmTitle: "Patient Characteristic Race",
+          qdmVersion: "5.6",
+          _type: "QDM::PatientCharacteristicRace",
+        },
+        {
+          codeListId: "2.16.840.1.114222.4.11.837",
+          dataElementCodes: [
+            {
+              code: "2186-5",
+              system: "2.16.840.1.113883.6.238",
+              version: null,
+              display: "Not Hispanic or Latino",
+            },
+          ],
+          description: "Patient Characteristic Ethnicity: Ethnicity",
+          hqmfOid: "2.16.840.1.113883.10.20.28.4.56",
+          id: "65425f2eb869be15aad3fd94",
+          qdmCategory: "patient_characteristic",
+          qdmStatus: "ethnicity",
+          qdmTitle: "Patient Characteristic Ethnicity",
+          qdmVersion: "5.6",
+          _type: "QDM::PatientCharacteristicEthnicity",
+        },
+      ],
+      extendedData: {
+        type: null,
+        is_shared: null,
+        origin_data: null,
+        test_id: null,
+        medical_record_number:
+          "ed7fd70767e203de5a4468033e956bad5ebbee5806026b11b93baf30c68bfc18",
+        medical_record_assigner: "Bonnie",
+        description: null,
+        description_category: null,
+        insurance_providers: "[]",
+      },
+      qdmVersion: "5.6",
+    },
+  },
+];
+
 // mocking calculationService
 jest.mock("../../../api/CalculationService");
 const calculationServiceMock =
@@ -536,6 +795,9 @@ describe("TestCaseList component", () => {
     });
     useMeasureServiceMock.mockImplementation(() => {
       return useMeasureServiceMockResolved;
+    });
+    mockOnImportTestCases.mockImplementation((realOnImport) => {
+      realOnImport([]);
     });
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
@@ -1281,6 +1543,19 @@ describe("TestCaseList component", () => {
       nextState = callback([]);
     });
 
+    mockOnImportTestCases.mockImplementation((realOnImport) =>
+      realOnImport([
+        {
+          patientId: "patient1ID",
+          json: JSON.stringify(bonnieQdmTestCases[0]),
+        },
+        {
+          patientId: "patient2ID",
+          json: JSON.stringify(bonnieQdmTestCases[0]),
+        },
+      ])
+    );
+
     renderTestCaseListComponent();
     const showImportBtn = await screen.findByRole("button", {
       name: /import test cases/i,
@@ -1298,6 +1573,19 @@ describe("TestCaseList component", () => {
       userEvent.click(importBtn);
       expect(screen.getByText("(2) Test cases imported successfully"));
     });
+    expect(
+      useTestCaseServiceMockRejected.importTestCasesQDM
+    ).toHaveBeenCalled();
+    const importMockArgs = (
+      useTestCaseServiceMockRejected.importTestCasesQDM as jest.Mock
+    ).mock.calls[0];
+    const testCasesArg = importMockArgs[1];
+    expect(testCasesArg[0].patientId).toEqual("patient1ID");
+    expect(testCasesArg[0].json).toBeTruthy();
+    expect(JSON.parse(testCasesArg[0].json)?.qdmPatient?._id).toBeTruthy();
+    expect(testCasesArg[1].patientId).toEqual("patient2ID");
+    expect(testCasesArg[1].json).toBeTruthy();
+    expect(JSON.parse(testCasesArg[1].json)?.qdmPatient?._id).toBeTruthy();
   });
 
   it("should close import dialog when cancel button is clicked", async () => {
