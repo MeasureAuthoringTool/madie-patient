@@ -1322,7 +1322,7 @@ describe("TestCaseList component", () => {
       fireEvent.click(selectButton);
     });
     const exportButton = screen.getByTestId(
-      `export-test-case-${testCases[0].id}`
+      `export-collection-bundle-${testCases[0].id}`
     );
     fireEvent.click(exportButton);
 
@@ -1357,7 +1357,7 @@ describe("TestCaseList component", () => {
       fireEvent.click(selectButton);
     });
     const exportButton = screen.getByTestId(
-      `export-test-case-${testCases[0].id}`
+      `export-collection-bundle-${testCases[0].id}`
     );
     fireEvent.click(exportButton);
 
@@ -1400,7 +1400,7 @@ describe("TestCaseList component", () => {
       fireEvent.click(selectButton);
     });
     const exportButton = screen.getByTestId(
-      `export-test-case-${testCases[0].id}`
+      `export-collection-bundle-${testCases[0].id}`
     );
     fireEvent.click(exportButton);
 
@@ -1428,6 +1428,7 @@ describe("TestCaseList component", () => {
 
     const exportTestCasesButton = getByTestId("export-test-cases-button");
     fireEvent.click(exportTestCasesButton);
+    userEvent.click(screen.getByText("Collection Bundle"));
 
     await waitFor(() => {
       expect(
@@ -1437,9 +1438,7 @@ describe("TestCaseList component", () => {
   });
 
   it("should render options for exporting bundle types when Export Test Cases button is clicked", async () => {
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      exportQiCoreBundleType: true,
-    }));
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({}));
 
     const { getByTestId } = renderTestCaseListComponent();
     const codeCoverageTabs = await screen.findByTestId("code-coverage-tabs");
@@ -1484,6 +1483,7 @@ describe("TestCaseList component", () => {
 
     const exportTestCasesButton = getByTestId("export-test-cases-button");
     fireEvent.click(exportTestCasesButton);
+    userEvent.click(screen.getByText("Collection Bundle"));
 
     await waitFor(() => {
       expect(
@@ -1517,6 +1517,7 @@ describe("TestCaseList component", () => {
 
     const exportTestCasesButton = getByTestId("export-test-cases-button");
     fireEvent.click(exportTestCasesButton);
+    userEvent.click(screen.getByText("Collection Bundle"));
 
     await waitFor(() => {
       expect(
@@ -1554,6 +1555,7 @@ describe("TestCaseList component", () => {
 
     const exportTestCasesButton = getByTestId("export-test-cases-button");
     fireEvent.click(exportTestCasesButton);
+    userEvent.click(screen.getByText("Collection Bundle"));
 
     await waitFor(() => {
       expect(
