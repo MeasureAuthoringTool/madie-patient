@@ -229,8 +229,7 @@ const TestCase = ({
             >
               {viewOrEdit}
             </button>
-            {featureFlags?.exportQiCoreBundleType &&
-            measure.model.startsWith("QI-Core") ? (
+            {measure.model.startsWith("QI-Core") ? (
               <>
                 <button
                   id={`export-transaction-bundle-${testCase.id}`}

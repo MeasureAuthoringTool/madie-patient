@@ -290,6 +290,17 @@ const TestCaseList = (props: TestCaseListProps) => {
     }));
 
     try {
+      testCases = testCases?.map((testCase) => {
+        if (testCase?.json) {
+          const json = JSON.parse(testCase.json);
+          if (json.qdmPatient) {
+            json.qdmPatient = new QDMPatient(json.qdmPatient);
+            testCase.json = JSON.stringify(json);
+          }
+        }
+        return testCase;
+      });
+
       const res = await testCaseService.current.importTestCasesQDM(
         measureId,
         testCases
@@ -441,7 +452,7 @@ const TestCaseList = (props: TestCaseListProps) => {
         </div>
       )}
       <TestCaseImportFromBonnieDialogQDM
-        open={importDialogState.open}
+        openDialog={importDialogState.open}
         onImport={onTestCaseImport}
         handleClose={() =>
           setImportDialogState({ ...importDialogState, open: false })
