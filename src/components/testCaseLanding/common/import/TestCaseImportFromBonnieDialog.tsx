@@ -164,10 +164,6 @@ const TestCaseImportFromBonnieDialog = ({
         onClick: () => onImport(testCases),
       }}
     >
-      <small>
-        Newly uploaded test cases will replace existing test cases that have
-        matching IDs.
-      </small>
       <div data-testid="test-case-import-content-div">
         <div
           data-testid="file-drop-div"
