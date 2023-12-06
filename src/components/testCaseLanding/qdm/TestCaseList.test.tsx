@@ -1571,7 +1571,7 @@ describe("TestCaseList component", () => {
             familyName: "DENEXPass",
             givenNames: ["FirstAvgDrink3PerDayB4MPSecondDuringMP"],
             notes:
-                "Female, 60 years and 6 months, qualifying encounter. Two drinks assessment both indicating 3 drinks per day. First started before MP and second during MP.",
+              "Female, 60 years and 6 months, qualifying encounter. Two drinks assessment both indicating 3 drinks per day. First started before MP and second during MP.",
             provider_ids: [],
           }),
         },
