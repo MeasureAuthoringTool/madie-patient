@@ -978,6 +978,82 @@ describe("TestCaseList component", () => {
     expect(nextState).toEqual(["BAD THINGS"]);
   });
 
+  it("Should delete all existing test cases", async () => {
+    useTestCaseServiceMock.mockImplementation(() => {
+      return {
+        ...useTestCaseServiceMockResolved,
+        deleteTestCases: jest
+          .fn()
+          .mockResolvedValue("All Test cases are deleted successfully"),
+      } as unknown as TestCaseServiceApi;
+    });
+    renderTestCaseListComponent();
+
+    const table = await screen.findByTestId("test-case-tbl");
+    const tableRows = table.querySelectorAll("tbody tr");
+    expect(tableRows.length).toBe(3);
+
+    const deleteAllButton = screen.getByRole("button", { name: "Delete All" });
+    userEvent.click(deleteAllButton);
+    expect(screen.getByTestId("delete-dialog")).toBeInTheDocument();
+
+    const continueButton = screen.getByRole("button", { name: "Yes, Delete" });
+    userEvent.click(continueButton);
+
+    const toastMessage = await screen.findByTestId("test-case-list-success");
+    expect(toastMessage).toHaveTextContent("Test cases successfully deleted");
+    expect(screen.queryByTestId("delete-dialog-body")).toBeNull();
+  });
+
+  it("Should throw error message for delete all existing test cases", async () => {
+    useTestCaseServiceMock.mockReset().mockImplementation(() => {
+      return {
+        ...useTestCaseServiceMockResolved,
+        deleteTestCases: jest.fn().mockRejectedValue({
+          response: {
+            data: {
+              message: "Unable to delete test cases.",
+            },
+          },
+        }),
+      } as unknown as TestCaseServiceApi;
+    });
+
+    let nextState;
+    setError.mockImplementation((callback) => {
+      nextState = callback([]);
+    });
+
+    renderTestCaseListComponent();
+
+    const table = await screen.findByTestId("test-case-tbl");
+    const tableRows = table.querySelectorAll("tbody tr");
+    expect(tableRows.length).toBe(3);
+
+    const deleteAllButton = screen.getByRole("button", { name: "Delete All" });
+    userEvent.click(deleteAllButton);
+    expect(await screen.findByTestId("delete-dialog")).toBeInTheDocument();
+
+    const continueButton = screen.getByRole("button", { name: "Yes, Delete" });
+    userEvent.click(continueButton);
+
+    expect(screen.queryByTestId("delete-dialog-body")).toBeNull();
+
+    await waitFor(() => expect(setError).toHaveBeenCalled());
+    expect(nextState).toEqual(["Unable to delete test cases."]);
+  });
+
+  it("Should disable delete all button", async () => {
+    measure.testCases = [];
+    renderTestCaseListComponent();
+
+    expect(
+      await screen.findByRole("button", {
+        name: "Delete All",
+      })
+    ).toBeDisabled();
+  });
+
   it("should navigate to the Test Case details page on edit button click for shared user", async () => {
     const { getByTestId } = renderTestCaseListComponent();
     await waitFor(() => {
