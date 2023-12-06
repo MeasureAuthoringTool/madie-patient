@@ -1553,6 +1553,32 @@ describe("TestCaseList component", () => {
           patientId: "patient2ID",
           json: JSON.stringify(bonnieQdmTestCases[0]),
         },
+        {
+          patientId: "patient3ID",
+          json: JSON.stringify({
+            expectedValues: [
+              {
+                population_index: 0,
+                IPP: 1,
+                DENOM: 1,
+                DENEX: 1,
+                NUMER: 0,
+                NUMEX: 0,
+                DENOM_OBSERV: [],
+                NUMER_OBSERV: [],
+              },
+            ],
+            familyName: "DENEXPass",
+            givenNames: ["FirstAvgDrink3PerDayB4MPSecondDuringMP"],
+            notes:
+                "Female, 60 years and 6 months, qualifying encounter. Two drinks assessment both indicating 3 drinks per day. First started before MP and second during MP.",
+            provider_ids: [],
+          }),
+        },
+        {
+          patientId: "patient4ID",
+          json: null,
+        },
       ])
     );
 
@@ -1586,6 +1612,11 @@ describe("TestCaseList component", () => {
     expect(testCasesArg[1].patientId).toEqual("patient2ID");
     expect(testCasesArg[1].json).toBeTruthy();
     expect(JSON.parse(testCasesArg[1].json)?.qdmPatient?._id).toBeTruthy();
+    expect(testCasesArg[2].patientId).toEqual("patient3ID");
+    expect(testCasesArg[2].json).toBeTruthy();
+    expect(JSON.parse(testCasesArg[2].json)?.qdmPatient).toBeFalsy();
+    expect(testCasesArg[3].patientId).toEqual("patient4ID");
+    expect(testCasesArg[3].json).toBeFalsy();
   });
 
   it("should close import dialog when cancel button is clicked", async () => {
