@@ -47,7 +47,7 @@ describe("TestCaseImportFromBonnieDialogQDM", () => {
 
     render(
       <TestCaseImportFromBonnieDialogQDM
-        open={open}
+        openDialog={open}
         handleClose={handleClose}
         onImport={onImport}
       />
@@ -63,7 +63,7 @@ describe("TestCaseImportFromBonnieDialogQDM", () => {
 
     render(
       <TestCaseImportFromBonnieDialogQDM
-        open={open}
+        openDialog={open}
         handleClose={handleClose}
         onImport={onImport}
       />
@@ -82,7 +82,7 @@ describe("TestCaseImportFromBonnieDialogQDM", () => {
 
     render(
       <TestCaseImportFromBonnieDialogQDM
-        open={open}
+        openDialog={open}
         handleClose={handleClose}
         onImport={onImport}
       />
@@ -113,7 +113,7 @@ describe("TestCaseImportFromBonnieDialogQDM", () => {
 
     render(
       <TestCaseImportFromBonnieDialogQDM
-        open={open}
+        openDialog={open}
         handleClose={handleClose}
         onImport={onImport}
       />
@@ -152,7 +152,7 @@ describe("TestCaseImportFromBonnieDialogQDM", () => {
 
     render(
       <TestCaseImportFromBonnieDialogQDM
-        open={open}
+        openDialog={open}
         handleClose={handleClose}
         onImport={onImport}
       />
@@ -192,7 +192,7 @@ describe("TestCaseImportFromBonnieDialogQDM", () => {
 
     render(
       <TestCaseImportFromBonnieDialogQDM
-        open={open}
+        openDialog={open}
         handleClose={handleClose}
         onImport={onImport}
       />
@@ -239,7 +239,7 @@ describe("TestCaseImportFromBonnieDialogQDM", () => {
 
     render(
       <TestCaseImportFromBonnieDialogQDM
-        open={open}
+        openDialog={open}
         handleClose={handleClose}
         onImport={onImport}
       />

@@ -130,7 +130,7 @@ jest.mock("@madie/madie-util", () => ({
   checkUserCanEdit: jest.fn().mockImplementation(() => true),
   useFeatureFlags: jest.fn().mockImplementation(() => ({
     applyDefaults: false,
-    importTestCases: false,
+    qiCoreBonnieTestCases: false,
   })),
 }));
 
@@ -138,8 +138,8 @@ let importingTestCases = [];
 jest.mock(
   "../common/import/TestCaseImportFromBonnieDialog",
   () =>
-    ({ open, handleClose, onImport }) => {
-      return open ? (
+    ({ openDialog, handleClose, onImport }) => {
+      return openDialog ? (
         <div data-testid="test-case-import-dialog">
           <button
             data-testid="test-case-import-cancel-btn"
@@ -532,7 +532,7 @@ describe("TestCaseList component", () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
       applyDefaults: false,
-      importTestCases: false,
+      qiCoreBonnieTestCases: false,
     }));
     setError.mockClear();
 
@@ -1142,7 +1142,7 @@ describe("TestCaseList component", () => {
   it("should hide the button for import test cases from bonnie when feature is disabled", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      importTestCases: false,
+      qiCoreBonnieTestCases: false,
     }));
 
     renderTestCaseListComponent();
@@ -1155,7 +1155,7 @@ describe("TestCaseList component", () => {
   it("should have a disabled button for import test cases from bonnie when feature is enabled but user cannot edit", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => false);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      importTestCases: true,
+      qiCoreBonnieTestCases: true,
     }));
 
     renderTestCaseListComponent();
@@ -1169,7 +1169,7 @@ describe("TestCaseList component", () => {
   it("should have a enabled button for import test cases when feature is enabled and user can edit", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      importTestCases: true,
+      qiCoreBonnieTestCases: true,
     }));
 
     renderTestCaseListComponent();
@@ -1183,7 +1183,7 @@ describe("TestCaseList component", () => {
   it("should display import dialog when import button is clicked", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      importTestCases: true,
+      qiCoreBonnieTestCases: true,
     }));
 
     let nextState;
@@ -1215,7 +1215,7 @@ describe("TestCaseList component", () => {
   it("should display import error when createTestCases call fails", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      importTestCases: true,
+      qiCoreBonnieTestCases: true,
     }));
 
     const useTestCaseServiceMockRejected = {
@@ -1258,7 +1258,7 @@ describe("TestCaseList component", () => {
   it("should close import dialog when cancel button is clicked", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      importTestCases: true,
+      qiCoreBonnieTestCases: true,
     }));
 
     let nextState;
@@ -1322,7 +1322,7 @@ describe("TestCaseList component", () => {
       fireEvent.click(selectButton);
     });
     const exportButton = screen.getByTestId(
-      `export-test-case-${testCases[0].id}`
+      `export-collection-bundle-${testCases[0].id}`
     );
     fireEvent.click(exportButton);
 
@@ -1357,7 +1357,7 @@ describe("TestCaseList component", () => {
       fireEvent.click(selectButton);
     });
     const exportButton = screen.getByTestId(
-      `export-test-case-${testCases[0].id}`
+      `export-collection-bundle-${testCases[0].id}`
     );
     fireEvent.click(exportButton);
 
@@ -1400,7 +1400,7 @@ describe("TestCaseList component", () => {
       fireEvent.click(selectButton);
     });
     const exportButton = screen.getByTestId(
-      `export-test-case-${testCases[0].id}`
+      `export-collection-bundle-${testCases[0].id}`
     );
     fireEvent.click(exportButton);
 
@@ -1428,6 +1428,7 @@ describe("TestCaseList component", () => {
 
     const exportTestCasesButton = getByTestId("export-test-cases-button");
     fireEvent.click(exportTestCasesButton);
+    userEvent.click(screen.getByText("Collection Bundle"));
 
     await waitFor(() => {
       expect(
@@ -1437,9 +1438,7 @@ describe("TestCaseList component", () => {
   });
 
   it("should render options for exporting bundle types when Export Test Cases button is clicked", async () => {
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      exportQiCoreBundleType: true,
-    }));
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({}));
 
     const { getByTestId } = renderTestCaseListComponent();
     const codeCoverageTabs = await screen.findByTestId("code-coverage-tabs");
@@ -1484,6 +1483,7 @@ describe("TestCaseList component", () => {
 
     const exportTestCasesButton = getByTestId("export-test-cases-button");
     fireEvent.click(exportTestCasesButton);
+    userEvent.click(screen.getByText("Collection Bundle"));
 
     await waitFor(() => {
       expect(
@@ -1517,6 +1517,7 @@ describe("TestCaseList component", () => {
 
     const exportTestCasesButton = getByTestId("export-test-cases-button");
     fireEvent.click(exportTestCasesButton);
+    userEvent.click(screen.getByText("Collection Bundle"));
 
     await waitFor(() => {
       expect(
@@ -1554,6 +1555,7 @@ describe("TestCaseList component", () => {
 
     const exportTestCasesButton = getByTestId("export-test-cases-button");
     fireEvent.click(exportTestCasesButton);
+    userEvent.click(screen.getByText("Collection Bundle"));
 
     await waitFor(() => {
       expect(
