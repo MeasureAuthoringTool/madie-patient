@@ -31,7 +31,7 @@ export interface NavTabProps {
   coveragePercentage: number;
   validTestCases: TestCase[];
   selectedPopCriteria: Group;
-  onDeleteAllTestCases?: () => void;
+  onDeleteAllTestCases: () => void;
 }
 
 const defaultStyle = {
@@ -163,9 +163,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           <Button
             variant="danger-primary"
             disabled={!canEdit || measure?.testCases?.length === 0}
-            onClick={() =>
-              onDeleteAllTestCases ? onDeleteAllTestCases() : null
-            }
+            onClick={onDeleteAllTestCases}
             data-testid="delete-all-test-cases-button"
           >
             <KeyboardArrowRightIcon
