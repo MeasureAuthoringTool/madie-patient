@@ -47,10 +47,8 @@ describe("QuantityInput Component", () => {
     const quantityValueInput = screen.getByTestId("quantity-value-input-low");
     expect(quantityValueInput).toBeInTheDocument();
 
-    const quantityUnit = screen.getByTestId("quantity-unit-dropdown-low");
+    const quantityUnit = screen.getByTestId("quantity-unit-input-low");
     expect(quantityUnit).toBeInTheDocument();
-    const quantityUnitInput = screen.getByRole("combobox");
-    expect(quantityUnitInput).toBeInTheDocument();
   });
 
   test("Test change of value", () => {
@@ -71,11 +69,6 @@ describe("QuantityInput Component", () => {
     expect(quantityValueInput).toBeInTheDocument();
     expect(quantityValueInput.value).toBe("0");
     fireEvent.change(quantityValueInput, { target: { value: "10" } });
-
-    const quantityUnit = screen.getByTestId("quantity-unit-dropdown-quantity");
-    expect(quantityUnit).toBeInTheDocument();
-    const quantityUnitInput = screen.getByRole("combobox");
-    expect(quantityUnitInput).toBeInTheDocument();
   });
 
   test.skip("Should render quantity unit field with selected option", async () => {
@@ -97,72 +90,6 @@ describe("QuantityInput Component", () => {
         `${testValue.value.code} ${testValue.value.name}`
       );
     });
-  });
-
-  test("Should render ucum options on click", async () => {
-    const handleQuantityChange = jest.fn();
-    render(
-      <QuantityInput
-        canEdit={true}
-        quantity={testQuantity2}
-        label="test"
-        onQuantityChange={handleQuantityChange}
-      />
-    );
-    const autocomplete = screen.getByTestId("quantity-unit-dropdown-test");
-    const input = within(autocomplete).getByRole(
-      `combobox`
-    ) as HTMLInputElement;
-    autocomplete.click();
-    autocomplete.focus();
-    fireEvent.change(input, { target: { value: "wk" } });
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 0));
-    });
-    fireEvent.click(screen.getAllByRole("option")[1]);
-    fireEvent.change(input, { target: { value: "/wk per week" } });
-  });
-
-  test("test change unit to empty string", async () => {
-    render(
-      <QuantityInput
-        canEdit={true}
-        quantity={testQuantity}
-        label="test"
-        onQuantityChange={onQuantityChange}
-      />
-    );
-    const autocomplete = screen.getByTestId("quantity-unit-dropdown-test");
-    const input = within(autocomplete).getByRole(
-      "combobox"
-    ) as HTMLInputElement;
-    autocomplete.click();
-    autocomplete.focus();
-    fireEvent.change(input, { target: { value: "" } });
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 0));
-    });
-    expect(input.value).toEqual("");
-  });
-
-  test("should render No Options when input is invalid", async () => {
-    render(
-      <QuantityInput
-        canEdit={true}
-        quantity={testQuantity}
-        label="test"
-        onQuantityChange={onQuantityChange}
-      />
-    );
-    const autocomplete = screen.getByTestId("quantity-unit-dropdown-test");
-    const input = within(autocomplete).getByRole("combobox");
-    autocomplete.click();
-    autocomplete.focus();
-    fireEvent.change(input, { target: { value: "nooption" } });
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 0));
-    });
-    expect(screen.getByText("No options")).toBeInTheDocument();
   });
 
   test("should ignore - and non-quantity-valueber keys, number field behavior expexted", async () => {

@@ -66,22 +66,6 @@ describe("RatioInput Component", () => {
     ) as HTMLInputElement[];
     expect(valueInputNumerator[0].value).toBe("1");
     expect(valueInputDenominator[0].value).toBe("100");
-
-    const autocomplete = screen.getAllByTestId(
-      "quantity-unit-dropdown-numerator"
-    );
-    autocomplete.push(
-      ...screen.getAllByTestId("quantity-unit-dropdown-denominator")
-    );
-    expect(autocomplete.length).toBe(2);
-    const unitInputLow = within(autocomplete[0]).getByRole(
-      "combobox"
-    ) as HTMLInputElement;
-    expect(unitInputLow.value).not.toBeNull();
-    const unitInputHigh = within(autocomplete[1]).getByRole(
-      `combobox`
-    ) as HTMLInputElement;
-    expect(unitInputHigh.value).not.toBeNull();
   });
 
   it("test change quantity values", async () => {
@@ -145,30 +129,5 @@ describe("RatioInput Component", () => {
     ) as HTMLInputElement[];
     expect(valueInputNumerator[0].value).toBe("1");
     expect(valueInputDenominator[0].value).toBe("100");
-
-    const autocomplete = screen.getAllByTestId(
-      "quantity-unit-dropdown-numerator"
-    );
-    autocomplete.push(
-      ...screen.getAllByTestId("quantity-unit-dropdown-denominator")
-    );
-    expect(autocomplete.length).toBe(2);
-    const unitInputLow = within(autocomplete[0]).getByRole(
-      "combobox"
-    ) as HTMLInputElement;
-
-    const unitInputHigh = within(autocomplete[1]).getByRole(
-      "combobox"
-    ) as HTMLInputElement;
-
-    userEvent.click(autocomplete[0]);
-    userEvent.keyboard("wk week");
-    fireEvent.mouseDown(autocomplete[0]);
-    expect(unitInputLow.value).toEqual("wk week");
-
-    userEvent.click(autocomplete[1]);
-    userEvent.keyboard("a year");
-    fireEvent.mouseDown(autocomplete[1]);
-    expect(unitInputHigh.value).toEqual("a year");
   });
 });

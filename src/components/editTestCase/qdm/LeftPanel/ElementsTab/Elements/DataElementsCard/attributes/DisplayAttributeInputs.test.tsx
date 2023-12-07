@@ -263,26 +263,6 @@ describe("DisplayAttributeInputs component", () => {
       target: { value: 200 },
     });
     expect(inputHigh.value).toBe("200");
-
-    const autocomplete1 = screen.getByTestId("quantity-unit-dropdown-low");
-    const unitInputLow = within(autocomplete1).getByRole(
-      "combobox"
-    ) as HTMLInputElement;
-
-    userEvent.click(autocomplete1);
-    userEvent.keyboard("wk week");
-    fireEvent.mouseDown(autocomplete1);
-    expect(unitInputLow.value).toEqual("wk week");
-
-    const autocomplete2 = screen.getByTestId("quantity-unit-dropdown-high");
-    const unitInputHigh = within(autocomplete2).getByRole(
-      "combobox"
-    ) as HTMLInputElement;
-
-    userEvent.click(autocomplete2);
-    userEvent.keyboard("mg milligram");
-    fireEvent.mouseDown(autocomplete2);
-    expect(unitInputHigh.value).toEqual("mg milligram");
   });
 
   it("should render the Organization selector", async () => {

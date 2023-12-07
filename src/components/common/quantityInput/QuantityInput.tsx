@@ -1,8 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import {
-  AutoComplete,
-  TextField,
-} from "@madie/madie-design-system/dist/react/";
+import { TextField } from "@madie/madie-design-system/dist/react/";
 import "twin.macro";
 import "styled-components/macro";
 import { CQL } from "cqm-models";
@@ -110,6 +107,36 @@ const QuantityInput = ({
     setCurrentUnit(newValue);
   };
 
+  const [error, setError] = useState<String>();
+  const [helperText, setHelperText] = useState<String>();
+
+  const validate = (code) => {
+    if (code) {
+      var parseResp = ucum.UcumLhcUtils.getInstance().validateUnitString(
+        code,
+        true
+      );
+      if (parseResp.status === "valid") {
+        setHelperText(undefined);
+        setError(undefined);
+        return true;
+      } else {
+        //create a message from
+        if (parseResp?.suggestions) {
+          let errorMsg: string = parseResp.suggestions[0]?.msg + ": ";
+
+          parseResp.suggestions[0].units.forEach((value) => {
+            errorMsg += value[0] + ", ";
+          });
+          setError("true");
+          setHelperText(errorMsg);
+        } else {
+          setError("true");
+          setHelperText(parseResp.msg[0]);
+        }
+      }
+    }
+  };
   return (
     <div tw="flex flex-row">
       <div tw="w-28">
@@ -145,21 +172,25 @@ const QuantityInput = ({
         />
       </div>
       <div tw="w-56">
-        <AutoComplete
-          id={`quantity-unit-dropdown-${label.toLowerCase()}`}
+        <TextField
+          id={`quantity-unit-input-${label.toLowerCase()}`}
           disabled={!canEdit}
           label={"Unit"}
-          options={ucumOptions.map((option) => option.code + " " + option.name)}
-          data-testid={`quantity-unit-dropdown-${label.toLowerCase()}`}
+          error={error}
+          helperText={helperText}
+          data-testid={`quantity-unit-input-${label.toLowerCase()}`}
           placeholder="unit"
-          onChange={(event, newValue) => {
-            if (newValue) {
-              const find = ucumOptions.find(
-                (option) => option.code + ` ` + option.name === newValue
-              );
+          onChange={(event: any) => {
+            if (validate(event.target.value)) {
+              const label = `${event.target.value}`;
               const transformedResult = {
-                label: newValue,
-                value: find,
+                label,
+                value: {
+                  code: event.target.value,
+                  guidance: undefined,
+                  name: "",
+                  system: "https://clinicaltables.nlm.nih.gov/",
+                },
               };
               handleQuantityUnitChange(transformedResult);
             } else {
