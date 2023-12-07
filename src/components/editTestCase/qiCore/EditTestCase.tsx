@@ -240,7 +240,6 @@ const EditTestCase = (props: EditTestCaseProps) => {
     loaded: false,
     series: [],
   });
-  // const [expressionDefinitions, setExpressionDefinitions] = useState<Array<ExpressionDefinition>>([]);
   const [editor, setEditor] = useState<Ace.Editor>(null);
   function resizeEditor() {
     // hack to force Ace to resize as it doesn't seem to be responsive

@@ -21,9 +21,6 @@ export class CqlParsingService {
       );
       return response.data as unknown as CqlDefinitionCallstack;
     } catch (err) {
-      // if (err?.response?.status === 400) {
-      //   throw new Error(err.response.data.message);
-      // }
       const message = `Unable to retrieve used definition references`;
       throw new Error(message);
     }
