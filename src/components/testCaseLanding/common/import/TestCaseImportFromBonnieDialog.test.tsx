@@ -59,7 +59,7 @@ describe("TestCaseImportFromBonnieDialog", () => {
 
     render(
       <TestCaseImportFromBonnieDialog
-        open={open}
+        openDialog={open}
         handleClose={handleClose}
         onImport={onImport}
       />
@@ -75,7 +75,7 @@ describe("TestCaseImportFromBonnieDialog", () => {
 
     render(
       <TestCaseImportFromBonnieDialog
-        open={open}
+        openDialog={open}
         handleClose={handleClose}
         onImport={onImport}
       />
@@ -94,7 +94,7 @@ describe("TestCaseImportFromBonnieDialog", () => {
 
     render(
       <TestCaseImportFromBonnieDialog
-        open={open}
+        openDialog={open}
         handleClose={handleClose}
         onImport={onImport}
       />
@@ -137,7 +137,7 @@ describe("TestCaseImportFromBonnieDialog", () => {
 
     render(
       <TestCaseImportFromBonnieDialog
-        open={open}
+        openDialog={open}
         handleClose={handleClose}
         onImport={onImport}
       />
@@ -185,7 +185,7 @@ describe("TestCaseImportFromBonnieDialog", () => {
 
     render(
       <TestCaseImportFromBonnieDialog
-        open={open}
+        openDialog={open}
         handleClose={handleClose}
         onImport={onImport}
       />
@@ -237,7 +237,7 @@ describe("TestCaseImportFromBonnieDialog", () => {
 
     render(
       <TestCaseImportFromBonnieDialog
-        open={open}
+        openDialog={open}
         handleClose={handleClose}
         onImport={onImport}
       />
@@ -293,7 +293,7 @@ describe("TestCaseImportFromBonnieDialog", () => {
 
     render(
       <TestCaseImportFromBonnieDialog
-        open={open}
+        openDialog={open}
         handleClose={handleClose}
         onImport={onImport}
       />
@@ -352,7 +352,7 @@ describe("TestCaseImportFromBonnieDialog", () => {
 
     render(
       <TestCaseImportFromBonnieDialog
-        open={open}
+        openDialog={open}
         handleClose={handleClose}
         onImport={onImport}
       />
@@ -404,7 +404,7 @@ describe("TestCaseImportFromBonnieDialog", () => {
 
     render(
       <TestCaseImportFromBonnieDialog
-        open={open}
+        openDialog={open}
         handleClose={handleClose}
         onImport={onImport}
       />
@@ -447,7 +447,7 @@ describe("TestCaseImportFromBonnieDialog", () => {
 
     render(
       <TestCaseImportFromBonnieDialog
-        open={open}
+        openDialog={open}
         handleClose={handleClose}
         onImport={onImport}
       />

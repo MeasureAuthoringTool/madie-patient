@@ -159,7 +159,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           <FileUploadIcon style={{ margin: "0 5px 0 -2px" }} fontSize="small" />
           Import Test Cases
         </Button>
-        {featureFlags?.importTestCases && (
+        {featureFlags?.qiCoreBonnieTestCases && (
           <Button
             onClick={() => {
               if (onImportTestCasesFromBonnie) {
@@ -190,21 +190,15 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           onRunTests={executeTestCases}
         />
         <Button
-          variant={featureFlags?.exportQiCoreBundleType ? "outline" : "filled"}
+          variant={"outline"}
           className="export-bundle-button"
-          onClick={(e) => {
-            featureFlags?.exportQiCoreBundleType
-              ? handleOpen(e)
-              : exportTestCases("COLLECTION");
-          }}
+          onClick={handleOpen}
           data-testid="export-test-cases-button"
         >
           <div className="export-action">Export Test Cases</div>
-          {featureFlags?.exportQiCoreBundleType && (
-            <div className="export-chevron-container">
-              <ExpandMoreIcon />
-            </div>
-          )}
+          <div className="export-chevron-container">
+            <ExpandMoreIcon />
+          </div>
         </Button>
 
         <Popover

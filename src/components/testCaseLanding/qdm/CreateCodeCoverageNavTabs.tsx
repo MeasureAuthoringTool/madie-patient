@@ -16,6 +16,7 @@ import { useFeatureFlags } from "@madie/madie-util";
 import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
 import RunTestButton from "../common/runTestsButton/RunTestsButton";
 import { disableRunTestButtonText } from "../../../util/Utils";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 
 export interface NavTabProps {
   activeTab: string;
@@ -30,6 +31,7 @@ export interface NavTabProps {
   coveragePercentage: number;
   validTestCases: TestCase[];
   selectedPopCriteria: Group;
+  onDeleteAllTestCases: () => void;
 }
 
 const defaultStyle = {
@@ -60,6 +62,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     coveragePercentage,
     validTestCases,
     selectedPopCriteria,
+    onDeleteAllTestCases,
   } = props;
 
   const featureFlags = useFeatureFlags();
@@ -156,36 +159,44 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
             value="coverage"
           />
         </Tabs>
-        <div style={{ margin: "6px 0 0 auto", display: "flex" }}>
+        <div style={{ margin: "6px 0 0 auto", display: "flex", gap: "10px" }}>
+          <Button
+            variant="danger-primary"
+            disabled={!canEdit || measure?.testCases?.length === 0}
+            onClick={onDeleteAllTestCases}
+            data-testid="delete-all-test-cases-button"
+          >
+            <KeyboardArrowRightIcon
+              style={{ margin: "0 5px 0 -2px" }}
+              fontSize="small"
+            />
+            Delete All
+          </Button>
           {featureFlags?.importTestCases && (
-            <div>
-              <Button
-                onClick={() => {
-                  if (onImportTestCases) {
-                    onImportTestCases();
-                  }
-                }}
-                disabled={!canEdit}
-                data-testid="show-import-test-cases-button"
-              >
-                <FileUploadIcon
-                  style={{ margin: "0 5px 0 -2px" }}
-                  fontSize="small"
-                />
-                Import Test Cases
-              </Button>
-            </div>
-          )}
-          <div style={{ margin: "0 6px 0 26px" }}>
             <Button
+              onClick={() => {
+                if (onImportTestCases) {
+                  onImportTestCases();
+                }
+              }}
               disabled={!canEdit}
-              onClick={createNewTestCase}
-              data-testid="create-new-test-case-button"
+              data-testid="show-import-test-cases-button"
             >
-              <AddIcon style={{ margin: "0 5px 0 -2px" }} fontSize="small" />
-              New Test Case
+              <FileUploadIcon
+                style={{ margin: "0 5px 0 -2px" }}
+                fontSize="small"
+              />
+              Import Test Cases
             </Button>
-          </div>
+          )}
+          <Button
+            disabled={!canEdit}
+            onClick={createNewTestCase}
+            data-testid="create-new-test-case-button"
+          >
+            <AddIcon style={{ margin: "0 5px 0 -2px" }} fontSize="small" />
+            New Test Case
+          </Button>
           <RunTestButton
             hasErrors={hasErrors}
             isExecutionContextReady={executionContextReady}
