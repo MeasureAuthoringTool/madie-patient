@@ -14,6 +14,7 @@ import {
   PopulationSet,
   MeasurePeriod,
   ValueSet,
+  CodeSystem,
 } from "cqm-models";
 import { ServiceConfig } from "./ServiceContext";
 import useServiceConfig from "./useServiceConfig";
@@ -281,6 +282,9 @@ export class CqmConversionService {
     const elmJson = JSON.parse(elm);
     elmJson.library?.valueSets?.def.forEach((valueSet: ValueSet) => {
       valueSet.id = valueSet.id.replace("urn:oid:", "");
+    });
+    elmJson.library?.codeSystems?.def.forEach((codeSystem: CodeSystem) => {
+      codeSystem.id = codeSystem.id.replace("urn:oid:", "");
     });
     const cqlLibrary = new CQLLibrary();
     cqlLibrary.library_name = elmJson.library?.identifier.id;

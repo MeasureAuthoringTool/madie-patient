@@ -178,6 +178,32 @@ export const cqm_measure_basic = {
                   },
                 ],
               },
+              {
+                localId: "5",
+                locator: "9:1-9:55",
+                name: "SNOMEDCT",
+                id: "2.16.840.1.113883.6.96",
+                accessLevel: "Public",
+                annotation: [
+                  {
+                    type: "Annotation",
+                    s: {
+                      r: "5",
+                      s: [
+                        {
+                          value: [
+                            "",
+                            "codesystem ",
+                            '"SNOMEDCT"',
+                            ": ",
+                            "'urn:oid:2.16.840.1.113883.6.96'",
+                          ],
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
             ],
           },
           valueSets: {
