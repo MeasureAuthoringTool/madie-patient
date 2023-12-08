@@ -7,8 +7,10 @@ import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calcula
 import { MadieAlert } from "@madie/madie-design-system/dist/react";
 import { GroupPopulation, PopulationType } from "@madie/madie-models";
 import { useFeatureFlags } from "@madie/madie-util";
-import QiCoreGroupCoverage from "../../groupCoverage/QiCoreGroupCoverage";
 import { Relevance } from "fqm-execution";
+import QiCoreGroupCoverage, {
+  CqlDefinitionCallstack,
+} from "../../groupCoverage/QiCoreGroupCoverage";
 
 type ErrorProps = {
   status?: "success" | "warning" | "error" | "info" | "meta";
@@ -19,6 +21,7 @@ type CalculationResultType = {
   calculationResults: DetailedPopulationGroupResult[];
   calculationErrors: ErrorProps;
   groupPopulations: GroupPopulation[];
+  cqlDefinitionCallstack?: CqlDefinitionCallstack;
 };
 
 export interface MappedCalculationResults {
@@ -45,6 +48,7 @@ const CalculationResults = ({
   calculationResults,
   calculationErrors,
   groupPopulations,
+  cqlDefinitionCallstack = {},
 }: CalculationResultType) => {
   // template for group name coming from execution engine
   const originalGroupName = (name) => {
@@ -140,6 +144,7 @@ const CalculationResults = ({
         <QiCoreGroupCoverage
           groupPopulations={groupPopulations}
           mappedCalculationResults={mapCalculationResults(calculationResults)}
+          cqlDefinitionCallstack={cqlDefinitionCallstack}
         />
       )}
       {!featureFlags.highlightingTabs && coverageHtmls && (

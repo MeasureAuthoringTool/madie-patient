@@ -979,12 +979,13 @@ describe("TestCaseList component", () => {
   });
 
   it("Should delete all existing test cases", async () => {
+    const deleteTestCasesApiMock = jest
+      .fn()
+      .mockResolvedValue("All Test cases are deleted successfully");
     useTestCaseServiceMock.mockImplementation(() => {
       return {
         ...useTestCaseServiceMockResolved,
-        deleteTestCases: jest
-          .fn()
-          .mockResolvedValue("All Test cases are deleted successfully"),
+        deleteTestCases: deleteTestCasesApiMock,
       } as unknown as TestCaseServiceApi;
     });
     renderTestCaseListComponent();
@@ -1003,6 +1004,40 @@ describe("TestCaseList component", () => {
     const toastMessage = await screen.findByTestId("test-case-list-success");
     expect(toastMessage).toHaveTextContent("Test cases successfully deleted");
     expect(screen.queryByTestId("delete-dialog-body")).toBeNull();
+    expect(deleteTestCasesApiMock).toHaveBeenCalled();
+  });
+
+  it("Should hide delete all dialogue when cancel is clicked", async () => {
+    const deleteTestCasesApiMock = jest
+      .fn()
+      .mockResolvedValue("All Test cases are deleted successfully");
+    useTestCaseServiceMock.mockImplementation(() => {
+      return {
+        ...useTestCaseServiceMockResolved,
+        deleteTestCases: deleteTestCasesApiMock,
+      } as unknown as TestCaseServiceApi;
+    });
+    renderTestCaseListComponent();
+
+    const table = await screen.findByTestId("test-case-tbl");
+    const tableRows = table.querySelectorAll("tbody tr");
+    expect(tableRows.length).toBe(3);
+
+    const deleteAllButton = screen.getByRole("button", { name: "Delete All" });
+    userEvent.click(deleteAllButton);
+    expect(screen.getByTestId("delete-dialog")).toBeInTheDocument();
+    expect(screen.getByText("Yes, Delete")).toBeInTheDocument();
+
+    expect(screen.getByText("Delete All Test Cases")).toBeInTheDocument();
+    const cancelButton = screen.getByRole("button", { name: "Cancel" });
+    userEvent.click(cancelButton);
+
+    await waitFor(() =>
+      expect(
+        screen.queryByText("Delete All Test Cases")
+      ).not.toBeInTheDocument()
+    );
+    expect(deleteTestCasesApiMock).not.toHaveBeenCalled();
   });
 
   it("Should throw error message for delete all existing test cases", async () => {

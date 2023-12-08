@@ -75,6 +75,8 @@ import { Bundle } from "fhir/r4";
 import { Allotment } from "allotment";
 import ElementsTab from "./LeftPanel/ElementsTab/ElementsTab";
 import { QiCoreResourceProvider } from "../../../util/QiCorePatientProvider";
+import useCqlParsingService from "../../../api/useCqlParsingService";
+import { CqlDefinitionCallstack } from "../groupCoverage/QiCoreGroupCoverage";
 
 const TestCaseForm = tw.form`m-3`;
 const ValidationErrorsButton = tw.button`
@@ -205,6 +207,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
   // Avoid infinite dependency render. May require additional error handling for timeouts.
   const testCaseService = useRef(useTestCaseServiceApi());
   const calculation = useRef(calculationService());
+  const cqlParsingService = useRef(useCqlParsingService());
   const [alert, setAlert] = useState<AlertProps>(null);
   const { errors, setErrors } = props;
   if (!errors) {
@@ -261,6 +264,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
   const [groupPopulations, setGroupPopulations] = useState<GroupPopulation[]>(
     []
   );
+  const [callstackMap, setCallstackMap] = useState<CqlDefinitionCallstack>();
 
   const {
     measureState,
@@ -414,6 +418,17 @@ const EditTestCase = (props: EditTestCaseProps) => {
     if (id && _.isNil(testCase) && measure && load.current === 0) {
       load.current = +1;
       loadTestCase();
+    }
+
+    if (_.isNil(callstackMap) && measure?.cql) {
+      cqlParsingService.current
+        .getDefinitionCallstacks(measure.cql)
+        .then((callstack: CqlDefinitionCallstack) => {
+          setCallstackMap(callstack);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     }
   }, [
     id,
@@ -886,6 +901,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
                       calculationResults={populationGroupResults}
                       calculationErrors={calculationErrors}
                       groupPopulations={groupPopulations}
+                      cqlDefinitionCallstack={callstackMap}
                     />
                   )}
                 </div>
