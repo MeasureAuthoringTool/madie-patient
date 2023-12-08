@@ -20,38 +20,38 @@ export const RACE_CODE_OPTIONS: DataElementCode[] = [
   {
     code: "1002-5",
     display: "American Indian or Alaska Native",
-    version: "1.2",
-    system: "2.16.840.1.113883.6.238",
+    version: undefined,
+    system: "urn:oid:2.16.840.1.113883.6.238",
   },
   {
     code: "2028-9",
     display: "Asian",
-    version: "1.2",
-    system: "2.16.840.1.113883.6.238",
+    version: undefined,
+    system: "urn:oid:2.16.840.1.113883.6.238",
   },
   {
     code: "2054-5",
     display: "Black or African American",
-    version: "1.2",
-    system: "2.16.840.1.113883.6.238",
+    version: undefined,
+    system: "urn:oid:2.16.840.1.113883.6.238",
   },
   {
     code: "2076-8",
     display: "Native Hawaiian or Other Pacific Islander",
-    version: "1.2",
-    system: "2.16.840.1.113883.6.238",
+    version: undefined,
+    system: "urn:oid:2.16.840.1.113883.6.238",
   },
   {
     code: "2106-3",
     display: "White",
-    version: "1.2",
-    system: "2.16.840.1.113883.6.238",
+    version: undefined,
+    system: "urn:oid:2.16.840.1.113883.6.238",
   },
   {
     code: "2131-1",
     display: "Other Race",
-    version: "1.2",
-    system: "2.16.840.1.113883.6.238",
+    version: undefined,
+    system: "urn:oid:2.16.840.1.113883.6.238",
   },
 ];
 
@@ -59,14 +59,14 @@ export const GENDER_CODE_OPTIONS: DataElementCode[] = [
   {
     code: "F",
     display: "Female",
-    version: "2022-11",
-    system: "2.16.840.1.113883.5.1",
+    version: undefined,
+    system: "urn:oid:2.16.840.1.113883.5.1",
   },
   {
     code: "M",
     display: "Male",
-    version: "2022-11",
-    system: "2.16.840.1.113883.5.1",
+    version: undefined,
+    system: "urn:oid:2.16.840.1.113883.5.1",
   },
 ];
 
@@ -74,14 +74,14 @@ export const ETHNICITY_CODE_OPTIONS: DataElementCode[] = [
   {
     code: "2135-2",
     display: "Hispanic or Latino",
-    version: "1.2",
-    system: "2.16.840.1.113883.6.238",
+    version: undefined,
+    system: "urn:oid:2.16.840.1.113883.6.238",
   },
   {
     code: "2186-5",
     display: "Not Hispanic or Latino",
-    version: "1.2",
-    system: "2.16.840.1.113883.6.238",
+    version: undefined,
+    system: "urn:oid:2.16.840.1.113883.6.238",
   },
 ];
 
