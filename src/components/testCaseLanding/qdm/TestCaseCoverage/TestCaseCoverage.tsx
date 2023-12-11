@@ -22,7 +22,6 @@ const TestCaseCoverage = ({
       cqlParsingService.current
         .getAllDefinitionsAndFunctions(measureCql)
         .then((allDefinitionsAndFunctions: CqlDefinitionExpression[]) => {
-          console.log(allDefinitionsAndFunctions);
           setAllDefinitions(allDefinitionsAndFunctions);
         });
     }
