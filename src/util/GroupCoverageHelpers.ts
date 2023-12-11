@@ -25,6 +25,15 @@ export interface MappedCql {
   };
 }
 
+export interface CoverageMappedCql {
+  populationDefinitions: {
+    id: string;
+    [populationName: string]: string;
+  };
+  functions: QDMPopulationDefinition;
+  definitions: QDMPopulationDefinition;
+}
+
 export interface CqlDefinitionExpression {
   id?: string;
   definitionName: string;
@@ -129,14 +138,18 @@ export const mapCql = (
   }
 };
 
-export const mapCoverageCql = (measureCql: string, groupPopulations) => {
+export const mapCoverageCql = (
+  measureCql: string,
+  groupPopulations,
+  allDefinitions
+) => {
   const filteredPopulations = groupPopulations.populations.filter(
     (population) => population.definition
   );
   const result = { ...groupPopulations, populations: filteredPopulations };
   if (measureCql && result) {
     const definitions = new CqlAntlr(measureCql).parse().expressionDefinitions;
-    return result.populations.reduce((acc, population) => {
+    const populationDetails = result.populations.reduce((acc, population) => {
       const matchingDef = definitions.find(
         (def) => def.name.replace(/"/g, "") === population.definition
       );
@@ -146,5 +159,31 @@ export const mapCoverageCql = (measureCql: string, groupPopulations) => {
 
       return acc;
     }, {});
+
+    const functionDetails = allDefinitions
+      ?.filter((definition) => definition.function)
+      .reduce((result, definition) => {
+        result[definition.definitionName] = {
+          definitionLogic: definition.definitionLogic,
+          parentLibrary: definition.parentLibrary,
+        };
+        return result;
+      }, {});
+
+    const allDefinitionDetails = allDefinitions
+      ?.filter((definition) => !definition.function)
+      .reduce((result, definition) => {
+        result[definition.definitionName] = {
+          definitionLogic: definition.definitionLogic,
+          parentLibrary: definition.parentLibrary,
+        };
+        return result;
+      }, {});
+
+    return {
+      populationDefinitions: populationDetails,
+      functions: functionDetails,
+      definitions: allDefinitionDetails,
+    };
   }
 };
