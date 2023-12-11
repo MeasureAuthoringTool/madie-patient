@@ -4,7 +4,7 @@ import { officeVisitValueSet } from "./__mocks__/OfficeVisitValueSet";
 import { officeVisitMeasureBundle } from "./__mocks__/OfficeVisitMeasureBundle";
 import { cqm_measure_basic } from "../mockdata/qdm/CMS108/cqm_measure_basic";
 import { cqm_measure_basic_valueset } from "../mockdata/qdm/CMS108/cqm_measure_basic_valueset";
-import { Measure as CqmMeasure } from "cqm-models";
+import { Measure as CqmMeasure, ValueSet } from "cqm-models";
 import * as _ from "lodash";
 
 jest.mock("axios");
@@ -81,7 +81,7 @@ describe("TerminologyServiceApi Tests", () => {
 
     terminologyService
       .getQdmValueSetsExpansion(cqm_measure_basic)
-      .then((data) => {
+      .then((data: ValueSet[]) => {
         expect(data.length).toEqual(2);
         expect(data[0].display_name).toEqual("Encounter Inpatient");
         expect(data[0].oid).toEqual("2.16.840.1.113883.3.666.5.307");
@@ -136,15 +136,18 @@ describe("TerminologyServiceApi Tests", () => {
     const result = terminologyService.getCqlCodesForDRCs(cqm_measure_basic);
     expect(result.length).toBe(3);
 
-    expect(result[0].code).toBe("drc-bdb8b89536181a411ad034378b7ceef6");
-    expect(result[0].system).toBe("LOINC");
-    expect(result[0].display).toBe("Housing status");
-    expect(result[1].code).toBe("160734000");
-    expect(result[1].system).toBe("SNOMEDCT");
-    expect(result[1].display).toBe("Lives in a nursing home (finding)");
-    expect(result[2].code).toBe("98181-1");
-    expect(result[2].system).toBe("LOINC");
-    expect(result[2].display).toBe("Medical equipment used");
+    expect(result[0].cqlCode.code).toBe("drc-bdb8b89536181a411ad034378b7ceef6");
+    expect(result[0].cqlCode.system).toBe("LOINC");
+    expect(result[0].cqlCode.display).toBe("Housing status");
+    expect(result[0].codeSystemOid).toBe("2.16.840.1.113883.6.1");
+    expect(result[1].cqlCode.code).toBe("160734000");
+    expect(result[1].cqlCode.system).toBe("SNOMEDCT");
+    expect(result[1].cqlCode.display).toBe("Lives in a nursing home (finding)");
+    expect(result[1].codeSystemOid).toBe("2.16.840.1.113883.6.96");
+    expect(result[2].cqlCode.code).toBe("98181-1");
+    expect(result[2].cqlCode.system).toBe("LOINC");
+    expect(result[2].cqlCode.display).toBe("Medical equipment used");
+    expect(result[2].codeSystemOid).toBe("2.16.840.1.113883.6.1");
   });
 
   it("test getCqlCodesForDRCs no codes", () => {
@@ -161,7 +164,8 @@ describe("TerminologyServiceApi Tests", () => {
   });
 
   it("test getValueSetsForDRCs", () => {
-    const result = terminologyService.getValueSetsForDRCs(cqm_measure_basic);
+    const result: ValueSet[] =
+      terminologyService.getValueSetsForDRCs(cqm_measure_basic);
 
     expect(result.length).toBe(1);
 
@@ -171,6 +175,7 @@ describe("TerminologyServiceApi Tests", () => {
     );
     expect(result[0].concepts[0].code_system_name).toBe("LOINC");
     expect(result[0].concepts[0].display_name).toBe("Housing status");
+    expect(result[0].concepts[0].code_system_oid).toBe("2.16.840.1.113883.6.1");
   });
 
   it("test getValueSetsForDRCs no value sets", () => {
