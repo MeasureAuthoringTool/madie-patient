@@ -14,27 +14,12 @@ import { MappedCalculationResults } from "../qiCore/calculationResults/Calculati
 import { Relevance } from "fqm-execution/build/types/Enums";
 import GroupCoverageResultsSection from "./GroupCoverageResultsSection";
 import {
+  CqlDefinitionExpression,
   getFirstPopulation,
   getPopulationAbbreviation,
+  isPopulation,
 } from "../../../util/GroupCoverageHelpers";
 import "./QiCoreGroupCoverage.scss";
-
-export interface CqlDefinitionExpression {
-  id?: string;
-  definitionName: string;
-  definitionLogic: string;
-  context: string;
-  supplDataElement: boolean;
-  popDefinition: boolean;
-  commentString: string;
-  returnType: string | null;
-  parentLibrary: string | null;
-  libraryDisplayName: string | null;
-  libraryVersion: string | null;
-  function: boolean;
-  name: string;
-  logic: string;
-}
 
 export interface CqlDefinitionCallstack {
   [key: string]: Array<CqlDefinitionExpression>;
@@ -235,10 +220,6 @@ const QiCoreGroupCoverage = ({
     return Object.fromEntries(
       Object.entries(statementResults).filter(([key, value]) => filterFn(value))
     );
-  };
-
-  const isPopulation = (name: string) => {
-    return name !== "Functions" && name !== "Definitions" && name !== "Unused";
   };
 
   const onHighlightingNavTabClick = (selectedTab) => {
