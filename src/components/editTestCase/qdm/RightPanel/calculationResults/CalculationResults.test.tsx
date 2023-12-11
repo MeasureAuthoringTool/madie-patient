@@ -4,6 +4,27 @@ import CalculationResults from "./CalculationResults";
 import { GroupPopulation } from "@madie/madie-models";
 import userEvent from "@testing-library/user-event";
 import { measureCql } from "../../../groupCoverage/_mocks_/QdmMeasureCql";
+import { qdmCallStack } from "../../../groupCoverage/_mocks_/QdmCallStack";
+import { qdmCalculationResults } from "../../../groupCoverage/_mocks_/QdmCalculationResults";
+import { qdmCqlPopulationsDefinitions } from "../../../groupCoverage/_mocks_/QDMCqlPopulationDefinitions";
+import useCqlParsingService, {
+  CqlParsingService,
+} from "../../../../../api/useCqlParsingService";
+import QdmGroupCoverage from "../../../groupCoverage/QdmGroupCoverage";
+
+jest.mock("@madie/madie-util", () => ({
+  useOktaTokens: () => ({
+    getAccessToken: () => "test.jwt",
+  }),
+}));
+
+jest.mock("../../../../../api/useCqlParsingService");
+const useCqlParsingServiceMock =
+  useCqlParsingService as jest.Mock<CqlParsingService>;
+
+const useCqlParsingServiceMockResolved = {
+  getAllDefinitionsAndFunctions: jest.fn().mockResolvedValue(qdmCallStack),
+} as unknown as CqlParsingService;
 
 const groups = [
   {
@@ -151,7 +172,7 @@ const assertPopulationTabs = async () => {
 };
 
 const renderCoverageComponent = (
-  calculationResults = undefined,
+  calculationResults = { qdmCalculationResults },
   calculationErrors = undefined
 ) => {
   render(
@@ -166,8 +187,21 @@ const renderCoverageComponent = (
 };
 
 describe("CalculationResults with tabbed highlighting layout off", () => {
+  beforeEach(() => {
+    useCqlParsingServiceMock.mockImplementation(() => {
+      return useCqlParsingServiceMockResolved;
+    });
+  });
   test("display info message when test case has not been ran yet", () => {
-    renderCoverageComponent();
+    render(
+      <CalculationResults
+        calculationResults={null}
+        testCaseGroups={groups}
+        measureCql={measureCql}
+        measureGroups={measureGroups}
+        calculationErrors={null}
+      />
+    );
     expect(
       screen.getByText("To see the logic highlights, click 'Run Test'")
     ).toBeInTheDocument();
@@ -180,12 +214,17 @@ describe("CalculationResults with tabbed highlighting layout off", () => {
 });
 
 describe("CalculationResults with new tabbed highlighting layout on", () => {
+  beforeEach(() => {
+    useCqlParsingServiceMock.mockImplementation(() => {
+      return useCqlParsingServiceMockResolved;
+    });
+  });
   test("highlighting tab if no groups available", () => {
     render(
       <CalculationResults
         calculationResults={null}
         testCaseGroups={groups}
-        measureCql={""}
+        measureCql={measureCql}
         measureGroups={measureGroups}
         calculationErrors={null}
       />
@@ -211,6 +250,9 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     expect(await getByRole("IP 2")).toBeInTheDocument();
     expect(await getByRole("DENOM")).toBeInTheDocument();
     expect(await getByRole("NUMER")).toBeInTheDocument();
+    expect(screen.getByText("Definitions")).toBeInTheDocument();
+    expect(screen.getByText("Unused")).toBeInTheDocument();
+    expect(screen.getByText("Functions")).toBeInTheDocument();
   });
 
   test("render highlighting view with coverage results for 2 groups", async () => {
@@ -224,15 +266,19 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     const denom = await getByRole("DENOM");
     userEvent.click(denom);
     expect(screen.getByTestId("DENOM-highlighting")).toHaveTextContent(
-      `define "Initial Population": ["Encounter, Performed": "Emergency Department Visit"] //Encounter union ["Encounter, Performed": "Closed Head and Facial Trauma"] //Encounter union ["Encounter, Performed": "Dementia"]`
+      `Initial Population": "Inpatient Encounters`
     );
 
     // switch to numerator tab
     const numer = await getByRole("NUMER");
     userEvent.click(numer);
     expect(screen.getByTestId("NUMER-highlighting")).toHaveTextContent(
-      `define "Numerator": ["Encounter, Performed"] E where E.relevantPeriod starts during day of "Measurement Period"`
+      `define "Numerator": "Initial Population"`
     );
+
+    const functions = await getByRole("Functions");
+    userEvent.click(functions);
+    expect(screen.getAllByTestId("functions-highlighting")).toHaveLength(25);
 
     // select population criteria 2
     const criteriaOptions = await getCriteriaOptions();
@@ -243,5 +289,37 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     expect(screen.getByTestId("IP-highlighting")).toHaveTextContent(
       `define "Denominator": "Initial Population"`
     );
+  });
+
+  test("render highlighting view with coverage results for definitions, used and functions", async () => {
+    render(
+      <QdmGroupCoverage
+        testCaseGroups={groups}
+        cqlPopulationDefinitions={qdmCqlPopulationsDefinitions}
+        measureGroups={measureGroups}
+        calculationResults={qdmCalculationResults}
+      />
+    );
+
+    expect(screen.getByText("Population Criteria 1")).toBeInTheDocument();
+
+    await assertPopulationTabs();
+
+    const criteriaOptions = await getCriteriaOptions();
+    expect(criteriaOptions).toHaveLength(2);
+    userEvent.click(criteriaOptions[0]);
+
+    expect(await getByRole("IP")).toBeInTheDocument();
+    expect(screen.getByText("Definitions")).toBeInTheDocument();
+    expect(screen.getByText("Unused")).toBeInTheDocument();
+    expect(screen.getByText("Functions")).toBeInTheDocument();
+
+    const definitions = await getByRole("Definitions");
+    userEvent.click(definitions);
+    expect(screen.getAllByTestId("definitions-highlighting")).toHaveLength(4);
+
+    const unused = await getByRole("Unused");
+    userEvent.click(unused);
+    expect(screen.getAllByTestId("unused-highlighting")).toHaveLength(5);
   });
 });

@@ -8,12 +8,38 @@ export interface Population {
   criteriaReference?: string;
   name: PopulationType;
 }
+
+export interface QDMPopulationDefinition {
+  [definitionName: string]: {
+    definitionLogic: string;
+    parentLibrary: string;
+  };
+}
 export interface MappedCql {
   [groupId: string]: {
     populationDefinitions: {
       [populationName: string]: string;
     };
+    functions: QDMPopulationDefinition;
+    definitions: QDMPopulationDefinition;
   };
+}
+
+export interface CqlDefinitionExpression {
+  id?: string;
+  definitionName: string;
+  definitionLogic: string;
+  context: string;
+  supplDataElement: boolean;
+  popDefinition: boolean;
+  commentString: string;
+  returnType: string | null;
+  parentLibrary: string | null;
+  libraryDisplayName: string | null;
+  libraryVersion: string | null;
+  function: boolean;
+  name: string;
+  logic: string;
 }
 
 export const abbreviatedPopulations = {
@@ -46,7 +72,15 @@ export const getFirstPopulation = (group) => {
   };
 };
 
-export const mapCql = (measureCql: string, measureGroups): MappedCql => {
+export const isPopulation = (name: string) => {
+  return name !== "Functions" && name !== "Definitions" && name !== "Unused";
+};
+
+export const mapCql = (
+  measureCql: string,
+  measureGroups,
+  allDefinitions
+): MappedCql => {
   if (measureCql && measureGroups) {
     const definitions = new CqlAntlr(measureCql).parse().expressionDefinitions;
     return measureGroups.reduce((acc, group) => {
@@ -64,7 +98,32 @@ export const mapCql = (measureCql: string, measureGroups): MappedCql => {
         },
         {}
       );
-      acc[group.id] = { populationDefinitions: populationDetails };
+
+      const functionDetails = allDefinitions
+        ?.filter((definition) => definition.function)
+        .reduce((result, definition) => {
+          result[definition.definitionName] = {
+            definitionLogic: definition.definitionLogic,
+            parentLibrary: definition.parentLibrary,
+          };
+          return result;
+        }, {});
+
+      const allDefinitionDetails = allDefinitions
+        ?.filter((definition) => !definition.function)
+        .reduce((result, definition) => {
+          result[definition.definitionName] = {
+            definitionLogic: definition.definitionLogic,
+            parentLibrary: definition.parentLibrary,
+          };
+          return result;
+        }, {});
+
+      acc[group.id] = {
+        populationDefinitions: populationDetails,
+        functions: functionDetails,
+        definitions: allDefinitionDetails,
+      };
       return acc;
     }, {});
   }

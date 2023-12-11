@@ -36,6 +36,10 @@ import { MadieError } from "../../../util/Utils";
 import qdmCalculationService, {
   QdmCalculationService,
 } from "../../../api/QdmCalculationService";
+import useCqlParsingService, {
+  CqlParsingService,
+} from "../../../api/useCqlParsingService";
+import { qdmCallStack } from "../groupCoverage/_mocks_/QdmCallStack";
 
 const serviceConfig = {
   testCaseService: {
@@ -320,6 +324,14 @@ const qdmExecutionResults = {
   },
 };
 
+jest.mock("../../../api/useCqlParsingService");
+const useCqlParsingServiceMock =
+  useCqlParsingService as jest.Mock<CqlParsingService>;
+
+const useCqlParsingServiceMockResolved = {
+  getAllDefinitionsAndFunctions: jest.fn().mockResolvedValue(qdmCallStack),
+} as unknown as CqlParsingService;
+
 const mockProcessTestCaseResults = jest.fn().mockImplementation(() => {
   return {
     ...testCase,
@@ -416,6 +428,9 @@ describe("ElementsTab", () => {
   useTestCaseServiceMock.mockImplementation(() => {
     return useTestCaseServiceMockResolved;
   });
+  useCqlParsingServiceMock.mockImplementation(() => {
+    return useCqlParsingServiceMockResolved;
+  });
 
   test("Icons present and navigate correctly.", async () => {
     CQMConversionMock.mockImplementation(() => {
@@ -462,6 +477,9 @@ test("LeftPanel navigation works as expected.", async () => {
   CQMConversionMock.mockImplementation(() => {
     return useCqmConversionServiceMockResolved;
   });
+  useCqlParsingServiceMock.mockImplementation(() => {
+    return useCqlParsingServiceMockResolved;
+  });
   await waitFor(() => renderEditTestCaseComponent());
   const symptom = await findByTestId("elements-tab-symptom");
   await waitFor(() => {
@@ -500,6 +518,10 @@ describe("EditTestCase QDM Component", () => {
     CQMConversionMock.mockImplementation(() => {
       return useCqmConversionServiceMockResolved;
     });
+    useCqlParsingServiceMock.mockImplementation(() => {
+      return useCqlParsingServiceMockResolved;
+    });
+
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => {
       return {
         applyDefaults: mockApplyDefaults,

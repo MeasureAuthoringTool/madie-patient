@@ -18,6 +18,11 @@ type ValueSetsSearchCriteria = {
   valueSetParams: ValueSetSearchParams[];
 };
 
+type CQLCodeWithCodeSystemOid = {
+  cqlCode: CQL.CQLCode;
+  codeSystemOid: string;
+};
+
 export class TerminologyServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
 
@@ -173,9 +178,10 @@ export class TerminologyServiceApi {
 
   getValueSetsForDRCs(cqmMeasure: CqmMeasure): ValueSet[] {
     const drcValueSets = [];
-    const cqlCodes: CQL.CQLCode[] = this.getCqlCodesForDRCs(cqmMeasure);
-    if (cqlCodes) {
-      cqlCodes.forEach((cqlCode) => {
+    const cqlCodeWithCodeSystemOid: CQLCodeWithCodeSystemOid[] =
+      this.getCqlCodesForDRCs(cqmMeasure);
+    if (cqlCodeWithCodeSystemOid) {
+      cqlCodeWithCodeSystemOid.forEach(({ cqlCode, codeSystemOid }) => {
         const drcOid = this.getDrcOid(cqmMeasure, cqlCode.code);
         if (drcOid) {
           const valueSet = {
@@ -184,7 +190,7 @@ export class TerminologyServiceApi {
             concepts: [
               {
                 code: cqlCode.code,
-                code_system_oid: cqlCode.system,
+                code_system_oid: codeSystemOid,
                 code_system_name: cqlCode.system,
                 code_system_version: cqlCode.version,
                 display_name: cqlCode.display,
@@ -199,23 +205,31 @@ export class TerminologyServiceApi {
     return drcValueSets;
   }
 
-  getCqlCodesForDRCs(cqmMeasure: CqmMeasure): CQL.CQLCode[] {
-    const cqlCodes: CQL.CQLCode[] = [];
+  getCqlCodesForDRCs(cqmMeasure: CqmMeasure): CQLCodeWithCodeSystemOid[] {
+    const cqlCodeWithCodeSystemOid: CQLCodeWithCodeSystemOid[] = [];
     cqmMeasure?.cql_libraries?.forEach((library) => {
       const codeDefs = library?.elm?.library?.codes?.def;
+      const codeSystemDefs = library?.elm?.library?.codeSystems?.def;
       if (!_.isEmpty(codeDefs)) {
         codeDefs.forEach((def) => {
+          // find associated CodeSystem for this code, so that we can get codeSystem oid
+          const codeSystem = codeSystemDefs.find(
+            (cs) => cs.name === def.codeSystem.name
+          );
           const cqlCode = new CQL.Code(
             def?.id, //code
             def.codeSystem.name, //system
             "N/A", //version,
             def.display //display
           );
-          cqlCodes.push(cqlCode);
+          cqlCodeWithCodeSystemOid.push({
+            cqlCode: cqlCode,
+            codeSystemOid: codeSystem.id,
+          });
         });
       }
     });
-    return cqlCodes;
+    return cqlCodeWithCodeSystemOid;
   }
 
   getDrcOid(cqmMeasure: CqmMeasure, code: string): string {

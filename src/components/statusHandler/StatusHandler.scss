@@ -36,10 +36,12 @@
   }
 }
 
-ul {
-  list-style: disc !important;
-  list-style-position: inside !important;
-  > li::marker {
-    font-size: 1rem;
+#status-handler {
+  ul {
+    list-style: disc !important;
+    list-style-position: inside !important;
+    > li::marker {
+      font-size: 1rem;
+    }
   }
 }
