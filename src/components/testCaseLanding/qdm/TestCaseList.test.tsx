@@ -44,8 +44,8 @@ import { ValueSet } from "cqm-models";
 import qdmCalculationService, {
   QdmCalculationService,
 } from "../../../api/QdmCalculationService";
-import { measureCql } from "../../editTestCase/groupCoverage/_mocks_/QdmMeasureCql";
 import * as _ from "lodash";
+import { measureCql } from "../../editTestCase/groupCoverage/_mocks_/QdmCovergaeMeasureCql";
 
 const mockScanResult: ScanValidationDto = {
   fileName: "testcaseExample.json",
