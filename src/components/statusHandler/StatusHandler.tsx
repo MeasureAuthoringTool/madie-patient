@@ -39,7 +39,7 @@ const StatusHandler = ({
         );
       } else if (withoutDuplicates.length > 1) {
         const mappedMessages = withoutDuplicates.map(
-          (em: string, index: number) => <ol key={index}>{em}</ol>
+          (em: string, index: number) => <li key={index}>{em}</li>
         );
         return (
           <div id="status-handler">
