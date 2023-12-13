@@ -1,13 +1,13 @@
 import React from "react";
 interface Props {
   population: string;
-  populationText;
+  definitionText: any;
 }
 import { Accordion } from "@madie/madie-design-system/dist/react";
 import "twin.macro";
 import "styled-components/macro";
 
-const CoverageTab = ({ population, populationText }: Props) => {
+const CoverageTab = ({ population, definitionText }: Props) => {
   return population !== "Functions" &&
     population !== "Used" &&
     population !== "Unused" ? (
@@ -17,7 +17,7 @@ const CoverageTab = ({ population, populationText }: Props) => {
     >
       <Accordion title={population} isOpen={false}>
         <pre data-testId={`${population}-population-text`}>
-          {populationText.text}
+          {definitionText.text}
         </pre>
       </Accordion>
     </div>
@@ -27,9 +27,9 @@ const CoverageTab = ({ population, populationText }: Props) => {
       data-testid={`${population}-definition`}
     >
       <Accordion title={population} isOpen={false}>
-        {populationText ? (
+        {definitionText ? (
           <div data-testId={`${population}-definition-text`}>
-            {Object.values(populationText).map((item: any) => (
+            {Object.values(definitionText)?.map((item: any) => (
               <pre>{item?.definitionLogic}</pre>
             ))}
           </div>

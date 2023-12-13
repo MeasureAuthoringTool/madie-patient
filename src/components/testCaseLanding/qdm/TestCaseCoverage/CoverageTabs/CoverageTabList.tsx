@@ -36,11 +36,11 @@ const CoverageTabList = ({
   const filterBasedOnDefinitionCategories = (definitionType) => {
     const definitionNames = [
       ...new Set(
-        Object.values(calculationOutput).flatMap((testCases) =>
-          Object.values(testCases).flatMap((testCaseCalculationResult) =>
-            Object.values(testCaseCalculationResult.statement_results).flatMap(
+        Object.values(calculationOutput)?.flatMap((testCases) =>
+          Object.values(testCases)?.flatMap((testCaseCalculationResult) =>
+            Object.values(testCaseCalculationResult.statement_results)?.flatMap(
               (statementResult) =>
-                Object.keys(statementResult).filter((definitionName) =>
+                Object.keys(statementResult)?.filter((definitionName) =>
                   getDefintionCategoryFilteringCondition(
                     definitionType,
                     statementResult,
@@ -94,7 +94,7 @@ const CoverageTabList = ({
                 pop.name,
                 i
               )}
-              populationText={mappedCql.populationDefinitions[pop.name]}
+              definitionText={mappedCql?.populationDefinitions[pop?.name]}
             />
           );
         })}
@@ -104,7 +104,7 @@ const CoverageTabList = ({
           <CoverageTab
             key={i}
             population={definition}
-            populationText={getDefinitionResults(definition)}
+            definitionText={getDefinitionResults(definition)}
           />
         );
       })}

@@ -164,8 +164,8 @@ export const mapCoverageCql = (
       ?.filter((definition) => definition.function)
       .reduce((result, definition) => {
         result[definition.definitionName] = {
-          definitionLogic: definition.definitionLogic,
-          parentLibrary: definition.parentLibrary,
+          definitionLogic: definition?.definitionLogic,
+          parentLibrary: definition?.parentLibrary,
         };
         return result;
       }, {});
@@ -174,8 +174,8 @@ export const mapCoverageCql = (
       ?.filter((definition) => !definition.function)
       .reduce((result, definition) => {
         result[definition.definitionName] = {
-          definitionLogic: definition.definitionLogic,
-          parentLibrary: definition.parentLibrary,
+          definitionLogic: definition?.definitionLogic,
+          parentLibrary: definition?.parentLibrary,
         };
         return result;
       }, {});
