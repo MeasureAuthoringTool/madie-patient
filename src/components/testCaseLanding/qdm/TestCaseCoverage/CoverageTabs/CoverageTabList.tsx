@@ -1,13 +1,13 @@
 import React from "react";
-import CoverageTab from "./CoverageTab";
-
-import { CoverageMappedCql } from "../../../../../util/GroupCoverageHelpers";
 import "twin.macro";
 import "styled-components/macro";
+import CoverageTab from "./CoverageTab";
+import { CoverageMappedCql } from "../../../../../util/GroupCoverageHelpers";
+import { CqmExecutionResultsByPatient } from "../../../../../api/QdmCalculationService";
 interface Props {
   populationCriteria: any;
   mappedCql: CoverageMappedCql;
-  calculationOutput: any;
+  calculationOutput: CqmExecutionResultsByPatient;
 }
 
 const allDefinitions = ["Used", "Functions", "Unused"];

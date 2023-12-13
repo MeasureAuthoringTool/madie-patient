@@ -1700,7 +1700,7 @@ describe("TestCaseList component", () => {
     expect(screen.getByTestId("test-case-tbl")).toBeInTheDocument();
   });
 
-  it.only("accordions for cql parts", async () => {
+  it("accordions for cql parts", async () => {
     measure.createdBy = MEASURE_CREATEDBY;
     renderTestCaseListComponent();
     const table = await screen.findByTestId("test-case-tbl");
