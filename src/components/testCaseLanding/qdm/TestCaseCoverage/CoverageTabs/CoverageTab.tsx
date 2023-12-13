@@ -11,23 +11,31 @@ const CoverageTab = ({ population, populationText }: Props) => {
   return population !== "Functions" &&
     population !== "Used" &&
     population !== "Unused" ? (
-    <div style={{ maxWidth: "1300px" }}>
-      <Accordion title={population} isOpen={true}>
-        <pre>{populationText.text}</pre>
+    <div
+      style={{ maxWidth: "1300px" }}
+      data-testid={`${population}-population`}
+    >
+      <Accordion title={population} isOpen={false}>
+        <pre data-testId={`${population}-population-text`}>
+          {populationText.text}
+        </pre>
       </Accordion>
     </div>
   ) : (
-    <div style={{ maxWidth: "1300px" }}>
-      <Accordion title={population} isOpen={true}>
-        {populationText
-          ? Object.values(populationText).map((item: any) => (
-              <pre>
-                <div style={{ maxWidth: "1300px", overflowWrap: "break-word" }}>
-                  {item?.definitionLogic}
-                </div>
-              </pre>
-            ))
-          : "No Results Available"}
+    <div
+      style={{ maxWidth: "1300px" }}
+      data-testid={`${population}-definition`}
+    >
+      <Accordion title={population} isOpen={false}>
+        {populationText ? (
+          <div data-testId={`${population}-definition-text`}>
+            {Object.values(populationText).map((item: any) => (
+              <pre>{item?.definitionLogic}</pre>
+            ))}
+          </div>
+        ) : (
+          "No Results Available"
+        )}
       </Accordion>
     </div>
   );

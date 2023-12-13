@@ -142,7 +142,7 @@ export const mapCoverageCql = (
   measureCql: string,
   groupPopulations,
   allDefinitions
-) => {
+): CoverageMappedCql => {
   const filteredPopulations = groupPopulations.populations.filter(
     (population) => population.definition
   );

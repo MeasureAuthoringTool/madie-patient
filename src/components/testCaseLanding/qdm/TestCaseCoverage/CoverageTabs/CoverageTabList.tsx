@@ -1,10 +1,7 @@
 import React from "react";
 import CoverageTab from "./CoverageTab";
 
-import {
-  CoverageMappedCql,
-  MappedCql,
-} from "../../../../../util/GroupCoverageHelpers";
+import { CoverageMappedCql } from "../../../../../util/GroupCoverageHelpers";
 import "twin.macro";
 import "styled-components/macro";
 interface Props {
@@ -13,14 +10,55 @@ interface Props {
   calculationOutput: any;
 }
 
+const allDefinitions = ["Used", "Functions", "Unused"];
+
 const CoverageTabList = ({
   populationCriteria,
   mappedCql,
   calculationOutput,
 }: Props) => {
-  const allDefinitions = ["Used", "Functions", "Unused"];
+  const getDefintionCategoryFilteringCondition = (
+    definitionType,
+    statementResult,
+    definitionName
+  ) => {
+    if (definitionType === "Used") {
+      return statementResult[definitionName].relevance !== "NA";
+    }
+    if (definitionType === "Unused") {
+      return statementResult[definitionName].relevance === "NA";
+    }
+  };
 
-  const test = (definitionType) => {
+  const filterBasedOnDefinitionCategories = (definitionType) => {
+    const definitionNames = [
+      ...new Set(
+        Object.values(calculationOutput).flatMap((testCases) =>
+          Object.values(testCases).flatMap((testCaseCalculationResult) =>
+            Object.values(testCaseCalculationResult.statement_results).flatMap(
+              (statementResult) =>
+                Object.keys(statementResult).filter((definitionName) =>
+                  getDefintionCategoryFilteringCondition(
+                    definitionType,
+                    statementResult,
+                    definitionName
+                  )
+                )
+            )
+          )
+        )
+      ),
+    ];
+
+    return definitionNames.reduce((acc, definitionName) => {
+      if (mappedCql.definitions[definitionName]) {
+        acc[definitionName] = mappedCql.definitions[definitionName];
+      }
+      return acc;
+    }, {});
+  };
+
+  const getDefinitionResults = (definitionType) => {
     if (
       mappedCql &&
       mappedCql.functions &&
@@ -31,54 +69,10 @@ const CoverageTabList = ({
         return mappedCql.functions;
       }
       if (definitionType === "Unused") {
-        const uniqueUsedDefinitionNames = [
-          ...new Set(
-            Object.values(calculationOutput).flatMap((record) =>
-              Object.values(record).flatMap((subRecord) =>
-                Object.values(subRecord.statement_results).flatMap(
-                  (innerRecord) =>
-                    Object.keys(innerRecord).filter(
-                      (key) => innerRecord[key].relevance === "NA"
-                    )
-                )
-              )
-            )
-          ),
-        ];
-
-        const result = uniqueUsedDefinitionNames.reduce((acc, key) => {
-          if (mappedCql.definitions[key]) {
-            acc[key] = mappedCql.definitions[key];
-          }
-          return acc;
-        }, {});
-
-        return result;
+        return filterBasedOnDefinitionCategories(definitionType);
       }
       if (definitionType === "Used") {
-        const uniqueUsedDefinitionNames = [
-          ...new Set(
-            Object.values(calculationOutput).flatMap((record) =>
-              Object.values(record).flatMap((subRecord) =>
-                Object.values(subRecord.statement_results).flatMap(
-                  (innerRecord) =>
-                    Object.keys(innerRecord).filter(
-                      (key) => innerRecord[key].relevance !== "NA"
-                    )
-                )
-              )
-            )
-          ),
-        ];
-
-        const result = uniqueUsedDefinitionNames.reduce((acc, key) => {
-          if (mappedCql.definitions[key]) {
-            acc[key] = mappedCql.definitions[key];
-          }
-          return acc;
-        }, {});
-
-        return result;
+        return filterBasedOnDefinitionCategories(definitionType);
       }
     }
     return null;
@@ -98,9 +92,13 @@ const CoverageTabList = ({
           );
         })}
 
-      {allDefinitions.map((pop, i) => {
+      {allDefinitions.map((definition, i) => {
         return (
-          <CoverageTab key={i} population={pop} populationText={test(pop)} />
+          <CoverageTab
+            key={i}
+            population={definition}
+            populationText={getDefinitionResults(definition)}
+          />
         );
       })}
       <div tw="flex mt-5" key={"1"}>

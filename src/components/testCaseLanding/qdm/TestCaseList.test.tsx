@@ -46,6 +46,10 @@ import qdmCalculationService, {
 } from "../../../api/QdmCalculationService";
 import * as _ from "lodash";
 import { measureCql } from "../../editTestCase/groupCoverage/_mocks_/QdmCovergaeMeasureCql";
+import { qdmCallStack } from "../../editTestCase/groupCoverage/_mocks_/QdmCallStack";
+import useCqlParsingService, {
+  CqlParsingService,
+} from "../../../api/useCqlParsingService";
 
 const mockScanResult: ScanValidationDto = {
   fileName: "testcaseExample.json",
@@ -129,7 +133,18 @@ jest.mock("@madie/madie-util", () => ({
     importTestCases: false,
     disableRunTestCaseWithObservStrat: true,
   })),
+  useOktaTokens: () => ({
+    getAccessToken: () => "test.jwt",
+  }),
 }));
+
+jest.mock("../../../api/useCqlParsingService");
+const useCqlParsingServiceMock =
+  useCqlParsingService as jest.Mock<CqlParsingService>;
+
+const useCqlParsingServiceMockResolved = {
+  getAllDefinitionsAndFunctions: jest.fn().mockResolvedValue(qdmCallStack),
+} as unknown as CqlParsingService;
 
 let importingTestCases = [];
 const mockOnImportTestCases = jest.fn();
@@ -230,6 +245,200 @@ const qdmExecutionResults = {
       DENOM: false,
       NUMER: true,
       episodeResults: {},
+      statement_results: {
+        MATGlobalCommonFunctionsQDM: {
+          EarliestOf: {
+            library_name: "MATGlobalCommonFunctionsQDM",
+            statement_name: "EarliestOf",
+            relevance: "NA",
+            final: "NA",
+          },
+          Earliest: {
+            library_name: "MATGlobalCommonFunctionsQDM",
+            statement_name: "Earliest",
+            relevance: "NA",
+            final: "NA",
+          },
+          HasStart: {
+            library_name: "MATGlobalCommonFunctionsQDM",
+            statement_name: "HasStart",
+            relevance: "NA",
+            final: "NA",
+          },
+          NormalizeInterval: {
+            library_name: "MATGlobalCommonFunctionsQDM",
+            statement_name: "NormalizeInterval",
+            relevance: "NA",
+            final: "NA",
+          },
+        },
+        TestQDM: {
+          Patient: {
+            library_name: "TestQDM",
+            statement_name: "Patient",
+            relevance: "NA",
+            final: "NA",
+          },
+          "Inpatient Encounters": {
+            raw: [],
+            library_name: "TestQDM",
+            statement_name: "Inpatient Encounters",
+            relevance: "TRUE",
+            final: "FALSE",
+          },
+          "Initial Population": {
+            raw: [],
+            library_name: "TestQDM",
+            statement_name: "Initial Population",
+            relevance: "TRUE",
+            final: "FALSE",
+          },
+          Denominator: {
+            raw: [],
+            library_name: "TestQDM",
+            statement_name: "Denominator",
+            relevance: "FALSE",
+            final: "UNHIT",
+          },
+          Numerator: {
+            raw: [],
+            library_name: "TestQDM",
+            statement_name: "Numerator",
+            relevance: "FALSE",
+            final: "UNHIT",
+          },
+          "SDE Ethnicity": {
+            raw: [
+              {
+                dataElementCodes: [
+                  {
+                    code: "2186-5",
+                    system: "2.16.840.1.113883.6.238",
+                    version: "1.2",
+                    display: "Not Hispanic or Latino",
+                  },
+                ],
+                _id: "65733afc0c92e100000f9121",
+                qdmTitle: "Patient Characteristic Ethnicity",
+                hqmfOid: "2.16.840.1.113883.10.20.28.4.56",
+                qdmCategory: "patient_characteristic",
+                qdmStatus: "ethnicity",
+                qdmVersion: "5.6",
+                _type: "QDM::PatientCharacteristicEthnicity",
+                id: "65733afc0c92e100000f9121",
+              },
+            ],
+            library_name: "TestQDM",
+            statement_name: "SDE Ethnicity",
+            relevance: "NA",
+            final: "NA",
+          },
+          "SDE Payer": {
+            raw: [],
+            library_name: "TestQDM",
+            statement_name: "SDE Payer",
+            relevance: "NA",
+            final: "NA",
+          },
+          "SDE Race": {
+            raw: [
+              {
+                dataElementCodes: [
+                  {
+                    code: "2028-9",
+                    system: "2.16.840.1.113883.6.238",
+                    version: "1.2",
+                    display: "Asian",
+                  },
+                ],
+                _id: "65733af90c92e100000f911d",
+                qdmTitle: "Patient Characteristic Race",
+                hqmfOid: "2.16.840.1.113883.10.20.28.4.59",
+                qdmCategory: "patient_characteristic",
+                qdmStatus: "race",
+                qdmVersion: "5.6",
+                _type: "QDM::PatientCharacteristicRace",
+                id: "65733af90c92e100000f911d",
+              },
+            ],
+            library_name: "TestQDM",
+            statement_name: "SDE Race",
+            relevance: "NA",
+            final: "NA",
+          },
+          "SDE Sex": {
+            raw: [
+              {
+                dataElementCodes: [
+                  {
+                    code: "M",
+                    system: "2.16.840.1.113883.5.1",
+                    version: "2022-11",
+                    display: "Male",
+                  },
+                ],
+                _id: "65733afb0c92e100000f911f",
+                qdmTitle: "Patient Characteristic Sex",
+                hqmfOid: "2.16.840.1.113883.10.20.28.4.55",
+                qdmCategory: "patient_characteristic",
+                qdmStatus: "gender",
+                qdmVersion: "5.6",
+                _type: "QDM::PatientCharacteristicSex",
+                id: "65733afb0c92e100000f911f",
+              },
+            ],
+            library_name: "TestQDM",
+            statement_name: "SDE Sex",
+            relevance: "NA",
+            final: "NA",
+          },
+          FirstPhysicalExamWithEncounterId: {
+            library_name: "TestQDM",
+            statement_name: "FirstPhysicalExamWithEncounterId",
+            relevance: "NA",
+            final: "NA",
+          },
+          FirstPhysicalExamWithEncounterIdUsingLabTiming: {
+            library_name: "TestQDM",
+            statement_name: "FirstPhysicalExamWithEncounterIdUsingLabTiming",
+            relevance: "NA",
+            final: "NA",
+          },
+          FirstLabTestWithEncounterId: {
+            library_name: "TestQDM",
+            statement_name: "FirstLabTestWithEncounterId",
+            relevance: "NA",
+            final: "NA",
+          },
+          "SDE Results": {
+            raw: {
+              FirstHeartRate: [],
+              FirstSystolicBloodPressure: [],
+              FirstRespiratoryRate: [],
+              FirstBodyTemperature: [],
+              FirstOxygenSaturation: [],
+              FirstBodyWeight: [],
+              FirstHematocritLab: [],
+              FirstWhiteBloodCellCount: [],
+              FirstPotassiumLab: [],
+              FirstSodiumLab: [],
+              FirstBicarbonateLab: [],
+              FirstCreatinineLab: [],
+              FirstGlucoseLab: [],
+            },
+            library_name: "TestQDM",
+            statement_name: "SDE Results",
+            relevance: "NA",
+            final: "NA",
+          },
+          LengthOfStay: {
+            library_name: "TestQDM",
+            statement_name: "LengthOfStay",
+            relevance: "NA",
+            final: "NA",
+          },
+        },
+      },
     },
   },
   "2": {
@@ -238,6 +447,352 @@ const qdmExecutionResults = {
       DENOM: false,
       NUMER: false,
       episodeResults: {},
+      statement_results: {
+        MATGlobalCommonFunctionsQDM: {
+          EarliestOf: {
+            library_name: "MATGlobalCommonFunctionsQDM",
+            statement_name: "EarliestOf",
+            relevance: "NA",
+            final: "NA",
+          },
+          Earliest: {
+            library_name: "MATGlobalCommonFunctionsQDM",
+            statement_name: "Earliest",
+            relevance: "NA",
+            final: "NA",
+          },
+          HasStart: {
+            library_name: "MATGlobalCommonFunctionsQDM",
+            statement_name: "HasStart",
+            relevance: "NA",
+            final: "NA",
+          },
+          NormalizeInterval: {
+            library_name: "MATGlobalCommonFunctionsQDM",
+            statement_name: "NormalizeInterval",
+            relevance: "NA",
+            final: "NA",
+          },
+        },
+        TestQDM: {
+          Patient: {
+            library_name: "TestQDM",
+            statement_name: "Patient",
+            relevance: "NA",
+            final: "NA",
+          },
+          "Inpatient Encounters": {
+            raw: [
+              {
+                dataElementCodes: [
+                  {
+                    code: "183452005",
+                    system: "2.16.840.1.113883.6.96",
+                    version: null,
+                    display: "Emergency hospital admission (procedure)",
+                  },
+                ],
+                _id: "65734f6e00291d000035fc5a",
+                participant: [],
+                relatedTo: [],
+                qdmTitle: "Encounter, Performed",
+                hqmfOid: "2.16.840.1.113883.10.20.28.4.5",
+                qdmCategory: "encounter",
+                qdmStatus: "performed",
+                qdmVersion: "5.6",
+                _type: "QDM::EncounterPerformed",
+                description: "Encounter, Performed: Encounter Inpatient",
+                codeListId: "2.16.840.1.113883.3.666.5.307",
+                id: "65734f6e00291d000035fc59",
+                relevantPeriod: {
+                  low: "2026-12-01T00:00:00.000+00:00",
+                  high: "2026-01-08T05:00:00.000+00:00",
+                  lowClosed: true,
+                  highClosed: true,
+                },
+                facilityLocations: [],
+                diagnoses: [],
+              },
+            ],
+            library_name: "TestQDM",
+            statement_name: "Inpatient Encounters",
+            relevance: "TRUE",
+            final: "TRUE",
+          },
+          "Initial Population": {
+            raw: [
+              {
+                dataElementCodes: [
+                  {
+                    code: "183452005",
+                    system: "2.16.840.1.113883.6.96",
+                    version: null,
+                    display: "Emergency hospital admission (procedure)",
+                  },
+                ],
+                _id: "65734f6e00291d000035fc5a",
+                participant: [],
+                relatedTo: [],
+                qdmTitle: "Encounter, Performed",
+                hqmfOid: "2.16.840.1.113883.10.20.28.4.5",
+                qdmCategory: "encounter",
+                qdmStatus: "performed",
+                qdmVersion: "5.6",
+                _type: "QDM::EncounterPerformed",
+                description: "Encounter, Performed: Encounter Inpatient",
+                codeListId: "2.16.840.1.113883.3.666.5.307",
+                id: "65734f6e00291d000035fc59",
+                relevantPeriod: {
+                  low: "2026-12-01T00:00:00.000+00:00",
+                  high: "2026-01-08T05:00:00.000+00:00",
+                  lowClosed: true,
+                  highClosed: true,
+                },
+                facilityLocations: [],
+                diagnoses: [],
+              },
+            ],
+            library_name: "TestQDM",
+            statement_name: "Initial Population",
+            relevance: "TRUE",
+            final: "TRUE",
+          },
+          Denominator: {
+            raw: [],
+            library_name: "TestQDM",
+            statement_name: "Denominator",
+            relevance: "TRUE",
+            final: "FALSE",
+          },
+          Numerator: {
+            raw: [
+              {
+                dataElementCodes: [
+                  {
+                    code: "183452005",
+                    system: "2.16.840.1.113883.6.96",
+                    version: null,
+                    display: "Emergency hospital admission (procedure)",
+                  },
+                ],
+                _id: "65734f6e00291d000035fc5a",
+                participant: [],
+                relatedTo: [],
+                qdmTitle: "Encounter, Performed",
+                hqmfOid: "2.16.840.1.113883.10.20.28.4.5",
+                qdmCategory: "encounter",
+                qdmStatus: "performed",
+                qdmVersion: "5.6",
+                _type: "QDM::EncounterPerformed",
+                description: "Encounter, Performed: Encounter Inpatient",
+                codeListId: "2.16.840.1.113883.3.666.5.307",
+                id: "65734f6e00291d000035fc59",
+                relevantPeriod: {
+                  low: "2026-12-01T00:00:00.000+00:00",
+                  high: "2026-01-08T05:00:00.000+00:00",
+                  lowClosed: true,
+                  highClosed: true,
+                },
+                facilityLocations: [],
+                diagnoses: [],
+              },
+            ],
+            library_name: "TestQDM",
+            statement_name: "Numerator",
+            relevance: "FALSE",
+            final: "UNHIT",
+          },
+          "SDE Ethnicity": {
+            raw: [
+              {
+                dataElementCodes: [
+                  {
+                    code: "2135-2",
+                    system: "2.16.840.1.113883.6.238",
+                    version: "1.2",
+                    display: "Hispanic or Latino",
+                  },
+                ],
+                _id: "6571f6fb514f8e0000a4c093",
+                qdmTitle: "Patient Characteristic Ethnicity",
+                hqmfOid: "2.16.840.1.113883.10.20.28.4.56",
+                qdmCategory: "patient_characteristic",
+                qdmStatus: "ethnicity",
+                qdmVersion: "5.6",
+                _type: "QDM::PatientCharacteristicEthnicity",
+                id: "6571f6fb514f8e0000a4c093",
+              },
+            ],
+            library_name: "TestQDM",
+            statement_name: "SDE Ethnicity",
+            relevance: "NA",
+            final: "NA",
+          },
+          "SDE Payer": {
+            raw: [],
+            library_name: "TestQDM",
+            statement_name: "SDE Payer",
+            relevance: "NA",
+            final: "NA",
+          },
+          "SDE Race": {
+            raw: [],
+            library_name: "TestQDM",
+            statement_name: "SDE Race",
+            relevance: "NA",
+            final: "NA",
+          },
+          "SDE Sex": {
+            raw: [
+              {
+                dataElementCodes: [
+                  {
+                    code: "F",
+                    system: "2.16.840.1.113883.5.1",
+                    version: "2022-11",
+                    display: "Female",
+                  },
+                ],
+                _id: "6571f6fc514f8e0000a4c095",
+                qdmTitle: "Patient Characteristic Sex",
+                hqmfOid: "2.16.840.1.113883.10.20.28.4.55",
+                qdmCategory: "patient_characteristic",
+                qdmStatus: "gender",
+                qdmVersion: "5.6",
+                _type: "QDM::PatientCharacteristicSex",
+                id: "6571f6fc514f8e0000a4c095",
+              },
+            ],
+            library_name: "TestQDM",
+            statement_name: "SDE Sex",
+            relevance: "NA",
+            final: "NA",
+          },
+          FirstPhysicalExamWithEncounterId: {
+            library_name: "TestQDM",
+            statement_name: "FirstPhysicalExamWithEncounterId",
+            relevance: "NA",
+            final: "NA",
+          },
+          FirstPhysicalExamWithEncounterIdUsingLabTiming: {
+            library_name: "TestQDM",
+            statement_name: "FirstPhysicalExamWithEncounterIdUsingLabTiming",
+            relevance: "NA",
+            final: "NA",
+          },
+          FirstLabTestWithEncounterId: {
+            library_name: "TestQDM",
+            statement_name: "FirstLabTestWithEncounterId",
+            relevance: "NA",
+            final: "NA",
+          },
+          "SDE Results": {
+            raw: {
+              FirstHeartRate: [
+                {
+                  EncounterId: "65734f6e00291d000035fc59",
+                  FirstResult: null,
+                  Timing: null,
+                },
+              ],
+              FirstSystolicBloodPressure: [
+                {
+                  EncounterId: "65734f6e00291d000035fc59",
+                  FirstResult: null,
+                  Timing: null,
+                },
+              ],
+              FirstRespiratoryRate: [
+                {
+                  EncounterId: "65734f6e00291d000035fc59",
+                  FirstResult: null,
+                  Timing: null,
+                },
+              ],
+              FirstBodyTemperature: [
+                {
+                  EncounterId: "65734f6e00291d000035fc59",
+                  FirstResult: null,
+                  Timing: null,
+                },
+              ],
+              FirstOxygenSaturation: [
+                {
+                  EncounterId: "65734f6e00291d000035fc59",
+                  FirstResult: null,
+                  Timing: null,
+                },
+              ],
+              FirstBodyWeight: [
+                {
+                  EncounterId: "65734f6e00291d000035fc59",
+                  FirstResult: null,
+                  Timing: null,
+                },
+              ],
+              FirstHematocritLab: [
+                {
+                  EncounterId: "65734f6e00291d000035fc59",
+                  FirstResult: null,
+                  Timing: null,
+                },
+              ],
+              FirstWhiteBloodCellCount: [
+                {
+                  EncounterId: "65734f6e00291d000035fc59",
+                  FirstResult: null,
+                  Timing: null,
+                },
+              ],
+              FirstPotassiumLab: [
+                {
+                  EncounterId: "65734f6e00291d000035fc59",
+                  FirstResult: null,
+                  Timing: null,
+                },
+              ],
+              FirstSodiumLab: [
+                {
+                  EncounterId: "65734f6e00291d000035fc59",
+                  FirstResult: null,
+                  Timing: null,
+                },
+              ],
+              FirstBicarbonateLab: [
+                {
+                  EncounterId: "65734f6e00291d000035fc59",
+                  FirstResult: null,
+                  Timing: null,
+                },
+              ],
+              FirstCreatinineLab: [
+                {
+                  EncounterId: "65734f6e00291d000035fc59",
+                  FirstResult: null,
+                  Timing: null,
+                },
+              ],
+              FirstGlucoseLab: [
+                {
+                  EncounterId: "65734f6e00291d000035fc59",
+                  FirstResult: null,
+                  Timing: null,
+                },
+              ],
+            },
+            library_name: "TestQDM",
+            statement_name: "SDE Results",
+            relevance: "NA",
+            final: "NA",
+          },
+          LengthOfStay: {
+            library_name: "TestQDM",
+            statement_name: "LengthOfStay",
+            relevance: "NA",
+            final: "NA",
+          },
+        },
+      },
     },
   },
 };
@@ -796,6 +1351,9 @@ describe("TestCaseList component", () => {
     useMeasureServiceMock.mockImplementation(() => {
       return useMeasureServiceMockResolved;
     });
+    useCqlParsingServiceMock.mockImplementation(() => {
+      return useCqlParsingServiceMockResolved;
+    });
     mockOnImportTestCases.mockImplementation((realOnImport) => {
       realOnImport([]);
     });
@@ -1142,7 +1700,7 @@ describe("TestCaseList component", () => {
     expect(screen.getByTestId("test-case-tbl")).toBeInTheDocument();
   });
 
-  it("accordions for cql parts", async () => {
+  it.only("accordions for cql parts", async () => {
     measure.createdBy = MEASURE_CREATEDBY;
     renderTestCaseListComponent();
     const table = await screen.findByTestId("test-case-tbl");
@@ -1154,6 +1712,20 @@ describe("TestCaseList component", () => {
     expect(allAccordions[0]).toBeInTheDocument();
     const firstAccordion = await screen.queryByText("initialPopulation");
     expect(firstAccordion).toBeInTheDocument();
+    const usedDefinitionAccordion = await screen.queryByText("Used");
+    expect(usedDefinitionAccordion).toBeInTheDocument();
+    const unUsedDefinitionAccordion = await screen.queryByText("Unused");
+    expect(unUsedDefinitionAccordion).toBeInTheDocument();
+    const functionsAccordion = await screen.queryByText("Functions");
+    expect(functionsAccordion).toBeInTheDocument();
+    userEvent.click(screen.getByTestId("initialPopulation-population"));
+    expect(
+      await screen.getByTestId("initialPopulation-population-text")
+    ).toHaveTextContent(`define "ipp": exists ["Encounter, Performed"] E`);
+    userEvent.click(screen.getByTestId("Used-definition"));
+    expect(
+      await screen.getAllByText("No Results Available")[0]
+    ).toBeInTheDocument();
   });
 
   it("Run Test Cases button should be disabled if no valid test cases", async () => {
