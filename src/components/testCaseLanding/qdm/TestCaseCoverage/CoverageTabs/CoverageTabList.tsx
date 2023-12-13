@@ -2,7 +2,10 @@ import React from "react";
 import "twin.macro";
 import "styled-components/macro";
 import CoverageTab from "./CoverageTab";
-import { CoverageMappedCql } from "../../../../../util/GroupCoverageHelpers";
+import {
+  CoverageMappedCql,
+  getPopulationAbbreviation,
+} from "../../../../../util/GroupCoverageHelpers";
 import { CqmExecutionResultsByPatient } from "../../../../../api/QdmCalculationService";
 interface Props {
   populationCriteria: any;
@@ -86,7 +89,11 @@ const CoverageTabList = ({
           return (
             <CoverageTab
               key={i}
-              population={pop.name}
+              population={getPopulationAbbreviation(
+                populationCriteria,
+                pop.name,
+                i
+              )}
               populationText={mappedCql.populationDefinitions[pop.name]}
             />
           );

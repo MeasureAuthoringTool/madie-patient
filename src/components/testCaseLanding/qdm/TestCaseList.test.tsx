@@ -1710,7 +1710,7 @@ describe("TestCaseList component", () => {
     expect(coverageTabList).toBeInTheDocument();
     const allAccordions = await screen.findAllByTestId("accordion");
     expect(allAccordions[0]).toBeInTheDocument();
-    const firstAccordion = await screen.queryByText("initialPopulation");
+    const firstAccordion = await screen.queryByText("IP");
     expect(firstAccordion).toBeInTheDocument();
     const usedDefinitionAccordion = await screen.queryByText("Used");
     expect(usedDefinitionAccordion).toBeInTheDocument();
@@ -1718,10 +1718,10 @@ describe("TestCaseList component", () => {
     expect(unUsedDefinitionAccordion).toBeInTheDocument();
     const functionsAccordion = await screen.queryByText("Functions");
     expect(functionsAccordion).toBeInTheDocument();
-    userEvent.click(screen.getByTestId("initialPopulation-population"));
-    expect(
-      await screen.getByTestId("initialPopulation-population-text")
-    ).toHaveTextContent(`define "ipp": exists ["Encounter, Performed"] E`);
+    userEvent.click(screen.getByTestId("IP-population"));
+    expect(await screen.getByTestId("IP-population-text")).toHaveTextContent(
+      `define "ipp": exists ["Encounter, Performed"] E`
+    );
     userEvent.click(screen.getByTestId("Used-definition"));
     expect(
       await screen.getAllByText("No Results Available")[0]
