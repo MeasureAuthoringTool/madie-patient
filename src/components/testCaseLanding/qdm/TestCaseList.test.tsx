@@ -1726,6 +1726,25 @@ describe("TestCaseList component", () => {
     expect(
       await screen.getAllByText("No Results Available")[0]
     ).toBeInTheDocument();
+
+    const executeAllTestCasesButton = screen.getByRole("button", {
+      name: "Run Test(s)",
+    });
+
+    userEvent.click(executeAllTestCasesButton);
+
+    await waitFor(() => {
+      userEvent.click(screen.getByTestId("Used-definition"));
+      expect(screen.getByTestId("Used-definition-text")).toBeInTheDocument();
+
+      userEvent.click(screen.getByTestId("Unused-definition"));
+      expect(screen.getByTestId("Unused-definition-text")).toBeInTheDocument();
+
+      userEvent.click(screen.getByTestId("Functions-definition"));
+      expect(
+        screen.getByTestId("Functions-definition-text")
+      ).toBeInTheDocument();
+    });
   });
 
   it("Run Test Cases button should be disabled if no valid test cases", async () => {
