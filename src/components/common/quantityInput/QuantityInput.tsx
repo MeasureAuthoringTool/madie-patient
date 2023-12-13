@@ -4,6 +4,7 @@ import "twin.macro";
 import "styled-components/macro";
 import { CQL } from "cqm-models";
 import * as ucum from "@lhncbc/ucum-lhc";
+import { validate, ValidationResult } from "./validate";
 
 export interface QuantityProps {
   quantity: CQL.Quantity;
@@ -57,9 +58,19 @@ const QuantityInput = ({
     }
   }, [ucum, ucumUnits]);
 
+  const valueFn = (value: any) => {
+    if (value?.code) {
+      return value.code;
+    } else {
+      return value;
+    }
+  };
   const [currentQuantity, setCurrentQuantity] =
     useState<CQL.Quantity>(quantity);
   const [currentUnit, setCurrentUnit] = useState<UcumOption>(null);
+  const [error, setError] = useState<boolean>();
+  const [helperText, setHelperText] = useState<String>();
+  const [unitText, setUnitText] = useState<String>(valueFn(currentUnit?.value));
 
   useEffect(() => {
     if (currentQuantity && currentQuantity.value && currentQuantity.unit) {
@@ -98,45 +109,33 @@ const QuantityInput = ({
     setCurrentQuantity(newQuantity);
   };
 
-  const handleQuantityUnitChange = (newValue) => {
-    const newQuantity: CQL.Quantity = {
-      value: currentQuantity ? currentQuantity.value : 0,
-      unit: newValue.value?.code,
-    };
-    setCurrentQuantity(newQuantity);
-    setCurrentUnit(newValue);
-  };
-
-  const [error, setError] = useState<String>();
-  const [helperText, setHelperText] = useState<String>();
-
-  const validate = (code) => {
-    if (code) {
-      var parseResp = ucum.UcumLhcUtils.getInstance().validateUnitString(
-        code,
-        true
-      );
-      if (parseResp.status === "valid") {
-        setHelperText(undefined);
-        setError(undefined);
-        return true;
-      } else {
-        //create a message from
-        if (parseResp?.suggestions) {
-          let errorMsg: string = parseResp.suggestions[0]?.msg + ": ";
-
-          parseResp.suggestions[0].units.forEach((value) => {
-            errorMsg += value[0] + ", ";
-          });
-          setError("true");
-          setHelperText(errorMsg);
-        } else {
-          setError("true");
-          setHelperText(parseResp.msg[0]);
-        }
-      }
+  const handleQuantityUnitChange = (value: any) => {
+    const validationResult: ValidationResult = validate(value);
+    if (!validationResult.error) {
+      const label = validationResult.label;
+      const transformedResult = {
+        label,
+        value: {
+          code: value,
+          guidance: undefined,
+          name: validationResult.label,
+          system: "https://clinicaltables.nlm.nih.gov/",
+        },
+      } as UcumOption;
+      const newQuantity: CQL.Quantity = {
+        value: currentQuantity ? currentQuantity.value : 0,
+        unit: value,
+      };
+      setCurrentQuantity(newQuantity);
+      setCurrentUnit(transformedResult);
+      setUnitText(transformedResult.value.code);
+    } else {
+      setUnitText(value);
     }
+    setHelperText(validationResult.helperText);
+    setError(validationResult.error);
   };
+
   return (
     <div tw="flex flex-row">
       <div tw="w-28">
@@ -175,29 +174,17 @@ const QuantityInput = ({
         <TextField
           id={`quantity-unit-input-${label.toLowerCase()}`}
           disabled={!canEdit}
-          label={"Unit"}
+          label={label}
           error={error}
           helperText={helperText}
           data-testid={`quantity-unit-input-${label.toLowerCase()}`}
           placeholder="unit"
-          onChange={(event: any) => {
-            if (validate(event.target.value)) {
-              const label = `${event.target.value}`;
-              const transformedResult = {
-                label,
-                value: {
-                  code: event.target.value,
-                  guidance: undefined,
-                  name: "",
-                  system: "https://clinicaltables.nlm.nih.gov/",
-                },
-              };
-              handleQuantityUnitChange(transformedResult);
-            } else {
-              handleQuantityUnitChange("");
-            }
+          onChange={(e: any) => {
+            handleQuantityUnitChange(e.target.value);
           }}
-          value={currentUnit?.label}
+          value={(() => {
+            return unitText;
+          })()}
         />
       </div>
     </div>

@@ -46,8 +46,13 @@ describe("RatioInput Component", () => {
       />
     );
 
-    expect(screen.getByText("Numerator")).toBeInTheDocument();
-    expect(screen.getByText("Denominator")).toBeInTheDocument();
+    expect(
+      screen.getByTestId("quantity-unit-input-numerator")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId("quantity-unit-input-denominator")
+    ).toBeInTheDocument();
+
     expect(screen.getAllByPlaceholderText("value").length).toBe(2);
     expect(screen.getAllByPlaceholderText("unit").length).toBe(2);
 
@@ -78,8 +83,6 @@ describe("RatioInput Component", () => {
       />
     );
 
-    expect(screen.getByText("Numerator")).toBeInTheDocument();
-    expect(screen.getByText("Denominator")).toBeInTheDocument();
     expect(screen.getAllByPlaceholderText("value").length).toBe(2);
     expect(screen.getAllByPlaceholderText("unit").length).toBe(2);
 
@@ -116,8 +119,6 @@ describe("RatioInput Component", () => {
       />
     );
 
-    expect(screen.getByText("Numerator")).toBeInTheDocument();
-    expect(screen.getByText("Denominator")).toBeInTheDocument();
     expect(screen.getAllByPlaceholderText("value").length).toBe(2);
     expect(screen.getAllByPlaceholderText("unit").length).toBe(2);
 

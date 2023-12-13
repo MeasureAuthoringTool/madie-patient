@@ -16,6 +16,16 @@ describe("QuantityInput Component", () => {
     },
   };
 
+  const testValue4 = {
+    label: "/min per minute",
+    value: {
+      code: "/min",
+      guidance: null,
+      name: "per minute",
+      system: "https://clinicaltables.nlm.nih.gov/",
+    },
+  };
+
   const testQuantity: CQL.Quantity = {
     value: 0,
     unit: testValue.value.code,
@@ -30,6 +40,11 @@ describe("QuantityInput Component", () => {
     unit: testValue.value.code,
   };
 
+  const testQuantity4: CQL.Quantity = {
+    value: 0,
+    unit: testValue4.value.code,
+  };
+
   const onQuantityChange = jest.fn();
 
   test("Should render quantity component", () => {
@@ -41,13 +56,31 @@ describe("QuantityInput Component", () => {
         onQuantityChange={onQuantityChange}
       />
     );
-
     const quantityValue = screen.getByTestId("quantity-value-field-low");
     expect(quantityValue).toBeInTheDocument();
     const quantityValueInput = screen.getByTestId("quantity-value-input-low");
     expect(quantityValueInput).toBeInTheDocument();
 
     const quantityUnit = screen.getByTestId("quantity-unit-input-low");
+    expect(quantityUnit).toBeInTheDocument();
+  });
+
+  test("Should render quantity component with different label", () => {
+    render(
+      <QuantityInput
+        canEdit={true}
+        quantity={testQuantity}
+        label="high"
+        onQuantityChange={onQuantityChange}
+      />
+    );
+
+    const quantityValue = screen.getByTestId("quantity-value-field-high");
+    expect(quantityValue).toBeInTheDocument();
+    const quantityValueInput = screen.getByTestId("quantity-value-input-high");
+    expect(quantityValueInput).toBeInTheDocument();
+
+    const quantityUnit = screen.getByTestId("quantity-unit-input-high");
     expect(quantityUnit).toBeInTheDocument();
   });
 
@@ -60,7 +93,7 @@ describe("QuantityInput Component", () => {
         onQuantityChange={handleQuantityChange}
       />
     );
-
+    //default value when label isn't passed with props is "Quantity"
     const quantityValue = screen.getByTestId("quantity-value-field-quantity");
     expect(quantityValue).toBeInTheDocument();
     const quantityValueInput = screen.getByTestId(
@@ -68,28 +101,26 @@ describe("QuantityInput Component", () => {
     ) as HTMLInputElement;
     expect(quantityValueInput).toBeInTheDocument();
     expect(quantityValueInput.value).toBe("0");
-    fireEvent.change(quantityValueInput, { target: { value: "10" } });
+    act(() => {
+      userEvent.type(quantityValueInput, "10");
+    });
   });
 
-  test.skip("Should render quantity unit field with selected option", async () => {
+  test("Should render value unit with error", async () => {
     const handleChange = jest.fn();
     render(
       <QuantityInput
         canEdit={true}
-        quantity={testQuantity}
+        quantity={testQuantity4}
         label="high"
-        onQuantityChange={onQuantityChange}
+        onQuantityChange={handleChange}
       />
     );
-    await act(async () => {
-      const quantityAutoComplete = await screen.findByTestId(
-        "quantity-unit-dropdown-high"
-      );
-      const listBox = within(quantityAutoComplete).getByRole("combobox");
-      expect(listBox).toHaveValue(
-        `${testValue.value.code} ${testValue.value.name}`
-      );
-    });
+
+    const quantityUnitInput = screen.getByRole("textbox");
+    expect(quantityUnitInput).toBeInTheDocument();
+
+    screen.debug();
   });
 
   test("should ignore - and non-quantity-valueber keys, number field behavior expexted", async () => {

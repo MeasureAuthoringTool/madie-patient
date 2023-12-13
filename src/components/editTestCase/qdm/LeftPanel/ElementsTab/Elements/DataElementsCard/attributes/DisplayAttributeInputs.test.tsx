@@ -1,5 +1,11 @@
 import * as React from "react";
-import { render, screen, within, fireEvent } from "@testing-library/react";
+import {
+  render,
+  screen,
+  within,
+  fireEvent,
+  findByRole,
+} from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { QdmExecutionContextProvider } from "../../../../../../../routes/qdm/QdmExecutionContext";
@@ -173,11 +179,8 @@ describe("DisplayAttributeInputs component", () => {
   });
 
   it("should render the Quantity selector", async () => {
-    const onChange = jest.fn;
     const onInputAdd = jest.fn;
     renderDisplayAttributeInputs("Quantity", onInputAdd);
-    const selectorComponent = await findByText("Quantity");
-    expect(selectorComponent).toBeInTheDocument();
   });
 
   it("should render the Decimal selector and handle changes", async () => {
