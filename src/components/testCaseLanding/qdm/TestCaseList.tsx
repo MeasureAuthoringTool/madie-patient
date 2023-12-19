@@ -466,6 +466,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                     data-testid="test-case-coverage"
                     populationCriteria={selectedPopCriteria}
                     measureCql={measure.cql}
+                    calculationOutput={calculationOutput}
                   />
                 </div>
               </div>
