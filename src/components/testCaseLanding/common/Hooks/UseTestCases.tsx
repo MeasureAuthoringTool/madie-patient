@@ -1,7 +1,7 @@
 import { useCallback, useState, useEffect, useRef } from "react";
 import useTestCaseServiceApi from "../../../../api/useTestCaseServiceApi";
 import { TestCase } from "@madie/madie-models";
-import { QDMPatient } from "cqm-models";
+import * as _ from "lodash";
 
 function UseFetchTestCases({ measureId, setErrors }) {
   const testCaseService = useRef(useTestCaseServiceApi());
@@ -23,6 +23,7 @@ function UseFetchTestCases({ measureId, setErrors }) {
         testCaseList.forEach((testCase: any) => {
           testCase.executionStatus = testCase.validResource ? "NA" : "Invalid";
         });
+        testCaseList = _.orderBy(testCaseList, ["lastModifiedAt"], ["desc"]);
         setTestCases(testCaseList);
       })
       .catch((err) => {

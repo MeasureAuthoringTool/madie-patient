@@ -5,6 +5,7 @@ import * as _ from "lodash";
 import {
   Group,
   MeasureErrorType,
+  TestCase,
   TestCaseImportOutcome,
   TestCaseImportRequest,
 } from "@madie/madie-models";
@@ -36,6 +37,7 @@ import TestCaseImportFromBonnieDialogQDM from "../common/import/TestCaseImportFr
 import TestCaseCoverage from "./TestCaseCoverage/TestCaseCoverage";
 import CodeCoverageHighlighting from "../common/CodeCoverageHighlighting";
 import { QDMPatient, DataElement } from "cqm-models";
+import { cloneTestCase } from "../../../util/QdmTestCaseHelper";
 
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
@@ -228,6 +230,12 @@ const TestCaseList = (props: TestCaseListProps) => {
         );
         setErrors((prevState) => [...prevState, err.message]);
       });
+  };
+
+  const handleCloneTestCase = async (testCase: TestCase) => {
+    const clonedTestCase = cloneTestCase(testCase);
+    await testCaseService.current.createTestCase(clonedTestCase, measureId);
+    retrieveTestCases();
   };
 
   const handleClose = () => {
@@ -438,6 +446,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                         executionResults={executionResults}
                         deleteTestCase={deleteTestCase}
                         exportTestCase={null}
+                        onCloneTestCase={handleCloneTestCase}
                         measure={measure}
                       />
                     </>
