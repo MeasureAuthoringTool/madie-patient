@@ -233,9 +233,19 @@ const TestCaseList = (props: TestCaseListProps) => {
   };
 
   const handleCloneTestCase = async (testCase: TestCase) => {
-    const clonedTestCase = cloneTestCase(testCase);
-    await testCaseService.current.createTestCase(clonedTestCase, measureId);
-    retrieveTestCases();
+    try {
+      const clonedTestCase = cloneTestCase(testCase);
+      await testCaseService.current.createTestCase(clonedTestCase, measureId);
+      setToastOpen(true);
+      setToastType("success");
+      setToastMessage("Test case cloned successfully");
+      retrieveTestCases();
+    } catch (error) {
+      setToastOpen(true);
+      setToastMessage(
+        `An error occurred while cloning the test case: ${error.message}`
+      );
+    }
   };
 
   const handleClose = () => {
