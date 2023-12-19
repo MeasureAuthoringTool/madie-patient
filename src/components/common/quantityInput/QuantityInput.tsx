@@ -59,11 +59,13 @@ const QuantityInput = ({
   }, [ucum, ucumUnits]);
 
   const valueFn = (value: any) => {
+    let result: string;
     if (value?.code) {
-      return value.code;
+      result = value.code;
     } else {
-      return value;
+      result = value;
     }
+    return result;
   };
   const [currentQuantity, setCurrentQuantity] =
     useState<CQL.Quantity>(quantity);
@@ -182,9 +184,7 @@ const QuantityInput = ({
           onChange={(e: any) => {
             handleQuantityUnitChange(e.target.value);
           }}
-          value={(() => {
-            return unitText;
-          })()}
+          value={unitText}
         />
       </div>
     </div>
