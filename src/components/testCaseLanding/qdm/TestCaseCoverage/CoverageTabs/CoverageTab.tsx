@@ -1,15 +1,43 @@
 import React from "react";
 interface Props {
   population: string;
-  populationText: any;
+  definitionText: any;
 }
 import { Accordion } from "@madie/madie-design-system/dist/react";
+import "twin.macro";
+import "styled-components/macro";
 
-const CoverageTab = ({ population, populationText }: Props) => {
-  return (
-    <Accordion title={population} isOpen={true}>
-      <pre>{populationText.text}</pre>
-    </Accordion>
+const CoverageTab = ({ population, definitionText }: Props) => {
+  return population !== "Functions" &&
+    population !== "Used" &&
+    population !== "Unused" ? (
+    <div
+      style={{ maxWidth: "1300px" }}
+      data-testid={`${population}-population`}
+    >
+      <Accordion title={population} isOpen={false}>
+        <pre data-testId={`${population}-population-text`}>
+          {definitionText.text}
+        </pre>
+      </Accordion>
+    </div>
+  ) : (
+    <div
+      style={{ maxWidth: "1300px" }}
+      data-testid={`${population}-definition`}
+    >
+      <Accordion title={population} isOpen={false}>
+        {definitionText ? (
+          <div data-testId={`${population}-definition-text`}>
+            {Object.values(definitionText)?.map((item: any) => (
+              <pre>{item?.definitionLogic}</pre>
+            ))}
+          </div>
+        ) : (
+          "No Results Available"
+        )}
+      </Accordion>
+    </div>
   );
 };
 
