@@ -40,10 +40,9 @@ const GroupCoverageResultsSection = ({ results }) => {
         {showGroupCoverageResults && (
           <div
             style={{
-              padding: "10px",
+              padding: "0px 10px",
               marginTop: "20px",
               width: "auto",
-              height: "75px",
               border: "1px solid #EDEDED",
               backgroundColor: "#EDEDED",
               fontFamily: "sans-serif",
@@ -53,7 +52,9 @@ const GroupCoverageResultsSection = ({ results }) => {
             data-testId="results-section"
             id="results"
           >
-            {results.trim()}{" "}
+            <pre>
+              <code>{results.trim()} </code>
+            </pre>
           </div>
         )}
       </div>
