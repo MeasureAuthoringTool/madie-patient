@@ -52,7 +52,9 @@ const GroupCoverageResultsSection = ({ results }) => {
             data-testId="results-section"
             id="results"
           >
-            <code>{results.trim()} </code>
+            <pre>
+              <code>{results.trim()} </code>
+            </pre>
           </div>
         )}
       </div>
