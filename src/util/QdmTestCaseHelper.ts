@@ -12,6 +12,7 @@ export function cloneTestCase(testCase: TestCase) {
   if (!_.isEmpty(clonedTestCase.json)) {
     const qdmPatient = new QDMPatient(JSON.parse(clonedTestCase?.json));
     qdmPatient._id = new ObjectID().toString();
+    clonedTestCase.json = JSON.stringify(qdmPatient);
   }
 
   clonedTestCase.patientId = uuidv4();
