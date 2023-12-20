@@ -1,12 +1,10 @@
 import React, { useEffect, useState, useCallback } from "react";
-import {
-  AutoComplete,
-  TextField,
-} from "@madie/madie-design-system/dist/react/";
+import { TextField } from "@madie/madie-design-system/dist/react/";
 import "twin.macro";
 import "styled-components/macro";
 import { CQL } from "cqm-models";
 import * as ucum from "@lhncbc/ucum-lhc";
+import { validate, ValidationResult } from "./validate";
 
 export interface QuantityProps {
   quantity: CQL.Quantity;
@@ -60,9 +58,21 @@ const QuantityInput = ({
     }
   }, [ucum, ucumUnits]);
 
+  const valueFn = (value: any) => {
+    let result: string;
+    if (value?.code) {
+      result = value.code;
+    } else {
+      result = value;
+    }
+    return result;
+  };
   const [currentQuantity, setCurrentQuantity] =
     useState<CQL.Quantity>(quantity);
   const [currentUnit, setCurrentUnit] = useState<UcumOption>(null);
+  const [error, setError] = useState<boolean>();
+  const [helperText, setHelperText] = useState<String>();
+  const [unitText, setUnitText] = useState<String>(valueFn(currentUnit?.value));
 
   useEffect(() => {
     if (currentQuantity && currentQuantity.value && currentQuantity.unit) {
@@ -101,13 +111,31 @@ const QuantityInput = ({
     setCurrentQuantity(newQuantity);
   };
 
-  const handleQuantityUnitChange = (newValue) => {
-    const newQuantity: CQL.Quantity = {
-      value: currentQuantity ? currentQuantity.value : 0,
-      unit: newValue.value?.code,
-    };
-    setCurrentQuantity(newQuantity);
-    setCurrentUnit(newValue);
+  const handleQuantityUnitChange = (value: any) => {
+    const validationResult: ValidationResult = validate(value);
+    if (!validationResult.error) {
+      const label = validationResult.label;
+      const transformedResult = {
+        label,
+        value: {
+          code: value,
+          guidance: undefined,
+          name: validationResult.label,
+          system: "https://clinicaltables.nlm.nih.gov/",
+        },
+      } as UcumOption;
+      const newQuantity: CQL.Quantity = {
+        value: currentQuantity ? currentQuantity.value : 0,
+        unit: value,
+      };
+      setCurrentQuantity(newQuantity);
+      setCurrentUnit(transformedResult);
+      setUnitText(transformedResult.value.code);
+    } else {
+      setUnitText(value);
+    }
+    setHelperText(validationResult.helperText);
+    setError(validationResult.error);
   };
 
   return (
@@ -145,28 +173,18 @@ const QuantityInput = ({
         />
       </div>
       <div tw="w-56">
-        <AutoComplete
-          id={`quantity-unit-dropdown-${label.toLowerCase()}`}
+        <TextField
+          id={`quantity-unit-input-${label.toLowerCase()}`}
           disabled={!canEdit}
-          label={"Unit"}
-          options={ucumOptions.map((option) => option.code + " " + option.name)}
-          data-testid={`quantity-unit-dropdown-${label.toLowerCase()}`}
+          label={label}
+          error={error}
+          helperText={helperText}
+          data-testid={`quantity-unit-input-${label.toLowerCase()}`}
           placeholder="unit"
-          onChange={(event, newValue) => {
-            if (newValue) {
-              const find = ucumOptions.find(
-                (option) => option.code + ` ` + option.name === newValue
-              );
-              const transformedResult = {
-                label: newValue,
-                value: find,
-              };
-              handleQuantityUnitChange(transformedResult);
-            } else {
-              handleQuantityUnitChange("");
-            }
+          onChange={(e: any) => {
+            handleQuantityUnitChange(e.target.value);
           }}
-          value={currentUnit?.label}
+          value={unitText}
         />
       </div>
     </div>
