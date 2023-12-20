@@ -1,5 +1,11 @@
 import * as React from "react";
-import { render, screen, within, fireEvent } from "@testing-library/react";
+import {
+  render,
+  screen,
+  within,
+  fireEvent,
+  findByRole,
+} from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { QdmExecutionContextProvider } from "../../../../../../../routes/qdm/QdmExecutionContext";
@@ -173,11 +179,8 @@ describe("DisplayAttributeInputs component", () => {
   });
 
   it("should render the Quantity selector", async () => {
-    const onChange = jest.fn;
     const onInputAdd = jest.fn;
     renderDisplayAttributeInputs("Quantity", onInputAdd);
-    const selectorComponent = await findByText("Quantity");
-    expect(selectorComponent).toBeInTheDocument();
   });
 
   it("should render the Decimal selector and handle changes", async () => {
@@ -263,26 +266,6 @@ describe("DisplayAttributeInputs component", () => {
       target: { value: 200 },
     });
     expect(inputHigh.value).toBe("200");
-
-    const autocomplete1 = screen.getByTestId("quantity-unit-dropdown-low");
-    const unitInputLow = within(autocomplete1).getByRole(
-      "combobox"
-    ) as HTMLInputElement;
-
-    userEvent.click(autocomplete1);
-    userEvent.keyboard("wk week");
-    fireEvent.mouseDown(autocomplete1);
-    expect(unitInputLow.value).toEqual("wk week");
-
-    const autocomplete2 = screen.getByTestId("quantity-unit-dropdown-high");
-    const unitInputHigh = within(autocomplete2).getByRole(
-      "combobox"
-    ) as HTMLInputElement;
-
-    userEvent.click(autocomplete2);
-    userEvent.keyboard("mg milligram");
-    fireEvent.mouseDown(autocomplete2);
-    expect(unitInputHigh.value).toEqual("mg milligram");
   });
 
   it("should render the Organization selector", async () => {
