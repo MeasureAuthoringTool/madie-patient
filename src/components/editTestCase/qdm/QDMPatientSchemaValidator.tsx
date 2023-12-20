@@ -1,5 +1,6 @@
 import * as Yup from "yup";
 import { PopulationType } from "@madie/madie-models";
+import * as ucum from "@lhncbc/ucum-lhc";
 
 export const QDMPatientSchemaValidator = Yup.object().shape({
   description: Yup.string().max(
