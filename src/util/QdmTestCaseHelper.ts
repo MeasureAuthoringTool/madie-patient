@@ -11,7 +11,7 @@ export function cloneTestCase(testCase: TestCase) {
   const clonedTestCase = _.cloneDeep(testCase);
   if (!_.isEmpty(clonedTestCase.json)) {
     const qdmPatient = new QDMPatient(JSON.parse(clonedTestCase?.json));
-    qdmPatient._id = new ObjectID().toString();
+    qdmPatient._id = new ObjectID();
     clonedTestCase.json = JSON.stringify(qdmPatient);
   }
 
