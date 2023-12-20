@@ -27,13 +27,16 @@ import { CqmModelFactory } from "./model-factory/CqmModelFactory";
 import { parse } from "./ElmParser";
 import { ElmDependencyFinder } from "./elmDependencyFinder/ElmDependencyFinder";
 import { v4 as uuidv4 } from "uuid";
+import { TranslatedLibrary } from "./models/TranslatedLibrary";
 
 export class CqmConversionService {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
 
   elmDependencyFinder = new ElmDependencyFinder();
 
-  async fetchElmForCql(cql: string): Promise<Array<string>> {
+  // get the translated artifacts for CQL including the included libraries.
+  // returns the array of TranslatedLibrary{name, version, cql, elmJson, elmXml}
+  async fetchTranslationForCql(cql: string): Promise<Array<TranslatedLibrary>> {
     try {
       const response = await axios.put(`${this.baseUrl}/cql/elm`, cql, {
         headers: {
@@ -90,7 +93,8 @@ export class CqmConversionService {
     cqmMeasure.source_data_criteria = await this.fetchRelevantDataElements(
       measure
     );
-    const elms = await this.fetchElmForCql(measure.cql);
+    const translatedLibraries = await this.fetchTranslationForCql(measure.cql);
+    const elms = translatedLibraries.map((t) => t.elmJson);
     // Fetch statement dependencies
     const statementDependenciesMap =
       await this.elmDependencyFinder.findDependencies(

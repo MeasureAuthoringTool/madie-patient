@@ -8,6 +8,7 @@ import axios from "axios";
 import { DataCriteria } from "./models/DataCriteria";
 import { CqmConversionService } from "./CqmModelConversionService";
 import { PopulationSet } from "cqm-models";
+import { TranslatedLibrary } from "./models/TranslatedLibrary";
 
 jest.mock("axios");
 const axiosMock = axios as jest.Mocked<typeof axios>;
@@ -32,6 +33,7 @@ describe("CqmConversionService", () => {
   let cqmConversionService = new CqmConversionService("url", getAccessToken);
   let dataCriteria: Array<DataCriteria>;
   let elms: Array<String>;
+  let translatedLibraries: Array<TranslatedLibrary>;
   let population_sets: Array<PopulationSet>;
   let group: Group;
 
@@ -110,6 +112,18 @@ describe("CqmConversionService", () => {
       '{"library":{"annotation":{},"identifier":{"id":"CQM01","version":"1.0.000"},"statements":{}}}',
       '{"library":{"annotation":{},"identifier":{"id":"IncludedLib","version":"0.1.000"},"statements":{}}}',
     ];
+    translatedLibraries = [
+      {
+        elmJson: elms[0],
+        name: "CQM01",
+        version: "1.0.000",
+      } as TranslatedLibrary,
+      {
+        elmJson: elms[1],
+        name: "IncludedLib",
+        version: "0.1.000",
+      } as TranslatedLibrary,
+    ];
     population_sets = [];
   });
 
@@ -120,7 +134,7 @@ describe("CqmConversionService", () => {
   it("converts MADiE measure to cqm measure successfully", async () => {
     axiosMock.put
       .mockResolvedValueOnce({ data: dataCriteria })
-      .mockResolvedValueOnce({ data: elms })
+      .mockResolvedValueOnce({ data: translatedLibraries })
       .mockResolvedValueOnce({ data: population_sets });
 
     measure.groups = [group];
@@ -205,7 +219,7 @@ describe("CqmConversionService", () => {
       error: { message: "error" },
     });
     try {
-      await cqmConversionService.fetchElmForCql("cal");
+      await cqmConversionService.fetchTranslationForCql("cal");
     } catch (e) {
       expect(e.message).toEqual("An Error occurred while fetching elm");
     }
