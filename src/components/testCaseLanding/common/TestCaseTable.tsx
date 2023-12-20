@@ -13,6 +13,7 @@ interface TestCaseTableProps {
   };
   deleteTestCase: Function;
   exportTestCase: Function;
+  onCloneTestCase?: (testCase: TestCase) => void;
   measure: Measure;
 }
 
@@ -23,6 +24,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     executionResults,
     deleteTestCase,
     exportTestCase,
+    onCloneTestCase,
     measure,
   } = props;
   const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
@@ -56,6 +58,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
               executionResult={executionResults[testCase.id]}
               deleteTestCase={deleteTestCase}
               exportTestCase={exportTestCase}
+              onCloneTestCase={onCloneTestCase}
               measure={measure}
               // we assume all results have been run here
             />
