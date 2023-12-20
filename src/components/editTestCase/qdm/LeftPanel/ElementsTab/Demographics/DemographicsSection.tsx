@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import ElementSection from "../../../../../common/ElementSection";
 import { InputLabel, Select } from "@madie/madie-design-system/dist/react";
 import FormControl from "@mui/material/FormControl";
-import InputAdornment from "@mui/material/InputAdornment";
-import EventIcon from "@mui/icons-material/Event";
-import { useFormikContext } from "formik";
-
-import { DataElement, QDMPatient } from "cqm-models";
+import {
+  DataElement,
+  QDMPatient,
+  PatientCharacteristicExpired,
+} from "cqm-models";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -37,6 +37,7 @@ import {
   PatientActionType,
   useQdmPatient,
 } from "../../../../../../util/QdmPatientContext";
+import DateTimeInput from "../../../../../common/dateTimeInput/DateTimeInput";
 
 export interface CodeSystem {
   code: string;
@@ -206,6 +207,19 @@ const DemographicsSection = ({ canEdit }) => {
     });
   };
 
+  const handleExpiredDateTimeChange = (val) => {
+    const expiredElement = getDataElementByStatus("expired", patient);
+    const newExpiredElement: DataElement = new PatientCharacteristicExpired(
+      expiredElement
+    );
+    newExpiredElement.expiredDatetime = val;
+    setLivingStatusDataElement(newExpiredElement);
+    dispatch({
+      type: PatientActionType.MODIFY_DATA_ELEMENT,
+      payload: newExpiredElement,
+    });
+  };
+
   return (
     <div>
       <ElementSection
@@ -293,6 +307,25 @@ const DemographicsSection = ({ canEdit }) => {
                   options={selectOptions(LIVING_STATUS_CODE_OPTIONS)}
                 ></Select>
               </FormControl>
+
+              {livingStatusDataElement?.qdmStatus === "expired" && (
+                <FormControl>
+                  <DateTimeInput
+                    label="Date/Time Expiration"
+                    canEdit={canEdit}
+                    dateTime={
+                      livingStatusDataElement?.expiredDatetime
+                        ? dayjs(livingStatusDataElement?.expiredDatetime)
+                        : null
+                    }
+                    attributeName="DateTime"
+                    onDateTimeChange={(e) => {
+                      handleExpiredDateTimeChange(e);
+                    }}
+                  />
+                </FormControl>
+              )}
+
               <FormControl>
                 <Select
                   labelId="demographics-race-select-label"
