@@ -26,6 +26,7 @@ const TestCase = ({
   executionResult,
   deleteTestCase,
   exportTestCase,
+  onCloneTestCase,
   measure,
 }: {
   testCase: TestCaseModel;
@@ -33,6 +34,7 @@ const TestCase = ({
   executionResult: DetailedPopulationGroupResult[];
   deleteTestCase;
   exportTestCase: any;
+  onCloneTestCase?: (testCase: TestCaseModel) => void;
   measure: Measure;
 }) => {
   const viewOrEdit = canEdit ? "edit" : "view";
@@ -265,6 +267,19 @@ const TestCase = ({
                 }}
               >
                 export
+              </button>
+            )}
+
+            {canEdit && onCloneTestCase && (
+              <button
+                id={`clone-test-case-btn-${testCase.id}`}
+                aria-label={`clone-test-case-${testCase.title}`}
+                data-testid={`clone-test-case-btn-${testCase.id}`}
+                onClick={() => {
+                  onCloneTestCase(selectedTestCase);
+                }}
+              >
+                clone
               </button>
             )}
 

@@ -82,6 +82,39 @@ describe("DemographicsSection", () => {
     });
   });
 
+  it("should handle expired date time change", async () => {
+    render(
+      <FormikProvider value={mockFormik}>
+        <DemographicsSection canEdit={true} />
+      </FormikProvider>
+    );
+
+    expect(screen.getByText("Living Status")).toBeInTheDocument();
+    const livingStatusInput = screen.getByTestId(
+      "demographics-living-status-input"
+    ) as HTMLInputElement;
+    expect(livingStatusInput).toBeInTheDocument();
+    expect(livingStatusInput.value).toBe("Living");
+
+    fireEvent.change(livingStatusInput, {
+      target: { value: "Expired" },
+    });
+    expect(livingStatusInput.value).toBe("Expired");
+
+    expect(screen.getByText("Date/Time Expiration")).toBeInTheDocument();
+
+    const dateTimeExpiration = screen.getAllByPlaceholderText(
+      "MM/DD/YYYY hh:mm aa"
+    ) as HTMLInputElement[];
+    expect(dateTimeExpiration.length).toBe(1);
+    // start date
+    fireEvent.change(dateTimeExpiration[0], {
+      target: { value: "08/02/2023 07:49 AM" },
+    });
+
+    expect(dateTimeExpiration[0].value).toBe("08/02/2023 07:49 AM");
+  });
+
   it("should handle Living Status change", () => {
     render(
       <FormikProvider value={mockFormik}>
