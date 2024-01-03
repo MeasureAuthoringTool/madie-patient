@@ -207,7 +207,6 @@ export class QdmCalculationService {
     measure: Measure,
     populationGroupResults: CqmExecutionPatientResultsByPopulationSet
   ) {
-    debugger;
     if (_.isNil(testCase)) {
       return testCase;
     }
@@ -277,10 +276,10 @@ export class QdmCalculationService {
           });
           // so we can reference them by the two sets of indeces
           groupPop.stratificationValues?.forEach((strat, stratIndex) => {
-            let temp = `PopulationSet_${gpIndex + 1}_Stratification_${
+            let stratId = `PopulationSet_${gpIndex + 1}_Stratification_${
               stratIndex + 1
             }`;
-            const value = populationGroupResults[temp]?.STRAT;
+            const value = populationGroupResults[stratId]?.STRAT;
             strat.actual = measure.patientBasis ? !!value : value;
             // each strat has strat expect value, and also an array of populationValue.
             Object.entries(CqmPopulationType).forEach((value, key) => {
@@ -288,19 +287,21 @@ export class QdmCalculationService {
               //Sets an entry = IPP & numeric value from results
               populationMap.set(
                 value[1],
-                populationGroupResults[temp][value[0]]
+                populationGroupResults[stratId][value[0]]
               );
             });
             groupsMap.set("" + groupId, populationMap);
-            this.setTestCaseGroupResultsForStratificationPopulations(
-              patientBased,
-              groupPop,
-              groupId,
-              groupsMap,
-              strat,
-              populationGroupResults,
-              temp
-            );
+            strat.populationValues.forEach((population) => {
+              this.setTestCaseGroupResultsForStratificationPopulations(
+                patientBased,
+                groupPop,
+                groupId,
+                groupsMap,
+                population,
+                populationGroupResults,
+                stratId
+              );
+            });
           });
         }
       });
@@ -318,51 +319,48 @@ export class QdmCalculationService {
 
   // Each stratification has a set a population values,
   // this method will set execution results i.e actual values for stratification populations
-  // Adding Actual values to group population also uses the similar logic, should find a way to re-use the same method
+  // Adding Actual values to group population also uses the similar logic.
   setTestCaseGroupResultsForStratificationPopulations(
     patientBased,
     groupPop,
     groupId,
     groupsMap,
-    strat,
+    population,
     populationGroupResults,
-    temp
+    stratId
   ) {
     let obsCount = 0;
     let obsTracker = {};
-    strat.populationValues.forEach((population) => {
-      if (isTestCasePopulationObservation(population)) {
-        if (patientBased) {
-          if (groupPop.scoring === MeasureScoring.RATIO) {
-            population.actual = this.mapPatientBasedObservations(
-              population,
-              populationGroupResults[temp]
-            );
-          } else {
-            population.actual =
-              populationGroupResults[temp]?.observation_values?.[0];
-          }
-        } else if (
-          obsCount < populationGroupResults[temp]?.observation_values?.length
-        ) {
-          const obsResult = this.getEpisodeObservationResult(
+    if (isTestCasePopulationObservation(population)) {
+      if (patientBased) {
+        if (groupPop.scoring === MeasureScoring.RATIO) {
+          population.actual = this.mapPatientBasedObservations(
             population,
-            populationGroupResults[temp].episode_results,
-            obsTracker[population.name] ?? 0
+            populationGroupResults[stratId]
           );
-          if (!_.isNil(obsResult)) {
-            population.actual = obsResult;
-            obsTracker[population.name] =
-              (obsTracker[population.name] ?? 0) + 1;
-          }
+        } else {
+          population.actual =
+            populationGroupResults[stratId]?.observation_values?.[0];
         }
-        obsCount++;
-      } else {
-        //Look up population
-        const value = groupsMap.get(groupId).get(population.name);
-        population.actual = patientBased ? !!value : value;
+      } else if (
+        obsCount < populationGroupResults[stratId]?.observation_values?.length
+      ) {
+        const obsResult = this.getEpisodeObservationResult(
+          population,
+          populationGroupResults[stratId].episode_results,
+          obsTracker[population.name] ?? 0
+        );
+        if (!_.isNil(obsResult)) {
+          population.actual = obsResult;
+          obsTracker[population.name] = (obsTracker[population.name] ?? 0) + 1;
+        }
       }
-    });
+      obsCount++;
+    } else {
+      //Look up population
+      const value = groupsMap.get(groupId).get(population.name);
+      population.actual = patientBased ? !!value : value;
+    }
   }
 }
 
