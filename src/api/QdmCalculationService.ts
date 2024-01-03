@@ -291,17 +291,15 @@ export class QdmCalculationService {
               );
             });
             groupsMap.set("" + groupId, populationMap);
-            strat.populationValues.forEach((population) => {
-              this.setTestCaseGroupResultsForStratificationPopulations(
-                patientBased,
-                groupPop,
-                groupId,
-                groupsMap,
-                population,
-                populationGroupResults,
-                stratId
-              );
-            });
+            this.setTestCaseGroupResultsForStratificationPopulations(
+              patientBased,
+              groupPop,
+              groupId,
+              groupsMap,
+              strat,
+              populationGroupResults,
+              stratId
+            );
           });
         }
       });
@@ -325,42 +323,45 @@ export class QdmCalculationService {
     groupPop,
     groupId,
     groupsMap,
-    population,
+    strat,
     populationGroupResults,
     stratId
   ) {
     let obsCount = 0;
     let obsTracker = {};
-    if (isTestCasePopulationObservation(population)) {
-      if (patientBased) {
-        if (groupPop.scoring === MeasureScoring.RATIO) {
-          population.actual = this.mapPatientBasedObservations(
+    strat.populationValues?.forEach((population) => {
+      if (isTestCasePopulationObservation(population)) {
+        if (patientBased) {
+          if (groupPop.scoring === MeasureScoring.RATIO) {
+            population.actual = this.mapPatientBasedObservations(
+              population,
+              populationGroupResults[stratId]
+            );
+          } else {
+            population.actual =
+              populationGroupResults[stratId]?.observation_values?.[0];
+          }
+        } else if (
+          obsCount < populationGroupResults[stratId]?.observation_values?.length
+        ) {
+          const obsResult = this.getEpisodeObservationResult(
             population,
-            populationGroupResults[stratId]
+            populationGroupResults[stratId].episode_results,
+            obsTracker[population.name] ?? 0
           );
-        } else {
-          population.actual =
-            populationGroupResults[stratId]?.observation_values?.[0];
+          if (!_.isNil(obsResult)) {
+            population.actual = obsResult;
+            obsTracker[population.name] =
+              (obsTracker[population.name] ?? 0) + 1;
+          }
         }
-      } else if (
-        obsCount < populationGroupResults[stratId]?.observation_values?.length
-      ) {
-        const obsResult = this.getEpisodeObservationResult(
-          population,
-          populationGroupResults[stratId].episode_results,
-          obsTracker[population.name] ?? 0
-        );
-        if (!_.isNil(obsResult)) {
-          population.actual = obsResult;
-          obsTracker[population.name] = (obsTracker[population.name] ?? 0) + 1;
-        }
+        obsCount++;
+      } else {
+        //Look up population
+        const value = groupsMap.get(groupId).get(population.name);
+        population.actual = patientBased ? !!value : value;
       }
-      obsCount++;
-    } else {
-      //Look up population
-      const value = groupsMap.get(groupId).get(population.name);
-      population.actual = patientBased ? !!value : value;
-    }
+    });
   }
 }
 
