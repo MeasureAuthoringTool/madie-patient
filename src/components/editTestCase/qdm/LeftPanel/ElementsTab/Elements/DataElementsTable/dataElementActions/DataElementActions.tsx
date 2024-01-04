@@ -75,7 +75,6 @@ export default function DataElementActions(props: DataElementActionsProps) {
         optionsOpen={open}
         handleClose={handleClose}
         canEdit={true}
-        canView={canView}
         editSelectOptionProps={{
           label: "Edit",
           toImplementFunction: () => {
