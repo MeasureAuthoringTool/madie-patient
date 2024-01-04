@@ -276,11 +276,30 @@ export class QdmCalculationService {
           });
           // so we can reference them by the two sets of indeces
           groupPop.stratificationValues?.forEach((strat, stratIndex) => {
-            const value =
-              populationGroupResults[
-                `PopulationSet_${gpIndex + 1}_Stratification_${stratIndex + 1}`
-              ]?.STRAT;
+            let stratId = `PopulationSet_${gpIndex + 1}_Stratification_${
+              stratIndex + 1
+            }`;
+            const value = populationGroupResults[stratId]?.STRAT;
             strat.actual = measure.patientBasis ? !!value : value;
+            // each strat has strat expect value, and also an array of populationValue.
+            Object.entries(CqmPopulationType).forEach((value, key) => {
+              //value is one of IPP, DENOM, NUMER, etc...
+              //Sets an entry = IPP & numeric value from results
+              populationMap.set(
+                value[1],
+                populationGroupResults[stratId][value[0]]
+              );
+            });
+            groupsMap.set("" + groupId, populationMap);
+            this.setTestCaseGroupResultsForStratificationPopulations(
+              patientBased,
+              groupPop,
+              groupId,
+              groupsMap,
+              strat,
+              populationGroupResults,
+              stratId
+            );
           });
         }
       });
@@ -294,6 +313,55 @@ export class QdmCalculationService {
       : ExecutionStatusType.FAIL;
 
     return updatedTestCase;
+  }
+
+  // Each stratification has a set a population values,
+  // this method will set execution results i.e actual values for stratification populations
+  // Adding Actual values to group population also uses the similar logic.
+  setTestCaseGroupResultsForStratificationPopulations(
+    patientBased,
+    groupPop,
+    groupId,
+    groupsMap,
+    strat,
+    populationGroupResults,
+    stratId
+  ) {
+    let obsCount = 0;
+    let obsTracker = {};
+    strat.populationValues?.forEach((population) => {
+      if (isTestCasePopulationObservation(population)) {
+        if (patientBased) {
+          if (groupPop.scoring === MeasureScoring.RATIO) {
+            population.actual = this.mapPatientBasedObservations(
+              population,
+              populationGroupResults[stratId]
+            );
+          } else {
+            population.actual =
+              populationGroupResults[stratId]?.observation_values?.[0];
+          }
+        } else if (
+          obsCount < populationGroupResults[stratId]?.observation_values?.length
+        ) {
+          const obsResult = this.getEpisodeObservationResult(
+            population,
+            populationGroupResults[stratId].episode_results,
+            obsTracker[population.name] ?? 0
+          );
+          if (!_.isNil(obsResult)) {
+            population.actual = obsResult;
+            obsTracker[population.name] =
+              (obsTracker[population.name] ?? 0) + 1;
+          }
+        }
+        obsCount++;
+      } else {
+        //Look up population
+        const value = groupsMap.get(groupId).get(population.name);
+        population.actual = patientBased ? !!value : value;
+      }
+    });
   }
 }
 
