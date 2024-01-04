@@ -122,6 +122,12 @@ const ElementsSection = (props: {
     setActiveTab(v);
   };
 
+  useEffect(() => {
+    if (selectedDataElement?.qdmCategory.length > 0) {
+      setActiveTab(selectedDataElement.qdmCategory);
+    }
+  }, [selectedDataElement]);
+
   const handleAddDataElement = (sourceCriteria) => {
     delete sourceCriteria._id;
 
@@ -186,7 +192,11 @@ const ElementsSection = (props: {
         <DataElementsTable
           allowedTypes={allowedTypes}
           dataElements={filterDataElements(patient?.dataElements)}
-          onView={(dataElement) => setSelectedDataElement(dataElement)}
+          onView={(dataElement) => {
+            const modelClass = getDataElementClass(dataElement);
+            const updatedDataElement = new modelClass(dataElement);
+            setSelectedDataElement(updatedDataElement);
+          }}
           canEdit={canEdit}
           onDelete={deleteDataElement}
         />
