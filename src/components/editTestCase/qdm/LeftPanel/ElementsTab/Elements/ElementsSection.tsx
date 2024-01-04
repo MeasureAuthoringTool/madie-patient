@@ -122,12 +122,6 @@ const ElementsSection = (props: {
     setActiveTab(v);
   };
 
-  useEffect(() => {
-    if (selectedDataElement?.qdmCategory.length > 0) {
-      setActiveTab(selectedDataElement.qdmCategory);
-    }
-  }, [selectedDataElement]);
-
   const handleAddDataElement = (sourceCriteria) => {
     delete sourceCriteria._id;
 
@@ -196,6 +190,7 @@ const ElementsSection = (props: {
             const modelClass = getDataElementClass(dataElement);
             const updatedDataElement = new modelClass(dataElement);
             setSelectedDataElement(updatedDataElement);
+            setActiveTab(updatedDataElement?.qdmCategory);
           }}
           canEdit={canEdit}
           onDelete={deleteDataElement}
