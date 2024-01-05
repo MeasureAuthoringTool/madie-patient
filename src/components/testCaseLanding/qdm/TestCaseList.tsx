@@ -236,6 +236,7 @@ const TestCaseList = (props: TestCaseListProps) => {
           });
           setCoveragePercentage(Math.floor((trueSet.size / allSet.size) * 100));
         } catch {
+          console.error("Something unexpected happened with clause_results");
           setCoveragePercentage(NaN);
         }
       });
