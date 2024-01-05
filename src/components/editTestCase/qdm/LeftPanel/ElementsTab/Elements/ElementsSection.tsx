@@ -186,7 +186,12 @@ const ElementsSection = (props: {
         <DataElementsTable
           allowedTypes={allowedTypes}
           dataElements={filterDataElements(patient?.dataElements)}
-          onView={(dataElement) => setSelectedDataElement(dataElement)}
+          onView={(dataElement) => {
+            const modelClass = getDataElementClass(dataElement);
+            const updatedDataElement = new modelClass(dataElement);
+            setSelectedDataElement(updatedDataElement);
+            setActiveTab(updatedDataElement?.qdmCategory);
+          }}
           canEdit={canEdit}
           onDelete={deleteDataElement}
         />
