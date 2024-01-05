@@ -238,7 +238,7 @@ export class QdmCalculationService {
         //Sets an entry = IPP & numeric value from results
         populationMap.set(value[1], results[value[0]]);
       });
-      groupsMap.set("" + groupId, populationMap);
+      groupsMap.set(groupId, populationMap);
 
       updatedTestCase.groupPopulations.forEach((groupPop, gpIndex) => {
         let obsCount = 0;
@@ -281,16 +281,13 @@ export class QdmCalculationService {
             }`;
             const value = populationGroupResults[stratId]?.STRAT;
             strat.actual = measure.patientBasis ? !!value : value;
-            // each strat has strat expect value, and also an array of populationValue.
             Object.entries(CqmPopulationType).forEach((value, key) => {
-              //value is one of IPP, DENOM, NUMER, etc...
-              //Sets an entry = IPP & numeric value from results
               populationMap.set(
                 value[1],
                 populationGroupResults[stratId][value[0]]
               );
             });
-            groupsMap.set("" + groupId, populationMap);
+            groupsMap.set(groupId, populationMap);
             this.setTestCaseGroupResultsForStratificationPopulations(
               patientBased,
               groupPop,
