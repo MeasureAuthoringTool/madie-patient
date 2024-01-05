@@ -160,7 +160,8 @@ export class QdmCalculationService {
   getEpisodeObservationResult(
     population: PopulationExpectedValue,
     episodeResults: any,
-    targetIndex: number
+    targetIndex: number,
+    gpIndex: number
   ): number | undefined {
     let counter = 0;
     // find the next episode for the current target population
@@ -188,7 +189,7 @@ export class QdmCalculationService {
         episode.MSRPOPL === 1 &&
         episode.MSRPOPLEX === 0
       ) {
-        result = episode?.observation_values?.[0];
+        result = episode?.observation_values?.[gpIndex];
       }
 
       if (result && counter === targetIndex) {
@@ -231,23 +232,23 @@ export class QdmCalculationService {
 
       const results = populationGroupResults[groupId];
       let populationMap = new Map<String, number>();
-      let groupsMap = new Map<String, Map<String, number>>();
+      // let groupsMap = new Map<String, Map<String, number>>();
 
       Object.entries(CqmPopulationType).forEach((value, key) => {
         //value is one of IPP, DENOM, NUMER, etc...
         //Sets an entry = IPP & numeric value from results
         populationMap.set(value[1], results[value[0]]);
       });
-      groupsMap.set(groupId, populationMap);
+      // groupsMap.set(groupId, populationMap);
 
-      updatedTestCase.groupPopulations.forEach((groupPop, gpIndex) => {
+      updatedTestCase.groupPopulations.forEach((tcGroupPop, gpIndex) => {
         let obsCount = 0;
         let obsTracker = {};
-        if (groupPop.groupId === groupId) {
-          groupPop.populationValues.forEach((population) => {
+        if (tcGroupPop.groupId === groupId) {
+          tcGroupPop.populationValues.forEach((population) => {
             if (isTestCasePopulationObservation(population)) {
               if (patientBased) {
-                if (groupPop.scoring === MeasureScoring.RATIO) {
+                if (tcGroupPop.scoring === MeasureScoring.RATIO) {
                   population.actual = this.mapPatientBasedObservations(
                     population,
                     results
@@ -259,7 +260,8 @@ export class QdmCalculationService {
                 const obsResult = this.getEpisodeObservationResult(
                   population,
                   results.episode_results,
-                  obsTracker[population.name] ?? 0
+                  obsTracker[population.name] ?? 0,
+                  gpIndex
                 );
                 if (!_.isNil(obsResult)) {
                   population.actual = obsResult;
@@ -269,30 +271,31 @@ export class QdmCalculationService {
               }
               obsCount++;
             } else {
-              //Look up population
-              const value = groupsMap.get(groupId).get(population.name);
+              // Look up population and set actual values
+              const value = populationMap.get(population.name);
               population.actual = measure.patientBasis ? !!value : value;
             }
           });
           // so we can reference them by the two sets of indeces
-          groupPop.stratificationValues?.forEach((strat, stratIndex) => {
+          tcGroupPop.stratificationValues?.forEach((strat, stratIndex) => {
             let stratId = `PopulationSet_${gpIndex + 1}_Stratification_${
               stratIndex + 1
             }`;
             const value = populationGroupResults[stratId]?.STRAT;
             strat.actual = measure.patientBasis ? !!value : value;
+            let stratPopulationMap = new Map<String, number>();
             Object.entries(CqmPopulationType).forEach((value, key) => {
-              populationMap.set(
+              stratPopulationMap.set(
                 value[1],
                 populationGroupResults[stratId][value[0]]
               );
             });
-            groupsMap.set(groupId, populationMap);
+            // groupsMap.set(groupId, populationMap);
             this.setTestCaseGroupResultsForStratificationPopulations(
               patientBased,
-              groupPop,
-              groupId,
-              groupsMap,
+              tcGroupPop,
+              gpIndex,
+              stratPopulationMap,
               strat,
               populationGroupResults,
               stratId
@@ -317,9 +320,9 @@ export class QdmCalculationService {
   // Adding Actual values to group population also uses the similar logic.
   setTestCaseGroupResultsForStratificationPopulations(
     patientBased,
-    groupPop,
-    groupId,
-    groupsMap,
+    tcGroupPop,
+    gpIndex,
+    stratPopulationMap,
     strat,
     populationGroupResults,
     stratId
@@ -329,7 +332,7 @@ export class QdmCalculationService {
     strat.populationValues?.forEach((population) => {
       if (isTestCasePopulationObservation(population)) {
         if (patientBased) {
-          if (groupPop.scoring === MeasureScoring.RATIO) {
+          if (tcGroupPop.scoring === MeasureScoring.RATIO) {
             population.actual = this.mapPatientBasedObservations(
               population,
               populationGroupResults[stratId]
@@ -344,7 +347,8 @@ export class QdmCalculationService {
           const obsResult = this.getEpisodeObservationResult(
             population,
             populationGroupResults[stratId].episode_results,
-            obsTracker[population.name] ?? 0
+            obsTracker[population.name] ?? 0,
+            gpIndex
           );
           if (!_.isNil(obsResult)) {
             population.actual = obsResult;
@@ -355,7 +359,7 @@ export class QdmCalculationService {
         obsCount++;
       } else {
         //Look up population
-        const value = groupsMap.get(groupId).get(population.name);
+        const value = stratPopulationMap.get(population.name);
         population.actual = patientBased ? !!value : value;
       }
     });
