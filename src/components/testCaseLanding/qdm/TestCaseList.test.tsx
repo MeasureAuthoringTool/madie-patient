@@ -2027,7 +2027,7 @@ describe("TestCaseList component", () => {
     });
 
     userEvent.click(executeButton);
-    await waitFor(() => expect(screen.getByText("0%")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText("NaN%")).toBeInTheDocument());
 
     const table = await screen.findByTestId("test-case-tbl");
     const tableRows = table.querySelectorAll("tbody tr");
@@ -2108,7 +2108,7 @@ describe("TestCaseList component", () => {
     });
 
     expect(screen.getByText("Passing (2/3)")).toBeInTheDocument();
-    expect(screen.getByText("0%")).toBeInTheDocument();
+    expect(screen.getByText("NaN%")).toBeInTheDocument();
     expect(screen.getByTestId("sr-div")).toBeInTheDocument();
   });
 

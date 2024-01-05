@@ -192,7 +192,6 @@ const TestCaseList = (props: TestCaseListProps) => {
       validTestCases.forEach((testCase) => {
         const patient: QDMPatient = JSON.parse(testCase.json);
         const patientResults = executionResults[patient._id];
-
         const processedTC = qdmCalculation.current.processTestCaseResults(
           testCase,
           [selectedPopCriteria],
@@ -211,7 +210,37 @@ const TestCaseList = (props: TestCaseListProps) => {
       });
       setTestCases([...testCases]);
     }
+    clauseProcessor(calculationOutput);
   }, [calculationOutput, selectedPopCriteria]);
+
+  const clauseProcessor = (calculationOutput) => {
+    //generates current populations coverage %
+    if (calculationOutput) {
+      const trueSet = new Set<string>();
+      const allSet = new Set<string>();
+      const patientIDs = Object.keys(calculationOutput);
+      patientIDs.map((patientID) => {
+        try {
+          const clauses =
+            calculationOutput[patientID][selectedPopCriteria.id].clause_results[
+              measure.cqlLibraryName
+            ];
+          const clauseNumbers = Object.keys(clauses);
+          clauseNumbers.map((localID) => {
+            if (clauses[localID].final != "NA") {
+              allSet.add(localID);
+              if (clauses[localID].final == "TRUE") {
+                trueSet.add(localID);
+              }
+            }
+          });
+          setCoveragePercentage(Math.floor((trueSet.size / allSet.size) * 100));
+        } catch {
+          setCoveragePercentage(NaN);
+        }
+      });
+    }
+  };
 
   const createNewTestCase = () => {
     setCreateOpen(true);
