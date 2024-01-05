@@ -105,7 +105,7 @@ const TestCaseList = (props: TestCaseListProps) => {
   const [executeAllTestCases, setExecuteAllTestCases] =
     useState<boolean>(false);
   const [coverageHTML, setCoverageHTML] = useState<Record<string, string>>();
-  const [coveragePercentage, setCoveragePercentage] = useState<number>(0);
+  const [coveragePercentage, setCoveragePercentage] = useState<string>("-");
   const [openDeleteAllTestCasesDialog, setOpenDeleteAllTestCasesDialog] =
     useState<boolean>(false);
   const [testCasePassFailStats, setTestCasePassFailStats] =
@@ -219,14 +219,14 @@ const TestCaseList = (props: TestCaseListProps) => {
       const trueSet = new Set<string>();
       const allSet = new Set<string>();
       const patientIDs = Object.keys(calculationOutput);
-      patientIDs.map((patientID) => {
+      patientIDs.forEach((patientID) => {
         try {
           const clauses =
             calculationOutput[patientID][selectedPopCriteria.id].clause_results[
               measure.cqlLibraryName
             ];
           const clauseNumbers = Object.keys(clauses);
-          clauseNumbers.map((localID) => {
+          clauseNumbers.forEach((localID) => {
             if (clauses[localID].final != "NA") {
               allSet.add(localID);
               if (clauses[localID].final == "TRUE") {
@@ -234,10 +234,11 @@ const TestCaseList = (props: TestCaseListProps) => {
               }
             }
           });
-          setCoveragePercentage(Math.floor((trueSet.size / allSet.size) * 100));
+          setCoveragePercentage(
+            Math.floor((trueSet.size / allSet.size) * 100).toString()
+          );
         } catch {
           console.error("Something unexpected happened with clause_results");
-          setCoveragePercentage(NaN);
         }
       });
     }
