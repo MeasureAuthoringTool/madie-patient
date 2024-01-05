@@ -17,6 +17,7 @@ import {
 import { ExecutionStatusType } from "./CalculationService";
 import {
   CV_EPISODE_WITH_OBS_RESULTS,
+  CV_EPISODE_WITH_STRAT_OBS_RESULTS,
   CV_PATIENT_WITH_OBS_RESULTS,
   RATIO_EPISODEBASED_WITH_OBS_RESULTS,
   RATIO_PATIENTBASED_WITH_OBS_RESULTS,
@@ -1320,6 +1321,78 @@ describe("QDM CalculationService Tests", () => {
       expect(output.groupPopulations[2].populationValues[9].actual).toEqual(6);
 
       expect(output.executionStatus).toEqual(ExecutionStatusType.FAIL);
+    });
+
+    it("Should return testCase with actual values passing for CV episode based measure with Stratifications", () => {
+      const output = calculationService.processTestCaseResults(
+        CV_EPISODE_WITH_STRAT_OBS_RESULTS.testCase,
+        CV_EPISODE_WITH_STRAT_OBS_RESULTS.measureGroups,
+        CV_EPISODE_WITH_STRAT_OBS_RESULTS.measure,
+        CV_EPISODE_WITH_STRAT_OBS_RESULTS.patientResults
+      );
+
+      expect(output).toBeTruthy();
+      expect(output.groupPopulations[0].populationValues[0].name).toEqual(
+        PopulationType.INITIAL_POPULATION
+      );
+      expect(output.groupPopulations[0].populationValues[0].actual).toEqual(2);
+      expect(output.groupPopulations[0].populationValues[1].name).toEqual(
+        PopulationType.MEASURE_POPULATION
+      );
+      expect(output.groupPopulations[0].populationValues[1].actual).toEqual(2);
+      expect(output.groupPopulations[0].populationValues[2].name).toEqual(
+        PopulationType.MEASURE_POPULATION_OBSERVATION
+      );
+      expect(output.groupPopulations[0].populationValues[2].actual).toEqual(60);
+      expect(output.groupPopulations[0].populationValues[3].name).toEqual(
+        PopulationType.MEASURE_POPULATION_OBSERVATION
+      );
+      expect(output.groupPopulations[0].populationValues[3].actual).toEqual(5);
+      expect(output.groupPopulations[0].populationValues[4].name).toEqual(
+        PopulationType.MEASURE_POPULATION_EXCLUSION
+      );
+      expect(output.groupPopulations[0].populationValues[4].actual).toEqual(0);
+
+      // verify stratification values
+      const strat1 = output.groupPopulations[0].stratificationValues[0];
+      expect(strat1.name).toEqual("Strata-1");
+      expect(strat1.actual).toEqual(1);
+      expect(strat1.populationValues[0].name).toEqual(
+        PopulationType.INITIAL_POPULATION
+      );
+      expect(strat1.populationValues[0].actual).toEqual(1);
+      expect(strat1.populationValues[1].name).toEqual(
+        PopulationType.MEASURE_POPULATION_OBSERVATION
+      );
+      expect(strat1.populationValues[1].actual).toEqual(60);
+      expect(strat1.populationValues[2].name).toEqual(
+        PopulationType.MEASURE_POPULATION
+      );
+      expect(strat1.populationValues[2].actual).toEqual(1);
+      expect(strat1.populationValues[3].name).toEqual(
+        PopulationType.MEASURE_POPULATION_EXCLUSION
+      );
+      expect(strat1.populationValues[3].actual).toEqual(0);
+
+      const strat2 = output.groupPopulations[0].stratificationValues[1];
+      expect(strat2.name).toEqual("Strata-2");
+      expect(strat2.actual).toEqual(1);
+      expect(strat2.populationValues[0].name).toEqual(
+        PopulationType.INITIAL_POPULATION
+      );
+      expect(strat2.populationValues[0].actual).toEqual(1);
+      expect(strat2.populationValues[1].name).toEqual(
+        PopulationType.MEASURE_POPULATION_OBSERVATION
+      );
+      expect(strat2.populationValues[1].actual).toEqual(5);
+      expect(strat2.populationValues[2].name).toEqual(
+        PopulationType.MEASURE_POPULATION
+      );
+      expect(strat2.populationValues[2].actual).toEqual(1);
+      expect(strat2.populationValues[3].name).toEqual(
+        PopulationType.MEASURE_POPULATION_EXCLUSION
+      );
+      expect(strat2.populationValues[3].actual).toEqual(0);
     });
   });
 
