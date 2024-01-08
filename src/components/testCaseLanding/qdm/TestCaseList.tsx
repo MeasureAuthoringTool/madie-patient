@@ -210,21 +210,23 @@ const TestCaseList = (props: TestCaseListProps) => {
       });
       setTestCases([...testCases]);
     }
-    clauseProcessor(calculationOutput);
+    clauseCoverageProcessor(calculationOutput);
   }, [calculationOutput, selectedPopCriteria]);
 
-  const clauseProcessor = (calculationOutput) => {
+  const clauseCoverageProcessor = (calculationOutput) => {
     //generates current populations coverage %
-    if (calculationOutput) {
+    if (calculationOutput && selectedPopCriteria) {
       const trueSet = new Set<string>();
       const allSet = new Set<string>();
       const patientIDs = Object.keys(calculationOutput);
       patientIDs.forEach((patientID) => {
-        try {
+        if (
+          calculationOutput[patientID][selectedPopCriteria.id]
+            ?.clause_results?.[measure.cqlLibraryName]
+        ) {
           const clauses =
-            calculationOutput[patientID][selectedPopCriteria.id].clause_results[
-              measure.cqlLibraryName
-            ];
+            calculationOutput[patientID][selectedPopCriteria.id]
+              ?.clause_results?.[measure.cqlLibraryName];
           const clauseNumbers = Object.keys(clauses);
           clauseNumbers.forEach((localID) => {
             if (clauses[localID].final != "NA") {
@@ -237,8 +239,11 @@ const TestCaseList = (props: TestCaseListProps) => {
           setCoveragePercentage(
             Math.floor((trueSet.size / allSet.size) * 100).toString()
           );
-        } catch {
-          console.error("Something unexpected happened with clause_results");
+        } else {
+          console.error(
+            "Something unexpected happened with the coverage processor",
+            calculationOutput
+          );
         }
       });
     }

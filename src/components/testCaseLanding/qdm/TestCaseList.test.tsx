@@ -237,6 +237,7 @@ const executionResults = {
 };
 
 const qdmExecutionResults = {
+  //TODO: AAAAA
   // patient with id "1"
   "1": {
     // group / population set with id "1"
@@ -1803,18 +1804,18 @@ describe("TestCaseList component", () => {
 
     userEvent.click(executeAllTestCasesButton);
 
+    userEvent.click(screen.getByTestId("Used-definition"));
     await waitFor(() => {
-      userEvent.click(screen.getByTestId("Used-definition"));
       expect(screen.getByTestId("Used-definition-text")).toBeInTheDocument();
-
-      userEvent.click(screen.getByTestId("Unused-definition"));
-      expect(screen.getByTestId("Unused-definition-text")).toBeInTheDocument();
-
-      userEvent.click(screen.getByTestId("Functions-definition"));
-      expect(
-        screen.getByTestId("Functions-definition-text")
-      ).toBeInTheDocument();
     });
+    userEvent.click(screen.getByTestId("Unused-definition"));
+    await waitFor(() => {
+      expect(screen.getByTestId("Unused-definition-text")).toBeInTheDocument();
+    });
+    userEvent.click(screen.getByTestId("Functions-definition"));
+    expect(
+      await screen.findByTestId("Functions-definition-text")
+    ).toBeInTheDocument();
   });
 
   it("Run Test Cases button should be disabled if no valid test cases", async () => {
@@ -1989,6 +1990,7 @@ describe("TestCaseList component", () => {
 
   it("defaults pop criteria nav link to first pop criteria on load", async () => {
     measure.cqlErrors = false;
+    renderTestCaseListComponent();
     measure.groups = [
       ...measure.groups,
       {
@@ -2005,7 +2007,6 @@ describe("TestCaseList component", () => {
         measureGroupTypes: [],
       },
     ];
-    renderTestCaseListComponent();
 
     // wait for pop criteria to load
     await waitFor(() => {
