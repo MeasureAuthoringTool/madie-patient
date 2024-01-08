@@ -157,6 +157,10 @@ export class QdmCalculationService {
     }
   };
 
+  // episodeResults.observation_values holds results for all observations associated to that episode from all groups.
+  // It is assumed that the observation values are stored sequentially, so based on groupIndex, we are getting observations results for that particular group
+  // Example: Episode-xyz has observation_values [3,56,8], For this particular episode, group-1's actual value is 3, group-2's actual value is 56 and so on...
+  // Observation_Values are ignored if MSRPOPL == 1 & MSRPOPLEX == 0, since the execution results might contain the value, even though it is not a valid scenario.
   getEpisodeObservationResult(
     population: PopulationExpectedValue,
     episodeResults: any,
@@ -232,14 +236,12 @@ export class QdmCalculationService {
 
       const results = populationGroupResults[groupId];
       let populationMap = new Map<String, number>();
-      // let groupsMap = new Map<String, Map<String, number>>();
 
       Object.entries(CqmPopulationType).forEach((value, key) => {
         //value is one of IPP, DENOM, NUMER, etc...
         //Sets an entry = IPP & numeric value from results
         populationMap.set(value[1], results[value[0]]);
       });
-      // groupsMap.set(groupId, populationMap);
 
       updatedTestCase.groupPopulations.forEach((tcGroupPop, gpIndex) => {
         let obsCount = 0;
@@ -271,7 +273,7 @@ export class QdmCalculationService {
               }
               obsCount++;
             } else {
-              // Look up population and set actual values
+              // Look up calculation result value for a particular population
               const value = populationMap.get(population.name);
               population.actual = measure.patientBasis ? !!value : value;
             }

@@ -205,6 +205,7 @@ export class CqmConversionService {
     }, {});
   };
 
+  // Combining all observations from multiple groups. Cqm-Execution likes it this way.
   private generateCqmObservations = (measure: Measure) => {
     const cqmObservations = [];
     measure.groups?.forEach((group) => {
