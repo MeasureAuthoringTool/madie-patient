@@ -254,7 +254,7 @@ export class QdmCalculationService {
                     results
                   );
                 } else {
-                  population.actual = results?.observation_values?.[0];
+                  population.actual = results?.observation_values?.[gpIndex];
                 }
               } else if (obsCount < results?.observation_values?.length) {
                 const obsResult = this.getEpisodeObservationResult(
