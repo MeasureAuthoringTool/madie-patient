@@ -27,13 +27,16 @@ import { CqmModelFactory } from "./model-factory/CqmModelFactory";
 import { parse } from "./ElmParser";
 import { ElmDependencyFinder } from "./elmDependencyFinder/ElmDependencyFinder";
 import { v4 as uuidv4 } from "uuid";
+import { TranslatedLibrary } from "./models/TranslatedLibrary";
 
 export class CqmConversionService {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
 
   elmDependencyFinder = new ElmDependencyFinder();
 
-  async fetchElmForCql(cql: string): Promise<Array<string>> {
+  // get the translated artifacts for CQL including the included libraries.
+  // returns the array of TranslatedLibrary{name, version, cql, elmJson, elmXml}
+  async fetchTranslationForCql(cql: string): Promise<Array<TranslatedLibrary>> {
     try {
       const response = await axios.put(`${this.baseUrl}/cql/elm`, cql, {
         headers: {
@@ -90,7 +93,8 @@ export class CqmConversionService {
     cqmMeasure.source_data_criteria = await this.fetchRelevantDataElements(
       measure
     );
-    const elms = await this.fetchElmForCql(measure.cql);
+    const translatedLibraries = await this.fetchTranslationForCql(measure.cql);
+    const elms = translatedLibraries.map((t) => t.elmJson);
     // Fetch statement dependencies
     const statementDependenciesMap =
       await this.elmDependencyFinder.findDependencies(
@@ -163,11 +167,7 @@ export class CqmConversionService {
       ),
       ...(measureScoring === "ContinuousVariable" || measureScoring === "Ratio"
         ? {
-            observations: this.generateCqmObservations(
-              group.measureObservations,
-              measure.cqlLibraryName,
-              group.populations
-            ),
+            observations: this.generateCqmObservations(measure),
           }
         : {}),
     }));
@@ -205,31 +205,34 @@ export class CqmConversionService {
     }, {});
   };
 
-  private generateCqmObservations = (
-    observations: MeasureObservation[],
-    cqlLibraryName: string,
-    populations: Population[]
-  ) => {
-    return observations?.map((observation, i) => ({
-      id: observation.id,
-      hqmf_id: null,
-      aggregation_type: observation.aggregateMethod,
-      observation_function: {
-        id: uuidv4(),
-        library_name: cqlLibraryName,
-        statement_name: observation.definition,
-        hqmf_id: null,
-      },
-      observation_parameter: {
-        id: uuidv4(),
-        library_name: cqlLibraryName,
-        statement_name: this.getAssociatedPopulationDefinition(
-          observation.criteriaReference,
-          populations
-        ),
-        hqmf_id: null,
-      },
-    }));
+  // Combining all observations from multiple groups. Cqm-Execution likes it this way.
+  private generateCqmObservations = (measure: Measure) => {
+    const cqmObservations = [];
+    measure.groups?.forEach((group) => {
+      group.measureObservations?.forEach((observation, i) =>
+        cqmObservations.push({
+          id: observation.id,
+          hqmf_id: null,
+          aggregation_type: observation.aggregateMethod,
+          observation_function: {
+            id: uuidv4(),
+            library_name: measure.cqlLibraryName,
+            statement_name: observation.definition,
+            hqmf_id: null,
+          },
+          observation_parameter: {
+            id: uuidv4(),
+            library_name: measure.cqlLibraryName,
+            statement_name: this.getAssociatedPopulationDefinition(
+              observation.criteriaReference,
+              group.populations
+            ),
+            hqmf_id: null,
+          },
+        })
+      );
+    });
+    return cqmObservations;
   };
 
   private getAssociatedPopulationDefinition = (
