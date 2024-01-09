@@ -167,11 +167,7 @@ export class CqmConversionService {
       ),
       ...(measureScoring === "ContinuousVariable" || measureScoring === "Ratio"
         ? {
-            observations: this.generateCqmObservations(
-              group.measureObservations,
-              measure.cqlLibraryName,
-              group.populations
-            ),
+            observations: this.generateCqmObservations(measure),
           }
         : {}),
     }));
@@ -209,31 +205,34 @@ export class CqmConversionService {
     }, {});
   };
 
-  private generateCqmObservations = (
-    observations: MeasureObservation[],
-    cqlLibraryName: string,
-    populations: Population[]
-  ) => {
-    return observations?.map((observation, i) => ({
-      id: observation.id,
-      hqmf_id: null,
-      aggregation_type: observation.aggregateMethod,
-      observation_function: {
-        id: uuidv4(),
-        library_name: cqlLibraryName,
-        statement_name: observation.definition,
-        hqmf_id: null,
-      },
-      observation_parameter: {
-        id: uuidv4(),
-        library_name: cqlLibraryName,
-        statement_name: this.getAssociatedPopulationDefinition(
-          observation.criteriaReference,
-          populations
-        ),
-        hqmf_id: null,
-      },
-    }));
+  // Combining all observations from multiple groups. Cqm-Execution likes it this way.
+  private generateCqmObservations = (measure: Measure) => {
+    const cqmObservations = [];
+    measure.groups?.forEach((group) => {
+      group.measureObservations?.forEach((observation, i) =>
+        cqmObservations.push({
+          id: observation.id,
+          hqmf_id: null,
+          aggregation_type: observation.aggregateMethod,
+          observation_function: {
+            id: uuidv4(),
+            library_name: measure.cqlLibraryName,
+            statement_name: observation.definition,
+            hqmf_id: null,
+          },
+          observation_parameter: {
+            id: uuidv4(),
+            library_name: measure.cqlLibraryName,
+            statement_name: this.getAssociatedPopulationDefinition(
+              observation.criteriaReference,
+              group.populations
+            ),
+            hqmf_id: null,
+          },
+        })
+      );
+    });
+    return cqmObservations;
   };
 
   private getAssociatedPopulationDefinition = (
