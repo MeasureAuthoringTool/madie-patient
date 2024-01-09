@@ -237,7 +237,6 @@ const executionResults = {
 };
 
 const qdmExecutionResults = {
-  //TODO: AAAAA
   // patient with id "1"
   "1": {
     // group / population set with id "1"
