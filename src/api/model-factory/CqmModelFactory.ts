@@ -177,8 +177,6 @@ export class CqmModelFactory {
         return new InterventionRecommended();
       case "PhysicalExamPerformed":
         return new PhysicalExamPerformed();
-      case "CommunicationNotPerformed":
-        return new CommunicationPerformed();
       default:
         throw new Error(`Unsupported data type: ${modelName}`);
     }
