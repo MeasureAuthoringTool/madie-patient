@@ -243,6 +243,55 @@ const qdmExecutionResults = {
     // group / population set with id "1"
     "1": {
       IPP: true,
+      clause_results: {
+        testLibrary: {
+          28: {
+            raw: [],
+            statement_name: "SDE Ethnicity",
+            library_name: "testLibrary",
+            localId: "28",
+            final: "TRUE",
+          },
+          36: {
+            raw: [
+              {
+                dataElementCodes: [
+                  {
+                    code: "4525004",
+                    system: "2.16.840.1.113883.6.96",
+                    version: null,
+                    display: "Emergency department patient visit (procedure)",
+                  },
+                ],
+                _id: "6595aa5d1860570000fa6503",
+                participant: [],
+                relatedTo: [],
+                qdmTitle: "Encounter, Performed",
+                hqmfOid: "2.16.840.1.113883.10.20.28.4.5",
+                qdmCategory: "encounter",
+                qdmStatus: "performed",
+                qdmVersion: "5.6",
+                _type: "QDM::EncounterPerformed",
+                description: "Encounter, Performed: Emergency Department Visit",
+                codeListId: "2.16.840.1.113883.3.117.1.7.1.292",
+                id: "6595aa5d1860570000fa6502",
+                relevantPeriod: {
+                  low: "2022-01-01T08:00:00.000+00:00",
+                  high: "2022-01-08T00:00:00.000+00:00",
+                  lowClosed: true,
+                  highClosed: true,
+                },
+                facilityLocations: [],
+                diagnoses: [],
+              },
+            ],
+            statement_name: "Initial Population",
+            library_name: "QDMDelete",
+            localId: "36",
+            final: "TRUE",
+          },
+        },
+      },
       DENOM: false,
       NUMER: true,
       episodeResults: {},
@@ -2028,7 +2077,7 @@ describe("TestCaseList component", () => {
     });
 
     userEvent.click(executeButton);
-    await waitFor(() => expect(screen.getByText("-%")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText("100%")).toBeInTheDocument());
 
     const table = await screen.findByTestId("test-case-tbl");
     const tableRows = table.querySelectorAll("tbody tr");
@@ -2109,7 +2158,7 @@ describe("TestCaseList component", () => {
     });
 
     expect(screen.getByText("Passing (2/3)")).toBeInTheDocument();
-    expect(screen.getByText("-%")).toBeInTheDocument();
+    expect(screen.getByText("100%")).toBeInTheDocument();
     expect(screen.getByTestId("sr-div")).toBeInTheDocument();
   });
 
