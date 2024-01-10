@@ -216,8 +216,8 @@ const TestCaseList = (props: TestCaseListProps) => {
   const clauseCoverageProcessor = (calculationOutput) => {
     //generates current populations coverage %
     if (calculationOutput && selectedPopCriteria) {
-      const trueSet = new Set<string>();
-      const allSet = new Set<string>();
+      const trueClauses = new Set<string>();
+      const allClauses = new Set<string>();
       const patientIDs = Object.keys(calculationOutput);
       patientIDs.forEach((patientID) => {
         if (
@@ -230,14 +230,14 @@ const TestCaseList = (props: TestCaseListProps) => {
           const clauseNumbers = Object.keys(clauses);
           clauseNumbers.forEach((localID) => {
             if (clauses[localID].final != "NA") {
-              allSet.add(localID);
+              allClauses.add(localID);
               if (clauses[localID].final == "TRUE") {
-                trueSet.add(localID);
+                trueClauses.add(localID);
               }
             }
           });
           setCoveragePercentage(
-            Math.floor((trueSet.size / allSet.size) * 100).toString()
+            Math.floor((trueClauses.size / allClauses.size) * 100).toString()
           );
         } else {
           console.error(
