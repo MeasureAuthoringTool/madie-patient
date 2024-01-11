@@ -1,5 +1,11 @@
 import * as React from "react";
-import { render, screen, waitFor, within } from "@testing-library/react";
+import {
+  findByTestId,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import CalculationResults from "./CalculationResults";
 import { GroupPopulation } from "@madie/madie-models";
 import userEvent from "@testing-library/user-event";
@@ -75,14 +81,14 @@ const measureGroups = [
       {
         id: "914d",
         name: "initialPopulation",
-        definition: "Denominator",
-        associationType: "Denominator",
+        definition: "Initial Population",
+        associationType: null,
         description: "",
       },
       {
         id: "19c0",
         name: "denominator",
-        definition: "Initial Population",
+        definition: "Denominator",
         associationType: null,
         description: "",
       },
@@ -259,14 +265,14 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     renderCoverageComponent();
     await assertPopulationTabs();
     expect(screen.getByTestId("IP-highlighting")).toHaveTextContent(
-      `define "Denominator": "Initial Population"`
+      `define "Initial Population": "Inpatient Encounters"`
     );
 
     // switch to denominator tab
     const denom = await getTab("DENOM");
     userEvent.click(denom);
     expect(screen.getByTestId("DENOM-highlighting")).toHaveTextContent(
-      `Initial Population": "Inpatient Encounters`
+      `define "Denominator": "Initial Population"`
     );
 
     // switch to numerator tab
@@ -321,5 +327,30 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     const unused = await getTab("Unused");
     userEvent.click(unused);
     expect(screen.getAllByTestId("unused-highlighting")).toHaveLength(5);
+  });
+
+  it("displays calculation results after test case execution", async () => {
+    renderCoverageComponent();
+    await assertPopulationTabs(); //ensures we're on the Initial Population tab
+
+    // Check for 'Results' button on IP population tab
+    const results = await screen.findByRole("button", { name: "Results" });
+    await waitFor(() => {
+      expect(results).toBeInTheDocument();
+    });
+
+    // Check for Initial Population result value
+    const result = await screen.findByTestId("results-section");
+    expect(result).toHaveTextContent("TRUE (true)");
+
+    // Move to Definitions tab
+    const definitions = await getTab("Definitions");
+    userEvent.click(definitions);
+
+    // Check how many 'Results' are present
+    const definitionResults = await screen.findAllByRole("button", {
+      name: "Results",
+    });
+    expect(definitionResults).toHaveLength(4);
   });
 });

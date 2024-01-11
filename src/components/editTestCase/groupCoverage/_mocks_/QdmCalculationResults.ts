@@ -101,13 +101,15 @@ export const qdmCalculationResults = {
             statement_name: "Inpatient Encounters",
             relevance: "TRUE",
             final: "FALSE",
+            pretty: "FALSE (false)",
           },
           "Initial Population": {
             raw: [],
             library_name: "TestQDM",
             statement_name: "Initial Population",
             relevance: "TRUE",
-            final: "FALSE",
+            final: "TRUE",
+            pretty: "TRUE (true)",
           },
           Denominator: {
             raw: [],
@@ -115,6 +117,7 @@ export const qdmCalculationResults = {
             statement_name: "Denominator",
             relevance: "TRUE",
             final: "FALSE",
+            pretty: "FALSE (false)",
           },
           Numerator: {
             raw: [],
@@ -122,6 +125,7 @@ export const qdmCalculationResults = {
             statement_name: "Numerator",
             relevance: "FALSE",
             final: "UNHIT",
+            pretty: "UNHIT",
           },
           "SDE Ethnicity": {
             raw: [
