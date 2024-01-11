@@ -620,7 +620,7 @@ describe("TestCaseRoutes", () => {
     );
     expect(
       await screen.findByText(
-        "An error occurred, please try again. If the error persists, please contact the help desk."
+        "An error occurred, please try again. If the error persists, please contact the help desk. (003)"
       )
     ).toBeInTheDocument();
   });

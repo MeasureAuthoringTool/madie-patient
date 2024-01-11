@@ -906,7 +906,7 @@ const renderDataElementsCard = (
 describe("DataElementsCard", () => {
   const { queryByText } = screen;
 
-  it("DataElementsCards renders length of stay", async () => {
+  it.only("DataElementsCards renders length of stay", async () => {
     const modelClass = getDataElementClass(dataEl[0]);
     const newDataElement = new modelClass(dataEl[0]);
     renderDataElementsCard("attributes", jest.fn, newDataElement, jest.fn);

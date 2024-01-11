@@ -3,6 +3,11 @@ import cqmModels, { CQL } from "cqm-models";
 import * as _ from "lodash";
 import { getDataElementClass } from "./DataElementHelper";
 
+class Quantity {
+  value: number;
+  unit: string;
+}
+
 export const PRIMARY_TIMING_ATTRIBUTES = [
   "relevantPeriod",
   "relevantDatetime",
@@ -162,10 +167,14 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
   if (!value) {
     return "null";
   }
-  if (value instanceof cqmModels.CQL.Code) {
+
+  if (value.value && value.unit) {
+    return `${value.value} '${value.unit}'`;
+  } else if (value instanceof cqmModels.CQL.Code) {
     const title = codeSystemMap[value.system] || value.system;
     return `${title} : ${value.code}`;
   } else if (value.unit == "%") {
+    //} || (value.unit && value.value)) {
     return `${value.value} ${value.unit}`;
   } else if (value instanceof CQL.Interval) {
     let lowString = value.low ? stringifyValue(value.low) : "N/A";
@@ -181,6 +190,7 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
     }
     // could be a UTC string
     const parsedDate = Date.parse(value);
+
     const resultDate = new Date(parsedDate);
     // treat date differently
     const year = resultDate.getUTCFullYear() || null;
