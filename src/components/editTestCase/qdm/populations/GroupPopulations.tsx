@@ -31,12 +31,8 @@ const GroupPopulations = ({
   groupPopulations = [],
   onChange,
   errors,
-  birthDateTime,
 }) => {
   const formik: any = useFormikContext();
-  if (formik && formik.values) {
-    formik.values.birthDate = birthDateTime;
-  }
   return (
     <>
       {groupPopulations && groupPopulations.length > 0 ? (
