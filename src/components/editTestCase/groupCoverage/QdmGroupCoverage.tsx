@@ -15,6 +15,7 @@ import "twin.macro";
 import "styled-components/macro";
 import parse from "html-react-parser";
 import { Group, GroupPopulation } from "@madie/madie-models";
+import GroupCoverageResultsSection from "./GroupCoverageResultsSection";
 
 interface Props {
   testCaseGroups: GroupPopulation[];
@@ -100,9 +101,13 @@ const QdmGroupCoverage = ({
         Object.entries(populationDefinition).find(
           ([key]) => key === _.camelCase(selectedPopulationDefinition?.name)
         );
-      setSelectedPopulationDefinitionText(
-        popDef?.[1] ? popDef[1] : undefined
-      );
+      setSelectedPopulationDefinitionText(popDef?.[1] ? popDef[1] : undefined);
+      // TODO: Why is the check on selectedPopDef needed? Too many rerenders?
+      if (calculationResults && selectedPopulationDefinition) {
+        setSelectedPopulationCalculationResult(
+          getDefinitionCalcResult(selectedPopulationDefinition.definition)
+        );
+      }
     }
   };
 
@@ -137,24 +142,35 @@ const QdmGroupCoverage = ({
       }, {});
   };
 
+  const getDefinitionCalcResult = (definitionName) => {
+    const popCriteriaResults =
+      calculationResults[Object.keys(calculationResults)[0]][selectedCriteria];
+    let calcResult;
+    Object.keys(popCriteriaResults.statement_results).forEach((cqlLib) => {
+      calcResult ??=
+        popCriteriaResults.statement_results[cqlLib]?.[definitionName]?.pretty;
+      if (calcResult) return;
+    });
+    return calcResult;
+  };
+
   const filterDefinitions = (
     cqlPopulationDefinitions,
     calculationResults,
     definitionCategory
-  ): QDMPopulationDefinition => {
-    const statementResults =
+  ): QDMCqlDefinition => {
+    const popCriteriaResults =
       calculationResults[Object.keys(calculationResults)[0]][selectedCriteria];
 
     if (Object.keys(popCriteriaResults?.statement_results)) {
-      const filteredDefinitions = 
-        Object.keys(
-          popCriteriaResults?.statement_results
-        )
+      const filteredDefinitions = Object.keys(
+        popCriteriaResults?.statement_results
+      )
         .map((cqlLibrary) =>
-            filterBasedOnDefinitionCategories(
-              popCriteriaResults?.statement_results[cqlLibrary],
-              definitionCategory
-            )
+          filterBasedOnDefinitionCategories(
+            popCriteriaResults?.statement_results[cqlLibrary],
+            definitionCategory
+          )
         )
         .reduce((result, statementResult) => {
           Object.assign(result, statementResult);
@@ -170,9 +186,11 @@ const QdmGroupCoverage = ({
             cqlPopulationDefinitions[selectedCriteria]?.definitions[
               definitionName
             ];
+          result[definitionName].calculationResult =
+            getDefinitionCalcResult(definitionName);
           return result;
         }, {} as QDMCqlDefinition);
-        return defs;
+      return defs;
     }
   };
 
@@ -336,11 +354,26 @@ const QdmGroupCoverage = ({
             id={`${selectedHighlightingTab.abbreviation}-highlighting`}
             data-testid={`${selectedHighlightingTab.abbreviation}-highlighting`}
           >
-            {selectedPopulationDefinitionResults
-                  `<pre><code>${selectedPopulationDefinitionResults}</code></pre>`
-            {selectedPopulationDefinitionText
+            {selectedPopulationDefinitionText ? (
+              <>
+                <div>
+                  {parse(
                     `<pre><code>${selectedPopulationDefinitionText}</code></pre>`
-              : "No results available"}
+                  )}
+                  {calculationResults && (
+                    <GroupCoverageResultsSection
+                      results={
+                        selectedPopulationCalculationResult
+                          ? selectedPopulationCalculationResult
+                          : ""
+                      }
+                    />
+                  )}
+                </div>
+              </>
+            ) : (
+              "No results available"
+            )}
           </div>
         ) : (
           <div>
@@ -365,6 +398,11 @@ const QdmGroupCoverage = ({
                     >
                       {parse(
                         `<pre><code>${selectedAllDefinitions[definition]?.definitionLogic}</code></pre>`
+                      )}
+                      {definition.calculationResult && (
+                        <GroupCoverageResultsSection
+                          results={definition.calculationResult}
+                        />
                       )}
                     </div>
                   );

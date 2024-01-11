@@ -147,7 +147,7 @@ const measureGroups = [
   },
 ];
 
-const getByRole = (name) => screen.findByRole("tab", { name: name });
+const getTab = (name) => screen.findByRole("tab", { name: name });
 const getCriteriaOptions = () => {
   const criteriaSelector = screen.getByTestId("population-criterion-selector");
   const criteriaDropdown = within(criteriaSelector).getByRole(
@@ -158,9 +158,9 @@ const getCriteriaOptions = () => {
 };
 
 const assertPopulationTabs = async () => {
-  const ip = await getByRole("IP");
-  const denom = await getByRole("DENOM");
-  const numer = await getByRole("NUMER");
+  const ip = await getTab("IP");
+  const denom = await getTab("DENOM");
+  const numer = await getTab("NUMER");
   // check tabs are rendered for all populations of a group
   expect(ip).toBeInTheDocument();
   expect(denom).toBeInTheDocument();
@@ -172,7 +172,7 @@ const assertPopulationTabs = async () => {
 };
 
 const renderCoverageComponent = (
-  calculationResults = { qdmCalculationResults },
+  calculationResults = qdmCalculationResults,
   calculationErrors = undefined
 ) => {
   render(
@@ -246,10 +246,10 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     expect(criteriaOptions).toHaveLength(2);
     userEvent.click(criteriaOptions[1]);
     // check tabs are rendered for all populations of a group
-    expect(await getByRole("IP 1")).toBeInTheDocument();
-    expect(await getByRole("IP 2")).toBeInTheDocument();
-    expect(await getByRole("DENOM")).toBeInTheDocument();
-    expect(await getByRole("NUMER")).toBeInTheDocument();
+    expect(await getTab("IP 1")).toBeInTheDocument();
+    expect(await getTab("IP 2")).toBeInTheDocument();
+    expect(await getTab("DENOM")).toBeInTheDocument();
+    expect(await getTab("NUMER")).toBeInTheDocument();
     expect(screen.getByText("Definitions")).toBeInTheDocument();
     expect(screen.getByText("Unused")).toBeInTheDocument();
     expect(screen.getByText("Functions")).toBeInTheDocument();
@@ -263,20 +263,20 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     );
 
     // switch to denominator tab
-    const denom = await getByRole("DENOM");
+    const denom = await getTab("DENOM");
     userEvent.click(denom);
     expect(screen.getByTestId("DENOM-highlighting")).toHaveTextContent(
       `Initial Population": "Inpatient Encounters`
     );
 
     // switch to numerator tab
-    const numer = await getByRole("NUMER");
+    const numer = await getTab("NUMER");
     userEvent.click(numer);
     expect(screen.getByTestId("NUMER-highlighting")).toHaveTextContent(
       `define "Numerator": "Initial Population"`
     );
 
-    const functions = await getByRole("Functions");
+    const functions = await getTab("Functions");
     userEvent.click(functions);
     expect(screen.getAllByTestId("functions-highlighting")).toHaveLength(25);
 
@@ -309,16 +309,16 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     expect(criteriaOptions).toHaveLength(2);
     userEvent.click(criteriaOptions[0]);
 
-    expect(await getByRole("IP")).toBeInTheDocument();
+    expect(await getTab("IP")).toBeInTheDocument();
     expect(screen.getByText("Definitions")).toBeInTheDocument();
     expect(screen.getByText("Unused")).toBeInTheDocument();
     expect(screen.getByText("Functions")).toBeInTheDocument();
 
-    const definitions = await getByRole("Definitions");
+    const definitions = await getTab("Definitions");
     userEvent.click(definitions);
     expect(screen.getAllByTestId("definitions-highlighting")).toHaveLength(4);
 
-    const unused = await getByRole("Unused");
+    const unused = await getTab("Unused");
     userEvent.click(unused);
     expect(screen.getAllByTestId("unused-highlighting")).toHaveLength(5);
   });
