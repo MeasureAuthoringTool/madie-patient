@@ -41,7 +41,7 @@ export class QdmCalculationService {
   ): Promise<CqmExecutionResultsByPatient> {
     // Example options; includes directive to produce pretty statement results.
     const options = {
-      doPretty: false, // getting errors inside cqm-execution with this on, need to debug more
+      doPretty: true,
       includeClauseResults: true,
     };
 
