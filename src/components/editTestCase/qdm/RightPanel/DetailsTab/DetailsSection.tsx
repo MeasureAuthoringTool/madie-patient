@@ -16,11 +16,10 @@ interface DetailsSectionProps {
   // to do, hook up alert/error if needed
   // setErrors: Function;
   // setAlert: Function;
-  birthDateTime: any;
 }
 const DetailsSection = (props: DetailsSectionProps) => {
   const { measureId, id } = useParams();
-  const { canEdit, measureName, birthDateTime } = props;
+  const { canEdit, measureName } = props;
   const [seriesState, setSeriesState] = useState<any>({
     loaded: false,
     series: [],
@@ -28,10 +27,6 @@ const DetailsSection = (props: DetailsSectionProps) => {
 
   const formik: any = useFormikContext();
   const testCaseService = useRef(useTestCaseServiceApi());
-
-  if (formik && formik.values) {
-    formik.values.birthDate = birthDateTime;
-  }
 
   useEffect(() => {
     if (!seriesState.loaded) {
