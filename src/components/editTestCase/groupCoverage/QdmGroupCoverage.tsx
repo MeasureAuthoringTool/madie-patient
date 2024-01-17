@@ -342,8 +342,12 @@ const QdmGroupCoverage = ({
           <div>
             {calculationResults &&
             Object.keys(selectedAllDefinitions).length > 0 ? (
-              Object.values(selectedAllDefinitions)
-                .filter((definition: any) => !!definition.definitionLogic)
+              Object.keys(selectedAllDefinitions)
+                .sort()
+                .filter(
+                  (definition: any) =>
+                    !!selectedAllDefinitions[definition].definitionLogic
+                )
                 .map((definition: any, index) => {
                   return (
                     <div
@@ -356,7 +360,7 @@ const QdmGroupCoverage = ({
                       style={{ borderBottomWidth: "4px" }}
                     >
                       {parse(
-                        `<pre><code>${definition?.definitionLogic}</code></pre>`
+                        `<pre><code>${selectedAllDefinitions[definition]?.definitionLogic}</code></pre>`
                       )}
                     </div>
                   );
