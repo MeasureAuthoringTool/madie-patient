@@ -60,12 +60,7 @@ const TestCaseStratification = ({
             <ExpectActualInput
               id={`${stratification.name}-actual-cb`}
               expectedValue={stratification.actual}
-              onChange={(expectedValue) =>
-                onStratificationChange({
-                  ...stratification,
-                  actual: expectedValue,
-                })
-              }
+              onChange={() => {}}
               stratificationBasis={populationBasis}
               disabled={true}
               data-testid={

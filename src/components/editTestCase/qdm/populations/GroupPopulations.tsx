@@ -1,28 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import TestCasePopulationList from "./TestCasePopulationList";
 import * as _ from "lodash";
 import { useFormikContext } from "formik";
-
-// export interface PopulationsProps {
-// disableExpected?: boolean;
-// we dont need disable actual as it's always disabled.
-// executionRun?: boolean;
-// groupPopulations: DisplayGroupPopulation[];
-// onChange?: (
-//   groupPopulations: GroupPopulation[],
-//   changedGroupId: string,
-//   changedPopulation: DisplayPopulationValue
-// ) => void;
-// onStratificationChange?: (
-//   groupPopulations: GroupPopulation[],
-//   changedGroupId: string,
-//   changedStratification: DisplayStratificationValue
-// ) => void;
-
-// errors?: any[];
-// }
+import { measureStore } from "@madie/madie-util";
 
 const GroupPopulations = ({
   disableExpected = false,
@@ -33,6 +15,7 @@ const GroupPopulations = ({
   errors,
 }) => {
   const formik: any = useFormikContext();
+  const [measure, setMeasure] = useState<any>(measureStore.state);
   return (
     <>
       {groupPopulations && groupPopulations.length > 0 ? (
@@ -48,19 +31,20 @@ const GroupPopulations = ({
                 executionRun={executionRun}
                 populations={gp.populationValues}
                 populationBasis={gp?.populationBasis}
-                onChange={(populations, type, changedPopulation) => {
-                  const nextPopulations = _.cloneDeep(groupPopulations);
-                  const groupPopulation = nextPopulations.find(
-                    (np) => np.groupId === gp.groupId
-                  );
-                  if (groupPopulation) {
-                    groupPopulation.populationValues = populations;
-                  }
+                onChange={(updatedPopulationValues, updatedPopulationValue) => {
+                  debugger;
+                  const clonedGroupPopulations = _.cloneDeep(groupPopulations);
+                  const groupPopulation = _.find(clonedGroupPopulations, {
+                    groupId: gp.groupId,
+                  });
+                  groupPopulation.populationValues = [
+                    ...updatedPopulationValues,
+                  ];
                   if (onChange) {
                     onChange(
-                      nextPopulations,
+                      clonedGroupPopulations,
                       groupPopulation.groupId,
-                      changedPopulation
+                      updatedPopulationValue
                     );
                   }
                 }}
@@ -80,57 +64,47 @@ const GroupPopulations = ({
                       populations={strat.populationValues}
                       stratifications={[strat]}
                       populationBasis={gp.populationBasis}
-                      // Could expect only changedStrat
-                      onStratificationChange={(
-                        changedStrat,
-                        type // unused
-                      ) => {
-                        // given a strat and gp, we find the strat and update it completely.
-                        const nextPopulations = _.cloneDeep(groupPopulations);
-                        const groupPopulation = nextPopulations.find(
-                          (np) => np.groupId === gp.groupId
+                      onStratificationChange={(updatedStratification) => {
+                        // This will only update if the stratification expected/actual value changes
+                        // Doesn't deal with populationValues of Stratification
+                        const clonedGroupPopulations =
+                          _.cloneDeep(groupPopulations);
+                        const groupPopulation = clonedGroupPopulations.find(
+                          (clonedGp) => clonedGp.groupId === gp.groupId
                         );
-                        // slice strat values
-                        const newStratificationValues = [
-                          ...groupPopulation.stratificationValues,
-                        ];
-                        // find index
-                        const targetStratIndex =
-                          newStratificationValues.findIndex(
-                            (strat) => strat.id === changedStrat.id
-                          );
-                        // update el
-                        newStratificationValues[targetStratIndex] =
-                          changedStrat;
-
-                        if (groupPopulation) {
-                          groupPopulation.stratificationValues =
-                            newStratificationValues;
-                        }
-
+                        groupPopulation.stratificationValues[stratIndex] = {
+                          ...updatedStratification,
+                        };
                         formik.setFieldValue(
                           "groupPopulations",
-                          nextPopulations
+                          clonedGroupPopulations
                         );
-                        // onChange(nextPopulations, groupPopulation.groupId, )
                       }}
-                      onChange={(populations, type, changedPopulation) => {
-                        // refactor
-                        const nextPopulations = _.cloneDeep(groupPopulations);
-                        const groupPopulation = nextPopulations.find(
-                          (np) => np.groupId === gp.groupId
-                        );
-                        if (groupPopulation) {
-                          groupPopulation.populationValues = populations;
-                        }
-                        if (onChange) {
-                          onChange(
-                            nextPopulations,
-                            groupPopulation.groupId,
-                            changedPopulation
-                          );
-                        }
-                      }}
+                      // onChange={(populations, updatedPopulationValue) => {
+                      //   const clonedGroupPopulations =
+                      //     _.cloneDeep(groupPopulations);
+                      //   const groupPopulation = clonedGroupPopulations.find(
+                      //     (clonedGp) => clonedGp.groupId === gp.groupId
+                      //   );
+                      //   const changedPopulationName: PopulationType =
+                      //     updatedPopulationValue.name as PopulationType;
+                      //   addRemoveObservationsForPopulationCritieria(
+                      //     groupPopulation.stratificationValues,
+                      //     changedPopulationName,
+                      //     gp.groupId,
+                      //     measure?.groups
+                      //   );
+                      //   const updatedStrat =
+                      //     groupPopulation.stratificationValues[stratIndex];
+                      //   updatedStrat.populationValues = [...populations];
+                      //   if (onChange) {
+                      //     onChange(
+                      //       clonedGroupPopulations,
+                      //       groupPopulation.groupId,
+                      //       updatedPopulationValue
+                      //     );
+                      //   }
+                      // }}
                     />
                   );
                 })}

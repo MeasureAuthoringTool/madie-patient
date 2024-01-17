@@ -149,6 +149,7 @@ const EditTestCase = () => {
     onSubmit: async (values: any) => await handleSubmit(values),
   });
   const { resetForm } = formik;
+  console.log("formik", formik.values.groupPopulations);
 
   // Fetches test case based on ID, identifies measure.group converts it to testcase.groupPopulation
   // if the measure.group is not in TC then a new testcase.groupPopulation is added to nextTc
@@ -207,6 +208,7 @@ const EditTestCase = () => {
   };
 
   const updateTestCase = async (testCase: TestCase) => {
+    debugger;
     const modifiedTestCase = { ...currentTestCase, ...testCase };
     try {
       const updatedTestCase = await testCaseService.current.updateTestCase(

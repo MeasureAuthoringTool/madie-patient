@@ -53,7 +53,7 @@ export function triggerPopChanges(
   let popMap = buildPopulationMap(targetGroup);
 
   addRemoveObservationsForPopulationCritieria(
-    targetGroup,
+    targetGroup.populationValues,
     changedPopulationName,
     changedGroupId,
     measureGroups
@@ -160,7 +160,7 @@ const buildPopulationMap = (populationCritiera: GroupPopulation) => {
 };
 
 function addRemoveObservationsForPopulationCritieria(
-  targetPopulationCriteria: GroupPopulation,
+  targetPopulationValues: PopulationExpectedValue[],
   changedPopulationName: PopulationType,
   changedGroupId: string,
   measureGroups: Group[]
@@ -178,14 +178,14 @@ function addRemoveObservationsForPopulationCritieria(
     let expectedPopType = defineExpectedPopulationType(changedPopulationName);
 
     const expectedObservationsPerPop = countObservationsPerType(
-      targetPopulationCriteria.populationValues,
+      targetPopulationValues,
       measureGroups,
       changedGroupId,
       expectedPopType
     );
 
     let populationBucket: PopulationExpectedValue[] =
-      targetPopulationCriteria.populationValues.filter(
+      targetPopulationValues.filter(
         (value) => value.name != PopulationType.MEASURE_OBSERVATION
       );
 
@@ -222,7 +222,7 @@ function addRemoveObservationsForPopulationCritieria(
         (value) => value.name === PopulationType.MEASURE_POPULATION
       ) + 1;
     newPopBucket.splice(msrPpIdx, 0, ...msrPopBucket);
-    targetPopulationCriteria.populationValues = [...newPopBucket];
+    targetPopulationValues = [...newPopBucket];
   }
 }
 

@@ -29,12 +29,12 @@ export interface TestCasePopulationListProps {
   executionRun?: boolean;
   onChange?: (
     populations: DisplayPopulationValue[],
-    type: "actual" | "expected",
+    // type: "actual" | "expected",
     changedPopulation: DisplayPopulationValue
   ) => void;
   onStratificationChange?: (
-    stratifications: any,
-    type: "actual" | "expected"
+    stratification: any
+    // type: "actual" | "expected"
     // changedStratification: any
     // stratifications: DisplayStratificationValue[],
     // type: "actual" | "expected",
@@ -170,60 +170,31 @@ const TestCasePopulationList = ({
   };
 
   // if we're handling a population nested in a strat we need to update that part instead.
-  const handleChange = (population: DisplayPopulationValue) => {
+  const handlePopulationValueChange = (
+    updatedPopulationValue: DisplayPopulationValue
+  ) => {
     // if our population is part of a strat, we're going to modify that populationValue instead.
     if (strat) {
-      // we want to trigger change in strat[0]
-      const currentStrats = [...stratifications];
-      const targetPopulation = currentStrats[0].populationValues.find(
-        (pop) => pop.id === population.id
+      const updatedStratification = [...stratifications][0];
+      const populationValue = updatedStratification.populationValues?.find(
+        (pop) => pop.id === updatedPopulationValue.id
       );
-      const type =
-        targetPopulation.actual !== population.actual
-          ? "actual"
-          : targetPopulation.expected !== population.expected
-          ? "expected"
-          : null;
-      targetPopulation.actual = population.actual;
-      targetPopulation.expected = population.expected;
-      onStratificationChange(currentStrats[0], type);
+      populationValue.expected = updatedPopulationValue.expected;
+      populationValue.actual = updatedPopulationValue.actual;
+      onChange(updatedStratification?.populationValues, populationValue);
     } else {
-      const newPopulations = _.cloneDeep(populations);
-      const newPop = newPopulations.find((pop) => pop.id === population.id);
-      const type =
-        newPop.actual !== population.actual
-          ? "actual"
-          : newPop.expected !== population.expected
-          ? "expected"
-          : null;
-      newPop.actual = population.actual;
-      newPop.expected = population.expected;
-      if (onChange) {
-        // we want to trigger a different population change if there is a strat
-        onChange(newPopulations, type, population);
+      debugger;
+      const clonedPopulationValues = _.cloneDeep(populations);
+      const populationValue = _.find(clonedPopulationValues, {
+        id: updatedPopulationValue.id,
+      });
+      if (populationValue) {
+        populationValue.expected = updatedPopulationValue.expected;
+        populationValue.actual = updatedPopulationValue.actual;
       }
-    }
-  };
-
-  const handleStratificationChange = (
-    stratification: DisplayStratificationValue
-  ) => {
-    const newStratifications = [...stratifications]; //copy
-    const newStrat = newStratifications.find(
-      (strat) => strat.id === stratification.id
-    );
-
-    const type =
-      newStrat.actual !== stratification.actual
-        ? "actual"
-        : newStrat.expected !== stratification.expected
-        ? "expected"
-        : null;
-
-    newStrat.actual = stratification.actual;
-    newStrat.expected = stratification.expected;
-    if (onStratificationChange) {
-      onStratificationChange(newStratifications, type);
+      if (onChange) {
+        onChange(clonedPopulationValues, updatedPopulationValue);
+      }
     }
   };
 
@@ -318,7 +289,9 @@ const TestCasePopulationList = ({
               populationBasis={populationBasis}
               key={stratification.id}
               disableExpected={disableExpected}
-              onStratificationChange={handleStratificationChange}
+              onStratificationChange={(updatedStratification) =>
+                onStratificationChange(updatedStratification)
+              }
             />
           ))}
           {populations?.map((population, j) => (
@@ -330,7 +303,7 @@ const TestCasePopulationList = ({
               populationBasis={populationBasis}
               key={population.id}
               disableExpected={disableExpected}
-              onChange={handleChange}
+              onChange={handlePopulationValueChange}
               measureObservationsCount={
                 scoring === "Ratio" || scoring === "Continuous Variable"
                   ? measureObservationsCount(population)
