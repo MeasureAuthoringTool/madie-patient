@@ -346,7 +346,7 @@ const QdmGroupCoverage = ({
                 .sort()
                 .filter(
                   (definition: any) =>
-                    !!selectedAllDefinitions[definition].definitionLogic
+                    selectedAllDefinitions[definition].definitionLogic
                 )
                 .map((definition: any, index) => {
                   return (

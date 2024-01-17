@@ -32,7 +32,7 @@ const CoverageTab = ({ population, definitionText }: Props) => {
             {Object.keys(definitionText)
               ?.sort()
               .filter(
-                (definition) => !!definitionText[definition].definitionLogic
+                (definition) => definitionText[definition].definitionLogic
               )
               .map((item: any) => (
                 <pre>{definitionText[item]?.definitionLogic}</pre>
