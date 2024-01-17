@@ -28,7 +28,7 @@ export interface NavTabProps {
   executeTestCases: () => void;
   onImportTestCases?: () => void;
   testCasePassFailStats: TestCasesPassingDetailsProps;
-  coveragePercentage: number;
+  coveragePercentage: string;
   validTestCases: TestCase[];
   selectedPopCriteria: Group;
   onDeleteAllTestCases: () => void;

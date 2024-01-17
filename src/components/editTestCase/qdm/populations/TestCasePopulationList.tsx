@@ -188,7 +188,7 @@ const TestCasePopulationList = ({
       targetPopulation.expected = population.expected;
       onStratificationChange(currentStrats[0], type);
     } else {
-      const newPopulations = [...populations];
+      const newPopulations = _.cloneDeep(populations);
       const newPop = newPopulations.find((pop) => pop.id === population.id);
       const type =
         newPop.actual !== population.actual

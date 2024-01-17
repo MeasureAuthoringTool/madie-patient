@@ -18,7 +18,6 @@ const RightPanel = ({
   measureCql,
   measureGroups,
   measureName,
-  birthDateTime,
 }) => {
   const [activeTab, setActiveTab] = useState<string>("highlighting");
   const featureFlags = useFeatureFlags();
@@ -26,11 +25,7 @@ const RightPanel = ({
   return (
     <div className="right-panel">
       <div className="tab-container">
-        <RightPanelNavTabs
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          birthDateTime={birthDateTime}
-        />
+        <RightPanelNavTabs activeTab={activeTab} setActiveTab={setActiveTab} />
         <div className="spacer" />
         <IconButton>
           <KeyboardTabIcon className="back-icon" />
@@ -53,15 +48,10 @@ const RightPanel = ({
             onChange={onChange}
             errors={errors}
             executionRun={executionRun}
-            birthDateTime={birthDateTime}
           />
         )}
         {activeTab === "details" && (
-          <DetailsSection
-            canEdit={canEdit}
-            measureName={measureName}
-            birthDateTime={birthDateTime}
-          />
+          <DetailsSection canEdit={canEdit} measureName={measureName} />
         )}
       </div>
       {/* header end */}

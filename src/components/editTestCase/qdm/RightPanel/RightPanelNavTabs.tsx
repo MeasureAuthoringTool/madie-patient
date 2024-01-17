@@ -1,20 +1,13 @@
 import React from "react";
 import { Tabs, Tab } from "@madie/madie-design-system/dist/react";
-import { useFormikContext } from "formik";
 
 export interface NavTabProps {
   activeTab: string;
   setActiveTab: (value: string) => void;
-  birthDateTime: any;
 }
 
 export default function RightPanelNavTabs(props: NavTabProps) {
-  const { activeTab, setActiveTab, birthDateTime } = props;
-  const formik: any = useFormikContext();
-  if (formik && formik.values) {
-    formik.values.birthDate = birthDateTime;
-  }
-
+  const { activeTab, setActiveTab } = props;
   return (
     <Tabs
       id="right-panel-navs"
