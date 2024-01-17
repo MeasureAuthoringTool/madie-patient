@@ -32,7 +32,6 @@ const GroupPopulations = ({
                 populations={gp.populationValues}
                 populationBasis={gp?.populationBasis}
                 onChange={(updatedPopulationValues, updatedPopulationValue) => {
-                  debugger;
                   const clonedGroupPopulations = _.cloneDeep(groupPopulations);
                   const groupPopulation = _.find(clonedGroupPopulations, {
                     groupId: gp.groupId,

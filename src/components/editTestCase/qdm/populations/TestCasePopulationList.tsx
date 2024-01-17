@@ -183,7 +183,6 @@ const TestCasePopulationList = ({
       populationValue.actual = updatedPopulationValue.actual;
       onChange(updatedStratification?.populationValues, populationValue);
     } else {
-      debugger;
       const clonedPopulationValues = _.cloneDeep(populations);
       const populationValue = _.find(clonedPopulationValues, {
         id: updatedPopulationValue.id,
