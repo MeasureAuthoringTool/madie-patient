@@ -252,7 +252,7 @@ const TestCasePopulationList = ({
     view = determineGroupResult(populationBasis, populations, executionRun);
   }
 
-  if (stratifications?.length > 0) {
+  if (stratifications?.length > 0 && view === "pass") {
     view = determineGroupResultStratification(
       populationBasis,
       stratifications,
