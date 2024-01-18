@@ -10,6 +10,14 @@ describe("StringifyValue", () => {
     expect(stringifyValue(1)).toBe("1");
   });
 
+  it("should stringify a quantity unit/value pair 'integer", () => {
+    expect(stringifyValue({ value: 2, unit: 4 })).toBe("2 '4'");
+  });
+
+  it("should stringify a quantity unit/value pair 'string'", () => {
+    expect(stringifyValue({ value: 12, unit: "hours" })).toBe("12 'hours'");
+  });
+
   it("stringify value stringifies a number, greater than 999, to a string without thinking it's a date", () => {
     expect(stringifyValue("1234")).toBe("1234");
   });
