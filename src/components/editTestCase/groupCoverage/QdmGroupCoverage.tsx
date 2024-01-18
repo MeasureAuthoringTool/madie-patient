@@ -399,9 +399,9 @@ const QdmGroupCoverage = ({
                       {parse(
                         `<pre><code>${selectedAllDefinitions[definition]?.definitionLogic}</code></pre>`
                       )}
-                      {definition.calculationResult && (
+                      {selectedAllDefinitions[definition]?.calculationResult && (
                         <GroupCoverageResultsSection
-                          results={definition.calculationResult}
+                          results={selectedAllDefinitions[definition].calculationResult}
                         />
                       )}
                     </div>
