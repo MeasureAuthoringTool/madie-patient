@@ -51,7 +51,7 @@ export class TerminologyServiceApi {
       return response.data;
     } catch (error) {
       let message =
-        "An error occurred, please try again. If the error persists, please contact the help desk.";
+        "An error occurred, please try again. If the error persists, please contact the help desk. (003)";
       if (error.response && error.response.status === 404) {
         const data = error.response.data?.message;
         console.error(
@@ -93,7 +93,7 @@ export class TerminologyServiceApi {
       return response.data;
     } catch (error) {
       let message =
-        "An error occurred, please try again. If the error persists, please contact the help desk.";
+        "An error occurred, please try again. If the error persists, please contact the help desk. (004)";
       if (error.response && error.response.status === 404) {
         const data = error.response.data?.message;
         console.error(
