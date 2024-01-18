@@ -26,18 +26,16 @@ const DiagnosisComponent = ({
 
   const handleValueSetChange = (valueSet) => {
     setDiagnosisCode(valueSet);
-    if (presentOnAdmissionIndicator && rank) {
-      handleChange({
-        code: valueSet,
-        presentOnAdmissionIndicator: presentOnAdmissionIndicator,
-        rank: rank,
-      });
-    }
+    handleChange({
+      code: valueSet,
+      presentOnAdmissionIndicator: presentOnAdmissionIndicator,
+      rank: rank,
+    });
   };
 
   const handleValueSetChangePOAI = (valueSet) => {
     setPresentOnAdmissionIndicator(valueSet);
-    if (diagnosisCode && rank) {
+    if (diagnosisCode) {
       handleChange({
         code: diagnosisCode,
         presentOnAdmissionIndicator: valueSet,
@@ -48,7 +46,7 @@ const DiagnosisComponent = ({
 
   const handleRankChange = (input) => {
     setRank(input);
-    if (diagnosisCode && presentOnAdmissionIndicator) {
+    if (diagnosisCode) {
       handleChange({
         code: diagnosisCode,
         presentOnAdmissionIndicator: presentOnAdmissionIndicator,

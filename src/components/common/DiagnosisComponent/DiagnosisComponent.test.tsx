@@ -245,7 +245,8 @@ describe("Diagnosis Component", () => {
       "305686008 - Seen by palliative care physician (finding)"
     );
     userEvent.click(codeOptions[0]);
-    expect(handleDiagnosisChange).toHaveBeenCalledTimes(0);
+    //POA and Rank are optional
+    expect(handleDiagnosisChange).toHaveBeenCalledTimes(1);
 
     //Present On Admission Indicator
     const presentOnAdmissionIndicatorInput = screen.getByTestId(
@@ -296,7 +297,7 @@ describe("Diagnosis Component", () => {
       "305686008 - Seen by palliative care physician (finding)"
     );
     userEvent.click(codeOptionsPOAI[0]);
-    expect(handleDiagnosisChange).toHaveBeenCalledTimes(0);
+    expect(handleDiagnosisChange).toHaveBeenCalledTimes(2);
 
     const rankInput = screen.getByTestId(
       "integer-input-field-Rank"
@@ -306,7 +307,7 @@ describe("Diagnosis Component", () => {
 
     fireEvent.change(rankInput, { target: { value: "1" } });
     expect(rankInput.value).toBe("1");
-    expect(handleDiagnosisChange).toHaveBeenCalledTimes(1);
+    expect(handleDiagnosisChange).toHaveBeenCalledTimes(3);
   });
 
   it("Should allow user to enter custom code system and code", async () => {
@@ -345,7 +346,7 @@ describe("Diagnosis Component", () => {
     // type in the code
     const customCodeInput = screen.getByTestId("custom-code-input");
     userEvent.type(customCodeInput, customCode);
-    expect(handleDiagnosisChange).toHaveBeenCalledTimes(0);
+    expect(handleDiagnosisChange).toHaveBeenCalledTimes(1);
   });
 
   it("Should allow user to enter custom code system and code for Present on Admission Indicator", async () => {
@@ -541,7 +542,7 @@ describe("Diagnosis Component", () => {
       "305686008 - Seen by palliative care physician (finding)"
     );
     userEvent.click(codeOptions[0]);
-    expect(handleDiagnosisChange).toHaveBeenCalledTimes(0);
+    expect(handleDiagnosisChange).toHaveBeenCalledTimes(1);
 
     const rankInput = screen.getByTestId(
       "integer-input-field-Rank"
@@ -551,7 +552,7 @@ describe("Diagnosis Component", () => {
 
     fireEvent.change(rankInput, { target: { value: "1" } });
     expect(rankInput.value).toBe("1");
-    expect(handleDiagnosisChange).toHaveBeenCalledTimes(0);
+    expect(handleDiagnosisChange).toHaveBeenCalledTimes(2);
 
     //Present On Admission Indicator
     const presentOnAdmissionIndicatorInput = screen.getByTestId(
@@ -602,6 +603,6 @@ describe("Diagnosis Component", () => {
       "305686008 - Seen by palliative care physician (finding)"
     );
     userEvent.click(codeOptionsPOAI[0]);
-    expect(handleDiagnosisChange).toHaveBeenCalledTimes(1);
+    expect(handleDiagnosisChange).toHaveBeenCalledTimes(3);
   });
 });
