@@ -162,6 +162,10 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
   if (!value) {
     return "null";
   }
+
+  if (value.value && value.unit) {
+    return `${value.value} '${value.unit}'`;
+  }
   if (value instanceof cqmModels.CQL.Code) {
     const title = codeSystemMap[value.system] || value.system;
     return `${title} : ${value.code}`;
@@ -181,6 +185,7 @@ export const stringifyValue = (value, topLevel = false, codeSystemMap = {}) => {
     }
     // could be a UTC string
     const parsedDate = Date.parse(value);
+
     const resultDate = new Date(parsedDate);
     // treat date differently
     const year = resultDate.getUTCFullYear() || null;
