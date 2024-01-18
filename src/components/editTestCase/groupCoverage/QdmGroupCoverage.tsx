@@ -65,7 +65,7 @@ const QdmGroupCoverage = ({
 
   useEffect(() => {
     changePopulation(selectedHighlightingTab);
-  }, [populationDefinition]);
+  }, [populationDefinition, calculationResults]);
 
   const getCriteriaLabel = (index) => {
     return testCaseGroups.length > 1
@@ -399,9 +399,12 @@ const QdmGroupCoverage = ({
                       {parse(
                         `<pre><code>${selectedAllDefinitions[definition]?.definitionLogic}</code></pre>`
                       )}
-                      {selectedAllDefinitions[definition]?.calculationResult && (
+                      {selectedAllDefinitions[definition]
+                        ?.calculationResult && (
                         <GroupCoverageResultsSection
-                          results={selectedAllDefinitions[definition].calculationResult}
+                          results={
+                            selectedAllDefinitions[definition].calculationResult
+                          }
                         />
                       )}
                     </div>
