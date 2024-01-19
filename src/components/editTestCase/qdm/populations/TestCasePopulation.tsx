@@ -5,7 +5,6 @@ import _ from "lodash";
 import ExpectActualInput from "./ExpectActualInput";
 
 export interface TestCasePopulationProps {
-  executionRun: boolean;
   population: DisplayPopulationValue;
   populationBasis: string;
   showExpected?: boolean;
@@ -19,7 +18,6 @@ export interface TestCasePopulationProps {
 }
 
 const TestCasePopulation = ({
-  executionRun,
   population,
   populationBasis,
   disableExpected = false,

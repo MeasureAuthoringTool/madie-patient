@@ -99,7 +99,7 @@ const EditTestCase = () => {
 
   const navigate = useNavigate();
   const { measureId, id } = useParams();
-  const [executionRun, setExecutionRun] = useState<boolean>(false);
+  const [isTestCaseExecuted, setIsTestCaseExecuted] = useState<boolean>(false);
 
   // our truth, currentTestCase is what we have in DB
   const [currentTestCase, setCurrentTestCase] = useState<TestCase>(null);
@@ -276,7 +276,7 @@ const EditTestCase = () => {
           "Calculation was successful, output is printed in the console",
           "success"
         );
-      setExecutionRun(true);
+      setIsTestCaseExecuted(true);
     } catch (error) {
       setQdmExecutionErrors((prevState) => [...prevState, `${error.message}`]);
       showToast("Error while calculating QDM test cases", "danger");
@@ -342,7 +342,7 @@ const EditTestCase = () => {
                 <RightPanel
                   canEdit={canEdit}
                   testCaseGroups={formik?.values?.groupPopulations}
-                  executionRun={executionRun}
+                  isTestCaseExecuted={isTestCaseExecuted}
                   errors={formik.errors.groupPopulations}
                   calculationResults={calculationResults}
                   calculationErrors={qdmExecutionErrors}

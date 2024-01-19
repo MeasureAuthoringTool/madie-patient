@@ -8,10 +8,10 @@ import { addRemoveObservationsForPopulationCriteria } from "../../../../util/Pop
 import { PopulationType } from "@madie/madie-models";
 import { measureStore } from "@madie/madie-util";
 
+// isTestCaseExecuted determines weather we display one of 3 views.
 const GroupPopulations = ({
   disableExpected = false,
-  // Execution run determines weather we display one of 3 views.
-  executionRun = false,
+  isTestCaseExecuted = false,
   groupPopulations = [],
   onChange,
   errors,
@@ -36,7 +36,7 @@ const GroupPopulations = ({
                 scoring={gp.scoring}
                 errors={errors?.[i]}
                 disableExpected={disableExpected}
-                executionRun={executionRun}
+                isTestCaseExecuted={isTestCaseExecuted}
                 populations={gp.populationValues}
                 populationBasis={gp?.populationBasis}
                 onChange={(updatedPopulationValues, updatedPopulationValue) => {
@@ -60,16 +60,15 @@ const GroupPopulations = ({
                 gp.stratificationValues.map((strat, stratIndex) => {
                   return (
                     <TestCasePopulationList
-                      strat
                       i={i}
                       content={`Measure Group ${i + 1}: Stratification ${
                         stratIndex + 1
                       }`}
                       scoring={gp.scoring}
                       disableExpected={disableExpected}
-                      executionRun={executionRun}
+                      isTestCaseExecuted={isTestCaseExecuted}
                       populations={strat.populationValues}
-                      stratifications={[strat]}
+                      stratification={strat}
                       populationBasis={gp.populationBasis}
                       onStratificationChange={(updatedStratification) => {
                         // This will only update if the stratification expected/actual value changes

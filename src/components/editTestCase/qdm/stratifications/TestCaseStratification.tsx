@@ -5,7 +5,6 @@ import ExpectActualInput from "../populations/ExpectActualInput";
 
 export interface TestCaseStratificationProps {
   strataCode: string;
-  executionRun: boolean;
   stratification: DisplayStratificationValue;
   populationBasis: string;
   showExpected?: boolean;
@@ -17,7 +16,6 @@ export interface TestCaseStratificationProps {
 
 const TestCaseStratification = ({
   strataCode,
-  executionRun,
   stratification,
   populationBasis,
   disableExpected = false,
