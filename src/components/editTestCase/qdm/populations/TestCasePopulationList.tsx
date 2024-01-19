@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import tw, { styled } from "twin.macro";
 import "styled-components/macro";
 import * as _ from "lodash";
@@ -143,24 +143,28 @@ const TestCasePopulationList = ({
     return 0;
   };
 
-  // we need to do an all check here for pass / no pass
-  // we need to check if either normal or stratification
-
-  let view;
-  if (populations?.length > 0) {
-    view = determineGroupResult(
-      populationBasis,
-      populations,
-      isTestCaseExecuted
-    );
-  }
-  if (stratification) {
-    view = determineGroupResultStratification(
-      populationBasis,
-      stratification,
-      isTestCaseExecuted
-    );
-  }
+  // Determines the result of each PopulationCriteria
+  // If stratification fails, then we skip verifying populations as the PC is failed
+  // if stratification pass, then we determine its populations result
+  // If the PC is not stratified, then we determine the PC results only based on its populations.
+  const [view, setView] = useState<string>();
+  useEffect(() => {
+    let localView = "pass";
+    if (stratification) {
+      localView = determineGroupResultStratification(
+        populationBasis,
+        stratification,
+        isTestCaseExecuted
+      );
+    }
+    if (populations?.length > 0 && localView === "pass") {
+      setView(
+        determineGroupResult(populationBasis, populations, isTestCaseExecuted)
+      );
+    } else {
+      setView(localView);
+    }
+  }, [isTestCaseExecuted, populationBasis, populations, stratification]);
 
   /*
     we have three separate views

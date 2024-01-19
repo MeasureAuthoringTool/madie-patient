@@ -1,5 +1,12 @@
-import { determineGroupResult } from "./TestCasePopulationListUtil";
-import { DisplayPopulationValue, PopulationType } from "@madie/madie-models";
+import {
+  determineGroupResult,
+  determineGroupResultStratification,
+} from "./TestCasePopulationListUtil";
+import {
+  DisplayPopulationValue,
+  PopulationType,
+  StratificationExpectedValue,
+} from "@madie/madie-models";
 
 describe("determineGroupResult", () => {
   it("should return initial for false isTestCaseExecuted input", () => {
@@ -288,4 +295,159 @@ describe("determineGroupResult", () => {
   });
 });
 
-describe("determineGroupResultStratification", () => {})
+describe("determineGroupResultStratification", () => {
+  it("Should return initial state when isTestCaseExported is false", () => {
+    const output = determineGroupResultStratification(null, null, false);
+    expect(output).toEqual("initial");
+  });
+
+  it("Should return fail state when patient based stratification result doesn't match", () => {
+    const stratification: StratificationExpectedValue = {
+      expected: true,
+      id: "test-id",
+      name: "Strat-1",
+      actual: false,
+    };
+    const output = determineGroupResultStratification(
+      "boolean",
+      stratification,
+      true
+    );
+    expect(output).toEqual("fail");
+  });
+
+  it("Should return pass state when patient based stratification result matches", () => {
+    const stratification: StratificationExpectedValue = {
+      expected: true,
+      id: "test-id",
+      name: "Strat-1",
+      actual: true,
+    };
+    const output = determineGroupResultStratification(
+      "boolean",
+      stratification,
+      true
+    );
+    expect(output).toEqual("pass");
+  });
+
+  it("Should return fail state when patient based stratification expected is null and actual is true", () => {
+    const stratification: StratificationExpectedValue = {
+      expected: null,
+      id: "test-id",
+      name: "Strat-1",
+      actual: true,
+    };
+    const output = determineGroupResultStratification(
+      "boolean",
+      stratification,
+      true
+    );
+    expect(output).toEqual("fail");
+  });
+
+  it("Should return fail state when patient based stratification expected is true and actual is null", () => {
+    const stratification: StratificationExpectedValue = {
+      expected: true,
+      id: "test-id",
+      name: "Strat-1",
+      actual: null,
+    };
+    const output = determineGroupResultStratification(
+      "boolean",
+      stratification,
+      true
+    );
+    expect(output).toEqual("fail");
+  });
+
+  it("Should return pass state when patient based stratification expected and actual are null or undefined", () => {
+    const stratification: StratificationExpectedValue = {
+      expected: undefined,
+      id: "test-id",
+      name: "Strat-1",
+      actual: null,
+    };
+    const output = determineGroupResultStratification(
+      "boolean",
+      stratification,
+      true
+    );
+    expect(output).toEqual("pass");
+  });
+
+  it("Should return fail state when non-patient based stratification result doesn't match", () => {
+    const stratification: StratificationExpectedValue = {
+      expected: 2,
+      id: "test-id",
+      name: "Strat-1",
+      actual: 1,
+    };
+    const output = determineGroupResultStratification(
+      "Encounter",
+      stratification,
+      true
+    );
+    expect(output).toEqual("fail");
+  });
+
+  it("Should return pass state when non-patient based stratification result matches", () => {
+    const stratification: StratificationExpectedValue = {
+      expected: 2,
+      id: "test-id",
+      name: "Strat-1",
+      actual: 2,
+    };
+    const output = determineGroupResultStratification(
+      "Encounter",
+      stratification,
+      true
+    );
+    expect(output).toEqual("pass");
+  });
+
+  it("Should return fail state when non-patient based stratification expected is null", () => {
+    const stratification: StratificationExpectedValue = {
+      expected: null,
+      id: "test-id",
+      name: "Strat-1",
+      actual: 1,
+    };
+    const output = determineGroupResultStratification(
+      "Encounter",
+      stratification,
+      true
+    );
+    expect(output).toEqual("fail");
+  });
+
+  it("Should return fail state when non-patient based stratification actual is null", () => {
+    const stratification: StratificationExpectedValue = {
+      expected: 2,
+      id: "test-id",
+      name: "Strat-1",
+      actual: null,
+    };
+    const output = determineGroupResultStratification(
+      "Encounter",
+      stratification,
+      true
+    );
+    expect(output).toEqual("fail");
+  });
+
+  it("Should return pass state when non-patient based stratification expected and actual are null or undefined", () => {
+    const stratification: StratificationExpectedValue = {
+      expected: undefined,
+      id: "test-id",
+      name: "Strat-1",
+      actual: null,
+    };
+    const output = determineGroupResultStratification(
+      "Encounter",
+      stratification,
+      true
+    );
+    expect(output).toEqual("pass");
+  });
+});
