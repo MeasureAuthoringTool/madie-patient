@@ -176,12 +176,12 @@ const TestCasePopulationList = ({
     // if our population is part of a strat, we're going to modify that populationValue instead.
     if (strat) {
       const updatedStratification = [...stratifications][0];
-      const populationValue = updatedStratification.populationValues?.find(
-        (pop) => pop.id === updatedPopulationValue.id
-      );
+      const populationValue = _.find(updatedStratification.populationValues, {
+        id: updatedPopulationValue.id,
+      });
       populationValue.expected = updatedPopulationValue.expected;
       populationValue.actual = updatedPopulationValue.actual;
-      onChange(updatedStratification?.populationValues, populationValue);
+      onChange(updatedStratification?.populationValues, updatedPopulationValue);
     } else {
       const clonedPopulationValues = _.cloneDeep(populations);
       const populationValue = _.find(clonedPopulationValues, {

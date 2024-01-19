@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import TestCasePopulationList from "./TestCasePopulationList";
 import * as _ from "lodash";
 import { useFormikContext } from "formik";
+import { addRemoveObservationsForPopulationCriteria } from "../../../../util/PopulationsMap";
+import { PopulationType } from "@madie/madie-models";
 import { measureStore } from "@madie/madie-util";
 
 const GroupPopulations = ({
@@ -16,6 +18,12 @@ const GroupPopulations = ({
 }) => {
   const formik: any = useFormikContext();
   const [measure, setMeasure] = useState<any>(measureStore.state);
+  useEffect(() => {
+    const subscription = measureStore.subscribe(setMeasure);
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
   return (
     <>
       {groupPopulations && groupPopulations.length > 0 ? (
@@ -68,9 +76,9 @@ const GroupPopulations = ({
                         // Doesn't deal with populationValues of Stratification
                         const clonedGroupPopulations =
                           _.cloneDeep(groupPopulations);
-                        const groupPopulation = clonedGroupPopulations.find(
-                          (clonedGp) => clonedGp.groupId === gp.groupId
-                        );
+                        const groupPopulation = _.find(clonedGroupPopulations, {
+                          groupId: gp.groupId,
+                        });
                         groupPopulation.stratificationValues[stratIndex] = {
                           ...updatedStratification,
                         };
@@ -79,31 +87,34 @@ const GroupPopulations = ({
                           clonedGroupPopulations
                         );
                       }}
-                      // onChange={(populations, updatedPopulationValue) => {
-                      //   const clonedGroupPopulations =
-                      //     _.cloneDeep(groupPopulations);
-                      //   const groupPopulation = clonedGroupPopulations.find(
-                      //     (clonedGp) => clonedGp.groupId === gp.groupId
-                      //   );
-                      //   const changedPopulationName: PopulationType =
-                      //     updatedPopulationValue.name as PopulationType;
-                      //   addRemoveObservationsForPopulationCritieria(
-                      //     groupPopulation.stratificationValues,
-                      //     changedPopulationName,
-                      //     gp.groupId,
-                      //     measure?.groups
-                      //   );
-                      //   const updatedStrat =
-                      //     groupPopulation.stratificationValues[stratIndex];
-                      //   updatedStrat.populationValues = [...populations];
-                      //   if (onChange) {
-                      //     onChange(
-                      //       clonedGroupPopulations,
-                      //       groupPopulation.groupId,
-                      //       updatedPopulationValue
-                      //     );
-                      //   }
-                      // }}
+                      onChange={(
+                        updatedPopulationValues,
+                        updatedPopulationValue
+                      ) => {
+                        const clonedGroupPopulations =
+                          _.cloneDeep(groupPopulations);
+                        const groupPopulation = _.find(clonedGroupPopulations, {
+                          groupId: gp.groupId,
+                        });
+                        groupPopulation.stratificationValues[
+                          stratIndex
+                        ].populationValues = [...updatedPopulationValues];
+                        const changedPopulationName: PopulationType =
+                          updatedPopulationValue.name as PopulationType;
+                        groupPopulation.stratificationValues[
+                          stratIndex
+                        ].populationValues =
+                          addRemoveObservationsForPopulationCriteria(
+                            updatedPopulationValues,
+                            changedPopulationName,
+                            gp.groupId,
+                            measure?.groups
+                          );
+                        formik.setFieldValue(
+                          "groupPopulations",
+                          clonedGroupPopulations
+                        );
+                      }}
                     />
                   );
                 })}

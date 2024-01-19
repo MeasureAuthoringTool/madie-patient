@@ -56,7 +56,7 @@ const TestCaseStratification = ({
           />
         </td>
         <td role="cell">
-          {executionRun ? (
+          {stratification.actual ? (
             <ExpectActualInput
               id={`${stratification.name}-actual-cb`}
               expectedValue={stratification.actual}

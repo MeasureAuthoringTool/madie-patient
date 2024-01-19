@@ -101,7 +101,8 @@ const EditTestCase = () => {
   const { measureId, id } = useParams();
   const [executionRun, setExecutionRun] = useState<boolean>(false);
 
-  const [currentTestCase, setCurrentTestCase] = useState<TestCase>(null); // our truth
+  // our truth, currentTestCase is what we have in DB
+  const [currentTestCase, setCurrentTestCase] = useState<TestCase>(null);
   const [qdmPatient, setQdmPatient] = useState<QDMPatient>(); // our truth reference for birthDay only
   // This should be the parsed tc.json initialized class
   const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
@@ -257,12 +258,17 @@ const EditTestCase = () => {
 
       const patientResults = calculationOutput[patient._id];
       const testCaseWithResults = qdmCalculation.current.processTestCaseResults(
-        currentTestCase,
+        { ...formik.values },
         measure.groups,
         measure,
         patientResults
       );
-      setCurrentTestCase(testCaseWithResults);
+      // From processTestCaseResults we will be loosing information about updatedTestCase.executionStatus,
+      // but that is not required on Edit TestCase page at-least for now.
+      formik.setFieldValue(
+        "groupPopulations",
+        testCaseWithResults.groupPopulations
+      );
       setCalculationResults(calculationOutput);
 
       calculationOutput &&
