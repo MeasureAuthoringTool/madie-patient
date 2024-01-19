@@ -27,14 +27,14 @@ const GroupPopulations = ({
   return (
     <>
       {groupPopulations && groupPopulations.length > 0 ? (
-        groupPopulations.map((gp, i) => {
+        groupPopulations.map((gp, groupIndex) => {
           return (
             <div key={gp.groupId} style={{ marginTop: 16 }}>
               <TestCasePopulationList
-                content={`Measure Group ${i + 1}`}
-                i={i}
+                content={`Measure Group ${groupIndex + 1}`}
+                groupIndex={groupIndex}
                 scoring={gp.scoring}
-                errors={errors?.[i]}
+                errors={errors?.[groupIndex]}
                 disableExpected={disableExpected}
                 isTestCaseExecuted={isTestCaseExecuted}
                 populations={gp.populationValues}
@@ -60,10 +60,10 @@ const GroupPopulations = ({
                 gp.stratificationValues.map((strat, stratIndex) => {
                   return (
                     <TestCasePopulationList
-                      i={i}
-                      content={`Measure Group ${i + 1}: Stratification ${
-                        stratIndex + 1
-                      }`}
+                      groupIndex={groupIndex}
+                      content={`Measure Group ${
+                        groupIndex + 1
+                      }: Stratification ${stratIndex + 1}`}
                       scoring={gp.scoring}
                       disableExpected={disableExpected}
                       isTestCaseExecuted={isTestCaseExecuted}
@@ -71,7 +71,7 @@ const GroupPopulations = ({
                       stratification={strat}
                       populationBasis={gp.populationBasis}
                       onStratificationChange={(updatedStratification) => {
-                        // This will only update if the stratification expected/actual value changes
+                        // onStratificationChange will only update if the stratification expected/actual value changes
                         // Doesn't deal with populationValues of Stratification
                         const clonedGroupPopulations =
                           _.cloneDeep(groupPopulations);
@@ -90,6 +90,8 @@ const GroupPopulations = ({
                         updatedPopulationValues,
                         updatedPopulationValue
                       ) => {
+                        // Updating the populationValues of this particular stratification
+                        // Also updates number of observations as needed
                         const clonedGroupPopulations =
                           _.cloneDeep(groupPopulations);
                         const groupPopulation = _.find(clonedGroupPopulations, {
