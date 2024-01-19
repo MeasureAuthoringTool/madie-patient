@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import tw, { styled } from "twin.macro";
 import "styled-components/macro";
-import * as _ from "lodash";
+import _ from "lodash";
 import TestCasePopulation from "./TestCasePopulation";
 import TestCaseStratification from "../stratifications/TestCaseStratification";
 import {
@@ -63,7 +63,10 @@ const TestCasePopulationList = ({
   let initialPopulations = [];
   let contentId = content?.toLocaleLowerCase().replace(/(\W)+/g, "-");
 
-  const getPopulationCount = (populations, type: PopulationType): number => {
+  const getPopulationCount = (
+    populations: DisplayPopulationValue[],
+    type: PopulationType
+  ): number => {
     return populations.filter((res) => res.name === type).length;
   };
   const getObservationCount = (
@@ -75,12 +78,11 @@ const TestCasePopulationList = ({
       observations.push(observation);
       return observations.length;
     } else {
-      observations = [];
       return 0;
     }
   };
 
-  const measureObservationsCount = (population) => {
+  const measureObservationsCount = (population: DisplayPopulationValue) => {
     let count = 0;
     if (population.name === PopulationType.MEASURE_POPULATION_OBSERVATION) {
       count = getPopulationCount(populations, population.name);

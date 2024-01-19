@@ -77,7 +77,6 @@ describe("TestCasePopulationList component", () => {
       },
     ];
     const handleChange = jest.fn();
-    const setChangedPopulation = jest.fn();
     render(
       <MemoryRouter>
         <TestCasePopulationList
@@ -281,13 +280,13 @@ describe("TestCasePopulationList component", () => {
     const testCasePopulations = [
       {
         id: "1",
-        name: PopulationType.INITIAL_POPULATION + " " + 1,
+        name: PopulationType.INITIAL_POPULATION,
         expected: 2,
         actual: 2,
       },
       {
         id: "9",
-        name: PopulationType.INITIAL_POPULATION + " " + 2,
+        name: PopulationType.INITIAL_POPULATION,
         expected: 2,
         actual: 2,
       },

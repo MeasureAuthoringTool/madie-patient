@@ -2,11 +2,28 @@ import React, { useEffect, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import TestCasePopulationList from "./TestCasePopulationList";
-import * as _ from "lodash";
+import _ from "lodash";
 import { useFormikContext } from "formik";
 import { addRemoveObservationsForPopulationCriteria } from "../../../../util/PopulationsMap";
-import { PopulationType } from "@madie/madie-models";
+import {
+  DisplayPopulationValue,
+  PopulationType,
+  StratificationExpectedValue,
+} from "@madie/madie-models";
 import { measureStore } from "@madie/madie-util";
+import { GroupPopulation } from "@madie/madie-models/dist/TestCase";
+
+interface GroupPopulationsProps {
+  disableExpected: boolean;
+  isTestCaseExecuted: boolean;
+  groupPopulations: GroupPopulation[];
+  onChange?: (
+    groupPopulations: GroupPopulation[],
+    changedGroupId: string,
+    changedPopulation: DisplayPopulationValue
+  ) => void;
+  errors: any[];
+}
 
 // isTestCaseExecuted determines weather we display one of 3 views.
 const GroupPopulations = ({
@@ -15,7 +32,7 @@ const GroupPopulations = ({
   groupPopulations = [],
   onChange,
   errors,
-}) => {
+}: GroupPopulationsProps) => {
   const formik: any = useFormikContext();
   const [measure, setMeasure] = useState<any>(measureStore.state);
   useEffect(() => {
@@ -27,7 +44,7 @@ const GroupPopulations = ({
   return (
     <>
       {groupPopulations && groupPopulations.length > 0 ? (
-        groupPopulations.map((gp, groupIndex) => {
+        groupPopulations.map((gp: GroupPopulation, groupIndex: number) => {
           return (
             <div key={gp.groupId} style={{ marginTop: 16 }}>
               <TestCasePopulationList
@@ -39,7 +56,10 @@ const GroupPopulations = ({
                 isTestCaseExecuted={isTestCaseExecuted}
                 populations={gp.populationValues}
                 populationBasis={gp?.populationBasis}
-                onChange={(updatedPopulationValues, updatedPopulationValue) => {
+                onChange={(
+                  updatedPopulationValues: DisplayPopulationValue[],
+                  updatedPopulationValue: DisplayPopulationValue
+                ) => {
                   const clonedGroupPopulations = _.cloneDeep(groupPopulations);
                   const groupPopulation = _.find(clonedGroupPopulations, {
                     groupId: gp.groupId,
@@ -57,68 +77,76 @@ const GroupPopulations = ({
                 }}
               />
               {gp?.stratificationValues?.length > 0 &&
-                gp.stratificationValues.map((strat, stratIndex) => {
-                  return (
-                    <TestCasePopulationList
-                      groupIndex={groupIndex}
-                      content={`Measure Group ${
-                        groupIndex + 1
-                      }: Stratification ${stratIndex + 1}`}
-                      scoring={gp.scoring}
-                      disableExpected={disableExpected}
-                      isTestCaseExecuted={isTestCaseExecuted}
-                      populations={strat.populationValues}
-                      stratification={strat}
-                      populationBasis={gp.populationBasis}
-                      onStratificationChange={(updatedStratification) => {
-                        // onStratificationChange will only update if the stratification expected/actual value changes
-                        // Doesn't deal with populationValues of Stratification
-                        const clonedGroupPopulations =
-                          _.cloneDeep(groupPopulations);
-                        const groupPopulation = _.find(clonedGroupPopulations, {
-                          groupId: gp.groupId,
-                        });
-                        groupPopulation.stratificationValues[stratIndex] = {
-                          ...updatedStratification,
-                        };
-                        formik.setFieldValue(
-                          "groupPopulations",
-                          clonedGroupPopulations
-                        );
-                      }}
-                      onChange={(
-                        updatedPopulationValues,
-                        updatedPopulationValue
-                      ) => {
-                        // Updating the populationValues of this particular stratification
-                        // Also updates number of observations as needed
-                        const clonedGroupPopulations =
-                          _.cloneDeep(groupPopulations);
-                        const groupPopulation = _.find(clonedGroupPopulations, {
-                          groupId: gp.groupId,
-                        });
-                        groupPopulation.stratificationValues[
-                          stratIndex
-                        ].populationValues = [...updatedPopulationValues];
-                        const changedPopulationName: PopulationType =
-                          updatedPopulationValue.name as PopulationType;
-                        groupPopulation.stratificationValues[
-                          stratIndex
-                        ].populationValues =
-                          addRemoveObservationsForPopulationCriteria(
-                            updatedPopulationValues,
-                            changedPopulationName,
-                            gp.groupId,
-                            measure?.groups
+                gp.stratificationValues.map(
+                  (strat: StratificationExpectedValue, stratIndex: number) => {
+                    return (
+                      <TestCasePopulationList
+                        groupIndex={groupIndex}
+                        content={`Measure Group ${
+                          groupIndex + 1
+                        }: Stratification ${stratIndex + 1}`}
+                        scoring={gp.scoring}
+                        disableExpected={disableExpected}
+                        isTestCaseExecuted={isTestCaseExecuted}
+                        populations={strat.populationValues}
+                        stratification={strat}
+                        populationBasis={gp.populationBasis}
+                        onStratificationChange={(updatedStratification) => {
+                          // onStratificationChange will only update if the stratification expected/actual value changes
+                          // Doesn't deal with populationValues of Stratification
+                          const clonedGroupPopulations =
+                            _.cloneDeep(groupPopulations);
+                          const groupPopulation = _.find(
+                            clonedGroupPopulations,
+                            {
+                              groupId: gp.groupId,
+                            }
                           );
-                        formik.setFieldValue(
-                          "groupPopulations",
-                          clonedGroupPopulations
-                        );
-                      }}
-                    />
-                  );
-                })}
+                          groupPopulation.stratificationValues[stratIndex] = {
+                            ...updatedStratification,
+                          };
+                          formik.setFieldValue(
+                            "groupPopulations",
+                            clonedGroupPopulations
+                          );
+                        }}
+                        onChange={(
+                          updatedPopulationValues: DisplayPopulationValue[],
+                          updatedPopulationValue: DisplayPopulationValue
+                        ) => {
+                          // Updating the populationValues of this particular stratification
+                          // Also updates number of observations as needed
+                          const clonedGroupPopulations =
+                            _.cloneDeep(groupPopulations);
+                          const groupPopulation = _.find(
+                            clonedGroupPopulations,
+                            {
+                              groupId: gp.groupId,
+                            }
+                          );
+                          groupPopulation.stratificationValues[
+                            stratIndex
+                          ].populationValues = [...updatedPopulationValues];
+                          const changedPopulationName: PopulationType =
+                            updatedPopulationValue.name as PopulationType;
+                          groupPopulation.stratificationValues[
+                            stratIndex
+                          ].populationValues =
+                            addRemoveObservationsForPopulationCriteria(
+                              updatedPopulationValues,
+                              changedPopulationName,
+                              gp.groupId,
+                              measure?.groups
+                            );
+                          formik.setFieldValue(
+                            "groupPopulations",
+                            clonedGroupPopulations
+                          );
+                        }}
+                      />
+                    );
+                  }
+                )}
             </div>
           );
         })
