@@ -22,7 +22,7 @@ interface GroupPopulationsProps {
     changedGroupId: string,
     changedPopulation: DisplayPopulationValue
   ) => void;
-  errors: any[];
+  errors: any;
 }
 
 // isTestCaseExecuted determines weather we display one of 3 views.

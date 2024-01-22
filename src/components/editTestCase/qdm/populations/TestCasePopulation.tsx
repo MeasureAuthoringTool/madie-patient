@@ -90,7 +90,7 @@ const TestCasePopulation = ({
           />
         </td>
         <td role="cell">
-          {population.actual ? (
+          {!_.isNil(population.actual) ? (
             <ExpectActualInput
               id={`${population.id}-actual-cb`}
               aria-labelledby={`${population.name}-actual`}
