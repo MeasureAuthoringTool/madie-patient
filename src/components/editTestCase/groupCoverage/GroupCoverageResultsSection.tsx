@@ -7,7 +7,7 @@ import "styled-components/macro";
 const GroupCoverageResultsSection = ({ results }) => {
   const [showGroupCoverageResults, setShowGroupCoverageResults] =
     useState<boolean>(true);
-
+  debugger
   const handleResultsCollapse = (e) => {
     e.preventDefault();
     setShowGroupCoverageResults(!showGroupCoverageResults);

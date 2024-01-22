@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import GroupCoverageNav from "./groupCoverageNav/GroupCoverageNav";
 import { Select } from "@madie/madie-design-system/dist/react";
 import { MenuItem } from "@mui/material";
-import { isEmpty } from "lodash";
+import { isEmpty, isNil } from "lodash";
 import {
   Population,
   getFirstPopulation,
@@ -13,7 +13,11 @@ import "twin.macro";
 import "styled-components/macro";
 import parse from "html-react-parser";
 import { Group, GroupPopulation } from "@madie/madie-models";
-import { GroupCoverageResult } from "../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
+import {
+  GroupCoverageResult,
+  StatementCoverageResult,
+} from "../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
+import GroupCoverageResultsSection from "./GroupCoverageResultsSection";
 
 interface Props {
   testCaseGroups: GroupPopulation[];
@@ -29,6 +33,26 @@ const allDefinitions = [
 
 const populationCriteriaLabel = "Population Criteria";
 
+const getCriteriaLabel = (index, numberOfGroups) => {
+  return numberOfGroups > 1
+    ? `${populationCriteriaLabel} ${index + 1}`
+    : populationCriteriaLabel;
+};
+
+const definitionFilterCondition = (statementResult, definitionCategory) => {
+  if (definitionCategory === "Definitions") {
+    return (
+      statementResult.type === undefined && statementResult.relevance !== "NA"
+    );
+  } else if (definitionCategory === "Functions") {
+    return statementResult.type === "FunctionDef";
+  }
+  // for unused defines
+  return (
+    statementResult.relevance === "NA" && statementResult.type !== "FunctionDef"
+  );
+};
+
 const QdmGroupCoverage = ({
   testCaseGroups,
   measureGroups,
@@ -38,8 +62,9 @@ const QdmGroupCoverage = ({
     getFirstPopulation(testCaseGroups[0])
   );
   const [selectedCriteria, setSelectedCriteria] = useState<string>("");
-  const [selectedDefinitionResults, setSelectedDefinitionResults] =
-    useState<string>();
+  const [selectedDefinitionResults, setSelectedDefinitionResults] = useState<
+    Array<StatementCoverageResult>
+  >([]);
 
   const changeCriteria = useMemo(
     () => (criteriaId: string) => {
@@ -67,7 +92,7 @@ const QdmGroupCoverage = ({
             (coverageResult) =>
               coverageResult.name === selectedPopulation.definition
           );
-        setSelectedDefinitionResults(coverage?.html);
+        setSelectedDefinitionResults([coverage]);
       }
     },
     [groupCoverageResult, measureGroups, selectedCriteria]
@@ -83,12 +108,6 @@ const QdmGroupCoverage = ({
     changePopulation(selectedTab);
   }, [selectedTab, selectedCriteria, changePopulation]);
 
-  const getCriteriaLabel = (index) => {
-    return testCaseGroups.length > 1
-      ? `${populationCriteriaLabel} ${index + 1}`
-      : populationCriteriaLabel;
-  };
-
   const populationCriteriaOptions = [
     ...testCaseGroups?.map((gp, index) => {
       return (
@@ -97,39 +116,21 @@ const QdmGroupCoverage = ({
           value={gp.groupId}
           data-testid={`option-${gp.groupId}`}
         >
-          {getCriteriaLabel(index)}
+          {getCriteriaLabel(index, testCaseGroups.length)}
         </MenuItem>
       );
     }),
   ];
 
-  const definitionFilterCondition = (statementResult, definitionCategory) => {
-    if (definitionCategory === "Definitions") {
-      return (
-        statementResult.type === undefined && statementResult.relevance !== "NA"
-      );
-    } else if (definitionCategory === "Functions") {
-      return statementResult.type === "FunctionDef";
-    }
-    // for unused defines
-    return (
-      statementResult.relevance === "NA" &&
-      statementResult.type !== "FunctionDef"
-    );
-  };
-
   const changeDefinitions = (population) => {
     setSelectedTab(population);
     if (groupCoverageResult) {
-      let result: string;
+      let result: StatementCoverageResult[];
       const statementResults = groupCoverageResult[selectedCriteria];
       if (statementResults) {
-        result = statementResults
-          .filter((statementResult) =>
-            definitionFilterCondition(statementResult, population.name)
-          )
-          .map((statementResult) => statementResult.html)
-          .join("");
+        result = statementResults.filter((statementResult) =>
+          definitionFilterCondition(statementResult, population.name)
+        );
       }
       setSelectedDefinitionResults(result);
     }
@@ -163,6 +164,17 @@ const QdmGroupCoverage = ({
           ),
         };
       });
+  };
+
+  const getCoverageHtml = (coverageResult: StatementCoverageResult) => {
+    if (isNil(coverageResult)) {
+      return "No results available";
+    }
+
+    return [
+      parse(`<pre><code>${coverageResult.html}</code></pre>`),
+      <GroupCoverageResultsSection results={coverageResult.result} />,
+    ];
   };
 
   return (
@@ -217,7 +229,7 @@ const QdmGroupCoverage = ({
             const index = testCaseGroups.findIndex(
               (gp) => gp.groupId === value
             );
-            return getCriteriaLabel(index);
+            return getCriteriaLabel(index, testCaseGroups.length);
           }}
           onChange={(e) => changeCriteria(e.target.value)}
         />
@@ -242,13 +254,13 @@ const QdmGroupCoverage = ({
           id={`${selectedTab.abbreviation}-highlighting`}
           data-testid={`${selectedTab.abbreviation}-highlighting`}
         >
-          {selectedDefinitionResults
-            ? parse(`<pre><code>${selectedDefinitionResults}</code></pre>`)
-            : "No results available"}
+          {selectedDefinitionResults &&
+            selectedDefinitionResults.map((definitionResults) =>
+              getCoverageHtml(definitionResults)
+            )}
         </div>
       </div>
     </>
   );
 };
-
 export default QdmGroupCoverage;

@@ -32,6 +32,7 @@ export interface StatementCoverageResult {
   html: string;
   relevance: string;
   name: string;
+  result: string;
 }
 
 export interface GroupCoverageResult {
