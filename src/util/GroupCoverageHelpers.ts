@@ -1,6 +1,5 @@
 import { CqlAntlr } from "@madie/cql-antlr-parser/dist/src";
 import { PopulationType, PopulationExpectedValue } from "@madie/madie-models";
-import _ from "lodash";
 
 export interface Population {
   abbreviation: string;
@@ -84,59 +83,6 @@ export const getFirstPopulation = (group) => {
 
 export const isPopulation = (name: string) => {
   return name !== "Functions" && name !== "Definitions" && name !== "Unused";
-};
-
-export const mapCql = (
-  measureCql: string,
-  measureGroups,
-  allDefinitions
-): MappedCql => {
-  if (measureCql && measureGroups) {
-    const definitions = new CqlAntlr(measureCql).parse().expressionDefinitions;
-    return measureGroups.reduce((acc, group) => {
-      const populationDetails = group.populations.reduce(
-        (output, population) => {
-          const matchingDefinition: any = definitions?.find(
-            (def) =>
-              _.camelCase(def?.name?.slice(1, -1)) ===
-              _.camelCase(population.definition)
-          );
-          if (matchingDefinition) {
-            output[population.name] = matchingDefinition.text;
-          }
-          return output;
-        },
-        {}
-      );
-
-      const functionDetails = allDefinitions
-        ?.filter((definition) => definition.function)
-        .reduce((result, definition) => {
-          result[definition.definitionName] = {
-            definitionLogic: definition.definitionLogic,
-            parentLibrary: definition.parentLibrary,
-          };
-          return result;
-        }, {});
-
-      const allDefinitionDetails = allDefinitions
-        ?.filter((definition) => !definition.function)
-        .reduce((result, definition) => {
-          result[definition.definitionName] = {
-            definitionLogic: definition.definitionLogic,
-            parentLibrary: definition.parentLibrary,
-          };
-          return result;
-        }, {});
-
-      acc[group.id] = {
-        populationDefinitions: populationDetails,
-        functions: functionDetails,
-        definitions: allDefinitionDetails,
-      };
-      return acc;
-    }, {});
-  }
 };
 
 export const mapCoverageCql = (

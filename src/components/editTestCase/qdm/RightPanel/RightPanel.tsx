@@ -12,10 +12,9 @@ const RightPanel = ({
   testCaseGroups,
   executionRun,
   errors,
-  calculationResults,
+  groupCoverageResult,
   calculationErrors,
   onChange,
-  measureCql,
   measureGroups,
   measureName,
 }) => {
@@ -34,9 +33,8 @@ const RightPanel = ({
       <div className="panel-content">
         {featureFlags.qdmHighlightingTabs && activeTab === "highlighting" && (
           <CalculationResults
-            calculationResults={calculationResults}
+            groupCoverageResult={groupCoverageResult}
             testCaseGroups={testCaseGroups}
-            measureCql={measureCql}
             measureGroups={measureGroups}
             calculationErrors={calculationErrors}
           />

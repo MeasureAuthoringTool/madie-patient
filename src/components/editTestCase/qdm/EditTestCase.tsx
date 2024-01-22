@@ -47,6 +47,10 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
 import StatusHandler from "../../statusHandler/StatusHandler";
+import {
+  buildHighlightingForGroups,
+  GroupCoverageResult,
+} from "../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
 
 const EditTestCase = () => {
   useDocumentTitle("MADiE Edit Measure Edit Test Case");
@@ -109,7 +113,8 @@ const EditTestCase = () => {
     []
   );
   const [selectedDataElement, setSelectedDataElement] = useState<DataElement>();
-  const [calculationResults, setCalculationResults] = useState(null);
+  const [groupCoverageResult, setGroupCoverageResult] =
+    useState<GroupCoverageResult>();
 
   dayjs.extend(utc);
   dayjs.utc().format(); // utc format
@@ -262,14 +267,12 @@ const EditTestCase = () => {
         measure,
         patientResults
       );
+      const coverageResults = buildHighlightingForGroups(
+        patientResults,
+        cqmMeasure
+      );
+      setGroupCoverageResult(coverageResults);
       setCurrentTestCase(output);
-      setCalculationResults(calculationOutput);
-
-      calculationOutput &&
-        showToast(
-          "Calculation was successful, output is printed in the console",
-          "success"
-        );
       setExecutionRun(true);
     } catch (error) {
       setQdmExecutionErrors((prevState) => [...prevState, `${error.message}`]);
@@ -338,7 +341,7 @@ const EditTestCase = () => {
                   testCaseGroups={formik?.values?.groupPopulations}
                   executionRun={executionRun}
                   errors={formik.errors.groupPopulations}
-                  calculationResults={calculationResults}
+                  groupCoverageResult={groupCoverageResult}
                   calculationErrors={qdmExecutionErrors}
                   onChange={(
                     groupPopulations,
@@ -355,7 +358,6 @@ const EditTestCase = () => {
                     // only update the formState. Not the source of truth.
                     formik.setFieldValue("groupPopulations", nextGc);
                   }}
-                  measureCql={measure?.cql}
                   measureGroups={measure?.groups}
                   measureName={measure?.measureName}
                 />
