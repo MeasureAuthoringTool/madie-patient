@@ -169,7 +169,8 @@ const QdmGroupCoverage = ({
       });
   };
 
-  const getCoverageHtml = (coverageResult: StatementCoverageResult) => {
+  // coverage html and results
+  const getCoverageResult = (coverageResult: StatementCoverageResult) => {
     if (isNil(coverageResult)) {
       return "No results available";
     }
@@ -266,7 +267,7 @@ const QdmGroupCoverage = ({
         >
           {selectedDefinitionResults &&
             selectedDefinitionResults.map((definitionResults) =>
-              getCoverageHtml(definitionResults)
+              getCoverageResult(definitionResults)
             )}
         </div>
       </div>

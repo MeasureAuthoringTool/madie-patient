@@ -103,9 +103,10 @@ const EditTestCase = () => {
 
   const navigate = useNavigate();
   const { measureId, id } = useParams();
-  const [executionRun, setExecutionRun] = useState<boolean>(false);
+  const [isTestCaseExecuted, setIsTestCaseExecuted] = useState<boolean>(false);
 
-  const [currentTestCase, setCurrentTestCase] = useState<TestCase>(null); // our truth
+  // our truth, currentTestCase is what we have in DB
+  const [currentTestCase, setCurrentTestCase] = useState<TestCase>(null);
   const [qdmPatient, setQdmPatient] = useState<QDMPatient>(); // our truth reference for birthDay only
   // This should be the parsed tc.json initialized class
   const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
@@ -261,19 +262,24 @@ const EditTestCase = () => {
         );
 
       const patientResults = calculationOutput[patient._id];
-      const output = qdmCalculation.current.processTestCaseResults(
-        formik.values,
+      const testCaseWithResults = qdmCalculation.current.processTestCaseResults(
+        { ...formik.values },
         measure.groups,
         measure,
         patientResults
+      );
+      // From processTestCaseResults we will be losing information about updatedTestCase.executionStatus,
+      // but that is not required on Edit TestCase page at-least for now.
+      formik.setFieldValue(
+        "groupPopulations",
+        testCaseWithResults.groupPopulations
       );
       const coverageResults = buildHighlightingForGroups(
         patientResults,
         cqmMeasure
       );
       setGroupCoverageResult(coverageResults);
-      setCurrentTestCase(output);
-      setExecutionRun(true);
+      setIsTestCaseExecuted(true);
     } catch (error) {
       setQdmExecutionErrors((prevState) => [...prevState, `${error.message}`]);
       showToast("Error while calculating QDM test cases", "danger");
@@ -326,7 +332,7 @@ const EditTestCase = () => {
 
         <form id="edit-test-case-form" onSubmit={formik.handleSubmit}>
           <div className="allotment-wrapper">
-            <Allotment defaultSizes={[200, 100]} vertical={false}>
+            <Allotment defaultSizes={[175, 125]} vertical={false}>
               <Allotment.Pane>
                 <LeftPanel
                   canEdit={canEdit}
@@ -339,7 +345,7 @@ const EditTestCase = () => {
                 <RightPanel
                   canEdit={canEdit}
                   testCaseGroups={formik?.values?.groupPopulations}
-                  executionRun={executionRun}
+                  isTestCaseExecuted={isTestCaseExecuted}
                   errors={formik.errors.groupPopulations}
                   groupCoverageResult={groupCoverageResult}
                   calculationErrors={qdmExecutionErrors}
