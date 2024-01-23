@@ -178,7 +178,7 @@ const QdmGroupCoverage = ({
     return [
       parse(`<pre><code>${coverageResult.html}</code></pre>`),
       <GroupCoverageResultsSection results={coverageResult.result} />,
-      isPopulation(selectedTab.name) && (
+      isPopulation(selectedTab.name) && cqlDefinitionCallstack && (
         <DefinitionsUsedSection
           results={selectedDefinitionResults}
           cqlDefinitionCallstack={cqlDefinitionCallstack}

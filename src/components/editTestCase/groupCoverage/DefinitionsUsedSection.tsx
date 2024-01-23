@@ -1,7 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
-import useCqlParsingService from "../../../api/useCqlParsingService";
-import { CqlDefinitionCallstack } from "./QiCoreGroupCoverage";
-import _ from "lodash";
+import React from "react";
 import parse from "html-react-parser";
 
 const DefinitionsUsedSection = ({
@@ -17,9 +14,6 @@ const DefinitionsUsedSection = ({
         text += groupCoverageResult.filter(
           (result) => result.name === calledDefinition.name
         )[0].html;
-
-        // console.log(getCallstack(calledDefinition.id));
-        // console.log(new Set(getCallstack(calledDefinition.id)));
         const test = new Set(getCallstack(calledDefinition.id));
         test.forEach((name) => {
           text += groupCoverageResult.filter(
@@ -44,10 +38,6 @@ const DefinitionsUsedSection = ({
     });
     return calledDefinitions;
   };
-  //   console.log(results);
-  //   console.log(cqlDefinitionCallstack);
-
-  //   console.log(parse(generateCallstackText()));
   return (
     <>
       <div
@@ -68,7 +58,6 @@ const DefinitionsUsedSection = ({
           whiteSpace: "pre-wrap",
         }}
       >
-        {/* {console.log(generateCallstackText)} */}
         {parse(generateCallstackText())}
       </div>
     </>
