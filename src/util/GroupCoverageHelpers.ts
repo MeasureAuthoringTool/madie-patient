@@ -9,10 +9,11 @@ export interface Population {
   name: PopulationType;
 }
 
-export interface QDMPopulationDefinition {
+export interface QDMCqlDefinition {
   [definitionName: string]: {
     definitionLogic: string;
     parentLibrary: string;
+    calculationResult?: string;
   };
 }
 export interface MappedCql {
@@ -20,8 +21,8 @@ export interface MappedCql {
     populationDefinitions: {
       [populationName: string]: string;
     };
-    functions: QDMPopulationDefinition;
-    definitions: QDMPopulationDefinition;
+    functions: QDMCqlDefinition;
+    definitions: QDMCqlDefinition;
   };
 }
 
@@ -30,8 +31,8 @@ export interface CoverageMappedCql {
     id: string;
     [populationName: string]: string;
   };
-  functions: QDMPopulationDefinition;
-  definitions: QDMPopulationDefinition;
+  functions: QDMCqlDefinition;
+  definitions: QDMCqlDefinition;
 }
 
 export interface CqlDefinitionExpression {
