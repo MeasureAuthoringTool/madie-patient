@@ -88,7 +88,7 @@ const QdmGroupCoverage = ({
         );
         const coverage =
           groupCoverageResult &&
-          groupCoverageResult[selectedCriteria].find(
+          groupCoverageResult[selectedCriteria]?.find(
             (coverageResult) =>
               coverageResult.name === selectedPopulation.definition
           );
@@ -251,8 +251,8 @@ const QdmGroupCoverage = ({
         <div
           tw="flex-auto pl-3"
           style={{ overflowX: "scroll" }}
-          id={`${selectedTab.abbreviation}-highlighting`}
-          data-testid={`${selectedTab.abbreviation}-highlighting`}
+          id={"cql-highlighting"}
+          data-testid={"cql-highlighting"}
         >
           {selectedDefinitionResults &&
             selectedDefinitionResults.map((definitionResults) =>
