@@ -10,7 +10,7 @@ import { useFeatureFlags } from "@madie/madie-util";
 const RightPanel = ({
   canEdit,
   testCaseGroups,
-  executionRun,
+  isTestCaseExecuted,
   errors,
   groupCoverageResult,
   calculationErrors,
@@ -45,7 +45,7 @@ const RightPanel = ({
             groupPopulations={testCaseGroups}
             onChange={onChange}
             errors={errors}
-            executionRun={executionRun}
+            isTestCaseExecuted={isTestCaseExecuted}
           />
         )}
         {activeTab === "details" && (
