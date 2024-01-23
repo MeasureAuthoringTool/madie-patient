@@ -4,7 +4,6 @@ import CalculationResults from "./CalculationResults";
 import { GroupPopulation } from "@madie/madie-models";
 import userEvent from "@testing-library/user-event";
 import { measureCql } from "../../../groupCoverage/_mocks_/QdmMeasureCql";
-import { qdmCalculationResults } from "../../../groupCoverage/_mocks_/QdmCalculationResults";
 import QdmGroupCoverage from "../../../groupCoverage/QdmGroupCoverage";
 import useCqlParsingService, {
   CqlParsingService,

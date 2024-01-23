@@ -69,7 +69,6 @@ const DefinitionsUsedSection = ({
           whiteSpace: "pre-wrap",
         }}
       >
-        {console.log(generateCallstackText())}
         {parse(generateCallstackText())}
       </div>
     </>

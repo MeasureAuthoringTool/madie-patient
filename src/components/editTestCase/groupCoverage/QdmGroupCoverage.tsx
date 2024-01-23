@@ -174,8 +174,6 @@ const QdmGroupCoverage = ({
       return "No results available";
     }
 
-    console.log(cqlDefinitionCallstack);
-
     return [
       parse(`<pre><code>${coverageResult.html}</code></pre>`),
       <GroupCoverageResultsSection results={coverageResult.result} />,
