@@ -17,6 +17,7 @@ const RightPanel = ({
   onChange,
   measureGroups,
   measureName,
+  measureCql,
 }) => {
   const [activeTab, setActiveTab] = useState<string>("highlighting");
   const featureFlags = useFeatureFlags();
@@ -37,6 +38,7 @@ const RightPanel = ({
             testCaseGroups={testCaseGroups}
             measureGroups={measureGroups}
             calculationErrors={calculationErrors}
+            measureCql={measureCql}
           />
         )}
         {activeTab === "expectoractual" && (

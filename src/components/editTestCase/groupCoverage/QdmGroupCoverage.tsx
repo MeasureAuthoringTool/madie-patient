@@ -18,11 +18,13 @@ import {
   StatementCoverageResult,
 } from "../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
 import GroupCoverageResultsSection from "./GroupCoverageResultsSection";
+import DefinitionsUsedSection from "./DefinitionsUsedSection";
 
 interface Props {
   testCaseGroups: GroupPopulation[];
   measureGroups: Group[];
   groupCoverageResult: GroupCoverageResult;
+  cqlDefinitionCallstack;
 }
 
 const allDefinitions = [
@@ -57,6 +59,7 @@ const QdmGroupCoverage = ({
   testCaseGroups,
   measureGroups,
   groupCoverageResult,
+  cqlDefinitionCallstack,
 }: Props) => {
   const [selectedTab, setSelectedTab] = useState<Population>(
     getFirstPopulation(testCaseGroups[0])
@@ -171,9 +174,18 @@ const QdmGroupCoverage = ({
       return "No results available";
     }
 
+    console.log(cqlDefinitionCallstack);
+
     return [
       parse(`<pre><code>${coverageResult.html}</code></pre>`),
       <GroupCoverageResultsSection results={coverageResult.result} />,
+      isPopulation(selectedTab.name) && (
+        <DefinitionsUsedSection
+          results={selectedDefinitionResults}
+          cqlDefinitionCallstack={cqlDefinitionCallstack}
+          groupCoverageResult={groupCoverageResult[selectedCriteria]}
+        />
+      ),
     ];
   };
 

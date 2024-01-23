@@ -360,6 +360,7 @@ const EditTestCase = () => {
                   }}
                   measureGroups={measure?.groups}
                   measureName={measure?.measureName}
+                  measureCql={measure?.cql}
                 />
               </Allotment.Pane>
             </Allotment>
