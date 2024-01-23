@@ -99,9 +99,10 @@ const EditTestCase = () => {
 
   const navigate = useNavigate();
   const { measureId, id } = useParams();
-  const [executionRun, setExecutionRun] = useState<boolean>(false);
+  const [isTestCaseExecuted, setIsTestCaseExecuted] = useState<boolean>(false);
 
-  const [currentTestCase, setCurrentTestCase] = useState<TestCase>(null); // our truth
+  // our truth, currentTestCase is what we have in DB
+  const [currentTestCase, setCurrentTestCase] = useState<TestCase>(null);
   const [qdmPatient, setQdmPatient] = useState<QDMPatient>(); // our truth reference for birthDay only
   // This should be the parsed tc.json initialized class
   const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
@@ -256,13 +257,18 @@ const EditTestCase = () => {
         );
 
       const patientResults = calculationOutput[patient._id];
-      const output = qdmCalculation.current.processTestCaseResults(
-        formik.values,
+      const testCaseWithResults = qdmCalculation.current.processTestCaseResults(
+        { ...formik.values },
         measure.groups,
         measure,
         patientResults
       );
-      setCurrentTestCase(output);
+      // From processTestCaseResults we will be losing information about updatedTestCase.executionStatus,
+      // but that is not required on Edit TestCase page at-least for now.
+      formik.setFieldValue(
+        "groupPopulations",
+        testCaseWithResults.groupPopulations
+      );
       setCalculationResults(calculationOutput);
 
       calculationOutput &&
@@ -270,7 +276,7 @@ const EditTestCase = () => {
           "Calculation was successful, output is printed in the console",
           "success"
         );
-      setExecutionRun(true);
+      setIsTestCaseExecuted(true);
     } catch (error) {
       setQdmExecutionErrors((prevState) => [...prevState, `${error.message}`]);
       showToast("Error while calculating QDM test cases", "danger");
@@ -336,7 +342,7 @@ const EditTestCase = () => {
                 <RightPanel
                   canEdit={canEdit}
                   testCaseGroups={formik?.values?.groupPopulations}
-                  executionRun={executionRun}
+                  isTestCaseExecuted={isTestCaseExecuted}
                   errors={formik.errors.groupPopulations}
                   calculationResults={calculationResults}
                   calculationErrors={qdmExecutionErrors}

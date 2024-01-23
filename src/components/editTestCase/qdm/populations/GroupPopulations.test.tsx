@@ -9,7 +9,6 @@ import {
 import userEvent from "@testing-library/user-event";
 
 const errors = jest.fn();
-const birthDateTime = 90436320690;
 
 jest.mock("formik", () => ({
   useField: jest.fn(),
@@ -59,21 +58,21 @@ describe("Group Populations", () => {
             name: PopulationType.INITIAL_POPULATION,
             expected: true,
             actual: false,
-            criteriaReference: "",
+            criteriaReference: null,
           },
           {
             id: "2",
             name: PopulationType.MEASURE_POPULATION,
             expected: false,
             actual: false,
-            criteriaReference: "",
+            criteriaReference: null,
           },
           {
             id: "3",
             name: PopulationType.MEASURE_POPULATION_EXCLUSION,
             expected: false,
             actual: false,
-            criteriaReference: "",
+            criteriaReference: null,
           },
         ],
       },
@@ -81,11 +80,11 @@ describe("Group Populations", () => {
     const handleChange = jest.fn();
     render(
       <GroupPopulations
-        executionRun
+        disableExpected={false}
+        isTestCaseExecuted={true}
         groupPopulations={groupPopulations}
         onChange={handleChange}
         errors={errors}
-        birthDateTime={birthDateTime}
       />
     );
     const g1MeasureName = screen.getByTestId("measure-group-1");
@@ -142,11 +141,11 @@ describe("Group Populations", () => {
   it("should handle null groupPopulation input", () => {
     render(
       <GroupPopulations
+        disableExpected={false}
+        isTestCaseExecuted={true}
         groupPopulations={null}
         onChange={jest.fn()}
-        executionRun
         errors={errors}
-        birthDateTime={birthDateTime}
       />
     );
     expect(
@@ -159,11 +158,11 @@ describe("Group Populations", () => {
   it("should handle undefined groupPopulation input", () => {
     render(
       <GroupPopulations
+        disableExpected={false}
+        isTestCaseExecuted={true}
         groupPopulations={undefined}
         onChange={jest.fn()}
-        executionRun
         errors={errors}
-        birthDateTime={birthDateTime}
       />
     );
     expect(
@@ -176,11 +175,11 @@ describe("Group Populations", () => {
   it("should handle empty groupPopulation input", () => {
     render(
       <GroupPopulations
+        disableExpected={false}
+        isTestCaseExecuted={true}
         groupPopulations={[]}
         onChange={jest.fn()}
-        executionRun
         errors={errors}
-        birthDateTime={birthDateTime}
       />
     );
     expect(
@@ -190,20 +189,19 @@ describe("Group Populations", () => {
     ).toBeInTheDocument();
   });
 
-  it("should render the populations with both checkboxes disabled", async () => {
+  it("should render the populations with both checkboxes disabled", () => {
     const handleChange = jest.fn();
     render(
       <GroupPopulations
         disableExpected={true}
-        executionRun
+        isTestCaseExecuted={true}
         groupPopulations={testCaseGroups}
         onChange={handleChange}
         errors={errors}
-        birthDateTime={birthDateTime}
       />
     );
 
-    const ippRows = await screen.getAllByRole("row", {
+    const ippRows = screen.getAllByRole("row", {
       name: "Initial Population",
     });
     const ippRow = ippRows[0];
@@ -220,12 +218,11 @@ describe("Group Populations", () => {
     const handleStratificationChange = jest.fn();
     render(
       <GroupPopulations
-        executionRun
+        disableExpected={false}
+        isTestCaseExecuted={true}
         groupPopulations={testCaseGroups}
         onChange={handleChange}
-        // onStratificationChange={handleStratificationChange}
         errors={errors}
-        birthDateTime={birthDateTime}
       />
     );
 
@@ -262,18 +259,18 @@ describe("Group Populations", () => {
     expect(handleStratificationChange).toHaveBeenCalledTimes(1);
   });
 
-  it("should display empty on non run", async () => {
+  it("should display empty on non run", () => {
     const handleChange = jest.fn();
     render(
       <GroupPopulations
-        executionRun={false}
+        disableExpected={false}
+        isTestCaseExecuted={false}
         groupPopulations={testCaseGroups}
         onChange={handleChange}
         errors={errors}
-        birthDateTime={birthDateTime}
       />
     );
-    const actualColumn = await screen.queryByTestId(
+    const actualColumn = screen.queryByTestId(
       "test-population-initialPopulation-actual-0"
     );
     expect(actualColumn).not.toBeInTheDocument();
@@ -300,11 +297,11 @@ describe("Group Populations", () => {
     const handleChange = jest.fn();
     render(
       <GroupPopulations
-        executionRun={false}
+        disableExpected={false}
+        isTestCaseExecuted={false}
         groupPopulations={groupPopulations}
         onChange={handleChange}
         errors={errors}
-        birthDateTime={birthDateTime}
       />
     );
 
@@ -317,11 +314,10 @@ describe("Group Populations", () => {
     render(
       <GroupPopulations
         disableExpected={false}
-        executionRun={true}
+        isTestCaseExecuted={false}
         groupPopulations={testCaseGroups}
         onChange={handleChange}
         errors={errors}
-        birthDateTime={birthDateTime}
       />
     );
 
