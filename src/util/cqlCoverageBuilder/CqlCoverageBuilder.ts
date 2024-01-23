@@ -3,6 +3,7 @@ import * as _ from "lodash";
 import {
   clauseCoveredStyle,
   clauseNotCoveredStyle,
+  clauseNotApplicableStyle,
   clauseTemplate,
   definitionTemplate,
 } from "./templates/highlightingTemplates";
@@ -22,6 +23,8 @@ Handlebars.registerHelper("highlightClause", (localId, context) => {
       return objToCSS(clauseCoveredStyle);
     } else if (clauseResult.final === "FALSE") {
       return objToCSS(clauseNotCoveredStyle);
+    } else {
+      return objToCSS(clauseNotApplicableStyle);
     }
   }
   return "";
