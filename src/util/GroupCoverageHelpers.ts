@@ -15,15 +15,6 @@ export interface QDMCqlDefinition {
     calculationResult?: string;
   };
 }
-export interface MappedCql {
-  [groupId: string]: {
-    populationDefinitions: {
-      [populationName: string]: string;
-    };
-    functions: QDMCqlDefinition;
-    definitions: QDMCqlDefinition;
-  };
-}
 
 export interface CoverageMappedCql {
   populationDefinitions: {

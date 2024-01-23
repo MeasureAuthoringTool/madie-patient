@@ -19,6 +19,7 @@ const useCqlParsingServiceMockResolved = {
   getAllDefinitionsAndFunctions: jest.fn().mockResolvedValue(qdmCallStack),
   getDefinitionCallstacks: jest.fn().mockResolvedValue(qdmCallStack),
 } as unknown as CqlParsingService;
+import { calculationResults } from "../../../groupCoverage/_mocks_/QdmCalculationResults";
 
 const groups = [
   {
@@ -43,10 +44,6 @@ const groups = [
     populationValues: [
       {
         id: "914a",
-        name: "initialPopulation",
-      },
-      {
-        id: "915a",
         name: "initialPopulation",
       },
       {
@@ -157,14 +154,13 @@ const assertPopulationTabs = async () => {
 };
 
 const renderCoverageComponent = (
-  groupCoverageResult = qdmCalculationResults,
+  groupCoverageResult = calculationResults,
   calculationErrors = undefined
 ) => {
   render(
     <CalculationResults
       groupCoverageResult={groupCoverageResult}
       testCaseGroups={groups}
-      measureCql={measureCql}
       measureGroups={measureGroups}
       calculationErrors={calculationErrors}
     />
@@ -172,11 +168,6 @@ const renderCoverageComponent = (
 };
 
 describe("CalculationResults with tabbed highlighting layout off", () => {
-  beforeEach(() => {
-    useCqlParsingServiceMock.mockImplementation(() => {
-      return useCqlParsingServiceMockResolved;
-    });
-  });
   test("display info message when test case has not been ran yet", () => {
     render(
       <CalculationResults
@@ -195,11 +186,6 @@ describe("CalculationResults with tabbed highlighting layout off", () => {
 });
 
 describe("CalculationResults with new tabbed highlighting layout on", () => {
-  beforeEach(() => {
-    useCqlParsingServiceMock.mockImplementation(() => {
-      return useCqlParsingServiceMockResolved;
-    });
-  });
   test("highlighting tab if no groups available", () => {
     render(
       <CalculationResults
