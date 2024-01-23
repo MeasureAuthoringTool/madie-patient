@@ -15,7 +15,6 @@ const useCqlParsingServiceMock =
   useCqlParsingService as jest.Mock<CqlParsingService>;
 
 const useCqlParsingServiceMockResolved = {
-  getAllDefinitionsAndFunctions: jest.fn().mockResolvedValue(qdmCallStack),
   getDefinitionCallstacks: jest.fn().mockResolvedValue(qdmCallStack),
 } as unknown as CqlParsingService;
 import { calculationResults } from "../../../groupCoverage/_mocks_/QdmCalculationResults";
@@ -162,11 +161,17 @@ const renderCoverageComponent = (
       testCaseGroups={groups}
       measureGroups={measureGroups}
       calculationErrors={calculationErrors}
+      measureCql={measureCql}
     />
   );
 };
 
 describe("CalculationResults with tabbed highlighting layout off", () => {
+  beforeEach(() => {
+    useCqlParsingServiceMock.mockImplementation(() => {
+      return useCqlParsingServiceMockResolved;
+    });
+  });
   test("display info message when test case has not been ran yet", () => {
     render(
       <CalculationResults
@@ -185,6 +190,11 @@ describe("CalculationResults with tabbed highlighting layout off", () => {
 });
 
 describe("CalculationResults with new tabbed highlighting layout on", () => {
+  beforeEach(() => {
+    useCqlParsingServiceMock.mockImplementation(() => {
+      return useCqlParsingServiceMockResolved;
+    });
+  });
   test("highlighting tab if no groups available", () => {
     render(
       <CalculationResults
@@ -224,14 +234,14 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     renderCoverageComponent();
     await assertPopulationTabs();
     expect(screen.getByTestId("cql-highlighting")).toHaveTextContent(
-      `define "Initial Population": "Qualifying Encounters"`
+      `define "Initial Population": "Qualifying Encounters" Results[Encounter, Performed: Encounter Inpatient START: 01/09/2020 12:00 AM STOP: 01/10/2020 12:00 AM CODE: SNOMEDCT 183452005]`
     );
 
     // switch to denominator tab
     const denom = await getTab("DENOM");
     userEvent.click(denom);
     expect(screen.getByTestId("cql-highlighting")).toHaveTextContent(
-      `define "Denominator": "Initial Population"`
+      `define "Denominator": "Initial Population" Results[Encounter, Performed: Encounter Inpatient START: 01/09/2020 12:00 AM STOP: 01/10/2020 12:00 AM CODE: SNOMEDCT 183452005]`
     );
 
     // switch to numerator tab
@@ -245,7 +255,7 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     const functions = await getTab("Functions");
     userEvent.click(functions);
     expect(screen.getByTestId("cql-highlighting")).toHaveTextContent(
-      `define function "Denominator Observations"(QualifyingEncounter "Encounter, Performed")`
+      `/** * Test comment 1 * another comment. */ define function "Denominator Observations"(QualifyingEncounter "Encounter, Performed"): duration in days of QualifyingEncounter.relevantPeriod ResultsNA`
     );
     // switch to Definitions tab
     const definitions = await getTab("Definitions");

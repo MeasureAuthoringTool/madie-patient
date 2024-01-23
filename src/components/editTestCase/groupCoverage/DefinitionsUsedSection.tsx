@@ -9,8 +9,6 @@ const DefinitionsUsedSection = ({
   cqlDefinitionCallstack,
   groupCoverageResult,
 }) => {
-  const cqlParsingService = useRef(useCqlParsingService());
-
   const generateCallstackText = (): string => {
     if (cqlDefinitionCallstack && groupCoverageResult) {
       let text = "";
@@ -49,6 +47,7 @@ const DefinitionsUsedSection = ({
   //   console.log(results);
   //   console.log(cqlDefinitionCallstack);
 
+  //   console.log(parse(generateCallstackText()));
   return (
     <>
       <div
@@ -69,6 +68,7 @@ const DefinitionsUsedSection = ({
           whiteSpace: "pre-wrap",
         }}
       >
+        {/* {console.log(generateCallstackText)} */}
         {parse(generateCallstackText())}
       </div>
     </>
