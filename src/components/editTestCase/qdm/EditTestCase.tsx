@@ -263,7 +263,7 @@ const EditTestCase = () => {
         measure,
         patientResults
       );
-      // From processTestCaseResults we will be loosing information about updatedTestCase.executionStatus,
+      // From processTestCaseResults we will be losing information about updatedTestCase.executionStatus,
       // but that is not required on Edit TestCase page at-least for now.
       formik.setFieldValue(
         "groupPopulations",
