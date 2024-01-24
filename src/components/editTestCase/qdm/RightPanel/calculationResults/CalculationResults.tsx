@@ -1,16 +1,34 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import QdmGroupCoverage from "../../../groupCoverage/QdmGroupCoverage";
 import { isEmpty } from "lodash";
 import { MadieAlert } from "@madie/madie-design-system/dist/react";
 import "twin.macro";
 import "styled-components/macro";
+import { CqlDefinitionCallstack } from "../../../groupCoverage/QiCoreGroupCoverage";
+import useCqlParsingService from "../../../../../api/useCqlParsingService";
 
 const CalculationResults = ({
   groupCoverageResult,
   testCaseGroups,
   measureGroups,
   calculationErrors,
+  measureCql,
 }) => {
+  const cqlParsingService = useRef(useCqlParsingService());
+  const [callstackMap, setCallstackMap] = useState<CqlDefinitionCallstack>();
+
+  useEffect(() => {
+    cqlParsingService.current
+      .getDefinitionCallstacks(measureCql)
+      .then((callstack: CqlDefinitionCallstack) => {
+        setCallstackMap(callstack);
+        return callstack;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [measureCql]);
+
   return (
     <div tw="p-5" style={{ paddingRight: ".25rem" }}>
       {!groupCoverageResult && isEmpty(calculationErrors) && (
@@ -28,6 +46,7 @@ const CalculationResults = ({
           testCaseGroups={testCaseGroups}
           measureGroups={measureGroups}
           groupCoverageResult={groupCoverageResult}
+          cqlDefinitionCallstack={callstackMap}
         />
       )}
     </div>
