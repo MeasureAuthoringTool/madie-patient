@@ -30,12 +30,12 @@ export const clauseTemplate = `{{~#if @root.highlightCoverage~}}
 {{~/if~}}`;
 
 export const clauseCoveredStyle = {
-  color: "#20744c",
-  "border-bottom": "1px solid #20744c",
+  color: "#4D7E23",
+  "border-bottom": "1px solid #4D7E23",
 };
 
 export const clauseNotCoveredStyle = {
-  color: "#a63b12",
+  color: "#AE1C1C",
 };
 
 export const clauseNotApplicableStyle = {
