@@ -40,6 +40,7 @@ const DefinitionsUsedSection = ({
   return (
     <>
       <div
+        data-testid={"definitions-used-section"}
         style={{
           fontFamily: "Rubik",
           fontSize: "14px",
