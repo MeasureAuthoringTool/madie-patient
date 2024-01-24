@@ -2,22 +2,22 @@ import React from "react";
 import parse from "html-react-parser";
 
 const DefinitionsUsedSection = ({
-  results,
+  result,
   cqlDefinitionCallstack,
   groupCoverageResult,
 }) => {
   const generateCallstackText = (): string => {
     if (cqlDefinitionCallstack && groupCoverageResult) {
       let text = "";
-      cqlDefinitionCallstack[results[0].name]?.forEach((calledDefinition) => {
+      cqlDefinitionCallstack[result[0].name]?.forEach((calledDefinition) => {
         // Get Highlighted HTML from execution results
-        text += groupCoverageResult.filter(
+        text += groupCoverageResult.find(
           (result) => result.name === calledDefinition.name
-        )[0].html;
+        ).html;
         getCallstack(calledDefinition.id).forEach((name) => {
-          text += groupCoverageResult.filter(
+          text += groupCoverageResult.find(
             (result) => result.name === name
-          )[0].html;
+          ).html;
         });
       });
 

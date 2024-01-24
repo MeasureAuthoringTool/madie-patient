@@ -180,7 +180,7 @@ const QdmGroupCoverage = ({
       <GroupCoverageResultsSection results={coverageResult.result} />,
       isPopulation(selectedTab.name) && cqlDefinitionCallstack && (
         <DefinitionsUsedSection
-          results={selectedDefinitionResults}
+          result={selectedDefinitionResults}
           cqlDefinitionCallstack={cqlDefinitionCallstack}
           groupCoverageResult={groupCoverageResult[selectedCriteria]}
         />
