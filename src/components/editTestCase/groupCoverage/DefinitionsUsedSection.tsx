@@ -14,8 +14,7 @@ const DefinitionsUsedSection = ({
         text += groupCoverageResult.filter(
           (result) => result.name === calledDefinition.name
         )[0].html;
-        const test = new Set(getCallstack(calledDefinition.id));
-        test.forEach((name) => {
+        getCallstack(calledDefinition.id).forEach((name) => {
           text += groupCoverageResult.filter(
             (result) => result.name === name
           )[0].html;
