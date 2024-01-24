@@ -50,30 +50,32 @@ const ElementsSection = (props: {
   const [typesFromCql, setTypesFromCql] = useState([]);
 
   const checkForMissingDataElements = useCallback(() => {
-    const types = {};
-    // skip demographics
-    types["QDM::PatientCharacteristicBirthdate"] = true;
-    types["QDM::PatientCharacteristicRace"] = true;
-    types["QDM::PatientCharacteristicEthnicity"] = true;
-    types["QDM::PatientCharacteristicSex"] = true;
-    types["QDM::PatientCharacteristicExpired"] = true;
-    // compile types from typesfromCQL
-    typesFromCql.forEach((item) => {
-      types[item] = true;
-    });
-    setAllowedTypes(types);
-    let failedLookupCount = 0;
-    patient?.dataElements.forEach((el) => {
-      if (!types[el._type]) {
-        failedLookupCount++;
+    if (typesFromCql.length > 0) {
+      const types = {};
+      // skip demographics
+      types["QDM::PatientCharacteristicBirthdate"] = true;
+      types["QDM::PatientCharacteristicRace"] = true;
+      types["QDM::PatientCharacteristicEthnicity"] = true;
+      types["QDM::PatientCharacteristicSex"] = true;
+      types["QDM::PatientCharacteristicExpired"] = true;
+      // compile types from typesfromCQL
+      typesFromCql.forEach((item) => {
+        types[item] = true;
+      });
+      setAllowedTypes(types);
+      let failedLookupCount = 0;
+      patient?.dataElements.forEach((el) => {
+        if (!types[el._type]) {
+          failedLookupCount++;
+        }
+      });
+      if (failedLookupCount > 0) {
+        handleTestCaseErrors(
+          "There are data elements in this test case not relevant to the measure.  Those data elements are not editable and can only be deleted from the Elements table."
+        );
+      } else {
+        handleTestCaseErrors(null);
       }
-    });
-    if (failedLookupCount > 0) {
-      handleTestCaseErrors(
-        "There are data elements in this test case not relevant to the measure.  Those data elements are not editable and can only be deleted from the Elements table."
-      );
-    } else {
-      handleTestCaseErrors(null);
     }
   }, [
     setAllowedTypes,
