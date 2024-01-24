@@ -1,4 +1,4 @@
-export const definitionTemplate = `<pre style="tab-size: 2; line-height: 1.4"
+export const definitionTemplate = `<pre style="tab-size: 2;"
   data-library-name="{{ libraryName }}" data-statement-name="{{ statementName }}">
 <code>
 {{> clause}}
@@ -31,13 +31,18 @@ export const clauseTemplate = `{{~#if @root.highlightCoverage~}}
 
 export const clauseCoveredStyle = {
   color: "#4D7E23",
-  "border-bottom": "1px solid #4D7E23",
+  "border-bottom-color": "#4D7E23",
+  "border-bottom-width": "3px",
 };
 
 export const clauseNotCoveredStyle = {
   color: "#AE1C1C",
+  "border-bottom-color": "#AE1C1C",
+  "border-bottom-style": "double",
+  "border-bottom-width": "3px",
 };
 
 export const clauseNotApplicableStyle = {
-  "border-bottom": "1px solid #515151",
+  "background-color": "white",
+  color: "black",
 };

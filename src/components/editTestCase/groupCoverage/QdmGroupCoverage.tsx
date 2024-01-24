@@ -261,7 +261,11 @@ const QdmGroupCoverage = ({
         </div>
         <div
           tw="flex-auto pl-3"
-          style={{ overflowX: "scroll" }}
+          style={{
+            overflowX: "scroll",
+            fontSize: "14px",
+            fontWeight: "400",
+          }}
           id={"cql-highlighting"}
           data-testid={"cql-highlighting"}
         >
