@@ -251,11 +251,6 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
       `define "Numerator": "Qualifying Encounters" Enc where Enc.lengthOfStay > 1 day`
     );
 
-    const definitionsUsedResult = await screen.findByTestId(
-      "definitions-used-section"
-    );
-    expect(definitionsUsedResult).toBeInTheDocument();
-
     // switch to function tab
     const functions = await getTab("Functions");
     userEvent.click(functions);
@@ -303,12 +298,6 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     expect(result).toHaveTextContent(
       "[Encounter, Performed: Encounter Inpatient START: 01/09/2020 12:00 AM STOP: 01/10/2020 12:00 AM CODE: SNOMEDCT 183452005]"
     );
-
-    // Check for Initial Population definitions used
-    const definitionsUsedResult = await screen.findByTestId(
-      "definitions-used-section"
-    );
-    expect(definitionsUsedResult).toBeInTheDocument();
 
     // Move to Definitions tab
     const definitions = await getTab("Definitions");

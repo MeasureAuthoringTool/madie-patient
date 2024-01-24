@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import parse from "html-react-parser";
 
 const DefinitionsUsedSection = ({
@@ -6,7 +6,9 @@ const DefinitionsUsedSection = ({
   cqlDefinitionCallstack,
   groupCoverageResult,
 }) => {
-  const generateCallstackText = (): string => {
+  const [callStackText, setCallStackText] = useState<string>(null);
+
+  useEffect(() => {
     if (cqlDefinitionCallstack && groupCoverageResult) {
       let text = "";
       cqlDefinitionCallstack[result[0].name]?.forEach((calledDefinition) => {
@@ -20,10 +22,9 @@ const DefinitionsUsedSection = ({
           ).html;
         });
       });
-
-      return text;
+      setCallStackText(text);
     }
-  };
+  }, [result]);
 
   const getCallstack = (defId: string): string[] => {
     let calledDefinitions: string[] = [];
@@ -37,29 +38,25 @@ const DefinitionsUsedSection = ({
     });
     return calledDefinitions;
   };
+
   return (
     <>
-      <div
-        data-testid={"definitions-used-section"}
-        style={{
-          fontFamily: "Rubik",
-          fontSize: "14px",
-          fontWeight: "500",
-          color: "#0073C8",
-        }}
-      >
-        Definition(s) Used
-      </div>
-      <div
-        style={{
-          fontFamily: "Rubik",
-          fontSize: "12px",
-          fontWeight: "500",
-          whiteSpace: "pre-wrap",
-        }}
-      >
-        {parse(generateCallstackText())}
-      </div>
+      {callStackText && (
+        <>
+          <div
+            data-testid={"definitions-used-section"}
+            style={{
+              fontFamily: "Rubik",
+              fontSize: "14px",
+              fontWeight: "500",
+              color: "#0073C8",
+            }}
+          >
+            Definition(s) Used
+          </div>
+          <div>{parse(callStackText)}</div>
+        </>
+      )}
     </>
   );
 };
