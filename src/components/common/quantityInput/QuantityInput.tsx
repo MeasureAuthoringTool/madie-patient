@@ -145,7 +145,7 @@ const QuantityInput = ({
           value={currentQuantity.value}
           disabled={!canEdit}
           placeholder="value"
-          label="Quantity"
+          label={label}
           id={`quantity-value-field-${label.toLowerCase()}`}
           data-testid={`quantity-value-field-${label.toLowerCase()}`}
           inputProps={{
@@ -176,7 +176,7 @@ const QuantityInput = ({
         <TextField
           id={`quantity-unit-input-${label.toLowerCase()}`}
           disabled={!canEdit}
-          label={label}
+          label="Unit"
           error={error}
           helperText={helperText}
           data-testid={`quantity-unit-input-${label.toLowerCase()}`}
