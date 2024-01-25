@@ -14,9 +14,9 @@ const DefinitionsUsedSection = ({
       if (cqlDefinitionCallstack && groupCoverageResult) {
         cqlDefinitionCallstack[name]?.forEach((calledDefinition) => {
           // Get Highlighted HTML from execution results
-          text += groupCoverageResult.filter(
+          text += groupCoverageResult.find(
             (result) => result.name === calledDefinition.name
-          )[0].html;
+          ).html;
           generateCallstackText(calledDefinition.id);
         });
       }
@@ -27,19 +27,6 @@ const DefinitionsUsedSection = ({
       setCallStackText(text);
     }
   }, [cqlDefinitionCallstack, groupCoverageResult, result]);
-
-  const getCallstack = (defId: string): string[] => {
-    let calledDefinitions: string[] = [];
-    cqlDefinitionCallstack[defId]?.forEach((calledDefinition) => {
-      calledDefinitions.push(calledDefinition.name);
-      if (cqlDefinitionCallstack[calledDefinition.id]) {
-        calledDefinitions = calledDefinitions.concat(
-          getCallstack(calledDefinition.id)
-        );
-      }
-    });
-    return calledDefinitions;
-  };
 
   return (
     <>
