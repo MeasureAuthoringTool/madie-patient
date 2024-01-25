@@ -6,44 +6,42 @@ const DefinitionsUsedSection = ({
   cqlDefinitionCallstack,
   groupCoverageResult,
 }) => {
-  const [callStackText, setCallStackText] = useState<string>(null);
+  const [callStackHtml, setCallStackHtml] = useState<string>(null);
 
   useEffect(() => {
-    let text = "";
-    const generateCallstackText = (name) => {
+    let html = "";
+    const generateCallstackHtml = (name) => {
       if (cqlDefinitionCallstack && groupCoverageResult) {
         cqlDefinitionCallstack[name]?.forEach((calledDefinition) => {
           // Get Highlighted HTML from execution results
-          text += groupCoverageResult.find(
+          html += groupCoverageResult.find(
             (result) => result.name === calledDefinition.name
           ).html;
-          generateCallstackText(calledDefinition.id);
+          generateCallstackHtml(calledDefinition.id);
         });
       }
     };
 
     if (cqlDefinitionCallstack && groupCoverageResult) {
-      generateCallstackText(result.name);
-      setCallStackText(text);
+      generateCallstackHtml(result.name);
+      setCallStackHtml(html);
     }
   }, [cqlDefinitionCallstack, groupCoverageResult, result]);
 
   return (
     <>
-      {callStackText && (
+      {callStackHtml && (
         <>
           <div
             data-testid={"definitions-used-section"}
             style={{
-              fontFamily: "Rubik",
-              fontSize: "14px",
               fontWeight: "500",
               color: "#0073C8",
             }}
           >
             Definition(s) Used
           </div>
-          <div>{parse(callStackText)}</div>
+          <div>{parse(callStackHtml)}</div>
         </>
       )}
     </>
