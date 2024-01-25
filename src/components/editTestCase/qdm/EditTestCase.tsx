@@ -47,10 +47,20 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
 import StatusHandler from "../../statusHandler/StatusHandler";
+import {
+  buildHighlightingForGroups,
+  GroupCoverageResult,
+} from "../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
 
 const EditTestCase = () => {
   useDocumentTitle("MADiE Edit Measure Edit Test Case");
+  /* For formik, we could simplify our patterns in some places
 
+  Establish a single source of truth and preserve it in state
+  Initialize a formik object that references the properties that we would change on that object. Initialize with formik.enableReinitialize = true;
+  Only modify the formik.values, and not the source of truth.
+  Do not use any useEffects to update any form state
+  Update the source of truth only on successful requests */
   const [measure, setMeasure] = useState<any>(measureStore.state);
   const { updateMeasure } = measureStore;
   useEffect(() => {
@@ -93,16 +103,19 @@ const EditTestCase = () => {
 
   const navigate = useNavigate();
   const { measureId, id } = useParams();
-  const [executionRun, setExecutionRun] = useState<boolean>(false);
+  const [isTestCaseExecuted, setIsTestCaseExecuted] = useState<boolean>(false);
 
+  // our truth, currentTestCase is what we have in DB
   const [currentTestCase, setCurrentTestCase] = useState<TestCase>(null);
-  const [qdmPatient, setQdmPatient] = useState<QDMPatient>();
+  const [qdmPatient, setQdmPatient] = useState<QDMPatient>(); // our truth reference for birthDay only
+  // This should be the parsed tc.json initialized class
   const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
   const [qdmExecutionErrors, setQdmExecutionErrors] = useState<Array<string>>(
     []
   );
   const [selectedDataElement, setSelectedDataElement] = useState<DataElement>();
-  const [calculationResults, setCalculationResults] = useState(null);
+  const [groupCoverageResult, setGroupCoverageResult] =
+    useState<GroupCoverageResult>();
 
   dayjs.extend(utc);
   dayjs.utc().format(); // utc format
@@ -126,22 +139,59 @@ const EditTestCase = () => {
       });
     }
   }, [measure, measure?.groups]);
-
   const formik = useFormik({
     initialValues: {
-      title: "",
-      description: "",
-      series: "",
-      json: "",
-      groupPopulations: [],
+      title: currentTestCase?.title || "",
+      description: currentTestCase?.description || "",
+      series: currentTestCase?.series || "",
+      json: currentTestCase?.json || "",
+      groupPopulations: currentTestCase?.groupPopulations || [],
       birthDate: qdmPatient?.birthDatetime
         ? dayjs(qdmPatient?.birthDatetime)
-        : "",
+        : null,
     },
+    enableReinitialize: true,
     validationSchema: QDMPatientSchemaValidator,
     onSubmit: async (values: any) => await handleSubmit(values),
   });
   const { resetForm } = formik;
+
+  // Fetches test case based on ID, identifies measure.group converts it to testcase.groupPopulation
+  // if the measure.group is not in TC then a new testcase.groupPopulation is added to nextTc
+  // and set it to form
+  useEffect(() => {
+    if (measure && measureId && id) {
+      testCaseService.current
+        .getTestCase(id, measureId)
+        .then((tc: TestCase) => {
+          const nextTc = _.cloneDeep(tc);
+          if (measure?.groups) {
+            nextTc.groupPopulations = measure.groups?.map((group) => {
+              const existingTestCasePC = tc.groupPopulations?.find(
+                (gp) => gp.groupId === group.id
+              );
+              return _.isNil(existingTestCasePC)
+                ? qdmCalculation.current.mapMeasureGroup(measure, group)
+                : mapExistingTestCasePopulations(existingTestCasePC, group);
+            });
+          } else {
+            nextTc.groupPopulations = [];
+          }
+          let patient: QDMPatient = new QDMPatient();
+          if (nextTc?.json) {
+            patient = new QDMPatient(JSON.parse(tc?.json));
+          }
+          nextTc.json = JSON.stringify(patient);
+          setQdmPatient(patient);
+          setCurrentTestCase(nextTc);
+        })
+        .catch((error) => {
+          if (error.toString().includes("404")) {
+            navigate("/404");
+          }
+        });
+    }
+  }, [measureId, id, measure?.groups, navigate]);
 
   const handleSubmit = async (testCase: TestCase) => {
     testCase.title = sanitizeUserInput(testCase.title);
@@ -163,15 +213,12 @@ const EditTestCase = () => {
   };
 
   const updateTestCase = async (testCase: TestCase) => {
+    const modifiedTestCase = { ...currentTestCase, ...testCase };
     try {
       const updatedTestCase = await testCaseService.current.updateTestCase(
-        testCase,
+        modifiedTestCase,
         measureId
       );
-
-      resetForm({
-        values: _.cloneDeep(updatedTestCase),
-      });
       setCurrentTestCase(_.cloneDeep(updatedTestCase));
       updateMeasureStore(updatedTestCase);
       showToast("Test Case Updated Successfully", "success");
@@ -203,48 +250,6 @@ const EditTestCase = () => {
     updateMeasure(measureCopy);
   }
 
-  // Fetches test case based on ID, identifies measure.group converts it to testcase.groupPopulation
-  // if the measure.group is not in TC then a new testcase.groupPopulation is added to nextTc
-  // and set it to form
-  useEffect(() => {
-    if (measureId && id) {
-      testCaseService.current
-        .getTestCase(id, measureId)
-        .then((tc: TestCase) => {
-          const nextTc = _.cloneDeep(tc);
-          if (measure?.groups) {
-            nextTc.groupPopulations = measure.groups?.map((group) => {
-              const existingTestCasePC = tc.groupPopulations?.find(
-                (gp) => gp.groupId === group.id
-              );
-              return _.isNil(existingTestCasePC)
-                ? qdmCalculation.current.mapMeasureGroup(measure, group)
-                : mapExistingTestCasePopulations(existingTestCasePC, group);
-            });
-          } else {
-            nextTc.groupPopulations = [];
-          }
-          setCurrentTestCase(nextTc);
-          let patient: QDMPatient = new QDMPatient();
-          if (nextTc?.json) {
-            patient = new QDMPatient(JSON.parse(tc?.json));
-          }
-          setQdmPatient(patient);
-          formik.setFieldValue(
-            "birthDate",
-            patient?.birthDatetime ? dayjs(patient?.birthDatetime) : null
-          );
-          nextTc.json = JSON.stringify(patient);
-          formik.resetForm({ values: _.cloneDeep(nextTc) });
-        })
-        .catch((error) => {
-          if (error.toString().includes("404")) {
-            navigate("/404");
-          }
-        });
-    }
-  }, [measureId, id, measure?.groups, navigate]);
-
   const calculateQdmTestCases = async () => {
     setExecuting(true);
     try {
@@ -257,21 +262,24 @@ const EditTestCase = () => {
         );
 
       const patientResults = calculationOutput[patient._id];
-      const output = qdmCalculation.current.processTestCaseResults(
-        currentTestCase,
+      const testCaseWithResults = qdmCalculation.current.processTestCaseResults(
+        { ...formik.values },
         measure.groups,
         measure,
         patientResults
       );
-      setCurrentTestCase(output);
-      setCalculationResults(calculationOutput);
-
-      calculationOutput &&
-        showToast(
-          "Calculation was successful, output is printed in the console",
-          "success"
-        );
-      setExecutionRun(true);
+      // From processTestCaseResults we will be losing information about updatedTestCase.executionStatus,
+      // but that is not required on Edit TestCase page at-least for now.
+      formik.setFieldValue(
+        "groupPopulations",
+        testCaseWithResults.groupPopulations
+      );
+      const coverageResults = buildHighlightingForGroups(
+        patientResults,
+        cqmMeasure
+      );
+      setGroupCoverageResult(coverageResults);
+      setIsTestCaseExecuted(true);
     } catch (error) {
       setQdmExecutionErrors((prevState) => [...prevState, `${error.message}`]);
       showToast("Error while calculating QDM test cases", "danger");
@@ -300,7 +308,6 @@ const EditTestCase = () => {
   const handleTestCaseErrors = (value) => {
     setTestCaseErrors(value);
   };
-
   return (
     <>
       {qdmExecutionErrors && qdmExecutionErrors.length > 0 && (
@@ -325,7 +332,7 @@ const EditTestCase = () => {
 
         <form id="edit-test-case-form" onSubmit={formik.handleSubmit}>
           <div className="allotment-wrapper">
-            <Allotment defaultSizes={[200, 100]} vertical={false}>
+            <Allotment defaultSizes={[175, 125]} vertical={false}>
               <Allotment.Pane>
                 <LeftPanel
                   canEdit={canEdit}
@@ -337,10 +344,10 @@ const EditTestCase = () => {
               <Allotment.Pane>
                 <RightPanel
                   canEdit={canEdit}
-                  testCaseGroups={currentTestCase?.groupPopulations}
-                  executionRun={executionRun}
+                  testCaseGroups={formik?.values?.groupPopulations}
+                  isTestCaseExecuted={isTestCaseExecuted}
                   errors={formik.errors.groupPopulations}
-                  calculationResults={calculationResults}
+                  groupCoverageResult={groupCoverageResult}
                   calculationErrors={qdmExecutionErrors}
                   onChange={(
                     groupPopulations,
@@ -353,30 +360,13 @@ const EditTestCase = () => {
                       changedPopulation,
                       measure?.groups
                     );
-                    setCurrentTestCase((prevCurrentTestCase) => ({
-                      ...prevCurrentTestCase,
-                      groupPopulations: updatedPops,
-                    }));
-                    formik.setFieldValue("groupPopulations", updatedPops);
-                    formik.setFieldValue(
-                      "birthDate",
-                      formik.values?.birthDate
-                        ? formik.values?.birthDate
-                        : qdmPatient?.birthDatetime
-                        ? dayjs(qdmPatient?.birthDatetime)
-                        : null
-                    );
+                    const nextGc = _.cloneDeep(updatedPops);
+                    // only update the formState. Not the source of truth.
+                    formik.setFieldValue("groupPopulations", nextGc);
                   }}
-                  measureCql={measure?.cql}
                   measureGroups={measure?.groups}
                   measureName={measure?.measureName}
-                  birthDateTime={
-                    formik.values?.birthDate
-                      ? formik.values?.birthDate
-                      : qdmPatient?.birthDatetime
-                      ? dayjs(qdmPatient?.birthDatetime)
-                      : null
-                  }
+                  measureCql={measure?.cql}
                 />
               </Allotment.Pane>
             </Allotment>

@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import tw, { styled } from "twin.macro";
 import "styled-components/macro";
-import * as _ from "lodash";
+import _ from "lodash";
 import TestCasePopulation from "./TestCasePopulation";
 import TestCaseStratification from "../stratifications/TestCaseStratification";
 import {
@@ -16,30 +16,25 @@ import {
   faCheckCircle,
   faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import {
+  determineGroupResult,
+  determineGroupResultStratification,
+} from "./TestCasePopulationListUtil";
 
 export interface TestCasePopulationListProps {
   content: string;
-  i?: number;
-  strat?: boolean;
+  groupIndex?: number;
   scoring: string;
   populations: DisplayPopulationValue[];
-  stratifications?: StratificationExpectedValue[];
+  stratification?: StratificationExpectedValue;
   populationBasis: string;
   disableExpected?: boolean;
-  executionRun?: boolean;
+  isTestCaseExecuted?: boolean;
   onChange?: (
     populations: DisplayPopulationValue[],
-    type: "actual" | "expected",
     changedPopulation: DisplayPopulationValue
   ) => void;
-  onStratificationChange?: (
-    stratifications: any,
-    type: "actual" | "expected"
-    // changedStratification: any
-    // stratifications: DisplayStratificationValue[],
-    // type: "actual" | "expected",
-    // changedStratification: DisplayStratificationValue
-  ) => void;
+  onStratificationChange?: (stratification: DisplayStratificationValue) => void;
   errors?: any;
 }
 const StyledIcon = styled(FontAwesomeIcon)(
@@ -48,83 +43,19 @@ const StyledIcon = styled(FontAwesomeIcon)(
   ]
 );
 
-export const determineGroupResult = (
-  populationBasis: string,
-  populations: DisplayPopulationValue[],
-  executionRun?: boolean
-) => {
-  if (!executionRun) {
-    return "initial";
-  }
-  for (let i = 0; i < populations?.length; i++) {
-    const population = populations[i];
-    const { expected, actual } = population;
-    if (populationBasis === "boolean" && expected != actual) {
-      return "fail";
-    } else if (populationBasis !== "boolean") {
-      const expectedNum =
-        _.isNil(expected) ||
-        (typeof expected === "string" && _.isEmpty(expected))
-          ? 0
-          : expected;
-      const actualNum =
-        _.isNil(actual) || (typeof actual === "string" && _.isEmpty(actual))
-          ? 0
-          : actual;
-      if (expectedNum != actualNum) {
-        return "fail";
-      }
-    }
-  }
-  return "pass";
-};
-
-export const determineGroupResultStratification = (
-  populationBasis: string,
-  stratifications: DisplayStratificationValue[],
-  executionRun?: boolean
-) => {
-  if (!executionRun) {
-    return "initial";
-  }
-  for (let i = 0; i < stratifications?.length; i++) {
-    const stratification = stratifications[i];
-    const { expected, actual } = stratification;
-
-    if (populationBasis === "boolean" && expected != actual) {
-      return "fail";
-    } else if (populationBasis !== "boolean") {
-      const expectedNum =
-        _.isNil(expected) ||
-        (typeof expected === "string" && _.isEmpty(expected))
-          ? 0
-          : expected;
-      const actualNum =
-        _.isNil(actual) || (typeof actual === "string" && _.isEmpty(actual))
-          ? 0
-          : actual;
-      if (expectedNum != actualNum) {
-        return "fail";
-      }
-    }
-  }
-  return "pass";
-};
-
 // Test case population table. We need to know if the execution has been
 const TestCasePopulationList = ({
   content,
   scoring,
   populations,
-  stratifications,
+  stratification,
   populationBasis,
   disableExpected = true,
-  executionRun = false,
+  isTestCaseExecuted = false,
   onChange,
   onStratificationChange,
   errors,
-  i,
-  strat,
+  groupIndex,
 }: TestCasePopulationListProps) => {
   let measureObservations = [];
   let numeratorObservations = [];
@@ -132,7 +63,10 @@ const TestCasePopulationList = ({
   let initialPopulations = [];
   let contentId = content?.toLocaleLowerCase().replace(/(\W)+/g, "-");
 
-  const getPopulationCount = (populations, type: PopulationType): number => {
+  const getPopulationCount = (
+    populations: DisplayPopulationValue[],
+    type: PopulationType
+  ): number => {
     return populations.filter((res) => res.name === type).length;
   };
   const getObservationCount = (
@@ -144,12 +78,11 @@ const TestCasePopulationList = ({
       observations.push(observation);
       return observations.length;
     } else {
-      observations = [];
       return 0;
     }
   };
 
-  const measureObservationsCount = (population) => {
+  const measureObservationsCount = (population: DisplayPopulationValue) => {
     let count = 0;
     if (population.name === PopulationType.MEASURE_POPULATION_OBSERVATION) {
       count = getPopulationCount(populations, population.name);
@@ -169,61 +102,31 @@ const TestCasePopulationList = ({
     }
   };
 
-  // if we're handling a population nested in a strat we need to update that part instead.
-  const handleChange = (population: DisplayPopulationValue) => {
-    // if our population is part of a strat, we're going to modify that populationValue instead.
-    if (strat) {
-      // we want to trigger change in strat[0]
-      const currentStrats = [...stratifications];
-      const targetPopulation = currentStrats[0].populationValues.find(
-        (pop) => pop.id === population.id
-      );
-      const type =
-        targetPopulation.actual !== population.actual
-          ? "actual"
-          : targetPopulation.expected !== population.expected
-          ? "expected"
-          : null;
-      targetPopulation.actual = population.actual;
-      targetPopulation.expected = population.expected;
-      onStratificationChange(currentStrats[0], type);
-    } else {
-      const newPopulations = [...populations];
-      const newPop = newPopulations.find((pop) => pop.id === population.id);
-      const type =
-        newPop.actual !== population.actual
-          ? "actual"
-          : newPop.expected !== population.expected
-          ? "expected"
-          : null;
-      newPop.actual = population.actual;
-      newPop.expected = population.expected;
-      if (onChange) {
-        // we want to trigger a different population change if there is a strat
-        onChange(newPopulations, type, population);
-      }
-    }
-  };
-
-  const handleStratificationChange = (
-    stratification: DisplayStratificationValue
+  // Update the appropriate populationValue inside the array of populationValues
+  const handlePopulationValueChange = (
+    updatedPopulationValue: DisplayPopulationValue
   ) => {
-    const newStratifications = [...stratifications]; //copy
-    const newStrat = newStratifications.find(
-      (strat) => strat.id === stratification.id
-    );
-
-    const type =
-      newStrat.actual !== stratification.actual
-        ? "actual"
-        : newStrat.expected !== stratification.expected
-        ? "expected"
-        : null;
-
-    newStrat.actual = stratification.actual;
-    newStrat.expected = stratification.expected;
-    if (onStratificationChange) {
-      onStratificationChange(newStratifications, type);
+    // if our population is part of a strat, we will be updating populationValue of a start instead.
+    if (stratification) {
+      const updatedStratification = { ...stratification };
+      const populationValue = _.find(updatedStratification.populationValues, {
+        id: updatedPopulationValue.id,
+      });
+      populationValue.expected = updatedPopulationValue.expected;
+      populationValue.actual = updatedPopulationValue.actual;
+      onChange(updatedStratification?.populationValues, updatedPopulationValue);
+    } else {
+      const clonedPopulationValues = _.cloneDeep(populations);
+      const populationValue = _.find(clonedPopulationValues, {
+        id: updatedPopulationValue.id,
+      });
+      if (populationValue) {
+        populationValue.expected = updatedPopulationValue.expected;
+        populationValue.actual = updatedPopulationValue.actual;
+      }
+      if (onChange) {
+        onChange(clonedPopulationValues, updatedPopulationValue);
+      }
     }
   };
 
@@ -242,23 +145,28 @@ const TestCasePopulationList = ({
     return 0;
   };
 
-  // we need to do an all check here for pass / no pass
-
-  // we need to check if either normal or stratification
-
-  let view;
-
-  if (populations?.length > 0) {
-    view = determineGroupResult(populationBasis, populations, executionRun);
-  }
-
-  if (stratifications?.length > 0) {
-    view = determineGroupResultStratification(
-      populationBasis,
-      stratifications,
-      executionRun
-    );
-  }
+  // Determines the result of each PopulationCriteria
+  // If stratification fails, then we skip verifying populations as the PC is failed
+  // if stratification pass, then we determine its populations result
+  // If the PC is not stratified, then we determine the PC results only based on its populations.
+  const [view, setView] = useState<string>();
+  useEffect(() => {
+    let localView = "pass";
+    if (stratification) {
+      localView = determineGroupResultStratification(
+        populationBasis,
+        stratification,
+        isTestCaseExecuted
+      );
+    }
+    if (populations?.length > 0 && localView === "pass") {
+      setView(
+        determineGroupResult(populationBasis, populations, isTestCaseExecuted)
+      );
+    } else {
+      setView(localView);
+    }
+  }, [isTestCaseExecuted, populationBasis, populations, stratification]);
 
   /*
     we have three separate views
@@ -282,7 +190,7 @@ const TestCasePopulationList = ({
         className="population-table"
       >
         <caption>
-          {executionRun && (
+          {isTestCaseExecuted && (
             <StyledIcon
               icon={view === "pass" ? faCheckCircle : faTimesCircle}
               data-testid={`test-population-icon-${scoring}`}
@@ -294,7 +202,7 @@ const TestCasePopulationList = ({
           </span>
           <span
             className="sub-caption"
-            data-testid={`${contentId}-scoring-unit-${i + 1}`}
+            data-testid={`${contentId}-scoring-unit-${groupIndex + 1}`}
           >{` - ${scoring} | ${getPatientBasisLabel()}`}</span>
         </caption>
         <thead>
@@ -308,29 +216,29 @@ const TestCasePopulationList = ({
           </tr>
         </thead>
         <tbody>
-          {stratifications?.map((stratification, j) => (
+          {stratification && (
             <TestCaseStratification
-              index={j}
+              index={groupIndex}
               QDM={true}
-              strataCode={stratification.name}
-              executionRun={executionRun}
+              strataCode={stratification?.name}
               stratification={stratification}
               populationBasis={populationBasis}
-              key={stratification.id}
+              key={stratification?.id}
               disableExpected={disableExpected}
-              onStratificationChange={handleStratificationChange}
+              onStratificationChange={(updatedStratification) =>
+                onStratificationChange(updatedStratification)
+              }
             />
-          ))}
+          )}
           {populations?.map((population, j) => (
             <TestCasePopulation
               i={j}
-              strat={strat}
-              executionRun={executionRun}
+              strat={!_.isEmpty(stratification)}
               population={population}
               populationBasis={populationBasis}
               key={population.id}
               disableExpected={disableExpected}
-              onChange={handleChange}
+              onChange={handlePopulationValueChange}
               measureObservationsCount={
                 scoring === "Ratio" || scoring === "Continuous Variable"
                   ? measureObservationsCount(population)

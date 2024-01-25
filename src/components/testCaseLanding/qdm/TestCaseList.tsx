@@ -105,7 +105,7 @@ const TestCaseList = (props: TestCaseListProps) => {
   const [executeAllTestCases, setExecuteAllTestCases] =
     useState<boolean>(false);
   const [coverageHTML, setCoverageHTML] = useState<Record<string, string>>();
-  const [coveragePercentage, setCoveragePercentage] = useState<number>(0);
+  const [coveragePercentage, setCoveragePercentage] = useState<string>("-");
   const [openDeleteAllTestCasesDialog, setOpenDeleteAllTestCasesDialog] =
     useState<boolean>(false);
   const [testCasePassFailStats, setTestCasePassFailStats] =
@@ -192,7 +192,6 @@ const TestCaseList = (props: TestCaseListProps) => {
       validTestCases.forEach((testCase) => {
         const patient: QDMPatient = JSON.parse(testCase.json);
         const patientResults = executionResults[patient._id];
-
         const processedTC = qdmCalculation.current.processTestCaseResults(
           testCase,
           [selectedPopCriteria],
@@ -211,7 +210,44 @@ const TestCaseList = (props: TestCaseListProps) => {
       });
       setTestCases([...testCases]);
     }
+    clauseCoverageProcessor(calculationOutput);
   }, [calculationOutput, selectedPopCriteria]);
+
+  const clauseCoverageProcessor = (calculationOutput) => {
+    //generates current populations coverage %
+    if (calculationOutput && selectedPopCriteria) {
+      const trueClauses = new Set<string>();
+      const allClauses = new Set<string>();
+      const patientIDs = Object.keys(calculationOutput);
+      patientIDs.forEach((patientID) => {
+        if (
+          calculationOutput[patientID][selectedPopCriteria.id]
+            ?.clause_results?.[measure.cqlLibraryName]
+        ) {
+          const clauses =
+            calculationOutput[patientID][selectedPopCriteria.id]
+              ?.clause_results?.[measure.cqlLibraryName];
+          const clauseNumbers = Object.keys(clauses);
+          clauseNumbers.forEach((localID) => {
+            if (clauses[localID].final != "NA") {
+              allClauses.add(localID);
+              if (clauses[localID].final == "TRUE") {
+                trueClauses.add(localID);
+              }
+            }
+          });
+          setCoveragePercentage(
+            Math.floor((trueClauses.size / allClauses.size) * 100).toString()
+          );
+        } else {
+          console.error(
+            "Something unexpected happened with the coverage processor",
+            calculationOutput
+          );
+        }
+      });
+    }
+  };
 
   const createNewTestCase = () => {
     setCreateOpen(true);

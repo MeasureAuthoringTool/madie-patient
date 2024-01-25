@@ -5,7 +5,6 @@ import _ from "lodash";
 import ExpectActualInput from "./ExpectActualInput";
 
 export interface TestCasePopulationProps {
-  executionRun: boolean;
   population: DisplayPopulationValue;
   populationBasis: string;
   showExpected?: boolean;
@@ -19,7 +18,6 @@ export interface TestCasePopulationProps {
 }
 
 const TestCasePopulation = ({
-  executionRun,
   population,
   populationBasis,
   disableExpected = false,
@@ -92,7 +90,7 @@ const TestCasePopulation = ({
           />
         </td>
         <td role="cell">
-          {executionRun ? (
+          {!_.isNil(population.actual) ? (
             <ExpectActualInput
               id={`${population.id}-actual-cb`}
               aria-labelledby={`${population.name}-actual`}

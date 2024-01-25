@@ -29,9 +29,14 @@ const CoverageTab = ({ population, definitionText }: Props) => {
       <Accordion title={population} isOpen={false}>
         {definitionText ? (
           <div data-testId={`${population}-definition-text`}>
-            {Object.values(definitionText)?.map((item: any) => (
-              <pre>{item?.definitionLogic}</pre>
-            ))}
+            {Object.keys(definitionText)
+              ?.sort()
+              .filter(
+                (definition) => definitionText[definition].definitionLogic
+              )
+              .map((item: any) => (
+                <pre>{definitionText[item]?.definitionLogic}</pre>
+              ))}
           </div>
         ) : (
           "No Results Available"

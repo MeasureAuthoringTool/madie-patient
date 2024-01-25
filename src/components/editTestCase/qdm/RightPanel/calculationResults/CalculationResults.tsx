@@ -2,38 +2,36 @@ import React, { useEffect, useRef, useState } from "react";
 import QdmGroupCoverage from "../../../groupCoverage/QdmGroupCoverage";
 import { isEmpty } from "lodash";
 import { MadieAlert } from "@madie/madie-design-system/dist/react";
-import {
-  CqlDefinitionExpression,
-  mapCql,
-} from "../../../../../util/GroupCoverageHelpers";
 import "twin.macro";
 import "styled-components/macro";
+import { CqlDefinitionCallstack } from "../../../groupCoverage/QiCoreGroupCoverage";
 import useCqlParsingService from "../../../../../api/useCqlParsingService";
 
 const CalculationResults = ({
-  calculationResults,
+  groupCoverageResult,
   testCaseGroups,
-  measureCql,
   measureGroups,
   calculationErrors,
+  measureCql,
 }) => {
   const cqlParsingService = useRef(useCqlParsingService());
-  const [allDefinitions, setAllDefinitions] =
-    useState<CqlDefinitionExpression[]>();
+  const [callstackMap, setCallstackMap] = useState<CqlDefinitionCallstack>();
 
   useEffect(() => {
-    if (measureCql) {
-      cqlParsingService.current
-        .getAllDefinitionsAndFunctions(measureCql)
-        .then((allDefinitionsAndFunctions: CqlDefinitionExpression[]) => {
-          setAllDefinitions(allDefinitionsAndFunctions);
-        });
-    }
+    cqlParsingService.current
+      .getDefinitionCallstacks(measureCql)
+      .then((callstack: CqlDefinitionCallstack) => {
+        setCallstackMap(callstack);
+        return callstack;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }, [measureCql]);
 
   return (
     <div tw="p-5" style={{ paddingRight: ".25rem" }}>
-      {!calculationResults && isEmpty(calculationErrors) && (
+      {!groupCoverageResult && isEmpty(calculationErrors) && (
         <MadieAlert
           type="info"
           content="To see the logic highlights, click 'Run Test'"
@@ -46,13 +44,9 @@ const CalculationResults = ({
       {!isEmpty(testCaseGroups) && (
         <QdmGroupCoverage
           testCaseGroups={testCaseGroups}
-          cqlPopulationDefinitions={mapCql(
-            measureCql,
-            measureGroups,
-            allDefinitions
-          )}
           measureGroups={measureGroups}
-          calculationResults={calculationResults}
+          groupCoverageResult={groupCoverageResult}
+          cqlDefinitionCallstack={callstackMap}
         />
       )}
     </div>

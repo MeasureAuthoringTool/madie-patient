@@ -10,15 +10,14 @@ import { useFeatureFlags } from "@madie/madie-util";
 const RightPanel = ({
   canEdit,
   testCaseGroups,
-  executionRun,
+  isTestCaseExecuted,
   errors,
-  calculationResults,
+  groupCoverageResult,
   calculationErrors,
   onChange,
-  measureCql,
   measureGroups,
   measureName,
-  birthDateTime,
+  measureCql,
 }) => {
   const [activeTab, setActiveTab] = useState<string>("highlighting");
   const featureFlags = useFeatureFlags();
@@ -26,11 +25,7 @@ const RightPanel = ({
   return (
     <div className="right-panel">
       <div className="tab-container">
-        <RightPanelNavTabs
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          birthDateTime={birthDateTime}
-        />
+        <RightPanelNavTabs activeTab={activeTab} setActiveTab={setActiveTab} />
         <div className="spacer" />
         <IconButton>
           <KeyboardTabIcon className="back-icon" />
@@ -39,11 +34,11 @@ const RightPanel = ({
       <div className="panel-content">
         {featureFlags.qdmHighlightingTabs && activeTab === "highlighting" && (
           <CalculationResults
-            calculationResults={calculationResults}
+            groupCoverageResult={groupCoverageResult}
             testCaseGroups={testCaseGroups}
-            measureCql={measureCql}
             measureGroups={measureGroups}
             calculationErrors={calculationErrors}
+            measureCql={measureCql}
           />
         )}
         {activeTab === "expectoractual" && (
@@ -52,16 +47,11 @@ const RightPanel = ({
             groupPopulations={testCaseGroups}
             onChange={onChange}
             errors={errors}
-            executionRun={executionRun}
-            birthDateTime={birthDateTime}
+            isTestCaseExecuted={isTestCaseExecuted}
           />
         )}
         {activeTab === "details" && (
-          <DetailsSection
-            canEdit={canEdit}
-            measureName={measureName}
-            birthDateTime={birthDateTime}
-          />
+          <DetailsSection canEdit={canEdit} measureName={measureName} />
         )}
       </div>
       {/* header end */}

@@ -52,8 +52,10 @@ export function triggerPopChanges(
   let stratMap = buildStratificationMap(targetGroup, changedTarget);
   let popMap = buildPopulationMap(targetGroup);
 
-  addRemoveObservationsForPopulationCritieria(
-    targetGroup,
+  const targetPopulationValues = targetGroup.populationValues;
+
+  targetGroup.populationValues = addRemoveObservationsForPopulationCriteria(
+    targetPopulationValues,
     changedPopulationName,
     changedGroupId,
     measureGroups
@@ -159,8 +161,8 @@ const buildPopulationMap = (populationCritiera: GroupPopulation) => {
   return popMap;
 };
 
-function addRemoveObservationsForPopulationCritieria(
-  targetPopulationCriteria: GroupPopulation,
+export function addRemoveObservationsForPopulationCriteria(
+  populationValues: PopulationExpectedValue[],
   changedPopulationName: PopulationType,
   changedGroupId: string,
   measureGroups: Group[]
@@ -174,20 +176,18 @@ function addRemoveObservationsForPopulationCritieria(
     changedPopulationName === PopulationType.MEASURE_POPULATION_EXCLUSION
   ) {
     //for denom add observations 1 * expectedValue
-
     let expectedPopType = defineExpectedPopulationType(changedPopulationName);
 
     const expectedObservationsPerPop = countObservationsPerType(
-      targetPopulationCriteria.populationValues,
+      populationValues,
       measureGroups,
       changedGroupId,
       expectedPopType
     );
 
-    let populationBucket: PopulationExpectedValue[] =
-      targetPopulationCriteria.populationValues.filter(
-        (value) => value.name != PopulationType.MEASURE_OBSERVATION
-      );
+    let populationBucket: PopulationExpectedValue[] = populationValues.filter(
+      (value) => value.name != PopulationType.MEASURE_OBSERVATION
+    );
 
     const [nonExcludedPopType, excludedPopType]: [
       PopulationType,
@@ -222,8 +222,9 @@ function addRemoveObservationsForPopulationCritieria(
         (value) => value.name === PopulationType.MEASURE_POPULATION
       ) + 1;
     newPopBucket.splice(msrPpIdx, 0, ...msrPopBucket);
-    targetPopulationCriteria.populationValues = [...newPopBucket];
+    populationValues = [...newPopBucket];
   }
+  return populationValues;
 }
 
 function defineExpectedPopulationType(changedPopulationName: PopulationType) {
