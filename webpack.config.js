@@ -1,8 +1,5 @@
 /** @format */
-
-const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { mergeWithRules } = require("webpack-merge");
-const TerserPlugin = require("terser-webpack-plugin");
 const singleSpaDefaults = require("webpack-config-single-spa-react-ts");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 const path = require("path");
@@ -46,7 +43,6 @@ module.exports = (webpackConfigEnv, argv) => {
   });
   const externalsConfig = {
     externals: [
-      "@madie/madie-components",
       "@madie/madie-util",
       "@madie/madie-editor",
     ],
@@ -95,42 +91,7 @@ module.exports = (webpackConfigEnv, argv) => {
     },
     devServer: {
       https,
-      static: [
-        {
-          directory: path.join(__dirname, "local-dev-env"),
-          publicPath: "/importmap",
-        },
-        {
-          directory: path.join(
-            __dirname,
-            "node_modules/@madie/madie-root/dist/"
-          ),
-          publicPath: "/",
-        },
-        {
-          directory: path.join(
-            __dirname,
-            "node_modules/@madie/madie-editor/dist/"
-          ),
-          publicPath: "/madie-editor",
-        },
-        {
-          directory: path.join(
-            __dirname,
-            "node_modules/@madie/madie-auth/dist/"
-          ),
-          publicPath: "/madie-auth",
-        },
-      ],
     },
-    plugins: [
-      new HtmlWebpackPlugin({
-        template: path.join(
-          __dirname,
-          "node_modules/@madie/madie-root/dist/index.html"
-        ),
-      }),
-    ],
   };
 
   // node polyfills
