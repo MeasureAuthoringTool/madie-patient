@@ -9,22 +9,24 @@ const DefinitionsUsedSection = ({
   const [callStackText, setCallStackText] = useState<string>(null);
 
   useEffect(() => {
-    if (cqlDefinitionCallstack && groupCoverageResult) {
-      let text = "";
-      cqlDefinitionCallstack[result[0].name]?.forEach((calledDefinition) => {
-        // Get Highlighted HTML from execution results
-        text += groupCoverageResult.find(
-          (result) => result.name === calledDefinition.name
-        ).html;
-        getCallstack(calledDefinition.id).forEach((name) => {
-          text += groupCoverageResult.find(
-            (result) => result.name === name
-          ).html;
+    let text = "";
+    const generateCallstackText = (name) => {
+      if (cqlDefinitionCallstack && groupCoverageResult) {
+        cqlDefinitionCallstack[name]?.forEach((calledDefinition) => {
+          // Get Highlighted HTML from execution results
+          text += groupCoverageResult.filter(
+            (result) => result.name === calledDefinition.name
+          )[0].html;
+          generateCallstackText(calledDefinition.id);
         });
-      });
+      }
+    };
+
+    if (cqlDefinitionCallstack && groupCoverageResult) {
+      generateCallstackText(result.name);
       setCallStackText(text);
     }
-  }, [result]);
+  }, [cqlDefinitionCallstack, groupCoverageResult, result]);
 
   const getCallstack = (defId: string): string[] => {
     let calledDefinitions: string[] = [];

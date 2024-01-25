@@ -131,9 +131,11 @@ const QdmGroupCoverage = ({
       let result: StatementCoverageResult[];
       const statementResults = groupCoverageResult[selectedCriteria];
       if (statementResults) {
-        result = statementResults.filter((statementResult) =>
-          definitionFilterCondition(statementResult, population.name)
-        );
+        result = statementResults
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .filter((statementResult) =>
+            definitionFilterCondition(statementResult, population.name)
+          );
       }
       setSelectedDefinitionResults(result);
     }
@@ -180,7 +182,7 @@ const QdmGroupCoverage = ({
       <GroupCoverageResultsSection results={coverageResult.result} />,
       isPopulation(selectedTab.name) && cqlDefinitionCallstack && (
         <DefinitionsUsedSection
-          result={selectedDefinitionResults}
+          result={selectedDefinitionResults[0]}
           cqlDefinitionCallstack={cqlDefinitionCallstack}
           groupCoverageResult={groupCoverageResult[selectedCriteria]}
         />
