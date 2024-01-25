@@ -115,13 +115,23 @@ const CodeInput = ({
     >
       Custom Code
     </MenuItem>,
-    valueSets?.map((vs) => {
-      return (
-        <MenuItem key={vs.oid} value={vs.oid} data-testid={`option-${vs.oid}`}>
-          {vs.display_name}
-        </MenuItem>
-      );
-    }),
+    valueSets
+      ?.sort(function (a, b) {
+        var nameA = a.display_name.toUpperCase();
+        var nameB = b.display_name.toUpperCase();
+        return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
+      })
+      .map((vs) => {
+        return (
+          <MenuItem
+            key={vs.oid}
+            value={vs.oid}
+            data-testid={`option-${vs.oid}`}
+          >
+            {vs.display_name}
+          </MenuItem>
+        );
+      }),
   ];
 
   const codeSystemMenuOptions = () => {
