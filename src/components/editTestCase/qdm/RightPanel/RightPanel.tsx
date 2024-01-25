@@ -12,12 +12,12 @@ const RightPanel = ({
   testCaseGroups,
   isTestCaseExecuted,
   errors,
-  calculationResults,
+  groupCoverageResult,
   calculationErrors,
   onChange,
-  measureCql,
   measureGroups,
   measureName,
+  measureCql,
 }) => {
   const [activeTab, setActiveTab] = useState<string>("highlighting");
   const featureFlags = useFeatureFlags();
@@ -34,11 +34,11 @@ const RightPanel = ({
       <div className="panel-content">
         {featureFlags.qdmHighlightingTabs && activeTab === "highlighting" && (
           <CalculationResults
-            calculationResults={calculationResults}
+            groupCoverageResult={groupCoverageResult}
             testCaseGroups={testCaseGroups}
-            measureCql={measureCql}
             measureGroups={measureGroups}
             calculationErrors={calculationErrors}
+            measureCql={measureCql}
           />
         )}
         {activeTab === "expectoractual" && (

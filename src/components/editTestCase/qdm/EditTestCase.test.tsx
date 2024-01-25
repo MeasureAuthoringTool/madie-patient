@@ -330,6 +330,7 @@ const useCqlParsingServiceMock =
 
 const useCqlParsingServiceMockResolved = {
   getAllDefinitionsAndFunctions: jest.fn().mockResolvedValue(qdmCallStack),
+  getDefinitionCallstacks: jest.fn().mockResolvedValue(qdmCallStack),
 } as unknown as CqlParsingService;
 
 const mockProcessTestCaseResults = jest.fn().mockImplementation(() => {

@@ -47,6 +47,10 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
 import StatusHandler from "../../statusHandler/StatusHandler";
+import {
+  buildHighlightingForGroups,
+  GroupCoverageResult,
+} from "../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
 
 const EditTestCase = () => {
   useDocumentTitle("MADiE Edit Measure Edit Test Case");
@@ -110,7 +114,8 @@ const EditTestCase = () => {
     []
   );
   const [selectedDataElement, setSelectedDataElement] = useState<DataElement>();
-  const [calculationResults, setCalculationResults] = useState(null);
+  const [groupCoverageResult, setGroupCoverageResult] =
+    useState<GroupCoverageResult>();
 
   dayjs.extend(utc);
   dayjs.utc().format(); // utc format
@@ -269,13 +274,11 @@ const EditTestCase = () => {
         "groupPopulations",
         testCaseWithResults.groupPopulations
       );
-      setCalculationResults(calculationOutput);
-
-      calculationOutput &&
-        showToast(
-          "Calculation was successful, output is printed in the console",
-          "success"
-        );
+      const coverageResults = buildHighlightingForGroups(
+        patientResults,
+        cqmMeasure
+      );
+      setGroupCoverageResult(coverageResults);
       setIsTestCaseExecuted(true);
     } catch (error) {
       setQdmExecutionErrors((prevState) => [...prevState, `${error.message}`]);
@@ -329,7 +332,7 @@ const EditTestCase = () => {
 
         <form id="edit-test-case-form" onSubmit={formik.handleSubmit}>
           <div className="allotment-wrapper">
-            <Allotment defaultSizes={[200, 100]} vertical={false}>
+            <Allotment defaultSizes={[175, 125]} vertical={false}>
               <Allotment.Pane>
                 <LeftPanel
                   canEdit={canEdit}
@@ -344,7 +347,7 @@ const EditTestCase = () => {
                   testCaseGroups={formik?.values?.groupPopulations}
                   isTestCaseExecuted={isTestCaseExecuted}
                   errors={formik.errors.groupPopulations}
-                  calculationResults={calculationResults}
+                  groupCoverageResult={groupCoverageResult}
                   calculationErrors={qdmExecutionErrors}
                   onChange={(
                     groupPopulations,
@@ -361,9 +364,9 @@ const EditTestCase = () => {
                     // only update the formState. Not the source of truth.
                     formik.setFieldValue("groupPopulations", nextGc);
                   }}
-                  measureCql={measure?.cql}
                   measureGroups={measure?.groups}
                   measureName={measure?.measureName}
+                  measureCql={measure?.cql}
                 />
               </Allotment.Pane>
             </Allotment>
