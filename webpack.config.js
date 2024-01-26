@@ -42,10 +42,7 @@ module.exports = (webpackConfigEnv, argv) => {
     orgPackagesAsExternal: false,
   });
   const externalsConfig = {
-    externals: [
-      "@madie/madie-util",
-      "@madie/madie-editor",
-    ],
+    externals: ["@madie/madie-util", "@madie/madie-editor"],
   };
 
   // We need to override the css loading rule from the parent configuration
