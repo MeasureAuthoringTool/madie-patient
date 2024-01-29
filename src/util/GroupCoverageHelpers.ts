@@ -50,6 +50,7 @@ export const abbreviatedPopulations = {
   numeratorExclusion: "NUMEX",
   denominatorException: "DENEXCEP",
   measurePopulation: "MSRPOPL",
+  measurePopulationExclusion: "MSRPOPLEX",
 };
 
 export const getPopulationAbbreviation = (
