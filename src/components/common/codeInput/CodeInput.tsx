@@ -9,6 +9,7 @@ import {
 import { MenuItem } from "@mui/material";
 import { CQL, ValueSet, Concept } from "cqm-models";
 import { routeHandlerStore } from "@madie/madie-util";
+import _ from "lodash";
 
 type CodeSystems = {
   [name: string]: string;
@@ -115,23 +116,13 @@ const CodeInput = ({
     >
       Custom Code
     </MenuItem>,
-    valueSets
-      ?.sort(function (a, b) {
-        var nameA = a.display_name.toUpperCase();
-        var nameB = b.display_name.toUpperCase();
-        return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
-      })
-      .map((vs) => {
-        return (
-          <MenuItem
-            key={vs.oid}
-            value={vs.oid}
-            data-testid={`option-${vs.oid}`}
-          >
-            {vs.display_name}
-          </MenuItem>
-        );
-      }),
+    _.sortBy(valueSets, "display_name")?.map((vs) => {
+      return (
+        <MenuItem key={vs.oid} value={vs.oid} data-testid={`option-${vs.oid}`}>
+          {vs.display_name}
+        </MenuItem>
+      );
+    }),
   ];
 
   const codeSystemMenuOptions = () => {
