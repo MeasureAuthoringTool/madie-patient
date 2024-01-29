@@ -38,6 +38,11 @@ import TestCaseCoverage from "./TestCaseCoverage/TestCaseCoverage";
 import CodeCoverageHighlighting from "../common/CodeCoverageHighlighting";
 import { QDMPatient, DataElement } from "cqm-models";
 import { cloneTestCase } from "../../../util/QdmTestCaseHelper";
+import {
+  buildHighlightingForGroups,
+  GroupCoverageResult,
+  buildHighlightingForAllGroups,
+} from "../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
 
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
@@ -104,7 +109,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     useState<CqmExecutionResultsByPatient>();
   const [executeAllTestCases, setExecuteAllTestCases] =
     useState<boolean>(false);
-  const [coverageHTML, setCoverageHTML] = useState<Record<string, string>>();
+  // const [coverageHTML, setCoverageHTML] = useState<Record<string, string>>();
   const [coveragePercentage, setCoveragePercentage] = useState<string>("-");
   const [openDeleteAllTestCasesDialog, setOpenDeleteAllTestCasesDialog] =
     useState<boolean>(false);
@@ -122,8 +127,9 @@ const TestCaseList = (props: TestCaseListProps) => {
     open: false,
   });
 
+  const [groupCoverageResult, setGroupCoverageResult] = useState([]);
+  useState<GroupCoverageResult>();
   const [createOpen, setCreateOpen] = useState<boolean>(false);
-
   useEffect(() => {
     if (
       !_.isNil(measure?.groups) &&
@@ -188,19 +194,27 @@ const TestCaseList = (props: TestCaseListProps) => {
     const validTestCases = testCases?.filter((tc) => tc.validResource);
     if (validTestCases && calculationOutput) {
       const executionResults: CqmExecutionResultsByPatient = calculationOutput;
-
+      // calculation output only contains valid testcases already.
+      const highlightingForAllGroups = buildHighlightingForAllGroups(
+        calculationOutput,
+        cqmMeasure
+      );
+      setGroupCoverageResult(highlightingForAllGroups);
       validTestCases.forEach((testCase) => {
         const patient: QDMPatient = JSON.parse(testCase.json);
         const patientResults = executionResults[patient._id];
-        const processedTC = qdmCalculation.current.processTestCaseResults(
-          testCase,
-          [selectedPopCriteria],
-          measure,
-          patientResults
-        );
-        testCase.groupPopulations = processedTC.groupPopulations;
-        testCase.executionStatus = processedTC.executionStatus;
+        const testCaseWithResults =
+          qdmCalculation.current.processTestCaseResults(
+            // buildHighlightingForGroups(validTestCases[0], cqmMeasure)
+            testCase,
+            [selectedPopCriteria],
+            measure,
+            patientResults
+          );
+        testCase.groupPopulations = testCaseWithResults.groupPopulations;
+        testCase.executionStatus = testCaseWithResults.executionStatus;
       });
+
       setExecuteAllTestCases(true);
       const { passPercentage, passFailRatio } =
         calculation.current.getPassingPercentageForTestCases(testCases);
@@ -509,9 +523,12 @@ const TestCaseList = (props: TestCaseListProps) => {
               <div tw="overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div tw="py-2 inline-block min-w-full sm:px-6 lg:px-8">
                   <TestCaseCoverage
+                    measureGroups={measure.groups}
+                    testCases={testCases}
+                    measureCql={measure.cql}
+                    groupCoverageResult={groupCoverageResult}
                     data-testid="test-case-coverage"
                     populationCriteria={selectedPopCriteria}
-                    measureCql={measure.cql}
                     calculationOutput={calculationOutput}
                   />
                 </div>
