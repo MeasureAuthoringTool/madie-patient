@@ -72,6 +72,76 @@ function updateGroupResults(groupResults) {
  * @param groupResults - calculation results for each measure group.
  * @param cqmMeasure - measure
  */
+
+function updateAllGroupResults(calculationOutput) {
+  const updatedGroupResults = [];
+
+  for (let patientId in calculationOutput) {
+    const patientResult = calculationOutput[patientId];
+
+    for (const groupId in patientResult) {
+      const groupResult = patientResult[groupId];
+      const existingGroupIndex = updatedGroupResults.findIndex(
+        (group) => group.groupId === groupId
+      );
+      // if the groupid already lives in updateGroupResults, we just want to append those values
+      if (existingGroupIndex > -1) {
+        const newClauseResults = Object.values(groupResult.clause_results)
+          ?.flatMap(Object.values)
+          .concat();
+
+        const newStatementResults = Object.values(
+          groupResult.statement_results
+        )?.flatMap(Object.values);
+
+        updatedGroupResults[existingGroupIndex].statementResults = [
+          ...updatedGroupResults[existingGroupIndex].statementResults,
+          ...newStatementResults,
+        ];
+        
+        // clause results are only relevant
+        updatedGroupResults[existingGroupIndex].clauseResults = [
+          ...updatedGroupResults[existingGroupIndex].clauseResults,
+          ...newClauseResults,
+        ];
+      } else {
+        updatedGroupResults.push({
+          groupId: groupId,
+          clauseResults: Object.values(groupResult.clause_results)?.flatMap(
+            Object.values
+          ),
+          statementResults: Object.values(
+            groupResult.statement_results
+          )?.flatMap(Object.values),
+        });
+      }
+    }
+    // filter the unique clauses
+    updatedGroupResults.forEach((groupResult) => {
+      const allRelevantClauses = groupResult.clauseResults.filter((c) =>
+        groupResult.statementResults.some(
+          (s) =>
+            s.statement_name === c.statement_name &&
+            s.library_name === c.library_name &&
+            !s.isFunction
+        )
+      );
+      console.log('allRelevantClauses', allRelevantClauses)
+
+      const allUniqueClauses = _.uniqWith(
+        allRelevantClauses,
+        (c1, c2) =>
+        // @ts-ignore
+          c1.library_name === c2.library_name && c1.localId === c2.localId
+      );
+      console.log('allUniqueClauses', allUniqueClauses)
+      groupResult.clause_results = allUniqueClauses;
+    });
+  }
+  return updatedGroupResults;
+}
+
+
 export function buildHighlightingForGroups(
   groupResults,
   cqmMeasure
@@ -82,7 +152,6 @@ export function buildHighlightingForGroups(
 
   // restructure the group results into an array
   const updatedGroupResults = updateGroupResults(groupResults);
-  // get the measure and included libraries
   const measureLibraryMap = cqmMeasure.cql_libraries?.reduce(
     (libraryMap, cqlLibrary) => {
       libraryMap[`${cqlLibrary.library_name}`] = cqlLibrary.elm.library;
@@ -133,3 +202,75 @@ export function buildHighlightingForGroups(
   }
   return coverageResults;
 }
+
+/* calcResult = {[patientid]: {
+  [populationSetId]: values
+}}
+
+*/
+// const transformResults
+
+// same thing as buildHighlightingForGroups with some additional changes.
+export function buildHighlightingForAllGroups(
+  calculationOutput, //calculation result
+  cqmMeasure
+): any {
+  if (_.isNil(calculationOutput) || _.isNil(cqmMeasure)) {
+    return {};
+  }
+
+  const measureLibraryMap = cqmMeasure.cql_libraries?.reduce(
+    (libraryMap, cqlLibrary) => {
+      libraryMap[`${cqlLibrary.library_name}`] = cqlLibrary.elm.library;
+      return libraryMap;
+    },
+    {}
+  );
+  // restructure the group results into an array
+  const allUpdatedGroupResults = updateAllGroupResults(calculationOutput);
+  // get the measure and included libraries
+
+  const coverageResults = {} as GroupCoverageResult;
+  for (const groupResult of allUpdatedGroupResults) {
+    const { groupId, clauseResults, statementResults } = groupResult;
+    coverageResults[groupId] = statementResults.reduce((result, statement) => {
+      // matching cql library
+      const library = measureLibraryMap[statement.library_name];
+      if (!library) {
+        throw new Error(`Unsupported libray: ${statement.library_name}`);
+      }
+      // find matching statement from library
+      const statementDef = library.statements.def.find(
+        (e) => e.name === statement.statement_name
+      );
+      if (!statementDef) {
+        throw new Error(
+          `Definition ${statement.name} not found in library ${statement.library_name}`
+        );
+      }
+      // ignore statement without annotations e.g. context Patient
+      if (_.isNil(statementDef.annotation)) {
+        return result;
+      }
+
+      // build the coverage html
+      const coverageHtml = main({
+        libraryName: statement.library_name,
+        statementName: statement.statement_name,
+        clauseResults: clauseResults,
+        ...statementDef.annotation[0].s,
+      });
+      result.push({
+        type: statementDef.type,
+        html: coverageHtml,
+        relevance: statement.relevance,
+        name: statement.statement_name,
+        result: statement.pretty,
+      });
+      return result;
+    }, []);
+  }
+  return coverageResults;
+}
+
+// we want to also do the same thing for individual definitions

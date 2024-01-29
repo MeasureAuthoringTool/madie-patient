@@ -1,42 +1,78 @@
 import React from "react";
 interface Props {
-  population: string;
-  definitionText: any;
+  definition: string;
+  definitionResults: any;
+  cqlDefinitionCallstack: any;
+  groupCoverageResult: any;
 }
 import { Accordion } from "@madie/madie-design-system/dist/react";
+import parse from "html-react-parser";
+import {
+  StatementCoverageResult,
+  GroupCoverageResult,
+} from "../../../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
+import GroupCoverageResultsSection from "../../../../editTestCase/groupCoverage/GroupCoverageResultsSection";
+import { isPopulation } from "../../../../../util/GroupCoverageHelpers";
+// import GroupCoverageResultsSection from ''
+import DefinitionsUsedSection from "../../../../editTestCase/groupCoverage/DefinitionsUsedSection";
+import { isEmpty, isNil } from "lodash";
 import "twin.macro";
 import "styled-components/macro";
 
-const CoverageTab = ({ population, definitionText }: Props) => {
-  return population !== "Functions" &&
-    population !== "Used" &&
-    population !== "Unused" ? (
+const CoverageTab = ({
+  definition,
+  definitionResults,
+  cqlDefinitionCallstack,
+  groupCoverageResult,
+}: Props) => {
+  console.log(`~~~coverageTabProps`);
+  console.log("definition", definition);
+  console.log("definitionResults", definitionResults);
+  console.log("cqlDefinitionCallstack", cqlDefinitionCallstack);
+
+  console.log('00~~', 'definition', isPopulation(definition), definition)
+
+  const getCoverageResult = (coverageResult: StatementCoverageResult) => {
+    if (isNil(coverageResult)) {
+      return "No results available";
+    }
+
+    return [
+      parse(`<pre><code>${coverageResult.html}</code></pre>`),
+      isPopulation(definition) && cqlDefinitionCallstack && (
+        <DefinitionsUsedSection
+          result={definitionResults[0]}
+          cqlDefinitionCallstack={cqlDefinitionCallstack}
+          groupCoverageResult={groupCoverageResult}
+        />
+      ),
+    ];
+  };
+  return definition !== "Functions" &&
+    definition !== "Used" &&
+    definition !== "Unused" ? (
     <div
       style={{ maxWidth: "1300px" }}
-      data-testid={`${population}-population`}
+      data-testid={`${definition}-population`}
     >
-      <Accordion title={population} isOpen={false}>
-        <pre data-testId={`${population}-population-text`}>
-          {definitionText.text}
+      <Accordion title={definition} isOpen={false}>
+        <pre data-testId={`${definition}-population-text`}>
+          {definitionResults.map((results) => getCoverageResult(results))}
         </pre>
       </Accordion>
     </div>
   ) : (
+    // all none populationcentric guys.
     <div
       style={{ maxWidth: "1300px" }}
-      data-testid={`${population}-definition`}
+      data-testid={`${definition}-definition`}
     >
-      <Accordion title={population} isOpen={false}>
-        {definitionText ? (
-          <div data-testId={`${population}-definition-text`}>
-            {Object.keys(definitionText)
-              ?.sort()
-              .filter(
-                (definition) => definitionText[definition].definitionLogic
-              )
-              .map((item: any) => (
-                <pre>{definitionText[item]?.definitionLogic}</pre>
-              ))}
+      <Accordion title={definition} isOpen={false}>
+        {/* definitionResults */}
+        {console.log("defintiionResults", definitionResults)}
+        {definitionResults ? (
+          <div data-testId={`${definition}-definition-text`}>
+            {definitionResults.map((results) => getCoverageResult(results))}
           </div>
         ) : (
           "No Results Available"
