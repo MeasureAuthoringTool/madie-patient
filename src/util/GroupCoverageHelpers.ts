@@ -65,7 +65,6 @@ export const getPopulationAbbreviation = (
 };
 
 export const getFirstPopulation = (group) => {
-  console.log("~~~~group is", group);
   return {
     abbreviation: "IP",
     criteriaReference: group.populationValues[0].criteriaReference,
