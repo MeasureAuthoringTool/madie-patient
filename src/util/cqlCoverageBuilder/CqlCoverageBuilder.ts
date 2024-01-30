@@ -1,8 +1,6 @@
 import * as _ from "lodash";
-import {
-  passFailCoverage,
-  codeCoverageHighlighting,
-} from "./CodeCoverageHighlighting";
+import { codeCoverageHighlighting } from "./CodeCoverageHighlighting";
+import { passFailCoverage } from "./CodeCoverageHighlightingPassFail";
 
 export interface StatementCoverageResult {
   type: string;
@@ -58,13 +56,13 @@ function updateAllGroupResults(calculationOutput) {
         (group) => group.groupId === groupId
       );
       const newStatementResults = Object.values(
-        groupResult.statement_results
+        groupResult?.statement_results
       )?.flatMap(Object.values);
 
       // we want only a single reference to each groupId. We will concat all the clauseResults associated with each one.
       if (existingGroupIndex > -1) {
         const newClauseResults = Object.values(
-          groupResult.clause_results
+          groupResult?.clause_results
         )?.flatMap(Object.values);
 
         updatedGroupResults[existingGroupIndex].clauseResults = [
@@ -72,11 +70,15 @@ function updateAllGroupResults(calculationOutput) {
           ...newClauseResults,
         ];
       } else {
+        let newClauseResults = [];
+        if (groupResult?.clause_results) {
+          newClauseResults = Object.values(
+            groupResult?.clause_results
+          )?.flatMap(Object.values);
+        }
         updatedGroupResults.push({
           groupId: groupId,
-          clauseResults: Object.values(groupResult.clause_results)?.flatMap(
-            Object.values
-          ),
+          clauseResults: newClauseResults,
           statementResults: newStatementResults, // we only need a single copy of statement result
         });
       }

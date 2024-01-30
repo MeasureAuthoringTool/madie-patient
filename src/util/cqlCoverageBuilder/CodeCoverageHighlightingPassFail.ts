@@ -1,16 +1,17 @@
 import * as Handlebars from "handlebars";
 import * as _ from "lodash";
 import {
+  clauseCoveredStylePass,
+  clauseNotCoveredStyleFail,
   clauseNotApplicableStyle,
-  clauseHighlightedStyle,
-  highlightTemplate,
+  clauseTemplate,
   definitionTemplate,
-} from "./templates/coverageHighlightingTemplate";
+} from "./templates/passFailHighlightingTemplate";
 import { objToCSS } from "./CqlCoverageBuilder";
 
-Handlebars.registerPartial("highlightClause", highlightTemplate);
-Handlebars.registerHelper("add", (s) => s.join(""));
-Handlebars.registerHelper("colorClause", (localId, context) => {
+Handlebars.registerPartial("clause", clauseTemplate);
+Handlebars.registerHelper("concat", (s) => s.join(""));
+Handlebars.registerHelper("highlightClause", (localId, context) => {
   const libraryName = context.data.root.libraryName;
   const clauseResults = context.data.root.clauseResults;
   const clauseResult = clauseResults.find(
@@ -19,14 +20,13 @@ Handlebars.registerHelper("colorClause", (localId, context) => {
   );
   if (clauseResult) {
     if (clauseResult.final === "TRUE") {
-      return objToCSS(clauseHighlightedStyle);
+      return objToCSS(clauseCoveredStylePass);
     } else if (clauseResult.final === "FALSE") {
-      return objToCSS(clauseNotApplicableStyle);
+      return objToCSS(clauseNotCoveredStyleFail);
     } else {
       return objToCSS(clauseNotApplicableStyle);
     }
   }
   return "";
 });
-
-export const codeCoverageHighlighting = Handlebars.compile(definitionTemplate);
+export const passFailCoverage = Handlebars.compile(definitionTemplate);

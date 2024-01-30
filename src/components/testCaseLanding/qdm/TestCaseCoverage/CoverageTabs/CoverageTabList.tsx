@@ -95,10 +95,11 @@ const CoverageTabList = ({
           );
         })}
 
-      {/* everything besides initial population.  
-  allDefinitions are not cql definitions. 
-  const allDefinitions = ["Used", "Functions", "Unused"];
-*/}
+      {/* 
+        everything besides initial population.  
+        allDefinitions are not cql definitions. 
+        const allDefinitions = ["Used", "Functions", "Unused"];
+      */}
       {allDefinitions.map((definition, i) => {
         return (
           <CoverageTab
