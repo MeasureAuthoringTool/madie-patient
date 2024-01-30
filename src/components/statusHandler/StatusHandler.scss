@@ -9,6 +9,10 @@
     overflow: auto;
     width: 100%;
     padding: 2px;
+
+    > h3 {
+      line-height: normal;
+    }
     .secondary {
       margin-bottom: 5px;
       ~ ul,
