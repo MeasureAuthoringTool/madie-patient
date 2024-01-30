@@ -152,10 +152,10 @@ export class CqmConversionService {
       id: group.id,
       title: "Population Criteria Section",
       population_set_id: group.id,
-      populations: this.generateCqmPopulations(
-        group.populations,
-        measure.cqlLibraryName
-      ),
+      // populations: this.generateCqmPopulations(
+      //   group.populations,
+      //   measure.cqlLibraryName
+      // ),
       stratifications: this.generateCqmStratifications(
         group.stratifications,
         measure.cqlLibraryName,
