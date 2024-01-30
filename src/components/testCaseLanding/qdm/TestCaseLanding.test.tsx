@@ -7,6 +7,10 @@ import { Measure, Model } from "@madie/madie-models";
 import { CqmMeasure, ValueSet } from "cqm-models";
 import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
 import { checkUserCanEdit } from "@madie/madie-util";
+import useCqlParsingService, {
+  CqlParsingService,
+} from "../../../api/useCqlParsingService";
+import { qdmCallStack } from "../../editTestCase/groupCoverage/_mocks_/QdmCallStack";
 
 const serviceConfig: ServiceConfig = {
   measureService: {
@@ -19,6 +23,15 @@ const serviceConfig: ServiceConfig = {
     baseUrl: "http.com",
   },
 };
+
+jest.mock("../../../api/useCqlParsingService");
+const useCqlParsingServiceMock =
+  useCqlParsingService as jest.Mock<CqlParsingService>;
+
+const useCqlParsingServiceMockResolved = {
+  getAllDefinitionsAndFunctions: jest.fn().mockResolvedValue(qdmCallStack),
+  getDefinitionCallstacks: jest.fn().mockResolvedValue(qdmCallStack),
+} as unknown as CqlParsingService;
 
 const MEASURE_CREATEDBY = "testuser";
 
@@ -57,6 +70,10 @@ jest.mock("@madie/madie-util", () => ({
 }));
 
 describe("TestCaseLanding component", () => {
+  useCqlParsingServiceMock.mockImplementation(() => {
+    return useCqlParsingServiceMockResolved;
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });

@@ -1,34 +1,6 @@
-import * as Handlebars from "handlebars";
 import * as _ from "lodash";
-import {
-  clauseCoveredStyle,
-  clauseNotCoveredStyle,
-  clauseNotApplicableStyle,
-  clauseTemplate,
-  definitionTemplate,
-} from "./templates/highlightingTemplates";
-
-const main = Handlebars.compile(definitionTemplate);
-Handlebars.registerPartial("clause", clauseTemplate);
-Handlebars.registerHelper("concat", (s) => s.join(""));
-Handlebars.registerHelper("highlightClause", (localId, context) => {
-  const libraryName = context.data.root.libraryName;
-  const clauseResults = context.data.root.clauseResults;
-  const clauseResult = clauseResults.find(
-    (result) =>
-      result.library_name === libraryName && result.localId === localId
-  );
-  if (clauseResult) {
-    if (clauseResult.final === "TRUE") {
-      return objToCSS(clauseCoveredStyle);
-    } else if (clauseResult.final === "FALSE") {
-      return objToCSS(clauseNotCoveredStyle);
-    } else {
-      return objToCSS(clauseNotApplicableStyle);
-    }
-  }
-  return "";
-});
+import { codeCoverageHighlighting } from "./CodeCoverageHighlighting";
+import { passFailCoverage } from "./CodeCoverageHighlightingPassFail";
 
 export interface StatementCoverageResult {
   type: string;
@@ -72,6 +44,49 @@ function updateGroupResults(groupResults) {
  * @param groupResults - calculation results for each measure group.
  * @param cqmMeasure - measure
  */
+
+function updateAllGroupResults(calculationOutput) {
+  const updatedGroupResults = [];
+
+  for (let patientId in calculationOutput) {
+    const patientResult = calculationOutput[patientId];
+    for (const groupId in patientResult) {
+      const groupResult = patientResult[groupId];
+      const existingGroupIndex = updatedGroupResults.findIndex(
+        (group) => group.groupId === groupId
+      );
+      const newStatementResults = Object.values(
+        groupResult?.statement_results
+      )?.flatMap(Object.values);
+
+      // we want only a single reference to each groupId. We will concat all the clauseResults associated with each one.
+      if (existingGroupIndex > -1) {
+        const newClauseResults = Object.values(
+          groupResult?.clause_results
+        )?.flatMap(Object.values);
+
+        updatedGroupResults[existingGroupIndex].clauseResults = [
+          ...updatedGroupResults[existingGroupIndex].clauseResults,
+          ...newClauseResults,
+        ];
+      } else {
+        let newClauseResults = [];
+        if (groupResult?.clause_results) {
+          newClauseResults = Object.values(
+            groupResult?.clause_results
+          )?.flatMap(Object.values);
+        }
+        updatedGroupResults.push({
+          groupId: groupId,
+          clauseResults: newClauseResults,
+          statementResults: newStatementResults, // we only need a single copy of statement result
+        });
+      }
+    }
+  }
+  return updatedGroupResults;
+}
+
 export function buildHighlightingForGroups(
   groupResults,
   cqmMeasure
@@ -82,7 +97,6 @@ export function buildHighlightingForGroups(
 
   // restructure the group results into an array
   const updatedGroupResults = updateGroupResults(groupResults);
-  // get the measure and included libraries
   const measureLibraryMap = cqmMeasure.cql_libraries?.reduce(
     (libraryMap, cqlLibrary) => {
       libraryMap[`${cqlLibrary.library_name}`] = cqlLibrary.elm.library;
@@ -115,7 +129,69 @@ export function buildHighlightingForGroups(
       }
 
       // build the coverage html
-      const coverageHtml = main({
+      const coverageHtml = passFailCoverage({
+        libraryName: statement.library_name,
+        statementName: statement.statement_name,
+        clauseResults: clauseResults,
+        ...statementDef.annotation[0].s,
+      });
+      result.push({
+        type: statementDef.type,
+        html: coverageHtml,
+        relevance: statement.relevance,
+        name: statement.statement_name,
+        result: statement.pretty,
+      });
+      return result;
+    }, []);
+  }
+  return coverageResults;
+}
+
+export function buildHighlightingForAllGroups(
+  calculationOutput,
+  cqmMeasure
+): any {
+  if (_.isNil(calculationOutput) || _.isNil(cqmMeasure)) {
+    return {};
+  }
+
+  const measureLibraryMap = cqmMeasure.cql_libraries?.reduce(
+    (libraryMap, cqlLibrary) => {
+      libraryMap[`${cqlLibrary.library_name}`] = cqlLibrary.elm.library;
+      return libraryMap;
+    },
+    {}
+  );
+  // restructure the group results into an array
+  const allUpdatedGroupResults = updateAllGroupResults(calculationOutput);
+  // get the measure and included libraries
+
+  const coverageResults = {} as GroupCoverageResult;
+  for (const groupResult of allUpdatedGroupResults) {
+    const { groupId, clauseResults, statementResults } = groupResult;
+    coverageResults[groupId] = statementResults.reduce((result, statement) => {
+      // matching cql library
+      const library = measureLibraryMap[statement.library_name];
+      if (!library) {
+        throw new Error(`Unsupported libray: ${statement.library_name}`);
+      }
+      // find matching statement from library
+      const statementDef = library.statements.def.find(
+        (e) => e.name === statement.statement_name
+      );
+      if (!statementDef) {
+        throw new Error(
+          `Definition ${statement.name} not found in library ${statement.library_name}`
+        );
+      }
+      // ignore statement without annotations e.g. context Patient
+      if (_.isNil(statementDef.annotation)) {
+        return result;
+      }
+
+      // build the coverage html
+      const coverageHtml = codeCoverageHighlighting({
         libraryName: statement.library_name,
         statementName: statement.statement_name,
         clauseResults: clauseResults,

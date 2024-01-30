@@ -77,11 +77,13 @@ export const isPopulation = (name: string) => {
   return name !== "Functions" && name !== "Definitions" && name !== "Unused";
 };
 
+// there's no coverage here at all.
 export const mapCoverageCql = (
   measureCql: string,
   groupPopulations,
   allDefinitions
 ): CoverageMappedCql => {
+  // filter populations by weather they have a definition
   const filteredPopulations = groupPopulations.populations.filter(
     (population) => population.definition
   );
