@@ -72,16 +72,15 @@ const CoverageTabList = ({
           const selectedGroup = measureGroups?.find(
             (group) => group.id === populationCriteria.id
           );
-
           const selectedPopulation = selectedGroup?.populations?.find(
-            (pop) => pop.id === pop.id
+            (s) => s.id === pop.id
           );
           // get all clauses that match with definition (e.i Initial Population)
           const coverage =
             groupCoverageResult &&
             groupCoverageResult[populationCriteria.id]?.find(
               (coverageResult) =>
-                coverageResult.name === selectedPopulation.definition
+                coverageResult.name === selectedPopulation?.definition
             );
 
           return (
