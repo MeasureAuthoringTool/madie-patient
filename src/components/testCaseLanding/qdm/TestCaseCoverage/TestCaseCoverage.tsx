@@ -57,20 +57,6 @@ const TestCaseCoverage = ({
         populationCriteria={populationCriteria}
         calculationOutput={calculationOutput}
       />
-      <div
-        style={{
-          padding: "0px 10px",
-          marginTop: "20px",
-          width: "auto",
-          border: "1px solid #EDEDED",
-          backgroundColor: "#EDEDED",
-          fontFamily: "sans-serif",
-          borderRadius: "1px",
-          color: "black",
-        }}
-        data-testId="results-section"
-        id="results"
-      ></div>
     </div>
   );
 };

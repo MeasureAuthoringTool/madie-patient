@@ -1,5 +1,4 @@
 import * as Handlebars from "handlebars";
-import * as _ from "lodash";
 import {
   clauseCoveredStylePass,
   clauseNotCoveredStyleFail,
