@@ -93,7 +93,7 @@ const QdmGroupCoverage = ({
           groupCoverageResult &&
           groupCoverageResult[selectedCriteria]?.find(
             (coverageResult) =>
-              coverageResult.name === selectedPopulation.definition
+              coverageResult.name === selectedPopulation?.definition
           );
         setSelectedDefinitionResults([coverage]);
       }

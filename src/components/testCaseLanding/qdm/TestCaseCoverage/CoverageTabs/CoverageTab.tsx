@@ -1,42 +1,47 @@
 import React from "react";
 interface Props {
-  population: string;
-  definitionText: any;
+  definition: string;
+  definitionResults: any;
+  cqlDefinitionCallstack: any;
+  groupCoverageResult: any;
 }
 import { Accordion } from "@madie/madie-design-system/dist/react";
+import parse from "html-react-parser";
+import { StatementCoverageResult } from "../../../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
+import { isNil } from "lodash";
 import "twin.macro";
 import "styled-components/macro";
 
-const CoverageTab = ({ population, definitionText }: Props) => {
-  return population !== "Functions" &&
-    population !== "Used" &&
-    population !== "Unused" ? (
+const CoverageTab = ({ definition, definitionResults }: Props) => {
+  const getCoverageResult = (coverageResult: StatementCoverageResult) => {
+    if (isNil(coverageResult)) {
+      return "No results available";
+    }
+
+    return [parse(`<pre><code>${coverageResult.html}</code></pre>`)];
+  };
+  return definition !== "Functions" &&
+    definition !== "Used" &&
+    definition !== "Unused" ? (
     <div
       style={{ maxWidth: "1300px" }}
-      data-testid={`${population}-population`}
+      data-testid={`${definition}-population`}
     >
-      <Accordion title={population} isOpen={false}>
-        <pre data-testId={`${population}-population-text`}>
-          {definitionText.text}
+      <Accordion title={definition} isOpen={false}>
+        <pre data-testId={`${definition}-population-text`}>
+          {definitionResults.map((results) => getCoverageResult(results))}
         </pre>
       </Accordion>
     </div>
   ) : (
     <div
       style={{ maxWidth: "1300px" }}
-      data-testid={`${population}-definition`}
+      data-testid={`${definition}-definition`}
     >
-      <Accordion title={population} isOpen={false}>
-        {definitionText ? (
-          <div data-testId={`${population}-definition-text`}>
-            {Object.keys(definitionText)
-              ?.sort()
-              .filter(
-                (definition) => definitionText[definition].definitionLogic
-              )
-              .map((item: any) => (
-                <pre>{definitionText[item]?.definitionLogic}</pre>
-              ))}
+      <Accordion title={definition} isOpen={false}>
+        {definitionResults ? (
+          <div data-testId={`${definition}-definition-text`}>
+            {definitionResults.map((results) => getCoverageResult(results))}
           </div>
         ) : (
           "No Results Available"

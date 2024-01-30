@@ -1,110 +1,137 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import CoverageTab from "./CoverageTab";
-import {
-  CoverageMappedCql,
-  getPopulationAbbreviation,
-} from "../../../../../util/GroupCoverageHelpers";
+import { startCase } from "lodash";
+import { getPopulationAbbreviation } from "../../../../../util/GroupCoverageHelpers";
 import { CqmExecutionResultsByPatient } from "../../../../../api/QdmCalculationService";
 interface Props {
-  populationCriteria: any;
-  mappedCql: CoverageMappedCql;
   calculationOutput: CqmExecutionResultsByPatient;
+  testCases: any;
+  testCaseGroups: any;
+  cqlDefinitionCallstack: any;
+  groupCoverageResult: any;
+  populationCriteria: any;
+  measureGroups: any;
 }
 
 const allDefinitions = ["Used", "Functions", "Unused"];
 
 const CoverageTabList = ({
+  measureGroups,
+  groupCoverageResult,
   populationCriteria,
-  mappedCql,
-  calculationOutput,
+  cqlDefinitionCallstack,
+  testCaseGroups,
 }: Props) => {
-  const getDefintionCategoryFilteringCondition = (
-    definitionType,
-    statementResult,
-    definitionName
-  ) => {
-    if (definitionType === "Used") {
-      return statementResult[definitionName].relevance !== "NA";
+  const [relevantPops, setRelevantPops] = useState([]);
+  const [allUsedDefinitions, setAllUsedDefinitions] = useState([]);
+  useEffect(() => {
+    if (testCaseGroups && populationCriteria.id) {
+      const selectedGroup = testCaseGroups.find(
+        (gp) => gp.groupId === populationCriteria.id
+      );
+      const results = selectedGroup?.populationValues
+        .filter((population) => {
+          return !population.name.includes("Observation");
+        })
+        .map((population, index) => {
+          return {
+            id: population.id,
+            criteriaReference: population.criteriaReference,
+            name: population.name,
+            abbreviation: getPopulationAbbreviation(
+              selectedGroup.populationValues,
+              population.name,
+              index
+            ),
+          };
+        });
+      setRelevantPops(results);
     }
-    if (definitionType === "Unused") {
-      return statementResult[definitionName].relevance === "NA";
+  }, [testCaseGroups, populationCriteria.id, getPopulationAbbreviation]);
+
+  // save all the definitions that we're using
+  useEffect(() => {
+    if (relevantPops && measureGroups) {
+      const definitions = relevantPops?.map((pop) => {
+        const selectedGroup = measureGroups?.find(
+          (group) => group.id === populationCriteria.id
+        );
+        const selectedPopulation = selectedGroup?.populations?.find(
+          (s) => s.id === pop.id
+        );
+        return selectedPopulation?.definition;
+      });
+      setAllUsedDefinitions(definitions);
     }
-  };
+  }, [relevantPops, measureGroups]);
 
-  const filterBasedOnDefinitionCategories = (definitionType) => {
-    const definitionNames = [
-      ...new Set(
-        Object.values(calculationOutput)?.flatMap((testCases) =>
-          Object.values(testCases)?.flatMap((testCaseCalculationResult) =>
-            Object.values(testCaseCalculationResult.statement_results)?.flatMap(
-              (statementResult) =>
-                Object.keys(statementResult)?.filter((definitionName) =>
-                  getDefintionCategoryFilteringCondition(
-                    definitionType,
-                    statementResult,
-                    definitionName
-                  )
-                )
-            )
-          )
-        )
-      ),
-    ];
-
-    return definitionNames.reduce((acc, definitionName) => {
-      if (mappedCql.definitions[definitionName]) {
-        acc[definitionName] = mappedCql.definitions[definitionName];
+  const getStatementResultsInCategory = (statementResults, definition) => {
+    if (statementResults) {
+      if (definition === "Used") {
+        // must also filter out all definitions for other populations such as Initial, Num, Denom so they appear in only one place
+        return statementResults.filter(
+          (s) => s.relevance !== "NA" && !allUsedDefinitions.includes(s.name)
+        );
       }
-      return acc;
-    }, {});
-  };
-
-  const getDefinitionResults = (definitionType) => {
-    if (
-      mappedCql &&
-      mappedCql.functions &&
-      mappedCql.definitions &&
-      calculationOutput
-    ) {
-      if (definitionType === "Functions") {
-        return mappedCql.functions;
+      if (definition === "Unused") {
+        return statementResults.filter(
+          (s) => s.relevance === "NA" && s.type !== "FunctionDef"
+        );
       }
-      if (definitionType === "Unused") {
-        return filterBasedOnDefinitionCategories(definitionType);
-      }
-      if (definitionType === "Used") {
-        return filterBasedOnDefinitionCategories(definitionType);
+      if (definition === "Functions") {
+        return statementResults.filter((s) => s.type === "FunctionDef");
       }
     }
-    return null;
+    return [];
   };
 
   return (
     <div data-testid="coverage-tab-list">
-      {mappedCql &&
-        populationCriteria.length &&
-        populationCriteria.map((pop, i) => {
+      {relevantPops &&
+        relevantPops.map((pop, i) => {
+          const selectedGroup = measureGroups?.find(
+            (group) => group.id === populationCriteria.id
+          );
+          const selectedPopulation = selectedGroup?.populations?.find(
+            (s) => s.id === pop.id
+          );
+          // get all clauses that match with definition (e.i Initial Population)
+          const coverage =
+            groupCoverageResult &&
+            groupCoverageResult.find(
+              (coverageResult) =>
+                coverageResult.name === selectedPopulation?.definition
+            );
+
           return (
             <CoverageTab
               key={i}
-              population={getPopulationAbbreviation(
-                populationCriteria,
-                pop.name,
-                i
-              )}
-              definitionText={mappedCql?.populationDefinitions[pop?.name]}
+              cqlDefinitionCallstack={cqlDefinitionCallstack}
+              definition={startCase(pop.name.split(/(?=[A-Z])/).join(" "))}
+              groupCoverageResult={groupCoverageResult}
+              definitionResults={[coverage]}
             />
           );
         })}
 
+      {/* 
+        everything besides initial population.  
+        allDefinitions are not cql definitions. 
+        const allDefinitions = ["Used", "Functions", "Unused"];
+      */}
       {allDefinitions.map((definition, i) => {
         return (
           <CoverageTab
             key={i}
-            population={definition}
-            definitionText={getDefinitionResults(definition)}
+            cqlDefinitionCallstack={cqlDefinitionCallstack}
+            definition={definition}
+            groupCoverageResult={groupCoverageResult}
+            definitionResults={getStatementResultsInCategory(
+              groupCoverageResult,
+              definition
+            )}
           />
         );
       })}
