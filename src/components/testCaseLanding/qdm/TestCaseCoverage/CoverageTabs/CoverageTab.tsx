@@ -8,33 +8,17 @@ interface Props {
 import { Accordion } from "@madie/madie-design-system/dist/react";
 import parse from "html-react-parser";
 import { StatementCoverageResult } from "../../../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
-import { isPopulation } from "../../../../../util/GroupCoverageHelpers";
-import DefinitionsUsedSection from "../../../../editTestCase/groupCoverage/DefinitionsUsedSection";
 import { isNil } from "lodash";
 import "twin.macro";
 import "styled-components/macro";
 
-const CoverageTab = ({
-  definition,
-  definitionResults,
-  cqlDefinitionCallstack,
-  groupCoverageResult,
-}: Props) => {
+const CoverageTab = ({ definition, definitionResults }: Props) => {
   const getCoverageResult = (coverageResult: StatementCoverageResult) => {
     if (isNil(coverageResult)) {
       return "No results available";
     }
 
-    return [
-      parse(`<pre><code>${coverageResult.html}</code></pre>`),
-      isPopulation(definition) && cqlDefinitionCallstack && (
-        <DefinitionsUsedSection
-          result={definitionResults[0]}
-          cqlDefinitionCallstack={cqlDefinitionCallstack}
-          groupCoverageResult={groupCoverageResult}
-        />
-      ),
-    ];
+    return [parse(`<pre><code>${coverageResult.html}</code></pre>`)];
   };
   return definition !== "Functions" &&
     definition !== "Used" &&
