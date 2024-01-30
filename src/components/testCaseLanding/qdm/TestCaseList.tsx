@@ -35,11 +35,9 @@ import qdmCalculationService, {
 } from "../../../api/QdmCalculationService";
 import TestCaseImportFromBonnieDialogQDM from "../common/import/TestCaseImportFromBonnieDialogQDM";
 import TestCaseCoverage from "./TestCaseCoverage/TestCaseCoverage";
-import CodeCoverageHighlighting from "../common/CodeCoverageHighlighting";
-import { QDMPatient, DataElement } from "cqm-models";
+import { QDMPatient } from "cqm-models";
 import { cloneTestCase } from "../../../util/QdmTestCaseHelper";
 import {
-  buildHighlightingForGroups,
   GroupCoverageResult,
   buildHighlightingForAllGroups,
 } from "../../../util/cqlCoverageBuilder/CqlCoverageBuilder";

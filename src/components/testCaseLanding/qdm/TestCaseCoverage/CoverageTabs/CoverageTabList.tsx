@@ -3,19 +3,12 @@ import "twin.macro";
 import "styled-components/macro";
 import CoverageTab from "./CoverageTab";
 import { startCase } from "lodash";
-
-import {
-  CoverageMappedCql,
-  getPopulationAbbreviation,
-} from "../../../../../util/GroupCoverageHelpers";
+import { getPopulationAbbreviation } from "../../../../../util/GroupCoverageHelpers";
 import { CqmExecutionResultsByPatient } from "../../../../../api/QdmCalculationService";
 interface Props {
-  // populationCriteria: any;
-  // mappedCql: CoverageMappedCql;
   calculationOutput: CqmExecutionResultsByPatient;
-  // statementResults: any;
-  testCaseGroups: any;
   testCases: any;
+  testCaseGroups: any;
   cqlDefinitionCallstack: any;
   groupCoverageResult: any;
   populationCriteria: any;
@@ -37,13 +30,11 @@ const CoverageTabList = ({
       const selectedGroup = testCaseGroups.find(
         (gp) => gp.groupId === populationCriteria.id
       );
-      console.log("selectedGroup is", selectedGroup);
       const results = selectedGroup?.populationValues
         .filter((population) => {
           return !population.name.includes("Observation");
         })
         .map((population, index) => {
-          console.log("~~population here is", population);
           return {
             id: population.id,
             criteriaReference: population.criteriaReference,
@@ -59,44 +50,25 @@ const CoverageTabList = ({
     }
   }, [testCaseGroups, populationCriteria.id, getPopulationAbbreviation]);
 
-  const getStatementResultsInCategory = (
-    // statementResult,
-    statementResults,
-    definition
-  ) => {
-    console.log(
-      "statementResults are",
-      statementResults,
-      "definition is",
-      definition
-    );
-    if (definition === "Used") {
-      console.log(statementResults.filter((s) => s.relevance !== "NA"));
-      return statementResults.filter((s) => s.relevance !== "NA");
-      // return statementResults[definitionName].relevance !== "NA";
+  const getStatementResultsInCategory = (statementResults, definition) => {
+    if (statementResults) {
+      if (definition === "Used") {
+        return statementResults.filter((s) => s.relevance !== "NA");
+      }
+      if (definition === "Unused") {
+        return statementResults.filter((s) => s.relevance === "NA");
+      }
+      if (definition === "Functions") {
+        return statementResults.filter((s) => s.type === "FunctionDef");
+      }
     }
-    if (definition === "Unused") {
-      return statementResults.filter((s) => s.relevance === "NA");
-
-      // return statementResult[definitionName].relevance === "NA";
-    }
-    if (definition === "Functions") {
-      return statementResults.filter((s) => s.type === "FunctionDef");
-    }
+    return [];
   };
 
   return (
     <div data-testid="coverage-tab-list">
       {relevantPops &&
         relevantPops.map((pop, i) => {
-          console.log("pop is", pop);
-          console.log(
-            "filteredResults are",
-            getStatementResultsInCategory(
-              groupCoverageResult[populationCriteria.id],
-              pop.name
-            )
-          );
           const selectedGroup = measureGroups?.find(
             (group) => group.id === populationCriteria.id
           );
@@ -104,7 +76,7 @@ const CoverageTabList = ({
           const selectedPopulation = selectedGroup?.populations?.find(
             (pop) => pop.id === pop.id
           );
-          console.log("00 seleccted population", selectedPopulation);
+          // get all clauses that match with definition (e.i Initial Population)
           const coverage =
             groupCoverageResult &&
             groupCoverageResult[populationCriteria.id]?.find(
