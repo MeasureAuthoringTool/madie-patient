@@ -48,12 +48,3 @@ export const clauseNotApplicableStyle = {
   "background-color": "white",
   color: "black",
 };
-
-// blue with dashed underline
-export const clauseHighlightedStyle = {
-  color: "#036CB4",
-  "text-decoration": "underline",
-  "text-decoration-style": "dashed",
-  "text-decoration-color": "#036CB4",
-  // "border-bottom": "dashed 3px #036CB4",
-};
