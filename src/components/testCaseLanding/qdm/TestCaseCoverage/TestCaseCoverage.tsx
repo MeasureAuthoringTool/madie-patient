@@ -1,17 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  CqlDefinitionExpression,
-  mapCoverageCql,
-} from "../../../../util/GroupCoverageHelpers";
 import "twin.macro";
 import "styled-components/macro";
-import { isEmpty } from "lodash";
 import CoverageTabList from "./CoverageTabs/CoverageTabList";
 import useCqlParsingService from "../../../../api/useCqlParsingService";
 import { CqlDefinitionCallstack } from "../../../editTestCase/groupCoverage/QiCoreGroupCoverage";
-import QdmGroupCoverage from "../../../editTestCase/groupCoverage/QdmGroupCoverage";
-import { StatementCoverageResult } from "../../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
-import parse from "html-react-parser";
 
 const TestCaseCoverage = ({
   populationCriteria,
@@ -34,13 +26,9 @@ const TestCaseCoverage = ({
             allTestCaseGroups.push(pop);
         });
       });
-      // const allTestCaseGroups = testCases.map((tc) => tc.groupPopulations);
-      // we want all groupPopulations on each testCase
       setTestCaseGroups(allTestCaseGroups);
     }
   }, [testCases]);
-  console.log("testCaseGroups", testCaseGroups);
-  console.log("testcases", testCases);
   useEffect(() => {
     cqlParsingService.current
       .getDefinitionCallstacks(measureCql)
@@ -55,15 +43,6 @@ const TestCaseCoverage = ({
 
   return (
     <div tw="p-5" style={{ paddingRight: ".25rem" }}>
-      {/* {!isEmpty(testCaseGroups) && callstackMap && (
-        <QdmGroupCoverage
-          testCaseGroups={testCaseGroups}
-          measureGroups={measureGroups}
-          groupCoverageResult={groupCoverageResult}
-          cqlDefinitionCallstack={callstackMap}
-        />
-      )} */}
-
       <CoverageTabList
         data-testid="coverage-tab-list"
         testCases={testCases}
@@ -74,7 +53,6 @@ const TestCaseCoverage = ({
         populationCriteria={populationCriteria}
         calculationOutput={calculationOutput}
       />
-      {/* {showGroupCoverageResults && ( */}
       <div
         style={{
           padding: "0px 10px",
@@ -88,10 +66,7 @@ const TestCaseCoverage = ({
         }}
         data-testId="results-section"
         id="results"
-      >
-        <pre>{/* <code>{results.trim()} </code> */}</pre>
-      </div>
-      {/* )} */}
+      ></div>
     </div>
   );
 };

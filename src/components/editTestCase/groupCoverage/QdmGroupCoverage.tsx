@@ -89,15 +89,12 @@ const QdmGroupCoverage = ({
         const selectedPopulation = selectedGroup?.populations?.find(
           (pop) => pop.id === population.id
         );
-        // console.log('~~~ selectedPopulation', selectedPopulation)
-
         const coverage =
           groupCoverageResult &&
           groupCoverageResult[selectedCriteria]?.find(
             (coverageResult) =>
               coverageResult.name === selectedPopulation?.definition
           );
-        console.log('~~~ selectedPopulation', selectedPopulation)
         setSelectedDefinitionResults([coverage]);
       }
     },

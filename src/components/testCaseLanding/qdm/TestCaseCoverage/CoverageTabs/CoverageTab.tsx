@@ -7,15 +7,10 @@ interface Props {
 }
 import { Accordion } from "@madie/madie-design-system/dist/react";
 import parse from "html-react-parser";
-import {
-  StatementCoverageResult,
-  GroupCoverageResult,
-} from "../../../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
-import GroupCoverageResultsSection from "../../../../editTestCase/groupCoverage/GroupCoverageResultsSection";
+import { StatementCoverageResult } from "../../../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
 import { isPopulation } from "../../../../../util/GroupCoverageHelpers";
-// import GroupCoverageResultsSection from ''
 import DefinitionsUsedSection from "../../../../editTestCase/groupCoverage/DefinitionsUsedSection";
-import { isEmpty, isNil } from "lodash";
+import { isNil } from "lodash";
 import "twin.macro";
 import "styled-components/macro";
 
@@ -25,13 +20,6 @@ const CoverageTab = ({
   cqlDefinitionCallstack,
   groupCoverageResult,
 }: Props) => {
-  console.log(`~~~coverageTabProps`);
-  console.log("definition", definition);
-  console.log("definitionResults", definitionResults);
-  console.log("cqlDefinitionCallstack", cqlDefinitionCallstack);
-
-  console.log('00~~', 'definition', isPopulation(definition), definition)
-
   const getCoverageResult = (coverageResult: StatementCoverageResult) => {
     if (isNil(coverageResult)) {
       return "No results available";
@@ -62,14 +50,11 @@ const CoverageTab = ({
       </Accordion>
     </div>
   ) : (
-    // all none populationcentric guys.
     <div
       style={{ maxWidth: "1300px" }}
       data-testid={`${definition}-definition`}
     >
       <Accordion title={definition} isOpen={false}>
-        {/* definitionResults */}
-        {console.log("defintiionResults", definitionResults)}
         {definitionResults ? (
           <div data-testId={`${definition}-definition-text`}>
             {definitionResults.map((results) => getCoverageResult(results))}

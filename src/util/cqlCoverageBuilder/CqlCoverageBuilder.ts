@@ -1,34 +1,8 @@
-import * as Handlebars from "handlebars";
 import * as _ from "lodash";
 import {
-  clauseCoveredStyle,
-  clauseNotCoveredStyle,
-  clauseNotApplicableStyle,
-  clauseTemplate,
-  definitionTemplate,
-} from "./templates/highlightingTemplates";
-
-const main = Handlebars.compile(definitionTemplate);
-Handlebars.registerPartial("clause", clauseTemplate);
-Handlebars.registerHelper("concat", (s) => s.join(""));
-Handlebars.registerHelper("highlightClause", (localId, context) => {
-  const libraryName = context.data.root.libraryName;
-  const clauseResults = context.data.root.clauseResults;
-  const clauseResult = clauseResults.find(
-    (result) =>
-      result.library_name === libraryName && result.localId === localId
-  );
-  if (clauseResult) {
-    if (clauseResult.final === "TRUE") {
-      return objToCSS(clauseCoveredStyle);
-    } else if (clauseResult.final === "FALSE") {
-      return objToCSS(clauseNotCoveredStyle);
-    } else {
-      return objToCSS(clauseNotApplicableStyle);
-    }
-  }
-  return "";
-});
+  passFailCoverage,
+  codeCoverageHighlighting,
+} from "./CodeCoverageHighlighting";
 
 export interface StatementCoverageResult {
   type: string;
@@ -78,28 +52,21 @@ function updateAllGroupResults(calculationOutput) {
 
   for (let patientId in calculationOutput) {
     const patientResult = calculationOutput[patientId];
-
     for (const groupId in patientResult) {
       const groupResult = patientResult[groupId];
       const existingGroupIndex = updatedGroupResults.findIndex(
         (group) => group.groupId === groupId
       );
-      // if the groupid already lives in updateGroupResults, we just want to append those values
-      if (existingGroupIndex > -1) {
-        const newClauseResults = Object.values(groupResult.clause_results)
-          ?.flatMap(Object.values)
-          .concat();
+      const newStatementResults = Object.values(
+        groupResult.statement_results
+      )?.flatMap(Object.values);
 
-        const newStatementResults = Object.values(
-          groupResult.statement_results
+      // we want only a single reference to each groupId. We will concat all the clauseResults associated with each one.
+      if (existingGroupIndex > -1) {
+        const newClauseResults = Object.values(
+          groupResult.clause_results
         )?.flatMap(Object.values);
 
-        updatedGroupResults[existingGroupIndex].statementResults = [
-          ...updatedGroupResults[existingGroupIndex].statementResults,
-          ...newStatementResults,
-        ];
-        
-        // clause results are only relevant
         updatedGroupResults[existingGroupIndex].clauseResults = [
           ...updatedGroupResults[existingGroupIndex].clauseResults,
           ...newClauseResults,
@@ -110,37 +77,13 @@ function updateAllGroupResults(calculationOutput) {
           clauseResults: Object.values(groupResult.clause_results)?.flatMap(
             Object.values
           ),
-          statementResults: Object.values(
-            groupResult.statement_results
-          )?.flatMap(Object.values),
+          statementResults: newStatementResults, // we only need a single copy of statement result
         });
       }
     }
-    // filter the unique clauses
-    updatedGroupResults.forEach((groupResult) => {
-      const allRelevantClauses = groupResult.clauseResults.filter((c) =>
-        groupResult.statementResults.some(
-          (s) =>
-            s.statement_name === c.statement_name &&
-            s.library_name === c.library_name &&
-            !s.isFunction
-        )
-      );
-      console.log('allRelevantClauses', allRelevantClauses)
-
-      const allUniqueClauses = _.uniqWith(
-        allRelevantClauses,
-        (c1, c2) =>
-        // @ts-ignore
-          c1.library_name === c2.library_name && c1.localId === c2.localId
-      );
-      console.log('allUniqueClauses', allUniqueClauses)
-      groupResult.clause_results = allUniqueClauses;
-    });
   }
   return updatedGroupResults;
 }
-
 
 export function buildHighlightingForGroups(
   groupResults,
@@ -184,7 +127,7 @@ export function buildHighlightingForGroups(
       }
 
       // build the coverage html
-      const coverageHtml = main({
+      const coverageHtml = passFailCoverage({
         libraryName: statement.library_name,
         statementName: statement.statement_name,
         clauseResults: clauseResults,
@@ -203,16 +146,8 @@ export function buildHighlightingForGroups(
   return coverageResults;
 }
 
-/* calcResult = {[patientid]: {
-  [populationSetId]: values
-}}
-
-*/
-// const transformResults
-
-// same thing as buildHighlightingForGroups with some additional changes.
 export function buildHighlightingForAllGroups(
-  calculationOutput, //calculation result
+  calculationOutput,
   cqmMeasure
 ): any {
   if (_.isNil(calculationOutput) || _.isNil(cqmMeasure)) {
@@ -254,7 +189,7 @@ export function buildHighlightingForAllGroups(
       }
 
       // build the coverage html
-      const coverageHtml = main({
+      const coverageHtml = codeCoverageHighlighting({
         libraryName: statement.library_name,
         statementName: statement.statement_name,
         clauseResults: clauseResults,
@@ -272,5 +207,3 @@ export function buildHighlightingForAllGroups(
   }
   return coverageResults;
 }
-
-// we want to also do the same thing for individual definitions
