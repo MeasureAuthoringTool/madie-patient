@@ -48,5 +48,5 @@ export const clauseHighlightedStyle = {
   "text-decoration": "underline",
   "text-decoration-style": "dashed",
   "text-decoration-color": "#036CB4",
-  // "border-bottom": "dashed 3px #036CB4",
+  "text-underline-offset": "3px",
 };

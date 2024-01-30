@@ -25,6 +25,7 @@ const CoverageTabList = ({
   testCaseGroups,
 }: Props) => {
   const [relevantPops, setRelevantPops] = useState([]);
+  const [allUsedDefinitions, setAllUsedDefinitions] = useState([]);
   useEffect(() => {
     if (testCaseGroups && populationCriteria.id) {
       const selectedGroup = testCaseGroups.find(
@@ -50,13 +51,34 @@ const CoverageTabList = ({
     }
   }, [testCaseGroups, populationCriteria.id, getPopulationAbbreviation]);
 
+  // save all the definitions that we're using
+  useEffect(() => {
+    if (relevantPops && measureGroups) {
+      const definitions = relevantPops?.map((pop) => {
+        const selectedGroup = measureGroups?.find(
+          (group) => group.id === populationCriteria.id
+        );
+        const selectedPopulation = selectedGroup?.populations?.find(
+          (s) => s.id === pop.id
+        );
+        return selectedPopulation?.definition;
+      });
+      setAllUsedDefinitions(definitions);
+    }
+  }, [relevantPops, measureGroups]);
+
   const getStatementResultsInCategory = (statementResults, definition) => {
     if (statementResults) {
       if (definition === "Used") {
-        return statementResults.filter((s) => s.relevance !== "NA");
+        // must also filter out all definitions for other populations such as Initial, Num, Denom so they appear in only one place
+        return statementResults.filter(
+          (s) => s.relevance !== "NA" && !allUsedDefinitions.includes(s.name)
+        );
       }
       if (definition === "Unused") {
-        return statementResults.filter((s) => s.relevance === "NA");
+        return statementResults.filter(
+          (s) => s.relevance === "NA" && s.type !== "FunctionDef"
+        );
       }
       if (definition === "Functions") {
         return statementResults.filter((s) => s.type === "FunctionDef");
@@ -78,7 +100,7 @@ const CoverageTabList = ({
           // get all clauses that match with definition (e.i Initial Population)
           const coverage =
             groupCoverageResult &&
-            groupCoverageResult[populationCriteria.id]?.find(
+            groupCoverageResult.find(
               (coverageResult) =>
                 coverageResult.name === selectedPopulation?.definition
             );
@@ -107,7 +129,7 @@ const CoverageTabList = ({
             definition={definition}
             groupCoverageResult={groupCoverageResult}
             definitionResults={getStatementResultsInCategory(
-              groupCoverageResult[populationCriteria.id],
+              groupCoverageResult,
               definition
             )}
           />
