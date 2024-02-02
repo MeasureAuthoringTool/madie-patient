@@ -233,16 +233,26 @@ const TestCaseList = (props: TestCaseListProps) => {
       let relevantStatements;
       const patientIDs = Object.keys(calculationOutput);
       patientIDs.forEach((patientID) => {
-        const newClauseResults = Object.values(
-          calculationOutput[patientID][selectedPopCriteria.id]?.clause_results
-        )?.flatMap(Object.values);
+        let newClauseResults = [];
+        const clauseResults =
+          calculationOutput[patientID][selectedPopCriteria.id]?.clause_results;
+        if (clauseResults) {
+          newClauseResults = Object.values(
+            calculationOutput[patientID][selectedPopCriteria.id]?.clause_results
+          )?.flatMap(Object.values);
+        }
         // we only need one copy of relevantStatements from the first group to match against
         if (!relevantStatements) {
-          const newStatementResults = Object.values(
+          const statementResults =
             calculationOutput[patientID][selectedPopCriteria.id]
-              ?.statement_results
-          )?.flatMap(Object.values);
-          relevantStatements = newStatementResults;
+              ?.statement_results;
+          if (statementResults) {
+            const newStatementResults = Object.values(
+              calculationOutput[patientID][selectedPopCriteria.id]
+                ?.statement_results
+            )?.flatMap(Object.values);
+            relevantStatements = newStatementResults;
+          }
         }
         allClauses = [...allClauses, ...newClauseResults];
       });
