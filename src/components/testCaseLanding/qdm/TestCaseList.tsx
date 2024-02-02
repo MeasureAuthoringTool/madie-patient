@@ -41,6 +41,7 @@ import {
   GroupCoverageResult,
   buildHighlightingForAllGroups,
 } from "../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
+import { uniqWith } from "lodash";
 
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
@@ -228,39 +229,55 @@ const TestCaseList = (props: TestCaseListProps) => {
   const clauseCoverageProcessor = (calculationOutput) => {
     //generates current populations coverage %
     if (calculationOutput && selectedPopCriteria) {
-      const trueClauses = new Set<string>();
-      const allClauses = new Set<string>();
+      let allClauses = [];
+      let relevantStatements;
       const patientIDs = Object.keys(calculationOutput);
       patientIDs.forEach((patientID) => {
-        if (
-          calculationOutput[patientID][selectedPopCriteria.id]
-            ?.clause_results?.[measure.cqlLibraryName]
-        ) {
-          const clauses =
+        const newClauseResults = Object.values(
+          calculationOutput[patientID][selectedPopCriteria.id]?.clause_results
+        )?.flatMap(Object.values);
+        // we only need one copy of relevantStatements from the first group to match against
+        if (!relevantStatements) {
+          const newStatementResults = Object.values(
             calculationOutput[patientID][selectedPopCriteria.id]
-              ?.clause_results?.[measure.cqlLibraryName];
-          const clauseNumbers = Object.keys(clauses);
-          clauseNumbers.forEach((localID) => {
-            if (clauses[localID].final != "NA") {
-              allClauses.add(localID);
-              if (clauses[localID].final == "TRUE") {
-                trueClauses.add(localID);
-              }
-            }
-          });
-          setCoveragePercentage(
-            Math.floor((trueClauses.size / allClauses.size) * 100).toString()
-          );
-        } else {
-          console.error(
-            "Something unexpected happened with the coverage processor",
-            calculationOutput
-          );
+              ?.statement_results
+          )?.flatMap(Object.values);
+          relevantStatements = newStatementResults;
         }
+        allClauses = [...allClauses, ...newClauseResults];
       });
+      // get a list of used statements
+      relevantStatements = relevantStatements.filter(
+        (s) => s.relevance !== "NA"
+      );
+      const allRelevantClauses = allClauses
+        .filter((c) =>
+          relevantStatements.some(
+            (s) =>
+              s.statementName === c.statementName &&
+              s.libraryName === c.libraryName
+          )
+        )
+        .filter((result) => result.final !== "NA");
+      // get a list of all unique used clauses
+      const allUniqueClauses = uniqWith(
+        allRelevantClauses,
+        (c1, c2) =>
+          c1.libraryName === c2.libraryName && c1.localId === c2.localId
+      ).sort((a, b) => a.localId - b.localId);
+      // get a list of all unique covered clauses
+      const coveredClauses = uniqWith(
+        allRelevantClauses.filter((clause) => clause.final === "TRUE"),
+        (c1, c2) =>
+          c1.libraryName === c2.libraryName && c1.localId === c2.localId
+      );
+      setCoveragePercentage(
+        Math.floor(
+          (coveredClauses.length / allUniqueClauses.length) * 100
+        ).toString()
+      );
     }
   };
-
   const createNewTestCase = () => {
     setCreateOpen(true);
     setExecuteAllTestCases(false);
