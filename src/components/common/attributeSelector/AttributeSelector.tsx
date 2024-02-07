@@ -33,7 +33,7 @@ const AttributeSelector = ({
           -
         </MenuItem>
       ) : null,
-      ...options.map((option) => (
+      ...options.sort().map((option) => (
         <MenuItem key={option} value={option} data-testid={`option-${option}`}>
           {option}
         </MenuItem>
