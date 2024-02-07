@@ -118,15 +118,17 @@ const Codes = ({
       >
         Custom
       </MenuItem>,
-      ...Object.entries(codeSystems).map(([oid, name]) => (
-        <MenuItem
-          key={oid}
-          value={name as string}
-          data-testid={`code-system-option-${name}`}
-        >
-          {name}
-        </MenuItem>
-      )),
+      ...Object.entries(codeSystems)
+        .sort(([, a], [, b]) => a.toString().localeCompare(b.toString()))
+        .map(([oid, name]) => (
+          <MenuItem
+            key={oid}
+            value={name as string}
+            data-testid={`code-system-option-${name}`}
+          >
+            {name}
+          </MenuItem>
+        )),
     ];
   };
 

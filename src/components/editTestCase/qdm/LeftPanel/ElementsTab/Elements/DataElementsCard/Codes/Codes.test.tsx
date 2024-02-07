@@ -93,8 +93,8 @@ describe("Codes section", () => {
     const optionsList = await screen.findAllByTestId(/code-system-option/i);
     expect(optionsList).toHaveLength(4);
     expect(optionsList[0]).toHaveTextContent("Custom");
-    expect(optionsList[1]).toHaveTextContent("SNOMEDCT");
-    expect(optionsList[2]).toHaveTextContent("ICD10CM");
+    expect(optionsList[1]).toHaveTextContent("ICD10CM");
+    expect(optionsList[3]).toHaveTextContent("SNOMEDCT");
 
     expect(screen.queryByTestId("code-selector")).not.toBeInTheDocument();
     expect(screen.queryByTestId("custom-code-system")).not.toBeInTheDocument();
@@ -125,7 +125,7 @@ describe("Codes section", () => {
       /code-system-option/i
     );
     expect(codeSystemOptions).toHaveLength(4);
-    userEvent.click(codeSystemOptions[1]);
+    userEvent.click(codeSystemOptions[3]);
     expect(codeSystemSelectInput.value).toBe("SNOMEDCT");
 
     // select the code
@@ -262,7 +262,7 @@ describe("Codes section", () => {
       /code-system-option/i
     );
     expect(codeSystemOptions).toHaveLength(4);
-    userEvent.click(codeSystemOptions[1]);
+    userEvent.click(codeSystemOptions[3]);
     expect(codeSystemSelectInput.value).toBe("SNOMEDCT");
 
     // select the code
