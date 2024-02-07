@@ -71,7 +71,14 @@ const TestCaseRoutes = () => {
           })
           .catch((err) => {
             setContextFailure(true);
-            setErrors((prevState) => [...prevState, err.message]);
+            setErrors((prevState) =>
+              prevState.length > 1 &&
+              prevState[0].includes(
+                "No Population Criteria is associated with this measure. Please review the Population Criteria tab"
+              )
+                ? [...prevState, err.message]
+                : [...prevState]
+            );
           });
       }
       setErrors((prevState) => {

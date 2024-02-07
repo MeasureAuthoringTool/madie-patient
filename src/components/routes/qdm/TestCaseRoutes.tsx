@@ -60,10 +60,17 @@ const TestCaseRoutes = () => {
           })
           .catch((err) => {
             setContextFailure(true);
-            setErrors((prevState) => [
-              ...prevState,
-              "An error occurred, please try again. If the error persists, please contact the help desk",
-            ]);
+            setErrors((prevState) =>
+              prevState.length > 1 &&
+              prevState[0].includes(
+                "No Population Criteria is associated with this measure. Please review the Population Criteria tab"
+              )
+                ? [
+                    ...prevState,
+                    "An error occurred, please try again. If the error persists, please contact the help desk",
+                  ]
+                : [...prevState]
+            );
           });
       }
     }
