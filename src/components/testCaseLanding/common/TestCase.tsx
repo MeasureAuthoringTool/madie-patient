@@ -256,7 +256,7 @@ const TestCase = ({
                   export collection bundle
                 </button>
               </>
-            ) : featureFlags.exportTestCase ? (
+            ) : exportTestCase ? (
               <button
                 id={`export-test-case-${testCase.id}`}
                 aria-label={`export-test-case-${testCase.title}`}
