@@ -81,8 +81,7 @@ const TestCaseRoutes = () => {
         )
       ) {
         localErrors.push(CQL_RETURN_TYPES_MISMATCH_ERROR);
-      }
-      localErrors.filter((s) => s !== CQL_RETURN_TYPES_MISMATCH_ERROR);
+      } else localErrors.filter((s) => s !== CQL_RETURN_TYPES_MISMATCH_ERROR);
       setErrors(localErrors);
     }
   }, [measure]);
