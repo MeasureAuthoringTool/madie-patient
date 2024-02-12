@@ -43,6 +43,7 @@ const TestCaseRoutes = () => {
   }, []);
 
   useEffect(() => {
+    let errorPresent = false;
     if (measure) {
       const compareTo = _.cloneDeep(measure);
       compareTo.testCases = null;
@@ -52,18 +53,20 @@ const TestCaseRoutes = () => {
       setLastMeasure(compareTo);
       setErrors(() => []);
       if (measure.cqlErrors || !measure.elmJson) {
+        errorPresent = true;
         setErrors((prevState) => [
           ...prevState,
           "An error exists with the measure CQL, please review the CQL Editor tab.",
         ]);
       }
       if (!measure?.groups?.length) {
+        errorPresent = true;
         setErrors((prevState) => [
           ...prevState,
           "No Population Criteria is associated with this measure. Please review the Population Criteria tab.",
         ]);
       }
-      if (!errors?.length) {
+      if (!errorPresent) {
         measureService.current
           .fetchMeasureBundle(measure)
           .then((bundle: Bundle) => {
@@ -71,14 +74,7 @@ const TestCaseRoutes = () => {
           })
           .catch((err) => {
             setContextFailure(true);
-            setErrors((prevState) =>
-              prevState.length === 1 &&
-              prevState[0].includes(
-                "No Population Criteria is associated with this measure. Please review the Population Criteria tab"
-              )
-                ? [...prevState]
-                : [...prevState, err.message]
-            );
+            setErrors((prevState) => [...prevState, err.message]);
           });
       }
       setErrors((prevState) => {
