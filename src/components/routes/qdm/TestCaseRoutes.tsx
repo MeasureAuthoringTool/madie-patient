@@ -36,21 +36,20 @@ const TestCaseRoutes = () => {
   }, []);
 
   useEffect(() => {
+    const localErrors: Array<string> = [...errors];
     if (measure) {
       if (measure.cqlErrors || !measure.elmJson) {
-        setErrors((prevState) => [
-          ...prevState,
-          "An error exists with the measure CQL, please review the CQL Editor tab.",
-        ]);
+        localErrors.push(
+          "An error exists with the measure CQL, please review the CQL Editor tab."
+        );
       }
       if (!measure?.groups?.length) {
-        setErrors((prevState) => [
-          ...prevState,
-          "No Population Criteria is associated with this measure. Please review the Population Criteria tab.",
-        ]);
+        localErrors.push(
+          "No Population Criteria is associated with this measure. Please review the Population Criteria tab."
+        );
       }
 
-      if (!errors?.length) {
+      if (!localErrors.length) {
         cqmService.current
           .convertToCqmMeasure(measure)
           .then((convertedMeasure) => {
@@ -60,12 +59,12 @@ const TestCaseRoutes = () => {
           })
           .catch((err) => {
             setContextFailure(true);
-            setErrors((prevState) => [
-              ...prevState,
-              "An error occurred, please try again. If the error persists, please contact the help desk",
-            ]);
+            localErrors.push(
+              "An error occurred, please try again. If the error persists, please contact the help desk"
+            );
           });
       }
+      setErrors(localErrors);
     }
   }, [measure]);
 
