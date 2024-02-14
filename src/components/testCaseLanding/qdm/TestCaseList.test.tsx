@@ -492,7 +492,7 @@ const qdmExecutionResults = {
     },
   },
   "2": {
-    "2": {
+    "1": {
       IPP: false,
       DENOM: false,
       NUMER: false,
@@ -1379,8 +1379,160 @@ const useMeasureServiceMockResolved = {
 
 const getAccessToken = jest.fn();
 let cqmConversionService = new CqmConversionService("url", getAccessToken);
+
 const cqmMeasure = {
-  cql_Libraries: ["MATGlobalCommonFunctionsQDM"],
+  cql_libraries: [
+    {
+      library_name: "MATGlobalCommonFunctionsQDM",
+      elm: {
+        library: {
+          localId: "0",
+          usings: { def: [] },
+          valuesets: { def: [] },
+          annotations: [],
+          statements: {
+            def: [
+              {
+                library_name: "MATGlobalCommonFunctionsQDM",
+                name: "EarliestOf",
+                relevance: "NA",
+                final: "NA",
+              },
+              {
+                library_name: "MATGlobalCommonFunctionsQDM",
+                name: "Earliest",
+                relevance: "NA",
+                final: "NA",
+              },
+              {
+                library_name: "MATGlobalCommonFunctionsQDM",
+                name: "HasStart",
+                relevance: "NA",
+                final: "NA",
+              },
+              {
+                library_name: "MATGlobalCommonFunctionsQDM",
+                name: "NormalizeInterval",
+                relevance: "NA",
+                final: "NA",
+              },
+              {
+                localId: "123",
+                name: "truebool",
+              },
+              {
+                localId: "1234",
+                name: "MATGlobalCommonFunctionsQDM",
+              },
+              {
+                localID: "12345",
+                name: "ear",
+              },
+            ],
+          },
+        },
+      },
+    },
+    {
+      library_name: "TestQDM",
+      elm: {
+        library: {
+          localId: "0",
+          usings: { def: [] },
+          valuesets: { def: [] },
+          annotations: [],
+          statements: {
+            def: [
+              {
+                library_name: "TestQDM",
+                name: "Patient",
+                relevance: "NA",
+                final: "NA",
+              },
+              {
+                library_name: "TestQDM",
+                name: "Inpatient Encounters",
+                relevance: "NA",
+                final: "NA",
+              },
+              {
+                library_name: "TestQDM",
+                name: "Initial Population",
+                relevance: "NA",
+                final: "NA",
+              },
+              {
+                ibrary_name: "TestQDM",
+                name: "Denominator",
+                relevance: "NA",
+                final: "NA",
+              },
+              {
+                library_name: "TestQDM",
+                name: "Numerator",
+                relevance: "NA",
+                final: "NA",
+              },
+              {
+                library_name: "TestQDM",
+                name: "SDE Ethnicity",
+                relevance: "NA",
+                final: "NA",
+              },
+              {
+                library_name: "TestQDM",
+                name: "SDE Payer",
+                relevance: "NA",
+                final: "NA",
+              },
+              {
+                library_name: "TestQDM",
+                name: "SDE Race",
+                relevance: "NA",
+                final: "NA",
+              },
+              {
+                library_name: "TestQDM",
+                name: "SDE Sex",
+                relevance: "NA",
+                final: "NA",
+              },
+              {
+                library_name: "TestQDM",
+                name: "FirstPhysicalExamWithEncounterId",
+                relevance: "NA",
+                final: "NA",
+              },
+              {
+                library_name: "TestQDM",
+                name: "FirstPhysicalExamWithEncounterIdUsingLabTiming",
+                relevance: "NA",
+                final: "NA",
+              },
+              {
+                library_name: "TestQDM",
+                name: "FirstLabTestWithEncounterId",
+                relevance: "NA",
+                final: "NA",
+              },
+              {
+                library_name: "TestQDM",
+                name: "SDE Results",
+                relevance: "NA",
+                final: "NA",
+              },
+              {
+                library_name: "TestQDM",
+                name: "LengthOfStay",
+                relevance: "NA",
+                final: "NA",
+              },
+            ],
+          },
+        },
+      },
+    },
+  ],
 };
 const valueSets = [] as ValueSet[];
 const setMeasure = jest.fn();
@@ -2035,7 +2187,7 @@ describe("TestCaseList component", () => {
   });
 
   // TODO: fix test. broken in MAT-5945.
-  it.skip("defaults pop criteria nav link to first pop criteria on load", async () => {
+  it("defaults pop criteria nav link to first pop criteria on load", async () => {
     measure.cqlErrors = false;
     renderTestCaseListComponent();
     measure.groups = [

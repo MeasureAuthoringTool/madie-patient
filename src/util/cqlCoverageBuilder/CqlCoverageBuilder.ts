@@ -61,9 +61,12 @@ function updateAllGroupResults(calculationOutput) {
 
       // we want only a single reference to each groupId. We will concat all the clauseResults associated with each one.
       if (existingGroupIndex > -1) {
-        const newClauseResults = Object.values(
-          groupResult?.clause_results
-        )?.flatMap(Object.values);
+        let newClauseResults = [];
+        if (groupResult?.clause_results) {
+          newClauseResults = Object.values(
+            groupResult?.clause_results
+          )?.flatMap(Object.values);
+        }
 
         updatedGroupResults[existingGroupIndex].clauseResults = [
           ...updatedGroupResults[existingGroupIndex].clauseResults,
