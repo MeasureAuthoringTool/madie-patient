@@ -6,6 +6,7 @@ import GroupPopulations from "../populations/GroupPopulations";
 import DetailsSection from "./DetailsTab/DetailsSection";
 import CalculationResults from "./calculationResults/CalculationResults";
 import { useFeatureFlags } from "@madie/madie-util";
+import { MadieEditor } from "@madie/madie-editor";
 
 const RightPanel = ({
   canEdit,
@@ -18,8 +19,9 @@ const RightPanel = ({
   measureGroups,
   measureName,
   measureCql,
+  cqlErrors,
 }) => {
-  const [activeTab, setActiveTab] = useState<string>("highlighting");
+  const [activeTab, setActiveTab] = useState<string>("measurecql");
   const featureFlags = useFeatureFlags();
 
   return (
@@ -54,26 +56,26 @@ const RightPanel = ({
           <DetailsSection canEdit={canEdit} measureName={measureName} />
         )}
 
-            {activeTab === "measurecql" &&
-                (!measure?.cqlErrors ? (
-                  <div
-                    data-testid="test-case-cql-editor"
-                    id="test-case-cql-editor"
-                    style={{ height: "calc(100% - 24px)" }}
-                  >
-                    <MadieEditor
-                      value={measure?.cql}
-                      height="100%"
-                      readOnly={true}
-                      validationsEnabled={false}
-                    />
-                  </div>
-                ) : (
-                  <div data-testid="test-case-cql-has-errors-message">
-                    An error exists with the measure CQL, please review the CQL
-                    Editor tab
-                  </div>
-                ))}
+        {activeTab === "measurecql" &&
+          (!cqlErrors ? (
+            <div
+              data-testid="test-case-cql-editor"
+              id="test-case-cql-editor"
+              // style={{ height: "calc(100% - 24px)" }}
+            >
+              <MadieEditor
+                value={measureCql}
+                height="100%"
+                readOnly={true}
+                validationsEnabled={false}
+              />
+            </div>
+          ) : (
+            <div data-testid="test-case-cql-has-errors-message">
+              An error exists with the measure CQL, please review the CQL Editor
+              tab
+            </div>
+          ))}
       </div>
       {/* header end */}
     </div>

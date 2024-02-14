@@ -17,7 +17,7 @@ export default function RightPanelNavTabs(props: NavTabProps) {
       }}
       type="D"
     >
-        <Tab
+      <Tab
         tabIndex={0}
         aria-label="Measure CQL View Only tab panel"
         type="B"
