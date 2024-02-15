@@ -1,0 +1,24 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# REGEX for commit message
+MSG_REGEX="(^MAT-[0-9]+ .*)|(^Merge pull request.*)|(^Merge remote-tracking.*)|(^Merge branch.*)|(^Revert.*)"
+
+# get the commit message
+COMMIT_MSG=$(cat "$1")
+
+# colors to highlight error message
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+# Check if the message matches the REGEX
+if [[ ! "$COMMIT_MSG" =~ $MSG_REGEX ]]; then
+  echo "\n${RED}****************************************************"
+  echo "ERROR: commit rejected because your commit message is invalid"
+  echo "Please re-commit your changes with commit message format: <Jira ID> <commit message>"
+  echo "e.g. MAT-1234 Generate CMS ID"
+  echo "****************************************************${NC}\n"
+  exit 1
+else
+  exit 0
+fi
