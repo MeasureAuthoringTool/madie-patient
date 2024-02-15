@@ -1,0 +1,12 @@
+.nav-collapse-container {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  padding: 0 16px;
+  .nav-collapser-title {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    justify-content: space-between;
+  }
+}
