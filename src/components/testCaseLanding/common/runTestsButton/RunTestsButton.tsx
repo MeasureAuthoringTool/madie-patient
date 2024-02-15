@@ -21,6 +21,9 @@ export default function RunTestButton(props: RunTestButtonProps) {
   // during test case execution. this is to overcome that.
   // remove this once we move calculation to backend
   const [loading, setLoading] = useState(false);
+  console.log('loading', loading);
+  console.log('isExecution ', isExecutionContextReady)
+  console.log('haserrors', hasErrors)
   function runTestCases() {
     setLoading(true);
     setTimeout(async () => {

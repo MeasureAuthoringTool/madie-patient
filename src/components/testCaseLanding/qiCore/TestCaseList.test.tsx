@@ -48,6 +48,7 @@ import {
 import { ScanValidationDto } from "../../../api/models/ScanValidationDto";
 // @ts-ignore
 import JSZip from "jszip";
+import TestCaseLandingWrapper from '../common/TestCaseLandingWrapper'
 
 const createZipFile = async (
   patientIds: string[],
@@ -92,7 +93,7 @@ const serviceConfig: ServiceConfig = {
 
 const MEASURE_CREATEDBY = "testuser";
 // Mock data for Measure retrieved from MeasureService
-const measure = {
+const mockMeasure = {
   id: "1",
   measureName: "measureName",
   createdBy: MEASURE_CREATEDBY,
@@ -126,6 +127,13 @@ const measure = {
 jest.mock("@madie/madie-util", () => ({
   measureStore: {
     updateMeasure: jest.fn((measure) => measure),
+    state: jest.fn().mockImplementation(() => mockMeasure),
+    initialState: null,
+    subscribe: (set) => {
+      set(mockMeasure);
+      return { unsubscribe: () => null };
+    },
+    unsubscribe: () => null,
   },
   checkUserCanEdit: jest.fn().mockImplementation(() => true),
   useFeatureFlags: jest.fn().mockImplementation(() => ({
@@ -485,11 +493,11 @@ const useMeasureServiceMock =
   useMeasureServiceApi as jest.Mock<MeasureServiceApi>;
 
 const useMeasureServiceMockResolved = {
-  fetchMeasure: jest.fn().mockResolvedValue(measure),
-  fetchMeasureBundle: jest.fn().mockResolvedValue(buildMeasureBundle(measure)),
+  fetchMeasure: jest.fn().mockResolvedValue(mockMeasure),
+  fetchMeasureBundle: jest.fn().mockResolvedValue(buildMeasureBundle(mockMeasure)),
 } as unknown as MeasureServiceApi;
 
-const measureBundle = buildMeasureBundle(measure);
+const measureBundle = buildMeasureBundle(mockMeasure);
 const valueSets = [getExampleValueSet()];
 const setMeasure = jest.fn();
 const setMeasureBundle = jest.fn();
@@ -553,7 +561,7 @@ describe("TestCaseList component", () => {
         <ApiContextProvider value={serviceConfig}>
           <ExecutionContextProvider
             value={{
-              measureState: [measure, setMeasure],
+              measureState: [mockMeasure, setMeasure],
               bundleState: [measureBundle, setMeasureBundle],
               valueSetsState: [valueSets, setValueSets],
               executionContextReady: true,
@@ -562,11 +570,15 @@ describe("TestCaseList component", () => {
               contextFailure: contextFailure,
             }}
           >
-            <TestCaseList
-              errors={errors}
-              setErrors={setError}
-              setWarnings={setWarnings}
+            <TestCaseLandingWrapper 
+              qdm={false}
+              children={<TestCaseList
+                errors={errors}
+                setErrors={setError}
+                setWarnings={setWarnings}
+              />}
             />
+            
           </ExecutionContextProvider>
         </ApiContextProvider>
       </MemoryRouter>
@@ -773,7 +785,7 @@ describe("TestCaseList component", () => {
   });
 
   it("Should disable delete all button", async () => {
-    measure.testCases = [];
+    mockMeasure.testCases = [];
     renderTestCaseListComponent();
 
     expect(
@@ -796,7 +808,7 @@ describe("TestCaseList component", () => {
   });
 
   it("should navigate to the Test Case details page on view button click for non-owner", async () => {
-    measure.createdBy = "AnotherUser";
+    mockMeasure.createdBy = "AnotherUser";
     const { getByTestId } = renderTestCaseListComponent();
     await waitFor(() => {
       const selectButton = getByTestId(`select-action-${testCases[0].id}`);
@@ -809,7 +821,7 @@ describe("TestCaseList component", () => {
   });
 
   it("should execute test cases", async () => {
-    measure.createdBy = MEASURE_CREATEDBY;
+    mockMeasure.createdBy = MEASURE_CREATEDBY;
     renderTestCaseListComponent();
 
     const table = await screen.findByTestId("test-case-tbl");
@@ -842,7 +854,7 @@ describe("TestCaseList component", () => {
   });
 
   it("Run Test Cases button should be disabled if no valid test cases", async () => {
-    measure.createdBy = MEASURE_CREATEDBY;
+    mockMeasure.createdBy = MEASURE_CREATEDBY;
     testCases[0].validResource = false;
     testCases[1].validResource = false;
 
@@ -869,7 +881,7 @@ describe("TestCaseList component", () => {
   });
 
   it("should not render execute button for user who is not the owner of the measure", () => {
-    measure.createdBy = "AnotherUser";
+    mockMeasure.createdBy = "AnotherUser";
     renderTestCaseListComponent();
     const executeAllTestCasesButton = screen.queryByText(
       "execute-test-cases-button"
@@ -878,7 +890,7 @@ describe("TestCaseList component", () => {
   });
 
   it("should not display error message when test cases calculation fails", async () => {
-    measure.createdBy = MEASURE_CREATEDBY;
+    mockMeasure.createdBy = MEASURE_CREATEDBY;
     const error = {
       message: "Unable to calculate test case.",
     };
@@ -997,7 +1009,7 @@ describe("TestCaseList component", () => {
   });
 
   it("should not render New Test Case button for user who is not the owner of the measure", () => {
-    measure.createdBy = "AnotherUser";
+    mockMeasure.createdBy = "AnotherUser";
     renderTestCaseListComponent();
     const createNewTestCaseButton = screen.queryByText(
       "create-new-test-case-button"
@@ -1006,8 +1018,8 @@ describe("TestCaseList component", () => {
   });
 
   it("disables execute button when trying to execute test cases when Measure CQL errors exist", async () => {
-    measure.createdBy = MEASURE_CREATEDBY;
-    measure.cqlErrors = true;
+    mockMeasure.createdBy = MEASURE_CREATEDBY;
+    mockMeasure.cqlErrors = true;
     renderTestCaseListComponent();
 
     expect(await screen.findByText("WhenAllGood")).toBeInTheDocument();
@@ -1015,9 +1027,9 @@ describe("TestCaseList component", () => {
   });
 
   it("defaults pop criteria nav link to first pop criteria on load", async () => {
-    measure.cqlErrors = false;
-    measure.groups = [
-      ...measure.groups,
+    mockMeasure.cqlErrors = false;
+    mockMeasure.groups = [
+      ...mockMeasure.groups,
       {
         id: "2",
         scoring: MeasureScoring.COHORT,
@@ -1066,9 +1078,9 @@ describe("TestCaseList component", () => {
   });
 
   it("updates all results when pop criteria tab is changed", async () => {
-    measure.cqlErrors = false;
-    measure.groups = [
-      ...measure.groups,
+    mockMeasure.cqlErrors = false;
+    mockMeasure.groups = [
+      ...mockMeasure.groups,
       {
         id: "2",
         scoring: MeasureScoring.COHORT,
@@ -1100,7 +1112,6 @@ describe("TestCaseList component", () => {
 
     userEvent.click(executeButton);
     await waitFor(() => expect(screen.getByText("75%")).toBeInTheDocument());
-
     const table = await screen.findByTestId("test-case-tbl");
     const tableRows = table.querySelectorAll("tbody tr");
     await waitFor(() => {
@@ -1130,7 +1141,9 @@ describe("TestCaseList component", () => {
     const tableRows2 = table2.querySelectorAll("tbody tr");
     await waitFor(() => {
       expect(tableRows2[0]).toHaveTextContent("Pass");
+      screen.debug();
       expect(tableRows2[1]).toHaveTextContent("Pass");
+      screen.debug();
       expect(tableRows2[2]).toHaveTextContent("Invalid");
     });
 
@@ -1288,8 +1301,8 @@ describe("TestCaseList component", () => {
   });
 
   it("should disable execute button if CQL Return type mismatch error exists on measure", async () => {
-    measure.createdBy = MEASURE_CREATEDBY;
-    measure.errors = [MeasureErrorType.MISMATCH_CQL_POPULATION_RETURN_TYPES];
+    mockMeasure.createdBy = MEASURE_CREATEDBY;
+    mockMeasure.errors = [MeasureErrorType.MISMATCH_CQL_POPULATION_RETURN_TYPES];
     renderTestCaseListComponent();
 
     const table = await screen.findByTestId("test-case-tbl");
@@ -1364,7 +1377,7 @@ describe("TestCaseList component", () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          `Unable to export test cases for ${measure?.measureName}. Please try again and contact the Help Desk if the problem persists.`
+          `Unable to export test cases for ${mockMeasure?.measureName}. Please try again and contact the Help Desk if the problem persists.`
         )
       ).toBeInTheDocument();
     });

@@ -10,6 +10,8 @@ import { ExecutionContextProvider } from "./ExecutionContext";
 import useMeasureServiceApi from "../../../api/useMeasureServiceApi";
 import * as _ from "lodash";
 import StatusHandler from "../../statusHandler/StatusHandler";
+import TestCaseLandingWrapper from "../../testCaseLanding/common/TestCaseLandingWrapper";
+import RedirectToList from "../RedirectToList";
 import {
   Measure,
   MeasureErrorType,
@@ -130,22 +132,56 @@ const TestCaseRoutes = () => {
         <StatusHandler importWarnings={importWarnings} />
       )}
       <Routes>
-        <Route path="/measures/:measureId/edit/test-cases">
+        <Route path="/measures/:measureId/edit/test-cases/list-page">
           <Route
             index
             element={
-              <TestCaseLanding
-                errors={errors}
-                setErrors={setErrors}
-                setWarnings={setImportWarnings}
+              <TestCaseLandingWrapper
+                qdm={false}
+                children={
+                  <TestCaseLanding
+                    errors={errors}
+                    setErrors={setErrors}
+                    setWarnings={setImportWarnings}
+                  />
+                }
               />
             }
           />
           <Route
+            path=":criteriaId"
+            element={
+              <TestCaseLandingWrapper
+                qdm={false}
+                children={
+                  <TestCaseLanding
+                    errors={errors}
+                    setErrors={setErrors}
+                    setWarnings={setImportWarnings}
+                  />
+                }
+              />
+            }
+          />
+        </Route>
+
+        <Route
+          path="/measures/:measureId/edit/test-cases"
+          element={<RedirectToList />}
+        ></Route>
+
+        <Route path="/measures/:measureId/edit/test-cases/:id">
+          <Route
+            index
+            element={<EditTestCase errors={errors} setErrors={setErrors} />}
+          />
+          <Route
             path=":id"
+            index
             element={<EditTestCase errors={errors} setErrors={setErrors} />}
           />
         </Route>
+
         <Route path="*" element={<NotFound />} />
       </Routes>
     </ExecutionContextProvider>

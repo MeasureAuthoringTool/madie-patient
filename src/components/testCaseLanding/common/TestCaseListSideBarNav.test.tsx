@@ -4,6 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 import TestCaseListSideBarNav from "./TestCaseListSideBarNav";
 import { Group } from "@madie/madie-models";
 import userEvent from "@testing-library/user-event";
+import { useFeatureFlags } from "@madie/madie-util";
 
 const groups: Group[] = [
   {
@@ -19,20 +20,24 @@ const groups: Group[] = [
     stratifications: [],
   },
 ];
-
+jest.mock("@madie/madie-util", () => ({
+  useFeatureFlags: jest.fn(() => {
+    return {
+      includeSDEValues: true,
+    };
+  }),
+}));
 describe("TestCase component", () => {
+  useFeatureFlags.mockReturnValue({ includeSDEValues: true });
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it("should render no population criteria for null groups array", async () => {
-    const onChange = jest.fn();
     render(
-      <TestCaseListSideBarNav
-        allPopulationCriteria={null}
-        selectedPopulationCriteria={null}
-        onChange={onChange}
-      />
+      <MemoryRouter>
+        <TestCaseListSideBarNav allPopulationCriteria={null} />
+      </MemoryRouter>
     );
 
     expect(screen.getByRole("navigation")).toBeInTheDocument();
@@ -42,13 +47,11 @@ describe("TestCase component", () => {
   });
 
   it("should render no population criteria for empty groups array", async () => {
-    const onChange = jest.fn();
+
     render(
-      <TestCaseListSideBarNav
-        allPopulationCriteria={[]}
-        selectedPopulationCriteria={null}
-        onChange={onChange}
-      />
+      <MemoryRouter>
+        <TestCaseListSideBarNav allPopulationCriteria={[]} />
+      </MemoryRouter>
     );
 
     expect(screen.getByRole("navigation")).toBeInTheDocument();
@@ -63,8 +66,6 @@ describe("TestCase component", () => {
       <MemoryRouter>
         <TestCaseListSideBarNav
           allPopulationCriteria={groups}
-          selectedPopulationCriteria={groups[1]}
-          onChange={onChange}
         />
       </MemoryRouter>
     );
@@ -76,12 +77,12 @@ describe("TestCase component", () => {
     });
     expect(activeLink).toBeInTheDocument();
     userEvent.click(activeLink);
-    expect(onChange).toHaveBeenCalled();
+    // expect(onChange).toHaveBeenCalled();
     const inactiveLink = screen.getByRole("tab", {
       name: "Population Criteria 1",
     });
     expect(inactiveLink).toBeInTheDocument();
     userEvent.click(inactiveLink);
-    expect(onChange).toHaveBeenCalledTimes(2);
+    // expect(onChange).toHaveBeenCalledTimes(2);
   });
 });
