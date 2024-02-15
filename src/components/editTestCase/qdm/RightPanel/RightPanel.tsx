@@ -58,14 +58,10 @@ const RightPanel = ({
 
         {activeTab === "measurecql" &&
           (!cqlErrors ? (
-            <div
-              data-testid="test-case-cql-editor"
-              id="test-case-cql-editor"
-              // style={{ height: "calc(100% - 24px)" }}
-            >
+            <div data-testid="test-case-cql-editor" id="test-case-cql-editor">
               <MadieEditor
                 value={measureCql}
-                height="100%"
+                height="52vh"
                 readOnly={true}
                 validationsEnabled={false}
               />
