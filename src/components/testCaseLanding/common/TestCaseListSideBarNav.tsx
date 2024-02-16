@@ -43,7 +43,7 @@ const TestCaseListSideBarNav = ({
   return (
     <OuterWrapper>
       <Nav data-testid="test-case-pop-criteria-nav">
-      <div className="nav-collapse-container">
+        <div className="nav-collapse-container">
           <button
             className="nav-collapser-title"
             onClick={() => {
@@ -90,7 +90,6 @@ const TestCaseListSideBarNav = ({
             )}
           </Tabs>
         )}
-
 
         {qdm && featureFlags?.includeSDEValues && (
           <>

@@ -2272,7 +2272,6 @@ describe("TestCaseList component", () => {
   // TODO: fix test. broken in MAT-5945.
   it("defaults pop criteria nav link to first pop criteria on load", async () => {
     mockMeasure.cqlErrors = false;
-    mockMeasure.cqlErrors = false;
     renderTestCaseListComponent();
     mockMeasure.groups = [
       ...mockMeasure.groups,
@@ -2293,8 +2292,8 @@ describe("TestCaseList component", () => {
 
     // wait for pop criteria to load
     await waitFor(() => {
-      expect(screen.getByText("Population Criteria 1")).toBeInTheDocument();
-      expect(screen.getByText("Population Criteria 2")).toBeInTheDocument();
+      const criteria1NavTab = screen.getByText("Population Criteria 1");
+      expect(criteria1NavTab.getAttribute("aria-selected")).toBe("true");
     });
 
     // wait for test cases to load
