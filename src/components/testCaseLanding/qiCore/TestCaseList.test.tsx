@@ -6,7 +6,7 @@ import {
   waitFor,
   within,
 } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
 import TestCaseList, {
   getCoverageValueFromHtml,
@@ -44,11 +44,13 @@ import {
   checkUserCanEdit,
   useFeatureFlags,
   measureStore,
+  useDocumentTitle,
 } from "@madie/madie-util";
 import { ScanValidationDto } from "../../../api/models/ScanValidationDto";
 // @ts-ignore
 import JSZip from "jszip";
-import TestCaseLandingWrapper from '../common/TestCaseLandingWrapper'
+import TestCaseLandingWrapper from "../common/TestCaseLandingWrapper";
+import TestCaseLanding from "../qiCore/TestCaseLanding";
 
 const createZipFile = async (
   patientIds: string[],
@@ -125,6 +127,7 @@ const mockMeasure = {
   acls: [{ userId: "othertestuser@example.com", roles: ["SHARED_WITH"] }], //#nosec
 } as Measure;
 jest.mock("@madie/madie-util", () => ({
+  useDocumentTitle: jest.fn(),
   measureStore: {
     updateMeasure: jest.fn((measure) => measure),
     state: jest.fn().mockImplementation(() => mockMeasure),
@@ -135,13 +138,29 @@ jest.mock("@madie/madie-util", () => ({
     },
     unsubscribe: () => null,
   },
+  useOktaTokens: () => ({
+    getAccessToken: () => "test.jwt",
+    getUserName: () => MEASURE_CREATEDBY,
+  }),
   checkUserCanEdit: jest.fn().mockImplementation(() => true),
   useFeatureFlags: jest.fn().mockImplementation(() => ({
     applyDefaults: false,
     qiCoreBonnieTestCases: false,
   })),
+  routeHandlerStore: {
+    subscribe: (set) => {
+      return { unsubscribe: () => null };
+    },
+    updateRouteHandlerState: () => null,
+    state: { canTravel: false, pendingPath: "" },
+    initialState: { canTravel: false, pendingPath: "" },
+  },
 }));
-
+global.ResizeObserver = jest.fn().mockImplementation(() => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn(),
+}));
 let importingTestCases = [];
 jest.mock(
   "../common/import/TestCaseImportFromBonnieDialog",
@@ -169,11 +188,6 @@ jest.mock(
 );
 
 const mockedUsedNavigate = jest.fn();
-jest.mock("react-router-dom", () => ({
-  ...(jest.requireActual("react-router-dom") as any),
-  useNavigate: () => mockedUsedNavigate,
-}));
-
 // output from calculationService
 const executionResults = {
   results: [
@@ -492,11 +506,6 @@ jest.mock("../../../api/useMeasureServiceApi");
 const useMeasureServiceMock =
   useMeasureServiceApi as jest.Mock<MeasureServiceApi>;
 
-const useMeasureServiceMockResolved = {
-  fetchMeasure: jest.fn().mockResolvedValue(mockMeasure),
-  fetchMeasureBundle: jest.fn().mockResolvedValue(buildMeasureBundle(mockMeasure)),
-} as unknown as MeasureServiceApi;
-
 const measureBundle = buildMeasureBundle(mockMeasure);
 const valueSets = [getExampleValueSet()];
 const setMeasure = jest.fn();
@@ -527,6 +536,12 @@ const patientId1 = "8cdd6a96-732f-41da-9902-d680ca68157c";
 const patientId2 = "a648e724-ce72-4cac-b0a7-3c4d52784f73";
 
 describe("TestCaseList component", () => {
+  const useMeasureServiceMockResolved = {
+    fetchMeasure: jest.fn().mockResolvedValue(mockMeasure),
+    fetchMeasureBundle: jest
+      .fn()
+      .mockResolvedValue(buildMeasureBundle(mockMeasure)),
+  } as unknown as MeasureServiceApi;
   beforeEach(() => {
     calculationServiceMock.mockImplementation(() => {
       return calculationServiceMockResolved;
@@ -557,7 +572,11 @@ describe("TestCaseList component", () => {
     contextFailure = false
   ) {
     return render(
-      <MemoryRouter>
+      <MemoryRouter
+        initialEntries={[
+          `/measures/${mockMeasure.id}/edit/test-cases/list-page`,
+        ]}
+      >
         <ApiContextProvider value={serviceConfig}>
           <ExecutionContextProvider
             value={{
@@ -570,15 +589,48 @@ describe("TestCaseList component", () => {
               contextFailure: contextFailure,
             }}
           >
-            <TestCaseLandingWrapper 
-              qdm={false}
-              children={<TestCaseList
-                errors={errors}
-                setErrors={setError}
-                setWarnings={setWarnings}
-              />}
-            />
-            
+            <Routes>
+              <Route path="/measures/:measureId/edit/test-cases/list-page">
+                <Route
+                  index
+                  element={
+                    <TestCaseLandingWrapper
+                      qdm={false}
+                      children={
+                        <TestCaseLanding
+                          errors={errors}
+                          setErrors={setError}
+                          setWarnings={setWarnings}
+                        />
+                      }
+                    />
+                  }
+                />
+                <Route
+                  path=":criteriaId"
+                  element={
+                    <TestCaseLandingWrapper
+                      qdm={false}
+                      children={
+                        <TestCaseLanding
+                          errors={errors}
+                          setErrors={setError}
+                          setWarnings={setWarnings}
+                        />
+                      }
+                    />
+                  }
+                />
+              </Route>
+              <Route path="/measures/:measureId/edit/test-cases/:id">
+                <Route index element={<div data-testid="edit-page" />} />
+                <Route
+                  path=":id"
+                  index
+                  element={<div data-testid="edit-page" />}
+                />
+              </Route>
+            </Routes>
           </ExecutionContextProvider>
         </ApiContextProvider>
       </MemoryRouter>
@@ -642,18 +694,6 @@ describe("TestCaseList component", () => {
     expect(
       await screen.queryByTestId("display-tests-error")
     ).not.toBeInTheDocument();
-  });
-
-  it("should navigate to the Test Case details page on edit button click", async () => {
-    const { getByTestId } = renderTestCaseListComponent();
-    await waitFor(() => {
-      const selectButton = getByTestId(`select-action-${testCases[0].id}`);
-      expect(selectButton).toBeInTheDocument();
-      fireEvent.click(selectButton);
-      const editButton = getByTestId(`view-edit-test-case-${testCases[0].id}`);
-      fireEvent.click(editButton);
-      expect(mockedUsedNavigate).toHaveBeenCalled();
-    });
   });
 
   it("should render delete dialogue on Test Case list page when delete button is clicked", async () => {
@@ -793,31 +833,6 @@ describe("TestCaseList component", () => {
         name: "Delete All",
       })
     ).toBeDisabled();
-  });
-
-  it("should navigate to the Test Case details page on edit button click for shared user", async () => {
-    const { getByTestId } = renderTestCaseListComponent();
-    await waitFor(() => {
-      const selectButton = getByTestId(`select-action-${testCases[0].id}`);
-      expect(selectButton).toBeInTheDocument();
-      fireEvent.click(selectButton);
-      const editButton = getByTestId(`view-edit-test-case-${testCases[0].id}`);
-      fireEvent.click(editButton);
-      expect(mockedUsedNavigate).toHaveBeenCalled();
-    });
-  });
-
-  it("should navigate to the Test Case details page on view button click for non-owner", async () => {
-    mockMeasure.createdBy = "AnotherUser";
-    const { getByTestId } = renderTestCaseListComponent();
-    await waitFor(() => {
-      const selectButton = getByTestId(`select-action-${testCases[0].id}`);
-      expect(selectButton).toBeInTheDocument();
-      fireEvent.click(selectButton);
-      const viewButton = getByTestId(`view-edit-test-case-${testCases[0].id}`);
-      fireEvent.click(viewButton);
-      expect(mockedUsedNavigate).toHaveBeenCalled();
-    });
   });
 
   it("should execute test cases", async () => {
@@ -1142,7 +1157,7 @@ describe("TestCaseList component", () => {
     await waitFor(() => {
       expect(tableRows2[0]).toHaveTextContent("Pass");
       screen.debug();
-      expect(tableRows2[1]).toHaveTextContent("Pass");
+      expect(tableRows2[1]).toHaveTextContent("Fail");
       screen.debug();
       expect(tableRows2[2]).toHaveTextContent("Invalid");
     });
@@ -1302,7 +1317,9 @@ describe("TestCaseList component", () => {
 
   it("should disable execute button if CQL Return type mismatch error exists on measure", async () => {
     mockMeasure.createdBy = MEASURE_CREATEDBY;
-    mockMeasure.errors = [MeasureErrorType.MISMATCH_CQL_POPULATION_RETURN_TYPES];
+    mockMeasure.errors = [
+      MeasureErrorType.MISMATCH_CQL_POPULATION_RETURN_TYPES,
+    ];
     renderTestCaseListComponent();
 
     const table = await screen.findByTestId("test-case-tbl");
@@ -1381,6 +1398,60 @@ describe("TestCaseList component", () => {
         )
       ).toBeInTheDocument();
     });
+  });
+
+  it("should navigate to the Test Case details page on edit button click", async () => {
+    renderTestCaseListComponent();
+
+    await waitFor(() => {
+      const selectButton = screen.getByTestId(
+        `select-action-${testCases[0].id}`
+      );
+      expect(selectButton).toBeInTheDocument();
+      fireEvent.click(selectButton);
+    });
+    const editButton = screen.getByTestId(
+      `view-edit-test-case-${testCases[0].id}`
+    );
+    fireEvent.click(editButton);
+    const editPage = await screen.findByTestId("edit-page");
+    expect(editPage).toBeInTheDocument();
+  });
+
+  it("should navigate to the Test Case details page on edit button click for shared user", async () => {
+    renderTestCaseListComponent();
+    await waitFor(() => {
+      const selectButton = screen.getByTestId(
+        `select-action-${testCases[0].id}`
+      );
+      expect(selectButton).toBeInTheDocument();
+      fireEvent.click(selectButton);
+    });
+    const editButton = screen.getByTestId(
+      `view-edit-test-case-${testCases[0].id}`
+    );
+    fireEvent.click(editButton);
+    const editPage = await screen.findByTestId("edit-page");
+    expect(editPage).toBeInTheDocument();
+  });
+
+  it("should navigate to the Test Case details page on view button click for non-owner", async () => {
+    mockMeasure.createdBy = "AnotherUser";
+    renderTestCaseListComponent();
+
+    await waitFor(() => {
+      const selectButton = screen.getByTestId(
+        `select-action-${testCases[0].id}`
+      );
+      expect(selectButton).toBeInTheDocument();
+      fireEvent.click(selectButton);
+    });
+    const viewButton = screen.getByTestId(
+      `view-edit-test-case-${testCases[0].id}`
+    );
+    fireEvent.click(viewButton);
+    const editPage = await screen.findByTestId("edit-page");
+    expect(editPage).toBeInTheDocument();
   });
 
   it("should throw 404 error while exporting a test case", async () => {

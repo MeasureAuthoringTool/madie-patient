@@ -47,7 +47,6 @@ describe("TestCase component", () => {
   });
 
   it("should render no population criteria for empty groups array", async () => {
-
     render(
       <MemoryRouter>
         <TestCaseListSideBarNav allPopulationCriteria={[]} />
@@ -64,9 +63,7 @@ describe("TestCase component", () => {
     const onChange = jest.fn();
     render(
       <MemoryRouter>
-        <TestCaseListSideBarNav
-          allPopulationCriteria={groups}
-        />
+        <TestCaseListSideBarNav allPopulationCriteria={groups} />
       </MemoryRouter>
     );
 

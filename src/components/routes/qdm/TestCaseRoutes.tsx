@@ -11,6 +11,7 @@ import useCqmConversionService from "../../../api/CqmModelConversionService";
 import useTerminologyServiceApi from "../../../api/useTerminologyServiceApi";
 import { QdmExecutionContextProvider } from "./QdmExecutionContext";
 import TestCaseLandingWrapper from "../../testCaseLanding/common/TestCaseLandingWrapper";
+import SDEPage from "./SDEPage";
 import RedirectToList from "../RedirectToList";
 import _ from "lodash";
 
@@ -123,7 +124,7 @@ const TestCaseRoutes = () => {
           {featureFlags?.includeSDEValues && (
             <Route
               path="/measures/:measureId/edit/test-cases/list-page/sde"
-              element={<TestCaseLandingWrapper children={<div />} />}
+              element={<TestCaseLandingWrapper qdm children={<SDEPage />} />}
             />
           )}
           <Route

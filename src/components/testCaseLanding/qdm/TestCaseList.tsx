@@ -141,7 +141,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     ) {
       setSelectedPopCriteria(measure.groups[0]);
       const newPath = `/measures/${measureId}/edit/test-cases/list-page/${measure.groups[0].id}`;
-      navigate(newPath, { replace: true }); // Use
+      navigate(newPath, { replace: true }); // update route
       if (
         measure?.errors?.length > 0 &&
         (measure.errors.includes(
@@ -166,7 +166,6 @@ const TestCaseList = (props: TestCaseListProps) => {
     }
   }, [testCases]);
 
-  // get stuff from the url if it exists. We don't do this if it doesn't and hopefully doesn't crash.
   useEffect(() => {
     if (criteriaId && measure?.groups?.length) {
       const selectedPopCriteria = measure.groups?.find(

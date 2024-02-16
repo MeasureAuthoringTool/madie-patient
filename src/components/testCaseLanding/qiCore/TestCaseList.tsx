@@ -72,7 +72,7 @@ const TestCaseList = (props: TestCaseListProps) => {
   const { measureId, criteriaId } = useParams<{
     measureId: string;
     criteriaId: string;
-  }>();  
+  }>();
   const {
     testCases,
     setTestCases,

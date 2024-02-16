@@ -1,9 +1,5 @@
 import React, { useState } from "react";
-import {
-  useLocation,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { Group } from "@madie/madie-models";
 import { Box } from "@mui/material";
