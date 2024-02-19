@@ -982,6 +982,7 @@ describe("EditTestCase QDM Component", () => {
   it("RightPanel navigation works as expected.", async () => {
     renderEditTestCaseComponent();
     const highlighting = await findByText("Highlighting");
+    const measureCql = await findByText("Measure CQL (View Only)");
     const expectedActual = await findByText("Expected / Actual");
     const details = await findByText("Details");
 
@@ -997,6 +998,13 @@ describe("EditTestCase QDM Component", () => {
     });
     await waitFor(() => {
       expect(expectedActual).toHaveAttribute("aria-selected", "true");
+    });
+
+    act(() => {
+      fireEvent.click(measureCql);
+    });
+    await waitFor(() => {
+      expect(measureCql).toHaveAttribute("aria-selected", "true");
     });
 
     act(() => {

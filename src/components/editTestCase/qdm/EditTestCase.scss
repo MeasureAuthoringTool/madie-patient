@@ -7,6 +7,7 @@
       height: 700px;
       .left-panel {
         > .panel-content {
+          padding-top: 32px;
           padding-left: 32px;
           padding-right: 20px;
           height: calc(100% - 48px);
@@ -17,7 +18,10 @@
         > .panel-content {
           padding-left: 16px;
           padding-right: 16px;
-          height: calc(100% - 48px);
+          height: inherit;
+        }
+        > .panel-content {
+          padding-top: 0px;
         }
         > .tab-container {
           > .MuiButtonBase-root {
@@ -47,7 +51,7 @@
           }
         }
         > .panel-content {
-          padding-top: 32px;
+          // padding-top: 32px;
           overflow: scroll;
         }
       }
@@ -99,5 +103,15 @@
       margin: 0;
       margin-left: 32px;
     }
+  }
+
+  #test-case-cql-editor {
+    height: inherit;
+    > div {
+      height: inherit;
+    }
+  }
+  .MuiTabs-scroller {
+    overflow-x: scroll !important;
   }
 }
