@@ -114,7 +114,6 @@ const DataElementTable = ({
       setAttributeColumns(attributeColumns);
     }
   }, [codeSystemMap, dataElements]);
-
   // Generating columns required for the table
   useEffect(() => {
     const columns = [
@@ -123,10 +122,6 @@ const DataElementTable = ({
         id: "category",
         cell: (info) => {
           const el = info.getValue();
-          if (el.id != "65d36222b7d01f0000a840ef") {
-            const isItpossible = el.get;
-            // console.log("info", info);
-          }
           return <DataTypeCell element={el} codeSystemMap={codeSystemMap} />;
         },
       }),
