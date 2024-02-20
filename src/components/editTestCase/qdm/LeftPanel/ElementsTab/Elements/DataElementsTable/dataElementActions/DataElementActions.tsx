@@ -10,10 +10,11 @@ type DataElementActionsProps = {
   onDelete: Function;
   onView: Function;
   canEdit: boolean;
+  onClone: Function;
 };
 
 export default function DataElementActions(props: DataElementActionsProps) {
-  const { elementId, canView, onDelete, onView, canEdit } = props;
+  const { elementId, canView, onDelete, onView, canEdit, onClone } = props;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -36,12 +37,22 @@ export default function DataElementActions(props: DataElementActionsProps) {
   };
 
   const deleteElement = canEdit
-    ? {
-        label: "Delete",
-        toImplementFunction: deleteDataElement,
-        dataTestId: `delete-element-${elementId}`,
-      }
-    : {};
+    ? [
+        {
+          label: "Delete",
+          toImplementFunction: deleteDataElement,
+          dataTestId: `delete-element-${elementId}`,
+        },
+        {
+          label: "Clone",
+          toImplementFunction: () => {
+            handleClose();
+            onClone();
+          },
+          dataTestId: `clone-element-${elementId}`,
+        },
+      ]
+    : [];
 
   return (
     <div>
@@ -82,7 +93,7 @@ export default function DataElementActions(props: DataElementActionsProps) {
           },
           dataTestId: `edit-element-${elementId}`,
         }}
-        additionalSelectOptionProps={[deleteElement]}
+        additionalSelectOptionProps={deleteElement}
       />
     </div>
   );

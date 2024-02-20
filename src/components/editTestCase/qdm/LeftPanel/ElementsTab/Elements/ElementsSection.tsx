@@ -2,13 +2,15 @@ import React, { useEffect, useState, useCallback, useRef } from "react";
 import { uniq } from "lodash";
 import { DataElement } from "cqm-models";
 import { ObjectID } from "bson";
-
+import * as _ from "lodash";
 import ElementSection from "../../../../../common/ElementSection";
 import DynamicElementTabs from "./DynamicElementTabs";
 import useCqmConversionService from "../../../../../../api/CqmModelConversionService";
 import { measureStore } from "@madie/madie-util";
 import DataElementsList from "./dataElementsList/DataElementsList";
-import DataElementsCard from "./DataElementsCard/DataElementsCard";
+import DataElementsCard, {
+  applyAttribute,
+} from "./DataElementsCard/DataElementsCard";
 import "./ElementsSection.scss";
 import {
   PatientActionType,
@@ -147,6 +149,29 @@ const ElementsSection = (props: {
     });
   };
 
+  const cloneDataElement = (existingDataElement: DataElement) => {
+    // const newDataElement = applyAttribute(
+    //   "id",
+    //   null,
+    //   new ObjectID().toString(),
+    //   existingDataElement
+    // );
+    const clonedDataElement: DataElement = {
+      ...existingDataElement,
+      id: new ObjectID().toString(),
+    };
+    const modelClass = getDataElementClass(clonedDataElement);
+    const newDataElement: DataElement = new modelClass(clonedDataElement);
+    dispatch({
+      type: PatientActionType.ADD_DATA_ELEMENT,
+      payload: newDataElement,
+    });
+    // dispatch({
+    //   type: PatientActionType.MODIFY_DATA_ELEMENT,
+    //   payload: newDataElement,
+    // });
+  };
+
   // we retain state up here so we can use it to generate the other components.
   return (
     <ElementSection title="Elements">
@@ -196,6 +221,7 @@ const ElementsSection = (props: {
           }}
           canEdit={canEdit}
           onDelete={deleteDataElement}
+          onClone={cloneDataElement}
         />
       </div>
     </ElementSection>

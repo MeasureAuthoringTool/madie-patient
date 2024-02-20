@@ -23,6 +23,7 @@ interface DataElementTableProps {
   canEdit: boolean;
   onDelete?: (id: string) => void;
   allowedTypes: object;
+  onClone: (dataElement: DataElement) => void;
 }
 
 interface ElementAttributeEntry {
@@ -44,6 +45,7 @@ const DataElementTable = ({
   canEdit,
   onView,
   allowedTypes,
+  onClone,
 }: DataElementTableProps) => {
   const { cqmMeasureState } = useQdmExecutionContext();
   const [codeSystemMap, setCodeSystemMap] = useState({});
@@ -121,6 +123,10 @@ const DataElementTable = ({
         id: "category",
         cell: (info) => {
           const el = info.getValue();
+          if (el.id != "65d36222b7d01f0000a840ef") {
+            const isItpossible = el.get;
+            // console.log("info", info);
+          }
           return <DataTypeCell element={el} codeSystemMap={codeSystemMap} />;
         },
       }),
@@ -150,6 +156,7 @@ const DataElementTable = ({
               onView={() => {
                 onView && onView(el);
               }}
+              onClone={() => onClone(el)}
             />
           );
         },
