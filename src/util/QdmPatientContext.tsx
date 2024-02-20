@@ -37,9 +37,9 @@ export function patientReducer(state, action: QdmPatientAction) {
     case PatientActionType.ADD_DATA_ELEMENT: {
       let patient = _.isNil(state.patient) ? new QDMPatient() : state.patient;
       if (patient.dataElements) {
-        patient.dataElements.unshift({ ...action.payload });
+        patient.dataElements.unshift(action.payload);
       } else {
-        patient.dataElements = [{ ...action.payload }];
+        patient.dataElements = [action.payload];
       }
       return { ...state, patient };
     }

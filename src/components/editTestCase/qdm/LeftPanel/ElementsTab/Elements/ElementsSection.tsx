@@ -150,12 +150,6 @@ const ElementsSection = (props: {
   };
 
   const cloneDataElement = (existingDataElement: DataElement) => {
-    // const newDataElement = applyAttribute(
-    //   "id",
-    //   null,
-    //   new ObjectID().toString(),
-    //   existingDataElement
-    // );
     const clonedDataElement: DataElement = {
       ...existingDataElement,
       id: new ObjectID().toString(),
@@ -166,10 +160,6 @@ const ElementsSection = (props: {
       type: PatientActionType.ADD_DATA_ELEMENT,
       payload: newDataElement,
     });
-    // dispatch({
-    //   type: PatientActionType.MODIFY_DATA_ELEMENT,
-    //   payload: newDataElement,
-    // });
   };
 
   // we retain state up here so we can use it to generate the other components.
