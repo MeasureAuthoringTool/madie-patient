@@ -53,4 +53,36 @@ describe("Identifier Component", () => {
     );
     expect(identifierFieldInput.value).toBe("10");
   });
+
+  test("Test change of namingSystem", () => {
+    const onIdentifierChange = jest.fn();
+    const { rerender } = render(
+      <Identifier
+        onIdentifierChange={onIdentifierChange}
+        canEdit={true}
+        identifier={{ namingSystem: "ID", value: "123" }}
+      />
+    );
+
+    const identifierField = screen.getByTestId(
+      "identifier-field-Naming System"
+    );
+    expect(identifierField).toBeInTheDocument();
+    const identifierFieldInput = screen.getByTestId(
+      "identifier-input-field-Naming System"
+    ) as HTMLInputElement;
+    expect(identifierFieldInput).toBeInTheDocument();
+    expect(identifierFieldInput.value).toBe("ID");
+    fireEvent.change(identifierFieldInput, { target: { namingSystem: "ID2" } });
+    rerender(
+      <Identifier
+        onIdentifierChange={onIdentifierChange}
+        canEdit={true}
+        identifier={{ namingSystem: "ID2", value: "10" }}
+      />
+    );
+    expect(identifierFieldInput.value).toBe("ID2");
+
+    //screen.debug(undefined, 50000);
+  });
 });
