@@ -74,12 +74,10 @@ describe("TestCase component", () => {
     });
     expect(activeLink).toBeInTheDocument();
     userEvent.click(activeLink);
-    // expect(onChange).toHaveBeenCalled();
     const inactiveLink = screen.getByRole("tab", {
       name: "Population Criteria 1",
     });
     expect(inactiveLink).toBeInTheDocument();
     userEvent.click(inactiveLink);
-    // expect(onChange).toHaveBeenCalledTimes(2);
   });
 });
