@@ -72,7 +72,10 @@ const CoverageTabList = ({
       if (definition === "Used") {
         // must also filter out all definitions for other populations such as Initial, Num, Denom so they appear in only one place
         return statementResults.filter(
-          (s) => s.relevance !== "NA" && !allUsedDefinitions.includes(s.name)
+          (s) =>
+            s.relevance !== "NA" &&
+            !allUsedDefinitions.includes(s.name) &&
+            s.type !== "FunctionDef"
         );
       }
       if (definition === "Unused") {
@@ -80,6 +83,7 @@ const CoverageTabList = ({
           (s) => s.relevance === "NA" && s.type !== "FunctionDef"
         );
       }
+
       if (definition === "Functions") {
         return statementResults.filter((s) => s.type === "FunctionDef");
       }
