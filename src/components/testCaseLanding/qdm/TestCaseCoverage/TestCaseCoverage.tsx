@@ -21,15 +21,17 @@ const TestCaseCoverage = ({
     if (testCases) {
       let allTestCaseGroups = [];
       // if the teset case isn't present in our return array, add all values
-      testCases.forEach((testCase) => {
-        testCase.groupPopulations.forEach((pop) => {
-          if (
-            !allTestCaseGroups.find((group) => group.groupId === pop.groupId)
-          ) {
-            allTestCaseGroups.push(pop);
-          }
+      testCases
+        ?.filter((tc) => tc.validResource)
+        .forEach((testCase) => {
+          testCase.groupPopulations?.forEach((pop) => {
+            if (
+              !allTestCaseGroups.find((group) => group.groupId === pop.groupId)
+            ) {
+              allTestCaseGroups.push(pop);
+            }
+          });
         });
-      });
       setTestCaseGroups(allTestCaseGroups);
     }
   }, [testCases]);
