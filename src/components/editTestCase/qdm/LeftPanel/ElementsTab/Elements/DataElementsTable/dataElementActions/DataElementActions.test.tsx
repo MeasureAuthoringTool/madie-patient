@@ -5,6 +5,7 @@ import userEvent from "@testing-library/user-event";
 
 const mockOnDelete = jest.fn();
 const mockOnView = jest.fn();
+const mockOnClone = jest.fn();
 
 describe("DatElementActions", () => {
   afterEach(() => {
@@ -19,6 +20,7 @@ describe("DatElementActions", () => {
         onDelete={mockOnDelete}
         onView={mockOnView}
         canEdit={false}
+        onClone={mockOnClone}
       />
     );
 
@@ -36,6 +38,7 @@ describe("DatElementActions", () => {
         onDelete={mockOnDelete}
         onView={mockOnView}
         canEdit={true}
+        onClone={mockOnClone}
       />
     );
 
@@ -48,6 +51,29 @@ describe("DatElementActions", () => {
     expect(mockOnView).toHaveBeenCalledTimes(1);
   });
 
+  it("Should display the clone option to the user and calls onClone when clicked", async () => {
+    render(
+      <DataElementActions
+        elementId={"exampleId"}
+        canView={true}
+        onDelete={mockOnDelete}
+        onView={mockOnView}
+        canEdit={true}
+        onClone={mockOnClone}
+      />
+    );
+
+    const viewButton = screen.getByRole("button", { name: "View" });
+    expect(viewButton).toBeInTheDocument();
+    userEvent.click(viewButton);
+    const popOver = await screen.findByTestId("popover-content");
+    const cloneButton = within(popOver).getByRole("button", {
+      name: "Clone",
+    });
+    userEvent.click(cloneButton);
+    expect(mockOnClone).toHaveBeenCalledTimes(1);
+  });
+
   it("Should display the delete button if the user is owner and deletes a dataElement when clicked", async () => {
     render(
       <DataElementActions
@@ -56,6 +82,7 @@ describe("DatElementActions", () => {
         onDelete={mockOnDelete}
         onView={mockOnView}
         canEdit={true}
+        onClone={mockOnClone}
       />
     );
 

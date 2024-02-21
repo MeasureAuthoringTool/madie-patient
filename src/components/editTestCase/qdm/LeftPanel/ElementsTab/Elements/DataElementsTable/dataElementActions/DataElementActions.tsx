@@ -10,10 +10,11 @@ type DataElementActionsProps = {
   onDelete: Function;
   onView: Function;
   canEdit: boolean;
+  onClone: Function;
 };
 
 export default function DataElementActions(props: DataElementActionsProps) {
-  const { elementId, canView, onDelete, onView, canEdit } = props;
+  const { elementId, canView, onDelete, onView, canEdit, onClone } = props;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -26,22 +27,32 @@ export default function DataElementActions(props: DataElementActionsProps) {
     }
   };
 
-  const handleClose = () => {
+  const handlePopOverClose = () => {
     setAnchorEl(null);
   };
 
   const deleteDataElement = () => {
-    handleClose();
+    handlePopOverClose();
     onDelete(elementId);
   };
 
-  const deleteElement = canEdit
-    ? {
-        label: "Delete",
-        toImplementFunction: deleteDataElement,
-        dataTestId: `delete-element-${elementId}`,
-      }
-    : {};
+  const additionalActions = canEdit
+    ? [
+        {
+          label: "Clone",
+          toImplementFunction: () => {
+            handlePopOverClose();
+            onClone();
+          },
+          dataTestId: `clone-element-${elementId}`,
+        },
+        {
+          label: "Delete",
+          toImplementFunction: deleteDataElement,
+          dataTestId: `delete-element-${elementId}`,
+        },
+      ]
+    : [];
 
   return (
     <div>
@@ -73,7 +84,7 @@ export default function DataElementActions(props: DataElementActionsProps) {
         id={`view-element-menu-${elementId}`}
         anchorEl={anchorEl}
         optionsOpen={open}
-        handleClose={handleClose}
+        handleClose={handlePopOverClose}
         canEdit={true}
         editSelectOptionProps={{
           label: "Edit",
@@ -82,7 +93,7 @@ export default function DataElementActions(props: DataElementActionsProps) {
           },
           dataTestId: `edit-element-${elementId}`,
         }}
-        additionalSelectOptionProps={[deleteElement]}
+        additionalSelectOptionProps={additionalActions}
       />
     </div>
   );
