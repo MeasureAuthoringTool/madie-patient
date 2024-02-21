@@ -83,7 +83,6 @@ const CoverageTabList = ({
           (s) => s.relevance === "NA" && s.type !== "FunctionDef"
         );
       }
-
       if (definition === "Functions") {
         return statementResults.filter((s) => s.type === "FunctionDef");
       }
