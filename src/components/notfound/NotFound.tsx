@@ -7,7 +7,6 @@ const NotFound = () => {
   return (
     <div data-testid="404-page">
       <h6 style={{ textAlign: "center" }}>404 - Not Found!</h6>
-
       <GoHomeLink>
         <Link to="/measures" data-testid="404-page-link">
           Go Home
