@@ -23,6 +23,7 @@ interface DataElementTableProps {
   canEdit: boolean;
   onDelete?: (id: string) => void;
   allowedTypes: object;
+  onClone: (dataElement: DataElement) => void;
 }
 
 interface ElementAttributeEntry {
@@ -44,6 +45,7 @@ const DataElementTable = ({
   canEdit,
   onView,
   allowedTypes,
+  onClone,
 }: DataElementTableProps) => {
   const { cqmMeasureState } = useQdmExecutionContext();
   const [codeSystemMap, setCodeSystemMap] = useState({});
@@ -112,7 +114,6 @@ const DataElementTable = ({
       setAttributeColumns(attributeColumns);
     }
   }, [codeSystemMap, dataElements]);
-
   // Generating columns required for the table
   useEffect(() => {
     const columns = [
@@ -150,6 +151,7 @@ const DataElementTable = ({
               onView={() => {
                 onView && onView(el);
               }}
+              onClone={() => onClone(el)}
             />
           );
         },
