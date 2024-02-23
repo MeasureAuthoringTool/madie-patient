@@ -9,7 +9,7 @@ import {
   TestCaseImportRequest,
   TestCaseImportOutcome,
 } from "@madie/madie-models";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import calculationService from "../../../api/CalculationService";
 import {
   CalculationOutput,
@@ -25,7 +25,6 @@ import {
   MadieSpinner,
   Toast,
 } from "@madie/madie-design-system/dist/react";
-import TestCaseListSideBarNav from "../common/TestCaseListSideBarNav";
 import Typography from "@mui/material/Typography";
 import TestCaseImportFromBonnieDialog from "../common/import/TestCaseImportFromBonnieDialog";
 import {
@@ -70,7 +69,10 @@ export const getCoverageValueFromHtml = (
 
 const TestCaseList = (props: TestCaseListProps) => {
   const { setErrors, setWarnings } = props;
-  const { measureId } = useParams<{ measureId: string }>();
+  const { measureId, criteriaId } = useParams<{
+    measureId: string;
+    criteriaId: string;
+  }>();
   const {
     testCases,
     setTestCases,
@@ -91,6 +93,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     setToastType,
     onToastClose,
   } = UseToast();
+  let navigate = useNavigate();
 
   const [executionResults, setExecutionResults] = useState<{
     [key: string]: DetailedPopulationGroupResult[];
@@ -142,6 +145,8 @@ const TestCaseList = (props: TestCaseListProps) => {
         _.isNil(measure.groups?.find((g) => g.id === selectedPopCriteria.id)))
     ) {
       setSelectedPopCriteria(measure.groups[0]);
+      const newPath = `/measures/${measureId}/edit/test-cases/list-page/${measure.groups[0].id}`;
+      navigate(newPath, { replace: true }); // update route
       if (
         measure?.errors?.length > 0 &&
         (measure.errors.includes(
@@ -158,6 +163,15 @@ const TestCaseList = (props: TestCaseListProps) => {
       }
     }
   }, [measure]);
+
+  useEffect(() => {
+    if (criteriaId && measure?.groups?.length) {
+      const selectedPopCriteria = measure.groups?.find(
+        (g) => g.id === criteriaId
+      );
+      setSelectedPopCriteria(selectedPopCriteria);
+    }
+  }, [criteriaId, measure?.groups]);
 
   useEffect(() => {
     setCanEdit(
@@ -458,15 +472,7 @@ const TestCaseList = (props: TestCaseListProps) => {
   };
 
   return (
-    <div
-      tw="grid lg:grid-cols-6 gap-4 mx-8 my-6 shadow-lg rounded-md border bg-white"
-      style={{
-        marginTop: 16,
-        borderColor: "#8c8c8c",
-        borderRadius: 3,
-        overflow: "hidden",
-      }}
-    >
+    <div>
       {!loadingState.loading && (
         <>
           <Toast
@@ -483,13 +489,6 @@ const TestCaseList = (props: TestCaseListProps) => {
             autoHideDuration={6000}
             closeButtonProps={{
               "data-testid": "close-error-button",
-            }}
-          />
-          <TestCaseListSideBarNav
-            allPopulationCriteria={measure?.groups}
-            selectedPopulationCriteria={selectedPopCriteria}
-            onChange={(populationCriteria) => {
-              setSelectedPopCriteria(populationCriteria);
             }}
           />
           <div tw="lg:col-span-5 pl-2 pr-2">
