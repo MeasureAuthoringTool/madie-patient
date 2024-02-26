@@ -21,7 +21,7 @@ const CoverageTab = ({ definition, definitionResults }: Props) => {
     return [parse(`<pre><code>${coverageResult.html}</code></pre>`)];
   };
   return definition !== "Functions" &&
-    definition !== "Used" &&
+    definition !== "Definitions" &&
     definition !== "Unused" ? (
     <div
       style={{ maxWidth: "1300px" }}
