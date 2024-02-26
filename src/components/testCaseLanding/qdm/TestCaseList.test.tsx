@@ -2070,13 +2070,13 @@ describe("TestCaseList component", () => {
     expect(allAccordions[0]).toBeInTheDocument();
     const firstAccordion = await screen.queryByText("Initial Population");
     expect(firstAccordion).toBeInTheDocument();
-    const usedDefinitionAccordion = await screen.queryByText("Used");
-    expect(usedDefinitionAccordion).toBeInTheDocument();
+    const definitionsAccordion = await screen.queryByText("Definitions");
+    expect(definitionsAccordion).toBeInTheDocument();
     const unUsedDefinitionAccordion = await screen.queryByText("Unused");
     expect(unUsedDefinitionAccordion).toBeInTheDocument();
     const functionsAccordion = await screen.queryByText("Functions");
     expect(functionsAccordion).toBeInTheDocument();
-    userEvent.click(screen.getByTestId("Used-definition"));
+    userEvent.click(screen.getByTestId("Definitions-definition"));
     expect(await screen.getByText("No Results Available")).toBeInTheDocument();
 
     const executeAllTestCasesButton = screen.getByRole("button", {
@@ -2085,9 +2085,11 @@ describe("TestCaseList component", () => {
 
     userEvent.click(executeAllTestCasesButton);
 
-    userEvent.click(screen.getByTestId("Used-definition"));
+    userEvent.click(screen.getByTestId("Definitions-definition"));
     await waitFor(() => {
-      expect(screen.getByTestId("Used-definition-text")).toBeInTheDocument();
+      expect(
+        screen.getByTestId("Definitions-definition-text")
+      ).toBeInTheDocument();
     });
     userEvent.click(screen.getByTestId("Unused-definition"));
     await waitFor(() => {

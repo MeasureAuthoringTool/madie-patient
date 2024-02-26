@@ -8,7 +8,7 @@ interface Props {
 import { Accordion } from "@madie/madie-design-system/dist/react";
 import parse from "html-react-parser";
 import { StatementCoverageResult } from "../../../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
-import { isNil } from "lodash";
+import _, { isNil } from "lodash";
 import "twin.macro";
 import "styled-components/macro";
 
@@ -21,7 +21,7 @@ const CoverageTab = ({ definition, definitionResults }: Props) => {
     return [parse(`<pre><code>${coverageResult.html}</code></pre>`)];
   };
   return definition !== "Functions" &&
-    definition !== "Used" &&
+    definition !== "Definitions" &&
     definition !== "Unused" ? (
     <div
       style={{ maxWidth: "1300px" }}
@@ -39,12 +39,12 @@ const CoverageTab = ({ definition, definitionResults }: Props) => {
       data-testid={`${definition}-definition`}
     >
       <Accordion title={definition} isOpen={false}>
-        {definitionResults ? (
+        {!_.isEmpty(definitionResults) ? (
           <div data-testId={`${definition}-definition-text`}>
             {definitionResults.map((results) => getCoverageResult(results))}
           </div>
         ) : (
-          "No Results Available"
+          <pre>No results available</pre>
         )}
       </Accordion>
     </div>

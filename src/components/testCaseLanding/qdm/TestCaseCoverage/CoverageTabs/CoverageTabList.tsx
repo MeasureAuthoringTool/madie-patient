@@ -15,7 +15,7 @@ interface Props {
   measureGroups: any;
 }
 
-const allDefinitions = ["Used", "Functions", "Unused"];
+const allDefinitions = ["Definitions", "Functions", "Unused"];
 
 const CoverageTabList = ({
   measureGroups,
@@ -69,7 +69,7 @@ const CoverageTabList = ({
 
   const getStatementResultsInCategory = (statementResults, definition) => {
     if (statementResults) {
-      if (definition === "Used") {
+      if (definition === "Definitions") {
         // must also filter out all definitions for other populations such as Initial, Num, Denom so they appear in only one place
         return statementResults.filter(
           (s) =>
@@ -122,7 +122,7 @@ const CoverageTabList = ({
       {/* 
         everything besides initial population.  
         allDefinitions are not cql definitions. 
-        const allDefinitions = ["Used", "Functions", "Unused"];
+        const allDefinitions = ["Definitions", "Functions", "Unused"];
       */}
       {allDefinitions.map((definition, i) => {
         return (
