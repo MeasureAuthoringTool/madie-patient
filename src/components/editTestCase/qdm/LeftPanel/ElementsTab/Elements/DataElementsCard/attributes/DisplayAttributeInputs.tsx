@@ -288,6 +288,7 @@ const DisplayAttributeInputs = ({
               variant="outline-filled"
               data-testid="add-attribute-button"
               onClick={handleAttributeChange}
+              disabled={!attributeValue}
             >
               Add
             </Button>
