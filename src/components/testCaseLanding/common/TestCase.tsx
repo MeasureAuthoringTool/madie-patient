@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CancelIcon from "@mui/icons-material/Cancel";
 import Popover from "@mui/material/Popover";
@@ -225,7 +225,7 @@ const TestCase = ({
               aria-label={`${viewOrEdit}-test-case-${testCase.title}`}
               data-testid={`view-edit-test-case-${testCase.id}`}
               onClick={() => {
-                navigate(`./${testCase.id}`);
+                navigate(`../../${testCase.id}`, { relative: "path" });
                 setOptionsOpen(false);
               }}
             >

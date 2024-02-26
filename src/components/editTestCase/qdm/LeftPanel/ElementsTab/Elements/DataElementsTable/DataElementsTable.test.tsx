@@ -140,6 +140,7 @@ const allowedTypes = {
 
 const mockOnView = jest.fn();
 const mockOnDelete = jest.fn();
+const mockOnClone = jest.fn();
 
 const renderDataElementsTable = (dataElements, onDelete, onView) => {
   return render(
@@ -160,6 +161,7 @@ const renderDataElementsTable = (dataElements, onDelete, onView) => {
           onView={onView}
           allowedTypes={allowedTypes}
           canEdit={true}
+          onClone={mockOnClone}
         />
       </QdmPatientProvider>
     </QdmExecutionContextProvider>
