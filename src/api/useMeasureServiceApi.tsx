@@ -26,6 +26,14 @@ export class MeasureServiceApi {
       );
     }
   }
+
+  async updateMeasure(measure: Measure): Promise<Response> {
+    return await axios.put(`${this.baseUrl}/measures/${measure.id}`, measure, {
+      headers: {
+        Authorization: `Bearer ${this.getAccessToken()}`,
+      },
+    });
+  }
 }
 
 export default function useMeasureServiceApi(): MeasureServiceApi {
