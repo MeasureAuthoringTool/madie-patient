@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import IdentifierInput from "../../../../../../../common/Identifier/IdentifierInput";
-import cqmModels, { Identifier } from "cqm-models";
+import cqmModels from "cqm-models";
 import StringInput from "../../../../../../../common/string/StringInput";
 import CodeInput from "../../../../../../../common/codeInput/CodeInput";
 import _ from "lodash";
@@ -18,20 +18,50 @@ const QdmEntity = ({
   attributeType,
   valueSets,
 }) => {
+  const [identifier, setIdentifier] = useState({
+    namingSystem: undefined,
+    value: undefined,
+  });
+  const [id, setId] = useState();
+  const [field, setField] = useState();
+  const [code, setCode] = useState();
+  const [role, setRole] = useState();
+  const [specialty, setSpecialty] = useState();
+  const [qualification, setQualification] = useState();
+
   useEffect(() => {
-    if (attributeType) {
+    if (attributeType && identifier.namingSystem && identifier.value && id) {
       const newAttribute = new cqmModels[attributeType]();
-      newAttribute["id"] = null;
-      setAttributeValue(newAttribute);
+      newAttribute["id"] = id;
+      newAttribute["identifier"] = identifier;
+      newAttribute[field] = code;
+      newAttribute["role"] = role;
+      newAttribute["specialty"] = specialty;
+      newAttribute["qualification"] = qualification;
+      if (attributeType === "PatientEntity") {
+        setAttributeValue(newAttribute);
+      } else if (attributeType !== "Practitioner" && code) {
+        setAttributeValue(newAttribute);
+      } else if (role && specialty && qualification) {
+        setAttributeValue(newAttribute);
+      }
     }
-  }, [attributeType]);
+  }, [attributeType, identifier, id, code, role, specialty, qualification]);
 
   const handleChange = (field, value) => {
-    const entityClass = cqmModels[attributeType];
-    if (entityClass && attributeValue) {
-      const nextEntity = new entityClass(attributeValue);
-      nextEntity[field] = value;
-      setAttributeValue(nextEntity);
+    if (field === "identifier") {
+      setIdentifier(value);
+    } else if (field === "id") {
+      setId(value);
+    } else if (field === "role") {
+      setRole(value);
+    } else if (field === "specialty") {
+      setSpecialty(value);
+    } else if (field === "qualification") {
+      setQualification(value);
+    } else {
+      setField(field);
+      setCode(value);
     }
   };
 
@@ -71,17 +101,10 @@ const QdmEntity = ({
           <div tw="mt-4">
             <IdentifierInput
               onIdentifierChange={(val) => {
-                handleChange("identifier", new Identifier(val));
+                handleChange("identifier", val);
               }}
               canEdit={true}
-              identifier={{
-                namingSystem: attributeValue?.identifier?.namingSystem
-                  ? attributeValue?.identifier?.namingSystem
-                  : "",
-                value: attributeValue?.identifier?.value
-                  ? attributeValue?.identifier?.value
-                  : "",
-              }}
+              identifier={identifier}
             />
           </div>
           <div tw="mt-4">
@@ -89,7 +112,7 @@ const QdmEntity = ({
               label="Id"
               title="Id"
               canEdit={true}
-              fieldValue={attributeValue?.id}
+              fieldValue={id}
               onStringValueChange={(val) => {
                 handleChange("id", val);
               }}
