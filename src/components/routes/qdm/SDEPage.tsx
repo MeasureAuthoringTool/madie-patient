@@ -9,6 +9,7 @@ import { useFormik, useFormikContext } from "formik";
 import { Measure } from "@madie/madie-models";
 import { measureStore, routeHandlerStore } from "@madie/madie-util";
 import useMeasureServiceApi from "../../../api/useMeasureServiceApi";
+import "./SDEPage.scss";
 
 interface SDEForm {
   sdeIncluded: string;
@@ -117,82 +118,87 @@ const SDEPage = () => {
       data-testid={`sde-form`}
       style={{ minHeight: 539 }}
     >
-      <div data-testId="sde-page">
-        <RadioButton
-          row
-          id="sde-option"
-          dataTestId="sde-option"
-          label="Include Supplemental Data"
-          required
-          options={[
-            { label: "Yes", value: true },
-            { label: "No", value: false },
-          ]}
-          value={formik.values.sdeIncluded}
-          onChange={(e) => {
-            const nextSdeIncluded = e.target.value;
-            formik.setFieldValue("sdeIncluded", nextSdeIncluded);
+      <div className="content">
+        <div className="subTitle">
+          <h2>SDE</h2>
+        </div>
+        <div className="sde-page" data-testId="sde-page">
+          <RadioButton
+            row
+            id="sde-option"
+            dataTestId="sde-option"
+            label="Include Supplemental Data"
+            required
+            options={[
+              { label: "Yes", value: true },
+              { label: "No", value: false },
+            ]}
+            value={formik.values.sdeIncluded}
+            onChange={(e) => {
+              const nextSdeIncluded = e.target.value;
+              formik.setFieldValue("sdeIncluded", nextSdeIncluded);
+            }}
+            error={
+              formik.touched.sdeIncluded && Boolean(formik.errors.sdeIncluded)
+            }
+            helperText={
+              formik.touched.sdeIncluded &&
+              Boolean(formik.errors.sdeIncluded) &&
+              formik.errors.sdeIncluded
+            }
+          />
+        </div>
+        <div
+          className="form-actions"
+          style={{ display: "flex", float: "right", paddingRight: 16 }}
+        >
+          <Button
+            variant="outline"
+            disabled={!formik.dirty}
+            data-testid="cancel-button"
+            onClick={onCancel}
+            style={{ marginTop: 20, float: "right", marginRight: 32 }}
+          >
+            Discard Changes
+          </Button>
+          <Button
+            disabled={!(formik.isValid && formik.dirty)}
+            type="submit"
+            variant="cyan"
+            data-testid={`sde-save`}
+            style={{ marginTop: 20, float: "right" }}
+          >
+            Save
+          </Button>
+        </div>
+        <Toast
+          toastKey="sde-toast"
+          aria-live="polite"
+          toastType={toastType}
+          testId={
+            toastType === "danger"
+              ? "edit-sde-generic-error-text"
+              : "edit-sde-success-text"
+          }
+          open={toastOpen}
+          message={toastMessage}
+          onClose={onToastClose}
+          autoHideDuration={10000}
+          closeButtonProps={{
+            "data-testid": "close-error-button",
           }}
-          error={
-            formik.touched.sdeIncluded && Boolean(formik.errors.sdeIncluded)
-          }
-          helperText={
-            formik.touched.sdeIncluded &&
-            Boolean(formik.errors.sdeIncluded) &&
-            formik.errors.sdeIncluded
-          }
+        />
+        <MadieDiscardDialog
+          open={discardDialogOpen}
+          onContinue={() => {
+            resetForm();
+            setDiscardDialogOpen(false);
+          }}
+          onClose={() => {
+            setDiscardDialogOpen(false);
+          }}
         />
       </div>
-      <div
-        className="form-actions"
-        style={{ display: "flex", float: "right", paddingRight: 32 }}
-      >
-        <Button
-          variant="outline"
-          disabled={!formik.dirty}
-          data-testid="cancel-button"
-          onClick={onCancel}
-          style={{ marginTop: 20, float: "right", marginRight: 32 }}
-        >
-          Discard Changes
-        </Button>
-        <Button
-          disabled={!(formik.isValid && formik.dirty)}
-          type="submit"
-          variant="cyan"
-          data-testid={`sde-save`}
-          style={{ marginTop: 20, float: "right" }}
-        >
-          Save
-        </Button>
-      </div>
-      <Toast
-        toastKey="sde-toast"
-        aria-live="polite"
-        toastType={toastType}
-        testId={
-          toastType === "danger"
-            ? "edit-sde-generic-error-text"
-            : "edit-sde-success-text"
-        }
-        open={toastOpen}
-        message={toastMessage}
-        onClose={onToastClose}
-        autoHideDuration={10000}
-        closeButtonProps={{
-          "data-testid": "close-error-button",
-        }}
-      />
-      <MadieDiscardDialog
-        open={discardDialogOpen}
-        onContinue={() => {
-          resetForm();
-          setDiscardDialogOpen(false);
-        }}
-        onClose={() => {
-          setDiscardDialogOpen(false);
-        }}
-      />
     </form>
   );
 };
