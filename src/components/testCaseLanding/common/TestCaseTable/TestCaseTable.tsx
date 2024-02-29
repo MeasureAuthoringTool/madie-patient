@@ -23,9 +23,6 @@ import "../TestCase.scss";
 interface TestCaseTableProps {
   testCases: TestCase[];
   canEdit: boolean;
-  executionResults: {
-    [key: string]: DetailedPopulationGroupResult[];
-  };
   deleteTestCase: Function;
   exportTestCase: Function;
   onCloneTestCase?: (testCase: TestCase) => void;
@@ -36,7 +33,6 @@ const TestCaseTable = (props: TestCaseTableProps) => {
   const {
     testCases,
     canEdit,
-    executionResults,
     deleteTestCase,
     exportTestCase,
     onCloneTestCase,
@@ -184,7 +180,11 @@ const TestCaseTable = (props: TestCaseTableProps) => {
       </thead>
       <tbody className="table-body" style={{ padding: 20 }}>
         {table.getRowModel().rows.map((row) => (
-          <tr key={row.id} className="tcl-tr">
+          <tr
+            key={row.id}
+            className="tcl-tr"
+            data-testid={`test-case-row-${row.id}`}
+          >
             {row.getVisibleCells().map((cell) => (
               <td key={cell.id} data-testid={`test-case-title-${cell.id}`}>
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -332,6 +332,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
         </div>
       </Popover>
 
+      {/* This sees to have gotten disconnected at some point in the past. */}
       <Toast
         toastKey="test-case-action-toast"
         aria-live="polite"

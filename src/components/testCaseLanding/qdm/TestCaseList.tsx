@@ -111,7 +111,6 @@ const TestCaseList = (props: TestCaseListProps) => {
     useState<CqmExecutionResultsByPatient>();
   const [executeAllTestCases, setExecuteAllTestCases] =
     useState<boolean>(false);
-  // const [coverageHTML, setCoverageHTML] = useState<Record<string, string>>();
   const [coveragePercentage, setCoveragePercentage] = useState<string>("-");
   const [openDeleteAllTestCasesDialog, setOpenDeleteAllTestCasesDialog] =
     useState<boolean>(false);
@@ -532,7 +531,6 @@ const TestCaseList = (props: TestCaseListProps) => {
                       <TestCaseTable
                         testCases={testCases}
                         canEdit={canEdit}
-                        executionResults={executionResults}
                         deleteTestCase={deleteTestCase}
                         exportTestCase={null}
                         onCloneTestCase={handleCloneTestCase}

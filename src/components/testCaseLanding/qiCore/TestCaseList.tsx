@@ -553,7 +553,6 @@ const TestCaseList = (props: TestCaseListProps) => {
                       <TestCaseTable
                         testCases={testCases}
                         canEdit={canEdit}
-                        executionResults={executionResults}
                         deleteTestCase={deleteTestCase}
                         exportTestCase={exportTestCase}
                         measure={measure}
