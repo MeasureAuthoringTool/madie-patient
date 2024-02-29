@@ -3,22 +3,11 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import TestCaseTable from "./TestCaseTable";
 import {
-  ApiContextProvider,
-  ServiceConfig,
-} from "../../../../api/ServiceContext";
-import { ExecutionContextProvider } from "../../../routes/qiCore/ExecutionContext";
-import {
   Measure,
   MeasureScoring,
   PopulationType,
   TestCase,
 } from "@madie/madie-models";
-import {
-  buildMeasureBundle,
-  getExampleValueSet,
-} from "../../../../util/CalculationTestHelpers";
-import { simpleMeasureFixture } from "../../../createTestCase/__mocks__/simpleMeasureFixture";
-
 const testCase = {
   id: "ID",
   title: "TEST IPP",
@@ -50,20 +39,6 @@ const testCaseInvalid = {
 } as unknown as TestCase;
 
 const testCases = [testCase, testCaseFail, testCaseNA, testCaseInvalid];
-const serviceConfig: ServiceConfig = {
-  measureService: {
-    baseUrl: "measure.url",
-  },
-  testCaseService: {
-    baseUrl: "base.url",
-  },
-  terminologyService: {
-    baseUrl: "something.com",
-  },
-  elmTranslationService: {
-    baseUrl: "",
-  },
-};
 
 const defaultMeasure = {
   id: "m1234",
@@ -90,15 +65,6 @@ const defaultMeasure = {
   model: "QI-Core v4.1.1",
   acls: [{ userId: "othertestuser@example.com", roles: ["SHARED_WITH"] }],
 } as unknown as Measure;
-
-const qdmMeasure = { ...defaultMeasure, model: "QDM v5.6" };
-
-const measureBundle = buildMeasureBundle(simpleMeasureFixture);
-const valueSets = [getExampleValueSet()];
-const setMeasure = jest.fn();
-const setMeasureBundle = jest.fn();
-const setValueSets = jest.fn();
-const setError = jest.fn();
 
 let mockApplyDefaults = false;
 jest.mock("@madie/madie-util", () => ({
