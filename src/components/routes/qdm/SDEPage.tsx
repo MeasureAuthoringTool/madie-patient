@@ -44,8 +44,7 @@ const SDEPage = () => {
 
   const formik = useFormik({
     initialValues: {
-      sdeIncluded:
-        String(measure?.testCaseConfiguration?.sdeIncluded) || "false",
+      sdeIncluded: measure?.testCaseConfiguration?.sdeIncluded || false,
     },
     enableReinitialize: true,
     onSubmit: async () => await handleSubmit(),
@@ -78,7 +77,7 @@ const SDEPage = () => {
     const newMeasure: Measure = {
       ...measure,
       testCaseConfiguration: {
-        sdeIncluded: formik.values.sdeIncluded === "true",
+        sdeIncluded: formik.values.sdeIncluded,
       },
     };
 
