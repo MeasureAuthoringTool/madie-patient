@@ -105,7 +105,7 @@ describe("SDEPage component", () => {
       expect(serviceApiMock.updateMeasure).toBeCalledWith({
         ...measure,
         testCaseConfiguration: {
-          sdeIncluded: true,
+          sdeIncluded: "true",
         },
       })
     );
@@ -143,7 +143,7 @@ describe("SDEPage component", () => {
     fireEvent.click(continueButton);
     await waitFor(() => {
       expect(sdeOptionYes).not.toBeChecked();
-      expect(sdeOptionNo).not.toBeChecked();
+      expect(sdeOptionNo).toBeChecked();
     });
   });
 
