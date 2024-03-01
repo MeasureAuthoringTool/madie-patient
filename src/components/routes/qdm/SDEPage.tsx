@@ -7,7 +7,11 @@ import {
 } from "@madie/madie-design-system/dist/react";
 import { useFormik, useFormikContext } from "formik";
 import { Measure } from "@madie/madie-models";
-import { measureStore, routeHandlerStore } from "@madie/madie-util";
+import {
+  measureStore,
+  checkUserCanEdit,
+  routeHandlerStore,
+} from "@madie/madie-util";
 import useMeasureServiceApi from "../../../api/useMeasureServiceApi";
 import "./SDEPage.scss";
 
@@ -24,8 +28,6 @@ const SDEPage = () => {
   const [toastOpen, setToastOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>("");
   const [toastType, setToastType] = useState<string>("danger");
-  const [currentSdeIncluded, setCurrentSdeIncluded] =
-    useState<boolean>(undefined);
 
   useEffect(() => {
     const subscription = measureStore.subscribe(setMeasure);
@@ -34,19 +36,19 @@ const SDEPage = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (measure && measure.testConfiguration) {
-      setCurrentSdeIncluded(measure.testCaseConfiguration.sdeIncluded);
-    }
-  }, [measure]);
+  const canEdit = checkUserCanEdit(
+    measure?.measureSet?.owner,
+    measure?.measureSet?.acls,
+    measure?.measureMetaData?.draft
+  );
 
   const formik = useFormik({
     initialValues: {
       sdeIncluded:
-        String(measure?.testCaseConfiguration?.sdeIncluded) || "true",
+        String(measure?.testCaseConfiguration?.sdeIncluded) || "false",
     },
     enableReinitialize: true,
-    onSubmit: async (values: SDEForm) => await handleSubmit(),
+    onSubmit: async () => await handleSubmit(),
   });
   const { resetForm } = formik;
 
@@ -73,14 +75,6 @@ const SDEPage = () => {
   };
 
   const handleSubmit = async () => {
-    if (
-      currentSdeIncluded != undefined &&
-      formik.values.sdeIncluded !== String(currentSdeIncluded)
-    ) {
-      setCurrentSdeIncluded(formik.values.sdeIncluded === "true");
-      return;
-    }
-
     const newMeasure: Measure = {
       ...measure,
       testCaseConfiguration: {
@@ -98,7 +92,6 @@ const SDEPage = () => {
         );
         // updating measure will propagate update state site wide.
         updateMeasure(newMeasure);
-        setCurrentSdeIncluded(newMeasure.testCaseConfiguration.sdeIncluded);
       })
       // update to alert
       .catch((err) => {
@@ -138,39 +131,34 @@ const SDEPage = () => {
               const nextSdeIncluded = e.target.value;
               formik.setFieldValue("sdeIncluded", nextSdeIncluded);
             }}
-            error={
-              formik.touched.sdeIncluded && Boolean(formik.errors.sdeIncluded)
-            }
-            helperText={
-              formik.touched.sdeIncluded &&
-              Boolean(formik.errors.sdeIncluded) &&
-              formik.errors.sdeIncluded
-            }
+            disabled={!canEdit}
           />
         </div>
-        <div
-          className="form-actions"
-          style={{ display: "flex", float: "right", paddingRight: 16 }}
-        >
-          <Button
-            variant="outline"
-            disabled={!formik.dirty}
-            data-testid="cancel-button"
-            onClick={onCancel}
-            style={{ marginTop: 20, float: "right", marginRight: 32 }}
+        {canEdit && (
+          <div
+            className="form-actions"
+            style={{ display: "flex", float: "right", paddingRight: 16 }}
           >
-            Discard Changes
-          </Button>
-          <Button
-            disabled={!(formik.isValid && formik.dirty)}
-            type="submit"
-            variant="cyan"
-            data-testid={`sde-save`}
-            style={{ marginTop: 20, float: "right" }}
-          >
-            Save
-          </Button>
-        </div>
+            <Button
+              variant="outline"
+              disabled={!formik.dirty}
+              data-testid="cancel-button"
+              onClick={onCancel}
+              style={{ marginTop: 20, float: "right", marginRight: 32 }}
+            >
+              Discard Changes
+            </Button>
+            <Button
+              disabled={!(formik.isValid && formik.dirty)}
+              type="submit"
+              variant="cyan"
+              data-testid={`sde-save`}
+              style={{ marginTop: 20, float: "right" }}
+            >
+              Save
+            </Button>
+          </div>
+        )}
         <Toast
           toastKey="sde-toast"
           aria-live="polite"
