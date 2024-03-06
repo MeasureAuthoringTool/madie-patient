@@ -106,10 +106,7 @@ const SDEPage = () => {
   return (
     <form
       id="sde-form"
-      onSubmit={(e) => {
-        e.preventDefault();
-        handleSubmit();
-      }}
+      onSubmit={formik.handleSubmit}
       data-testid={`sde-form`}
       style={{ minHeight: 539 }}
     >
