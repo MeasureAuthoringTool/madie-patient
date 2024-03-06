@@ -9,7 +9,7 @@ import {
   TestCaseImportOutcome,
   TestCaseImportRequest,
 } from "@madie/madie-models";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, json } from "react-router-dom";
 import calculationService from "../../../api/CalculationService";
 import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calculator";
 import { checkUserCanEdit, measureStore } from "@madie/madie-util";
@@ -41,6 +41,7 @@ import {
   buildHighlightingForAllGroups,
 } from "../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
 import { uniqWith } from "lodash";
+import getModelFamily from "../../../util/measureModelHelpers";
 
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
@@ -458,6 +459,40 @@ const TestCaseList = (props: TestCaseListProps) => {
     }
   };
 
+  const downloadZipFile = (exportData, ecqmTitle, model, version) => {
+    var myblob = new Blob([exportData], {
+      type: "text/plain",
+    });
+    const url = window.URL.createObjectURL(myblob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute(
+      "download",
+      `${ecqmTitle}-v${version}-${getModelFamily(model)}-TestCases.zip`
+    );
+    document.body.appendChild(link);
+    link.click();
+    setToastOpen(true);
+    setToastType("success");
+    setToastMessage("QRDA exported successfully");
+    document.body.removeChild(link);
+  };
+
+  const exportQRDA = async () => {
+    try {
+      const exportData = await testCaseService.current.exportQRDA(measureId);
+      downloadZipFile(
+        exportData,
+        measure.ecqmTitle,
+        measure.model,
+        measure.version
+      );
+    } catch (err) {
+      const message = "Unable to Export QRDA.";
+      setErrors((prevState) => [...prevState, message]);
+    }
+  };
+
   return (
     <div>
       {!loadingState.loading && (
@@ -501,6 +536,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                 onDeleteAllTestCases={() =>
                   setOpenDeleteAllTestCasesDialog(true)
                 }
+                onExportQRDA={() => exportQRDA()}
               />
             </div>
             <CreateNewTestCaseDialog open={createOpen} onClose={handleClose} />

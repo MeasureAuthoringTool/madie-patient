@@ -288,6 +288,18 @@ export class TestCaseServiceApi {
     };
     fileReader.readAsText(file);
   }
+
+  async exportQRDA(measureId: string): Promise<Blob> {
+    const response = await axios.get(
+      `${this.baseUrl}/measures/${measureId}/qdm/qrda`,
+      {
+        headers: {
+          Authorization: `Bearer ${this.getAccessToken()}`,
+        },
+      }
+    );
+    return response.data;
+  }
 }
 
 const useTestCaseServiceApi = (): TestCaseServiceApi => {

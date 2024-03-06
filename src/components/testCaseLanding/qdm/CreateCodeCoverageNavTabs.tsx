@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Button, Tabs, Tab } from "@madie/madie-design-system/dist/react";
+import {
+  Button,
+  Tabs,
+  Tab,
+  Popover,
+} from "@madie/madie-design-system/dist/react";
 import AddIcon from "@mui/icons-material/Add";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import * as _ from "lodash";
@@ -17,6 +22,7 @@ import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
 import RunTestButton from "../common/runTestsButton/RunTestsButton";
 import { disableRunTestButtonText } from "../../../util/Utils";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 export interface NavTabProps {
   activeTab: string;
@@ -32,6 +38,7 @@ export interface NavTabProps {
   validTestCases: TestCase[];
   selectedPopCriteria: Group;
   onDeleteAllTestCases: () => void;
+  onExportQRDA: () => void;
 }
 
 const defaultStyle = {
@@ -63,11 +70,15 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     validTestCases,
     selectedPopCriteria,
     onDeleteAllTestCases,
+    onExportQRDA,
   } = props;
 
   const featureFlags = useFeatureFlags();
   const [shouldDisableRunTestsButton, setShouldDisableRunTestsButton] =
     useState(false);
+  const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+
   useEffect(() => {
     if (featureFlags?.disableRunTestCaseWithObservStrat) {
       const groups: Group[] = measure?.groups;
@@ -121,6 +132,17 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     measure?.groups.length === 0 ||
     _.isEmpty(validTestCases) ||
     contextFailure;
+
+  const handleOpen = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    setOptionsOpen(true);
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setOptionsOpen(false);
+    setAnchorEl(null);
+  };
 
   return (
     <>
@@ -202,6 +224,34 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
             isExecutionContextReady={executionContextReady}
             onRunTests={executeTestCases}
             shouldDisableRunTestsButton={shouldDisableRunTestsButton}
+          />
+          {featureFlags?.qrdaExport && (
+            <Button
+              onClick={(e) => {
+                if (onExportQRDA) {
+                  handleOpen(e);
+                }
+              }}
+              disabled={!canEdit}
+              data-testid="show-export-test-cases-button"
+            >
+              Export Test Cases
+              <ExpandMoreIcon
+                style={{ margin: "0 5px 0 5px" }}
+                fontSize="small"
+              />
+            </Button>
+          )}
+          <Popover
+            optionsOpen={optionsOpen}
+            anchorEl={anchorEl}
+            handleClose={handleClose}
+            canEdit={canEdit}
+            editViewSelectOptionProps={{
+              label: "QRDA",
+              toImplementFunction: onExportQRDA,
+              dataTestId: `export-qrda-${measure?.id}`,
+            }}
           />
         </div>
       </div>

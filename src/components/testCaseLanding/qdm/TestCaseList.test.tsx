@@ -142,6 +142,7 @@ jest.mock("@madie/madie-util", () => ({
     applyDefaults: false,
     importTestCases: false,
     disableRunTestCaseWithObservStrat: true,
+    qrdaExport: false,
   })),
   useOktaTokens: () => ({
     getAccessToken: () => "test.jwt",
@@ -1388,6 +1389,7 @@ const useTestCaseServiceMockResolved = {
     .mockResolvedValue(["Series 1", "Series 2"]),
   createTestCases: jest.fn().mockResolvedValue([]),
   importTestCasesQDM: jest.fn().mockResolvedValue([]),
+  exportQRDA: jest.fn().mockResolvedValue([]),
 } as unknown as TestCaseServiceApi;
 
 // mocking measureService
@@ -1566,6 +1568,8 @@ const setValueSets = jest.fn();
 const setError = jest.fn();
 const setWarnings = jest.fn();
 
+window.URL.createObjectURL = jest.fn().mockImplementation(() => "url");
+
 describe("TestCaseList component", () => {
   beforeEach(() => {
     calculationServiceMock.mockImplementation(() => {
@@ -1592,6 +1596,7 @@ describe("TestCaseList component", () => {
       importTestCases: false,
       qdmTestCases: true,
       disableRunTestCaseWithObservStrat: true,
+      qrdaExport: false,
     }));
     setError.mockClear();
 
@@ -2816,6 +2821,99 @@ describe("TestCaseList component", () => {
         name: "Run Test(s)",
       });
       expect(executeButton).toBeDisabled();
+    });
+  });
+
+  it("should not display export qrda button", async () => {
+    renderTestCaseListComponent();
+    await waitFor(() => {
+      const qrdaExportButton = screen.queryByTestId(
+        "show-export-test-cases-button"
+      );
+      expect(qrdaExportButton).not.toBeInTheDocument();
+    });
+  });
+
+  it("should display export qrda button with feature flag set to true", async () => {
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      qdmTestCases: true,
+      qrdaExport: true,
+    }));
+    renderTestCaseListComponent();
+    await waitFor(() => {
+      const qrdaExportButton = screen.getByTestId(
+        "show-export-test-cases-button"
+      );
+      expect(qrdaExportButton).toBeInTheDocument();
+    });
+  });
+
+  it("should display success message when QRDA Export button clicked", async () => {
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      qdmTestCases: true,
+      qrdaExport: true,
+    }));
+
+    const useTestCaseServiceMockResolve = {
+      getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
+      getTestCaseSeriesForMeasure: jest
+        .fn()
+        .mockResolvedValue(["Series 1", "Series 2"]),
+      exportQRDA: jest.fn().mockResolvedValue("test qrda"),
+    } as unknown as TestCaseServiceApi;
+    useTestCaseServiceMock.mockImplementation(() => {
+      return useTestCaseServiceMockResolve;
+    });
+
+    const { getByTestId, unmount, getByText, findByText } =
+      renderTestCaseListComponent();
+    await waitFor(() => {
+      const qrdaExportButton = getByTestId("show-export-test-cases-button");
+      expect(qrdaExportButton).toBeInTheDocument();
+      fireEvent.click(qrdaExportButton);
+      //popover opens
+      const popoverButton = getByTestId("export-qrda-1");
+      fireEvent.click(popoverButton);
+      expect(getByText("QRDA exported successfully")).toBeInTheDocument();
+      unmount();
+    });
+  });
+
+  it("should display error message when QRDA Export failed", async () => {
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      qdmTestCases: true,
+      qrdaExport: true,
+    }));
+
+    const useTestCaseServiceMockReject = {
+      getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
+      getTestCaseSeriesForMeasure: jest
+        .fn()
+        .mockResolvedValue(["Series 1", "Series 2"]),
+      exportQRDA: jest
+        .fn()
+        .mockRejectedValue(new Error("Unable to Export QRDA.")),
+    } as unknown as TestCaseServiceApi;
+    useTestCaseServiceMock.mockImplementation(() => {
+      return useTestCaseServiceMockReject;
+    });
+
+    let nextState;
+    setError.mockImplementation((callback) => {
+      nextState = callback([]);
+    });
+
+    const { getByTestId, unmount } = renderTestCaseListComponent();
+    await waitFor(() => {
+      const qrdaExportButton = getByTestId("show-export-test-cases-button");
+      expect(qrdaExportButton).toBeInTheDocument();
+      fireEvent.click(qrdaExportButton);
+      //popover opens
+      const popoverButton = getByTestId("export-qrda-1");
+      fireEvent.click(popoverButton);
+      waitFor(() => expect(setError).toHaveBeenCalled());
+      expect(nextState).toEqual(["Unable to Export QRDA."]);
+      unmount();
     });
   });
 });
