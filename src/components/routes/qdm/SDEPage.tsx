@@ -106,7 +106,10 @@ const SDEPage = () => {
   return (
     <form
       id="sde-form"
-      onSubmit={handleSubmit}
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleSubmit();
+      }}
       data-testid={`sde-form`}
       style={{ minHeight: 539 }}
     >
