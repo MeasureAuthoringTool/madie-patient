@@ -260,7 +260,6 @@ const EditTestCase = () => {
           cqmMeasure,
           patients
         );
-
       const patientResults = calculationOutput[patient._id];
       const testCaseWithResults = qdmCalculation.current.processTestCaseResults(
         { ...formik.values },
