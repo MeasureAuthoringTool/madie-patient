@@ -225,7 +225,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
             onRunTests={executeTestCases}
             shouldDisableRunTestsButton={shouldDisableRunTestsButton}
           />
-          {featureFlags?.qrdaExport && (
+          {featureFlags?.testCaseExport && (
             <Button
               onClick={(e) => {
                 if (onExportQRDA) {

@@ -142,7 +142,7 @@ jest.mock("@madie/madie-util", () => ({
     applyDefaults: false,
     importTestCases: false,
     disableRunTestCaseWithObservStrat: true,
-    qrdaExport: false,
+    testCaseExport: false,
   })),
   useOktaTokens: () => ({
     getAccessToken: () => "test.jwt",
@@ -1596,7 +1596,7 @@ describe("TestCaseList component", () => {
       importTestCases: false,
       qdmTestCases: true,
       disableRunTestCaseWithObservStrat: true,
-      qrdaExport: false,
+      testCaseExport: false,
     }));
     setError.mockClear();
 
@@ -2837,7 +2837,7 @@ describe("TestCaseList component", () => {
   it("should display export qrda button with feature flag set to true", async () => {
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
       qdmTestCases: true,
-      qrdaExport: true,
+      testCaseExport: true,
     }));
     renderTestCaseListComponent();
     await waitFor(() => {
@@ -2851,7 +2851,7 @@ describe("TestCaseList component", () => {
   it("should display success message when QRDA Export button clicked", async () => {
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
       qdmTestCases: true,
-      qrdaExport: true,
+      testCaseExport: true,
     }));
 
     const useTestCaseServiceMockResolve = {
@@ -2882,7 +2882,7 @@ describe("TestCaseList component", () => {
   it("should display error message when QRDA Export failed", async () => {
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
       qdmTestCases: true,
-      qrdaExport: true,
+      testCaseExport: true,
     }));
 
     const useTestCaseServiceMockReject = {
