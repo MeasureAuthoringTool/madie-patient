@@ -2865,7 +2865,7 @@ describe("TestCaseList component", () => {
       return useTestCaseServiceMockResolve;
     });
 
-    const { getByTestId, unmount, getByText, findByText } =
+    const { getByTestId, unmount, getByText, queryByText } =
       renderTestCaseListComponent();
     await waitFor(() => {
       const qrdaExportButton = getByTestId("show-export-test-cases-button");
@@ -2875,6 +2875,8 @@ describe("TestCaseList component", () => {
       const popoverButton = getByTestId("export-qrda-1");
       fireEvent.click(popoverButton);
       expect(getByText("QRDA exported successfully")).toBeInTheDocument();
+      userEvent.keyboard("{esc}");
+      expect(queryByText("QRDA exported successfully")).toBeInTheDocument();
       unmount();
     });
   });

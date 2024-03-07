@@ -228,9 +228,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           {featureFlags?.testCaseExport && (
             <Button
               onClick={(e) => {
-                if (onExportQRDA) {
-                  handleOpen(e);
-                }
+                handleOpen(e);
               }}
               disabled={!canEdit}
               data-testid="show-export-test-cases-button"
