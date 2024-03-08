@@ -2,8 +2,6 @@ import React, { useState, useEffect, useMemo } from "react";
 import tw from "twin.macro";
 import "styled-components/macro";
 import { Measure, TestCase } from "@madie/madie-models";
-import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calculator";
-import { Popover } from "@mui/material";
 import {
   useReactTable,
   ColumnDef,
@@ -17,8 +15,8 @@ import {
   MadieDeleteDialog,
   Toast,
 } from "@madie/madie-design-system/dist/react";
-import { useNavigate } from "react-router-dom";
 import "../TestCase.scss";
+import TestCaseTablePopover from "./TestCaseTablePopover";
 
 interface TestCaseTableProps {
   testCases: TestCase[];
@@ -38,7 +36,6 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     onCloneTestCase,
     measure,
   } = props;
-  const navigate = useNavigate();
   const viewOrEdit = canEdit ? "edit" : "view";
   const [deleteDialogModalOpen, setDeleteDialogModalOpen] =
     useState<boolean>(false);
@@ -193,144 +190,19 @@ const TestCaseTable = (props: TestCaseTableProps) => {
           </tr>
         ))}
       </tbody>
-      <Popover
-        open={optionsOpen}
+      <TestCaseTablePopover
+        canEdit={canEdit}
+        viewOrEdit={viewOrEdit}
+        model={measure?.model}
+        selectedTestCase={selectedTestCase}
         anchorEl={anchorEl}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "left",
-        }}
-        sx={{
-          ".MuiPopover-paper": {
-            boxShadow: "none",
-            overflow: "visible",
-            ".popover-content": {
-              border: "solid 1px #979797",
-              position: "relative",
-              marginTop: "16px",
-              marginLeft: "-70px",
-              borderRadius: "6px",
-              background: "#F7F7F7",
-              width: "fit-content",
-              "&::before": {
-                borderWidth: "thin",
-                position: "absolute",
-                top: "-8px",
-                left: "calc(50% - 8px)",
-                height: "16px",
-                width: "16px",
-                background: "#F7F7F7",
-                borderColor: "#979797 transparent transparent #979797",
-                content: '""',
-                transform: "rotate(45deg)",
-              },
-              ".btn-container": {
-                display: "flex",
-                flexDirection: "column",
-                padding: "10px 0",
-                button: {
-                  zIndex: 2,
-                  fontSize: 14,
-                  padding: "0px 12px",
-                  textAlign: "left",
-                  "&:hover": {
-                    backgroundColor: "rgba(0, 0, 0, 0.5)",
-                  },
-                },
-              },
-            },
-          },
-        }}
-      >
-        {/* getting out of child element should dratstically improve performance on large test case suites. */}
-        <div className="popover-content" data-testid="popover-content">
-          <div className="btn-container">
-            <button
-              id={`view-edit-test-case-${selectedTestCase?.id}`}
-              aria-label={`${viewOrEdit}-test-case-${selectedTestCase?.title}`}
-              data-testid={`view-edit-test-case-${selectedTestCase?.id}`}
-              onClick={() => {
-                navigate(`../../${selectedTestCase?.id}`, { relative: "path" });
-                setOptionsOpen(false);
-              }}
-            >
-              {viewOrEdit}
-            </button>
-            {measure.model.startsWith("QI-Core") ? (
-              <>
-                <button
-                  id={`export-transaction-bundle-${selectedTestCase?.id}`}
-                  aria-label={`export-transaction-bundle-${selectedTestCase?.title}`}
-                  data-testid={`export-transaction-bundle-${selectedTestCase?.id}`}
-                  onClick={() => {
-                    exportTestCase(selectedTestCase, "TRANSACTION");
-                    setOptionsOpen(false);
-                  }}
-                >
-                  export transaction bundle
-                </button>
-                <button
-                  id={`export-collection-bundle-${selectedTestCase?.id}`}
-                  aria-label={`export-collection-bundle-${selectedTestCase?.title}`}
-                  data-testid={`export-collection-bundle-${selectedTestCase?.id}`}
-                  onClick={() => {
-                    exportTestCase(selectedTestCase, "COLLECTION");
-                    setOptionsOpen(false);
-                  }}
-                >
-                  export collection bundle
-                </button>
-              </>
-            ) : exportTestCase ? (
-              <button
-                id={`export-test-case-${selectedTestCase?.id}`}
-                aria-label={`export-test-case-${selectedTestCase?.title}`}
-                data-testid={`export-test-case-${selectedTestCase?.id}`}
-                onClick={() => {
-                  exportTestCase(selectedTestCase);
-                  setOptionsOpen(false);
-                }}
-              >
-                export
-              </button>
-            ) : (
-              ""
-            )}
-
-            {canEdit && onCloneTestCase && (
-              <button
-                id={`clone-test-case-btn-${selectedTestCase?.id}`}
-                aria-label={`clone-test-case-${selectedTestCase?.title}`}
-                data-testid={`clone-test-case-btn-${selectedTestCase?.id}`}
-                onClick={() => {
-                  onCloneTestCase(selectedTestCase);
-                }}
-              >
-                clone
-              </button>
-            )}
-
-            {canEdit && (
-              <button
-                id={`delete-test-case-btn-${selectedTestCase?.id}`}
-                aria-label={`delete-test-case-${selectedTestCase?.title}`}
-                data-testid={`delete-test-case-btn-${selectedTestCase?.id}`}
-                onClick={() => {
-                  setDeleteDialogModalOpen(true);
-                  setOptionsOpen(false);
-                }}
-              >
-                delete
-              </button>
-            )}
-          </div>
-        </div>
-      </Popover>
+        optionsOpen={optionsOpen}
+        setOptionsOpen={setOptionsOpen}
+        exportTestCase={exportTestCase}
+        onCloneTestCase={onCloneTestCase}
+        setDeleteDialogModalOpen={setDeleteDialogModalOpen}
+        handleClose={handleClose}
+      />
 
       {/* This sees to have gotten disconnected at some point in the past. */}
       <Toast
