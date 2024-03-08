@@ -27,6 +27,9 @@ const measure = {
       description: "",
     },
   ],
+  testCaseConfiguration: {
+    sdeIncluded: true,
+  },
 } as Measure;
 describe("CqmConversionService", () => {
   const getAccessToken = jest.fn();
@@ -151,6 +154,7 @@ describe("CqmConversionService", () => {
     expect(cqmMeasure.source_data_criteria[0].codeListId).toEqual(
       dataCriteria[0].oid
     );
+    expect(cqmMeasure.calculate_sdes).toBeTruthy();
 
     const cqlLibraries = cqmMeasure.cql_libraries;
     expect(cqlLibraries.length).toEqual(2);
