@@ -110,8 +110,7 @@ export class CqmConversionService {
       )
     );
 
-    // TODO: need UI checkbox to determine yes/no
-    cqmMeasure.calculate_sdes = false;
+    cqmMeasure.calculate_sdes = measure.testCaseConfiguration.sdeIncluded;
     const populationSets: PopulationSet[] =
       this.buildCqmPopulationSets(measure);
     cqmMeasure.measure_period = this.measurePeriodData(
