@@ -1,19 +1,12 @@
 import * as React from "react";
-import {
-  render,
-  fireEvent,
-  waitFor,
-  screen,
-  within,
-  getByRole,
-} from "@testing-library/react";
+import { render, fireEvent, waitFor, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
-import SDEPage from "./SDEPage";
+import SDEPage from "./Expansion";
+import { Measure } from "@madie/madie-models";
+import userEvent from "@testing-library/user-event";
 import useMeasureServiceApi, {
   MeasureServiceApi,
 } from "../../../api/useMeasureServiceApi";
-import { Measure } from "@madie/madie-models";
-import userEvent from "@testing-library/user-event";
 
 const mockHistoryPush = jest.fn();
 

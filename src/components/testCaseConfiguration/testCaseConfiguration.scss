@@ -1,0 +1,57 @@
+.test-case-config-form {
+  display: flex;
+  flex-direction: column;
+  padding: 32px 24px 32px 12px;
+  .form-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 8px;
+    margin-bottom: 33px;
+    border-bottom: solid 1px;
+    > h2 {
+      font-size: 24px;
+    }
+    > p {
+      font-size: 14px;
+      font-weight: 300;
+      font-family: "Rubik", sans-serif;
+      > span {
+        color: #D92F2F;
+        margin-right: 3px;
+      }
+    }
+  }
+  .form-elements {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    max-width: 50%;
+    .radio-button-group {
+      > div {
+        > div {
+          > label {
+            text-transform: none;
+            font-family: Rubik, sans-serif;
+            color: #333;
+          }
+        }
+      }
+    }
+    .select {
+      width: 300px;
+    }
+  }
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    .cancel-button {
+      margin-top: 20px;
+      margin-right: 32px;
+    }
+    .save-button {
+      margin-top: 20px;
+      float: right;
+    }
+  }
+}

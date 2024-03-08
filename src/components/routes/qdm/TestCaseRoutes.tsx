@@ -11,9 +11,10 @@ import useCqmConversionService from "../../../api/CqmModelConversionService";
 import useTerminologyServiceApi from "../../../api/useTerminologyServiceApi";
 import { QdmExecutionContextProvider } from "./QdmExecutionContext";
 import TestCaseLandingWrapper from "../../testCaseLanding/common/TestCaseLandingWrapper";
-import SDEPage from "./SDEPage";
 import RedirectToList from "../RedirectToList";
 import _ from "lodash";
+import SDEPage from "../../testCaseConfiguration/sde/SDEPage";
+import Expansion from "../../testCaseConfiguration/expansion/Expansion";
 
 const TestCaseRoutes = () => {
   const [errors, setErrors] = useState<Array<string>>([]);
@@ -127,6 +128,12 @@ const TestCaseRoutes = () => {
               element={<TestCaseLandingWrapper qdm children={<SDEPage />} />}
             />
           )}
+          {featureFlags?.manifestExpansion && (
+            <Route
+              path="/measures/:measureId/edit/test-cases/list-page/expansion"
+              element={<TestCaseLandingWrapper qdm children={<Expansion />} />}
+            />
+          )}
           <Route
             index
             element={
@@ -162,7 +169,7 @@ const TestCaseRoutes = () => {
         <Route
           path="/measures/:measureId/edit/test-cases"
           element={<RedirectToList />}
-        ></Route>
+        />
 
         <Route path="/measures/:measureId/edit/test-cases/:id">
           <Route index element={<EditTestCase />} />

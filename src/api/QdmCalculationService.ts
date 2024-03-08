@@ -1,4 +1,4 @@
-import { Calculator } from "cqm-execution";
+import { Calculator } from "../../../../cqm-execution";
 import { CqmMeasure, IndividualResult } from "cqm-models";
 import {
   Group,
