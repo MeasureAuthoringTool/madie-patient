@@ -57,6 +57,11 @@ const TestCase = ({
   const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedTestCase, setSelectedTestCase] = useState<TestCaseModel>(null);
+
+  const editTestCaseUrl = _.isEmpty(measure?.groups)
+    ? `../${testCase?.id}`
+    : `../../${testCase?.id}`;
+
   const handleOpen = (
     selected: TestCaseModel,
     event: React.MouseEvent<HTMLButtonElement>
@@ -225,7 +230,7 @@ const TestCase = ({
               aria-label={`${viewOrEdit}-test-case-${testCase.title}`}
               data-testid={`view-edit-test-case-${testCase.id}`}
               onClick={() => {
-                navigate(`../../${testCase.id}`, { relative: "path" });
+                navigate(editTestCaseUrl, { relative: "path" });
                 setOptionsOpen(false);
               }}
             >
