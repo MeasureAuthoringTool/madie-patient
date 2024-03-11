@@ -49,7 +49,7 @@ const Expansion = () => {
     setToastMessage("");
     setToastOpen(false);
   };
-  const handleToast = (type, message, open) => {
+  const handleToast = (type: string, message: string, open: boolean) => {
     setToastType(type);
     setToastMessage(message);
     setToastOpen(open);
@@ -59,15 +59,15 @@ const Expansion = () => {
   const manifestOptions = [
     {
       label: "ecqm-update-4q2017-eh",
-      value: "http://cts.nlm.nih.gov/fhir/Library/ecqm-update-4q2017-eh",
+      value: "https://cts.nlm.nih.gov/fhir/Library/ecqm-update-4q2017-eh",
     },
     {
       label: "mu2-update-2012-10-25",
-      value: "http://cts.nlm.nih.gov/fhir/Library/mu2-update-2012-10-25",
+      value: "https://cts.nlm.nih.gov/fhir/Library/mu2-update-2012-10-25",
     },
     {
       label: "mu2-update-2012-12-21",
-      value: "http://cts.nlm.nih.gov/fhir/Library/mu2-update-2012-12-21",
+      value: "https://cts.nlm.nih.gov/fhir/Library/mu2-update-2012-12-21",
     },
   ];
 
@@ -76,8 +76,7 @@ const Expansion = () => {
       isManifestExpansion:
         !!measure?.testCaseConfiguration?.manifestExpansion?.id,
       manifestExpansionId:
-        measure?.testCaseConfiguration?.manifestExpansion?.id ||
-        "Select a Manifest",
+        measure?.testCaseConfiguration?.manifestExpansion?.id || "",
     },
     validationSchema: Yup.object().shape({
       manifestExpansionId: Yup.string().when("isManifestExpansion", {
@@ -91,6 +90,8 @@ const Expansion = () => {
   const { resetForm } = formik;
 
   const handleSubmit = async (values) => {
+    debugger;
+    console.log("this is called", values);
     let updatedMeasure: Measure;
     if (values?.isManifestExpansion) {
       const selectedManifest = manifestOptions.find(
@@ -188,6 +189,7 @@ const Expansion = () => {
               SelectDisplayProps={{
                 "aria-required": "true",
               }}
+              disabled={!canEdit}
               error={
                 formik.touched.manifestExpansionId &&
                 Boolean(formik.errors.manifestExpansionId)
