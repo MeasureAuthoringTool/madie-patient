@@ -1,7 +1,8 @@
 import React from "react";
 import { Popover } from "@mui/material";
-import { TestCase } from "@madie/madie-models";
+import { Group, TestCase } from "@madie/madie-models";
 import { useNavigate } from "react-router-dom";
+import * as _ from "lodash";
 
 interface TestCaseTablePopoverProps {
   optionsOpen: boolean;
@@ -14,6 +15,7 @@ interface TestCaseTablePopoverProps {
   setOptionsOpen: Function;
   onCloneTestCase?: (testCase: TestCase) => void;
   model: string;
+  groups: Group[];
   setDeleteDialogModalOpen: Function;
 }
 
@@ -32,6 +34,10 @@ const TestCaseTablePopover = (props: TestCaseTablePopoverProps) => {
     onCloneTestCase,
     setDeleteDialogModalOpen,
   } = props;
+  const editTestCaseUrl = _.isEmpty(props.groups)
+    ? `../${selectedTestCase?.id}`
+    : `../../${selectedTestCase?.id}`;
+
   return (
     <Popover
       open={optionsOpen}
@@ -96,7 +102,7 @@ const TestCaseTablePopover = (props: TestCaseTablePopoverProps) => {
             aria-label={`${viewOrEdit}-test-case-${selectedTestCase?.title}`}
             data-testid={`view-edit-test-case-${selectedTestCase?.id}`}
             onClick={() => {
-              navigate(`../../${selectedTestCase?.id}`, { relative: "path" });
+              navigate(editTestCaseUrl, { relative: "path" });
               setOptionsOpen(false);
             }}
           >

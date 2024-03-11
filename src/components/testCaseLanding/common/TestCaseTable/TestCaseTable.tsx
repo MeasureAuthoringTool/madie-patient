@@ -194,6 +194,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
         canEdit={canEdit}
         viewOrEdit={viewOrEdit}
         model={measure?.model}
+        groups={measure?.groups}
         selectedTestCase={selectedTestCase}
         anchorEl={anchorEl}
         optionsOpen={optionsOpen}
