@@ -19,6 +19,7 @@ interface Props {
   allDefinitions: Array<AllDefinitionsTabs>;
   selectedHighlightingTab: Population;
   onClick: Function;
+  includeSDE?: boolean;
 }
 
 const GroupCoverageNav = ({
@@ -27,6 +28,7 @@ const GroupCoverageNav = ({
   allDefinitions,
   selectedHighlightingTab,
   onClick,
+  includeSDE,
 }: Props) => {
   return (
     <>
@@ -50,6 +52,20 @@ const GroupCoverageNav = ({
               }}
             />
           ))}
+        {includeSDE && (
+          <Tab
+            type="C"
+            label="SDE"
+            key="SDE"
+            value="SDE"
+            aria-label="SDE-tab"
+            orientation="vertical"
+            data-testid="sde-tab"
+            onClick={() => {
+              onClick({ name: "SDE" });
+            }}
+          />
+        )}
       </Tabs>
       <Tabs
         type="C"
