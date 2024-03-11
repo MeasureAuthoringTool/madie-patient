@@ -25,7 +25,7 @@ import {
   TestCasesPassingDetailsProps,
   TestCaseListProps,
 } from "../common/interfaces";
-import TestCaseTable from "../common/TestCaseTable";
+import TestCaseTable from "../common/TestCaseTable/TestCaseTable";
 import UseTestCases from "../common/Hooks/UseTestCases";
 import UseToast from "../common/Hooks/UseToast";
 import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
@@ -111,7 +111,6 @@ const TestCaseList = (props: TestCaseListProps) => {
     useState<CqmExecutionResultsByPatient>();
   const [executeAllTestCases, setExecuteAllTestCases] =
     useState<boolean>(false);
-  // const [coverageHTML, setCoverageHTML] = useState<Record<string, string>>();
   const [coveragePercentage, setCoveragePercentage] = useState<string>("-");
   const [openDeleteAllTestCasesDialog, setOpenDeleteAllTestCasesDialog] =
     useState<boolean>(false);
@@ -141,7 +140,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     ) {
       setSelectedPopCriteria(measure.groups[0]);
       const newPath = `/measures/${measureId}/edit/test-cases/list-page/${measure.groups[0].id}`;
-      navigate(newPath, { replace: true }); // update route
+      navigate(newPath);
       if (
         measure?.errors?.length > 0 &&
         (measure.errors.includes(
@@ -532,7 +531,6 @@ const TestCaseList = (props: TestCaseListProps) => {
                       <TestCaseTable
                         testCases={testCases}
                         canEdit={canEdit}
-                        executionResults={executionResults}
                         deleteTestCase={deleteTestCase}
                         exportTestCase={null}
                         onCloneTestCase={handleCloneTestCase}

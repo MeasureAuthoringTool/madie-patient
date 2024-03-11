@@ -31,7 +31,7 @@ import {
   TestCasesPassingDetailsProps,
   TestCaseListProps,
 } from "../common/interfaces";
-import TestCaseTable from "../common/TestCaseTable";
+import TestCaseTable from "../common/TestCaseTable/TestCaseTable";
 import UseTestCases from "../common/Hooks/UseTestCases";
 import UseToast from "../common/Hooks/UseToast";
 import getModelFamily from "../../../util/measureModelHelpers";
@@ -146,7 +146,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     ) {
       setSelectedPopCriteria(measure.groups[0]);
       const newPath = `/measures/${measureId}/edit/test-cases/list-page/${measure.groups[0].id}`;
-      navigate(newPath, { replace: true }); // update route
+      navigate(newPath); // update route
       if (
         measure?.errors?.length > 0 &&
         (measure.errors.includes(
@@ -553,7 +553,6 @@ const TestCaseList = (props: TestCaseListProps) => {
                       <TestCaseTable
                         testCases={testCases}
                         canEdit={canEdit}
-                        executionResults={executionResults}
                         deleteTestCase={deleteTestCase}
                         exportTestCase={exportTestCase}
                         measure={measure}
