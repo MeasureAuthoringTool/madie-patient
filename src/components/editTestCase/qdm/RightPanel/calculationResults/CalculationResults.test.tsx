@@ -141,17 +141,16 @@ const assertPopulationTabs = async () => {
   const ip = await getTab("IP");
   const denom = await getTab("DENOM");
   const numer = await getTab("NUMER");
-  const sde = await getTab("SDE");
+
   // check tabs are rendered for all populations of a group
   expect(ip).toBeInTheDocument();
   expect(denom).toBeInTheDocument();
   expect(numer).toBeInTheDocument();
-  expect(sde).toBeInTheDocument();
+
   // IP is the default selected tab
   expect(ip.getAttribute("aria-selected")).toEqual("true");
   expect(denom.getAttribute("aria-selected")).toEqual("false");
   expect(numer.getAttribute("aria-selected")).toEqual("false");
-  expect(sde.getAttribute("aria-selected")).toEqual("false");
 };
 
 const renderCoverageComponent = (
@@ -359,7 +358,7 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     });
     expect(definitionResults).toHaveLength(5);
 
-    const sde = await getTab("SDE");
+    const sde = await screen.findByTestId("sde-tab");
     expect(sde).toBeInTheDocument();
     userEvent.click(sde);
 
