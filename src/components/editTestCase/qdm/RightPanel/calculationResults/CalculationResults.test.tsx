@@ -357,7 +357,6 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     const definitionResults = await screen.findAllByRole("button", {
       name: "Results",
     });
-    // expect(definitionResults).toHaveLength(4);
     expect(definitionResults).toHaveLength(5);
 
     const sde = await getTab("SDE");
