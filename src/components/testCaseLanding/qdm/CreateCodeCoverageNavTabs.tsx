@@ -257,7 +257,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
                 }}
                 disabled={!executeAllTestCases}
                 id="show-export-test-case-button"
-                aria-describedby=""
+                aria-describedby="show-export-test-case-button-tooltip"
                 data-testid="show-export-test-cases-button"
                 tabIndex={0}
               >
