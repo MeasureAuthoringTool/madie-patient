@@ -291,7 +291,7 @@ export class TestCaseServiceApi {
 
   async exportQRDA(measureId: string): Promise<Blob> {
     const response = await axios.get(
-      `${this.baseUrl}/measures/${measureId}/qdm/qrda`,
+      `${this.baseUrl}/measures/${measureId}/test-cases/qrda`,
       {
         headers: {
           Authorization: `Bearer ${this.getAccessToken()}`,

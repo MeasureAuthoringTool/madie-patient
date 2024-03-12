@@ -460,10 +460,10 @@ const TestCaseList = (props: TestCaseListProps) => {
   };
 
   const downloadZipFile = (exportData, ecqmTitle, model, version) => {
-    var myblob = new Blob([exportData], {
+    var exportBlob = new Blob([exportData], {
       type: "text/plain",
     });
-    const url = window.URL.createObjectURL(myblob);
+    const url = window.URL.createObjectURL(exportBlob);
     const link = document.createElement("a");
     link.href = url;
     link.setAttribute(
