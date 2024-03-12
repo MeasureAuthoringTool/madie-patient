@@ -23,6 +23,8 @@ import RunTestButton from "../common/runTestsButton/RunTestsButton";
 import { disableRunTestButtonText } from "../../../util/Utils";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import classNames from "classnames";
+import "./CreateCodeCoverageNavTabs.scss";
 
 export interface NavTabProps {
   activeTab: string;
@@ -56,6 +58,12 @@ const defaultStyle = {
 export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
   const { executionContextReady, contextFailure } = useQdmExecutionContext();
 
+  const [activeTip, setActiveTip] = useState<boolean>(false);
+  const toolTipClass = classNames("madie-tooltip", {
+    // hide the tooltip if context is ready, or if there's no
+    hidden: !activeTip || executionContextReady,
+  });
+  const exportMessage = "Test cases must be executed prior to exporting.";
   const {
     activeTab,
     setActiveTab,
@@ -78,7 +86,6 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     useState(false);
   const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState(null);
-
   useEffect(() => {
     if (featureFlags?.disableRunTestCaseWithObservStrat) {
       const groups: Group[] = measure?.groups;
@@ -225,21 +232,53 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
             onRunTests={executeTestCases}
             shouldDisableRunTestsButton={shouldDisableRunTestsButton}
           />
-          {featureFlags?.testCaseExport && (
+
+          {/* disabled elements do not fire events. we wrap a listener around it to bypass */}
+          <div
+            id="export-button-focus-trap"
+            onFocus={() => setActiveTip(true)}
+            onBlur={() => {
+              setActiveTip(false);
+            }}
+            onMouseEnter={() => {
+              setActiveTip(true);
+            }}
+            onMouseLeave={() => {
+              setActiveTip(false);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                setActiveTip(false);
+              }
+            }}
+          >
             <Button
               onClick={(e) => {
                 handleOpen(e);
               }}
-              disabled={!canEdit}
+              disabled={!canEdit || !executionContextReady}
+              id="show-export-test-case-button"
+              aria-describedby=""
               data-testid="show-export-test-cases-button"
+              tabIndex={0}
             >
               Export Test Cases
+              <div
+                role="tooltip"
+                id="show-export-test-case-button-tooltip"
+                data-testid="show-export-test-case-button-tooltip"
+                aria-live="polite"
+                className={toolTipClass}
+              >
+                <p>{exportMessage}</p>
+              </div>
               <ExpandMoreIcon
                 style={{ margin: "0 5px 0 5px" }}
                 fontSize="small"
               />
             </Button>
-          )}
+          </div>
+
           <Popover
             optionsOpen={optionsOpen}
             anchorEl={anchorEl}
