@@ -141,10 +141,12 @@ const assertPopulationTabs = async () => {
   const ip = await getTab("IP");
   const denom = await getTab("DENOM");
   const numer = await getTab("NUMER");
+
   // check tabs are rendered for all populations of a group
   expect(ip).toBeInTheDocument();
   expect(denom).toBeInTheDocument();
   expect(numer).toBeInTheDocument();
+
   // IP is the default selected tab
   expect(ip.getAttribute("aria-selected")).toEqual("true");
   expect(denom.getAttribute("aria-selected")).toEqual("false");
@@ -162,6 +164,7 @@ const renderCoverageComponent = (
       measureGroups={measureGroups}
       calculationErrors={calculationErrors}
       measureCql={measureCql}
+      includeSDE={true}
     />
   );
 };
@@ -180,6 +183,7 @@ describe("CalculationResults with tabbed highlighting layout off", () => {
         measureGroups={measureGroups}
         calculationErrors={null}
         measureCql={measureCql}
+        includeSDE={false}
       />
     );
     expect(
@@ -203,6 +207,7 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
         measureGroups={measureGroups}
         calculationErrors={null}
         measureCql={measureCql}
+        includeSDE={false}
       />
     );
     expect(
@@ -283,6 +288,50 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     );
   });
 
+  test("render highlighting view with coverage results for 1 test case group", async () => {
+    const groupCoverageResult = calculationResults;
+    const calculationErrors = undefined;
+    const testCaseGroups = [
+      {
+        groupId: "64ef",
+        populationValues: [
+          {
+            id: "914d",
+            name: "initialPopulation",
+          },
+          {
+            id: "19c0",
+            name: "denominator",
+          },
+          {
+            id: "3fdd",
+            name: "numerator",
+          },
+        ],
+      },
+    ] as Array<GroupPopulation>;
+
+    render(
+      <CalculationResults
+        groupCoverageResult={groupCoverageResult}
+        testCaseGroups={testCaseGroups}
+        measureGroups={measureGroups}
+        calculationErrors={calculationErrors}
+        measureCql={measureCql}
+        includeSDE={true}
+      />
+    );
+    await assertPopulationTabs();
+
+    expect(screen.getByTestId("cql-highlighting")).toHaveTextContent(
+      `define "Initial Population": "Qualifying Encounters" Results[Encounter, Performed: Encounter Inpatient START: 01/09/2020 12:00 AM STOP: 01/10/2020 12:00 AM CODE: SNOMEDCT 183452005]`
+    );
+
+    // only 1 population criteria
+    const criteriaOptions = await getCriteriaOptions();
+    expect(criteriaOptions.length).toBe(1);
+  });
+
   it("displays calculation results after test case execution", async () => {
     renderCoverageComponent();
     await assertPopulationTabs(); //ensures we're on the Initial Population tab
@@ -307,6 +356,24 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     const definitionResults = await screen.findAllByRole("button", {
       name: "Results",
     });
-    expect(definitionResults).toHaveLength(4);
+    expect(definitionResults).toHaveLength(5);
+
+    const sde = await screen.findByTestId("sde-tab");
+    expect(sde).toBeInTheDocument();
+    userEvent.click(sde);
+
+    // Check for SDE result value
+    const result2 = await screen.findByTestId("results-section");
+    expect(result2).toHaveTextContent(
+      "[PatientCharacteristicEthnicity CODE: CDCREC 2135-2]"
+    );
+
+    const expandLess = await screen.findByTestId("ExpandLessIcon");
+    userEvent.click(expandLess);
+    expect(
+      await screen.queryByText(
+        "[PatientCharacteristicEthnicity CODE: CDCREC 2135-2]"
+      )
+    ).not.toBeInTheDocument();
   });
 });

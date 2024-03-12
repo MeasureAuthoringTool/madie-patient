@@ -47,6 +47,13 @@ export const calculationResults: GroupCoverageResult = {
       type: undefined,
       result: "NA",
     },
+    {
+      html: '<pre style="tab-size: 2;"\n  data-library-name="MAT6264Lib" data-statement-name="SDE Ethnicity">\n<code>\n<span data-ref-id="151" style="color:#4D7E23;border-bottom-color:#4D7E23;border-bottom-width:3px"><span>define &quot;SDE Ethnicity&quot;:\n  </span><span data-ref-id="150" style="color:#4D7E23;border-bottom-color:#4D7E23;border-bottom-width:3px"><span>[&quot;Patient Characteristic Ethnicity&quot;: </span><span><span>&quot;Ethnicity&quot;</span></span><span>]</span></span></span></code>\n</pre>',
+      relevance: "TRUE",
+      name: "SDE Ethnicity",
+      result: "[PatientCharacteristicEthnicity\nCODE: CDCREC 2135-2]",
+      type: undefined,
+    },
   ],
   "64ec": [
     {
