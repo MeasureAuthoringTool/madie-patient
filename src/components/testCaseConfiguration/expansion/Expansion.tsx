@@ -90,8 +90,6 @@ const Expansion = () => {
   const { resetForm } = formik;
 
   const handleSubmit = async (values) => {
-    debugger;
-    console.log("this is called", values);
     let updatedMeasure: Measure;
     if (values?.isManifestExpansion) {
       const selectedManifest = manifestOptions.find(

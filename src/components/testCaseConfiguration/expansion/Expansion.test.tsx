@@ -86,38 +86,31 @@ describe("Expansion component", () => {
 
     // Update form
     userEvent.click(manifestRadioInput);
-    const manifestSelect = await screen.findByTestId("manifest-select");
-    expect(manifestSelect).toBeInTheDocument();
+    const manifestSelectWrapperDiv = await screen.findByTestId(
+      "manifest-select"
+    );
+    const manifestSelect = manifestSelectWrapperDiv.children[0];
     userEvent.click(manifestSelect);
-    waitFor(() => {
-      const manifestOptions = screen.getAllByRole("option");
-      expect(manifestOptions).toHaveLength(3);
-      userEvent.click(manifestOptions[0]);
-    });
-
-    waitFor(() => {
+    const manifestOptions = screen.getAllByRole("option");
+    expect(manifestOptions).toHaveLength(3);
+    userEvent.click(manifestOptions[0]);
+    await waitFor(() => {
       const manifestSelectInput = screen.getByTestId("manifest-select-input");
       expect(manifestSelectInput).toHaveValue("ecqm-update-4q2017-eh");
-      expect(saveButton).toBeDisabled();
-      expect(discardButton).toBeDisabled();
-      // expect(measureServiceApiMock.updateMeasure(measure)).toHaveBeenCalled();
+      expect(saveButton).toBeEnabled();
       userEvent.click(saveButton);
-
-      expect(
-        screen.getByTestId("manifest-expansion-success-text")
-      ).toHaveTextContent("Expansion details Updated Successfully");
-      // expect(measureServiceApiMock.updateMeasure).toHaveBeenCalledWith({
-      //   ...measure,
-      //   testCaseConfiguration: {
-      //     id: "test-case-config-id",
-      //     sdeIncluded: false,
-      //     manifestExpansion: {
-      //       fullUrl:
-      //         "https://cts.nlm.nih.gov/fhir/Library/ecqm-update-4q2017-eh",
-      //       id: "ecqm-update-4q2017-eh2",
-      //     },
-      //   },
-      // });
+    });
+    expect(
+      screen.getByTestId("manifest-expansion-success-text")
+    ).toHaveTextContent("Expansion details Updated Successfully");
+    expect(measureServiceApiMock.updateMeasure).toHaveBeenCalledWith({
+      ...measure,
+      testCaseConfiguration: {
+        manifestExpansion: {
+          fullUrl: "https://cts.nlm.nih.gov/fhir/Library/ecqm-update-4q2017-eh",
+          id: "ecqm-update-4q2017-eh",
+        },
+      },
     });
   });
 
@@ -141,37 +134,8 @@ describe("Expansion component", () => {
     expect(manifestSelectInput).toHaveValue("ecqm-update-4q2017-eh");
   });
 
-  it("Should display input fields and action buttons for a non-owner but the form is disabled", async () => {
-    (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => {
-      return false;
-    });
-    measureStore.state.mockImplementation(
-      () => measureWithTestCaseConfiguration
-    );
-    render(<Expansion />);
-
-    const latestRadioInput = screen.getByLabelText(
-      "Latest"
-    ) as HTMLInputElement;
-    const manifestRadioInput = screen.getByLabelText(
-      "Manifest"
-    ) as HTMLInputElement;
-
-    expect(latestRadioInput).not.toBeChecked();
-    expect(latestRadioInput).toBeDisabled();
-    expect(manifestRadioInput).toBeChecked();
-    expect(manifestRadioInput).toBeDisabled();
-    expect(screen.getByTestId("manifest-select-input")).toBeDisabled();
-
-    expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
-    expect(
-      screen.getByRole("button", {
-        name: "Discard Changes",
-      })
-    ).toBeDisabled();
-  });
-
   it("Should discard changes", async () => {
+    measureStore.state.mockImplementation(() => measure);
     render(<Expansion />);
 
     const latestRadioInput = screen.getByLabelText(
@@ -214,5 +178,35 @@ describe("Expansion component", () => {
     expect(manifestRadioInput).not.toBeChecked();
     expect(saveButton).toBeDisabled();
     expect(discardButton).toBeDisabled();
+  });
+
+  it("Should display input fields and action buttons for a non-owner but the form is disabled", async () => {
+    (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => {
+      return false;
+    });
+    measureStore.state.mockImplementation(
+      () => measureWithTestCaseConfiguration
+    );
+    render(<Expansion />);
+
+    const latestRadioInput = screen.getByLabelText(
+      "Latest"
+    ) as HTMLInputElement;
+    const manifestRadioInput = screen.getByLabelText(
+      "Manifest"
+    ) as HTMLInputElement;
+
+    expect(latestRadioInput).not.toBeChecked();
+    expect(latestRadioInput).toBeDisabled();
+    expect(manifestRadioInput).toBeChecked();
+    expect(manifestRadioInput).toBeDisabled();
+    expect(screen.getByTestId("manifest-select-input")).toBeDisabled();
+
+    expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
+    expect(
+      screen.getByRole("button", {
+        name: "Discard Changes",
+      })
+    ).toBeDisabled();
   });
 });
