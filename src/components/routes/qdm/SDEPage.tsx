@@ -127,8 +127,7 @@ const SDEPage = () => {
             ]}
             value={formik.values.sdeIncluded}
             onChange={(e) => {
-              const nextSdeIncluded = e.target.value;
-              formik.setFieldValue("sdeIncluded", nextSdeIncluded);
+              formik.setFieldValue("sdeIncluded", e.target.value === "true");
             }}
             disabled={!canEdit}
           />
