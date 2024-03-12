@@ -232,51 +232,52 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           />
 
           {/* disabled elements do not fire events. we wrap a listener around it to bypass */}
-          <div
-            id="export-button-focus-trap"
-            onFocus={() => setActiveTip(true)}
-            onBlur={() => {
-              setActiveTip(false);
-            }}
-            onMouseEnter={() => {
-              setActiveTip(true);
-            }}
-            onMouseLeave={() => {
-              setActiveTip(false);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Escape") {
+          {featureFlags?.testCaseExport && (
+            <div
+              id="export-button-focus-trap"
+              onFocus={() => setActiveTip(true)}
+              onBlur={() => {
                 setActiveTip(false);
-              }
-            }}
-          >
-            <Button
-              onClick={(e) => {
-                handleOpen(e);
               }}
-              disabled={!executeAllTestCases}
-              id="show-export-test-case-button"
-              aria-describedby=""
-              data-testid="show-export-test-cases-button"
-              tabIndex={0}
+              onMouseEnter={() => {
+                setActiveTip(true);
+              }}
+              onMouseLeave={() => {
+                setActiveTip(false);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") {
+                  setActiveTip(false);
+                }
+              }}
             >
-              Export Test Cases
-              <div
-                role="tooltip"
-                id="show-export-test-case-button-tooltip"
-                data-testid="show-export-test-case-button-tooltip"
-                aria-live="polite"
-                className={toolTipClass}
+              <Button
+                onClick={(e) => {
+                  handleOpen(e);
+                }}
+                disabled={!executeAllTestCases}
+                id="show-export-test-case-button"
+                aria-describedby=""
+                data-testid="show-export-test-cases-button"
+                tabIndex={0}
               >
-                <p>{exportMessage}</p>
-              </div>
-              <ExpandMoreIcon
-                style={{ margin: "0 5px 0 5px" }}
-                fontSize="small"
-              />
-            </Button>
-          </div>
-
+                Export Test Cases
+                <div
+                  role="tooltip"
+                  id="show-export-test-case-button-tooltip"
+                  data-testid="show-export-test-case-button-tooltip"
+                  aria-live="polite"
+                  className={toolTipClass}
+                >
+                  <p>{exportMessage}</p>
+                </div>
+                <ExpandMoreIcon
+                  style={{ margin: "0 5px 0 5px" }}
+                  fontSize="small"
+                />
+              </Button>
+            </div>
+          )}
           <Popover
             optionsOpen={optionsOpen}
             anchorEl={anchorEl}
