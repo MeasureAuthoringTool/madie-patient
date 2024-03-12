@@ -234,6 +234,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           {/* disabled elements do not fire events. we wrap a listener around it to bypass */}
           {featureFlags?.testCaseExport && (
             <div
+              role="button"
               id="export-button-focus-trap"
               onFocus={() => setActiveTip(true)}
               onBlur={() => {
