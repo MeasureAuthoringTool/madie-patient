@@ -25,7 +25,7 @@ interface Props {
   measureGroups: Group[];
   groupCoverageResult: GroupCoverageResult;
   cqlDefinitionCallstack;
-  includeSDE;
+  includeSDE: boolean;
 }
 
 const allDefinitions = [
@@ -56,7 +56,7 @@ const definitionFilterCondition = (statementResult, definitionCategory) => {
   );
 };
 
-const sdeFilter = (statementResult, definitionCategory) => {
+const sdeFilter = (statementResult) => {
   return (
     statementResult.type === undefined &&
     statementResult.relevance !== "NA" &&
@@ -159,9 +159,7 @@ const QdmGroupCoverage = ({
       if (statementResults) {
         result = statementResults
           .sort((a, b) => a.name.localeCompare(b.name))
-          .filter((statementResult) =>
-            sdeFilter(statementResult, population.name)
-          );
+          .filter((statementResult) => sdeFilter(statementResult));
       }
       setSelectedDefinitionResults(result);
     }
