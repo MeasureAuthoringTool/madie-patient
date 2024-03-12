@@ -180,4 +180,72 @@ describe("TestCaseServiceApi Tests", () => {
       );
     });
   });
+
+  it("test exportQRDA success", async () => {
+    const zippedQRDAData = {
+      size: 635581,
+      type: "application/octet-stream",
+    };
+    const resp = { status: 200, data: zippedQRDAData };
+    axios.get = jest.fn().mockResolvedValueOnce(resp);
+
+    const qrdaData = await testCaseService.exportQRDA("testMeasureId");
+    expect(axios.get).toBeCalledTimes(1);
+    expect(qrdaData).toEqual(zippedQRDAData);
+  });
+
+  it("test exportQRDA failure", async () => {
+    const resp = {
+      status: 500,
+    };
+    axios.get = jest.fn().mockRejectedValueOnce(resp);
+
+    try {
+      await testCaseService.exportQRDA("testMeasureId");
+      expect(axios.get).toBeCalledTimes(1);
+    } catch (error) {
+      expect(error.status).toBe(500);
+    }
+  });
+
+  it("test createTestCase success", async () => {
+    const responseDto: TestCase = {
+      id: "1234",
+      title: "TestCase1",
+      validResource: false,
+    } as TestCase;
+    axios.post = jest.fn().mockResolvedValueOnce({ data: responseDto });
+
+    const testCase: TestCase = {
+      title: "TestCase1",
+    } as TestCase;
+
+    const response = await testCaseService.createTestCase(
+      testCase,
+      "testMeasureId"
+    );
+    expect(response).toBeTruthy();
+    expect(response).toEqual(responseDto);
+  });
+
+  it("test createTestCase failure", async () => {
+    const resp = {
+      response: {
+        status: 400,
+      },
+    };
+
+    axios.post = jest.fn().mockRejectedValueOnce({ err: resp });
+
+    const testCase: TestCase = {
+      title: "TestCase1",
+    } as TestCase;
+
+    try {
+      await testCaseService.createTestCase(testCase, "testMeasureId");
+      expect(axios.get).toBeCalledTimes(1);
+    } catch (err) {
+      expect(err).not.toBeNull();
+    }
+  });
 });

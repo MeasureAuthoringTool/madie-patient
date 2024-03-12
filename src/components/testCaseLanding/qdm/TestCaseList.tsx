@@ -9,7 +9,7 @@ import {
   TestCaseImportOutcome,
   TestCaseImportRequest,
 } from "@madie/madie-models";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, json } from "react-router-dom";
 import calculationService from "../../../api/CalculationService";
 import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calculator";
 import { checkUserCanEdit, measureStore } from "@madie/madie-util";
@@ -25,7 +25,7 @@ import {
   TestCasesPassingDetailsProps,
   TestCaseListProps,
 } from "../common/interfaces";
-import TestCaseTable from "../common/TestCaseTable";
+import TestCaseTable from "../common/TestCaseTable/TestCaseTable";
 import UseTestCases from "../common/Hooks/UseTestCases";
 import UseToast from "../common/Hooks/UseToast";
 import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
@@ -41,6 +41,7 @@ import {
   buildHighlightingForAllGroups,
 } from "../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
 import { uniqWith } from "lodash";
+import getModelFamily from "../../../util/measureModelHelpers";
 
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
@@ -111,7 +112,6 @@ const TestCaseList = (props: TestCaseListProps) => {
     useState<CqmExecutionResultsByPatient>();
   const [executeAllTestCases, setExecuteAllTestCases] =
     useState<boolean>(false);
-  // const [coverageHTML, setCoverageHTML] = useState<Record<string, string>>();
   const [coveragePercentage, setCoveragePercentage] = useState<string>("-");
   const [openDeleteAllTestCasesDialog, setOpenDeleteAllTestCasesDialog] =
     useState<boolean>(false);
@@ -141,7 +141,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     ) {
       setSelectedPopCriteria(measure.groups[0]);
       const newPath = `/measures/${measureId}/edit/test-cases/list-page/${measure.groups[0].id}`;
-      navigate(newPath, { replace: true }); // update route
+      navigate(newPath);
       if (
         measure?.errors?.length > 0 &&
         (measure.errors.includes(
@@ -458,6 +458,40 @@ const TestCaseList = (props: TestCaseListProps) => {
     }
   };
 
+  const downloadZipFile = (exportData, ecqmTitle, model, version) => {
+    var exportBlob = new Blob([exportData], {
+      type: "text/plain",
+    });
+    const url = window.URL.createObjectURL(exportBlob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute(
+      "download",
+      `${ecqmTitle}-v${version}-${getModelFamily(model)}-TestCases.zip`
+    );
+    document.body.appendChild(link);
+    link.click();
+    setToastOpen(true);
+    setToastType("success");
+    setToastMessage("QRDA exported successfully");
+    document.body.removeChild(link);
+  };
+
+  const exportQRDA = async () => {
+    try {
+      const exportData = await testCaseService.current.exportQRDA(measureId);
+      downloadZipFile(
+        exportData,
+        measure.ecqmTitle,
+        measure.model,
+        measure.version
+      );
+    } catch (err) {
+      const message = "Unable to Export QRDA.";
+      setErrors((prevState) => [...prevState, message]);
+    }
+  };
+
   return (
     <div>
       {!loadingState.loading && (
@@ -501,6 +535,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                 onDeleteAllTestCases={() =>
                   setOpenDeleteAllTestCasesDialog(true)
                 }
+                onExportQRDA={() => exportQRDA()}
               />
             </div>
             <CreateNewTestCaseDialog open={createOpen} onClose={handleClose} />
@@ -532,7 +567,6 @@ const TestCaseList = (props: TestCaseListProps) => {
                       <TestCaseTable
                         testCases={testCases}
                         canEdit={canEdit}
-                        executionResults={executionResults}
                         deleteTestCase={deleteTestCase}
                         exportTestCase={null}
                         onCloneTestCase={handleCloneTestCase}
