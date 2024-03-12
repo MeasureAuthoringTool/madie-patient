@@ -57,12 +57,6 @@ const defaultStyle = {
 
 export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
   const { executionContextReady, contextFailure } = useQdmExecutionContext();
-
-  const [activeTip, setActiveTip] = useState<boolean>(false);
-  const toolTipClass = classNames("madie-tooltip", {
-    // hide the tooltip if context is ready, or if there's no
-    hidden: !activeTip || executionContextReady,
-  });
   const exportMessage = "Test cases must be executed prior to exporting.";
   const {
     activeTab,
@@ -80,7 +74,11 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     onDeleteAllTestCases,
     onExportQRDA,
   } = props;
-
+  const [activeTip, setActiveTip] = useState<boolean>(false);
+  const toolTipClass = classNames("madie-tooltip", {
+    // hide the tooltip if all testcases have been run
+    hidden: !activeTip || executeAllTestCases,
+  });
   const featureFlags = useFeatureFlags();
   const [shouldDisableRunTestsButton, setShouldDisableRunTestsButton] =
     useState(false);
@@ -256,7 +254,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
               onClick={(e) => {
                 handleOpen(e);
               }}
-              disabled={!canEdit || !executionContextReady}
+              disabled={!executeAllTestCases}
               id="show-export-test-case-button"
               aria-describedby=""
               data-testid="show-export-test-cases-button"
