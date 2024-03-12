@@ -232,52 +232,76 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           />
 
           {/* disabled elements do not fire events. we wrap a listener around it to bypass */}
+
           {featureFlags?.testCaseExport && (
-            <div
-              role="button"
-              id="export-button-focus-trap"
-              onFocus={() => setActiveTip(true)}
-              onBlur={() => {
-                setActiveTip(false);
-              }}
-              onMouseEnter={() => {
-                setActiveTip(true);
-              }}
-              onMouseLeave={() => {
-                setActiveTip(false);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Escape") {
-                  setActiveTip(false);
-                }
-              }}
-            >
-              <Button
-                onClick={(e) => {
-                  handleOpen(e);
-                }}
-                disabled={!executeAllTestCases}
-                id="show-export-test-case-button"
-                aria-describedby="show-export-test-case-button-tooltip"
-                data-testid="show-export-test-cases-button"
-                tabIndex={0}
-              >
-                Export Test Cases
+            <>
+              {/* render focus trap only when needed */}
+              {!executeAllTestCases ? (
                 <div
-                  role="tooltip"
-                  id="show-export-test-case-button-tooltip"
-                  data-testid="show-export-test-case-button-tooltip"
-                  aria-live="polite"
-                  className={toolTipClass}
+                  role="button"
+                  tabIndex={0}
+                  id="export-button-focus-trap"
+                  onFocus={() => setActiveTip(true)}
+                  onBlur={() => {
+                    setActiveTip(false);
+                  }}
+                  onMouseEnter={() => {
+                    setActiveTip(true);
+                  }}
+                  onMouseLeave={() => {
+                    setActiveTip(false);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Escape") {
+                      setActiveTip(false);
+                    }
+                  }}
                 >
-                  <p>{exportMessage}</p>
+                  <Button
+                    onClick={(e) => {
+                      handleOpen(e);
+                    }}
+                    disabled={!executeAllTestCases}
+                    id="show-export-test-case-button"
+                    aria-describedby="show-export-test-case-button-tooltip"
+                    data-testid="show-export-test-cases-button"
+                    tabIndex={0}
+                  >
+                    Export Test Cases
+                    <div
+                      role="tooltip"
+                      id="show-export-test-case-button-tooltip"
+                      data-testid="show-export-test-case-button-tooltip"
+                      aria-live="polite"
+                      className={toolTipClass}
+                    >
+                      <p>{exportMessage}</p>
+                    </div>
+                    <ExpandMoreIcon
+                      style={{ margin: "0 5px 0 5px" }}
+                      fontSize="small"
+                    />
+                  </Button>
                 </div>
-                <ExpandMoreIcon
-                  style={{ margin: "0 5px 0 5px" }}
-                  fontSize="small"
-                />
-              </Button>
-            </div>
+              ) : (
+                <Button
+                  onClick={(e) => {
+                    handleOpen(e);
+                  }}
+                  disabled={!executeAllTestCases}
+                  id="show-export-test-case-button"
+                  aria-describedby="show-export-test-case-button-tooltip"
+                  data-testid="show-export-test-cases-button"
+                  tabIndex={0}
+                >
+                  Export Test Cases
+                  <ExpandMoreIcon
+                    style={{ margin: "0 5px 0 5px" }}
+                    fontSize="small"
+                  />
+                </Button>
+              )}
+            </>
           )}
           <Popover
             optionsOpen={optionsOpen}
