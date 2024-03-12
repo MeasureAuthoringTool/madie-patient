@@ -110,7 +110,7 @@ export class CqmConversionService {
       )
     );
 
-    cqmMeasure.calculate_sdes = measure.testCaseConfiguration.sdeIncluded;
+    cqmMeasure.calculate_sdes = measure?.testCaseConfiguration.sdeIncluded;
     const populationSets: PopulationSet[] =
       this.buildCqmPopulationSets(measure);
     cqmMeasure.measure_period = this.measurePeriodData(
