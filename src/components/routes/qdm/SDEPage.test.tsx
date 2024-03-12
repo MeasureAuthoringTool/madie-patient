@@ -105,7 +105,7 @@ describe("SDEPage component", () => {
       expect(serviceApiMock.updateMeasure).toBeCalledWith({
         ...measure,
         testCaseConfiguration: {
-          sdeIncluded: "true",
+          sdeIncluded: true,
         },
       })
     );
