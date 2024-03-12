@@ -13,6 +13,7 @@ const CalculationResults = ({
   measureGroups,
   calculationErrors,
   measureCql,
+  includeSDE,
 }) => {
   const cqlParsingService = useRef(useCqlParsingService());
   const [callstackMap, setCallstackMap] = useState<CqlDefinitionCallstack>();
@@ -47,6 +48,7 @@ const CalculationResults = ({
           measureGroups={measureGroups}
           groupCoverageResult={groupCoverageResult}
           cqlDefinitionCallstack={callstackMap}
+          includeSDE={includeSDE}
         />
       )}
     </div>
