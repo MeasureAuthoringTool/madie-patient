@@ -18,6 +18,7 @@ export interface TestCaseListSideBarNavProps {
 }
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+
 const TestCaseListSideBarNav = ({
   allPopulationCriteria,
   qdm,
@@ -37,7 +38,7 @@ const TestCaseListSideBarNav = ({
     useState<boolean>(true);
   const handleChange = (e, v) => {
     const newPath = `/measures/${measureId}/edit/test-cases/list-page/${v}`;
-    navigate(newPath, { replace: true });
+    navigate(newPath);
   };
   const endRoute = /[^/]*$/.exec(pathname)[0];
   return (
@@ -126,6 +127,16 @@ const TestCaseListSideBarNav = ({
                   orientation="vertical"
                   onChange={handleChange}
                 />
+                {featureFlags?.manifestExpansion && (
+                  <Tab
+                    label="Expansion"
+                    value="expansion"
+                    data-testid="nav-link-expansion"
+                    type="C"
+                    orientation="vertical"
+                    onChange={handleChange}
+                  />
+                )}
               </Tabs>
             )}
           </>

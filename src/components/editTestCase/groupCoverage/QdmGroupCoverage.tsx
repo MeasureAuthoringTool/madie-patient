@@ -25,6 +25,7 @@ interface Props {
   measureGroups: Group[];
   groupCoverageResult: GroupCoverageResult;
   cqlDefinitionCallstack;
+  includeSDE: boolean;
 }
 
 const allDefinitions = [
@@ -55,11 +56,20 @@ const definitionFilterCondition = (statementResult, definitionCategory) => {
   );
 };
 
+const sdeFilter = (statementResult) => {
+  return (
+    statementResult.type === undefined &&
+    statementResult.relevance !== "NA" &&
+    statementResult.name.includes("SDE")
+  );
+};
+
 const QdmGroupCoverage = ({
   testCaseGroups,
   measureGroups,
   groupCoverageResult,
   cqlDefinitionCallstack,
+  includeSDE,
 }: Props) => {
   const [selectedTab, setSelectedTab] = useState<Population>(
     getFirstPopulation(testCaseGroups[0])
@@ -141,8 +151,24 @@ const QdmGroupCoverage = ({
     }
   };
 
+  const changeSDE = (population) => {
+    setSelectedTab(population);
+    if (groupCoverageResult) {
+      let result: StatementCoverageResult[];
+      const statementResults = groupCoverageResult[selectedCriteria];
+      if (statementResults) {
+        result = statementResults
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .filter((statementResult) => sdeFilter(statementResult));
+      }
+      setSelectedDefinitionResults(result);
+    }
+  };
+
   const onHighlightingNavTabClick = (selectedTab) => {
-    if (isPopulation(selectedTab.name)) {
+    if (selectedTab.name === "SDE") {
+      changeSDE(selectedTab);
+    } else if (isPopulation(selectedTab.name)) {
       changePopulation(selectedTab);
     } else {
       changeDefinitions(selectedTab);
@@ -259,6 +285,7 @@ const QdmGroupCoverage = ({
             allDefinitions={allDefinitions}
             selectedHighlightingTab={selectedTab}
             onClick={onHighlightingNavTabClick}
+            includeSDE={includeSDE}
           />
         </div>
         <div

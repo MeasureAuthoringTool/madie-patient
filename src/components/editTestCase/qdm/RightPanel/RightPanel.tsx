@@ -20,6 +20,7 @@ const RightPanel = ({
   measureName,
   measureCql,
   cqlErrors,
+  includeSDE,
 }) => {
   const [activeTab, setActiveTab] = useState<string>("measurecql");
   const featureFlags = useFeatureFlags();
@@ -41,6 +42,7 @@ const RightPanel = ({
             measureGroups={measureGroups}
             calculationErrors={calculationErrors}
             measureCql={measureCql}
+            includeSDE={includeSDE}
           />
         )}
         {activeTab === "expectoractual" && (
