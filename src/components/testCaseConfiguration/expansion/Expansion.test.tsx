@@ -8,10 +8,7 @@ import useMeasureServiceApi, {
 // @ts-ignore
 import { checkUserCanEdit, measureStore } from "@madie/madie-util";
 import Expansion from "./Expansion";
-import { MemoryRouter } from "react-router-dom";
-import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
 import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
-import TestCaseLandingWrapper from "../../testCaseLanding/common/TestCaseLandingWrapper";
 
 const measure = {
   id: "m1234",
@@ -64,52 +61,25 @@ jest.mock("@madie/madie-util", () => ({
     initialState: { canTravel: true, pendingPath: "" },
   },
   checkUserCanEdit: jest.fn().mockImplementation(() => true),
-  useFeatureFlags: jest.fn(() => {
-    return {
-      applyDefaults: false,
-      disableRunTestCaseWithObservStrat: true,
-      qdmHideJson: false,
-      qdmHighlightingTabs: true,
-    };
-  }),
 }));
-
-const serviceConfig: ServiceConfig = {
-  measureService: {
-    baseUrl: "measureService.url",
-  },
-  testCaseService: {
-    baseUrl: "testCaseService.url",
-  },
-  terminologyService: {
-    baseUrl: "terminologyService.url",
-  },
-  elmTranslationService: {
-    baseUrl: "elmTranslationService.url",
-  },
-};
 
 const setExecutionContextReady = jest.fn();
 
 function renderExpansionComponent() {
   return render(
-    <MemoryRouter>
-      <ApiContextProvider value={serviceConfig}>
-        <QdmExecutionContextProvider
-          value={{
-            measureState: [null, jest.fn()],
-            cqmMeasureState: [null, jest.fn()],
-            executionContextReady: true,
-            setExecutionContextReady: setExecutionContextReady,
-            executing: false,
-            setExecuting: jest.fn(),
-            contextFailure: false,
-          }}
-        >
-          <TestCaseLandingWrapper qdm children={<Expansion />} />
-        </QdmExecutionContextProvider>
-      </ApiContextProvider>
-    </MemoryRouter>
+    <QdmExecutionContextProvider
+      value={{
+        measureState: [null, jest.fn()],
+        cqmMeasureState: [null, jest.fn()],
+        executionContextReady: true,
+        setExecutionContextReady: setExecutionContextReady,
+        executing: false,
+        setExecuting: jest.fn(),
+        contextFailure: false,
+      }}
+    >
+      <Expansion />
+    </QdmExecutionContextProvider>
   );
 }
 

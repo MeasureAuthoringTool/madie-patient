@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, fireEvent, waitFor, screen } from "@testing-library/react";
+import { render, waitFor, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import SDEPage from "./SDEPage";
 import { Measure } from "@madie/madie-models";
@@ -7,10 +7,7 @@ import userEvent from "@testing-library/user-event";
 import useMeasureServiceApi, {
   MeasureServiceApi,
 } from "../../../api/useMeasureServiceApi";
-import { MemoryRouter } from "react-router-dom";
-import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
 import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
-import TestCaseLandingWrapper from "../../testCaseLanding/common/TestCaseLandingWrapper";
 
 const measure = {
   id: "test measure",
@@ -48,51 +45,24 @@ jest.mock("@madie/madie-util", () => ({
     initialState: { canTravel: true, pendingPath: "" },
   },
   checkUserCanEdit: jest.fn().mockImplementation(() => true),
-  useFeatureFlags: jest.fn(() => {
-    return {
-      applyDefaults: false,
-      disableRunTestCaseWithObservStrat: true,
-      qdmHideJson: false,
-      qdmHighlightingTabs: true,
-    };
-  }),
 }));
-
-const serviceConfig: ServiceConfig = {
-  measureService: {
-    baseUrl: "measureService.url",
-  },
-  testCaseService: {
-    baseUrl: "testCaseService.url",
-  },
-  terminologyService: {
-    baseUrl: "terminologyService.url",
-  },
-  elmTranslationService: {
-    baseUrl: "elmTranslationService.url",
-  },
-};
 
 const setExecutionContextReady = jest.fn();
 function renderSdePageComponent() {
   return render(
-    <MemoryRouter>
-      <ApiContextProvider value={serviceConfig}>
-        <QdmExecutionContextProvider
-          value={{
-            measureState: [null, jest.fn()],
-            cqmMeasureState: [null, jest.fn()],
-            executionContextReady: true,
-            setExecutionContextReady: setExecutionContextReady,
-            executing: false,
-            setExecuting: jest.fn(),
-            contextFailure: false,
-          }}
-        >
-          <TestCaseLandingWrapper qdm children={<SDEPage />} />
-        </QdmExecutionContextProvider>
-      </ApiContextProvider>
-    </MemoryRouter>
+    <QdmExecutionContextProvider
+      value={{
+        measureState: [null, jest.fn()],
+        cqmMeasureState: [null, jest.fn()],
+        executionContextReady: true,
+        setExecutionContextReady: setExecutionContextReady,
+        executing: false,
+        setExecuting: jest.fn(),
+        contextFailure: false,
+      }}
+    >
+      <SDEPage />
+    </QdmExecutionContextProvider>
   );
 }
 
@@ -112,7 +82,7 @@ describe("SDEPage component", () => {
     const saveButton = getByTestId("sde-save");
     expect(saveButton).toBeInTheDocument();
     await waitFor(() => expect(saveButton).toBeEnabled());
-    fireEvent.click(saveButton);
+    userEvent.click(saveButton);
     await waitFor(() =>
       expect(serviceApiMock.updateMeasure).toBeCalledWith({
         ...measure,
@@ -128,7 +98,7 @@ describe("SDEPage component", () => {
 
     const toastCloseButton = await findByTestId("close-error-button");
     expect(toastCloseButton).toBeInTheDocument();
-    fireEvent.click(toastCloseButton);
+    userEvent.click(toastCloseButton);
     await waitFor(() => {
       expect(toastCloseButton).not.toBeInTheDocument();
     });
@@ -145,14 +115,14 @@ describe("SDEPage component", () => {
     expect(cancelButton).toBeInTheDocument();
     await waitFor(() => expect(cancelButton).toBeEnabled());
     act(() => {
-      fireEvent.click(cancelButton);
+      userEvent.click(cancelButton);
     });
 
     const discardDialog = getByTestId("discard-dialog");
     expect(discardDialog).toBeInTheDocument();
     const continueButton = getByTestId("discard-dialog-continue-button");
     expect(continueButton).toBeInTheDocument();
-    fireEvent.click(continueButton);
+    userEvent.click(continueButton);
     await waitFor(() => {
       expect(sdeOptionYes).not.toBeChecked();
       expect(sdeOptionNo).toBeChecked();
@@ -169,15 +139,13 @@ describe("SDEPage component", () => {
     const cancelButton = getByTestId("cancel-button");
     expect(cancelButton).toBeInTheDocument();
     await waitFor(() => expect(cancelButton).toBeEnabled());
-    act(() => {
-      fireEvent.click(cancelButton);
-    });
+    userEvent.click(cancelButton);
 
     const discardDialog = getByTestId("discard-dialog");
     expect(discardDialog).toBeInTheDocument();
     const discardCancelButton = getByTestId("discard-dialog-cancel-button");
     expect(discardCancelButton).toBeInTheDocument();
-    fireEvent.click(discardCancelButton);
+    userEvent.click(discardCancelButton);
     await waitFor(() => {
       expect(sdeOptionYes).toBeChecked();
       expect(sdeOptionNo).not.toBeChecked();
