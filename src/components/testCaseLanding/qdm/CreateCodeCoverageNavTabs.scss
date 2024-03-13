@@ -2,6 +2,7 @@ $grey-80: #333;
 
 #export-button-focus-trap {
   display: flex;
+
   > button {
     position: relative;
 
@@ -28,7 +29,7 @@ $grey-80: #333;
         margin: 0;
       }
 
-      &:after {
+      &::after {
         content: "";
         position: absolute;
         top: -8px;
