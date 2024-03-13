@@ -1,6 +1,7 @@
 $grey-80: #333;
 
 #export-button-focus-trap {
+  display: flex;
   > button {
     position: relative;
 
