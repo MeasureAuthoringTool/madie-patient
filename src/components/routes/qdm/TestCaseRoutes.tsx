@@ -23,7 +23,7 @@ const TestCaseRoutes = () => {
   );
   const featureFlags = useFeatureFlags();
   const [executionContextReady, setExecutionContextReady] =
-    useState<boolean>(true);
+    useState<boolean>(false);
   const [executing, setExecuting] = useState<boolean>();
   const [contextFailure, setContextFailure] = useState<boolean>();
   const [cqmMeasure, setCqmMeasure] = useState<CqmMeasure>();
@@ -80,10 +80,14 @@ const TestCaseRoutes = () => {
     terminologyService.current
       .getQdmValueSetsExpansion(convertedMeasure)
       .then((vs: ValueSet[]) => {
-        setCqmMeasure({
+        const newCqmMeasure = {
           ...convertedMeasure,
           value_sets: [...vs, ...drcValueSets],
-        });
+        };
+        setCqmMeasure(newCqmMeasure);
+        setExecutionContextReady(
+          !!newCqmMeasure && !_.isEmpty(newCqmMeasure?.value_sets) && !!measure
+        );
       })
       .catch((err) => {
         setContextFailure(true);
@@ -91,17 +95,13 @@ const TestCaseRoutes = () => {
       });
   };
 
-  useEffect(() => {
-    setExecutionContextReady(
-      !!cqmMeasure && !_.isEmpty(cqmMeasure?.value_sets) && !!measure
-    );
-  }, [cqmMeasure, measure]);
   return (
     <QdmExecutionContextProvider
       value={{
         measureState: [measure, setMeasure],
         cqmMeasureState: [cqmMeasure, setCqmMeasure],
         executionContextReady,
+        setExecutionContextReady,
         executing,
         setExecuting,
         contextFailure,
