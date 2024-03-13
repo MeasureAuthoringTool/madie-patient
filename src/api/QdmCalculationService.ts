@@ -194,7 +194,10 @@ export class QdmCalculationService {
         episode.MSRPOPL === 1 &&
         episode.MSRPOPLEX === 0
       ) {
-        result = episode?.observation_values?.[gpIndex];
+        result =
+            episode?.observation_values?.length > 1
+                ? episode?.observation_values?.[gpIndex]
+                : episode?.observation_values?.[0];
       }
 
       if (result && counter === targetIndex) {
