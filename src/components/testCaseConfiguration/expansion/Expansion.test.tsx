@@ -8,9 +8,13 @@ import useMeasureServiceApi, {
 // @ts-ignore
 import { checkUserCanEdit, measureStore } from "@madie/madie-util";
 import Expansion from "./Expansion";
+import { MemoryRouter } from "react-router-dom";
+import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
+import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
+import TestCaseLandingWrapper from "../../testCaseLanding/common/TestCaseLandingWrapper";
 
 const measure = {
-  id: "test measure",
+  id: "m1234",
   measureName: "the measure for testing",
   cqlLibraryName: "TestCqlLibraryName",
   ecqmTitle: "ecqmTitle",
@@ -60,11 +64,58 @@ jest.mock("@madie/madie-util", () => ({
     initialState: { canTravel: true, pendingPath: "" },
   },
   checkUserCanEdit: jest.fn().mockImplementation(() => true),
+  useFeatureFlags: jest.fn(() => {
+    return {
+      applyDefaults: false,
+      disableRunTestCaseWithObservStrat: true,
+      qdmHideJson: false,
+      qdmHighlightingTabs: true,
+    };
+  }),
 }));
+
+const serviceConfig: ServiceConfig = {
+  measureService: {
+    baseUrl: "measureService.url",
+  },
+  testCaseService: {
+    baseUrl: "testCaseService.url",
+  },
+  terminologyService: {
+    baseUrl: "terminologyService.url",
+  },
+  elmTranslationService: {
+    baseUrl: "elmTranslationService.url",
+  },
+};
+
+const setExecutionContextReady = jest.fn();
+
+function renderExpansionComponent() {
+  return render(
+    <MemoryRouter>
+      <ApiContextProvider value={serviceConfig}>
+        <QdmExecutionContextProvider
+          value={{
+            measureState: [null, jest.fn()],
+            cqmMeasureState: [null, jest.fn()],
+            executionContextReady: true,
+            setExecutionContextReady: setExecutionContextReady,
+            executing: false,
+            setExecuting: jest.fn(),
+            contextFailure: false,
+          }}
+        >
+          <TestCaseLandingWrapper qdm children={<Expansion />} />
+        </QdmExecutionContextProvider>
+      </ApiContextProvider>
+    </MemoryRouter>
+  );
+}
 
 describe("Expansion component", () => {
   it("Should display radio buttons for expansion type selection and display manifest dropdown as needed", async () => {
-    render(<Expansion />);
+    renderExpansionComponent();
 
     const latestRadioInput = screen.getByLabelText(
       "Latest"
@@ -119,7 +170,7 @@ describe("Expansion component", () => {
       () => measureWithTestCaseConfiguration
     );
 
-    render(<Expansion />);
+    renderExpansionComponent();
     const latestRadioInput = screen.getByLabelText(
       "Latest"
     ) as HTMLInputElement;
@@ -136,7 +187,7 @@ describe("Expansion component", () => {
 
   it("Should discard changes", async () => {
     measureStore.state.mockImplementation(() => measure);
-    render(<Expansion />);
+    renderExpansionComponent();
 
     const latestRadioInput = screen.getByLabelText(
       "Latest"
@@ -187,7 +238,7 @@ describe("Expansion component", () => {
     measureStore.state.mockImplementation(
       () => measureWithTestCaseConfiguration
     );
-    render(<Expansion />);
+    renderExpansionComponent();
 
     const latestRadioInput = screen.getByLabelText(
       "Latest"
