@@ -63,6 +63,11 @@ const TestCaseRoutes = () => {
             }
           })
           .catch((err) => {
+            // Added a console log because anytime this fails, we get an error banner with no other information
+            console.error(
+              "An error occurred while converting to CQM measure: ",
+              err
+            );
             setContextFailure(true);
             localErrors.push(
               "An error occurred, please try again. If the error persists, please contact the help desk"
