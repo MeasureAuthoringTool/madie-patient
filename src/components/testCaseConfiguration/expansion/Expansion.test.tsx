@@ -8,9 +8,10 @@ import useMeasureServiceApi, {
 // @ts-ignore
 import { checkUserCanEdit, measureStore } from "@madie/madie-util";
 import Expansion from "./Expansion";
+import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
 
 const measure = {
-  id: "test measure",
+  id: "m1234",
   measureName: "the measure for testing",
   cqlLibraryName: "TestCqlLibraryName",
   ecqmTitle: "ecqmTitle",
@@ -62,9 +63,29 @@ jest.mock("@madie/madie-util", () => ({
   checkUserCanEdit: jest.fn().mockImplementation(() => true),
 }));
 
+const setExecutionContextReady = jest.fn();
+
+function renderExpansionComponent() {
+  return render(
+    <QdmExecutionContextProvider
+      value={{
+        measureState: [null, jest.fn()],
+        cqmMeasureState: [null, jest.fn()],
+        executionContextReady: true,
+        setExecutionContextReady: setExecutionContextReady,
+        executing: false,
+        setExecuting: jest.fn(),
+        contextFailure: false,
+      }}
+    >
+      <Expansion />
+    </QdmExecutionContextProvider>
+  );
+}
+
 describe("Expansion component", () => {
   it("Should display radio buttons for expansion type selection and display manifest dropdown as needed", async () => {
-    render(<Expansion />);
+    renderExpansionComponent();
 
     const latestRadioInput = screen.getByLabelText(
       "Latest"
@@ -119,7 +140,7 @@ describe("Expansion component", () => {
       () => measureWithTestCaseConfiguration
     );
 
-    render(<Expansion />);
+    renderExpansionComponent();
     const latestRadioInput = screen.getByLabelText(
       "Latest"
     ) as HTMLInputElement;
@@ -136,7 +157,7 @@ describe("Expansion component", () => {
 
   it("Should discard changes", async () => {
     measureStore.state.mockImplementation(() => measure);
-    render(<Expansion />);
+    renderExpansionComponent();
 
     const latestRadioInput = screen.getByLabelText(
       "Latest"
@@ -187,7 +208,7 @@ describe("Expansion component", () => {
     measureStore.state.mockImplementation(
       () => measureWithTestCaseConfiguration
     );
-    render(<Expansion />);
+    renderExpansionComponent();
 
     const latestRadioInput = screen.getByLabelText(
       "Latest"
