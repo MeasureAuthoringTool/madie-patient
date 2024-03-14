@@ -9,6 +9,7 @@ export interface QdmExecutionContextHolder {
     setCqmMeasure: (cqmMeasure: CqmMeasure) => void
   ];
   executionContextReady: boolean;
+  setExecutionContextReady: (executionContextReady: boolean) => void;
   executing: boolean;
   setExecuting: (executing: boolean) => void;
   contextFailure: boolean;

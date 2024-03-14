@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, fireEvent, waitFor, screen } from "@testing-library/react";
+import { render, waitFor, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import SDEPage from "./SDEPage";
 import { Measure } from "@madie/madie-models";
@@ -7,16 +7,8 @@ import userEvent from "@testing-library/user-event";
 import useMeasureServiceApi, {
   MeasureServiceApi,
 } from "../../../api/useMeasureServiceApi";
+import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
 
-const mockHistoryPush = jest.fn();
-
-jest.mock("react-router-dom", () => ({
-  useHistory: () => ({
-    push: mockHistoryPush,
-  }),
-}));
-
-jest.mock("../../../api/useMeasureServiceApi");
 const measure = {
   id: "test measure",
   measureName: "the measure for testing",
@@ -29,24 +21,16 @@ const measure = {
   acls: [{ userId: "othertestuser@example.com", roles: ["SHARED_WITH"] }], //#nosec
 } as unknown as Measure;
 
-jest.mock("@madie/madie-editor", () => ({
-  synchingEditorCqlContent: jest.fn().mockResolvedValue("modified cql"),
-  parseContent: jest.fn(() => []),
-  validateContent: jest.fn().mockResolvedValue({
-    errors: [],
-    translation: { library: "NewLibName" },
-  }),
-}));
+jest.mock("../../../api/useMeasureServiceApi");
+const useMeasureServiceApiMock =
+  useMeasureServiceApi as jest.Mock<MeasureServiceApi>;
+let serviceApiMock: MeasureServiceApi;
 
 jest.mock("@madie/madie-util", () => ({
-  useOktaTokens: jest.fn(() => ({
-    getAccessToken: () => "test.jwt",
-  })),
-  useKeyPress: jest.fn(() => false),
   measureStore: {
-    updateMeasure: jest.fn(),
-    state: measure,
-    initialState: jest.fn(),
+    updateMeasure: jest.fn((measure) => measure),
+    state: jest.fn().mockImplementation(() => measure),
+    initialState: jest.fn().mockImplementation(() => measure),
     subscribe: () => {
       return { unsubscribe: () => null };
     },
@@ -60,25 +44,30 @@ jest.mock("@madie/madie-util", () => ({
     state: { canTravel: true, pendingPath: "" },
     initialState: { canTravel: true, pendingPath: "" },
   },
-
-  checkUserCanEdit: jest.fn(() => {
-    return true;
-  }),
+  checkUserCanEdit: jest.fn().mockImplementation(() => true),
 }));
 
-const useMeasureServiceApiMock =
-  useMeasureServiceApi as jest.Mock<MeasureServiceApi>;
-
-let serviceApiMock: MeasureServiceApi;
+const setExecutionContextReady = jest.fn();
+function renderSdePageComponent() {
+  return render(
+    <QdmExecutionContextProvider
+      value={{
+        measureState: [null, jest.fn()],
+        cqmMeasureState: [null, jest.fn()],
+        executionContextReady: true,
+        setExecutionContextReady: setExecutionContextReady,
+        executing: false,
+        setExecuting: jest.fn(),
+        contextFailure: false,
+      }}
+    >
+      <SDEPage />
+    </QdmExecutionContextProvider>
+  );
+}
 
 describe("SDEPage component", () => {
-  const {
-    getByTestId,
-    findByTestId,
-    findAllByTestId,
-    getByText,
-    getByLabelText,
-  } = screen;
+  const { getByTestId, findByTestId, getByText, getByLabelText } = screen;
 
   test("Changes to Test Case Configuration enables Save button and saving successfully displays success message", async () => {
     serviceApiMock = {
@@ -86,14 +75,14 @@ describe("SDEPage component", () => {
     } as unknown as MeasureServiceApi;
     useMeasureServiceApiMock.mockImplementation(() => serviceApiMock);
 
-    render(<SDEPage />);
+    renderSdePageComponent();
 
     userEvent.click(getByLabelText("Yes"));
 
     const saveButton = getByTestId("sde-save");
     expect(saveButton).toBeInTheDocument();
     await waitFor(() => expect(saveButton).toBeEnabled());
-    fireEvent.click(saveButton);
+    userEvent.click(saveButton);
     await waitFor(() =>
       expect(serviceApiMock.updateMeasure).toBeCalledWith({
         ...measure,
@@ -104,36 +93,36 @@ describe("SDEPage component", () => {
     );
 
     expect(
-      await getByText("Test Case Configuration Updated Successfully")
+      getByText("Test Case Configuration Updated Successfully")
     ).toBeInTheDocument();
 
     const toastCloseButton = await findByTestId("close-error-button");
     expect(toastCloseButton).toBeInTheDocument();
-    fireEvent.click(toastCloseButton);
+    userEvent.click(toastCloseButton);
     await waitFor(() => {
       expect(toastCloseButton).not.toBeInTheDocument();
     });
   });
 
   test("Change of Test Configuration enables Discard button and click Discard resets the form", async () => {
-    const { getByRole } = render(<SDEPage />);
+    renderSdePageComponent();
 
-    const sdeOptionYes = getByRole("radio", { name: "Yes" });
-    const sdeOptionNo = getByRole("radio", { name: "No" });
+    const sdeOptionYes = screen.getByRole("radio", { name: "Yes" });
+    const sdeOptionNo = screen.getByRole("radio", { name: "No" });
     userEvent.click(getByLabelText("Yes"));
 
     const cancelButton = getByTestId("cancel-button");
     expect(cancelButton).toBeInTheDocument();
     await waitFor(() => expect(cancelButton).toBeEnabled());
     act(() => {
-      fireEvent.click(cancelButton);
+      userEvent.click(cancelButton);
     });
 
-    const discardDialog = await getByTestId("discard-dialog");
+    const discardDialog = getByTestId("discard-dialog");
     expect(discardDialog).toBeInTheDocument();
-    const continueButton = await getByTestId("discard-dialog-continue-button");
+    const continueButton = getByTestId("discard-dialog-continue-button");
     expect(continueButton).toBeInTheDocument();
-    fireEvent.click(continueButton);
+    userEvent.click(continueButton);
     await waitFor(() => {
       expect(sdeOptionYes).not.toBeChecked();
       expect(sdeOptionNo).toBeChecked();
@@ -141,26 +130,22 @@ describe("SDEPage component", () => {
   });
 
   test("Discard change then click Keep Working", async () => {
-    const { getByRole } = render(<SDEPage />);
+    renderSdePageComponent();
 
-    const sdeOptionYes = getByRole("radio", { name: "Yes" });
-    const sdeOptionNo = getByRole("radio", { name: "No" });
+    const sdeOptionYes = screen.getByRole("radio", { name: "Yes" });
+    const sdeOptionNo = screen.getByRole("radio", { name: "No" });
     userEvent.click(getByLabelText("Yes"));
 
     const cancelButton = getByTestId("cancel-button");
     expect(cancelButton).toBeInTheDocument();
     await waitFor(() => expect(cancelButton).toBeEnabled());
-    act(() => {
-      fireEvent.click(cancelButton);
-    });
+    userEvent.click(cancelButton);
 
-    const discardDialog = await getByTestId("discard-dialog");
+    const discardDialog = getByTestId("discard-dialog");
     expect(discardDialog).toBeInTheDocument();
-    const discardCancelButton = await getByTestId(
-      "discard-dialog-cancel-button"
-    );
+    const discardCancelButton = getByTestId("discard-dialog-cancel-button");
     expect(discardCancelButton).toBeInTheDocument();
-    fireEvent.click(discardCancelButton);
+    userEvent.click(discardCancelButton);
     await waitFor(() => {
       expect(sdeOptionYes).toBeChecked();
       expect(sdeOptionNo).not.toBeChecked();
