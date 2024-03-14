@@ -21,3 +21,16 @@ export function cloneTestCase(testCase: TestCase) {
 
   return clonedTestCase;
 }
+
+export function defaultTestCaseJson(testCase: TestCase) {
+  if (_.isNil(testCase)) {
+    return;
+  }
+  const clonedTestCase = _.cloneDeep(testCase);
+  if (_.isEmpty(clonedTestCase.json)) {
+    const qdmPatient = new QDMPatient();
+    qdmPatient._id = new ObjectID();
+    clonedTestCase.json = JSON.stringify(qdmPatient);
+  }
+  return clonedTestCase;
+}
