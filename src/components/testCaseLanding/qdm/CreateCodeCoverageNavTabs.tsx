@@ -257,7 +257,11 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
 
           {/* render focus trap only when needed */}
           {featureFlags?.testCaseExport && (
-            <div id="export-button-focus-trap" {...focusTrapAttributes}>
+            <div
+              {...focusTrapAttributes}
+              id="export-button-focus-trap"
+              data-testid="export-button-focus-trap"
+            >
               <Button
                 onClick={(e) => {
                   handleOpen(e);

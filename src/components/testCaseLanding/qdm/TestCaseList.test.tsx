@@ -2133,6 +2133,53 @@ describe("TestCaseList component", () => {
       expect(qrdaExportButton).toBeInTheDocument();
     });
   });
+  it("should trigger tooltip when disabled", async () => {
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      qdmTestCases: true,
+      testCaseExport: true,
+    }));
+    await renderTestCaseListComponent();
+    await waitFor(() => {
+      const qrdaExportButton = screen.getByTestId(
+        "show-export-test-cases-button"
+      );
+      expect(qrdaExportButton).toBeDisabled();
+    });
+    const toolTip = screen.queryByTestId(
+      "show-export-test-case-button-tooltip"
+    );
+    await waitFor(() => {
+      expect(toolTip).toHaveClass("hidden");
+    });
+    const focusTrap = screen.getByTestId("export-button-focus-trap");
+    //focus
+    fireEvent.focus(focusTrap);
+    await waitFor(() => {
+      expect(toolTip).not.toHaveClass("hidden");
+    });
+    //blur
+    act(() => {
+      fireEvent.blur(focusTrap);
+    });
+    await waitFor(() => {
+      expect(toolTip).toHaveClass("hidden");
+    });
+    //enter
+    act(() => {
+      fireEvent.mouseEnter(focusTrap);
+    });
+    await waitFor(() => {
+      expect(toolTip).not.toHaveClass("hidden");
+    });
+    //leave
+    act(() => {
+      fireEvent.mouseLeave(focusTrap);
+    });
+    await waitFor(() => {
+      expect(toolTip).toHaveClass("hidden");
+    });
+  });
+
   it("should not display export qrda button", async () => {
     renderTestCaseListComponent();
     await waitFor(() => {
