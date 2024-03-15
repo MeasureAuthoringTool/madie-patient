@@ -167,7 +167,7 @@ describe("TerminologyServiceApi Tests", () => {
     const result: ValueSet[] =
       terminologyService.getValueSetsForDRCs(cqm_measure_basic);
 
-    expect(result.length).toBe(1);
+    expect(result.length).toBe(3);
 
     expect(result[0].oid).toBe("drc-bdb8b89536181a411ad034378b7ceef6");
     expect(result[0].concepts[0].code).toBe(
@@ -176,6 +176,9 @@ describe("TerminologyServiceApi Tests", () => {
     expect(result[0].concepts[0].code_system_name).toBe("LOINC");
     expect(result[0].concepts[0].display_name).toBe("Housing status");
     expect(result[0].concepts[0].code_system_oid).toBe("2.16.840.1.113883.6.1");
+
+    expect(result[1].oid).not.toBe("drc-bdb8b89536181a411ad034378b7ceef6");
+    expect(result[1].oid).toContain("drc-");
   });
 
   it("test getValueSetsForDRCs no value sets", () => {
