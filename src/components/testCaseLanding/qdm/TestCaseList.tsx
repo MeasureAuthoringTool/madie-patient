@@ -538,7 +538,11 @@ const TestCaseList = (props: TestCaseListProps) => {
                 onExportQRDA={() => exportQRDA()}
               />
             </div>
-            <CreateNewTestCaseDialog open={createOpen} onClose={handleClose} />
+            <CreateNewTestCaseDialog
+              open={createOpen}
+              onClose={handleClose}
+              measure={measure}
+            />
             {activeTab === "passing" && (
               <div tw="overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div tw="py-2 inline-block min-w-full sm:px-6 lg:px-8">

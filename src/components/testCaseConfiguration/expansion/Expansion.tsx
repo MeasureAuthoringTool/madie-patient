@@ -17,8 +17,10 @@ import "../testCaseConfiguration.scss";
 import useMeasureServiceApi from "../../../api/useMeasureServiceApi";
 import { MenuItem, Typography } from "@mui/material";
 import * as Yup from "yup";
+import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
 
 const Expansion = () => {
+  const { setExecutionContextReady } = useQdmExecutionContext();
   const [measure, setMeasure] = useState<Measure>(measureStore.state);
   const measureServiceApi = useMeasureServiceApi();
   const { updateMeasure } = measureStore;
@@ -118,6 +120,8 @@ const Expansion = () => {
       .updateMeasure(updatedMeasure)
       .then(() => {
         handleToast("success", "Expansion details Updated Successfully", true);
+        // To disable Run test case button, until cqmMeasure is rebuilt
+        setExecutionContextReady(false);
         // updating measure will propagate update state site wide.
         updateMeasure(updatedMeasure);
       })

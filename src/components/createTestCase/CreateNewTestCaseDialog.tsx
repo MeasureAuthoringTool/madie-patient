@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { TestCase } from "@madie/madie-models";
+import { TestCase, Measure } from "@madie/madie-models";
 import { TestCaseValidator } from "../../validators/TestCaseValidator";
 import {
   MadieDialog,
@@ -15,6 +15,7 @@ import useTestCaseServiceApi from "../../api/useTestCaseServiceApi";
 import * as _ from "lodash";
 import TestCaseSeries from "./TestCaseSeries";
 import { sanitizeUserInput } from "../../util/Utils";
+import { defaultTestCaseJson } from "../../util/QdmTestCaseHelper";
 
 interface Toast {
   toastOpen: boolean;
@@ -60,7 +61,17 @@ const testCaseSeriesStyles = {
   },
 };
 
-const CreateNewTestCaseDialog = ({ open, onClose }) => {
+interface createNewTestCaseDialogProps {
+  open: boolean;
+  onClose: (boolean) => void;
+  measure?: Measure;
+}
+
+const CreateNewTestCaseDialog = ({
+  open,
+  onClose,
+  measure,
+}: createNewTestCaseDialogProps) => {
   const [toast, setToast] = useState<Toast>({
     toastOpen: false,
     toastType: "danger",
@@ -126,6 +137,10 @@ const CreateNewTestCaseDialog = ({ open, onClose }) => {
     testCase.title = sanitizeUserInput(testCase.title);
     testCase.description = sanitizeUserInput(testCase.description);
     testCase.series = sanitizeUserInput(testCase.series);
+
+    if (measure?.model?.includes("QDM")) {
+      testCase = defaultTestCaseJson(testCase);
+    }
 
     await createTestCase(testCase);
   };

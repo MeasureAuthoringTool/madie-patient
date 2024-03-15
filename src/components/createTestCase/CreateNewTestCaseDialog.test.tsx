@@ -90,10 +90,16 @@ describe("Create New Test Case Dialog", () => {
         series: formikInfo.series,
       },
     });
-
+    const measure: Measure = {
+      model: "QDM",
+    } as unknown as Measure;
     await act(async () => {
       const { getByRole, getByTestId, getByText, queryByTestId } = await render(
-        <CreateNewTestCaseDialog open={true} onClose={jest.fn()} />
+        <CreateNewTestCaseDialog
+          open={true}
+          onClose={jest.fn()}
+          measure={measure}
+        />
       );
 
       const titleInput = await getByTestId("create-test-case-title-input");
@@ -107,8 +113,6 @@ describe("Create New Test Case Dialog", () => {
       userEvent.type(descriptionInput, formikInfo.description);
       expect(descriptionInput.value).toBe(formikInfo.description);
       Simulate.change(descriptionInput);
-
-      screen.debug(undefined, 20000);
 
       const seriesInput = getByRole("combobox");
       userEvent.type(seriesInput, formikInfo.series);
