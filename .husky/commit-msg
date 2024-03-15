@@ -2,7 +2,7 @@
 . "$(dirname "$0")/_/husky.sh"
 
 # REGEX for commit message
-MSG_REGEX="(^MAT-[0-9]+ .*)|(^Merge pull request.*)|(^Merge remote-tracking.*)|(^Merge branch.*)|(^Revert.*)"
+MSG_REGEX="(^MAT-[0-9]+[:]* .*)|(^Merge pull request.*)|(^Merge remote-tracking.*)|(^Merge branch.*)|(^Revert.*)"
 
 # get the commit message
 COMMIT_MSG=$(cat "$1")
