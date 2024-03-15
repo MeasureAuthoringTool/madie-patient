@@ -2178,6 +2178,23 @@ describe("TestCaseList component", () => {
     await waitFor(() => {
       expect(toolTip).toHaveClass("hidden");
     });
+    act(() => {
+      fireEvent.mouseEnter(focusTrap);
+    });
+    await waitFor(() => {
+      expect(toolTip).not.toHaveClass("hidden");
+    });
+    act(() => {
+      fireEvent.keyDown(focusTrap, {
+        key: "Escape",
+        code: "Escape",
+        keyCode: 27,
+        charCode: 27,
+      });
+    });
+    await waitFor(() => {
+      expect(toolTip).toHaveClass("hidden");
+    });
   });
 
   it("should not display export qrda button", async () => {
