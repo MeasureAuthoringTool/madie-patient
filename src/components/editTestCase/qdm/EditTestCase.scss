@@ -18,7 +18,7 @@
         > .panel-content {
           padding-left: 16px;
           padding-right: 16px;
-          height: inherit;
+          height: calc(100% - 48px);
         }
         > .panel-content {
           padding-top: 0px;

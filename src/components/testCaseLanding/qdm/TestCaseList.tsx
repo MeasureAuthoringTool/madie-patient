@@ -218,7 +218,6 @@ const TestCaseList = (props: TestCaseListProps) => {
         const patientResults = executionResults[patient._id];
         const testCaseWithResults =
           qdmCalculation.current.processTestCaseResults(
-            // buildHighlightingForGroups(validTestCases[0], cqmMeasure)
             testCase,
             [selectedPopCriteria],
             measure,
@@ -227,7 +226,6 @@ const TestCaseList = (props: TestCaseListProps) => {
         testCase.groupPopulations = testCaseWithResults.groupPopulations;
         testCase.executionStatus = testCaseWithResults.executionStatus;
       });
-
       setExecuteAllTestCases(true);
       const { passPercentage, passFailRatio } =
         calculation.current.getPassingPercentageForTestCases(testCases);

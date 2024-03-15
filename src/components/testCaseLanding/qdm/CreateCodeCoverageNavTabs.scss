@@ -1,0 +1,44 @@
+$grey-80: #333;
+
+#export-button-focus-trap {
+  display: flex;
+
+  > button {
+    position: relative;
+
+    > .madie-tooltip {
+      z-index: 1;
+      border-radius: 4px;
+      color: #fff;
+      background: $grey-80;
+      padding: 8px 16px;
+      position: absolute;
+      overflow: visible;
+      width: 150%;
+      left: -25%;
+      top: calc(100% + 12px);
+
+      &.hidden {
+        visibility: hidden;
+      }
+
+      > p {
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        margin: 0;
+      }
+
+      &::after {
+        content: "";
+        position: absolute;
+        top: -8px;
+        height: 16px;
+        width: 16px;
+        background-color: $grey-80;
+        rotate: 45deg;
+        left: calc(50% - 1px);
+      }
+    }
+  }
+}

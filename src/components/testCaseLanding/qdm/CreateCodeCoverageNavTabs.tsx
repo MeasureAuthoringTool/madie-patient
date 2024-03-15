@@ -23,6 +23,8 @@ import RunTestButton from "../common/runTestsButton/RunTestsButton";
 import { disableRunTestButtonText } from "../../../util/Utils";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import classNames from "classnames";
+import "./CreateCodeCoverageNavTabs.scss";
 
 export interface NavTabProps {
   activeTab: string;
@@ -55,7 +57,7 @@ const defaultStyle = {
 
 export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
   const { executionContextReady, contextFailure } = useQdmExecutionContext();
-
+  const exportMessage = "Test cases must be executed prior to exporting.";
   const {
     activeTab,
     setActiveTab,
@@ -72,13 +74,16 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     onDeleteAllTestCases,
     onExportQRDA,
   } = props;
-
+  const [activeTip, setActiveTip] = useState<boolean>(false);
+  const toolTipClass = classNames("madie-tooltip", {
+    // hide the tooltip if all testcases have been run
+    hidden: !activeTip || executeAllTestCases,
+  });
   const featureFlags = useFeatureFlags();
   const [shouldDisableRunTestsButton, setShouldDisableRunTestsButton] =
     useState(false);
   const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState(null);
-
   useEffect(() => {
     if (featureFlags?.disableRunTestCaseWithObservStrat) {
       const groups: Group[] = measure?.groups;
@@ -144,6 +149,28 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     setAnchorEl(null);
   };
 
+  // we only want these attributes surrounding the button if it's disabled.
+  const focusTrapAttributes = !executeAllTestCases
+    ? {
+        role: "button",
+        tabIndex: 0,
+        onFocus: () => setActiveTip(true),
+        onBlur: () => {
+          setActiveTip(false);
+        },
+        onMouseEnter: () => {
+          setActiveTip(true);
+        },
+        onMouseLeave: () => {
+          setActiveTip(false);
+        },
+        onKeyDown: (e) => {
+          if (e.key === "Escape") {
+            setActiveTip(false);
+          }
+        },
+      }
+    : {};
   return (
     <>
       <div
@@ -225,20 +252,42 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
             onRunTests={executeTestCases}
             shouldDisableRunTestsButton={shouldDisableRunTestsButton}
           />
+
+          {/* disabled elements do not fire events. we wrap a listener around it to bypass */}
+
+          {/* render focus trap only when needed */}
           {featureFlags?.testCaseExport && (
-            <Button
-              onClick={(e) => {
-                handleOpen(e);
-              }}
-              disabled={!canEdit}
-              data-testid="show-export-test-cases-button"
+            <div
+              {...focusTrapAttributes}
+              id="export-button-focus-trap"
+              data-testid="export-button-focus-trap"
             >
-              Export Test Cases
-              <ExpandMoreIcon
-                style={{ margin: "0 5px 0 5px" }}
-                fontSize="small"
-              />
-            </Button>
+              <Button
+                onClick={(e) => {
+                  handleOpen(e);
+                }}
+                disabled={!executeAllTestCases}
+                id="show-export-test-cases-button"
+                aria-describedby="show-export-test-cases-button-tooltip"
+                data-testid="show-export-test-cases-button"
+                tabIndex={0}
+              >
+                Export Test Cases
+                <div
+                  role="tooltip"
+                  id="show-export-test-cases-button-tooltip"
+                  data-testid="show-export-test-case-button-tooltip"
+                  aria-live="polite"
+                  className={toolTipClass}
+                >
+                  <p>{exportMessage}</p>
+                </div>
+                <ExpandMoreIcon
+                  style={{ margin: "0 5px 0 5px" }}
+                  fontSize="small"
+                />
+              </Button>
+            </div>
           )}
           <Popover
             optionsOpen={optionsOpen}
