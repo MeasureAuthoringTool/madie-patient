@@ -7,7 +7,7 @@ import {
   Select,
 } from "@madie/madie-design-system/dist/react";
 import { useFormik } from "formik";
-import { Measure } from "@madie/madie-models";
+import { ManifestExpansion, Measure } from "@madie/madie-models";
 import {
   measureStore,
   checkUserCanEdit,
@@ -18,11 +18,16 @@ import useMeasureServiceApi from "../../../api/useMeasureServiceApi";
 import { MenuItem, Typography } from "@mui/material";
 import * as Yup from "yup";
 import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
+import useTerminologyServiceApi from "../../../api/useTerminologyServiceApi";
 
 const Expansion = () => {
   const { setExecutionContextReady } = useQdmExecutionContext();
   const [measure, setMeasure] = useState<Measure>(measureStore.state);
+  const [manifestOptions, setManifestOptions] = useState<ManifestExpansion[]>(
+    []
+  );
   const measureServiceApi = useMeasureServiceApi();
+  const terminologyServiceApi = useTerminologyServiceApi();
   const { updateMeasure } = measureStore;
 
   const { updateRouteHandlerState } = routeHandlerStore;
@@ -57,22 +62,6 @@ const Expansion = () => {
     setToastOpen(open);
   };
 
-  // Todo MAT-6736 will fetch the actual values from VSAC
-  const manifestOptions = [
-    {
-      label: "ecqm-update-4q2017-eh",
-      value: "https://cts.nlm.nih.gov/fhir/Library/ecqm-update-4q2017-eh",
-    },
-    {
-      label: "mu2-update-2012-10-25",
-      value: "https://cts.nlm.nih.gov/fhir/Library/mu2-update-2012-10-25",
-    },
-    {
-      label: "mu2-update-2012-12-21",
-      value: "https://cts.nlm.nih.gov/fhir/Library/mu2-update-2012-12-21",
-    },
-  ];
-
   const formik = useFormik({
     initialValues: {
       isManifestExpansion:
@@ -95,15 +84,15 @@ const Expansion = () => {
     let updatedMeasure: Measure;
     if (values?.isManifestExpansion) {
       const selectedManifest = manifestOptions.find(
-        (manifestOption) => manifestOption.label === values.manifestExpansionId
+        (manifestOption) => manifestOption.id === values.manifestExpansionId
       );
       updatedMeasure = {
         ...measure,
         testCaseConfiguration: {
           ...measure.testCaseConfiguration,
           manifestExpansion: {
-            fullUrl: selectedManifest.value,
-            id: selectedManifest.label,
+            fullUrl: selectedManifest.fullUrl,
+            id: selectedManifest.id,
           },
         },
       };
@@ -142,6 +131,27 @@ const Expansion = () => {
       pendingRoute: "",
     });
   }, [formik.dirty]);
+
+  // Fetch the list of manifests available in VSAC
+  // List is fetched only when manifest option is selected,
+  // The result is cached at service level in the backend
+  useEffect(() => {
+    if (formik.values.isManifestExpansion === true) {
+      terminologyServiceApi
+        .getManifestList()
+        .then((response) => {
+          setManifestOptions(response.data);
+        })
+        .catch((error) => {
+          handleToast(
+            "danger",
+            "Error fetching Manifest options : " +
+              error?.response?.data?.message?.toString(),
+            true
+          );
+        });
+    }
+  }, [formik.values.isManifestExpansion]);
 
   return (
     <form
@@ -201,14 +211,14 @@ const Expansion = () => {
                 formik.errors.manifestExpansionId
               }
               size="small"
-              options={manifestOptions.map((manifestOption) => {
+              options={manifestOptions?.map((manifestOption) => {
                 return (
                   <MenuItem
-                    key={manifestOption.label}
-                    value={manifestOption.label}
-                    data-testid={`manifest-option-${manifestOption.label}`}
+                    key={manifestOption.id}
+                    value={manifestOption.id}
+                    data-testid={`manifest-option-${manifestOption.id}`}
                   >
-                    {manifestOption.label}
+                    {manifestOption.id}
                   </MenuItem>
                 );
               })}
