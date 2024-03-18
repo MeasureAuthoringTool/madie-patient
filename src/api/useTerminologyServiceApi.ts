@@ -5,6 +5,7 @@ import { getOidFromString, useOktaTokens } from "@madie/madie-util";
 import { Bundle, Library, ValueSet } from "fhir/r4";
 import { CqmMeasure, CQL } from "cqm-models";
 import * as _ from "lodash";
+import md5 from "blueimp-md5";
 
 type ValueSetSearchParams = {
   oid: string;
@@ -183,23 +184,23 @@ export class TerminologyServiceApi {
     if (cqlCodeWithCodeSystemOid) {
       cqlCodeWithCodeSystemOid.forEach(({ cqlCode, codeSystemOid }) => {
         const drcOid = this.getDrcOid(cqmMeasure, cqlCode.code);
-        if (drcOid) {
-          const valueSet = {
-            oid: drcOid,
-            version: cqlCode.version,
-            concepts: [
-              {
-                code: cqlCode.code,
-                code_system_oid: codeSystemOid,
-                code_system_name: cqlCode.system,
-                code_system_version: cqlCode.version,
-                display_name: cqlCode.display,
-              },
-            ],
-            display_name: cqlCode.display,
-          };
-          drcValueSets.push(valueSet);
-        }
+        const valueSet = {
+          oid:
+            drcOid ??
+            `drc-${md5(cqlCode.system + cqlCode.code + cqlCode.version)}`,
+          version: cqlCode.version,
+          concepts: [
+            {
+              code: cqlCode.code,
+              code_system_oid: codeSystemOid,
+              code_system_name: cqlCode.system,
+              code_system_version: cqlCode.version,
+              display_name: cqlCode.display,
+            },
+          ],
+          display_name: cqlCode.display,
+        };
+        drcValueSets.push(valueSet);
       });
     }
     return drcValueSets;
