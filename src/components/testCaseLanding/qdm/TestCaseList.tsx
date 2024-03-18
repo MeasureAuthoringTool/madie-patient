@@ -41,7 +41,6 @@ import {
   buildHighlightingForAllGroups,
 } from "../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
 import { uniqWith } from "lodash";
-import getModelFamily from "../../../util/measureModelHelpers";
 
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
@@ -463,10 +462,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     const url = window.URL.createObjectURL(exportBlob);
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute(
-      "download",
-      `${ecqmTitle}-v${version}-${getModelFamily(model)}-TestCases.zip`
-    );
+    link.setAttribute("download", `${ecqmTitle}-v${version}-TestCases.zip`);
     document.body.appendChild(link);
     link.click();
     setToastOpen(true);
