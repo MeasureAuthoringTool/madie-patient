@@ -9,6 +9,31 @@ import useMeasureServiceApi, {
 import { checkUserCanEdit, measureStore } from "@madie/madie-util";
 import Expansion from "./Expansion";
 import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
+import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
+import axios from "axios";
+
+const mockServiceConfig: ServiceConfig = {
+  measureService: { baseUrl: "measure.url" },
+  testCaseService: { baseUrl: "testcase.url" },
+  terminologyService: { baseUrl: "terminology.url" },
+  elmTranslationService: { baseUrl: "translator.url" },
+};
+
+const mockManifestList = [
+  {
+    fullUrl:
+      "https://cts.nlm.nih.gov/fhir/Library/cms-pre-rulemaking-ecqm-2019-08-30",
+    id: "cms-pre-rulemaking-ecqm-2019-08-30",
+  },
+  {
+    fullUrl: "https://cts.nlm.nih.gov/fhir/Library/mu2-update-2012-10-25",
+    id: "mu2-update-2012-10-25",
+  },
+  {
+    fullUrl: "https://cts.nlm.nih.gov/fhir/Library/mu2-update-2012-12-21",
+    id: "mu2-update-2012-12-21",
+  },
+];
 
 const measure = {
   id: "m1234",
@@ -42,6 +67,9 @@ const measureServiceApiMock = {
 } as unknown as MeasureServiceApi;
 useMeasureServiceApiMock.mockImplementation(() => measureServiceApiMock);
 
+jest.mock("axios");
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+
 jest.mock("@madie/madie-util", () => ({
   measureStore: {
     updateMeasure: jest.fn((measure) => measure),
@@ -61,30 +89,46 @@ jest.mock("@madie/madie-util", () => ({
     initialState: { canTravel: true, pendingPath: "" },
   },
   checkUserCanEdit: jest.fn().mockImplementation(() => true),
+  useOktaTokens: () => ({
+    getAccessToken: () => "test.jwt",
+  }),
 }));
 
 const setExecutionContextReady = jest.fn();
 
 function renderExpansionComponent() {
   return render(
-    <QdmExecutionContextProvider
-      value={{
-        measureState: [null, jest.fn()],
-        cqmMeasureState: [null, jest.fn()],
-        executionContextReady: true,
-        setExecutionContextReady: setExecutionContextReady,
-        executing: false,
-        setExecuting: jest.fn(),
-        contextFailure: false,
-      }}
-    >
-      <Expansion />
-    </QdmExecutionContextProvider>
+    <ApiContextProvider value={mockServiceConfig}>
+      <QdmExecutionContextProvider
+        value={{
+          measureState: [null, jest.fn()],
+          cqmMeasureState: [null, jest.fn()],
+          executionContextReady: true,
+          setExecutionContextReady: setExecutionContextReady,
+          executing: false,
+          setExecuting: jest.fn(),
+          contextFailure: false,
+        }}
+      >
+        <Expansion />
+      </QdmExecutionContextProvider>
+    </ApiContextProvider>
   );
 }
 
 describe("Expansion component", () => {
   it("Should display radio buttons for expansion type selection and display manifest dropdown as needed", async () => {
+    mockedAxios.get.mockImplementation((args) => {
+      if (
+        args &&
+        args.startsWith(mockServiceConfig.terminologyService.baseUrl)
+      ) {
+        return Promise.resolve({
+          data: mockManifestList,
+          status: 200,
+        });
+      }
+    });
     renderExpansionComponent();
 
     const latestRadioInput = screen.getByLabelText(
@@ -117,7 +161,9 @@ describe("Expansion component", () => {
     userEvent.click(manifestOptions[0]);
     await waitFor(() => {
       const manifestSelectInput = screen.getByTestId("manifest-select-input");
-      expect(manifestSelectInput).toHaveValue("ecqm-update-4q2017-eh");
+      expect(manifestSelectInput).toHaveValue(
+        "cms-pre-rulemaking-ecqm-2019-08-30"
+      );
       expect(saveButton).toBeEnabled();
       userEvent.click(saveButton);
     });
@@ -128,11 +174,58 @@ describe("Expansion component", () => {
       ...measure,
       testCaseConfiguration: {
         manifestExpansion: {
-          fullUrl: "https://cts.nlm.nih.gov/fhir/Library/ecqm-update-4q2017-eh",
-          id: "ecqm-update-4q2017-eh",
+          fullUrl:
+            "https://cts.nlm.nih.gov/fhir/Library/cms-pre-rulemaking-ecqm-2019-08-30",
+          id: "cms-pre-rulemaking-ecqm-2019-08-30",
         },
       },
     });
+  });
+
+  it("Should throw a toast error when we are unable to fetch manifest list from service", async () => {
+    mockedAxios.get.mockImplementation((args) => {
+      if (
+        args &&
+        args.startsWith(mockServiceConfig.terminologyService.baseUrl)
+      ) {
+        return Promise.reject({
+          response: {
+            data: {
+              message:
+                "401 Unauthorized from GET https://uat-cts.nlm.nih.gov/fhir/Library",
+            },
+            status: 401,
+          },
+        });
+      }
+    });
+    renderExpansionComponent();
+
+    const latestRadioInput = screen.getByLabelText(
+      "Latest"
+    ) as HTMLInputElement;
+    const manifestRadioInput = screen.getByLabelText(
+      "Manifest"
+    ) as HTMLInputElement;
+
+    // Verify default selection
+    expect(latestRadioInput).toBeChecked();
+    expect(manifestRadioInput).not.toBeChecked();
+
+    const saveButton = screen.getByRole("button", { name: "Save" });
+    const discardButton = screen.getByRole("button", {
+      name: "Discard Changes",
+    });
+    expect(saveButton).toBeDisabled();
+    expect(discardButton).toBeDisabled();
+
+    // Update form
+    userEvent.click(manifestRadioInput);
+    expect(
+      await screen.findByTestId("manifest-expansion-generic-error-text")
+    ).toHaveTextContent(
+      "Error fetching Manifest options : 401 Unauthorized from GET https://uat-cts.nlm.nih.gov/fhir/Library"
+    );
   });
 
   it("Should display previously selected values from measure store", () => {

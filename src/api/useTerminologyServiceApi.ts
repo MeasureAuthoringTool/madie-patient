@@ -239,6 +239,14 @@ export class TerminologyServiceApi {
     );
     return find?.desc;
   }
+
+  async getManifestList() {
+    return await axios.get(`${this.baseUrl}/vsac/manifest-list`, {
+      headers: {
+        Authorization: `Bearer ${this.getAccessToken()}`,
+      },
+    });
+  }
 }
 
 export default function useTerminologyServiceApi(): TerminologyServiceApi {
