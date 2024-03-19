@@ -462,7 +462,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     const url = window.URL.createObjectURL(exportBlob);
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", `${ecqmTitle}-v${version}-TestCases.zip`);
+    link.setAttribute("download", `${ecqmTitle}-v${version}-QDM-TestCases.zip`);
     document.body.appendChild(link);
     link.click();
     setToastOpen(true);
