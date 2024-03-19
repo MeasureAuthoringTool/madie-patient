@@ -80,9 +80,15 @@ const StatusHandler = ({
                 </h6>
                 <ul>
                   {failedImports.map((failedImport) => {
+                    const family = failedImport?.familyName;
+                    const given = failedImport?.givenNames?.toString();
+                    const names =
+                      family && given
+                        ? `${family} ${given}`
+                        : failedImport?.patientId;
                     return (
                       <li data-testid="failed-test-cases">
-                        {failedImport.patientId} <br />
+                        {names} <br />
                         <span tw="ml-4">Reason : {failedImport.message}</span>
                       </li>
                     );
@@ -98,9 +104,17 @@ const StatusHandler = ({
                     <ul>
                       {successfulImportsWithWarning.map(
                         (successfulImportWithWarning) => {
+                          const family =
+                            successfulImportWithWarning?.familyName;
+                          const given =
+                            successfulImportWithWarning?.givenNames?.toString();
+                          const names =
+                            family && given
+                              ? `${family} ${given}`
+                              : successfulImportWithWarning?.patientId;
                           return (
                             <li data-testid="success-imports-with-warnings">
-                              {successfulImportWithWarning.patientId}{" "}
+                              {names}{" "}
                             </li>
                           );
                         }

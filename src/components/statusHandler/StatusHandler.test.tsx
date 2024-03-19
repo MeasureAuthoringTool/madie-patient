@@ -4,7 +4,7 @@ import StatusHandler from "./StatusHandler";
 import { TestCaseImportOutcome } from "../../../../madie-models/src/TestCase";
 
 describe("StatusHandler Component", () => {
-  const { getByTestId, queryByTestId, getByText } = screen;
+  const { getByTestId, queryByTestId, getByText, findByText } = screen;
   test("Should display nothing when error is false", () => {
     render(
       <StatusHandler
@@ -96,5 +96,54 @@ describe("StatusHandler Component", () => {
     const importWarnings: TestCaseImportOutcome[] = [];
     render(<StatusHandler importWarnings={importWarnings} />);
     expect(screen.queryByTestId("failed-test-cases")).toBeNull();
+  });
+
+  it("displays success family + given names", async () => {
+    const successOutcomes: TestCaseImportOutcome[] = [
+      {
+        familyName: "Family1",
+        givenNames: ["Given1"],
+        patientId: "test.patientId",
+        message: "Error while processing Test Case Json.",
+        successful: true,
+      },
+      {
+        familyName: "Family2",
+        givenNames: [""],
+        patientId: "test.patientId2",
+        message:
+          "The measure populations do not match the populations in the import file. No expected values have been set.",
+        successful: true,
+      },
+    ];
+    render(<StatusHandler importWarnings={successOutcomes} />);
+    const name = await findByText("Family1 Given1");
+    expect(name).toBeInTheDocument();
+    const name1 = await findByText("test.patientId2");
+    expect(name1).toBeInTheDocument();
+  });
+  it("displays failure family + given names", async () => {
+    const failureOutcome: TestCaseImportOutcome[] = [
+      {
+        familyName: "Family1",
+        givenNames: ["Given1"],
+        patientId: "test.patientId",
+        message: "Error while processing Test Case Json.",
+        successful: false,
+      },
+      {
+        familyName: "Family2",
+        givenNames: [""],
+        patientId: "test.patientId2",
+        message:
+          "The measure populations do not match the populations in the import file. No expected values have been set.",
+        successful: false,
+      },
+    ];
+    render(<StatusHandler importWarnings={failureOutcome} />);
+    const name = await findByText("Family1 Given1");
+    expect(name).toBeInTheDocument();
+    const name1 = await findByText("test.patientId2");
+    expect(name1).toBeInTheDocument();
   });
 });
