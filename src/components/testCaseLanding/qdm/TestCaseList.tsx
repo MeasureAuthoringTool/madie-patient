@@ -41,13 +41,13 @@ import {
   buildHighlightingForAllGroups,
 } from "../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
 import { uniqWith } from "lodash";
-
+import checkSpecialCharacters from "../common/checkSpecialCharacters";
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
-
 export const coverageHeaderRegex =
   /<h2> .* Clause Coverage: (\d*\.\d+|\d*|NaN)%<\/h2>/i;
-
+export const EXPORT_ERROR_CHARACTERS =
+  "Test Cases can not be exported some titles or groups contain special characters.";
 export const removeHtmlCoverageHeader = (
   coverageHtml: Record<string, string>
 ): Record<string, string> => {
@@ -486,6 +486,15 @@ const TestCaseList = (props: TestCaseListProps) => {
     }
   };
 
+  const checkTestCases = () => {
+    const failedTCs = checkSpecialCharacters(testCases);
+    if (failedTCs.length) {
+      setErrors((prevState) => [...prevState, ...failedTCs]);
+      return;
+    }
+    exportQRDA();
+  };
+
   return (
     <div>
       {!loadingState.loading && (
@@ -529,7 +538,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                 onDeleteAllTestCases={() =>
                   setOpenDeleteAllTestCasesDialog(true)
                 }
-                onExportQRDA={() => exportQRDA()}
+                onExportQRDA={checkTestCases}
               />
             </div>
             <CreateNewTestCaseDialog
