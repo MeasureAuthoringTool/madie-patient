@@ -2,14 +2,14 @@ import * as React from "react";
 import { render, screen } from "@testing-library/react";
 import StatusHandler from "./StatusHandler";
 import { TestCaseImportOutcome } from "../../../../madie-models/src/TestCase";
-import { EXPORT_ERROR_CHARACTERS } from "../testCaseLanding/qdm/TestCaseList";
+import { EXPORT_ERROR_CHARACTERS_MESSAGE } from "../testCaseLanding/qdm/TestCaseList";
 
 describe("StatusHandler Component", () => {
   const { getByTestId, queryByTestId, getByText, findByText, queryByText } =
     screen;
   const specialCharsErrors = [
-    EXPORT_ERROR_CHARACTERS + "~title",
-    EXPORT_ERROR_CHARACTERS + "!series",
+    EXPORT_ERROR_CHARACTERS_MESSAGE + "~title",
+    EXPORT_ERROR_CHARACTERS_MESSAGE + "!series",
   ];
   test("Should display nothing when error is false", () => {
     render(
