@@ -4,7 +4,7 @@ import "./StatusHandler.scss";
 import { TestCaseImportOutcome } from "@madie/madie-models";
 import "twin.macro";
 import "styled-components/macro";
-import { EXPORT_ERROR_CHARACTERS } from "../testCaseLanding/qdm/TestCaseList";
+import { EXPORT_ERROR_CHARACTERS_MESSAGE } from "../testCaseLanding/qdm/TestCaseList";
 interface StatusHandlerProps {
   error?: boolean;
   errorMessages?: Array<string>;
@@ -22,10 +22,10 @@ const StatusHandler = ({
     // we need to separate export errors from regular errors since they need to be grouped together under a single heading
     const withoutDuplicates = [...new Set(errorMessages)];
     const exportErrors = withoutDuplicates.filter((e) =>
-      e.includes(EXPORT_ERROR_CHARACTERS)
+      e.includes(EXPORT_ERROR_CHARACTERS_MESSAGE)
     );
     const nonExportErrors = withoutDuplicates.filter(
-      (e) => !e.includes(EXPORT_ERROR_CHARACTERS)
+      (e) => !e.includes(EXPORT_ERROR_CHARACTERS_MESSAGE)
     );
 
     let exportErrorContent = <div></div>;
@@ -33,11 +33,13 @@ const StatusHandler = ({
       exportErrorContent = (
         <>
           <h3 data-testid="error-special-char-title">
-            {EXPORT_ERROR_CHARACTERS}
+            {EXPORT_ERROR_CHARACTERS_MESSAGE}
           </h3>
           <ul data-testid="error-special-char">
             {exportErrors.map((e, index) => (
-              <li key={index}>{e.replace(EXPORT_ERROR_CHARACTERS, "")}</li>
+              <li key={index}>
+                {e.replace(EXPORT_ERROR_CHARACTERS_MESSAGE, "")}
+              </li>
             ))}
           </ul>
         </>

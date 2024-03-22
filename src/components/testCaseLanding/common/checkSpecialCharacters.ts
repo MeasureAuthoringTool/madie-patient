@@ -1,5 +1,5 @@
 import { TestCase } from "@madie/madie-models";
-import { EXPORT_ERROR_CHARACTERS } from "../qdm/TestCaseList";
+import { EXPORT_ERROR_CHARACTERS_MESSAGE } from "../qdm/TestCaseList";
 const checkSpecialCharacters = (testCases: TestCase[]): string[] => {
   const specialChars = /[`!@#$%^&*()_\+=\[\]{};':"\\|,.<>\/?~]/;
   let series, title;
@@ -8,7 +8,9 @@ const checkSpecialCharacters = (testCases: TestCase[]): string[] => {
     series = specialChars.test(tc.series);
     title = specialChars.test(tc.title);
     if (series || title) {
-      failedTCs.push(`${EXPORT_ERROR_CHARACTERS}${tc.series} ${tc.title}`);
+      failedTCs.push(
+        `${EXPORT_ERROR_CHARACTERS_MESSAGE}${tc.series} ${tc.title}`
+      );
     }
   });
   return failedTCs;
