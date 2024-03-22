@@ -135,19 +135,6 @@ const DisplayAttributeInputs = ({
           />
         );
       case "Integer":
-        return (
-          <IntegerInput
-            intValue={null}
-            canEdit={true}
-            handleChange={(val) => {
-              setAttributeValue(parseInt(val));
-              if (onChangeForComponentType) {
-                onChangeForComponentType(val);
-              }
-            }}
-            label="Integer"
-          />
-        );
       case "Number":
         return (
           <IntegerInput
@@ -159,7 +146,7 @@ const DisplayAttributeInputs = ({
                 onChangeForComponentType(val);
               }
             }}
-            label="Number"
+            label="Integer"
           />
         );
 
