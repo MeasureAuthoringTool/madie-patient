@@ -472,6 +472,11 @@ const TestCaseList = (props: TestCaseListProps) => {
   };
 
   const exportQRDA = async () => {
+    const failedTCs = checkSpecialCharacters(testCases);
+    if (failedTCs.length) {
+      setErrors((prevState) => [...prevState, ...failedTCs]);
+      return;
+    }
     try {
       const exportData = await testCaseService.current.exportQRDA(measureId);
       downloadZipFile(
@@ -484,15 +489,6 @@ const TestCaseList = (props: TestCaseListProps) => {
       const message = "Unable to Export QRDA.";
       setErrors((prevState) => [...prevState, message]);
     }
-  };
-
-  const checkTestCases = () => {
-    const failedTCs = checkSpecialCharacters(testCases);
-    if (failedTCs.length) {
-      setErrors((prevState) => [...prevState, ...failedTCs]);
-      return;
-    }
-    exportQRDA();
   };
 
   return (
@@ -538,7 +534,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                 onDeleteAllTestCases={() =>
                   setOpenDeleteAllTestCasesDialog(true)
                 }
-                onExportQRDA={checkTestCases}
+                onExportQRDA={exportQRDA}
               />
             </div>
             <CreateNewTestCaseDialog
