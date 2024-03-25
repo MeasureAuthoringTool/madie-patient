@@ -64,8 +64,6 @@ jest.mock("@madie/madie-util", () => ({
   }),
   useFeatureFlags: jest.fn().mockImplementation(() => ({
     applyDefaults: false,
-    importTestCases: false,
-    qdmTestCases: true,
   })),
 }));
 
