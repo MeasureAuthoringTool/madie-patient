@@ -148,20 +148,6 @@ const DisplayAttributeInputs = ({
             label="Integer"
           />
         );
-      case "Number":
-        return (
-          <IntegerInput
-            intValue={null}
-            canEdit={true}
-            handleChange={(val) => {
-              setAttributeValue(parseInt(val));
-              if (onChangeForComponentType) {
-                onChangeForComponentType(val);
-              }
-            }}
-            label="Number"
-          />
-        );
 
       case "Quantity":
         return (
