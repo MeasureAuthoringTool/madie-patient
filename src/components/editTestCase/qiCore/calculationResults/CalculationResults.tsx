@@ -140,14 +140,14 @@ const CalculationResults = ({
           }}
         />
       )}
-      {featureFlags.highlightingTabs && !isEmpty(groupPopulations) && (
+      {!isEmpty(groupPopulations) && (
         <QiCoreGroupCoverage
           groupPopulations={groupPopulations}
           mappedCalculationResults={mapCalculationResults(calculationResults)}
           cqlDefinitionCallstack={cqlDefinitionCallstack}
         />
       )}
-      {!featureFlags.highlightingTabs && coverageHtmls && (
+      {coverageHtmls && (
         <div tw="text-sm" data-testid="calculation-results">
           {coverageHtmls.map((coverageHtml) => parse(coverageHtml))}
         </div>
