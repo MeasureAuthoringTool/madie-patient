@@ -221,7 +221,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
             />
             Delete All
           </Button>
-          {featureFlags?.importTestCases && (
+          
             <Button
               onClick={() => {
                 if (onImportTestCases) {
@@ -237,7 +237,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
               />
               Import Test Cases
             </Button>
-          )}
+          
           <Button
             disabled={!canEdit}
             onClick={createNewTestCase}

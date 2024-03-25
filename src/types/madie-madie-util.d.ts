@@ -13,7 +13,6 @@ declare module "@madie/madie-util" {
     includeSDEValues: boolean;
     manifestExpansion: boolean;
     qiCoreBonnieTestCases: boolean;
-    qdmTestCases: boolean;
     qiCoreElementsTab: boolean;
     highlightingTabs: boolean;
     qdmHighlightingTabs: boolean;
