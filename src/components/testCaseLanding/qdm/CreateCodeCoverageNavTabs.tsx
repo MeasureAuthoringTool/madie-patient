@@ -85,7 +85,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
   const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState(null);
   useEffect(() => {
-    if (featureFlags?.disableRunTestCaseWithObservStrat) {
+    
       const groups: Group[] = measure?.groups;
       groups?.forEach((group) => {
         const measureObservations: MeasureObservation[] =
@@ -98,13 +98,9 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           setShouldDisableRunTestsButton(true);
         }
       });
-    } else {
-      setShouldDisableRunTestsButton(false);
-    }
   }, [
     measure,
     measure?.groups,
-    featureFlags?.disableRunTestCaseWithObservStrat,
   ]);
 
   const executionResultsDisplayTemplate = (label) => {

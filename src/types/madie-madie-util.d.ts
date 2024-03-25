@@ -14,9 +14,6 @@ declare module "@madie/madie-util" {
     manifestExpansion: boolean;
     qiCoreBonnieTestCases: boolean;
     qiCoreElementsTab: boolean;
-    highlightingTabs: boolean;
-    qdmHighlightingTabs: boolean;
-    disableRunTestCaseWithObservStrat: boolean;
     qdmHideJson: boolean;
     testCaseExport: boolean;
   }
