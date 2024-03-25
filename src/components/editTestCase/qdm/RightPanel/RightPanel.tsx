@@ -35,7 +35,7 @@ const RightPanel = ({
         </IconButton>
       </div>
       <div className="panel-content">
-        {featureFlags.qdmHighlightingTabs && activeTab === "highlighting" && (
+        {activeTab === "highlighting" && (
           <CalculationResults
             groupCoverageResult={groupCoverageResult}
             testCaseGroups={testCaseGroups}
