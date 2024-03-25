@@ -135,6 +135,7 @@ const DisplayAttributeInputs = ({
           />
         );
       case "Integer":
+      case "Number":
         return (
           <IntegerInput
             intValue={null}
@@ -145,10 +146,9 @@ const DisplayAttributeInputs = ({
                 onChangeForComponentType(val);
               }
             }}
-            label="Integer"
+            label={attributeType}
           />
         );
-
       case "Quantity":
         return (
           <QuantityInput
