@@ -2,9 +2,15 @@ import * as React from "react";
 import { render, screen } from "@testing-library/react";
 import StatusHandler from "./StatusHandler";
 import { TestCaseImportOutcome } from "../../../../madie-models/src/TestCase";
+import { EXPORT_ERROR_CHARACTERS_MESSAGE } from "../testCaseLanding/qdm/TestCaseList";
 
 describe("StatusHandler Component", () => {
-  const { getByTestId, queryByTestId, getByText, findByText } = screen;
+  const { getByTestId, queryByTestId, getByText, findByText, queryByText } =
+    screen;
+  const specialCharsErrors = [
+    EXPORT_ERROR_CHARACTERS_MESSAGE + "~title",
+    EXPORT_ERROR_CHARACTERS_MESSAGE + "!series",
+  ];
   test("Should display nothing when error is false", () => {
     render(
       <StatusHandler
@@ -38,6 +44,19 @@ describe("StatusHandler Component", () => {
     expect(getByTestId("test_data_id")).toBeInTheDocument();
     expect(getByText("test error")).toBeInTheDocument();
   });
+  test("Should display single error with exportErrors", () => {
+    render(
+      <StatusHandler
+        error={true}
+        errorMessages={[specialCharsErrors[0]]}
+        testDataId="test_data_id"
+      />
+    );
+    expect(queryByTestId("test_data_id")).toBeInTheDocument();
+    expect(queryByTestId("error-special-char-title")).toBeInTheDocument();
+    expect(queryByTestId("error-special-char")).toBeInTheDocument();
+    expect(queryByText("~title")).toBeInTheDocument();
+  });
 
   test("Should display multiple errors", () => {
     render(
@@ -52,6 +71,20 @@ describe("StatusHandler Component", () => {
     expect(getByTestId("generic-fail-text-list")).toBeInTheDocument();
     expect(getByText("test error 1")).toBeInTheDocument();
     expect(getByText("test error 2")).toBeInTheDocument();
+  });
+
+  test("Should display multiple errors with exportErrors", () => {
+    render(
+      <StatusHandler
+        error={true}
+        errorMessages={["test error 1", specialCharsErrors[1]]}
+        testDataId="test_data_id"
+      />
+    );
+    expect(queryByTestId("test_data_id")).toBeInTheDocument();
+    expect(queryByTestId("error-special-char-title")).toBeInTheDocument();
+    expect(queryByTestId("error-special-char")).toBeInTheDocument();
+    expect(queryByText("!series")).toBeInTheDocument();
   });
 
   it("Should display import warning alert", () => {
