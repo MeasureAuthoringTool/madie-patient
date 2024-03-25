@@ -2369,7 +2369,7 @@ describe("EditTestCase component", () => {
       });
       userEvent.click(screen.getByTestId("highlighting-tab"));
       expect(
-        await screen.findByText("Population Criteria 1")
+        await screen.findByText("Population Criteria")
       ).toBeInTheDocument();
 
       userEvent.click(screen.getByTestId("expectoractual-tab"));
@@ -2486,7 +2486,7 @@ describe("EditTestCase component", () => {
       });
       userEvent.click(screen.getByTestId("highlighting-tab"));
       expect(
-        await screen.findByText("Population Criteria 1")
+        await screen.findByText("Population Criteria")
       ).toBeInTheDocument();
 
       userEvent.click(screen.getByTestId("expectoractual-tab"));
