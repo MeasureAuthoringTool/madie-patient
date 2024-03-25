@@ -146,10 +146,9 @@ const DisplayAttributeInputs = ({
                 onChangeForComponentType(val);
               }
             }}
-            label="Integer"
+            label={attributeType}
           />
         );
-
       case "Quantity":
         return (
           <QuantityInput
