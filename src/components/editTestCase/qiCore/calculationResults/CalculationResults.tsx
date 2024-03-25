@@ -96,7 +96,7 @@ const CalculationResults = ({
             },
             {}
           ),
-          populationRelevance: populationRelevance.reduce(
+          populationRelevance: populationRelevance?.reduce(
             (
               populationRelevanceOutput,
               { criteriaExpression, populationId, populationType, result }
@@ -146,11 +146,6 @@ const CalculationResults = ({
           mappedCalculationResults={mapCalculationResults(calculationResults)}
           cqlDefinitionCallstack={cqlDefinitionCallstack}
         />
-      )}
-      {coverageHtmls && (
-        <div tw="text-sm" data-testid="calculation-results">
-          {coverageHtmls.map((coverageHtml) => parse(coverageHtml))}
-        </div>
       )}
     </div>
   );

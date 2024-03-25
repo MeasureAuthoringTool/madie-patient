@@ -552,21 +552,6 @@ describe("EditTestCase QDM Component", () => {
     await waitFor(() => expect(actualResult).toBeChecked());
   });
 
-  it("should disable run qdm test case", async () => {
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementationOnce(() => {
-      return {
-        applyDefaults: mockApplyDefaults,
-      };
-    });
-    await waitFor(() => renderEditTestCaseComponent());
-    const runTestCaseButton = await getByRole("button", {
-      name: "Run Test",
-    });
-    expect(runTestCaseButton).toBeInTheDocument();
-
-    expect(runTestCaseButton).toBeDisabled();
-  });
-
   it("should see that the JSON changed", async () => {
     await waitFor(() => renderEditTestCaseComponent());
     const runTestCaseButton = await getByRole("button", {

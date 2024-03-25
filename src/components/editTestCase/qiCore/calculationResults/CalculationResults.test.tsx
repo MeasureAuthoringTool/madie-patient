@@ -96,19 +96,6 @@ describe("CalculationResults with tabbed highlighting layout off", () => {
       screen.getByText("To see the logic highlights, click 'Run Test'")
     ).toBeInTheDocument();
   });
-
-  test("render calculation results", () => {
-    renderCoverageComponent(calculationResults);
-    expect(screen.getByText("Population Criteria 1")).toBeInTheDocument();
-    expect(screen.getByText("Population Criteria 2")).toBeInTheDocument();
-  });
-
-  test("render calculation errors if any", () => {
-    const errorMessage = "Something is not right";
-    renderCoverageComponent([], { status: "error", message: errorMessage });
-    expect(screen.getByText(`${errorMessage}`)).toBeInTheDocument();
-    expect(screen.getByTestId("calculation-results").innerHTML).toEqual("");
-  });
 });
 
 describe("CalculationResults with new tabbed highlighting layout on", () => {
