@@ -123,20 +123,6 @@ const EditTestCase = () => {
   const featureFlags = useFeatureFlags();
   const [hasObservationOrStratification, setHasObservationOrStratification] =
     useState(false);
-  useEffect(() => {
-    const groups: Group[] = measure?.groups;
-    groups?.forEach((group) => {
-      const measureObservations: MeasureObservation[] =
-        group?.measureObservations;
-      const measureStratifications: Stratification[] = group?.stratifications;
-      if (
-        (measureObservations && measureObservations.length > 0) ||
-        (measureStratifications && measureStratifications.length > 0)
-      ) {
-        setHasObservationOrStratification(true);
-      }
-    });
-  }, [measure, measure?.groups]);
   const formik = useFormik({
     initialValues: {
       title: currentTestCase?.title || "",
