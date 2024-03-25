@@ -366,9 +366,7 @@ jest.mock("@madie/madie-util", () => ({
   useFeatureFlags: jest.fn(() => {
     return {
       applyDefaults: mockApplyDefaults,
-      disableRunTestCaseWithObservStrat: true,
       qdmHideJson: false,
-      qdmHighlightingTabs: true,
     };
   }),
   measureStore: {
@@ -526,7 +524,6 @@ describe("EditTestCase QDM Component", () => {
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => {
       return {
         applyDefaults: mockApplyDefaults,
-        disableRunTestCaseWithObservStrat: false,
       };
     });
   });
@@ -559,7 +556,6 @@ describe("EditTestCase QDM Component", () => {
     (useFeatureFlags as jest.Mock).mockClear().mockImplementationOnce(() => {
       return {
         applyDefaults: mockApplyDefaults,
-        disableRunTestCaseWithObservStrat: true,
       };
     });
     await waitFor(() => renderEditTestCaseComponent());

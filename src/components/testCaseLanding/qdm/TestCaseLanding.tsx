@@ -11,11 +11,11 @@ const TestCaseLandingQdm = (props: TestCaseListProps) => {
   return (
     <div>
       <section>
-          <TestCaseList
-            errors={props.errors}
-            setErrors={props.setErrors}
-            setWarnings={props.setWarnings}
-          />
+        <TestCaseList
+          errors={props.errors}
+          setErrors={props.setErrors}
+          setWarnings={props.setWarnings}
+        />
       </section>
     </div>
   );

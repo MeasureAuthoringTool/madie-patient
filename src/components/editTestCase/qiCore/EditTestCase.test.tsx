@@ -100,7 +100,6 @@ jest.mock("@madie/madie-util", () => {
       return {
         applyDefaults: mockApplyDefaults,
         qiCoreElementsTab: true,
-        highlightingTabs: false,
       };
     },
     measureStore: {

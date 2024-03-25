@@ -139,10 +139,7 @@ jest.mock("@madie/madie-util", () => ({
     unsubscribe: () => null,
   },
   useFeatureFlags: jest.fn().mockImplementation(() => ({
-    qdmTestCases: true,
     applyDefaults: false,
-    importTestCases: false,
-    disableRunTestCaseWithObservStrat: true,
     testCaseExport: false,
   })),
   useOktaTokens: () => ({
@@ -1596,9 +1593,6 @@ describe("TestCaseList component", () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
       applyDefaults: false,
-      importTestCases: false,
-      qdmTestCases: true,
-      disableRunTestCaseWithObservStrat: true,
       testCaseExport: false,
     }));
     setError.mockClear();
@@ -2123,7 +2117,6 @@ describe("TestCaseList component", () => {
   });
   it("should display export qrda button with feature flag set to true", async () => {
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      qdmTestCases: true,
       testCaseExport: true,
     }));
     renderTestCaseListComponent();
@@ -2136,7 +2129,6 @@ describe("TestCaseList component", () => {
   });
   it("should trigger tooltip when disabled", async () => {
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      qdmTestCases: true,
       testCaseExport: true,
     }));
     await renderTestCaseListComponent();
@@ -2210,10 +2202,7 @@ describe("TestCaseList component", () => {
   it("should display success message when QRDA Export button clicked", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      qdmTestCases: true,
       testCaseExport: true,
-      importTestCases: true,
-      disableRunTestCaseWithObservStrat: false,
     }));
     const useTestCaseServiceMockResolve = {
       getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
@@ -2272,10 +2261,7 @@ describe("TestCaseList component", () => {
   it("should display success message when QRDA Export button clicked", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      qdmTestCases: true,
       testCaseExport: true,
-      importTestCases: true,
-      disableRunTestCaseWithObservStrat: false,
     }));
     const useTestCaseServiceMockResolve = {
       getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
@@ -2342,10 +2328,7 @@ describe("TestCaseList component", () => {
   it("should display error message when QRDA Export failed", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      qdmTestCases: true,
       testCaseExport: true,
-      importTestCases: true,
-      disableRunTestCaseWithObservStrat: false,
     }));
     const useTestCaseServiceMockReject = {
       getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
@@ -2405,10 +2388,7 @@ describe("TestCaseList component", () => {
   it("Should display errors on test cases with special characters", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      qdmTestCases: true,
       testCaseExport: true,
-      importTestCases: true,
-      disableRunTestCaseWithObservStrat: false,
     }));
     const failedExports = [...testCases];
     testCases[0].title = "~title";
@@ -2762,10 +2742,6 @@ describe("TestCaseList component", () => {
 
   it("should hide the button for import test cases when feature is disabled", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      importTestCases: false,
-      qdmTestCases: true,
-    }));
 
     renderTestCaseListComponent();
     const importBtn = await screen.queryByRole("button", {
@@ -2777,10 +2753,6 @@ describe("TestCaseList component", () => {
   // here down broke
   it("should have a disabled button for import test cases when feature is enabled but user cannot edit", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => false);
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      importTestCases: true,
-      qdmTestCases: true,
-    }));
 
     renderTestCaseListComponent();
     const importBtn = await screen.findByRole("button", {
@@ -2792,10 +2764,6 @@ describe("TestCaseList component", () => {
 
   it("should have a enabled button for import test cases when feature is enabled and user can edit", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      importTestCases: true,
-      qdmTestCases: true,
-    }));
 
     renderTestCaseListComponent();
     const importBtn = await screen.findByRole("button", {
@@ -2807,10 +2775,6 @@ describe("TestCaseList component", () => {
 
   it("should display import dialog when import button is clicked", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      importTestCases: true,
-      qdmTestCases: true,
-    }));
 
     let nextState;
     setError.mockImplementation((callback) => {
@@ -2840,10 +2804,6 @@ describe("TestCaseList component", () => {
 
   it("should display import error when importTestCasesQDM call fails", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      importTestCases: true,
-      qdmTestCases: true,
-    }));
 
     const useTestCaseServiceMockRejected = {
       getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
@@ -2886,10 +2846,6 @@ describe("TestCaseList component", () => {
 
   it("should display warning messages when importTestCasesQDM call succeeds with warnings", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      importTestCases: true,
-      qdmTestCases: true,
-    }));
 
     const useTestCaseServiceMockRejected = {
       getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
@@ -2944,10 +2900,6 @@ describe("TestCaseList component", () => {
 
   it("should display success message when importTestCasesQDM call succeeds without", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      importTestCases: true,
-      qdmTestCases: true,
-    }));
 
     const useTestCaseServiceMockRejected = {
       getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
@@ -3049,10 +3001,6 @@ describe("TestCaseList component", () => {
 
   it("should close import dialog when cancel button is clicked", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      importTestCases: true,
-      qdmTestCases: true,
-    }));
 
     let nextState;
     setError.mockImplementation((callback) => {

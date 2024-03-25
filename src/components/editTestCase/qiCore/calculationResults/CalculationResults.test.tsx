@@ -90,10 +90,6 @@ describe("CalculationResults with tabbed highlighting layout off", () => {
     },
   ];
 
-  beforeEach(() => {
-    useFeatureFlags.mockReturnValue({ highlightingTabs: false });
-  });
-
   test("display info message when test case has not been ran yet", () => {
     renderCoverageComponent();
     expect(
@@ -282,10 +278,6 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
       ],
     },
   ];
-
-  beforeEach(() => {
-    useFeatureFlags.mockReturnValue({ highlightingTabs: true });
-  });
 
   const getByRole = (name) => screen.findByRole("tab", { name: name });
   const getCriteriaOptions = () => {
