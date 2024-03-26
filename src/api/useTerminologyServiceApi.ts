@@ -90,7 +90,7 @@ export class TerminologyServiceApi {
 
     try {
       const response = await axios.put(
-        `${this.baseUrl}/terminology/fhir/value-sets/expansion`,
+        `${this.baseUrl}/terminology/value-sets/expansion/qdm`,
         searchCriteria,
         {
           headers: {
