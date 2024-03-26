@@ -81,9 +81,11 @@ const TestCaseRoutes = () => {
   const getQdmValueSets = (convertedMeasure) => {
     const drcValueSets: ValueSet[] =
       terminologyService.current.getValueSetsForDRCs(convertedMeasure);
-
     terminologyService.current
-      .getQdmValueSetsExpansion(convertedMeasure)
+      .getQdmValueSetsExpansion(
+        convertedMeasure,
+        measure.testCaseConfiguration?.manifestExpansion
+      )
       .then((vs: ValueSet[]) => {
         const newCqmMeasure = {
           ...convertedMeasure,
