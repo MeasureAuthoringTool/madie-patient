@@ -6,6 +6,7 @@ import { Bundle, Library, ValueSet } from "fhir/r4";
 import { CqmMeasure, CQL } from "cqm-models";
 import * as _ from "lodash";
 import md5 from "blueimp-md5";
+import { ManifestExpansion } from "../../../madie-models/src";
 
 type ValueSetSearchParams = {
   oid: string;
@@ -16,6 +17,7 @@ type ValueSetSearchParams = {
 type ValueSetsSearchCriteria = {
   profile: string;
   includeDraft: "yes" | "no";
+  manifestExpansion: ManifestExpansion;
   valueSetParams: ValueSetSearchParams[];
 };
 
@@ -66,16 +68,21 @@ export class TerminologyServiceApi {
     }
   }
 
-  async getQdmValueSetsExpansion(cqmMeasure: CqmMeasure): Promise<ValueSet[]> {
+  async getQdmValueSetsExpansion(
+    cqmMeasure: CqmMeasure,
+    manifestExpansion: ManifestExpansion
+  ): Promise<ValueSet[]> {
     if (!cqmMeasure) {
       return null;
     }
-    const searchCriteria = {
+    const searchCriteria: ValueSetsSearchCriteria = {
       includeDraft: "yes", // always yes for now
+      profile: "",
+      manifestExpansion: manifestExpansion,
       valueSetParams: this.getValueSetsOIDsFromCqmMeasure(
         JSON.parse(JSON.stringify(cqmMeasure))
       ),
-    } as ValueSetsSearchCriteria;
+    };
 
     if (_.isEmpty(searchCriteria.valueSetParams)) {
       return [];
@@ -83,7 +90,7 @@ export class TerminologyServiceApi {
 
     try {
       const response = await axios.put(
-        `${this.baseUrl}/vsac/qdm/value-sets/searches`,
+        `${this.baseUrl}/terminology/fhir/value-sets/expansion`,
         searchCriteria,
         {
           headers: {
@@ -241,7 +248,7 @@ export class TerminologyServiceApi {
   }
 
   async getManifestList() {
-    return await axios.get(`${this.baseUrl}/vsac/manifest-list`, {
+    return await axios.get(`${this.baseUrl}/terminology/fhir/manifest-list`, {
       headers: {
         Authorization: `Bearer ${this.getAccessToken()}`,
       },

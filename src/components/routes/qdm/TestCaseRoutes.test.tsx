@@ -8,7 +8,6 @@ import { Model, PopulationType } from "@madie/madie-models";
 import useCqmConversionService, {
   CqmConversionService,
 } from "../../../api/CqmModelConversionService";
-import { TerminologyServiceApi } from "../../../api/useTerminologyServiceApi";
 
 // mock the editor cause we don't care for this test and it gets rid of errors
 // jest.mock("../../editor/Editor", () => () => <div>editor contents</div>);
@@ -29,6 +28,9 @@ const serviceConfig: ServiceConfig = {
   },
   terminologyService: {
     baseUrl: "something.com",
+  },
+  elmTranslationService: {
+    baseUrl: "elmTranslationService.com",
   },
 };
 
@@ -104,7 +106,7 @@ const CQMConversionMock =
   useCqmConversionService as jest.Mock<CqmConversionService>;
 const useCqmConversionServiceMockResolved = {
   convertToCqmMeasure: jest.fn().mockResolvedValue(mockMeasure),
-} as unknown as TerminologyServiceApi;
+} as unknown as CqmConversionService;
 
 CQMConversionMock.mockImplementation(() => {
   return useCqmConversionServiceMockResolved;
@@ -169,7 +171,7 @@ describe("TestCaseRoutes", () => {
       </MemoryRouter>
     );
 
-    const runTestCaseButton = await screen.getByRole("button", {
+    const runTestCaseButton = screen.getByRole("button", {
       name: "Run Test",
     });
     expect(runTestCaseButton).toBeInTheDocument();
@@ -182,7 +184,7 @@ describe("TestCaseRoutes", () => {
           message: "error convert to qdm measure",
         },
       }),
-    } as unknown as TerminologyServiceApi;
+    } as unknown as CqmConversionService;
 
     CQMConversionMock.mockImplementation(() => {
       return useCqmConversionServiceMockRejected;
@@ -195,7 +197,7 @@ describe("TestCaseRoutes", () => {
       </MemoryRouter>
     );
 
-    const runTestCaseButton = await screen.getByRole("button", {
+    const runTestCaseButton = screen.getByRole("button", {
       name: "Run Test",
     });
     expect(runTestCaseButton).toBeInTheDocument();
