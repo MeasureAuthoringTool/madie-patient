@@ -6,7 +6,7 @@ import { Bundle, Library, ValueSet } from "fhir/r4";
 import { CqmMeasure, CQL } from "cqm-models";
 import * as _ from "lodash";
 import md5 from "blueimp-md5";
-import { ManifestExpansion } from "../../../madie-models/src";
+import { ManifestExpansion } from "@madie/madie-models";
 
 type ValueSetSearchParams = {
   oid: string;
