@@ -248,7 +248,7 @@ export class TerminologyServiceApi {
   }
 
   async getManifestList() {
-    return await axios.get(`${this.baseUrl}/terminology/fhir/manifest-list`, {
+    return await axios.get(`${this.baseUrl}/terminology/manifest-list`, {
       headers: {
         Authorization: `Bearer ${this.getAccessToken()}`,
       },
