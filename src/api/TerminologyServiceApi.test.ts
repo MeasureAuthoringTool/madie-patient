@@ -6,6 +6,7 @@ import { cqm_measure_basic } from "../mockdata/qdm/CMS108/cqm_measure_basic";
 import { cqm_measure_basic_valueset } from "../mockdata/qdm/CMS108/cqm_measure_basic_valueset";
 import { Measure as CqmMeasure, ValueSet } from "cqm-models";
 import * as _ from "lodash";
+import { ManifestExpansion } from "@madie/madie-models";
 
 jest.mock("axios");
 
@@ -14,6 +15,11 @@ jest.mock("@madie/madie-util", () => ({
 }));
 
 const testCqmMeasure: CqmMeasure = new CqmMeasure();
+
+const testManifestExpansion: ManifestExpansion = {
+  fullUrl: "https://cts.nlm.nih.gov/fhir/Library/mu2-update-2015-05-01",
+  id: "mu2-update-2015-05-01",
+};
 
 describe("TerminologyServiceApi Tests", () => {
   let terminologyService: TerminologyServiceApi;
@@ -69,9 +75,11 @@ describe("TerminologyServiceApi Tests", () => {
   });
 
   it("gives no ValueSets when no cqm measure provided", () => {
-    terminologyService.getQdmValueSetsExpansion(null).then((data) => {
-      expect(data).toBeNull();
-    });
+    terminologyService
+      .getQdmValueSetsExpansion(null, testManifestExpansion)
+      .then((data) => {
+        expect(data).toBeNull();
+      });
   });
 
   it("gives expanded ValueSets for ValueSets in cqm measure", () => {
@@ -80,7 +88,7 @@ describe("TerminologyServiceApi Tests", () => {
       .mockResolvedValueOnce({ data: cqm_measure_basic_valueset });
 
     terminologyService
-      .getQdmValueSetsExpansion(cqm_measure_basic)
+      .getQdmValueSetsExpansion(cqm_measure_basic, testManifestExpansion)
       .then((data: ValueSet[]) => {
         expect(data.length).toEqual(2);
         expect(data[0].display_name).toEqual("Encounter Inpatient");
@@ -101,12 +109,14 @@ describe("TerminologyServiceApi Tests", () => {
           "404 Not Found from GET https://vsac.nlm.nih.gov/vsac/svs/RetrieveMultipleValueSets?id=2.16.840.1.113883.3.464.1003.101.12.10011&ticket=ST-106586-7gtyv4fwl3xjfcyy-cas&profile=eCQM%20Update%202022-05-05&includeDraft=yes",
       },
     };
-
     axios.put = jest
       .fn()
       .mockRejectedValue({ response: { status: 404, data: response } });
     try {
-      await terminologyService.getQdmValueSetsExpansion(cqm_measure_basic);
+      await terminologyService.getQdmValueSetsExpansion(
+        cqm_measure_basic,
+        testManifestExpansion
+      );
     } catch (error) {
       expect(error.message).toEqual(
         "An error exists with the measure CQL, please review the CQL Editor tab."
@@ -115,7 +125,10 @@ describe("TerminologyServiceApi Tests", () => {
   });
 
   it("test getQdmValueSetsExpansion no search param", () => {
-    const result = terminologyService.getQdmValueSetsExpansion(testCqmMeasure);
+    const result = terminologyService.getQdmValueSetsExpansion(
+      testCqmMeasure,
+      testManifestExpansion
+    );
     expect(_.isEmpty(result)).toBe(true);
   });
 
