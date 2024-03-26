@@ -85,27 +85,19 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
   const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState(null);
   useEffect(() => {
-    if (featureFlags?.disableRunTestCaseWithObservStrat) {
-      const groups: Group[] = measure?.groups;
-      groups?.forEach((group) => {
-        const measureObservations: MeasureObservation[] =
-          group?.measureObservations;
-        const measureStratifications: Stratification[] = group?.stratifications;
-        if (
-          (measureObservations && measureObservations.length > 0) ||
-          (measureStratifications && measureStratifications.length > 0)
-        ) {
-          setShouldDisableRunTestsButton(true);
-        }
-      });
-    } else {
-      setShouldDisableRunTestsButton(false);
-    }
-  }, [
-    measure,
-    measure?.groups,
-    featureFlags?.disableRunTestCaseWithObservStrat,
-  ]);
+    const groups: Group[] = measure?.groups;
+    groups?.forEach((group) => {
+      const measureObservations: MeasureObservation[] =
+        group?.measureObservations;
+      const measureStratifications: Stratification[] = group?.stratifications;
+      if (
+        (measureObservations && measureObservations.length > 0) ||
+        (measureStratifications && measureStratifications.length > 0)
+      ) {
+        setShouldDisableRunTestsButton(true);
+      }
+    });
+  }, [measure, measure?.groups]);
 
   const executionResultsDisplayTemplate = (label) => {
     const codeCoverage = executeAllTestCases ? coveragePercentage : "-";
@@ -221,23 +213,23 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
             />
             Delete All
           </Button>
-          {featureFlags?.importTestCases && (
-            <Button
-              onClick={() => {
-                if (onImportTestCases) {
-                  onImportTestCases();
-                }
-              }}
-              disabled={!canEdit}
-              data-testid="show-import-test-cases-button"
-            >
-              <FileUploadIcon
-                style={{ margin: "0 5px 0 -2px" }}
-                fontSize="small"
-              />
-              Import Test Cases
-            </Button>
-          )}
+
+          <Button
+            onClick={() => {
+              if (onImportTestCases) {
+                onImportTestCases();
+              }
+            }}
+            disabled={!canEdit}
+            data-testid="show-import-test-cases-button"
+          >
+            <FileUploadIcon
+              style={{ margin: "0 5px 0 -2px" }}
+              fontSize="small"
+            />
+            Import Test Cases
+          </Button>
+
           <Button
             disabled={!canEdit}
             onClick={createNewTestCase}

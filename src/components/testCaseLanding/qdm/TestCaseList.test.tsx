@@ -139,10 +139,7 @@ jest.mock("@madie/madie-util", () => ({
     unsubscribe: () => null,
   },
   useFeatureFlags: jest.fn().mockImplementation(() => ({
-    qdmTestCases: true,
     applyDefaults: false,
-    importTestCases: false,
-    disableRunTestCaseWithObservStrat: true,
     testCaseExport: false,
   })),
   useOktaTokens: () => ({
@@ -878,7 +875,7 @@ const testCases = [
     id: "1",
     description: "Test IPP",
     title: "WhenAllGood",
-    series: "IPP_Pass",
+    series: "IPP-Pass",
     validResource: true,
     json: "{}",
     groupPopulations: [
@@ -906,7 +903,7 @@ const testCases = [
     id: "2",
     description: "Test IPP Fail when something is wrong",
     title: "WhenSomethingIsWrong",
-    series: "IPP_Fail",
+    series: "IPP-Fail",
     validResource: true,
     json: "{}",
     groupPopulations: [
@@ -934,7 +931,7 @@ const testCases = [
     id: "3",
     description: "Invalid test case",
     title: "WhenJsonIsInvalid",
-    series: "IPP_Fail",
+    series: "IPP-Fail",
     validResource: false,
     json: "{}",
     groupPopulations: [
@@ -965,7 +962,7 @@ const failingTestCaseResults = [
     id: "1",
     description: "Test IPP",
     title: "WhenAllGood",
-    series: "IPP_Pass",
+    series: "IPP-Pass",
     validResource: true,
     executionStatus: "pass",
     groupPopulations: [
@@ -1009,7 +1006,7 @@ const failingTestCaseResults = [
     id: "2",
     description: "Test IPP Fail when something is wrong",
     title: "WhenSomethingIsWrong",
-    series: "IPP_Fail",
+    series: "IPP-Fail",
     validResource: true,
     executionStatus: "fail",
     groupPopulations: [
@@ -1596,9 +1593,6 @@ describe("TestCaseList component", () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
       applyDefaults: false,
-      importTestCases: false,
-      qdmTestCases: true,
-      disableRunTestCaseWithObservStrat: true,
       testCaseExport: false,
     }));
     setError.mockClear();
@@ -1612,6 +1606,7 @@ describe("TestCaseList component", () => {
   });
 
   function renderTestCaseListComponent(
+    mockError = setError,
     errors: string[] = [],
     contextFailure = false
   ) {
@@ -1642,7 +1637,7 @@ describe("TestCaseList component", () => {
                       children={
                         <TestCaseLanding
                           errors={errors}
-                          setErrors={setError}
+                          setErrors={mockError}
                           setWarnings={setWarnings}
                         />
                       }
@@ -1657,7 +1652,7 @@ describe("TestCaseList component", () => {
                       children={
                         <TestCaseLanding
                           errors={errors}
-                          setErrors={setError}
+                          setErrors={mockError}
                           setWarnings={setWarnings}
                         />
                       }
@@ -1681,7 +1676,7 @@ describe("TestCaseList component", () => {
   }
 
   it("should disable Run QDM test case button, if execution context failed", async () => {
-    renderTestCaseListComponent([], true);
+    renderTestCaseListComponent(setError, [], true);
     await waitFor(() => {
       const executeButton = screen.getByTestId("execute-test-cases-button");
       expect(executeButton).toHaveProperty("disabled", true);
@@ -2122,7 +2117,6 @@ describe("TestCaseList component", () => {
   });
   it("should display export qrda button with feature flag set to true", async () => {
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      qdmTestCases: true,
       testCaseExport: true,
     }));
     renderTestCaseListComponent();
@@ -2135,7 +2129,6 @@ describe("TestCaseList component", () => {
   });
   it("should trigger tooltip when disabled", async () => {
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      qdmTestCases: true,
       testCaseExport: true,
     }));
     await renderTestCaseListComponent();
@@ -2209,10 +2202,7 @@ describe("TestCaseList component", () => {
   it("should display success message when QRDA Export button clicked", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      qdmTestCases: true,
       testCaseExport: true,
-      importTestCases: true,
-      disableRunTestCaseWithObservStrat: false,
     }));
     const useTestCaseServiceMockResolve = {
       getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
@@ -2267,13 +2257,11 @@ describe("TestCaseList component", () => {
 
     expect(screen.queryByTestId("export-qrda-1")).not.toBeVisible();
   });
+
   it("should display success message when QRDA Export button clicked", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      qdmTestCases: true,
       testCaseExport: true,
-      importTestCases: true,
-      disableRunTestCaseWithObservStrat: false,
     }));
     const useTestCaseServiceMockResolve = {
       getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
@@ -2340,10 +2328,7 @@ describe("TestCaseList component", () => {
   it("should display error message when QRDA Export failed", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      qdmTestCases: true,
       testCaseExport: true,
-      importTestCases: true,
-      disableRunTestCaseWithObservStrat: false,
     }));
     const useTestCaseServiceMockReject = {
       getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
@@ -2359,7 +2344,7 @@ describe("TestCaseList component", () => {
     });
 
     let nextState;
-    setError.mockImplementation((callback) => {
+    setError.mockClear().mockImplementation((callback) => {
       nextState = callback([]);
     });
 
@@ -2399,6 +2384,64 @@ describe("TestCaseList component", () => {
       waitFor(() => expect(setError).toHaveBeenCalled());
       expect(nextState).toEqual(["Unable to Export QRDA."]);
     });
+  });
+  it("Should display errors on test cases with special characters", async () => {
+    (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      testCaseExport: true,
+    }));
+    const failedExports = [...testCases];
+    testCases[0].title = "~title";
+    testCases[1].series = "+series";
+
+    const useTestCaseServiceMockReject = {
+      getTestCasesByMeasureId: jest.fn().mockResolvedValue(failedExports),
+      getTestCaseSeriesForMeasure: jest
+        .fn()
+        .mockResolvedValue(["Series 1", "Series 2"]),
+      exportQRDA: jest
+        .fn()
+        .mockRejectedValue(new Error("Unable to Export QRDA.")),
+    } as unknown as TestCaseServiceApi;
+    useTestCaseServiceMock.mockImplementation(() => {
+      return useTestCaseServiceMockReject;
+    });
+    const setErrorMock2 = jest.fn();
+    renderTestCaseListComponent(setErrorMock2);
+    await screen.findByTestId("test-case-tbl");
+    const executeAllTestCasesButton = screen.getByRole("button", {
+      name: "Run Test(s)",
+    });
+    await waitFor(() => {
+      expect(executeAllTestCasesButton).toBeEnabled();
+    });
+    userEvent.click(executeAllTestCasesButton);
+    await waitFor(() => {
+      expect(
+        qdmCalculationServiceMockResolved.calculateQdmTestCases
+      ).toHaveBeenCalled();
+    });
+
+    const qrdaExportButton = screen.getByTestId(
+      "show-export-test-cases-button"
+    );
+    await waitFor(() => {
+      expect(qrdaExportButton).toBeEnabled();
+    });
+    act(() => {
+      fireEvent.click(qrdaExportButton);
+    });
+
+    await waitFor(() => {
+      const qrdaExportButton = screen.getByTestId(
+        "show-export-test-cases-button"
+      );
+      expect(qrdaExportButton).toBeEnabled();
+      fireEvent.click(qrdaExportButton);
+      const popoverButton = screen.getByTestId("export-qrda-1");
+      fireEvent.click(popoverButton);
+    });
+    await waitFor(() => expect(setErrorMock2).toHaveBeenCalled());
   });
 
   it("Run Test Cases button should be disabled if no valid test cases", async () => {
@@ -2566,8 +2609,7 @@ describe("TestCaseList component", () => {
     mockMeasure.createdBy = MEASURE_CREATEDBY;
     mockMeasure.cqlErrors = true;
     renderTestCaseListComponent();
-
-    expect(await screen.findByText("WhenAllGood")).toBeInTheDocument();
+    await screen.findByTestId("test-case-tbl");
     expect(screen.getByRole("button", { name: "Run Test(s)" })).toBeDisabled();
   });
 
@@ -2700,10 +2742,6 @@ describe("TestCaseList component", () => {
 
   it("should hide the button for import test cases when feature is disabled", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      importTestCases: false,
-      qdmTestCases: true,
-    }));
 
     renderTestCaseListComponent();
     const importBtn = await screen.queryByRole("button", {
@@ -2715,10 +2753,6 @@ describe("TestCaseList component", () => {
   // here down broke
   it("should have a disabled button for import test cases when feature is enabled but user cannot edit", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => false);
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      importTestCases: true,
-      qdmTestCases: true,
-    }));
 
     renderTestCaseListComponent();
     const importBtn = await screen.findByRole("button", {
@@ -2730,10 +2764,6 @@ describe("TestCaseList component", () => {
 
   it("should have a enabled button for import test cases when feature is enabled and user can edit", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      importTestCases: true,
-      qdmTestCases: true,
-    }));
 
     renderTestCaseListComponent();
     const importBtn = await screen.findByRole("button", {
@@ -2745,10 +2775,6 @@ describe("TestCaseList component", () => {
 
   it("should display import dialog when import button is clicked", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      importTestCases: true,
-      qdmTestCases: true,
-    }));
 
     let nextState;
     setError.mockImplementation((callback) => {
@@ -2778,10 +2804,6 @@ describe("TestCaseList component", () => {
 
   it("should display import error when importTestCasesQDM call fails", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      importTestCases: true,
-      qdmTestCases: true,
-    }));
 
     const useTestCaseServiceMockRejected = {
       getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
@@ -2824,10 +2846,6 @@ describe("TestCaseList component", () => {
 
   it("should display warning messages when importTestCasesQDM call succeeds with warnings", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      importTestCases: true,
-      qdmTestCases: true,
-    }));
 
     const useTestCaseServiceMockRejected = {
       getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
@@ -2882,10 +2900,6 @@ describe("TestCaseList component", () => {
 
   it("should display success message when importTestCasesQDM call succeeds without", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      importTestCases: true,
-      qdmTestCases: true,
-    }));
 
     const useTestCaseServiceMockRejected = {
       getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
@@ -2987,16 +3001,12 @@ describe("TestCaseList component", () => {
 
   it("should close import dialog when cancel button is clicked", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      importTestCases: true,
-      qdmTestCases: true,
-    }));
 
     let nextState;
     setError.mockImplementation((callback) => {
       nextState = callback([]);
     });
-    renderTestCaseListComponent([IMPORT_ERROR]);
+    renderTestCaseListComponent(setError, [IMPORT_ERROR]);
     const showImportBtn = await screen.findByRole("button", {
       name: /import test cases/i,
     });
@@ -3120,108 +3130,108 @@ describe("TestCaseList component", () => {
   });
 });
 
-// describe("retrieve coverage value from HTML coverage", () => {
-//   it("should retrieve the numeric coverage value for decimal percentages", () => {
-//     const coverageHtml: Record<string, string> = {
-//       a345sda45: `<div><h2> a345sda45 Clause Coverage: 50.0%</h2></div>`,
-//     };
-//     const coverageValue = getCoverageValueFromHtml(coverageHtml, "a345sda45");
-//     expect(coverageValue).toEqual(expect.any(Number));
-//     expect(coverageValue).toEqual(50);
-//   });
+describe("retrieve coverage value from HTML coverage", () => {
+  it("should retrieve the numeric coverage value for decimal percentages", () => {
+    const coverageHtml: Record<string, string> = {
+      a345sda45: `<div><h2> a345sda45 Clause Coverage: 50.0%</h2></div>`,
+    };
+    const coverageValue = getCoverageValueFromHtml(coverageHtml, "a345sda45");
+    expect(coverageValue).toEqual(expect.any(Number));
+    expect(coverageValue).toEqual(50);
+  });
 
-//   it("should retrieve the numeric coverage value for whole numbers", () => {
-//     const coverageHtml: Record<string, string> = {
-//       a345sda45: `<div><h2> a345sda45 Clause Coverage: 100%</h2></div>`,
-//     };
-//     const coverageValue = getCoverageValueFromHtml(coverageHtml, "a345sda45");
-//     expect(coverageValue).toEqual(100);
-//   });
+  it("should retrieve the numeric coverage value for whole numbers", () => {
+    const coverageHtml: Record<string, string> = {
+      a345sda45: `<div><h2> a345sda45 Clause Coverage: 100%</h2></div>`,
+    };
+    const coverageValue = getCoverageValueFromHtml(coverageHtml, "a345sda45");
+    expect(coverageValue).toEqual(100);
+  });
 
-//   it("should return 0 for NaN percentages", () => {
-//     const coverageHtml: Record<string, string> = {
-//       a345sda45: `<div><h2> a345sda45 Clause Coverage: NaN%</h2></div>`,
-//     };
-//     const coverageValue = getCoverageValueFromHtml(coverageHtml, "a345sda45");
-//     expect(coverageValue).toEqual(0);
-//   });
+  it("should return 0 for NaN percentages", () => {
+    const coverageHtml: Record<string, string> = {
+      a345sda45: `<div><h2> a345sda45 Clause Coverage: NaN%</h2></div>`,
+    };
+    const coverageValue = getCoverageValueFromHtml(coverageHtml, "a345sda45");
+    expect(coverageValue).toEqual(0);
+  });
 
-//   it("should return 0 for missing percentages", () => {
-//     const coverageHtml: Record<string, string> = {
-//       a345sda45: `<div><h2> a345sda45 Clause Coverage: %</h2></div>`,
-//     };
-//     const coverageValue = getCoverageValueFromHtml(coverageHtml, "a345sda45");
-//     expect(coverageValue).toEqual(0);
-//   });
-// });
+  it("should return 0 for missing percentages", () => {
+    const coverageHtml: Record<string, string> = {
+      a345sda45: `<div><h2> a345sda45 Clause Coverage: %</h2></div>`,
+    };
+    const coverageValue = getCoverageValueFromHtml(coverageHtml, "a345sda45");
+    expect(coverageValue).toEqual(0);
+  });
+});
 
-// describe("removeHtmlCoverageHeader", () => {
-//   it("should remove header with numeric percentage", () => {
-//     const coverage: Record<string, string> = {
-//       a345sda45: `
-//       <div><h2> a345sda45 Clause Coverage: 50.0%</h2><pre style="tab-size: 2; border-bottom-width: 4px; line-height: 1.4">
-//         <code>
-//         <span data-ref-id="55" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>define &quot;boolIpp&quot;:
-//         </span><span data-ref-id="54" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span><span data-ref-id="48" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="47" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="47" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>[&quot;Encounter&quot;]</span></span></span><span> E</span></span></span><span> </span><span data-ref-id="53" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>where </span><span data-ref-id="53" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="51" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="50" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="49" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>E</span></span><span>.</span><span data-ref-id="50" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>period</span></span></span><span>.</span><span data-ref-id="51" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>start</span></span></span><span data-ref-id="53" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"> during </span><span data-ref-id="52" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>&quot;Measurement Period&quot;</span></span></span></span></span></span></code>
-//         </pre><pre style="tab-size: 2; border-bottom-width: 4px; line-height: 1.4">
-//         <code>
-//         <span data-ref-id="1719" style=""><span>define function ToDateTime(value </span><span data-ref-id="1716" style=""><span>dateTime</span></span><span>): </span><span data-ref-id="1718" style=""><span data-ref-id="1718" style=""><span data-ref-id="1717" style=""><span>value</span></span><span>.</span><span data-ref-id="1718" style=""><span>value</span></span></span></span></span></code>
-//         </pre>
-//        </div>
-//       `,
-//     };
-//     const htmlCoverage = removeHtmlCoverageHeader(coverage);
-//     expect(htmlCoverage["a345sda45"]).toEqual(`
-//       <div><pre style="tab-size: 2; border-bottom-width: 4px; line-height: 1.4">
-//         <code>
-//         <span data-ref-id="55" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>define &quot;boolIpp&quot;:
-//         </span><span data-ref-id="54" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span><span data-ref-id="48" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="47" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="47" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>[&quot;Encounter&quot;]</span></span></span><span> E</span></span></span><span> </span><span data-ref-id="53" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>where </span><span data-ref-id="53" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="51" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="50" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="49" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>E</span></span><span>.</span><span data-ref-id="50" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>period</span></span></span><span>.</span><span data-ref-id="51" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>start</span></span></span><span data-ref-id="53" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"> during </span><span data-ref-id="52" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>&quot;Measurement Period&quot;</span></span></span></span></span></span></code>
-//         </pre><pre style="tab-size: 2; border-bottom-width: 4px; line-height: 1.4">
-//         <code>
-//         <span data-ref-id="1719" style=""><span>define function ToDateTime(value </span><span data-ref-id="1716" style=""><span>dateTime</span></span><span>): </span><span data-ref-id="1718" style=""><span data-ref-id="1718" style=""><span data-ref-id="1717" style=""><span>value</span></span><span>.</span><span data-ref-id="1718" style=""><span>value</span></span></span></span></span></code>
-//         </pre>
-//        </div>
-//       `);
-//   });
+describe("removeHtmlCoverageHeader", () => {
+  it("should remove header with numeric percentage", () => {
+    const coverage: Record<string, string> = {
+      a345sda45: `
+      <div><h2> a345sda45 Clause Coverage: 50.0%</h2><pre style="tab-size: 2; border-bottom-width: 4px; line-height: 1.4">
+        <code>
+        <span data-ref-id="55" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>define &quot;boolIpp&quot;:
+        </span><span data-ref-id="54" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span><span data-ref-id="48" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="47" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="47" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>[&quot;Encounter&quot;]</span></span></span><span> E</span></span></span><span> </span><span data-ref-id="53" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>where </span><span data-ref-id="53" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="51" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="50" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="49" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>E</span></span><span>.</span><span data-ref-id="50" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>period</span></span></span><span>.</span><span data-ref-id="51" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>start</span></span></span><span data-ref-id="53" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"> during </span><span data-ref-id="52" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>&quot;Measurement Period&quot;</span></span></span></span></span></span></code>
+        </pre><pre style="tab-size: 2; border-bottom-width: 4px; line-height: 1.4">
+        <code>
+        <span data-ref-id="1719" style=""><span>define function ToDateTime(value </span><span data-ref-id="1716" style=""><span>dateTime</span></span><span>): </span><span data-ref-id="1718" style=""><span data-ref-id="1718" style=""><span data-ref-id="1717" style=""><span>value</span></span><span>.</span><span data-ref-id="1718" style=""><span>value</span></span></span></span></span></code>
+        </pre>
+       </div>
+      `,
+    };
+    const htmlCoverage = removeHtmlCoverageHeader(coverage);
+    expect(htmlCoverage["a345sda45"]).toEqual(`
+      <div><pre style="tab-size: 2; border-bottom-width: 4px; line-height: 1.4">
+        <code>
+        <span data-ref-id="55" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>define &quot;boolIpp&quot;:
+        </span><span data-ref-id="54" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span><span data-ref-id="48" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="47" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="47" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>[&quot;Encounter&quot;]</span></span></span><span> E</span></span></span><span> </span><span data-ref-id="53" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>where </span><span data-ref-id="53" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="51" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="50" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="49" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>E</span></span><span>.</span><span data-ref-id="50" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>period</span></span></span><span>.</span><span data-ref-id="51" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>start</span></span></span><span data-ref-id="53" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"> during </span><span data-ref-id="52" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>&quot;Measurement Period&quot;</span></span></span></span></span></span></code>
+        </pre><pre style="tab-size: 2; border-bottom-width: 4px; line-height: 1.4">
+        <code>
+        <span data-ref-id="1719" style=""><span>define function ToDateTime(value </span><span data-ref-id="1716" style=""><span>dateTime</span></span><span>): </span><span data-ref-id="1718" style=""><span data-ref-id="1718" style=""><span data-ref-id="1717" style=""><span>value</span></span><span>.</span><span data-ref-id="1718" style=""><span>value</span></span></span></span></span></code>
+        </pre>
+       </div>
+      `);
+  });
 
-//   it("should remove header with NaN percentage", () => {
-//     const htmlCoverage = removeHtmlCoverageHeader({
-//       ab4c23fd5f: `<div><h2> ab4c23fd5f Clause Coverage: NaN%</h2></div>`,
-//     });
-//     expect(htmlCoverage["ab4c23fd5f"]).toEqual(`<div></div>`);
-//   });
+  it("should remove header with NaN percentage", () => {
+    const htmlCoverage = removeHtmlCoverageHeader({
+      ab4c23fd5f: `<div><h2> ab4c23fd5f Clause Coverage: NaN%</h2></div>`,
+    });
+    expect(htmlCoverage["ab4c23fd5f"]).toEqual(`<div></div>`);
+  });
 
-//   it("should remove header with 100 percentage", () => {
-//     const htmlCoverage = removeHtmlCoverageHeader({
-//       ab4c23fd5f: `<div><h2> ab4c23fd5f Clause Coverage: 100%</h2></div>`,
-//     });
-//     expect(htmlCoverage["ab4c23fd5f"]).toEqual(`<div></div>`);
-//   });
+  it("should remove header with 100 percentage", () => {
+    const htmlCoverage = removeHtmlCoverageHeader({
+      ab4c23fd5f: `<div><h2> ab4c23fd5f Clause Coverage: 100%</h2></div>`,
+    });
+    expect(htmlCoverage["ab4c23fd5f"]).toEqual(`<div></div>`);
+  });
 
-//   it("should leave regular HTML alone", () => {
-//     const htmlCoverage = removeHtmlCoverageHeader({
-//       ab4c23fd5f: `
-//       <div><h2>Different Header</h2><pre style="tab-size: 2; border-bottom-width: 4px; line-height: 1.4">
-//         <code>
-//         <span data-ref-id="55" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>define &quot;boolIpp&quot;:
-//         </span><span data-ref-id="54" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span><span data-ref-id="48" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="47" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="47" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>[&quot;Encounter&quot;]</span></span></span><span> E</span></span></span><span> </span><span data-ref-id="53" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>where </span><span data-ref-id="53" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="51" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="50" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="49" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>E</span></span><span>.</span><span data-ref-id="50" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>period</span></span></span><span>.</span><span data-ref-id="51" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>start</span></span></span><span data-ref-id="53" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"> during </span><span data-ref-id="52" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>&quot;Measurement Period&quot;</span></span></span></span></span></span></code>
-//         </pre><pre style="tab-size: 2; border-bottom-width: 4px; line-height: 1.4">
-//         <code>
-//         <span data-ref-id="1719" style=""><span>define function ToDateTime(value </span><span data-ref-id="1716" style=""><span>dateTime</span></span><span>): </span><span data-ref-id="1718" style=""><span data-ref-id="1718" style=""><span data-ref-id="1717" style=""><span>value</span></span><span>.</span><span data-ref-id="1718" style=""><span>value</span></span></span></span></span></code>
-//         </pre>
-//        </div>
-//     `,
-//     });
-//     expect(htmlCoverage["ab4c23fd5f"]).toEqual(`
-//       <div><h2>Different Header</h2><pre style="tab-size: 2; border-bottom-width: 4px; line-height: 1.4">
-//         <code>
-//         <span data-ref-id="55" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>define &quot;boolIpp&quot;:
-//         </span><span data-ref-id="54" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span><span data-ref-id="48" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="47" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="47" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>[&quot;Encounter&quot;]</span></span></span><span> E</span></span></span><span> </span><span data-ref-id="53" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>where </span><span data-ref-id="53" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="51" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="50" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="49" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>E</span></span><span>.</span><span data-ref-id="50" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>period</span></span></span><span>.</span><span data-ref-id="51" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>start</span></span></span><span data-ref-id="53" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"> during </span><span data-ref-id="52" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>&quot;Measurement Period&quot;</span></span></span></span></span></span></code>
-//         </pre><pre style="tab-size: 2; border-bottom-width: 4px; line-height: 1.4">
-//         <code>
-//         <span data-ref-id="1719" style=""><span>define function ToDateTime(value </span><span data-ref-id="1716" style=""><span>dateTime</span></span><span>): </span><span data-ref-id="1718" style=""><span data-ref-id="1718" style=""><span data-ref-id="1717" style=""><span>value</span></span><span>.</span><span data-ref-id="1718" style=""><span>value</span></span></span></span></span></code>
-//         </pre>
-//        </div>
-//     `);
-//   });
-// });
+  it("should leave regular HTML alone", () => {
+    const htmlCoverage = removeHtmlCoverageHeader({
+      ab4c23fd5f: `
+      <div><h2>Different Header</h2><pre style="tab-size: 2; border-bottom-width: 4px; line-height: 1.4">
+        <code>
+        <span data-ref-id="55" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>define &quot;boolIpp&quot;:
+        </span><span data-ref-id="54" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span><span data-ref-id="48" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="47" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="47" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>[&quot;Encounter&quot;]</span></span></span><span> E</span></span></span><span> </span><span data-ref-id="53" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>where </span><span data-ref-id="53" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="51" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="50" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="49" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>E</span></span><span>.</span><span data-ref-id="50" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>period</span></span></span><span>.</span><span data-ref-id="51" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>start</span></span></span><span data-ref-id="53" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"> during </span><span data-ref-id="52" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>&quot;Measurement Period&quot;</span></span></span></span></span></span></code>
+        </pre><pre style="tab-size: 2; border-bottom-width: 4px; line-height: 1.4">
+        <code>
+        <span data-ref-id="1719" style=""><span>define function ToDateTime(value </span><span data-ref-id="1716" style=""><span>dateTime</span></span><span>): </span><span data-ref-id="1718" style=""><span data-ref-id="1718" style=""><span data-ref-id="1717" style=""><span>value</span></span><span>.</span><span data-ref-id="1718" style=""><span>value</span></span></span></span></span></code>
+        </pre>
+       </div>
+    `,
+    });
+    expect(htmlCoverage["ab4c23fd5f"]).toEqual(`
+      <div><h2>Different Header</h2><pre style="tab-size: 2; border-bottom-width: 4px; line-height: 1.4">
+        <code>
+        <span data-ref-id="55" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>define &quot;boolIpp&quot;:
+        </span><span data-ref-id="54" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span><span data-ref-id="48" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="47" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="47" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>[&quot;Encounter&quot;]</span></span></span><span> E</span></span></span><span> </span><span data-ref-id="53" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>where </span><span data-ref-id="53" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="51" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="50" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span data-ref-id="49" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>E</span></span><span>.</span><span data-ref-id="50" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>period</span></span></span><span>.</span><span data-ref-id="51" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>start</span></span></span><span data-ref-id="53" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"> during </span><span data-ref-id="52" style="background-color:#daeaf5;color:#004e82;border-bottom-color:#006cb4;border-bottom-style:dashed"><span>&quot;Measurement Period&quot;</span></span></span></span></span></span></code>
+        </pre><pre style="tab-size: 2; border-bottom-width: 4px; line-height: 1.4">
+        <code>
+        <span data-ref-id="1719" style=""><span>define function ToDateTime(value </span><span data-ref-id="1716" style=""><span>dateTime</span></span><span>): </span><span data-ref-id="1718" style=""><span data-ref-id="1718" style=""><span data-ref-id="1717" style=""><span>value</span></span><span>.</span><span data-ref-id="1718" style=""><span>value</span></span></span></span></span></code>
+        </pre>
+       </div>
+    `);
+  });
+});
