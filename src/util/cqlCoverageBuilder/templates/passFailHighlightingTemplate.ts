@@ -31,14 +31,18 @@ export const clauseTemplate = `{{~#if @root.highlightCoverage~}}
 
 // green text, lighter green highlight
 export const clauseCoveredStylePass = {
-  "background-color":"#d2eae1",
-  color: "#4f7f61",
+  "background-color": "#ccebe0",
+  color: "#20744c",
+  "border-bottom-color": "#20744c",
+  "border-bottom-style": "solid",
 };
 
-// clause covered fail (red with double underline)
+// red text, lighter red highlight
 export const clauseNotCoveredStyleFail = {
-  color: "#9d4728",
-  "background-color":"#e9d9d1",
+  "background-color": "#edd8d0",
+  color: "#a63b12",
+  "border-bottom-color": "#a63b12",
+  "border-bottom-style": "double",
 };
 
 export const clauseNotApplicableStyle = {

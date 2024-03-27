@@ -31,8 +31,10 @@ export const highlightTemplate = `{{~#if @root.highlightCoverage~}}
 
 // red text, lighter red highlight
 export const clauseNotCoveredStyleFail = {
-  color: "#9d4728",
-  "background-color":"#e9d9d1",
+  "background-color": "#edd8d0",
+  color: "#a63b12",
+  "border-bottom-color": "#a63b12",
+  "border-bottom-style": "double",
 };
 
 export const clauseNotApplicableStyle = {
@@ -43,5 +45,7 @@ export const clauseNotApplicableStyle = {
 // blue text, lighter blue highlight
 export const clauseHighlightedStyle = {
   "background-color": "#daeaf5",
-  "color":"004e82",
+  color: "004e82",
+  "border-bottom-color": "004e82",
+  "border-bottom-style": "dashed",
 };
