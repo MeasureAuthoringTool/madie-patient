@@ -76,9 +76,24 @@ describe("TerminologyServiceApi Tests", () => {
 
   it("gives no ValueSets when no cqm measure provided", () => {
     terminologyService
-      .getQdmValueSetsExpansion(null, testManifestExpansion)
+      .getQdmValueSetsExpansion(null, testManifestExpansion, false)
       .then((data) => {
         expect(data).toBeNull();
+      });
+  });
+
+  it("Should call Terminology Service URL to fetch value set expansions when manifest Expansion feature flag is true", () => {
+    axios.put = jest
+      .fn()
+      .mockResolvedValueOnce({ data: cqm_measure_basic_valueset });
+    terminologyService
+      .getQdmValueSetsExpansion(cqm_measure_basic, testManifestExpansion, true)
+      .then((data) => {
+        expect(axios.put).toBeCalledWith(
+          "test.url/terminology/value-sets/expansion/qdm"
+        );
+
+        expect(data.length).toEqual(2);
       });
   });
 
@@ -88,8 +103,11 @@ describe("TerminologyServiceApi Tests", () => {
       .mockResolvedValueOnce({ data: cqm_measure_basic_valueset });
 
     terminologyService
-      .getQdmValueSetsExpansion(cqm_measure_basic, testManifestExpansion)
+      .getQdmValueSetsExpansion(cqm_measure_basic, testManifestExpansion, false)
       .then((data: ValueSet[]) => {
+        expect(axios.put).toBeCalledWith(
+          "test.url/vsac/qdm/value-sets/searches"
+        );
         expect(data.length).toEqual(2);
         expect(data[0].display_name).toEqual("Encounter Inpatient");
         expect(data[0].oid).toEqual("2.16.840.1.113883.3.666.5.307");
@@ -115,7 +133,8 @@ describe("TerminologyServiceApi Tests", () => {
     try {
       await terminologyService.getQdmValueSetsExpansion(
         cqm_measure_basic,
-        testManifestExpansion
+        testManifestExpansion,
+        false
       );
     } catch (error) {
       expect(error.message).toEqual(
@@ -127,7 +146,8 @@ describe("TerminologyServiceApi Tests", () => {
   it("test getQdmValueSetsExpansion no search param", () => {
     const result = terminologyService.getQdmValueSetsExpansion(
       testCqmMeasure,
-      testManifestExpansion
+      testManifestExpansion,
+      false
     );
     expect(_.isEmpty(result)).toBe(true);
   });
