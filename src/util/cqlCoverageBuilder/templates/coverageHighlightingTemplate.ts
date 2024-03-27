@@ -29,12 +29,10 @@ export const highlightTemplate = `{{~#if @root.highlightCoverage~}}
 </span>
 {{~/if~}}`;
 
-// clause covered fail (red with double underline)
+// red text, lighter red highlight
 export const clauseNotCoveredStyleFail = {
-  color: "#AE1C1C",
-  "border-bottom-color": "#AE1C1C",
-  "border-bottom-style": "double",
-  "border-bottom-width": "3px",
+  color: "#9d4728",
+  "background-color":"#e9d9d1",
 };
 
 export const clauseNotApplicableStyle = {
@@ -42,11 +40,8 @@ export const clauseNotApplicableStyle = {
   color: "black",
 };
 
-// blue with dashed underline
+// blue text, lighter blue highlight
 export const clauseHighlightedStyle = {
-  color: "#036CB4",
-  "text-decoration": "underline",
-  "text-decoration-style": "dashed",
-  "text-decoration-color": "#036CB4",
-  "text-underline-offset": "3px",
+  "background-color": "#daeaf5",
+  "color":"004e82",
 };
