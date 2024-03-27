@@ -84,7 +84,8 @@ const TestCaseRoutes = () => {
     terminologyService.current
       .getQdmValueSetsExpansion(
         convertedMeasure,
-        measure.testCaseConfiguration?.manifestExpansion
+        measure.testCaseConfiguration?.manifestExpansion,
+        featureFlags.manifestExpansion
       )
       .then((vs: ValueSet[]) => {
         const newCqmMeasure = {
