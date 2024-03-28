@@ -2795,6 +2795,6 @@ export const testMeasureCalculationResult = {
 export const ipHighlighting = `<pre style="tab-size: 2;"
   data-library-name="QDMTestMeasure" data-statement-name="Initial Population">
 <code>
-<span data-ref-id="18" style="color:#4D7E23;border-bottom-color:#4D7E23;border-bottom-width:3px"><span>define &quot;Initial Population&quot;:
-  </span><span data-ref-id="17" style="color:#4D7E23;border-bottom-color:#4D7E23;border-bottom-width:3px"><span>&quot;Qualifying Encounters&quot;</span></span></span></code>
+<span data-ref-id="18" style="background-color:#ccebe0;color:#20744c;border-bottom-color:#20744c;border-bottom-style:solid"><span>define &quot;Initial Population&quot;:
+  </span><span data-ref-id="17" style="background-color:#ccebe0;color:#20744c;border-bottom-color:#20744c;border-bottom-style:solid"><span>&quot;Qualifying Encounters&quot;</span></span></span></code>
 </pre>`;
