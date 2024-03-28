@@ -1,0 +1,720 @@
+{
+  "MATGlobalCommonFunctionsQDM-1.0.000|Global|EarliestOf": [
+    {
+      "id": "MATGlobalCommonFunctionsQDM-1.0.000|Global|Earliest",
+      "uuid": null,
+      "definitionName": "Earliest",
+      "definitionLogic": "define function \"Earliest\"(period Interval<DateTime> ):\n  if ( HasStart(period)) then start of period \n    else \n  end of period",
+      "context": "Patient",
+      "supplDataElement": false,
+      "popDefinition": false,
+      "commentString": "",
+      "returnType": null,
+      "parentLibrary": "MATGlobalCommonFunctionsQDM",
+      "libraryDisplayName": "Global",
+      "libraryVersion": "1.0.000",
+      "functionArguments": [
+        {
+          "id": "a0acfa46-d86f-3610-b2c7-3dbb28f64701",
+          "argumentName": "period",
+          "argumentType": "Others",
+          "otherType": "Interval<DateTime>",
+          "qdmDataType": null,
+          "attributeName": null,
+          "returnType": "Interval<DateTime>",
+          "valid": false
+        }
+      ],
+      "name": "Earliest",
+      "function": true,
+      "logic": "define function \"Earliest\"(period Interval<DateTime> ):\n  if ( HasStart(period)) then start of period \n    else \n  end of period"
+    },
+    {
+      "id": "MATGlobalCommonFunctionsQDM-1.0.000|Global|NormalizeInterval",
+      "uuid": null,
+      "definitionName": "NormalizeInterval",
+      "definitionLogic": "define function \"NormalizeInterval\"(pointInTime DateTime, period Interval<DateTime> ):\n  if pointInTime is not null then Interval[pointInTime, pointInTime]\n    else if period is not null then period \n    else null as Interval<DateTime>",
+      "context": "Patient",
+      "supplDataElement": false,
+      "popDefinition": false,
+      "commentString": "",
+      "returnType": null,
+      "parentLibrary": "MATGlobalCommonFunctionsQDM",
+      "libraryDisplayName": "Global",
+      "libraryVersion": "1.0.000",
+      "functionArguments": [
+        {
+          "id": "397c867a-4be3-368d-91b0-2c95ccbc3d6e",
+          "argumentName": "pointInTime",
+          "argumentType": "DateTime",
+          "otherType": null,
+          "qdmDataType": null,
+          "attributeName": null,
+          "returnType": "DateTime",
+          "valid": false
+        },
+        {
+          "id": "a0acfa46-d86f-3610-b2c7-3dbb28f64701",
+          "argumentName": "period",
+          "argumentType": "Others",
+          "otherType": "Interval<DateTime>",
+          "qdmDataType": null,
+          "attributeName": null,
+          "returnType": "Interval<DateTime>",
+          "valid": false
+        }
+      ],
+      "name": "NormalizeInterval",
+      "function": true,
+      "logic": "define function \"NormalizeInterval\"(pointInTime DateTime, period Interval<DateTime> ):\n  if pointInTime is not null then Interval[pointInTime, pointInTime]\n    else if period is not null then period \n    else null as Interval<DateTime>"
+    }
+  ],
+  "MATGlobalCommonFunctionsQDM-1.0.000|Global|Latest": [
+    {
+      "id": "MATGlobalCommonFunctionsQDM-1.0.000|Global|HasEnd",
+      "uuid": null,
+      "definitionName": "HasEnd",
+      "definitionLogic": "define function \"HasEnd\"(period Interval<DateTime> ):\n  not ( \n    end of period is null\n      or \n      end of period = maximum DateTime\n  )",
+      "context": "Patient",
+      "supplDataElement": false,
+      "popDefinition": false,
+      "commentString": "",
+      "returnType": null,
+      "parentLibrary": "MATGlobalCommonFunctionsQDM",
+      "libraryDisplayName": "Global",
+      "libraryVersion": "1.0.000",
+      "functionArguments": [
+        {
+          "id": "a0acfa46-d86f-3610-b2c7-3dbb28f64701",
+          "argumentName": "period",
+          "argumentType": "Others",
+          "otherType": "Interval<DateTime>",
+          "qdmDataType": null,
+          "attributeName": null,
+          "returnType": "Interval<DateTime>",
+          "valid": false
+        }
+      ],
+      "name": "HasEnd",
+      "function": true,
+      "logic": "define function \"HasEnd\"(period Interval<DateTime> ):\n  not ( \n    end of period is null\n      or \n      end of period = maximum DateTime\n  )"
+    }
+  ],
+  "Encounter with Opioid Administration Outside of Operating Room": [
+    {
+      "id": "MATGlobalCommonFunctionsQDM-1.0.000|Global|NormalizeInterval",
+      "uuid": null,
+      "definitionName": "NormalizeInterval",
+      "definitionLogic": "define function \"NormalizeInterval\"(pointInTime DateTime, period Interval<DateTime> ):\n  if pointInTime is not null then Interval[pointInTime, pointInTime]\n    else if period is not null then period \n    else null as Interval<DateTime>",
+      "context": "Patient",
+      "supplDataElement": false,
+      "popDefinition": false,
+      "commentString": "",
+      "returnType": null,
+      "parentLibrary": "MATGlobalCommonFunctionsQDM",
+      "libraryDisplayName": "Global",
+      "libraryVersion": "1.0.000",
+      "functionArguments": [
+        {
+          "id": "397c867a-4be3-368d-91b0-2c95ccbc3d6e",
+          "argumentName": "pointInTime",
+          "argumentType": "DateTime",
+          "otherType": null,
+          "qdmDataType": null,
+          "attributeName": null,
+          "returnType": "DateTime",
+          "valid": false
+        },
+        {
+          "id": "a0acfa46-d86f-3610-b2c7-3dbb28f64701",
+          "argumentName": "period",
+          "argumentType": "Others",
+          "otherType": "Interval<DateTime>",
+          "qdmDataType": null,
+          "attributeName": null,
+          "returnType": "Interval<DateTime>",
+          "valid": false
+        }
+      ],
+      "name": "NormalizeInterval",
+      "function": true,
+      "logic": "define function \"NormalizeInterval\"(pointInTime DateTime, period Interval<DateTime> ):\n  if pointInTime is not null then Interval[pointInTime, pointInTime]\n    else if period is not null then period \n    else null as Interval<DateTime>"
+    },
+    {
+      "id": "Opioid Administration",
+      "uuid": null,
+      "definitionName": "Opioid Administration",
+      "definitionLogic": "define \"Opioid Administration\":\n  [\"Medication, Administered\": \"Opioids, All\"]",
+      "context": "Patient",
+      "supplDataElement": false,
+      "popDefinition": false,
+      "commentString": "",
+      "returnType": null,
+      "parentLibrary": null,
+      "libraryDisplayName": null,
+      "libraryVersion": null,
+      "functionArguments": null,
+      "name": "Opioid Administration",
+      "function": false,
+      "logic": "define \"Opioid Administration\":\n  [\"Medication, Administered\": \"Opioids, All\"]"
+    },
+    {
+      "id": "Qualifying Encounter",
+      "uuid": null,
+      "definitionName": "Qualifying Encounter",
+      "definitionLogic": "define \"Qualifying Encounter\":\n  [\"Encounter, Performed\": \"Encounter Inpatient\"] InpatientHospitalization\n    where InpatientHospitalization.relevantPeriod ends during day of \"Measurement Period\"\n      and AgeInYearsAt(date from start of InpatientHospitalization.relevantPeriod) >= 18",
+      "context": "Patient",
+      "supplDataElement": false,
+      "popDefinition": false,
+      "commentString": "",
+      "returnType": null,
+      "parentLibrary": null,
+      "libraryDisplayName": null,
+      "libraryVersion": null,
+      "functionArguments": null,
+      "name": "Qualifying Encounter",
+      "function": false,
+      "logic": "define \"Qualifying Encounter\":\n  [\"Encounter, Performed\": \"Encounter Inpatient\"] InpatientHospitalization\n    where InpatientHospitalization.relevantPeriod ends during day of \"Measurement Period\"\n      and AgeInYearsAt(date from start of InpatientHospitalization.relevantPeriod) >= 18"
+    },
+    {
+      "id": "MATGlobalCommonFunctionsQDM-1.0.000|Global|HospitalizationWithObservation",
+      "uuid": null,
+      "definitionName": "HospitalizationWithObservation",
+      "definitionLogic": "define function \"HospitalizationWithObservation\"(Encounter \"Encounter, Performed\" ):\n  Encounter Visit\n  \tlet ObsVisit: Last([\"Encounter, Performed\": \"Observation Services\"] LastObs\n  \t\t\twhere LastObs.relevantPeriod ends 1 hour or less on or before start of Visit.relevantPeriod\n  \t\t\tsort by \n  \t\t\tend of relevantPeriod\n  \t),\n  \tVisitStart: Coalesce(start of ObsVisit.relevantPeriod, start of Visit.relevantPeriod),\n  \tEDVisit: Last([\"Encounter, Performed\": \"Emergency Department Visit\"] LastED\n  \t\t\twhere LastED.relevantPeriod ends 1 hour or less on or before VisitStart\n  \t\t\tsort by \n  \t\t\tend of relevantPeriod\n  \t)\n  \treturn Interval[Coalesce(start of EDVisit.relevantPeriod, VisitStart), \n  \tend of Visit.relevantPeriod]",
+      "context": "Patient",
+      "supplDataElement": false,
+      "popDefinition": false,
+      "commentString": "",
+      "returnType": null,
+      "parentLibrary": "MATGlobalCommonFunctionsQDM",
+      "libraryDisplayName": "Global",
+      "libraryVersion": "1.0.000",
+      "functionArguments": [
+        {
+          "id": "d1e9f9f8-91de-3f9a-a557-39a01fbf68f0",
+          "argumentName": "Encounter",
+          "argumentType": "QDM Datatype",
+          "otherType": null,
+          "qdmDataType": "Encounter, Performed",
+          "attributeName": null,
+          "returnType": "Encounter, Performed",
+          "valid": false
+        }
+      ],
+      "name": "HospitalizationWithObservation",
+      "function": true,
+      "logic": "define function \"HospitalizationWithObservation\"(Encounter \"Encounter, Performed\" ):\n  Encounter Visit\n  \tlet ObsVisit: Last([\"Encounter, Performed\": \"Observation Services\"] LastObs\n  \t\t\twhere LastObs.relevantPeriod ends 1 hour or less on or before start of Visit.relevantPeriod\n  \t\t\tsort by \n  \t\t\tend of relevantPeriod\n  \t),\n  \tVisitStart: Coalesce(start of ObsVisit.relevantPeriod, start of Visit.relevantPeriod),\n  \tEDVisit: Last([\"Encounter, Performed\": \"Emergency Department Visit\"] LastED\n  \t\t\twhere LastED.relevantPeriod ends 1 hour or less on or before VisitStart\n  \t\t\tsort by \n  \t\t\tend of relevantPeriod\n  \t)\n  \treturn Interval[Coalesce(start of EDVisit.relevantPeriod, VisitStart), \n  \tend of Visit.relevantPeriod]"
+    }
+  ],
+  "MATGlobalCommonFunctionsQDM-1.0.000|Global|HospitalizationWithObservationLengthofStay": [
+    {
+      "id": "MATGlobalCommonFunctionsQDM-1.0.000|Global|HospitalizationWithObservation",
+      "uuid": null,
+      "definitionName": "HospitalizationWithObservation",
+      "definitionLogic": "define function \"HospitalizationWithObservation\"(Encounter \"Encounter, Performed\" ):\n  Encounter Visit\n  \tlet ObsVisit: Last([\"Encounter, Performed\": \"Observation Services\"] LastObs\n  \t\t\twhere LastObs.relevantPeriod ends 1 hour or less on or before start of Visit.relevantPeriod\n  \t\t\tsort by \n  \t\t\tend of relevantPeriod\n  \t),\n  \tVisitStart: Coalesce(start of ObsVisit.relevantPeriod, start of Visit.relevantPeriod),\n  \tEDVisit: Last([\"Encounter, Performed\": \"Emergency Department Visit\"] LastED\n  \t\t\twhere LastED.relevantPeriod ends 1 hour or less on or before VisitStart\n  \t\t\tsort by \n  \t\t\tend of relevantPeriod\n  \t)\n  \treturn Interval[Coalesce(start of EDVisit.relevantPeriod, VisitStart), \n  \tend of Visit.relevantPeriod]",
+      "context": "Patient",
+      "supplDataElement": false,
+      "popDefinition": false,
+      "commentString": "",
+      "returnType": null,
+      "parentLibrary": "MATGlobalCommonFunctionsQDM",
+      "libraryDisplayName": "Global",
+      "libraryVersion": "1.0.000",
+      "functionArguments": [
+        {
+          "id": "d1e9f9f8-91de-3f9a-a557-39a01fbf68f0",
+          "argumentName": "Encounter",
+          "argumentType": "QDM Datatype",
+          "otherType": null,
+          "qdmDataType": "Encounter, Performed",
+          "attributeName": null,
+          "returnType": "Encounter, Performed",
+          "valid": false
+        }
+      ],
+      "name": "HospitalizationWithObservation",
+      "function": true,
+      "logic": "define function \"HospitalizationWithObservation\"(Encounter \"Encounter, Performed\" ):\n  Encounter Visit\n  \tlet ObsVisit: Last([\"Encounter, Performed\": \"Observation Services\"] LastObs\n  \t\t\twhere LastObs.relevantPeriod ends 1 hour or less on or before start of Visit.relevantPeriod\n  \t\t\tsort by \n  \t\t\tend of relevantPeriod\n  \t),\n  \tVisitStart: Coalesce(start of ObsVisit.relevantPeriod, start of Visit.relevantPeriod),\n  \tEDVisit: Last([\"Encounter, Performed\": \"Emergency Department Visit\"] LastED\n  \t\t\twhere LastED.relevantPeriod ends 1 hour or less on or before VisitStart\n  \t\t\tsort by \n  \t\t\tend of relevantPeriod\n  \t)\n  \treturn Interval[Coalesce(start of EDVisit.relevantPeriod, VisitStart), \n  \tend of Visit.relevantPeriod]"
+    },
+    {
+      "id": "MATGlobalCommonFunctionsQDM-1.0.000|Global|LengthInDays",
+      "uuid": null,
+      "definitionName": "LengthInDays",
+      "definitionLogic": "define function \"LengthInDays\"(Value Interval<DateTime> ):\n  difference in days between start of Value and end of Value",
+      "context": "Patient",
+      "supplDataElement": false,
+      "popDefinition": false,
+      "commentString": "",
+      "returnType": null,
+      "parentLibrary": "MATGlobalCommonFunctionsQDM",
+      "libraryDisplayName": "Global",
+      "libraryVersion": "1.0.000",
+      "functionArguments": [
+        {
+          "id": "68920240-9e48-343b-9147-13f96d93947c",
+          "argumentName": "Value",
+          "argumentType": "Others",
+          "otherType": "Interval<DateTime>",
+          "qdmDataType": null,
+          "attributeName": null,
+          "returnType": "Interval<DateTime>",
+          "valid": false
+        }
+      ],
+      "name": "LengthInDays",
+      "function": true,
+      "logic": "define function \"LengthInDays\"(Value Interval<DateTime> ):\n  difference in days between start of Value and end of Value"
+    }
+  ],
+  "MATGlobalCommonFunctionsQDM-1.0.000|Global|Earliest": [
+    {
+      "id": "MATGlobalCommonFunctionsQDM-1.0.000|Global|HasStart",
+      "uuid": null,
+      "definitionName": "HasStart",
+      "definitionLogic": "define function \"HasStart\"(period Interval<DateTime> ):\n  not ( start of period is null\n      or start of period = minimum DateTime\n  )",
+      "context": "Patient",
+      "supplDataElement": false,
+      "popDefinition": false,
+      "commentString": "",
+      "returnType": null,
+      "parentLibrary": "MATGlobalCommonFunctionsQDM",
+      "libraryDisplayName": "Global",
+      "libraryVersion": "1.0.000",
+      "functionArguments": [
+        {
+          "id": "a0acfa46-d86f-3610-b2c7-3dbb28f64701",
+          "argumentName": "period",
+          "argumentType": "Others",
+          "otherType": "Interval<DateTime>",
+          "qdmDataType": null,
+          "attributeName": null,
+          "returnType": "Interval<DateTime>",
+          "valid": false
+        }
+      ],
+      "name": "HasStart",
+      "function": true,
+      "logic": "define function \"HasStart\"(period Interval<DateTime> ):\n  not ( start of period is null\n      or start of period = minimum DateTime\n  )"
+    }
+  ],
+  "MATGlobalCommonFunctionsQDM-1.0.000|Global|LatestOf": [
+    {
+      "id": "MATGlobalCommonFunctionsQDM-1.0.000|Global|NormalizeInterval",
+      "uuid": null,
+      "definitionName": "NormalizeInterval",
+      "definitionLogic": "define function \"NormalizeInterval\"(pointInTime DateTime, period Interval<DateTime> ):\n  if pointInTime is not null then Interval[pointInTime, pointInTime]\n    else if period is not null then period \n    else null as Interval<DateTime>",
+      "context": "Patient",
+      "supplDataElement": false,
+      "popDefinition": false,
+      "commentString": "",
+      "returnType": null,
+      "parentLibrary": "MATGlobalCommonFunctionsQDM",
+      "libraryDisplayName": "Global",
+      "libraryVersion": "1.0.000",
+      "functionArguments": [
+        {
+          "id": "397c867a-4be3-368d-91b0-2c95ccbc3d6e",
+          "argumentName": "pointInTime",
+          "argumentType": "DateTime",
+          "otherType": null,
+          "qdmDataType": null,
+          "attributeName": null,
+          "returnType": "DateTime",
+          "valid": false
+        },
+        {
+          "id": "a0acfa46-d86f-3610-b2c7-3dbb28f64701",
+          "argumentName": "period",
+          "argumentType": "Others",
+          "otherType": "Interval<DateTime>",
+          "qdmDataType": null,
+          "attributeName": null,
+          "returnType": "Interval<DateTime>",
+          "valid": false
+        }
+      ],
+      "name": "NormalizeInterval",
+      "function": true,
+      "logic": "define function \"NormalizeInterval\"(pointInTime DateTime, period Interval<DateTime> ):\n  if pointInTime is not null then Interval[pointInTime, pointInTime]\n    else if period is not null then period \n    else null as Interval<DateTime>"
+    },
+    {
+      "id": "MATGlobalCommonFunctionsQDM-1.0.000|Global|Latest",
+      "uuid": null,
+      "definitionName": "Latest",
+      "definitionLogic": "define function \"Latest\"(period Interval<DateTime> ):\n  if ( HasEnd(period)) then \n  end of period \n    else start of period",
+      "context": "Patient",
+      "supplDataElement": false,
+      "popDefinition": false,
+      "commentString": "",
+      "returnType": null,
+      "parentLibrary": "MATGlobalCommonFunctionsQDM",
+      "libraryDisplayName": "Global",
+      "libraryVersion": "1.0.000",
+      "functionArguments": [
+        {
+          "id": "a0acfa46-d86f-3610-b2c7-3dbb28f64701",
+          "argumentName": "period",
+          "argumentType": "Others",
+          "otherType": "Interval<DateTime>",
+          "qdmDataType": null,
+          "attributeName": null,
+          "returnType": "Interval<DateTime>",
+          "valid": false
+        }
+      ],
+      "name": "Latest",
+      "function": true,
+      "logic": "define function \"Latest\"(period Interval<DateTime> ):\n  if ( HasEnd(period)) then \n  end of period \n    else start of period"
+    }
+  ],
+  "Numerator": [
+    {
+      "id": "Encounter with Non Enteral Opioid Antagonist Administration Outside of Operating Room and within 12 Hrs After Opioid",
+      "uuid": null,
+      "definitionName": "Encounter with Non Enteral Opioid Antagonist Administration Outside of Operating Room and within 12 Hrs After Opioid",
+      "definitionLogic": "define \"Encounter with Non Enteral Opioid Antagonist Administration Outside of Operating Room and within 12 Hrs After Opioid\":\n  // Opioids administered before opioid antagonist AND excludes opioid antagonist administered in operating room AND limits opioid antagonist to non-enteral routes\n  \n  from\n    [\"Medication, Administered\": \"Opioid Antagonist\"] OpioidAntagonistGiven,\n    \"Opioid Administration\" OpioidGiven,\n    \"Denominator\" EncounterWithQualifyingAge\n    where not exists ( EncounterWithQualifyingAge.facilityLocations EncounterLocation\n        where EncounterLocation.code ~ \"Operating Room/Suite\"\n          and Global.\"NormalizeInterval\" ( OpioidAntagonistGiven.relevantDatetime, OpioidAntagonistGiven.relevantPeriod ) starts during EncounterLocation.locationPeriod\n    )\n      and ( Global.\"NormalizeInterval\" ( OpioidAntagonistGiven.relevantDatetime, OpioidAntagonistGiven.relevantPeriod ) starts during Global.\"HospitalizationWithObservation\" ( EncounterWithQualifyingAge )\n          and Global.\"NormalizeInterval\" ( OpioidGiven.relevantDatetime, OpioidGiven.relevantPeriod ) starts during Global.\"HospitalizationWithObservation\" ( EncounterWithQualifyingAge )\n          and Global.\"NormalizeInterval\" ( OpioidGiven.relevantDatetime, OpioidGiven.relevantPeriod ) ends 12 hours or less before start of Global.\"NormalizeInterval\" ( OpioidAntagonistGiven.relevantDatetime, OpioidAntagonistGiven.relevantPeriod )\n          and OpioidAntagonistGiven.route in \"Routes of Administration for Opioid Antagonists\"\n      )\n    return EncounterWithQualifyingAge",
+      "context": "Patient",
+      "supplDataElement": false,
+      "popDefinition": false,
+      "commentString": "",
+      "returnType": null,
+      "parentLibrary": null,
+      "libraryDisplayName": null,
+      "libraryVersion": null,
+      "functionArguments": null,
+      "name": "Encounter with Non Enteral Opioid Antagonist Administration Outside of Operating Room and within 12 Hrs After Opioid",
+      "function": false,
+      "logic": "define \"Encounter with Non Enteral Opioid Antagonist Administration Outside of Operating Room and within 12 Hrs After Opioid\":\n  // Opioids administered before opioid antagonist AND excludes opioid antagonist administered in operating room AND limits opioid antagonist to non-enteral routes\n  \n  from\n    [\"Medication, Administered\": \"Opioid Antagonist\"] OpioidAntagonistGiven,\n    \"Opioid Administration\" OpioidGiven,\n    \"Denominator\" EncounterWithQualifyingAge\n    where not exists ( EncounterWithQualifyingAge.facilityLocations EncounterLocation\n        where EncounterLocation.code ~ \"Operating Room/Suite\"\n          and Global.\"NormalizeInterval\" ( OpioidAntagonistGiven.relevantDatetime, OpioidAntagonistGiven.relevantPeriod ) starts during EncounterLocation.locationPeriod\n    )\n      and ( Global.\"NormalizeInterval\" ( OpioidAntagonistGiven.relevantDatetime, OpioidAntagonistGiven.relevantPeriod ) starts during Global.\"HospitalizationWithObservation\" ( EncounterWithQualifyingAge )\n          and Global.\"NormalizeInterval\" ( OpioidGiven.relevantDatetime, OpioidGiven.relevantPeriod ) starts during Global.\"HospitalizationWithObservation\" ( EncounterWithQualifyingAge )\n          and Global.\"NormalizeInterval\" ( OpioidGiven.relevantDatetime, OpioidGiven.relevantPeriod ) ends 12 hours or less before start of Global.\"NormalizeInterval\" ( OpioidAntagonistGiven.relevantDatetime, OpioidAntagonistGiven.relevantPeriod )\n          and OpioidAntagonistGiven.route in \"Routes of Administration for Opioid Antagonists\"\n      )\n    return EncounterWithQualifyingAge"
+    }
+  ],
+  "MATGlobalCommonFunctionsQDM-1.0.000|Global|EmergencyDepartmentArrivalTime": [
+    {
+      "id": "MATGlobalCommonFunctionsQDM-1.0.000|Global|HospitalizationLocations",
+      "uuid": null,
+      "definitionName": "HospitalizationLocations",
+      "definitionLogic": "define function \"HospitalizationLocations\"(Encounter \"Encounter, Performed\" ):\n  Encounter Visit\n  \tlet EDVisit: Last([\"Encounter, Performed\": \"Emergency Department Visit\"] LastED\n  \t\t\twhere LastED.relevantPeriod ends 1 hour or less on or before start of Visit.relevantPeriod\n  \t\t\tsort by \n  \t\t\tend of relevantPeriod\n  \t)\n  \treturn if EDVisit is null then Visit.facilityLocations \n  \t\telse flatten { EDVisit.facilityLocations, Visit.facilityLocations }",
+      "context": "Patient",
+      "supplDataElement": false,
+      "popDefinition": false,
+      "commentString": "",
+      "returnType": null,
+      "parentLibrary": "MATGlobalCommonFunctionsQDM",
+      "libraryDisplayName": "Global",
+      "libraryVersion": "1.0.000",
+      "functionArguments": [
+        {
+          "id": "d1e9f9f8-91de-3f9a-a557-39a01fbf68f0",
+          "argumentName": "Encounter",
+          "argumentType": "QDM Datatype",
+          "otherType": null,
+          "qdmDataType": "Encounter, Performed",
+          "attributeName": null,
+          "returnType": "Encounter, Performed",
+          "valid": false
+        }
+      ],
+      "name": "HospitalizationLocations",
+      "function": true,
+      "logic": "define function \"HospitalizationLocations\"(Encounter \"Encounter, Performed\" ):\n  Encounter Visit\n  \tlet EDVisit: Last([\"Encounter, Performed\": \"Emergency Department Visit\"] LastED\n  \t\t\twhere LastED.relevantPeriod ends 1 hour or less on or before start of Visit.relevantPeriod\n  \t\t\tsort by \n  \t\t\tend of relevantPeriod\n  \t)\n  \treturn if EDVisit is null then Visit.facilityLocations \n  \t\telse flatten { EDVisit.facilityLocations, Visit.facilityLocations }"
+    }
+  ],
+  "MATGlobalCommonFunctionsQDM-1.0.000|Global|HospitalDepartureTime": [
+    {
+      "id": "MATGlobalCommonFunctionsQDM-1.0.000|Global|HospitalizationLocations",
+      "uuid": null,
+      "definitionName": "HospitalizationLocations",
+      "definitionLogic": "define function \"HospitalizationLocations\"(Encounter \"Encounter, Performed\" ):\n  Encounter Visit\n  \tlet EDVisit: Last([\"Encounter, Performed\": \"Emergency Department Visit\"] LastED\n  \t\t\twhere LastED.relevantPeriod ends 1 hour or less on or before start of Visit.relevantPeriod\n  \t\t\tsort by \n  \t\t\tend of relevantPeriod\n  \t)\n  \treturn if EDVisit is null then Visit.facilityLocations \n  \t\telse flatten { EDVisit.facilityLocations, Visit.facilityLocations }",
+      "context": "Patient",
+      "supplDataElement": false,
+      "popDefinition": false,
+      "commentString": "",
+      "returnType": null,
+      "parentLibrary": "MATGlobalCommonFunctionsQDM",
+      "libraryDisplayName": "Global",
+      "libraryVersion": "1.0.000",
+      "functionArguments": [
+        {
+          "id": "d1e9f9f8-91de-3f9a-a557-39a01fbf68f0",
+          "argumentName": "Encounter",
+          "argumentType": "QDM Datatype",
+          "otherType": null,
+          "qdmDataType": "Encounter, Performed",
+          "attributeName": null,
+          "returnType": "Encounter, Performed",
+          "valid": false
+        }
+      ],
+      "name": "HospitalizationLocations",
+      "function": true,
+      "logic": "define function \"HospitalizationLocations\"(Encounter \"Encounter, Performed\" ):\n  Encounter Visit\n  \tlet EDVisit: Last([\"Encounter, Performed\": \"Emergency Department Visit\"] LastED\n  \t\t\twhere LastED.relevantPeriod ends 1 hour or less on or before start of Visit.relevantPeriod\n  \t\t\tsort by \n  \t\t\tend of relevantPeriod\n  \t)\n  \treturn if EDVisit is null then Visit.facilityLocations \n  \t\telse flatten { EDVisit.facilityLocations, Visit.facilityLocations }"
+    }
+  ],
+  "Denominator": [
+    {
+      "id": "Initial Population",
+      "uuid": null,
+      "definitionName": "Initial Population",
+      "definitionLogic": "define \"Initial Population\":\n  \"Encounter with Opioid Administration Outside of Operating Room\"",
+      "context": "Patient",
+      "supplDataElement": false,
+      "popDefinition": false,
+      "commentString": "",
+      "returnType": null,
+      "parentLibrary": null,
+      "libraryDisplayName": null,
+      "libraryVersion": null,
+      "functionArguments": null,
+      "name": "Initial Population",
+      "function": false,
+      "logic": "define \"Initial Population\":\n  \"Encounter with Opioid Administration Outside of Operating Room\""
+    }
+  ],
+  "MATGlobalCommonFunctionsQDM-1.0.000|Global|HospitalArrivalTime": [
+    {
+      "id": "MATGlobalCommonFunctionsQDM-1.0.000|Global|HospitalizationLocations",
+      "uuid": null,
+      "definitionName": "HospitalizationLocations",
+      "definitionLogic": "define function \"HospitalizationLocations\"(Encounter \"Encounter, Performed\" ):\n  Encounter Visit\n  \tlet EDVisit: Last([\"Encounter, Performed\": \"Emergency Department Visit\"] LastED\n  \t\t\twhere LastED.relevantPeriod ends 1 hour or less on or before start of Visit.relevantPeriod\n  \t\t\tsort by \n  \t\t\tend of relevantPeriod\n  \t)\n  \treturn if EDVisit is null then Visit.facilityLocations \n  \t\telse flatten { EDVisit.facilityLocations, Visit.facilityLocations }",
+      "context": "Patient",
+      "supplDataElement": false,
+      "popDefinition": false,
+      "commentString": "",
+      "returnType": null,
+      "parentLibrary": "MATGlobalCommonFunctionsQDM",
+      "libraryDisplayName": "Global",
+      "libraryVersion": "1.0.000",
+      "functionArguments": [
+        {
+          "id": "d1e9f9f8-91de-3f9a-a557-39a01fbf68f0",
+          "argumentName": "Encounter",
+          "argumentType": "QDM Datatype",
+          "otherType": null,
+          "qdmDataType": "Encounter, Performed",
+          "attributeName": null,
+          "returnType": "Encounter, Performed",
+          "valid": false
+        }
+      ],
+      "name": "HospitalizationLocations",
+      "function": true,
+      "logic": "define function \"HospitalizationLocations\"(Encounter \"Encounter, Performed\" ):\n  Encounter Visit\n  \tlet EDVisit: Last([\"Encounter, Performed\": \"Emergency Department Visit\"] LastED\n  \t\t\twhere LastED.relevantPeriod ends 1 hour or less on or before start of Visit.relevantPeriod\n  \t\t\tsort by \n  \t\t\tend of relevantPeriod\n  \t)\n  \treturn if EDVisit is null then Visit.facilityLocations \n  \t\telse flatten { EDVisit.facilityLocations, Visit.facilityLocations }"
+    }
+  ],
+  "MATGlobalCommonFunctionsQDM-1.0.000|Global|HospitalAdmissionTime": [
+    {
+      "id": "MATGlobalCommonFunctionsQDM-1.0.000|Global|Hospitalization",
+      "uuid": null,
+      "definitionName": "Hospitalization",
+      "definitionLogic": "define function \"Hospitalization\"(Encounter \"Encounter, Performed\" ):\n  Encounter Visit\n  \tlet EDVisit: Last([\"Encounter, Performed\": \"Emergency Department Visit\"] LastED\n  \t\t\twhere LastED.relevantPeriod ends 1 hour or less on or before start of Visit.relevantPeriod\n  \t\t\tsort by \n  \t\t\tend of relevantPeriod\n  \t)\n  \treturn Interval[Coalesce(start of EDVisit.relevantPeriod, start of Visit.relevantPeriod), \n  \tend of Visit.relevantPeriod]",
+      "context": "Patient",
+      "supplDataElement": false,
+      "popDefinition": false,
+      "commentString": "",
+      "returnType": null,
+      "parentLibrary": "MATGlobalCommonFunctionsQDM",
+      "libraryDisplayName": "Global",
+      "libraryVersion": "1.0.000",
+      "functionArguments": [
+        {
+          "id": "d1e9f9f8-91de-3f9a-a557-39a01fbf68f0",
+          "argumentName": "Encounter",
+          "argumentType": "QDM Datatype",
+          "otherType": null,
+          "qdmDataType": "Encounter, Performed",
+          "attributeName": null,
+          "returnType": "Encounter, Performed",
+          "valid": false
+        }
+      ],
+      "name": "Hospitalization",
+      "function": true,
+      "logic": "define function \"Hospitalization\"(Encounter \"Encounter, Performed\" ):\n  Encounter Visit\n  \tlet EDVisit: Last([\"Encounter, Performed\": \"Emergency Department Visit\"] LastED\n  \t\t\twhere LastED.relevantPeriod ends 1 hour or less on or before start of Visit.relevantPeriod\n  \t\t\tsort by \n  \t\t\tend of relevantPeriod\n  \t)\n  \treturn Interval[Coalesce(start of EDVisit.relevantPeriod, start of Visit.relevantPeriod), \n  \tend of Visit.relevantPeriod]"
+    }
+  ],
+  "MATGlobalCommonFunctionsQDM-1.0.000|Global|HospitalizationLengthofStay": [
+    {
+      "id": "MATGlobalCommonFunctionsQDM-1.0.000|Global|Hospitalization",
+      "uuid": null,
+      "definitionName": "Hospitalization",
+      "definitionLogic": "define function \"Hospitalization\"(Encounter \"Encounter, Performed\" ):\n  Encounter Visit\n  \tlet EDVisit: Last([\"Encounter, Performed\": \"Emergency Department Visit\"] LastED\n  \t\t\twhere LastED.relevantPeriod ends 1 hour or less on or before start of Visit.relevantPeriod\n  \t\t\tsort by \n  \t\t\tend of relevantPeriod\n  \t)\n  \treturn Interval[Coalesce(start of EDVisit.relevantPeriod, start of Visit.relevantPeriod), \n  \tend of Visit.relevantPeriod]",
+      "context": "Patient",
+      "supplDataElement": false,
+      "popDefinition": false,
+      "commentString": "",
+      "returnType": null,
+      "parentLibrary": "MATGlobalCommonFunctionsQDM",
+      "libraryDisplayName": "Global",
+      "libraryVersion": "1.0.000",
+      "functionArguments": [
+        {
+          "id": "d1e9f9f8-91de-3f9a-a557-39a01fbf68f0",
+          "argumentName": "Encounter",
+          "argumentType": "QDM Datatype",
+          "otherType": null,
+          "qdmDataType": "Encounter, Performed",
+          "attributeName": null,
+          "returnType": "Encounter, Performed",
+          "valid": false
+        }
+      ],
+      "name": "Hospitalization",
+      "function": true,
+      "logic": "define function \"Hospitalization\"(Encounter \"Encounter, Performed\" ):\n  Encounter Visit\n  \tlet EDVisit: Last([\"Encounter, Performed\": \"Emergency Department Visit\"] LastED\n  \t\t\twhere LastED.relevantPeriod ends 1 hour or less on or before start of Visit.relevantPeriod\n  \t\t\tsort by \n  \t\t\tend of relevantPeriod\n  \t)\n  \treturn Interval[Coalesce(start of EDVisit.relevantPeriod, start of Visit.relevantPeriod), \n  \tend of Visit.relevantPeriod]"
+    },
+    {
+      "id": "MATGlobalCommonFunctionsQDM-1.0.000|Global|LengthInDays",
+      "uuid": null,
+      "definitionName": "LengthInDays",
+      "definitionLogic": "define function \"LengthInDays\"(Value Interval<DateTime> ):\n  difference in days between start of Value and end of Value",
+      "context": "Patient",
+      "supplDataElement": false,
+      "popDefinition": false,
+      "commentString": "",
+      "returnType": null,
+      "parentLibrary": "MATGlobalCommonFunctionsQDM",
+      "libraryDisplayName": "Global",
+      "libraryVersion": "1.0.000",
+      "functionArguments": [
+        {
+          "id": "68920240-9e48-343b-9147-13f96d93947c",
+          "argumentName": "Value",
+          "argumentType": "Others",
+          "otherType": "Interval<DateTime>",
+          "qdmDataType": null,
+          "attributeName": null,
+          "returnType": "Interval<DateTime>",
+          "valid": false
+        }
+      ],
+      "name": "LengthInDays",
+      "function": true,
+      "logic": "define function \"LengthInDays\"(Value Interval<DateTime> ):\n  difference in days between start of Value and end of Value"
+    }
+  ],
+  "Initial Population": [
+    {
+      "id": "Encounter with Opioid Administration Outside of Operating Room",
+      "uuid": null,
+      "definitionName": "Encounter with Opioid Administration Outside of Operating Room",
+      "definitionLogic": "define \"Encounter with Opioid Administration Outside of Operating Room\":\n  \"Qualifying Encounter\" InpatientEncounter\n    with \"Opioid Administration\" OpioidGiven\n      such that Global.\"NormalizeInterval\" ( OpioidGiven.relevantDatetime, OpioidGiven.relevantPeriod ) starts during Global.\"HospitalizationWithObservation\" ( InpatientEncounter )\n        and not exists ( InpatientEncounter.facilityLocations EncounterLocation\n            where EncounterLocation.code ~ \"Operating Room/Suite\"\n              and Global.\"NormalizeInterval\" ( OpioidGiven.relevantDatetime, OpioidGiven.relevantPeriod ) starts during EncounterLocation.locationPeriod\n        )",
+      "context": "Patient",
+      "supplDataElement": false,
+      "popDefinition": false,
+      "commentString": "",
+      "returnType": null,
+      "parentLibrary": null,
+      "libraryDisplayName": null,
+      "libraryVersion": null,
+      "functionArguments": null,
+      "name": "Encounter with Opioid Administration Outside of Operating Room",
+      "function": false,
+      "logic": "define \"Encounter with Opioid Administration Outside of Operating Room\":\n  \"Qualifying Encounter\" InpatientEncounter\n    with \"Opioid Administration\" OpioidGiven\n      such that Global.\"NormalizeInterval\" ( OpioidGiven.relevantDatetime, OpioidGiven.relevantPeriod ) starts during Global.\"HospitalizationWithObservation\" ( InpatientEncounter )\n        and not exists ( InpatientEncounter.facilityLocations EncounterLocation\n            where EncounterLocation.code ~ \"Operating Room/Suite\"\n              and Global.\"NormalizeInterval\" ( OpioidGiven.relevantDatetime, OpioidGiven.relevantPeriod ) starts during EncounterLocation.locationPeriod\n        )"
+    }
+  ],
+  "Encounter with Non Enteral Opioid Antagonist Administration Outside of Operating Room and within 12 Hrs After Opioid": [
+    {
+      "id": "MATGlobalCommonFunctionsQDM-1.0.000|Global|NormalizeInterval",
+      "uuid": null,
+      "definitionName": "NormalizeInterval",
+      "definitionLogic": "define function \"NormalizeInterval\"(pointInTime DateTime, period Interval<DateTime> ):\n  if pointInTime is not null then Interval[pointInTime, pointInTime]\n    else if period is not null then period \n    else null as Interval<DateTime>",
+      "context": "Patient",
+      "supplDataElement": false,
+      "popDefinition": false,
+      "commentString": "",
+      "returnType": null,
+      "parentLibrary": "MATGlobalCommonFunctionsQDM",
+      "libraryDisplayName": "Global",
+      "libraryVersion": "1.0.000",
+      "functionArguments": [
+        {
+          "id": "397c867a-4be3-368d-91b0-2c95ccbc3d6e",
+          "argumentName": "pointInTime",
+          "argumentType": "DateTime",
+          "otherType": null,
+          "qdmDataType": null,
+          "attributeName": null,
+          "returnType": "DateTime",
+          "valid": false
+        },
+        {
+          "id": "a0acfa46-d86f-3610-b2c7-3dbb28f64701",
+          "argumentName": "period",
+          "argumentType": "Others",
+          "otherType": "Interval<DateTime>",
+          "qdmDataType": null,
+          "attributeName": null,
+          "returnType": "Interval<DateTime>",
+          "valid": false
+        }
+      ],
+      "name": "NormalizeInterval",
+      "function": true,
+      "logic": "define function \"NormalizeInterval\"(pointInTime DateTime, period Interval<DateTime> ):\n  if pointInTime is not null then Interval[pointInTime, pointInTime]\n    else if period is not null then period \n    else null as Interval<DateTime>"
+    },
+    {
+      "id": "Opioid Administration",
+      "uuid": null,
+      "definitionName": "Opioid Administration",
+      "definitionLogic": "define \"Opioid Administration\":\n  [\"Medication, Administered\": \"Opioids, All\"]",
+      "context": "Patient",
+      "supplDataElement": false,
+      "popDefinition": false,
+      "commentString": "",
+      "returnType": null,
+      "parentLibrary": null,
+      "libraryDisplayName": null,
+      "libraryVersion": null,
+      "functionArguments": null,
+      "name": "Opioid Administration",
+      "function": false,
+      "logic": "define \"Opioid Administration\":\n  [\"Medication, Administered\": \"Opioids, All\"]"
+    },
+    {
+      "id": "MATGlobalCommonFunctionsQDM-1.0.000|Global|HospitalizationWithObservation",
+      "uuid": null,
+      "definitionName": "HospitalizationWithObservation",
+      "definitionLogic": "define function \"HospitalizationWithObservation\"(Encounter \"Encounter, Performed\" ):\n  Encounter Visit\n  \tlet ObsVisit: Last([\"Encounter, Performed\": \"Observation Services\"] LastObs\n  \t\t\twhere LastObs.relevantPeriod ends 1 hour or less on or before start of Visit.relevantPeriod\n  \t\t\tsort by \n  \t\t\tend of relevantPeriod\n  \t),\n  \tVisitStart: Coalesce(start of ObsVisit.relevantPeriod, start of Visit.relevantPeriod),\n  \tEDVisit: Last([\"Encounter, Performed\": \"Emergency Department Visit\"] LastED\n  \t\t\twhere LastED.relevantPeriod ends 1 hour or less on or before VisitStart\n  \t\t\tsort by \n  \t\t\tend of relevantPeriod\n  \t)\n  \treturn Interval[Coalesce(start of EDVisit.relevantPeriod, VisitStart), \n  \tend of Visit.relevantPeriod]",
+      "context": "Patient",
+      "supplDataElement": false,
+      "popDefinition": false,
+      "commentString": "",
+      "returnType": null,
+      "parentLibrary": "MATGlobalCommonFunctionsQDM",
+      "libraryDisplayName": "Global",
+      "libraryVersion": "1.0.000",
+      "functionArguments": [
+        {
+          "id": "d1e9f9f8-91de-3f9a-a557-39a01fbf68f0",
+          "argumentName": "Encounter",
+          "argumentType": "QDM Datatype",
+          "otherType": null,
+          "qdmDataType": "Encounter, Performed",
+          "attributeName": null,
+          "returnType": "Encounter, Performed",
+          "valid": false
+        }
+      ],
+      "name": "HospitalizationWithObservation",
+      "function": true,
+      "logic": "define function \"HospitalizationWithObservation\"(Encounter \"Encounter, Performed\" ):\n  Encounter Visit\n  \tlet ObsVisit: Last([\"Encounter, Performed\": \"Observation Services\"] LastObs\n  \t\t\twhere LastObs.relevantPeriod ends 1 hour or less on or before start of Visit.relevantPeriod\n  \t\t\tsort by \n  \t\t\tend of relevantPeriod\n  \t),\n  \tVisitStart: Coalesce(start of ObsVisit.relevantPeriod, start of Visit.relevantPeriod),\n  \tEDVisit: Last([\"Encounter, Performed\": \"Emergency Department Visit\"] LastED\n  \t\t\twhere LastED.relevantPeriod ends 1 hour or less on or before VisitStart\n  \t\t\tsort by \n  \t\t\tend of relevantPeriod\n  \t)\n  \treturn Interval[Coalesce(start of EDVisit.relevantPeriod, VisitStart), \n  \tend of Visit.relevantPeriod]"
+    },
+    {
+      "id": "Denominator",
+      "uuid": null,
+      "definitionName": "Denominator",
+      "definitionLogic": "define \"Denominator\":\n  \"Initial Population\"",
+      "context": "Patient",
+      "supplDataElement": false,
+      "popDefinition": false,
+      "commentString": "",
+      "returnType": null,
+      "parentLibrary": null,
+      "libraryDisplayName": null,
+      "libraryVersion": null,
+      "functionArguments": null,
+      "name": "Denominator",
+      "function": false,
+      "logic": "define \"Denominator\":\n  \"Initial Population\""
+    }
+  ]
+}

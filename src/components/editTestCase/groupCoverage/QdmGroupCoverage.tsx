@@ -19,6 +19,7 @@ import {
 } from "../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
 import GroupCoverageResultsSection from "./GroupCoverageResultsSection";
 import DefinitionsUsedSection from "./DefinitionsUsedSection";
+import { definitionFilterCondition } from "../../../util/TestCaseExcelExportUtil";
 
 interface Props {
   testCaseGroups: GroupPopulation[];
@@ -40,20 +41,6 @@ const getCriteriaLabel = (index, numberOfGroups) => {
   return numberOfGroups > 1
     ? `${populationCriteriaLabel} ${index + 1}`
     : populationCriteriaLabel;
-};
-
-const definitionFilterCondition = (statementResult, definitionCategory) => {
-  if (definitionCategory === "Definitions") {
-    return (
-      statementResult.type === undefined && statementResult.relevance !== "NA"
-    );
-  } else if (definitionCategory === "Functions") {
-    return statementResult.type === "FunctionDef";
-  }
-  // for unused defines
-  return (
-    statementResult.relevance === "NA" && statementResult.type !== "FunctionDef"
-  );
 };
 
 const sdeFilter = (statementResult) => {
