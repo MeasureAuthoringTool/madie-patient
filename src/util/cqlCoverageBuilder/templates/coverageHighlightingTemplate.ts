@@ -45,7 +45,7 @@ export const clauseNotApplicableStyle = {
 // blue text, lighter blue highlight
 export const clauseHighlightedStyle = {
   "background-color": "#daeaf5",
-  color: "004e82",
+  color: "#004e82",
   "border-bottom-color": "004e82",
   "border-bottom-style": "dashed",
 };
