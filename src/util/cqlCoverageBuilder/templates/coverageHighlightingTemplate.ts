@@ -46,6 +46,6 @@ export const clauseNotApplicableStyle = {
 export const clauseHighlightedStyle = {
   "background-color": "#daeaf5",
   color: "#004e82",
-  "border-bottom-color": "004e82",
+  "border-bottom-color": "#004e82",
   "border-bottom-style": "dashed",
 };
