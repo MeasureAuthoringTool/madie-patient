@@ -70,7 +70,8 @@ export class TerminologyServiceApi {
 
   async getQdmValueSetsExpansion(
     cqmMeasure: CqmMeasure,
-    manifestExpansion: ManifestExpansion
+    manifestExpansion: ManifestExpansion,
+    manifestExpansionFeatureFlag: boolean
   ): Promise<QdmValueSet[]> {
     if (!cqmMeasure) {
       return null;
@@ -84,13 +85,20 @@ export class TerminologyServiceApi {
       ),
     };
 
+    let path;
+    if (manifestExpansionFeatureFlag) {
+      path = "/terminology/value-sets/expansion/qdm";
+    } else {
+      path = "/vsac/qdm/value-sets/searches";
+    }
+
     if (_.isEmpty(searchCriteria.valueSetParams)) {
       return [];
     }
 
     try {
       const response = await axios.put(
-        `${this.baseUrl}/terminology/value-sets/expansion/qdm`,
+        `${this.baseUrl}${path}`,
         searchCriteria,
         {
           headers: {

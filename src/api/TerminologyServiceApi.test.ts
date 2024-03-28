@@ -7,6 +7,8 @@ import { cqm_measure_basic_valueset } from "../mockdata/qdm/CMS108/cqm_measure_b
 import { Measure as CqmMeasure, ValueSet } from "cqm-models";
 import * as _ from "lodash";
 import { ManifestExpansion } from "@madie/madie-models";
+import { Simulate } from "react-dom/test-utils";
+import error = Simulate.error;
 
 jest.mock("axios");
 
@@ -76,10 +78,37 @@ describe("TerminologyServiceApi Tests", () => {
 
   it("gives no ValueSets when no cqm measure provided", () => {
     terminologyService
-      .getQdmValueSetsExpansion(null, testManifestExpansion)
+      .getQdmValueSetsExpansion(null, testManifestExpansion, false)
       .then((data) => {
         expect(data).toBeNull();
       });
+  });
+
+  it("Should call Terminology Service URL to fetch value set expansions when manifest Expansion feature flag is true", () => {
+    axios.put = jest
+      .fn()
+      .mockResolvedValue({ data: cqm_measure_basic_valueset });
+    const result = terminologyService.getQdmValueSetsExpansion(
+      cqm_measure_basic,
+      testManifestExpansion,
+      true
+    );
+    expect(axios.put).toBeCalledWith(
+      "test.url/terminology/value-sets/expansion/qdm",
+      {
+        includeDraft: "yes",
+        manifestExpansion: {
+          fullUrl: "https://cts.nlm.nih.gov/fhir/Library/mu2-update-2015-05-01",
+          id: "mu2-update-2015-05-01",
+        },
+        profile: "",
+        valueSetParams: [
+          { oid: "2.16.840.1.113883.3.666.5.307" },
+          { oid: "2.16.840.1.113883.3.464.1003.103.12.1001" },
+        ],
+      },
+      { headers: { Authorization: "Bearer undefined" } }
+    );
   });
 
   it("gives expanded ValueSets for ValueSets in cqm measure", () => {
@@ -88,8 +117,25 @@ describe("TerminologyServiceApi Tests", () => {
       .mockResolvedValueOnce({ data: cqm_measure_basic_valueset });
 
     terminologyService
-      .getQdmValueSetsExpansion(cqm_measure_basic, testManifestExpansion)
+      .getQdmValueSetsExpansion(cqm_measure_basic, testManifestExpansion, false)
       .then((data: ValueSet[]) => {
+        expect(axios.put).toBeCalledWith(
+          "test.url/vsac/qdm/value-sets/searches",
+          {
+            includeDraft: "yes",
+            manifestExpansion: {
+              fullUrl:
+                "https://cts.nlm.nih.gov/fhir/Library/mu2-update-2015-05-01",
+              id: "mu2-update-2015-05-01",
+            },
+            profile: "",
+            valueSetParams: [
+              { oid: "2.16.840.1.113883.3.666.5.307" },
+              { oid: "2.16.840.1.113883.3.464.1003.103.12.1001" },
+            ],
+          },
+          { headers: { Authorization: "Bearer undefined" } }
+        );
         expect(data.length).toEqual(2);
         expect(data[0].display_name).toEqual("Encounter Inpatient");
         expect(data[0].oid).toEqual("2.16.840.1.113883.3.666.5.307");
@@ -115,7 +161,8 @@ describe("TerminologyServiceApi Tests", () => {
     try {
       await terminologyService.getQdmValueSetsExpansion(
         cqm_measure_basic,
-        testManifestExpansion
+        testManifestExpansion,
+        false
       );
     } catch (error) {
       expect(error.message).toEqual(
@@ -127,7 +174,8 @@ describe("TerminologyServiceApi Tests", () => {
   it("test getQdmValueSetsExpansion no search param", () => {
     const result = terminologyService.getQdmValueSetsExpansion(
       testCqmMeasure,
-      testManifestExpansion
+      testManifestExpansion,
+      false
     );
     expect(_.isEmpty(result)).toBe(true);
   });
