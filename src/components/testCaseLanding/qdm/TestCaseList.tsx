@@ -139,7 +139,7 @@ const TestCaseList = (props: TestCaseListProps) => {
         _.isNil(measure.groups?.find((g) => g.id === selectedPopCriteria.id)))
     ) {
       // first time loading a measure, set the criteria and update the url
-      if (!criteriaId){
+      if (!criteriaId) {
         setSelectedPopCriteria(measure.groups[0]);
         const newPath = `/measures/${measureId}/edit/test-cases/list-page/${measure.groups[0].id}`;
         navigate(newPath);
@@ -170,7 +170,6 @@ const TestCaseList = (props: TestCaseListProps) => {
 
   useEffect(() => {
     if (criteriaId && measure?.groups?.length) {
-      console.log('criteriaId', criteriaId)
       const selectedPopCriteria = measure.groups?.find(
         (g) => g.id === criteriaId
       );
