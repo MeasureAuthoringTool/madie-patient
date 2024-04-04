@@ -58,7 +58,7 @@ const TestCaseStratification = ({
                   actual: expectedValue,
                 })
               }
-              stratificationBasis={populationBasis}
+              populationBasis={populationBasis}
               disabled={true}
               data-testid={`test-stratification-${stratification.name}-actual`}
               displayType="actual"

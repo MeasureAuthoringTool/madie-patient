@@ -138,9 +138,12 @@ const TestCaseList = (props: TestCaseListProps) => {
       (_.isNil(selectedPopCriteria) ||
         _.isNil(measure.groups?.find((g) => g.id === selectedPopCriteria.id)))
     ) {
-      setSelectedPopCriteria(measure.groups[0]);
-      const newPath = `/measures/${measureId}/edit/test-cases/list-page/${measure.groups[0].id}`;
-      navigate(newPath);
+      // first time loading a measure, set the criteria and update the url
+      if (!criteriaId) {
+        setSelectedPopCriteria(measure.groups[0]);
+        const newPath = `/measures/${measureId}/edit/test-cases/list-page/${measure.groups[0].id}`;
+        navigate(newPath);
+      }
       if (
         measure?.errors?.length > 0 &&
         (measure.errors.includes(

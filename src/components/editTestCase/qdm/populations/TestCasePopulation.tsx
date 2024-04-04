@@ -15,6 +15,7 @@ export interface TestCasePopulationProps {
   error: any;
   i?: number;
   strat?: boolean;
+  isTestCaseExecuted?: boolean;
 }
 
 const TestCasePopulation = ({
@@ -27,6 +28,7 @@ const TestCasePopulation = ({
   error,
   strat,
   i,
+  isTestCaseExecuted,
 }: TestCasePopulationProps) => {
   const populationNameTemplate = (prop) => {
     if (prop === PopulationType.INITIAL_POPULATION) {
@@ -90,7 +92,7 @@ const TestCasePopulation = ({
           />
         </td>
         <td role="cell">
-          {!_.isNil(population.actual) ? (
+          {isTestCaseExecuted ? (
             <ExpectActualInput
               id={`${population.id}-actual-cb`}
               aria-labelledby={`${population.name}-actual`}
