@@ -31,11 +31,7 @@ import { QDMPatientSchemaValidator } from "./QDMPatientSchemaValidator";
 
 import "allotment/dist/style.css";
 import "./EditTestCase.scss";
-import {
-  MadieError,
-  sanitizeUserInput,
-  disableRunTestButtonText,
-} from "../../../util/Utils";
+import { MadieError, sanitizeUserInput } from "../../../util/Utils";
 import * as _ from "lodash";
 import "styled-components/macro";
 import {
@@ -120,9 +116,6 @@ const EditTestCase = () => {
   dayjs.extend(utc);
   dayjs.utc().format(); // utc format
 
-  const featureFlags = useFeatureFlags();
-  const [hasObservationOrStratification, setHasObservationOrStratification] =
-    useState(false);
   const formik = useFormik({
     initialValues: {
       title: currentTestCase?.title || "",
@@ -373,8 +366,7 @@ const EditTestCase = () => {
                 ) ||
                 !formik.values?.json ||
                 !executionContextReady ||
-                executing ||
-                hasObservationOrStratification
+                executing
               }
             >
               Run Test
@@ -395,18 +387,6 @@ const EditTestCase = () => {
               Discard Changes
             </Button>
           </div>
-          {hasObservationOrStratification && (
-            <div
-              style={{
-                textAlign: "center",
-                color: "#717171",
-                fontSize: "14px",
-                paddingBottom: "30px",
-              }}
-            >
-              {disableRunTestButtonText}
-            </div>
-          )}
           {/* outside flow of page */}
           <Toast
             toastKey="edit-action-toast"
