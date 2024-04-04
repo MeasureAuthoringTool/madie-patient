@@ -9,17 +9,112 @@ import {
   Measure,
   TestCase,
   Group,
+  GroupPopulation,
   TestCaseExcelExportDto,
   PopulationDto,
   DefinitionDto,
   FunctionDto,
+  StratificationDto,
   TestCaseExecutionResultDto,
+  GroupedStratificationDto,
 } from "@madie/madie-models";
 import { CqlDefinitionCallstack } from "../components/editTestCase/groupCoverage/QiCoreGroupCoverage";
 import {
   StatementCoverageResult,
   buildHighlightingForGroups,
 } from "./cqlCoverageBuilder/CqlCoverageBuilder";
+
+const getTestCasesByGroup = (measure: Measure, groupId: string): TestCase[] => {
+  const testCasesByGroup: TestCase[] = [];
+  measure.testCases?.forEach((testCase) => {
+    testCase.groupPopulations?.forEach((groupPopulation) => {
+      if (groupPopulation.groupId === groupId) {
+        testCasesByGroup.push(testCase);
+      }
+    });
+  });
+  return testCasesByGroup;
+};
+
+export const convertToNumber = (value: number | boolean | string) => {
+  let convertedNumber: number = 0;
+  if (typeof value === "string") {
+    convertedNumber = Number(value);
+  } else if (typeof value === "number") {
+    convertedNumber = value;
+  } else {
+    convertedNumber = value === true ? 1 : 0;
+  }
+  return convertedNumber;
+};
+
+const populatePopulationDtos = (
+  groupPopulation: GroupPopulation,
+  populationDtos: PopulationDto[]
+): PopulationDto[] => {
+  const popValues = groupPopulation?.populationValues;
+  popValues?.forEach((pop) => {
+    const expected: number = convertToNumber(pop.expected);
+    const actual: number = convertToNumber(pop.actual);
+    const popDto: PopulationDto = {
+      name: pop.name,
+      expected: expected,
+      actual: actual,
+      pass: expected === actual,
+    };
+    populationDtos.push(popDto);
+  });
+  return populationDtos;
+};
+
+const convertToStratDto = (strat): StratificationDto[] => {
+  const stratificationDtos: StratificationDto[] = [];
+  const expected: number = convertToNumber(strat.expected);
+  const actual: number = convertToNumber(strat.actual);
+  const stratDto: StratificationDto = {
+    id: strat.id,
+    name: "STRAT",
+    expected: expected,
+    actual: actual,
+    pass: expected === actual,
+  };
+  stratificationDtos.push(stratDto);
+  strat.populationValues?.forEach((pop) => {
+    const expected: number = convertToNumber(strat.expected);
+    const actual: number = convertToNumber(strat.actual);
+    const stratDto: StratificationDto = {
+      id: strat.id,
+      name: pop.name,
+      expected: expected,
+      actual: actual,
+      pass: expected === actual,
+    };
+    stratificationDtos.push(stratDto);
+  });
+
+  return stratificationDtos;
+};
+const populateStratificationDtos = (
+  groupPopulation: GroupPopulation,
+  groupNumber: number,
+  stratNumber: number,
+  testCaseId: string
+): GroupedStratificationDto[] => {
+  let stratificationDtos: StratificationDto[] = [];
+  let groupedStratsDtos: GroupedStratificationDto[] = [];
+  groupPopulation?.stratificationValues?.forEach((strat) => {
+    stratificationDtos = convertToStratDto(strat);
+    const groupedStratsDto = {
+      testCaseId: testCaseId,
+      stratId: strat.id,
+      stratName: `PopSet${groupNumber} Stratification ${stratNumber}`,
+      stratificationDtos: stratificationDtos,
+    };
+    groupedStratsDtos.push(groupedStratsDto);
+    stratNumber += 1;
+  });
+  return groupedStratsDtos;
+};
 
 export const createExcelExportDtosForAllTestCases = (
   measure: Measure,
@@ -29,9 +124,29 @@ export const createExcelExportDtosForAllTestCases = (
 ): TestCaseExcelExportDto[] => {
   const testCaseExcelExportDtos: TestCaseExcelExportDto[] = [];
 
+  let groupNumber = 1;
   measure.groups?.forEach((group) => {
     const testCaseExecutionResultDtos: TestCaseExecutionResultDto[] = [];
-    measure.testCases?.forEach((currentTestCase) => {
+    const testCasesByGroup: TestCase[] = getTestCasesByGroup(measure, group.id);
+    testCasesByGroup?.forEach((currentTestCase) => {
+      const groupPopulations = currentTestCase.groupPopulations?.filter(
+        (groupPopulation) => {
+          return groupPopulation.groupId === group.id;
+        }
+      );
+      const populationDtos: PopulationDto[] = [];
+      let groupedStratDtos: GroupedStratificationDto[] = [];
+      let stratNumber = 1;
+      groupPopulations?.forEach((groupPopulation) => {
+        populatePopulationDtos(groupPopulation, populationDtos);
+        groupedStratDtos = populateStratificationDtos(
+          groupPopulation,
+          groupNumber,
+          stratNumber,
+          currentTestCase.id
+        );
+      });
+
       const patient = JSON.parse(currentTestCase.json);
       const patientResults = calculationOutput[patient._id];
       const coverageResults = buildHighlightingForGroups(
@@ -42,7 +157,9 @@ export const createExcelExportDtosForAllTestCases = (
         buildTestCaseExecutionResult(
           currentTestCase,
           coverageResults,
-          callstack
+          callstack,
+          populationDtos,
+          groupedStratDtos
         );
       testCaseExecutionResultDtos.push(resultDto);
     });
@@ -52,6 +169,7 @@ export const createExcelExportDtosForAllTestCases = (
       testCaseExecutionResults: testCaseExecutionResultDtos,
     };
     testCaseExcelExportDtos.push(testCaseExcelExportDto);
+    groupNumber += groupNumber;
   });
   return testCaseExcelExportDtos;
 };
@@ -59,12 +177,15 @@ export const createExcelExportDtosForAllTestCases = (
 export const buildTestCaseExecutionResult = (
   currentTestCase: TestCase,
   coverageResults,
-  callstack: CqlDefinitionCallstack
+  callstack: CqlDefinitionCallstack,
+  populationDtos: PopulationDto[],
+  groupedStratsDtos: GroupedStratificationDto[]
 ): TestCaseExecutionResultDto => {
   const qdmPatient: QDMPatient = JSON.parse(currentTestCase.json);
   return {
-    populations: getTestCaseExecutionGroupInfo(currentTestCase),
-    notes: "",
+    testCaseId: currentTestCase?.id,
+    populations: populationDtos,
+    notes: currentTestCase?.description,
     last: currentTestCase?.series,
     first: currentTestCase?.title,
     birthdate: getReformattedDob(qdmPatient?.birthDatetime),
@@ -83,6 +204,7 @@ export const buildTestCaseExecutionResult = (
       coverageResults,
       callstack
     ),
+    stratifications: groupedStratsDtos,
   };
 };
 
@@ -109,22 +231,6 @@ export function getDataElementByStatus(
     return element.dataElementCodes?.[0]?.display;
   }
   return null;
-}
-
-export function getTestCaseExecutionGroupInfo(
-  testCase: TestCase
-): PopulationDto[] {
-  let populations = [];
-  testCase?.groupPopulations?.[0]?.populationValues?.forEach(
-    (populationValue) => {
-      populations.push({
-        name: populationValue.name,
-        expected: populationValue.expected,
-        actual: populationValue.actual,
-      } as PopulationDto);
-    }
-  );
-  return populations;
 }
 
 export function getTestCaseExecutionDefinitionsInfo(
