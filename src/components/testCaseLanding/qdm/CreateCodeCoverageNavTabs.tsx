@@ -20,7 +20,6 @@ import { TestCasesPassingDetailsProps } from "../common/interfaces";
 import { useFeatureFlags } from "@madie/madie-util";
 import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
 import RunTestButton from "../common/runTestsButton/RunTestsButton";
-import { disableRunTestButtonText } from "../../../util/Utils";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import classNames from "classnames";
@@ -80,24 +79,8 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     hidden: !activeTip || executeAllTestCases,
   });
   const featureFlags = useFeatureFlags();
-  const [shouldDisableRunTestsButton, setShouldDisableRunTestsButton] =
-    useState(false);
   const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState(null);
-  useEffect(() => {
-    const groups: Group[] = measure?.groups;
-    groups?.forEach((group) => {
-      const measureObservations: MeasureObservation[] =
-        group?.measureObservations;
-      const measureStratifications: Stratification[] = group?.stratifications;
-      if (
-        (measureObservations && measureObservations.length > 0) ||
-        (measureStratifications && measureStratifications.length > 0)
-      ) {
-        setShouldDisableRunTestsButton(true);
-      }
-    });
-  }, [measure, measure?.groups]);
 
   const executionResultsDisplayTemplate = (label) => {
     const codeCoverage = executeAllTestCases ? coveragePercentage : "-";
@@ -242,7 +225,6 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
             hasErrors={hasErrors}
             isExecutionContextReady={executionContextReady}
             onRunTests={executeTestCases}
-            shouldDisableRunTestsButton={shouldDisableRunTestsButton}
           />
 
           {/* disabled elements do not fire events. we wrap a listener around it to bypass */}
@@ -294,11 +276,6 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           />
         </div>
       </div>
-      {shouldDisableRunTestsButton && (
-        <div style={{ textAlign: "right", color: "#717171", fontSize: "9px" }}>
-          {disableRunTestButtonText}
-        </div>
-      )}
     </>
   );
 }
