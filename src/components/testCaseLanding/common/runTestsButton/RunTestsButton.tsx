@@ -6,21 +6,16 @@ interface RunTestButtonProps {
   hasErrors: boolean;
   isExecutionContextReady: boolean;
   onRunTests: () => void;
-  shouldDisableRunTestsButton?: boolean;
 }
 
 export default function RunTestButton(props: RunTestButtonProps) {
-  const {
-    hasErrors,
-    isExecutionContextReady,
-    onRunTests,
-    shouldDisableRunTestsButton,
-  } = props;
+  const { hasErrors, isExecutionContextReady, onRunTests } = props;
 
   //TODO: because calculation is a heavy process, react blocks all the re-renders
   // during test case execution. this is to overcome that.
   // remove this once we move calculation to backend
   const [loading, setLoading] = useState(false);
+
   function runTestCases() {
     setLoading(true);
     setTimeout(async () => {
@@ -37,7 +32,7 @@ export default function RunTestButton(props: RunTestButtonProps) {
       }}
       variant="outlined"
       size="large"
-      disabled={hasErrors || shouldDisableRunTestsButton}
+      disabled={hasErrors}
       loading={(!hasErrors && !isExecutionContextReady) || loading}
       loadingPosition="start"
       startIcon={<RefreshIcon />}

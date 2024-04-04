@@ -38,6 +38,3 @@ export class MadieError extends Error {
     super(message);
   }
 }
-
-export const disableRunTestButtonText =
-  "Execution of test case that contains Stratifications or Measure Observations is NOT supported at this time";
