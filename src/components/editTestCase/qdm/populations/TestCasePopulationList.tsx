@@ -220,6 +220,7 @@ const TestCasePopulationList = ({
             <TestCaseStratification
               index={groupIndex}
               QDM={true}
+              isTestCaseExecuted={isTestCaseExecuted}
               strataCode={stratification?.name}
               stratification={stratification}
               populationBasis={populationBasis}
@@ -233,6 +234,7 @@ const TestCasePopulationList = ({
           {populations?.map((population, j) => (
             <TestCasePopulation
               i={j}
+              isTestCaseExecuted={isTestCaseExecuted}
               strat={!_.isEmpty(stratification)}
               population={population}
               populationBasis={populationBasis}

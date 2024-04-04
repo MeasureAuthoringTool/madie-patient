@@ -24,7 +24,7 @@ describe("TestCasePopulation component", () => {
         <table>
           <tbody>
             <TestCasePopulation
-              executionRun
+              isTestCaseExecuted
               population={testCasePopulation}
               onChange={handleChange}
               populationBasis="true"
@@ -58,7 +58,7 @@ describe("TestCasePopulation component", () => {
         <table>
           <tbody>
             <TestCasePopulation
-              executionRun
+              isTestCaseExecuted
               population={testCasePopulation}
               onChange={handleChange}
               populationBasis="true"
@@ -102,7 +102,7 @@ describe("TestCasePopulation component", () => {
         <table>
           <tbody>
             <TestCasePopulation
-              executionRun
+              isTestCaseExecuted
               population={testCasePopulation}
               onChange={handleChange}
               populationBasis="true"
@@ -135,7 +135,7 @@ describe("TestCasePopulation component", () => {
         <table>
           <tbody>
             <TestCasePopulation
-              executionRun
+              isTestCaseExecuted
               population={testCasePopulation}
               onChange={handleChange}
               populationBasis="true"
