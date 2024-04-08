@@ -129,7 +129,7 @@ export const createExcelExportDtosForAllTestCases = (
     const testCaseExecutionResultDtos: TestCaseExecutionResultDto[] = [];
     const testCasesByGroup: TestCase[] = getTestCasesByGroup(measure, group.id);
     testCasesByGroup?.forEach((currentTestCase) => {
-      const groupPopulations = currentTestCase.groupPopulations?.filter(
+      const groupPopulation = currentTestCase.groupPopulations?.filter(
         (groupPopulation) => {
           return groupPopulation.groupId === group.id;
         }
@@ -137,15 +137,14 @@ export const createExcelExportDtosForAllTestCases = (
       const populationDtos: PopulationDto[] = [];
       let groupedStratDtos: GroupedStratificationDto[] = [];
       let stratNumber = 1;
-      groupPopulations?.forEach((groupPopulation) => {
-        populatePopulationDtos(groupPopulation, populationDtos);
-        groupedStratDtos = populateStratificationDtos(
-          groupPopulation,
-          groupNumber,
-          stratNumber,
-          currentTestCase.id
-        );
-      });
+
+      populatePopulationDtos(groupPopulation[0], populationDtos);
+      groupedStratDtos = populateStratificationDtos(
+        groupPopulation[0],
+        groupNumber,
+        stratNumber,
+        currentTestCase.id
+      );
 
       const patient = JSON.parse(currentTestCase.json);
       const patientResults = calculationOutput[patient._id];
