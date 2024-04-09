@@ -2,7 +2,7 @@ import * as React from "react";
 import { render, screen } from "@testing-library/react";
 import StatusHandler from "./StatusHandler";
 import { TestCaseImportOutcome } from "../../../../madie-models/src/TestCase";
-import { EXPORT_ERROR_CHARACTERS_MESSAGE } from "../testCaseLanding/qdm/TestCaseList";
+import { EXPORT_ERROR_CHARACTERS_MESSAGE } from "../testCaseLanding/common/checkSpecialCharacters";
 
 describe("StatusHandler Component", () => {
   const { getByTestId, queryByTestId, getByText, findByText, queryByText } =
