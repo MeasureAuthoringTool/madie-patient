@@ -880,7 +880,7 @@ describe("EditTestCase QDM Component", () => {
     await waitFor(
       () => {
         expect(screen.getByTestId("error-toast")).toHaveTextContent(
-          'Error updating Test Case "undefined": Error Msg'
+          'Error updating Test Case "test measure": Error Msg'
         );
         const closeToastBtn = screen.getByTestId("close-toast-button");
         userEvent.click(closeToastBtn);
