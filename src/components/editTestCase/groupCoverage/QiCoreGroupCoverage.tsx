@@ -338,7 +338,7 @@ const QiCoreGroupCoverage = ({
             id={`${selectedHighlightingTab.abbreviation}-highlighting`}
             data-testid={`${selectedHighlightingTab.abbreviation}-highlighting`}
           >
-            {selectedPopulationDefinitionResults ? (
+            {selectedPopulationDefinitionResults?.statementLevelHTML ? (
               <>
                 <div>
                   {parse(
