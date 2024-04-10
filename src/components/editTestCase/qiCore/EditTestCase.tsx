@@ -898,6 +898,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
                     </div>
                   ) : (
                     <CalculationResults
+                      mainCqlLibraryName={measure?.cqlLibraryName}
                       calculationResults={populationGroupResults}
                       calculationErrors={calculationErrors}
                       groupPopulations={groupPopulations}
