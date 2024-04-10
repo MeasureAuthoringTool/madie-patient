@@ -296,6 +296,7 @@ export class TestCaseServiceApi {
         headers: {
           Authorization: `Bearer ${this.getAccessToken()}`,
         },
+        responseType: "blob",
       }
     );
     return response.data;

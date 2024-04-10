@@ -42,6 +42,7 @@ import {
 } from "../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
 import { uniqWith } from "lodash";
 import checkSpecialCharacters from "../common/checkSpecialCharacters";
+import FileSaver from "file-saver";
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
 export const coverageHeaderRegex =
@@ -457,19 +458,11 @@ const TestCaseList = (props: TestCaseListProps) => {
   };
 
   const downloadZipFile = (exportData, ecqmTitle, model, version) => {
-    var exportBlob = new Blob([exportData], {
-      type: "text/plain",
-    });
-    const url = window.URL.createObjectURL(exportBlob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", `${ecqmTitle}-v${version}-QDM-TestCases.zip`);
-    document.body.appendChild(link);
-    link.click();
+    FileSaver.saveAs(exportData, `${ecqmTitle}-v${version}-QDM-TestCases.zip`);
+
     setToastOpen(true);
     setToastType("success");
     setToastMessage("QRDA exported successfully");
-    document.body.removeChild(link);
   };
 
   const exportQRDA = async () => {
