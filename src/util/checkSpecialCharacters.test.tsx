@@ -1,4 +1,8 @@
-import checkSpecialCharacters from "./checkSpecialCharacters";
+import checkSpecialCharacters, {
+  checkSpecialCharactersForExport,
+  SPECIAL_CHARACTERS_ERROR_TITLE,
+  SPECIAL_CHARACTERS_ERROR_SERIES,
+} from "./checkSpecialCharacters";
 import { TestCase } from "@madie/madie-models";
 const allSpecialChars = [
   "[",
@@ -34,8 +38,35 @@ describe("checks all special chars", () => {
     series: c,
   })) as TestCase[];
   it("triggers all available special chars", () => {
-    expect(checkSpecialCharacters(testCases).length).toBe(
+    expect(checkSpecialCharactersForExport(testCases).length).toBe(
       allSpecialChars.length
     );
+  });
+
+  it("Should return error for title", () => {
+    const testCase: TestCase = {
+      title: "[",
+      series: "test series",
+    } as TestCase;
+    const error = checkSpecialCharacters(testCase);
+    expect(error).toBe(SPECIAL_CHARACTERS_ERROR_TITLE);
+  });
+
+  it("Should return error for group", () => {
+    const testCase: TestCase = {
+      title: "test title",
+      series: " test series \\",
+    } as TestCase;
+    const error = checkSpecialCharacters(testCase);
+    expect(error).toBe(SPECIAL_CHARACTERS_ERROR_SERIES);
+  });
+
+  it("Should not return error", () => {
+    const testCase: TestCase = {
+      title: "test title",
+      series: " test series",
+    } as TestCase;
+    const error = checkSpecialCharacters(testCase);
+    expect(error).toBe("");
   });
 });
