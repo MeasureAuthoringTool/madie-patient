@@ -129,7 +129,7 @@ export const createExcelExportDtosForAllTestCases = (
     const testCaseExecutionResultDtos: TestCaseExecutionResultDto[] = [];
     const testCasesByGroup: TestCase[] = getTestCasesByGroup(measure, group.id);
     testCasesByGroup?.forEach((currentTestCase) => {
-      const groupPopulation = currentTestCase.groupPopulations?.find(
+      const groupPopulation = currentTestCase.groupPopulations?.filter(
         (groupPopulation) => {
           return groupPopulation.groupId === group.id;
         }
