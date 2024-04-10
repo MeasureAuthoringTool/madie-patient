@@ -188,7 +188,7 @@ const EditTestCase = () => {
     const errorMsg = checkSpecialCharacters(modifiedTestCase);
     if (errorMsg) {
       showToast(
-        `Error updating Test Case "${measure.measureName}": ${errorMsg}`,
+        `Error updating Test Case for measure: "${measure.measureName}": ${errorMsg}`,
         "danger"
       );
       return;
