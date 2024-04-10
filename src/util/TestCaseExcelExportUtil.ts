@@ -49,9 +49,9 @@ export const convertToNumber = (value: number | boolean | string) => {
 };
 
 const populatePopulationDtos = (
-  groupPopulation: GroupPopulation,
-  populationDtos: PopulationDto[]
+  groupPopulation: GroupPopulation
 ): PopulationDto[] => {
+  const populationDtos: PopulationDto[] = [];
   const popValues = groupPopulation?.populationValues;
   popValues?.forEach((pop) => {
     const expected: number = convertToNumber(pop.expected);
@@ -134,11 +134,12 @@ export const createExcelExportDtosForAllTestCases = (
           return groupPopulation.groupId === group.id;
         }
       );
-      const populationDtos: PopulationDto[] = [];
+
       let groupedStratDtos: GroupedStratificationDto[] = [];
       let stratNumber = 1;
-
-      populatePopulationDtos(groupPopulation[0], populationDtos);
+      const populationDtos: PopulationDto[] = populatePopulationDtos(
+        groupPopulation[0]
+      );
       groupedStratDtos = populateStratificationDtos(
         groupPopulation[0],
         groupNumber,
