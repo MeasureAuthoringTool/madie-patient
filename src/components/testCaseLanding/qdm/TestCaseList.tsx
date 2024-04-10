@@ -41,7 +41,7 @@ import {
   buildHighlightingForAllGroups,
 } from "../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
 import { uniqWith } from "lodash";
-import checkSpecialCharacters from "../common/checkSpecialCharacters";
+import { checkSpecialCharactersForExport } from "../../../util/checkSpecialCharacters";
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
 export const coverageHeaderRegex =
@@ -473,7 +473,7 @@ const TestCaseList = (props: TestCaseListProps) => {
   };
 
   const exportQRDA = async () => {
-    const failedTCs = checkSpecialCharacters(testCases);
+    const failedTCs = checkSpecialCharactersForExport(testCases);
     if (failedTCs.length) {
       setErrors((prevState) => [...prevState, ...failedTCs]);
       return;

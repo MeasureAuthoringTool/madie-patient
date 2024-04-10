@@ -4,15 +4,8 @@ import {
   measureStore,
   checkUserCanEdit,
   routeHandlerStore,
-  useFeatureFlags,
 } from "@madie/madie-util";
-import {
-  TestCase,
-  MeasureErrorType,
-  Group,
-  MeasureObservation,
-  Stratification,
-} from "@madie/madie-models";
+import { TestCase, MeasureErrorType } from "@madie/madie-models";
 import "../qiCore/EditTestCase.scss";
 import {
   Button,
@@ -47,6 +40,7 @@ import {
   buildHighlightingForGroups,
   GroupCoverageResult,
 } from "../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
+import checkSpecialCharacters from "../../../util/checkSpecialCharacters";
 
 const EditTestCase = () => {
   useDocumentTitle("MADiE Edit Measure Edit Test Case");
@@ -191,6 +185,14 @@ const EditTestCase = () => {
 
   const updateTestCase = async (testCase: TestCase) => {
     const modifiedTestCase = { ...currentTestCase, ...testCase };
+    const errorMsg = checkSpecialCharacters(modifiedTestCase);
+    if (errorMsg) {
+      showToast(
+        `Error updating Test Case "${measure.measureName}": ${errorMsg}`,
+        "danger"
+      );
+      return;
+    }
     try {
       const updatedTestCase = await testCaseService.current.updateTestCase(
         modifiedTestCase,
