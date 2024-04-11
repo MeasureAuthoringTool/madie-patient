@@ -1,6 +1,7 @@
 import {
   findGroupNumber,
   createExcelExportDtosForAllTestCases,
+  convertToNumber,
 } from "./TestCaseExcelExportUtil";
 import {
   Measure,
@@ -21,9 +22,9 @@ import { DataCriteria } from "../api/models/DataCriteria";
 import { TranslatedLibrary } from "../api/models/TranslatedLibrary";
 import axios from "axios";
 
-const groupId: string = "65c51ed069853c1ce9726179";
+const group1Id: string = "65c51ed069853c1ce9726179";
 const group1: Group = {
-  id: groupId,
+  id: group1Id,
   populations: [
     {
       id: "testPopulationId1",
@@ -47,14 +48,50 @@ const group1: Group = {
       description: "",
     },
   ],
+  stratifications: [
+    {
+      id: "f0b3c08d-1164-48d8-bc71-aed87499099f",
+      description: "test description1",
+      cqlDefinition: "Initial Population",
+    },
+    {
+      id: "6e7c1233-6106-46fe-ae83-0769d24c46ae",
+      description: "test description2",
+      cqlDefinition: "Denominator",
+    },
+  ],
 } as Group;
 
+const group2Id: string = "6605623a387d4b542a847fa8";
 const group2: Group = {
-  id: "testGroup2",
+  id: group2Id,
+  populations: [
+    {
+      id: "testPopulationId4",
+      name: PopulationType.INITIAL_POPULATION,
+      definition: "Initial Population",
+      associationType: "",
+      description: "",
+    },
+    {
+      id: "testPopulationId5",
+      name: PopulationType.DENOMINATOR,
+      definition: "Denominator",
+      associationType: "",
+      description: "",
+    },
+    {
+      id: "testPopulationId6",
+      name: PopulationType.NUMERATOR,
+      definition: "Numerator",
+      associationType: "",
+      description: "",
+    },
+  ],
 } as Group;
 
-const groupPopulation: GroupPopulation = {
-  groupId: "65c51ed069853c1ce9726179",
+const groupPopulation1: GroupPopulation = {
+  groupId: group1Id,
   scoring: MeasureScoring.PROPORTION,
   populationBasis: "false",
   populationValues: [
@@ -71,7 +108,84 @@ const groupPopulation: GroupPopulation = {
       actual: 4,
     },
     {
+      id: "pop3ID",
+      name: PopulationType.NUMERATOR,
+      expected: 5,
+      actual: 6,
+    },
+  ],
+  stratificationValues: [
+    {
+      id: "f0b3c08d-1164-48d8-bc71-aed87499099f",
+      name: "Strata-1",
+      expected: 1,
+      populationValues: [
+        {
+          id: "stratPop1ID",
+          name: PopulationType.INITIAL_POPULATION,
+          expected: 1,
+          actual: 1,
+        },
+        {
+          id: "stratPop2ID",
+          name: PopulationType.DENOMINATOR,
+          expected: 1,
+          actual: 1,
+        },
+        {
+          id: "stratPop3ID",
+          name: PopulationType.NUMERATOR,
+          expected: 1,
+          actual: 1,
+        },
+      ],
+    },
+    {
+      id: "6e7c1233-6106-46fe-ae83-0769d24c46ae",
+      name: "Strata-2",
+      expected: 2,
+      populationValues: [
+        {
+          id: "stratPop1ID",
+          name: PopulationType.INITIAL_POPULATION,
+          expected: 2,
+          actual: 2,
+        },
+        {
+          id: "stratPop2ID",
+          name: PopulationType.DENOMINATOR,
+          expected: 2,
+          actual: 2,
+        },
+        {
+          id: "stratPop3ID",
+          name: PopulationType.NUMERATOR,
+          expected: 2,
+          actual: 2,
+        },
+      ],
+    },
+  ],
+};
+const groupPopulation2: GroupPopulation = {
+  groupId: group2Id,
+  scoring: MeasureScoring.PROPORTION,
+  populationBasis: "false",
+  populationValues: [
+    {
+      id: "pop1ID",
+      name: PopulationType.INITIAL_POPULATION,
+      expected: 1,
+      actual: 2,
+    },
+    {
       id: "pop2ID",
+      name: PopulationType.DENOMINATOR,
+      expected: 3,
+      actual: 4,
+    },
+    {
+      id: "pop3ID",
       name: PopulationType.NUMERATOR,
       expected: 5,
       actual: 6,
@@ -86,7 +200,7 @@ const testCase1: TestCase = {
   series: "testSeries1",
   title: "testTitle1",
   json: testCase1Json,
-  groupPopulations: [groupPopulation],
+  groupPopulations: [groupPopulation1, groupPopulation2],
 } as TestCase;
 
 const testCase2: TestCase = {
@@ -94,6 +208,7 @@ const testCase2: TestCase = {
   series: "testSeries2",
   title: "testTitle2",
   json: '{"qdmVersion":"5.6","dataElements":[],"_id":"65fb3f0b11abc50000d8cb77"}',
+  groupPopulations: [groupPopulation1, groupPopulation2],
 } as TestCase;
 
 const cql: string =
@@ -109,7 +224,7 @@ const measure: Measure = {
   cql: cql,
   cqlLibraryName: "MAT6264Lib",
   scoring: MeasureScoring.PROPORTION,
-  groups: [group1],
+  groups: [group1, group2],
   testCases: [testCase1, testCase2],
   supplementalData: supplementalData,
 } as Measure;
@@ -328,8 +443,8 @@ describe("TestCaseExcelExportUtil", () => {
         cqlDefinitionCallstack
       );
 
-    expect(testCaseExcelExportDtos.length).toBe(1);
-    expect(testCaseExcelExportDtos[0].groupId).toBe(groupId);
+    expect(testCaseExcelExportDtos.length).toBe(2);
+    expect(testCaseExcelExportDtos[0].groupId).toBe(group1Id);
     expect(testCaseExcelExportDtos[0].groupNumber).toBe("1");
     expect(testCaseExcelExportDtos[0].testCaseExecutionResults.length).toBe(2);
 
@@ -421,8 +536,62 @@ describe("TestCaseExcelExportUtil", () => {
     ).toBe("FALSE ([])");
 
     expect(
+      testCaseExcelExportDtos[0].testCaseExecutionResults[0].stratifications
+        ?.length
+    ).toBe(2);
+    expect(
+      testCaseExcelExportDtos[0].testCaseExecutionResults[0]
+        .stratifications?.[0]?.stratificationDtos?.length
+    ).toBe(4);
+    expect(
+      testCaseExcelExportDtos[0].testCaseExecutionResults[0]
+        .stratifications?.[0]?.stratificationDtos?.[0].id
+    ).toBe("f0b3c08d-1164-48d8-bc71-aed87499099f");
+    expect(
+      testCaseExcelExportDtos[0].testCaseExecutionResults[0]
+        .stratifications?.[0]?.stratificationDtos?.[0].expected
+    ).toBe(1);
+    expect(
+      testCaseExcelExportDtos[0].testCaseExecutionResults[0]
+        .stratifications?.[0]?.stratificationDtos?.[1].expected
+    ).toBe(1);
+    expect(
+      testCaseExcelExportDtos[0].testCaseExecutionResults[0]
+        .stratifications?.[0]?.stratificationDtos?.[2].expected
+    ).toBe(1);
+    expect(
+      testCaseExcelExportDtos[0].testCaseExecutionResults[0]
+        .stratifications?.[0]?.stratificationDtos?.[3].expected
+    ).toBe(1);
+
+    expect(
+      testCaseExcelExportDtos[0].testCaseExecutionResults[0]
+        .stratifications?.[1]?.stratificationDtos?.length
+    ).toBe(4);
+    expect(
+      testCaseExcelExportDtos[0].testCaseExecutionResults[0]
+        .stratifications?.[1]?.stratificationDtos?.[0].id
+    ).toBe("6e7c1233-6106-46fe-ae83-0769d24c46ae");
+    expect(
+      testCaseExcelExportDtos[0].testCaseExecutionResults[0]
+        .stratifications?.[1]?.stratificationDtos?.[0].expected
+    ).toBe(2);
+    expect(
+      testCaseExcelExportDtos[0].testCaseExecutionResults[0]
+        .stratifications?.[1]?.stratificationDtos?.[1].expected
+    ).toBe(2);
+    expect(
+      testCaseExcelExportDtos[0].testCaseExecutionResults[0]
+        .stratifications?.[1]?.stratificationDtos?.[2].expected
+    ).toBe(2);
+    expect(
+      testCaseExcelExportDtos[0].testCaseExecutionResults[0]
+        .stratifications?.[1]?.stratificationDtos?.[3].expected
+    ).toBe(2);
+
+    expect(
       testCaseExcelExportDtos[0].testCaseExecutionResults[1].populations.length
-    ).toBe(0);
+    ).toBe(3);
     expect(testCaseExcelExportDtos[0].testCaseExecutionResults[1].last).toBe(
       "testSeries2"
     );
@@ -443,15 +612,42 @@ describe("TestCaseExcelExportUtil", () => {
     );
     expect(
       testCaseExcelExportDtos[0].testCaseExecutionResults[1].definitions.length
-    ).toBe(0);
+    ).toBe(7);
     expect(
       testCaseExcelExportDtos[0].testCaseExecutionResults[1].functions.length
+    ).toBe(2);
+
+    expect(testCaseExcelExportDtos[1].groupId).toBe(group2Id);
+    expect(testCaseExcelExportDtos[1].groupNumber).toBe("2");
+    expect(testCaseExcelExportDtos[1].testCaseExecutionResults.length).toBe(2);
+    expect(
+      testCaseExcelExportDtos[1].testCaseExecutionResults[0].stratifications
+        ?.length
+    ).toBe(0);
+    expect(
+      testCaseExcelExportDtos[1].testCaseExecutionResults[1].stratifications
+        ?.length
     ).toBe(0);
   });
 
   it("test findGroupNumber", () => {
     const groups: Group[] = [group1, group2];
-    const groupNumber: string = findGroupNumber(groups, "testGroup2");
+    const groupNumber: string = findGroupNumber(groups, group2Id);
     expect(groupNumber).toBe("2");
+  });
+
+  it("test convertToNumber number", () => {
+    const result = convertToNumber(Number("2"));
+    expect(result).toBe(2);
+  });
+
+  it("test convertToNumber boolean", () => {
+    const result = convertToNumber(true);
+    expect(result).toBe(1);
+  });
+
+  it("test convertToNumber string", () => {
+    const result = convertToNumber("3");
+    expect(result).toBe(3);
   });
 });
