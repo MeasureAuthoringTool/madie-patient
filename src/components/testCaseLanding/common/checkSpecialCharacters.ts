@@ -1,5 +1,7 @@
 import { TestCase } from "@madie/madie-models";
-import { EXPORT_ERROR_CHARACTERS_MESSAGE } from "../qdm/TestCaseList";
+
+export const EXPORT_ERROR_CHARACTERS_MESSAGE =
+  "Test Cases can not be exported some titles or groups contain special characters.";
 const checkSpecialCharacters = (testCases: TestCase[]): string[] => {
   const specialChars = /[`!@#$%^&*()_\+=\[\]{};':"\\|,.<>\/?~]/;
   let series, title;

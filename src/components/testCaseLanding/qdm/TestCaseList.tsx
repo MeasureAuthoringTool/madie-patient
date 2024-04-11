@@ -52,8 +52,6 @@ export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
 export const coverageHeaderRegex =
   /<h2> .* Clause Coverage: (\d*\.\d+|\d*|NaN)%<\/h2>/i;
-export const EXPORT_ERROR_CHARACTERS_MESSAGE =
-  "Test Cases can not be exported some titles or groups contain special characters.";
 export const removeHtmlCoverageHeader = (
   coverageHtml: Record<string, string>
 ): Record<string, string> => {

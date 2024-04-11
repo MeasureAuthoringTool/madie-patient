@@ -30,9 +30,16 @@
               color: #0073c8;
             }
           }
+
           > .spacer {
             display: flex;
             flex-grow: 1;
+          }
+
+          > .MuiTabs-root {
+            > .MuiTabs-scroller {
+              overflow-x: scroll !important;
+            }
           }
         }
       }
@@ -110,8 +117,5 @@
     > div {
       height: inherit;
     }
-  }
-  .MuiTabs-scroller {
-    overflow-x: scroll !important;
   }
 }
