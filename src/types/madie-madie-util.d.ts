@@ -28,6 +28,9 @@ declare module "@madie/madie-util" {
     terminologyService: {
       baseUrl: string;
     };
+    excelExportService: {
+      baseUrl: string;
+    };
   }
 
   export interface RouteHandlerState {

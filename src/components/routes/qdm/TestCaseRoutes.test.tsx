@@ -32,6 +32,9 @@ const serviceConfig: ServiceConfig = {
   elmTranslationService: {
     baseUrl: "elmTranslationService.com",
   },
+  excelExportService: {
+    baseUrl: "excelexport.com",
+  },
 };
 
 const MEASURE_CREATEDBY = "testuser";

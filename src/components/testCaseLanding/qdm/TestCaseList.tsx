@@ -8,6 +8,7 @@ import {
   TestCase,
   TestCaseImportOutcome,
   TestCaseImportRequest,
+  TestCaseExcelExportDto,
 } from "@madie/madie-models";
 import { useParams, useNavigate, json } from "react-router-dom";
 import calculationService from "../../../api/CalculationService";
@@ -42,6 +43,11 @@ import {
 } from "../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
 import { uniqWith } from "lodash";
 import checkSpecialCharacters from "../common/checkSpecialCharacters";
+import { createExcelExportDtosForAllTestCases } from "../../../util/TestCaseExcelExportUtil";
+import useCqlParsingService from "../../../api/useCqlParsingService";
+import { CqlDefinitionCallstack } from "../../editTestCase/groupCoverage/QiCoreGroupCoverage";
+import useExcelExportService from "../../../api/useExcelExportService";
+
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
 export const coverageHeaderRegex =
@@ -98,6 +104,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     setToastType,
     onToastClose,
   } = UseToast();
+  const excelExportService = useRef(useExcelExportService());
 
   const [executionResults, setExecutionResults] = useState<{
     [key: string]: DetailedPopulationGroupResult[];
@@ -127,6 +134,21 @@ const TestCaseList = (props: TestCaseListProps) => {
   const [importDialogState, setImportDialogState] = useState<any>({
     open: false,
   });
+  const cqlParsingService = useRef(useCqlParsingService());
+
+  const [callstackMap, setCallstackMap] = useState<CqlDefinitionCallstack>();
+
+  useEffect(() => {
+    cqlParsingService.current
+      .getDefinitionCallstacks(measure.cql)
+      .then((callstack: CqlDefinitionCallstack) => {
+        setCallstackMap(callstack);
+        return callstack;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [measure.cql]);
 
   const [groupCoverageResult, setGroupCoverageResult] = useState([]);
   useState<GroupCoverageResult>();
@@ -458,7 +480,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     }
   };
 
-  const downloadZipFile = (exportData, ecqmTitle, model, version) => {
+  const downloadQRDAFile = (exportData, ecqmTitle, model, version) => {
     var exportBlob = new Blob([exportData], {
       type: "text/plain",
     });
@@ -473,6 +495,34 @@ const TestCaseList = (props: TestCaseListProps) => {
     setToastMessage("QRDA exported successfully");
     document.body.removeChild(link);
   };
+  const exportExcel = async () => {
+    const testCaseDtos: TestCaseExcelExportDto[] =
+      createExcelExportDtosForAllTestCases(
+        measure,
+        cqmMeasure,
+        calculationOutput,
+        callstackMap
+      );
+    const excelData: Blob = await excelExportService.current.generateExcel(
+      testCaseDtos
+    );
+    var exportBlob = new Blob([excelData], {
+      type: "application/vnd.ms-excel",
+    });
+    const url = window.URL.createObjectURL(exportBlob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute(
+      "download",
+      `${measure.ecqmTitle}-v${measure.version}-QDM-TestCases.xls`
+    );
+    document.body.appendChild(link);
+    link.click();
+    setToastOpen(true);
+    setToastType("success");
+    setToastMessage("Excel exported successfully");
+    document.body.removeChild(link);
+  };
 
   const exportQRDA = async () => {
     const failedTCs = checkSpecialCharacters(testCases);
@@ -482,7 +532,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     }
     try {
       const exportData = await testCaseService.current.exportQRDA(measureId);
-      downloadZipFile(
+      downloadQRDAFile(
         exportData,
         measure.ecqmTitle,
         measure.model,
@@ -538,6 +588,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                   setOpenDeleteAllTestCasesDialog(true)
                 }
                 onExportQRDA={exportQRDA}
+                onExportExcel={exportExcel}
               />
             </div>
             <CreateNewTestCaseDialog

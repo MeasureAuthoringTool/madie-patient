@@ -40,6 +40,7 @@ export interface NavTabProps {
   selectedPopCriteria: Group;
   onDeleteAllTestCases: () => void;
   onExportQRDA: () => void;
+  onExportExcel: (fileType: string) => void;
 }
 
 const defaultStyle = {
@@ -72,6 +73,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     selectedPopCriteria,
     onDeleteAllTestCases,
     onExportQRDA,
+    onExportExcel,
   } = props;
   const [activeTip, setActiveTip] = useState<boolean>(false);
   const toolTipClass = classNames("madie-tooltip", {
@@ -268,11 +270,18 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
             anchorEl={anchorEl}
             handleClose={handleClose}
             canEdit={canEdit}
-            editViewSelectOptionProps={{
-              label: "QRDA",
-              toImplementFunction: onExportQRDA,
-              dataTestId: `export-qrda-${measure?.id}`,
-            }}
+            additionalSelectOptionProps={[
+              {
+                label: "QRDA",
+                toImplementFunction: onExportQRDA,
+                dataTestId: `export-qrda-${measure?.id}`,
+              },
+              {
+                label: "Excel",
+                toImplementFunction: onExportExcel,
+                dataTestId: `export-export-${measure?.id}`,
+              },
+            ]}
           />
         </div>
       </div>
