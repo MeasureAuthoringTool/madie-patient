@@ -24,18 +24,6 @@ import {
   buildHighlightingForGroups,
 } from "./cqlCoverageBuilder/CqlCoverageBuilder";
 
-const getTestCasesByGroup = (measure: Measure, groupId: string): TestCase[] => {
-  const testCasesByGroup: TestCase[] = [];
-  measure.testCases?.forEach((testCase) => {
-    testCase.groupPopulations?.forEach((groupPopulation) => {
-      if (groupPopulation.groupId === groupId) {
-        testCasesByGroup.push(testCase);
-      }
-    });
-  });
-  return testCasesByGroup;
-};
-
 export const convertToNumber = (value: number | boolean | string) => {
   let convertedNumber: number = 0;
   if (typeof value === "string") {
@@ -127,9 +115,8 @@ export const createExcelExportDtosForAllTestCases = (
   let groupNumber = 1;
   measure.groups?.forEach((group) => {
     const testCaseExecutionResultDtos: TestCaseExecutionResultDto[] = [];
-    const testCasesByGroup: TestCase[] = getTestCasesByGroup(measure, group.id);
-    testCasesByGroup?.forEach((currentTestCase) => {
-      const groupPopulation = currentTestCase.groupPopulations?.filter(
+    measure?.testCases?.forEach((currentTestCase) => {
+      const groupPopulation = currentTestCase.groupPopulations?.find(
         (groupPopulation) => {
           return groupPopulation.groupId === group.id;
         }
@@ -137,11 +124,10 @@ export const createExcelExportDtosForAllTestCases = (
 
       let groupedStratDtos: GroupedStratificationDto[] = [];
       let stratNumber = 1;
-      const populationDtos: PopulationDto[] = populatePopulationDtos(
-        groupPopulation[0]
-      );
+      const populationDtos: PopulationDto[] =
+        populatePopulationDtos(groupPopulation);
       groupedStratDtos = populateStratificationDtos(
-        groupPopulation[0],
+        groupPopulation,
         groupNumber,
         stratNumber,
         currentTestCase.id
