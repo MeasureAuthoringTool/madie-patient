@@ -279,7 +279,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
               {
                 label: "Excel",
                 toImplementFunction: onExportExcel,
-                dataTestId: `export-export-${measure?.id}`,
+                dataTestId: `export-excel-${measure?.id}`,
               },
             ]}
           />

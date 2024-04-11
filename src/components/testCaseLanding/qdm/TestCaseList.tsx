@@ -144,7 +144,10 @@ const TestCaseList = (props: TestCaseListProps) => {
         return callstack;
       })
       .catch((error) => {
-        console.error(error);
+        console.error(
+          "CQL Parsing for callStack parsing: err.message = " + error.message
+        );
+        setErrors((prevState) => [...prevState, error.message]);
       });
   }, [measure.cql]);
 
@@ -479,7 +482,7 @@ const TestCaseList = (props: TestCaseListProps) => {
   };
 
   const downloadQRDAFile = (exportData, ecqmTitle, model, version) => {
-    var exportBlob = new Blob([exportData], {
+    const exportBlob = new Blob([exportData], {
       type: "text/plain",
     });
     const url = window.URL.createObjectURL(exportBlob);
