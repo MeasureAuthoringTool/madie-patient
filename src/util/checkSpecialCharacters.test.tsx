@@ -50,11 +50,7 @@ describe("checks all special chars", () => {
       series: "test series",
     } as TestCase;
     const error = checkSpecialCharacters(testCase);
-    expect(error).toBe(
-      SPECIAL_CHARACTERS_ERROR_TITLE +
-        " These are special characters that are invalid: " +
-        specialChars
-    );
+    expect(error).toBe(SPECIAL_CHARACTERS_ERROR_TITLE);
   });
 
   it("Should return error for group", () => {
@@ -63,11 +59,7 @@ describe("checks all special chars", () => {
       series: " test series \\",
     } as TestCase;
     const error = checkSpecialCharacters(testCase);
-    expect(error).toBe(
-      SPECIAL_CHARACTERS_ERROR_SERIES +
-        " These are special characters that are invalid: " +
-        specialChars
-    );
+    expect(error).toBe(SPECIAL_CHARACTERS_ERROR_SERIES);
   });
 
   it("Should not return error", () => {
