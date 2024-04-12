@@ -4,10 +4,8 @@ export const specialChars = /[`!@#$%^&*()_\+=\[\]{};':"\\|,.<>\/?~]/;
 
 export const EXPORT_ERROR_CHARACTERS_MESSAGE =
   "Test Cases can not be exported some titles or groups contain special characters.";
-export const SPECIAL_CHARACTERS_ERROR_TITLE =
-  'Test Case Title can not contain special characters: (){}[]<>/|"\':;,.~`!@#$%^&*_+="';
-export const SPECIAL_CHARACTERS_ERROR_SERIES =
-  'Test Case Group can not contain special characters: (){}[]<>/|"\':;,.~`!@#$%^&*_+="';
+export const SPECIAL_CHARACTERS_ERROR_TITLE = `Test Case Title can not contain special characters: ${specialChars}`;
+export const SPECIAL_CHARACTERS_ERROR_SERIES = `Test Case Group can not contain special characters: ${specialChars}`;
 
 export const checkSpecialCharactersForExport = (
   testCases: TestCase[]
