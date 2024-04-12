@@ -2,6 +2,7 @@ import checkSpecialCharacters, {
   checkSpecialCharactersForExport,
   SPECIAL_CHARACTERS_ERROR_TITLE,
   SPECIAL_CHARACTERS_ERROR_SERIES,
+  specialChars,
 } from "./checkSpecialCharacters";
 import { TestCase } from "@madie/madie-models";
 const allSpecialChars = [
@@ -49,7 +50,11 @@ describe("checks all special chars", () => {
       series: "test series",
     } as TestCase;
     const error = checkSpecialCharacters(testCase);
-    expect(error).toBe(SPECIAL_CHARACTERS_ERROR_TITLE);
+    expect(error).toBe(
+      SPECIAL_CHARACTERS_ERROR_TITLE +
+        " These are special characters that are invalid: " +
+        specialChars
+    );
   });
 
   it("Should return error for group", () => {
@@ -58,7 +63,11 @@ describe("checks all special chars", () => {
       series: " test series \\",
     } as TestCase;
     const error = checkSpecialCharacters(testCase);
-    expect(error).toBe(SPECIAL_CHARACTERS_ERROR_SERIES);
+    expect(error).toBe(
+      SPECIAL_CHARACTERS_ERROR_SERIES +
+        " These are special characters that are invalid: " +
+        specialChars
+    );
   });
 
   it("Should not return error", () => {
