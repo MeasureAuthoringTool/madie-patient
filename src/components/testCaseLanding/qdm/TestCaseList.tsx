@@ -141,7 +141,6 @@ const TestCaseList = (props: TestCaseListProps) => {
       .getDefinitionCallstacks(measure.cql)
       .then((callstack: CqlDefinitionCallstack) => {
         setCallstackMap(callstack);
-        return callstack;
       })
       .catch((error) => {
         console.error(
