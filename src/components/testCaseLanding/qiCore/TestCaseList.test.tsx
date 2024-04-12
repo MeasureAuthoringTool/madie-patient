@@ -82,6 +82,9 @@ const createZipFile = async (
 
 const serviceConfig: ServiceConfig = {
   elmTranslationService: { baseUrl: "base.url" },
+  excelExportService: {
+    baseUrl: "excelexport.com",
+  },
   testCaseService: {
     baseUrl: "base.url",
   },

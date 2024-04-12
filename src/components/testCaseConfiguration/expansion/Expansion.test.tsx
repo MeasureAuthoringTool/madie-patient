@@ -17,6 +17,9 @@ const mockServiceConfig: ServiceConfig = {
   testCaseService: { baseUrl: "testcase.url" },
   terminologyService: { baseUrl: "terminology.url" },
   elmTranslationService: { baseUrl: "translator.url" },
+  excelExportService: {
+    baseUrl: "excelexport.com",
+  },
 };
 
 const mockManifestList = [
