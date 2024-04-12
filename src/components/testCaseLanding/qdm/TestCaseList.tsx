@@ -8,6 +8,7 @@ import {
   TestCase,
   TestCaseImportOutcome,
   TestCaseImportRequest,
+  TestCaseExcelExportDto,
 } from "@madie/madie-models";
 import { useParams, useNavigate, json } from "react-router-dom";
 import calculationService from "../../../api/CalculationService";
@@ -41,7 +42,11 @@ import {
   buildHighlightingForAllGroups,
 } from "../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
 import { uniqWith } from "lodash";
-import checkSpecialCharacters from "../common/checkSpecialCharacters";
+import { checkSpecialCharactersForExport } from "../../../util/checkSpecialCharacters";
+import { createExcelExportDtosForAllTestCases } from "../../../util/TestCaseExcelExportUtil";
+import useCqlParsingService from "../../../api/useCqlParsingService";
+import { CqlDefinitionCallstack } from "../../editTestCase/groupCoverage/QiCoreGroupCoverage";
+import useExcelExportService from "../../../api/useExcelExportService";
 import FileSaver from "file-saver";
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
@@ -97,6 +102,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     setToastType,
     onToastClose,
   } = UseToast();
+  const excelExportService = useRef(useExcelExportService());
 
   const [executionResults, setExecutionResults] = useState<{
     [key: string]: DetailedPopulationGroupResult[];
@@ -126,6 +132,23 @@ const TestCaseList = (props: TestCaseListProps) => {
   const [importDialogState, setImportDialogState] = useState<any>({
     open: false,
   });
+  const cqlParsingService = useRef(useCqlParsingService());
+
+  const [callstackMap, setCallstackMap] = useState<CqlDefinitionCallstack>();
+
+  useEffect(() => {
+    cqlParsingService.current
+      .getDefinitionCallstacks(measure.cql)
+      .then((callstack: CqlDefinitionCallstack) => {
+        setCallstackMap(callstack);
+      })
+      .catch((error) => {
+        console.error(
+          "CQL Parsing for callStack parsing: err.message = " + error.message
+        );
+        setErrors((prevState) => [...prevState, error.message]);
+      });
+  }, [measure.cql]);
 
   const [groupCoverageResult, setGroupCoverageResult] = useState([]);
   useState<GroupCoverageResult>();
@@ -457,23 +480,51 @@ const TestCaseList = (props: TestCaseListProps) => {
     }
   };
 
-  const downloadZipFile = (exportData, ecqmTitle, model, version) => {
+  const downloadQRDAFile = (exportData, ecqmTitle, model, version) => {
     FileSaver.saveAs(exportData, `${ecqmTitle}-v${version}-QDM-TestCases.zip`);
 
     setToastOpen(true);
     setToastType("success");
     setToastMessage("QRDA exported successfully");
   };
+  const exportExcel = async () => {
+    const testCaseDtos: TestCaseExcelExportDto[] =
+      createExcelExportDtosForAllTestCases(
+        measure,
+        cqmMeasure,
+        calculationOutput,
+        callstackMap
+      );
+    const excelData: Blob = await excelExportService.current.generateExcel(
+      testCaseDtos
+    );
+    var exportBlob = new Blob([excelData], {
+      type: "application/vnd.ms-excel",
+    });
+    const url = window.URL.createObjectURL(exportBlob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute(
+      "download",
+      `${measure.ecqmTitle}-v${measure.version}-QDM-TestCases.xls`
+    );
+    document.body.appendChild(link);
+    link.click();
+    setToastOpen(true);
+    setToastType("success");
+    setToastMessage("Excel exported successfully");
+    document.body.removeChild(link);
+  };
 
   const exportQRDA = async () => {
-    const failedTCs = checkSpecialCharacters(testCases);
+    const failedTCs = checkSpecialCharactersForExport(testCases);
     if (failedTCs.length) {
       setErrors((prevState) => [...prevState, ...failedTCs]);
       return;
     }
     try {
       const exportData = await testCaseService.current.exportQRDA(measureId);
-      downloadZipFile(
+      downloadQRDAFile(
         exportData,
         measure.ecqmTitle,
         measure.model,
@@ -529,6 +580,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                   setOpenDeleteAllTestCasesDialog(true)
                 }
                 onExportQRDA={exportQRDA}
+                onExportExcel={exportExcel}
               />
             </div>
             <CreateNewTestCaseDialog

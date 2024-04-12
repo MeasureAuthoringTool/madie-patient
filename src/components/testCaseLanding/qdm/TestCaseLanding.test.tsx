@@ -22,6 +22,9 @@ const serviceConfig: ServiceConfig = {
   terminologyService: {
     baseUrl: "http.com",
   },
+  excelExportService: {
+    baseUrl: "excelexport.com",
+  },
 };
 
 jest.mock("../../../api/useCqlParsingService");

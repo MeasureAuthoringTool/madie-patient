@@ -171,6 +171,7 @@ const testCase: TestCase = {
 
 const mockMeasure = {
   id: "testmeasureid",
+  measureName: "test measure",
   scoring: MeasureScoring.COHORT,
   model: Model.QDM_5_6,
   createdBy: "testUserOwner",
@@ -879,7 +880,7 @@ describe("EditTestCase QDM Component", () => {
     await waitFor(
       () => {
         expect(screen.getByTestId("error-toast")).toHaveTextContent(
-          'Error updating Test Case "undefined": Error Msg'
+          'Error updating Test Case "test measure": Error Msg'
         );
         const closeToastBtn = screen.getByTestId("close-toast-button");
         userEvent.click(closeToastBtn);
@@ -1045,6 +1046,59 @@ describe("EditTestCase QDM Component", () => {
     await waitFor(() => {
       expect(screen.getByTestId("success-toast")).toHaveTextContent(
         "Test Case Updated Successfully"
+      );
+    });
+  }, 30000);
+
+  it("Should not update test case because of special characters", async () => {
+    testCase.json = testCaseJson;
+    await waitFor(() => renderEditTestCaseComponent());
+
+    const detailsTab = getByRole("tab", { name: "Details tab panel" });
+    act(() => {
+      fireEvent.click(detailsTab);
+    });
+    await waitFor(() => {
+      expect(detailsTab).toHaveAttribute("aria-selected", "true");
+    });
+    // check title is as expected
+    const tcTitle = await screen.findByTestId("test-case-title");
+    expect(tcTitle).toHaveValue(testCase.title);
+
+    const descriptionInput = screen.getByTestId("test-case-description");
+    expect(descriptionInput).toHaveTextContent(testCase.description);
+
+    const seriesInput = screen
+      .getByTestId("test-case-series")
+      .querySelector("input") as HTMLInputElement;
+    expect(seriesInput).toHaveValue("test series");
+
+    act(() => {
+      userEvent.click(seriesInput);
+    });
+    const list = await screen.findByRole("listbox");
+    expect(list).toBeInTheDocument();
+    const listItems = within(list).getAllByRole("option");
+    expect(listItems[1]).toHaveTextContent("Series 2");
+    act(() => {
+      userEvent.click(listItems[1]);
+    });
+
+    await testTitle("newtesttitle1 with special characters $ % ^", true);
+    await waitFor(() => {
+      const descriptionInput = screen.getByTestId("test-case-description");
+      userEvent.type(descriptionInput, "testtestsetse");
+    });
+
+    const saveButton = getByRole("button", { name: "Save" });
+    expect(saveButton).toBeEnabled();
+    act(() => {
+      fireEvent.click(saveButton);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId("error-toast")).toHaveTextContent(
+        'Error updating Test Case for measure: "test measure": Test Case Title can not contain special characters'
       );
     });
   }, 30000);

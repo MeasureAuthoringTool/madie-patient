@@ -13,6 +13,9 @@ export interface ServiceConfig {
   elmTranslationService: {
     baseUrl: string;
   };
+  excelExportService: {
+    baseUrl: string;
+  };
 }
 
 const ServiceContext = createContext<ServiceConfig>(null);

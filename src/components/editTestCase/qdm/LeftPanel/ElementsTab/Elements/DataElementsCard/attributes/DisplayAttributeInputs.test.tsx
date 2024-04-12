@@ -35,6 +35,9 @@ const serviceConfig: ServiceConfig = {
   elmTranslationService: {
     baseUrl: "base.url",
   },
+  excelExportService: {
+    baseUrl: "excelexport.com",
+  },
 };
 const mockCqmMeasure = {
   id: "id-1",
