@@ -24,6 +24,9 @@ const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const serviceConfig: ServiceConfig = {
   elmTranslationService: { baseUrl: "translator.url" },
+  excelExportService: {
+    baseUrl: "excelexport.com",
+  },
   measureService: {
     baseUrl: "measure.url",
   },

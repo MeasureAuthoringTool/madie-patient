@@ -2,6 +2,7 @@ import checkSpecialCharacters, {
   checkSpecialCharactersForExport,
   SPECIAL_CHARACTERS_ERROR_TITLE,
   SPECIAL_CHARACTERS_ERROR_SERIES,
+  specialChars,
 } from "./checkSpecialCharacters";
 import { TestCase } from "@madie/madie-models";
 const allSpecialChars = [

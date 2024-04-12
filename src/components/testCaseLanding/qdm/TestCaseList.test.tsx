@@ -61,6 +61,9 @@ const mockScanResult: ScanValidationDto = {
 
 const serviceConfig: ServiceConfig = {
   elmTranslationService: { baseUrl: "translator.url" },
+  excelExportService: {
+    baseUrl: "excelexport.com",
+  },
   testCaseService: {
     baseUrl: "base.url",
   },
