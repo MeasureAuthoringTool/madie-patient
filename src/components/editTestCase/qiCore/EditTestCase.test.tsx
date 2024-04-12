@@ -81,6 +81,9 @@ const testCaseAlertToast = false;
 
 const serviceConfig: ServiceConfig = {
   elmTranslationService: { baseUrl: "cql-to-elm.com" },
+  excelExportService: {
+    baseUrl: "excelexport.com",
+  },
   measureService: {
     baseUrl: "measure.url",
   },
