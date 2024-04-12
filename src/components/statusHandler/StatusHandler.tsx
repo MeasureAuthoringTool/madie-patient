@@ -4,7 +4,7 @@ import "./StatusHandler.scss";
 import { TestCaseImportOutcome } from "@madie/madie-models";
 import "twin.macro";
 import "styled-components/macro";
-import { EXPORT_ERROR_CHARACTERS_MESSAGE } from "../testCaseLanding/common/checkSpecialCharacters";
+import { EXPORT_ERROR_CHARACTERS_MESSAGE } from "../../util/checkSpecialCharacters";
 interface StatusHandlerProps {
   error?: boolean;
   errorMessages?: Array<string>;

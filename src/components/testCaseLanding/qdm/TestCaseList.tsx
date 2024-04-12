@@ -42,7 +42,7 @@ import {
   buildHighlightingForAllGroups,
 } from "../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
 import { uniqWith } from "lodash";
-import checkSpecialCharacters from "../common/checkSpecialCharacters";
+import { checkSpecialCharactersForExport } from "../../../util/checkSpecialCharacters";
 import { createExcelExportDtosForAllTestCases } from "../../../util/TestCaseExcelExportUtil";
 import useCqlParsingService from "../../../api/useCqlParsingService";
 import { CqlDefinitionCallstack } from "../../editTestCase/groupCoverage/QiCoreGroupCoverage";
@@ -525,7 +525,7 @@ const TestCaseList = (props: TestCaseListProps) => {
   };
 
   const exportQRDA = async () => {
-    const failedTCs = checkSpecialCharacters(testCases);
+    const failedTCs = checkSpecialCharactersForExport(testCases);
     if (failedTCs.length) {
       setErrors((prevState) => [...prevState, ...failedTCs]);
       return;
