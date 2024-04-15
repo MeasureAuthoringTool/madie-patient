@@ -6,6 +6,7 @@ import userEvent from "@testing-library/user-event";
 import CreateNewTestCaseDialog from "./CreateNewTestCaseDialog";
 import { Measure } from "@madie/madie-models";
 import axios from "axios";
+import { specialChars } from "../../util/checkSpecialCharacters";
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -205,7 +206,9 @@ describe("Create New Test Case Dialog", () => {
       const titleInput = await getByTestId("create-test-case-title-input");
       userEvent.type(titleInput, formikInfo.title);
       expect(titleInput.value).toBe(formikInfo.title);
-      Simulate.change("invalid title ~!@#$");
+      fireEvent.change(titleInput, {
+        target: { value: "invalid title ~!@#$" },
+      });
 
       const descriptionInput = await getByTestId(
         "create-test-case-description"
@@ -231,7 +234,7 @@ describe("Create New Test Case Dialog", () => {
         const serverErrorAlert = queryByTestId("server-error-alerts");
         expect(serverErrorAlert).toBeVisible();
         expect(serverErrorAlert).toHaveTextContent(
-          "An error occurred while creating the test case: Unable to create new test case"
+          "Test Case Title can not contain special characters: " + specialChars
         );
       });
     });
