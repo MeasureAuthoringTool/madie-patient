@@ -137,18 +137,20 @@ const TestCaseList = (props: TestCaseListProps) => {
   const [callstackMap, setCallstackMap] = useState<CqlDefinitionCallstack>();
 
   useEffect(() => {
-    cqlParsingService.current
-      .getDefinitionCallstacks(measure.cql)
-      .then((callstack: CqlDefinitionCallstack) => {
-        setCallstackMap(callstack);
-      })
-      .catch((error) => {
-        console.error(
-          "CQL Parsing for callStack parsing: err.message = " + error.message
-        );
-        setErrors((prevState) => [...prevState, error.message]);
-      });
-  }, [measure.cql]);
+    if (measure?.cql) {
+      cqlParsingService.current
+        .getDefinitionCallstacks(measure.cql)
+        .then((callstack: CqlDefinitionCallstack) => {
+          setCallstackMap(callstack);
+        })
+        .catch((error) => {
+          console.error(
+            "CQL Parsing for callStack parsing: err.message = " + error.message
+          );
+          setErrors((prevState) => [...prevState, error.message]);
+        });
+    }
+  }, [measure?.cql]);
 
   const [groupCoverageResult, setGroupCoverageResult] = useState([]);
   useState<GroupCoverageResult>();
