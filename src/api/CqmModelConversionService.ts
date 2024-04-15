@@ -24,7 +24,6 @@ import { CalculationMethod } from "./models/CalculationMethod";
 import { DataCriteria } from "./models/DataCriteria";
 import _ from "lodash";
 import { CqmModelFactory } from "./model-factory/CqmModelFactory";
-import { parse } from "./ElmParser";
 import { ElmDependencyFinder } from "./elmDependencyFinder/ElmDependencyFinder";
 import { v4 as uuidv4 } from "uuid";
 import { TranslatedLibrary } from "./models/TranslatedLibrary";
@@ -296,7 +295,6 @@ export class CqmConversionService {
     // true for all non-composite measures
     cqlLibrary.is_top_level = true;
 
-    cqlLibrary.elm_annotations = parse(cqlLibrary.elm);
     cqlLibrary.statement_dependencies = this.generateCqlStatementDependencies(
       statementDependenciesMap[elmJson.library?.identifier.id]
     );
