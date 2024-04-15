@@ -139,7 +139,7 @@ const TestCaseList = (props: TestCaseListProps) => {
   useEffect(() => {
     if (measure?.cql) {
       cqlParsingService.current
-        .getDefinitionCallstacks(measure?.cql)
+        .getDefinitionCallstacks(measure.cql)
         .then((callstack: CqlDefinitionCallstack) => {
           setCallstackMap(callstack);
         })
