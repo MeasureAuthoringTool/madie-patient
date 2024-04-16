@@ -100,34 +100,38 @@ const StatusHandler = ({
           type="warning"
           content={
             <div aria-live="polite" role="alert" data-testid={testDataId}>
-              <h6>
-                ({successfulImports}) test case(s) were imported. The following
-                ({failedImports.length}) test case(s) could not be imported.
-                Please ensure that your formatting is correct and try again.
-              </h6>
-              <ul>
-                {failedImports.map((failedImport) => {
-                  const family = failedImport?.familyName;
-                  const given = failedImport?.givenNames?.toString();
-                  const names =
-                    family && given
-                      ? `${family} ${given}`
-                      : failedImport?.patientId;
-                  return (
-                    <li data-testid="failed-test-cases">
-                      {names} <br />
-                      <span tw="ml-4">Reason : {failedImport.message}</span>
-                    </li>
-                  );
-                })}
-              </ul>
+              {failedImports.length > 0 && (
+                <div>
+                  <div tw="font-medium">
+                    ({successfulImports}) test case(s) were imported. The
+                    following ({failedImports.length}) test case(s) could not be
+                    imported. Please ensure that your formatting is correct and
+                    try again.
+                  </div>
+                  <ul>
+                    {failedImports.map((failedImport) => {
+                      const family = failedImport?.familyName;
+                      const given = failedImport?.givenNames?.toString();
+                      const names =
+                        family && given
+                          ? `${family} ${given}`
+                          : failedImport?.patientId;
+                      return (
+                        <li data-testid="failed-test-cases">
+                          {names} <br />
+                          <span tw="ml-4">Reason : {failedImport.message}</span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              )}
               {successfulImportsWithWarning?.length > 0 && (
                 <div>
-                  <h6>
-                    Following test case(s) were imported succesfully, but The
-                    measure populations do not match the populations in the
-                    import file. No expected values have been set.
-                  </h6>
+                  <div tw="font-medium">
+                    Following test case(s) were imported successfully, but{" "}
+                    {successfulImportsWithWarning[0].message}
+                  </div>
                   <ul>
                     {successfulImportsWithWarning.map(
                       (successfulImportWithWarning) => {
