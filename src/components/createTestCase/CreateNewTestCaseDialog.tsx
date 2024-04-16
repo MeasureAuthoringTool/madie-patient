@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { TestCase, Measure } from "@madie/madie-models";
+import { TestCase, Measure, Model } from "@madie/madie-models";
 import { TestCaseValidator } from "../../validators/TestCaseValidator";
 import {
   MadieDialog,
@@ -16,6 +16,7 @@ import * as _ from "lodash";
 import TestCaseSeries from "./TestCaseSeries";
 import { sanitizeUserInput } from "../../util/Utils";
 import { defaultTestCaseJson } from "../../util/QdmTestCaseHelper";
+import checkSpecialCharacters from "../../util/checkSpecialCharacters";
 
 interface Toast {
   toastOpen: boolean;
@@ -146,6 +147,17 @@ const CreateNewTestCaseDialog = ({
   };
 
   const createTestCase = async (testCase: TestCase) => {
+    if (measure?.model === Model.QDM_5_6) {
+      const errorMsg = checkSpecialCharacters(testCase);
+      if (errorMsg) {
+        setToast({
+          toastOpen: true,
+          toastType: "danger",
+          toastMessage: errorMsg,
+        });
+        return;
+      }
+    }
     try {
       const savedTestCase = await testCaseService.current.createTestCase(
         testCase,

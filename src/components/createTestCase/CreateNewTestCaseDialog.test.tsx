@@ -6,6 +6,7 @@ import userEvent from "@testing-library/user-event";
 import CreateNewTestCaseDialog from "./CreateNewTestCaseDialog";
 import { Measure } from "@madie/madie-models";
 import axios from "axios";
+import { specialChars } from "../../util/checkSpecialCharacters";
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -188,4 +189,54 @@ describe("Create New Test Case Dialog", () => {
       });
     });
   });
+
+  test("should not save test case as input has special characters for QDM measure", async () => {
+    const measure: Measure = {
+      model: "QDM v5.6",
+    } as unknown as Measure;
+    await act(async () => {
+      const { getByRole, getByTestId, getByText, queryByTestId } = await render(
+        <CreateNewTestCaseDialog
+          open={true}
+          onClose={jest.fn()}
+          measure={measure}
+        />
+      );
+
+      const titleInput = await getByTestId("create-test-case-title-input");
+      userEvent.type(titleInput, formikInfo.title);
+      expect(titleInput.value).toBe(formikInfo.title);
+      fireEvent.change(titleInput, {
+        target: { value: "invalid title ~!@#$" },
+      });
+
+      const descriptionInput = await getByTestId(
+        "create-test-case-description"
+      );
+      userEvent.type(descriptionInput, formikInfo.description);
+      expect(descriptionInput.value).toBe(formikInfo.description);
+      Simulate.change(descriptionInput);
+
+      const seriesInput = getByRole("combobox");
+      userEvent.type(seriesInput, formikInfo.series);
+      const seriesOption = getByText('Add "test case series"');
+      expect(
+        getByTestId('Add "test case series"-aa-option')
+      ).toBeInTheDocument();
+      expect(seriesOption).toBeInTheDocument();
+      userEvent.click(seriesOption);
+      expect(seriesInput).toHaveValue(formikInfo.series);
+
+      const saveButton = await getByTestId("create-test-case-save-button");
+      expect(saveButton).not.toBeDisabled();
+      fireEvent.click(saveButton);
+      await waitFor(() => {
+        const serverErrorAlert = queryByTestId("server-error-alerts");
+        expect(serverErrorAlert).toBeVisible();
+        expect(serverErrorAlert).toHaveTextContent(
+          "Test Case Title can not contain special characters: " + specialChars
+        );
+      });
+    });
+  }, 16000);
 });
