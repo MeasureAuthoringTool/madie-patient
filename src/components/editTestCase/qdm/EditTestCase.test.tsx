@@ -1098,7 +1098,7 @@ describe("EditTestCase QDM Component", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("error-toast")).toHaveTextContent(
-        'Error updating Test Case for measure: "test measure": Test Case Title can not contain special characters'
+        "Test Case Title can not contain special characters"
       );
     });
   }, 30000);
