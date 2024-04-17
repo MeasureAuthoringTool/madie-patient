@@ -257,7 +257,7 @@ const QiCoreGroupCoverage = ({
           ]?.statementLevelHTML;
         // Get the callstack for each definition called by the parent statement
         getCallstack(calledDefinition.id).forEach((name) => {
-         // console.log(name);
+          // console.log(name);
           text +=
             mappedCalculationResults[selectedCriteria]["statementResults"][name]
               ?.statementLevelHTML;
