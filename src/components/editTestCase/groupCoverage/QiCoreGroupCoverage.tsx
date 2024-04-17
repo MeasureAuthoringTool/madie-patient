@@ -62,7 +62,6 @@ const QiCoreGroupCoverage = ({
   cqlDefinitionCallstack,
   mainCqlLibraryName,
 }: Props) => {
-  //console.log(cqlDefinitionCallstack);
   // selected group/criteria
   const [selectedCriteria, setSelectedCriteria] = useState<string>("");
   // selected population of a selected group
@@ -113,7 +112,6 @@ const QiCoreGroupCoverage = ({
 
   const getPopulationResults = (groupId: string) => {
     if (mappedCalculationResults) {
-      // console.log(mappedCalculationResults);
       const selectedGroupCalculationResults = mappedCalculationResults[groupId];
       if (selectedGroupCalculationResults) {
         const relevantPopulations =
@@ -204,12 +202,13 @@ const QiCoreGroupCoverage = ({
 
         filteredDefinitions = Object.keys(unusedDefinitions).reduce(
           (result, statementName) => {
-            let processName = processStatementName(statementName);
-            if (processName !== "Patient") {
+            let statementDefinitionName =
+              getStatementDefinitionName(statementName);
+            if (statementDefinitionName !== "Patient") {
               result[statementName] = {
                 ...unusedDefinitions[statementName],
                 //currently we don’t have tools for CQl unused definitions
-                statementLevelHTML: `<code><span>define &quot;${processName}&quot;: </span><span>&quot;unavailable&quot;</span></code>`,
+                statementLevelHTML: `<code><span>define &quot;${statementDefinitionName}&quot;: </span><span>&quot;unavailable&quot;</span></code>`,
               };
             }
             return result;
@@ -221,7 +220,7 @@ const QiCoreGroupCoverage = ({
     }
   };
 
-  const processStatementName = (statementName) => {
+  const getStatementDefinitionName = (statementName) => {
     if (statementName.includes("|")) {
       return statementName.split("|")[1].trim();
     } else {
@@ -244,20 +243,16 @@ const QiCoreGroupCoverage = ({
   };
 
   const generateCallstackText = (selectedDefinition: Statement): string => {
-    // console.log("selected definition:", selectedDefinition);
-    // console.log("cql definition call stack:", cqlDefinitionCallstack);
-    // console.log("mapped calculation results:", mappedCalculationResults);
     let text = "";
     cqlDefinitionCallstack[selectedDefinition.name]?.forEach(
       (calledDefinition) => {
         // Get Highlighted HTML from execution results
         text +=
           mappedCalculationResults[selectedCriteria]["statementResults"][
-            test(calledDefinition)
+            getCalledDefinitionName(calledDefinition)
           ]?.statementLevelHTML;
         // Get the callstack for each definition called by the parent statement
         getCallstack(calledDefinition.id).forEach((name) => {
-          // console.log(name);
           text +=
             mappedCalculationResults[selectedCriteria]["statementResults"][name]
               ?.statementLevelHTML;
@@ -267,21 +262,21 @@ const QiCoreGroupCoverage = ({
     return text;
   };
 
-  const test = (sname) => {
+  const getCalledDefinitionName = (calledDefinition) => {
     if (
-      sname.parentLibrary === null ||
-      sname.parentLibrary === mainCqlLibraryName
+      calledDefinition.parentLibrary === null ||
+      calledDefinition.parentLibrary === mainCqlLibraryName
     ) {
-      return sname;
+      return calledDefinition.name;
     } else {
-      return `${sname.parentLibrary}|${sname.name}`;
+      return `${calledDefinition.parentLibrary}|${calledDefinition.name}`;
     }
   };
 
   const getCallstack = (defId: string): string[] => {
     let calledDefinitions: string[] = [];
     cqlDefinitionCallstack[defId]?.forEach((calledDefinition) => {
-      calledDefinitions.push(test(calledDefinition));
+      calledDefinitions.push(getCalledDefinitionName(calledDefinition));
       if (cqlDefinitionCallstack[calledDefinition.id]) {
         calledDefinitions = calledDefinitions.concat(
           getCallstack(calledDefinition.id)
