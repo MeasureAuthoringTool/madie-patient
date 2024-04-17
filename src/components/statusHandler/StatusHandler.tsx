@@ -91,7 +91,7 @@ const StatusHandler = ({
     });
     const successfulImports = importWarnings.length - failedImports.length;
 
-    const successfulImportsWithWarning = importWarnings.filter((warnings) => {
+    const successfulImportsWithWarnings = importWarnings.filter((warnings) => {
       if (warnings.successful && warnings.message) return warnings;
     });
     return (
@@ -119,32 +119,37 @@ const StatusHandler = ({
                       return (
                         <li data-testid="failed-test-cases">
                           {names} <br />
-                          <span tw="ml-4">Reason : {failedImport.message}</span>
+                          <span tw="ml-4">Reason: {failedImport.message}</span>
                         </li>
                       );
                     })}
                   </ul>
                 </div>
               )}
-              {successfulImportsWithWarning?.length > 0 && (
+              {successfulImportsWithWarnings?.length > 0 && (
                 <div>
                   <div tw="font-medium">
-                    Following test case(s) were imported successfully, but{" "}
-                    {successfulImportsWithWarning[0].message}
+                    ({successfulImports}) test case(s) were imported
+                    successfully. The following (
+                    {successfulImportsWithWarnings.length}) test case(s) were
+                    imported with warning.
                   </div>
                   <ul>
-                    {successfulImportsWithWarning.map(
-                      (successfulImportWithWarning) => {
-                        const family = successfulImportWithWarning?.familyName;
+                    {successfulImportsWithWarnings.map(
+                      (successfulImportsWithWarning) => {
+                        const family = successfulImportsWithWarning?.familyName;
                         const given =
-                          successfulImportWithWarning?.givenNames?.toString();
+                          successfulImportsWithWarning?.givenNames?.toString();
                         const names =
                           family && given
                             ? `${family} ${given}`
-                            : successfulImportWithWarning?.patientId;
+                            : successfulImportsWithWarning?.patientId;
                         return (
                           <li data-testid="success-imports-with-warnings">
-                            {names}{" "}
+                            {names} <br />
+                            <span tw="ml-4">
+                              Reason: {successfulImportsWithWarning.message}
+                            </span>
                           </li>
                         );
                       }
