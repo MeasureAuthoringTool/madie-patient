@@ -18,11 +18,10 @@ describe("useExcelExport Tests", () => {
     excelExportService = new ExcelExportService("test.url", getAccessToken);
   });
 
-  it("Should call Terminology Service URL to fetch value set expansions when manifest Expansion feature flag is true", () => {
-    axios.put = jest
-      .fn()
-      .mockResolvedValue({ data: cqm_measure_basic_valueset });
+  it("Should call Terminology Service URL to fetch value set expansions when manifest Expansion feature flag is true", async () => {
+    axios.put = jest.fn().mockResolvedValue({ data: "test-data" });
 
-    excelExportService.generateExcel([]);
+    var result = await excelExportService.generateExcel([]);
+    expect(result.data).toEqual("test-data");
   });
 });
