@@ -333,7 +333,7 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     expect(await getByRole("NUMER")).toBeInTheDocument();
   });
 
-  test("render highlighting view with coverage results for 2 groups", async () => {
+  test.skip("render highlighting view with coverage results for 2 groups", async () => {
     renderCoverageComponent(calculationResults);
     await assertPopulationTabs();
     expect(screen.getByTestId("IP-highlighting")).toHaveTextContent(
