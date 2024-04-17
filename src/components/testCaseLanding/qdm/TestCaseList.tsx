@@ -48,6 +48,7 @@ import useCqlParsingService from "../../../api/useCqlParsingService";
 import { CqlDefinitionCallstack } from "../../editTestCase/groupCoverage/QiCoreGroupCoverage";
 import useExcelExportService from "../../../api/useExcelExportService";
 import FileSaver from "file-saver";
+import { AxiosError, AxiosResponse } from "axios";
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
 export const coverageHeaderRegex =
@@ -497,25 +498,35 @@ const TestCaseList = (props: TestCaseListProps) => {
         calculationOutput,
         callstackMap
       );
-    const excelData: Blob = await excelExportService.current.generateExcel(
-      testCaseDtos
-    );
-    var exportBlob = new Blob([excelData], {
-      type: "application/vnd.ms-excel",
-    });
-    const url = window.URL.createObjectURL(exportBlob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute(
-      "download",
-      `${measure.ecqmTitle}-v${measure.version}-QDM-TestCases.xls`
-    );
-    document.body.appendChild(link);
-    link.click();
-    setToastOpen(true);
-    setToastType("success");
-    setToastMessage("Excel exported successfully");
-    document.body.removeChild(link);
+
+    excelExportService.current
+      .generateExcel(testCaseDtos)
+      .then((response: AxiosResponse) => {
+        const excelData: Blob = response.data;
+        var exportBlob = new Blob([excelData], {
+          type: "application/vnd.ms-excel",
+        });
+        const url = window.URL.createObjectURL(exportBlob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute(
+          "download",
+          `${measure.ecqmTitle}-v${measure.version}-QDM-TestCases.xls`
+        );
+        document.body.appendChild(link);
+        link.click();
+        setToastOpen(true);
+        setToastType("success");
+        setToastMessage("Excel exported successfully");
+        document.body.removeChild(link);
+      })
+      .catch((error: AxiosError) => {
+        setToastOpen(true);
+        setToastType("danger");
+        setToastMessage(
+          error?.message + ". Please try again, or reach out to the Help Desk."
+        );
+      });
   };
 
   const exportQRDA = async () => {
