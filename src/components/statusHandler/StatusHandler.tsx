@@ -129,10 +129,8 @@ const StatusHandler = ({
               {successfulImportsWithWarnings?.length > 0 && (
                 <div>
                   <div tw="font-medium">
-                    ({successfulImports}) test case(s) were imported
-                    successfully. The following (
-                    {successfulImportsWithWarnings.length}) test case(s) were
-                    imported with warning.
+                    Following test case(s) were imported successfully, but{" "}
+                    {successfulImportsWithWarnings[0].message}
                   </div>
                   <ul>
                     {successfulImportsWithWarnings.map(
@@ -146,10 +144,7 @@ const StatusHandler = ({
                             : successfulImportsWithWarning?.patientId;
                         return (
                           <li data-testid="success-imports-with-warnings">
-                            {names} <br />
-                            <span tw="ml-4">
-                              Reason: {successfulImportsWithWarning.message}
-                            </span>
+                            {names}{" "}
                           </li>
                         );
                       }
