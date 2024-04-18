@@ -386,4 +386,129 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     expect(screen.getByText("IP 2 Not Covered")).toBeInTheDocument();
     expect(screen.getAllByText("UNHIT").length).toEqual(2);
   });
+
+  test("mapping calculation results with library name and statement name for included definitions and just statement name for main library definitions", () => {
+    const calculationResults = [
+      {
+        groupId: "6615b454a4cdf63fb8140bb3",
+        statementResults: [
+          {
+            libraryName: "BugVenousThromboembolismProphylaxisFHIR",
+            statementName: "Patient",
+            final: "NA",
+            relevance: "NA",
+            isFunction: false,
+            pretty: "NA",
+          },
+          {
+            libraryName: "BugVenousThromboembolismProphylaxisFHIR",
+            statementName: "SDE Payer",
+            localId: "58",
+            final: "NA",
+            relevance: "NA",
+            raw: [],
+            isFunction: false,
+            pretty: "NA",
+          },
+          {
+            libraryName: "BugVenousThromboembolismProphylaxisFHIR",
+            statementName: "SDE Race",
+            localId: "61",
+            final: "NA",
+            relevance: "NA",
+            raw: {
+              codes: [
+                {
+                  code: "1002-5",
+                  system: "urn:oid:2.16.840.1.113883.6.238",
+                  version: null,
+                  display: "American Indian or Alaska Native",
+                },
+              ],
+              display: "American Indian or Alaska Native",
+            },
+            isFunction: false,
+            pretty: "NA",
+          },
+          {
+            libraryName: "BugVenousThromboembolismProphylaxisFHIR",
+            statementName: "SDE Sex",
+            localId: "64",
+            final: "NA",
+            relevance: "NA",
+            raw: {
+              code: "M",
+              system: "http://hl7.org/fhir/v3/AdministrativeGender",
+              display: "Male",
+            },
+            isFunction: false,
+            pretty: "NA",
+          },
+          {
+            libraryName: "BugVenousThromboembolismProphylaxisFHIR",
+            statementName: "Initial Population",
+            localId: "64",
+            final: "NA",
+            relevance: "NA",
+            raw: {
+              code: "M",
+              system: "http://hl7.org/fhir/v3/AdministrativeGender",
+              display: "Male",
+            },
+            isFunction: false,
+            pretty: "NA",
+          },
+          {
+            libraryName: "VTE",
+            statementName: "Initial Population",
+            localId: "48",
+            final: "NA",
+            relevance: "NA",
+            isFunction: false,
+            pretty: "NA",
+          },
+          {
+            libraryName: "Test Library",
+            statementName: "Encounter",
+            localId: "48",
+            final: "NA",
+            relevance: "NA",
+            isFunction: false,
+            pretty: "NA",
+          },
+        ],
+      },
+    ];
+    const mappedCalculationResults = mapCalculationResults(
+      calculationResults,
+      "BugVenousThromboembolismProphylaxisFHIR"
+    );
+    expect(
+      mappedCalculationResults["6615b454a4cdf63fb8140bb3"]["statementResults"][
+        "Initial Population"
+      ]
+    ).toEqual({
+      isFunction: false,
+      libraryName: "BugVenousThromboembolismProphylaxisFHIR",
+      pretty: "NA",
+      relevance: "NA",
+      statementLevelHTML: undefined,
+    });
+
+    expect(
+      mappedCalculationResults["6615b454a4cdf63fb8140bb3"]["statementResults"][
+        "Test Library|Encounter"
+      ]
+    ).toBeTruthy();
+    expect(
+      mappedCalculationResults["6615b454a4cdf63fb8140bb3"]["statementResults"][
+        "Initial Population"
+      ]
+    ).toBeTruthy();
+    expect(
+      mappedCalculationResults["6615b454a4cdf63fb8140bb3"]["statementResults"][
+        "VTE|Initial Population"
+      ]
+    ).toBeTruthy();
+  });
 });
