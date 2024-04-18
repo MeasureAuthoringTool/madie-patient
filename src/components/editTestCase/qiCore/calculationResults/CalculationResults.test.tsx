@@ -59,13 +59,15 @@ const groups = [
 
 const renderCoverageComponent = (
   calculationResults = undefined,
-  calculationErrors = undefined
+  calculationErrors = undefined,
+  mainCqlLibraryName
 ) => {
   render(
     <CalculationResults
       groupPopulations={groups}
       calculationResults={calculationResults}
       calculationErrors={calculationErrors}
+      mainCqlLibraryName={mainCqlLibraryName}
     />
   );
 };
@@ -333,8 +335,9 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     expect(await getByRole("NUMER")).toBeInTheDocument();
   });
 
-  test.skip("render highlighting view with coverage results for 2 groups", async () => {
-    renderCoverageComponent(calculationResults);
+  test("render highlighting view with coverage results for 2 groups", async () => {
+    const mainCqlLibraryName = "OncologyMeasureTest";
+    renderCoverageComponent(calculationResults, null, mainCqlLibraryName);
     await assertPopulationTabs();
     expect(screen.getByTestId("IP-highlighting")).toHaveTextContent(
       "IP 1 Covered"
@@ -383,97 +386,4 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     expect(screen.getByText("IP 2 Not Covered")).toBeInTheDocument();
     expect(screen.getAllByText("UNHIT").length).toEqual(2);
   });
-
-  // test.only("hello", () => {
-  //   const test1 = [
-  //     {
-  //       groupId: "6615b454a4cdf63fb8140bb3",
-  //       statementResults: [
-  //         {
-  //           libraryName: "BugVenousThromboembolismProphylaxisFHIR",
-  //           statementName: "Patient",
-  //           final: "NA",
-  //           relevance: "NA",
-  //           isFunction: false,
-  //           pretty: "NA",
-  //         },
-  //         {
-  //           libraryName: "BugVenousThromboembolismProphylaxisFHIR",
-  //           statementName: "SDE Payer",
-  //           localId: "58",
-  //           final: "NA",
-  //           relevance: "NA",
-  //           raw: [],
-  //           isFunction: false,
-  //           pretty: "NA",
-  //         },
-  //         {
-  //           libraryName: "BugVenousThromboembolismProphylaxisFHIR",
-  //           statementName: "SDE Race",
-  //           localId: "61",
-  //           final: "NA",
-  //           relevance: "NA",
-  //           raw: {
-  //             codes: [
-  //               {
-  //                 code: "1002-5",
-  //                 system: "urn:oid:2.16.840.1.113883.6.238",
-  //                 version: null,
-  //                 display: "American Indian or Alaska Native",
-  //               },
-  //             ],
-  //             display: "American Indian or Alaska Native",
-  //           },
-  //           isFunction: false,
-  //           pretty: "NA",
-  //         },
-  //         {
-  //           libraryName: "BugVenousThromboembolismProphylaxisFHIR",
-  //           statementName: "SDE Sex",
-  //           localId: "64",
-  //           final: "NA",
-  //           relevance: "NA",
-  //           raw: {
-  //             code: "M",
-  //             system: "http://hl7.org/fhir/v3/AdministrativeGender",
-  //             display: "Male",
-  //           },
-  //           isFunction: false,
-  //           pretty: "NA",
-  //         },
-  //         {
-  //           libraryName: "BugVenousThromboembolismProphylaxisFHIR",
-  //           statementName: "Initial Population",
-  //           localId: "64",
-  //           final: "NA",
-  //           relevance: "NA",
-  //           raw: {
-  //             code: "M",
-  //             system: "http://hl7.org/fhir/v3/AdministrativeGender",
-  //             display: "Male",
-  //           },
-  //           isFunction: false,
-  //           pretty: "NA",
-  //         },
-  //         {
-  //           libraryName: "VTE",
-  //           statementName: "Initial Population",
-  //           localId: "48",
-  //           final: "NA",
-  //           relevance: "NA",
-  //           isFunction: false,
-  //           pretty: "NA",
-  //         },
-  //       ],
-  //     },
-  //   ];
-  //   const test = mapCalculationResults(
-  //     test1,
-  //     "BugVenousThromboembolismProphylaxisFHIR"
-  //   );
-  //   console.log(test);
-  //   expect(
-  //     test["6615b454a4cdf63fb8140bb3"]["statementResults"]["Initial Population"]
-  //   ).toEqual("");
-  // });
 });
