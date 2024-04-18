@@ -22,6 +22,7 @@ type CalculationResultType = {
   calculationErrors: ErrorProps;
   groupPopulations: GroupPopulation[];
   cqlDefinitionCallstack?: CqlDefinitionCallstack;
+  mainCqlLibraryName: string;
 };
 
 export interface MappedCalculationResults {
@@ -44,11 +45,75 @@ export interface MappedCalculationResults {
   };
 }
 
+export const mapCalculationResults = (
+  calculationResult,
+  mainCqlLibraryName: string
+) => {
+  if (calculationResult) {
+    const mapCalculationResults = calculationResult.reduce((output, item) => {
+      const { groupId, statementResults, populationRelevance } = item;
+      output[groupId] = {
+        statementResults: statementResults.reduce(
+          (
+            statementResultsOutput,
+            {
+              isFunction,
+              relevance,
+              statementLevelHTML,
+              statementName,
+              pretty,
+              libraryName,
+            }
+          ) => {
+            if (libraryName === mainCqlLibraryName) {
+              statementResultsOutput[statementName] = {
+                isFunction,
+                relevance,
+                statementLevelHTML,
+                pretty,
+                libraryName,
+              };
+            } else {
+              statementResultsOutput[`${libraryName}|${statementName}`] = {
+                isFunction,
+                relevance,
+                statementLevelHTML,
+                pretty,
+                libraryName,
+              };
+            }
+            return statementResultsOutput;
+          },
+          {}
+        ),
+        populationRelevance: populationRelevance?.reduce(
+          (
+            populationRelevanceOutput,
+            { criteriaExpression, populationId, populationType, result }
+          ) => {
+            populationRelevanceOutput[criteriaExpression] = {
+              populationId,
+              populationType,
+              result,
+            };
+            return populationRelevanceOutput;
+          },
+          {}
+        ),
+      };
+
+      return output;
+    }, {});
+    return mapCalculationResults;
+  }
+};
+
 const CalculationResults = ({
   calculationResults,
   calculationErrors,
   groupPopulations,
   cqlDefinitionCallstack = {},
+  mainCqlLibraryName,
 }: CalculationResultType) => {
   // template for group name coming from execution engine
   const originalGroupName = (name) => {
@@ -66,57 +131,6 @@ const CalculationResults = ({
       updatedGroupName(index + 1)
     )
   );
-
-  const mapCalculationResults = (
-    calculationResult: DetailedPopulationGroupResult[]
-  ): MappedCalculationResults => {
-    if (calculationResult) {
-      const mapCalculationResults = calculationResult.reduce((output, item) => {
-        const { groupId, statementResults, populationRelevance } = item;
-
-        output[groupId] = {
-          statementResults: statementResults.reduce(
-            (
-              statementResultsOutput,
-              {
-                isFunction,
-                relevance,
-                statementLevelHTML,
-                statementName,
-                pretty,
-              }
-            ) => {
-              statementResultsOutput[statementName] = {
-                isFunction,
-                relevance,
-                statementLevelHTML,
-                pretty,
-              };
-              return statementResultsOutput;
-            },
-            {}
-          ),
-          populationRelevance: populationRelevance?.reduce(
-            (
-              populationRelevanceOutput,
-              { criteriaExpression, populationId, populationType, result }
-            ) => {
-              populationRelevanceOutput[criteriaExpression] = {
-                populationId,
-                populationType,
-                result,
-              };
-              return populationRelevanceOutput;
-            },
-            {}
-          ),
-        };
-
-        return output;
-      }, {});
-      return mapCalculationResults;
-    }
-  };
 
   return (
     <div tw="p-5" style={{ paddingRight: ".25rem" }}>
@@ -143,8 +157,12 @@ const CalculationResults = ({
       {!isEmpty(groupPopulations) && (
         <QiCoreGroupCoverage
           groupPopulations={groupPopulations}
-          mappedCalculationResults={mapCalculationResults(calculationResults)}
+          mappedCalculationResults={mapCalculationResults(
+            calculationResults,
+            mainCqlLibraryName
+          )}
           cqlDefinitionCallstack={cqlDefinitionCallstack}
+          mainCqlLibraryName={mainCqlLibraryName}
         />
       )}
     </div>
