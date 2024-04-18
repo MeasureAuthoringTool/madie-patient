@@ -223,9 +223,8 @@ const QiCoreGroupCoverage = ({
   const getStatementDefinitionName = (statementName) => {
     if (statementName.includes("|")) {
       return statementName.split("|")[1].trim();
-    } else {
-      return statementName;
     }
+    return statementName;
   };
 
   const filterDefinitions = (statementResults, filterFn) => {
@@ -268,9 +267,8 @@ const QiCoreGroupCoverage = ({
       calledDefinition.parentLibrary === mainCqlLibraryName
     ) {
       return calledDefinition.name;
-    } else {
-      return `${calledDefinition.parentLibrary}|${calledDefinition.name}`;
     }
+    return `${calledDefinition.parentLibrary}|${calledDefinition.name}`;
   };
 
   const getCallstack = (defId: string): string[] => {
