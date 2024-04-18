@@ -91,7 +91,7 @@ const StatusHandler = ({
     });
     const successfulImports = importWarnings.length - failedImports.length;
 
-    const successfulImportsWithWarning = importWarnings.filter((warnings) => {
+    const successfulImportsWithWarnings = importWarnings.filter((warnings) => {
       if (warnings.successful && warnings.message) return warnings;
     });
     return (
@@ -100,44 +100,48 @@ const StatusHandler = ({
           type="warning"
           content={
             <div aria-live="polite" role="alert" data-testid={testDataId}>
-              <h6>
-                ({successfulImports}) test case(s) were imported. The following
-                ({failedImports.length}) test case(s) could not be imported.
-                Please ensure that your formatting is correct and try again.
-              </h6>
-              <ul>
-                {failedImports.map((failedImport) => {
-                  const family = failedImport?.familyName;
-                  const given = failedImport?.givenNames?.toString();
-                  const names =
-                    family && given
-                      ? `${family} ${given}`
-                      : failedImport?.patientId;
-                  return (
-                    <li data-testid="failed-test-cases">
-                      {names} <br />
-                      <span tw="ml-4">Reason : {failedImport.message}</span>
-                    </li>
-                  );
-                })}
-              </ul>
-              {successfulImportsWithWarning?.length > 0 && (
+              {failedImports.length > 0 && (
                 <div>
-                  <h6>
-                    Following test case(s) were imported succesfully, but The
-                    measure populations do not match the populations in the
-                    import file. No expected values have been set.
-                  </h6>
+                  <div tw="font-medium">
+                    ({successfulImports}) test case(s) were imported. The
+                    following ({failedImports.length}) test case(s) could not be
+                    imported. Please ensure that your formatting is correct and
+                    try again.
+                  </div>
                   <ul>
-                    {successfulImportsWithWarning.map(
-                      (successfulImportWithWarning) => {
-                        const family = successfulImportWithWarning?.familyName;
+                    {failedImports.map((failedImport) => {
+                      const family = failedImport?.familyName;
+                      const given = failedImport?.givenNames?.toString();
+                      const names =
+                        family && given
+                          ? `${family} ${given}`
+                          : failedImport?.patientId;
+                      return (
+                        <li data-testid="failed-test-cases">
+                          {names} <br />
+                          <span tw="ml-4">Reason: {failedImport.message}</span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              )}
+              {successfulImportsWithWarnings?.length > 0 && (
+                <div>
+                  <div tw="font-medium">
+                    Following test case(s) were imported successfully, but{" "}
+                    {successfulImportsWithWarnings[0].message}
+                  </div>
+                  <ul>
+                    {successfulImportsWithWarnings.map(
+                      (successfulImportsWithWarning) => {
+                        const family = successfulImportsWithWarning?.familyName;
                         const given =
-                          successfulImportWithWarning?.givenNames?.toString();
+                          successfulImportsWithWarning?.givenNames?.toString();
                         const names =
                           family && given
                             ? `${family} ${given}`
-                            : successfulImportWithWarning?.patientId;
+                            : successfulImportsWithWarning?.patientId;
                         return (
                           <li data-testid="success-imports-with-warnings">
                             {names}{" "}
