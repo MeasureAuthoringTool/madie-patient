@@ -55,8 +55,12 @@ const TestCaseCoverage = ({
         testCaseGroups={testCaseGroups}
         measureGroups={measureGroups}
         cqlDefinitionCallstack={callstackMap}
-        groupCoverageResult={groupCoverageResult[populationCriteria.id]}
-        populationCriteria={populationCriteria}
+        groupCoverageResult={
+          groupCoverageResult.length
+            ? groupCoverageResult[populationCriteria.id]
+            : null
+        }
+        populationCriteria={populationCriteria || []}
         calculationOutput={calculationOutput}
       />
     </div>
