@@ -86,7 +86,7 @@ const TestCaseListSideBarNav = ({
               })
             ) : (
               <Tab
-                label={`No Population Criteria Exist`}
+                label="No Population Criteria Exist"
                 disabled
                 type="C"
                 orientation="vertical"
