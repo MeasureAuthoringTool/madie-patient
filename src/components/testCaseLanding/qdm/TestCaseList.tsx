@@ -10,9 +10,8 @@ import {
   TestCaseImportRequest,
   TestCaseExcelExportDto,
 } from "@madie/madie-models";
-import { useParams, useNavigate, json } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import calculationService from "../../../api/CalculationService";
-import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calculator";
 import { checkUserCanEdit, measureStore } from "@madie/madie-util";
 import CreateCodeCoverageNavTabs from "./CreateCodeCoverageNavTabs";
 import CreateNewTestCaseDialog from "../../createTestCase/CreateNewTestCaseDialog";
@@ -78,7 +77,7 @@ export const getCoverageValueFromHtml = (
 
 const TestCaseList = (props: TestCaseListProps) => {
   let navigate = useNavigate();
-  const { errors, setErrors, setWarnings } = props;
+  const { setErrors, setImportErrors, setWarnings } = props;
   const { measureId, criteriaId } = useParams<{
     measureId: string;
     criteriaId: string;
@@ -104,10 +103,6 @@ const TestCaseList = (props: TestCaseListProps) => {
     onToastClose,
   } = UseToast();
   const excelExportService = useRef(useExcelExportService());
-
-  const [executionResults, setExecutionResults] = useState<{
-    [key: string]: DetailedPopulationGroupResult[];
-  }>({});
   const { updateMeasure } = measureStore;
   const calculation = useRef(calculationService());
   const qdmCalculation = useRef(qdmCalculationService());
@@ -135,23 +130,9 @@ const TestCaseList = (props: TestCaseListProps) => {
   });
   const cqlParsingService = useRef(useCqlParsingService());
 
-  const [callstackMap, setCallstackMap] = useState<CqlDefinitionCallstack>();
-
-  useEffect(() => {
-    if (measure?.cql) {
-      cqlParsingService.current
-        .getDefinitionCallstacks(measure.cql)
-        .then((callstack: CqlDefinitionCallstack) => {
-          setCallstackMap(callstack);
-        })
-        .catch((error) => {
-          console.error(
-            "CQL Parsing for callStack parsing: err.message = " + error.message
-          );
-          setErrors((prevState) => [...prevState, error.message]);
-        });
-    }
-  }, [measure?.cql]);
+  // const [callstackMap, setCallstackMap] = useState<CqlDefinitionCallstack>();
+  // callStackMap is used for generating Excel Export
+  useEffect(() => {}, [measure?.cql]);
 
   const [groupCoverageResult, setGroupCoverageResult] = useState([]);
   useState<GroupCoverageResult>();
@@ -342,7 +323,11 @@ const TestCaseList = (props: TestCaseListProps) => {
         console.error(
           "deleteTestCaseByTestCaseId: err.message = " + err.message
         );
-        setErrors((prevState) => [...prevState, err.message]);
+        setToastOpen(true);
+        setToastType("danger");
+        setToastMessage(
+          `Unable to Delete test Case with ID ${testCaseId}. Please try again. If the issue continues, please contact helpdesk.`
+        );
       });
   };
 
@@ -371,13 +356,16 @@ const TestCaseList = (props: TestCaseListProps) => {
       console.error(
         "executeTestCases: Cannot execute test cases while errors exist in the measure CQL! "
       );
-      setErrors((prevState) => [
-        ...prevState,
-        "Cannot execute test cases while errors exist in the measure CQL!",
-      ]);
+      setToastOpen(true);
+      setToastType("danger");
+      setToastMessage(
+        "Cannot execute test cases while errors exist in the measure CQL!"
+      );
       return null;
     }
-    const validTestCases = testCases?.filter((tc) => tc.validResource);
+    const validTestCases: TestCase[] = testCases?.filter(
+      (tc) => tc.validResource
+    );
     if (validTestCases && validTestCases.length > 0 && cqmMeasure) {
       setExecuting(true);
       try {
@@ -391,15 +379,18 @@ const TestCaseList = (props: TestCaseListProps) => {
         setCalculationOutput(calculationOutput);
       } catch (error) {
         console.error("calculateTestCases: error.message = " + error.message);
-        setErrors((prevState) => [...prevState, error.message]);
+        setToastOpen(true);
+        setToastType("danger");
+        setToastMessage(
+          "Error while executing test cases. Message: " + error.message
+        );
       }
       setExecuting(false);
     } else if (_.isNil(validTestCases) || _.isEmpty(validTestCases)) {
       console.error("calculateTestCases: No valid test cases to execute");
-      setErrors((prevState) => [
-        ...prevState,
-        "calculateTestCases: No valid test cases to execute",
-      ]);
+      setToastOpen(true);
+      setToastType("danger");
+      setToastMessage("No valid test cases to execute");
     }
   };
   // Test case 2 "test case name" has a status of "status".
@@ -430,9 +421,13 @@ const TestCaseList = (props: TestCaseListProps) => {
         setToastType("success");
         setToastMessage("Test cases successfully deleted");
       })
-      .catch((err) => {
+      .catch(() => {
         setOpenDeleteAllTestCasesDialog(false);
-        setErrors((prevState) => [...prevState, err?.response?.data?.message]);
+        setToastOpen(true);
+        setToastType("danger");
+        setToastMessage(
+          "Unable to Delete All test Cases. Please try again. If the issue continues, please contact helpdesk."
+        );
       });
   };
 
@@ -477,56 +472,68 @@ const TestCaseList = (props: TestCaseListProps) => {
       }
       retrieveTestCases();
     } catch (error) {
-      setErrors((prevState) => [...prevState, IMPORT_ERROR]);
+      setToastOpen(true);
+      setToastType("danger");
+      setToastMessage(IMPORT_ERROR);
     } finally {
       setLoadingState({ loading: false, message: "" });
     }
   };
 
-  const downloadQRDAFile = (exportData, ecqmTitle, model, version) => {
-    FileSaver.saveAs(exportData, `${ecqmTitle}-v${version}-QDM-TestCases.zip`);
-
-    setToastOpen(true);
-    setToastType("success");
-    setToastMessage("QRDA exported successfully");
-  };
   const exportExcel = async () => {
-    const testCaseDtos: TestCaseExcelExportDto[] =
-      createExcelExportDtosForAllTestCases(
-        measure,
-        cqmMeasure,
-        calculationOutput,
-        callstackMap
-      );
-
-    excelExportService.current
-      .generateExcel(testCaseDtos)
-      .then((response: AxiosResponse) => {
-        const excelData: Blob = response.data;
-        var exportBlob = new Blob([excelData], {
-          type: "application/vnd.ms-excel",
+    if (measure?.cql) {
+      cqlParsingService.current
+        .getDefinitionCallstacks(measure.cql)
+        .then((callstack: CqlDefinitionCallstack) => {
+          const testCaseDtos: TestCaseExcelExportDto[] =
+            createExcelExportDtosForAllTestCases(
+              measure,
+              cqmMeasure,
+              calculationOutput,
+              callstack
+            );
+          excelExportService.current
+            .generateExcel(testCaseDtos)
+            .then((response: AxiosResponse) => {
+              const excelData: Blob = response.data;
+              var exportBlob = new Blob([excelData], {
+                type: "application/vnd.ms-excel",
+              });
+              const url = window.URL.createObjectURL(exportBlob);
+              const link = document.createElement("a");
+              link.href = url;
+              link.setAttribute(
+                "download",
+                `${measure.ecqmTitle}-v${measure.version}-QDM-TestCases.xls`
+              );
+              document.body.appendChild(link);
+              link.click();
+              setToastOpen(true);
+              setToastType("success");
+              setToastMessage("Excel exported successfully");
+              document.body.removeChild(link);
+            })
+            .catch((error: AxiosError) => {
+              setToastOpen(true);
+              setToastType("danger");
+              setToastMessage(
+                error?.message +
+                  ". Please try again. If the issue continues, please contact helpdesk."
+              );
+            });
+        })
+        .catch((error) => {
+          console.error(
+            "Error while Parsing CQL for callStack: err.message = " +
+              error.message
+          );
+          setToastOpen(true);
+          setToastType("danger");
+          setToastMessage(
+            "Error while Parsing CQL for callStack, Please try again. If the issue continues, please contact helpdesk."
+          );
         });
-        const url = window.URL.createObjectURL(exportBlob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute(
-          "download",
-          `${measure.ecqmTitle}-v${measure.version}-QDM-TestCases.xls`
-        );
-        document.body.appendChild(link);
-        link.click();
-        setToastOpen(true);
-        setToastType("success");
-        setToastMessage("Excel exported successfully");
-        document.body.removeChild(link);
-      })
-      .catch((error: AxiosError) => {
-        setToastOpen(true);
-        setToastType("danger");
-        setToastMessage(
-          error?.message + ". Please try again, or reach out to the Help Desk."
-        );
-      });
+    }
   };
 
   const exportQRDA = async () => {
@@ -537,15 +544,19 @@ const TestCaseList = (props: TestCaseListProps) => {
     }
     try {
       const exportData = await testCaseService.current.exportQRDA(measureId);
-      downloadQRDAFile(
+      FileSaver.saveAs(
         exportData,
-        measure.ecqmTitle,
-        measure.model,
-        measure.version
+        `${measure.ecqmTitle}-v${measure.version}-QDM-TestCases.zip`
       );
+      setToastOpen(true);
+      setToastType("success");
+      setToastMessage("QRDA exported successfully");
     } catch (err) {
-      const message = "Unable to Export QRDA.";
-      setErrors((prevState) => [...prevState, message]);
+      setToastOpen(true);
+      setToastType("danger");
+      setToastMessage(
+        "Unable to Export QRDA. Please try again. If the issue continues, please contact helpdesk."
+      );
     }
   };
 
@@ -580,7 +591,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                 createNewTestCase={createNewTestCase}
                 executeTestCases={executeTestCases}
                 onImportTestCases={() => {
-                  setErrors((prevState) => [
+                  setImportErrors((prevState) => [
                     ...prevState?.filter((e) => e !== IMPORT_ERROR),
                   ]);
                   setImportDialogState({ ...importDialogState, open: true });

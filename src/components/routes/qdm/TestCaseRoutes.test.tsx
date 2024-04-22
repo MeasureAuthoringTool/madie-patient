@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import TestCaseRoutes from "./TestCaseRoutes";
 import axios from "axios";
@@ -8,9 +8,6 @@ import { Model, PopulationType } from "@madie/madie-models";
 import useCqmConversionService, {
   CqmConversionService,
 } from "../../../api/CqmModelConversionService";
-
-// mock the editor cause we don't care for this test and it gets rid of errors
-// jest.mock("../../editor/Editor", () => () => <div>editor contents</div>);
 
 jest.mock("axios");
 global.ResizeObserver = jest.fn().mockImplementation(() => ({
@@ -82,6 +79,8 @@ jest.mock("@madie/madie-util", () => ({
   },
   useFeatureFlags: jest.fn().mockImplementation(() => ({
     applyDefaults: false,
+    includeSDEValues: true,
+    manifestExpansion: true,
   })),
   useOktaTokens: () => ({
     getAccessToken: () => "test.jwt",
@@ -122,7 +121,7 @@ describe("TestCaseRoutes", () => {
         data: [
           {
             id: "id1",
-            title: "TC1",
+            title: "TC12",
             description: "Desc1",
             series: "IPP_Pass",
             status: null,
@@ -138,18 +137,74 @@ describe("TestCaseRoutes", () => {
       </MemoryRouter>
     );
 
-    // I only changed how time worked with dayjs? This test now inexplicibly has multiple tc1
-    const testCaseTitles = await screen.findAllByText("TC1");
-    const testCaseTitle = testCaseTitles[0];
-    expect(testCaseTitle).toBeInTheDocument();
-    const testCaseSerieses = await screen.findAllByText("IPP_Pass");
-    const testCaseSeries = testCaseSerieses[0];
-    expect(testCaseSeries).toBeInTheDocument();
-    const editBtns = screen.getAllByRole("button", {
-      name: "select-action-TC1",
+    const testCaseListTable = (await screen.findByTestId(
+      "test-case-tbl"
+    )) as HTMLTableElement;
+    const tBody = testCaseListTable.tBodies.item(0);
+    expect(tBody.rows.length).toBe(1);
+    expect(tBody.rows.item(0).cells[0]).toHaveTextContent("Invalid");
+    expect(tBody.rows.item(0).cells[1]).toHaveTextContent("IPP_Pass");
+    expect(tBody.rows.item(0).cells[2]).toHaveTextContent("TC12");
+    expect(tBody.rows.item(0).cells[3]).toHaveTextContent("Desc1");
+    expect(
+      within(tBody.rows.item(0).cells[4]).getByRole("button", {
+        name: "select-action-TC12",
+      })
+    ).toBeInTheDocument();
+  });
+
+  it("should render the SDEPage", async () => {
+    mockedAxios.get.mockImplementation(() => {
+      return Promise.resolve({
+        data: [
+          {
+            id: "id1",
+            title: "TC12",
+            description: "Desc1",
+            series: "IPP_Pass",
+            status: null,
+          },
+        ],
+      });
     });
-    const editBtn = editBtns[0];
-    expect(editBtn).toBeInTheDocument();
+    render(
+      <MemoryRouter
+        initialEntries={["/measures/m1234/edit/test-cases/list-page/sde"]}
+      >
+        <ApiContextProvider value={serviceConfig}>
+          <TestCaseRoutes />
+        </ApiContextProvider>
+      </MemoryRouter>
+    );
+    expect(
+      screen.getByTestId("sde-option-radio-buttons-group")
+    ).toBeInTheDocument();
+  });
+
+  it("should render the Expansion Component", async () => {
+    mockedAxios.get.mockImplementation(() => {
+      return Promise.resolve({
+        data: [
+          {
+            id: "id1",
+            title: "TC12",
+            description: "Desc1",
+            series: "IPP_Pass",
+            status: null,
+          },
+        ],
+      });
+    });
+    render(
+      <MemoryRouter
+        initialEntries={["/measures/m1234/edit/test-cases/list-page/expansion"]}
+      >
+        <ApiContextProvider value={serviceConfig}>
+          <TestCaseRoutes />
+        </ApiContextProvider>
+      </MemoryRouter>
+    );
+    expect(screen.getByTestId("manifest-expansion-form")).toBeInTheDocument();
   });
 
   it("should render the Edit test case component", async () => {
@@ -174,10 +229,7 @@ describe("TestCaseRoutes", () => {
       </MemoryRouter>
     );
 
-    const runTestCaseButton = screen.getByRole("button", {
-      name: "Run Test",
-    });
-    expect(runTestCaseButton).toBeInTheDocument();
+    expect(screen.getByTestId("edit-test-case-form")).toBeInTheDocument();
   });
 
   it("test error convertToCqmMeasure", async () => {
@@ -203,6 +255,6 @@ describe("TestCaseRoutes", () => {
     const runTestCaseButton = screen.getByRole("button", {
       name: "Run Test",
     });
-    expect(runTestCaseButton).toBeInTheDocument();
+    expect(runTestCaseButton).toBeDisabled();
   });
 });
