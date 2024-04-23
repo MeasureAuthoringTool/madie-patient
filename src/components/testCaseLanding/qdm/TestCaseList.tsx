@@ -144,12 +144,6 @@ const TestCaseList = (props: TestCaseListProps) => {
       (_.isNil(selectedPopCriteria) ||
         _.isNil(measure.groups?.find((g) => g.id === selectedPopCriteria.id)))
     ) {
-      // first time loading a measure, set the criteria and update the url
-      if (!criteriaId) {
-        setSelectedPopCriteria(measure.groups[0]);
-        const newPath = `/measures/${measureId}/edit/test-cases/list-page/${measure.groups[0].id}`;
-        navigate(newPath);
-      }
       if (
         measure?.errors?.length > 0 &&
         (measure.errors.includes(
@@ -180,6 +174,12 @@ const TestCaseList = (props: TestCaseListProps) => {
         (g) => g.id === criteriaId
       );
       setSelectedPopCriteria(selectedPopCriteria);
+    }
+    if (!criteriaId && measure?.groups) {
+      setSelectedPopCriteria(measure.groups[0]);
+      const newPath = `/measures/${measureId}/edit/test-cases/list-page/${measure.groups[0].id}`;
+      // we want to replace the current path to allow the back button to work as intended.
+      navigate(newPath, { replace: true });
     }
   }, [criteriaId, measure?.groups]);
 
