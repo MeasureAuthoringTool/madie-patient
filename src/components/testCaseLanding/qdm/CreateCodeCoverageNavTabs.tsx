@@ -205,6 +205,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
                 onImportTestCases();
               }
             }}
+            variant="outline"
             disabled={!canEdit}
             data-testid="show-import-test-cases-button"
           >
@@ -212,7 +213,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
               style={{ margin: "0 5px 0 -2px" }}
               fontSize="small"
             />
-            Import Test Cases
+            Import from Bonnie
           </Button>
 
           <Button
