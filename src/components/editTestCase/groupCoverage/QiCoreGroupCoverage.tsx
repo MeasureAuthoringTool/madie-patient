@@ -45,7 +45,6 @@ interface PopulationStatement extends Statement {
   id: string;
 }
 
-type PopulationResult = Record<string, PopulationStatement>;
 type AllDefinitions = Record<string, Statement>;
 
 const populationCriteriaLabel = "Population Criteria";
@@ -74,9 +73,7 @@ const QiCoreGroupCoverage = ({
     setSelectedPopulationDefinitionResults,
   ] = useState<Statement>();
   // calculation results for selected group/criteria
-  const [populationResults, setPopulationResults] = useState<
-    PopulationResult | {}
-  >();
+  const [populationResults, setPopulationResults] = useState([]);
 
   useEffect(() => {
     if (!isEmpty(groupPopulations)) {
@@ -118,18 +115,15 @@ const QiCoreGroupCoverage = ({
           selectedGroupCalculationResults.populationRelevance;
         const statementResults =
           selectedGroupCalculationResults.statementResults;
-        return Object.keys(statementResults)
-          .filter((key) => relevantPopulations[key])
-          .reduce((output, key) => {
-            output[key] = {
-              ...statementResults[key],
-              populationName:
-                FHIR_POPULATION_CODES[relevantPopulations[key].populationType],
-              id: relevantPopulations[key].populationId,
-              name: key,
-            };
-            return output;
-          }, {});
+        return Object.values(relevantPopulations).map((relevantPopulation) => {
+          return {
+            ...statementResults[`${relevantPopulation?.criteriaExpression}`],
+            id: relevantPopulation.populationId,
+            populationName:
+              FHIR_POPULATION_CODES[`${relevantPopulation?.populationType}`],
+            name: relevantPopulation?.criteriaExpression,
+          };
+        });
       }
     }
     return [];
@@ -137,8 +131,7 @@ const QiCoreGroupCoverage = ({
 
   const changeCriteria = (criteriaId: string) => {
     setSelectedCriteria(criteriaId);
-    const populationResults: PopulationResult | {} =
-      getPopulationResults(criteriaId);
+    const populationResults = getPopulationResults(criteriaId);
     setPopulationResults(populationResults);
     const group = groupPopulations.find((gp) => gp.groupId === criteriaId);
     setSelectedHighlightingTab(getFirstPopulation(group));
@@ -149,9 +142,7 @@ const QiCoreGroupCoverage = ({
     setSelectedAllDefinitions(undefined);
     const result =
       populationResults &&
-      Object.values(populationResults).find(
-        (result) => result.id === population.id
-      );
+      populationResults.find((result) => result.id === population.id);
     setSelectedPopulationDefinitionResults(result);
   };
 
