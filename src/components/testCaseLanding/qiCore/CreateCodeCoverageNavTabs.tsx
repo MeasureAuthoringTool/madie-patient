@@ -208,13 +208,6 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           canEdit={canEdit}
           additionalSelectOptionProps={[
             {
-              label: "Excel",
-              dataTestId: `export-excel`,
-              toImplementFunction: () => {
-                exportTestCases("EXCEL");
-              },
-            },
-            {
               label: "Transaction Bundle",
               dataTestId: `export-transaction-bundle`,
               toImplementFunction: () => {
