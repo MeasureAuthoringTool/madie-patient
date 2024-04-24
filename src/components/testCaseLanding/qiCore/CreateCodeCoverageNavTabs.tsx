@@ -157,7 +157,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           data-testid="import-test-cases-button"
         >
           <FileUploadIcon style={{ margin: "0 5px 0 -2px" }} fontSize="small" />
-          Import Test Cases
+          Import from MADiE
         </Button>
         {featureFlags?.qiCoreBonnieTestCases && (
           <Button
@@ -207,13 +207,6 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
           handleClose={handleClose}
           canEdit={canEdit}
           additionalSelectOptionProps={[
-            {
-              label: "Excel",
-              dataTestId: `export-excel`,
-              toImplementFunction: () => {
-                exportTestCases("EXCEL");
-              },
-            },
             {
               label: "Transaction Bundle",
               dataTestId: `export-transaction-bundle`,

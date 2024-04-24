@@ -12,7 +12,7 @@ export class ExcelExportService {
   ): Promise<AxiosResponse> {
     //creaet a JSON that look slike {"testCaseDtos:testCaseDtos}
     const body = { testCaseExcelExportDtos: testCaseDtos };
-    return axios.put(`${this.baseUrl}/api/excel`, body, {
+    return axios.put(`${this.baseUrl}/excel`, body, {
       headers: {
         Authorization: `Bearer ${this.getAccessToken()}`,
         "Accept-Encoding": "application/vnd.ms-excel",

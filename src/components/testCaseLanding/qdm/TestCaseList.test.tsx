@@ -2748,7 +2748,7 @@ describe("TestCaseList component", () => {
 
     renderTestCaseListComponent();
     const importBtn = await screen.queryByRole("button", {
-      name: /import test cases/i,
+      name: /Import from Bonnie/i,
     });
     expect(importBtn).not.toBeInTheDocument();
   });
@@ -2759,7 +2759,7 @@ describe("TestCaseList component", () => {
 
     renderTestCaseListComponent();
     const importBtn = await screen.findByRole("button", {
-      name: /import test cases/i,
+      name: /Import from Bonnie/i,
     });
     expect(importBtn).toBeInTheDocument();
     expect(importBtn).toBeDisabled();
@@ -2770,7 +2770,7 @@ describe("TestCaseList component", () => {
 
     renderTestCaseListComponent();
     const importBtn = await screen.findByRole("button", {
-      name: /import test cases/i,
+      name: /Import from Bonnie/i,
     });
     expect(importBtn).toBeInTheDocument();
     await waitFor(() => expect(importBtn).not.toBeDisabled());
@@ -2786,7 +2786,7 @@ describe("TestCaseList component", () => {
 
     renderTestCaseListComponent();
     const showImportBtn = await screen.findByRole("button", {
-      name: /import test cases/i,
+      name: /Import from Bonnie/i,
     });
     expect(showImportBtn).toBeInTheDocument();
     await waitFor(() => expect(showImportBtn).not.toBeDisabled());
@@ -2829,7 +2829,7 @@ describe("TestCaseList component", () => {
 
     renderTestCaseListComponent();
     const showImportBtn = await screen.findByRole("button", {
-      name: /import test cases/i,
+      name: /Import from Bonnie/i,
     });
     await waitFor(() => expect(showImportBtn).not.toBeDisabled());
     userEvent.click(showImportBtn);
@@ -2884,7 +2884,7 @@ describe("TestCaseList component", () => {
 
     renderTestCaseListComponent();
     const showImportBtn = await screen.findByRole("button", {
-      name: /import test cases/i,
+      name: /Import from Bonnie/i,
     });
     await waitFor(() => expect(showImportBtn).not.toBeDisabled());
     userEvent.click(showImportBtn);
@@ -2967,7 +2967,7 @@ describe("TestCaseList component", () => {
 
     renderTestCaseListComponent();
     const showImportBtn = await screen.findByRole("button", {
-      name: /import test cases/i,
+      name: /Import from Bonnie/i,
     });
     await waitFor(() => expect(showImportBtn).not.toBeDisabled());
     userEvent.click(showImportBtn);
@@ -3011,7 +3011,7 @@ describe("TestCaseList component", () => {
     });
     renderTestCaseListComponent(setError, [IMPORT_ERROR]);
     const showImportBtn = await screen.findByRole("button", {
-      name: /import test cases/i,
+      name: /Import from Bonnie/i,
     });
     expect(showImportBtn).toBeInTheDocument();
     await waitFor(() => expect(showImportBtn).not.toBeDisabled());

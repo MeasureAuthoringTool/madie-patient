@@ -1,8 +1,8 @@
 import * as React from "react";
 import { render, screen } from "@testing-library/react";
 import StatusHandler from "./StatusHandler";
-import { TestCaseImportOutcome } from "../../../../madie-models/src/TestCase";
 import { EXPORT_ERROR_CHARACTERS_MESSAGE } from "../../util/checkSpecialCharacters";
+import { TestCaseImportOutcome } from "@madie/madie-models";
 
 describe("StatusHandler Component", () => {
   const { getByTestId, queryByTestId, getByText, findByText, queryByText } =
@@ -126,8 +126,7 @@ describe("StatusHandler Component", () => {
   });
 
   it("Should not display import warning alert", () => {
-    const importWarnings: TestCaseImportOutcome[] = [];
-    render(<StatusHandler importWarnings={importWarnings} />);
+    render(<StatusHandler importWarnings={[]} />);
     expect(screen.queryByTestId("failed-test-cases")).toBeNull();
   });
 
