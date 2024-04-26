@@ -5,7 +5,6 @@ import { IconButton } from "@mui/material";
 import GroupPopulations from "../populations/GroupPopulations";
 import DetailsSection from "./DetailsTab/DetailsSection";
 import CalculationResults from "./calculationResults/CalculationResults";
-import { useFeatureFlags } from "@madie/madie-util";
 import { MadieEditor } from "@madie/madie-editor";
 
 const RightPanel = ({
@@ -59,11 +58,7 @@ const RightPanel = ({
 
         {activeTab === "measurecql" &&
           (!cqlErrors ? (
-            <div
-              data-testid="test-case-cql-editor"
-              style={{ height: "100%" }}
-              id="test-case-cql-editor"
-            >
+            <div data-testid="test-case-cql-editor" id="test-case-cql-editor">
               <MadieEditor
                 value={measureCql}
                 height="100%"
