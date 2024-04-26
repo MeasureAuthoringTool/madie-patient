@@ -10,7 +10,7 @@ import {
   TestCaseImportRequest,
   TestCaseExcelExportDto,
 } from "@madie/madie-models";
-import { useParams, useNavigate, json } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import calculationService from "../../../api/CalculationService";
 import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calculator";
 import { checkUserCanEdit, measureStore } from "@madie/madie-util";
@@ -196,7 +196,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     }
     if (!criteriaId && measure?.groups) {
       setSelectedPopCriteria(measure.groups[0]);
-      const newPath = `/measures/${measureId}/edit/test-cases/list-page/${measure.groups[0].id}`;
+      const newPath = `/measures/${measureId}/edit/test-cases/list-page/${measure.groups[0]?.id}`;
       // we want to replace the current path to allow the back button to work as intended.
       navigate(newPath, { replace: true });
     }

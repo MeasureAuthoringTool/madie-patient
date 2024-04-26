@@ -23,7 +23,6 @@ const RightPanel = ({
   includeSDE,
 }) => {
   const [activeTab, setActiveTab] = useState<string>("measurecql");
-  const featureFlags = useFeatureFlags();
 
   return (
     <div className="right-panel">
@@ -62,13 +61,12 @@ const RightPanel = ({
           (!cqlErrors ? (
             <div
               data-testid="test-case-cql-editor"
-              // style={{ height: "calc(100% - 24px)" }}
-              // style={{height:"inheret"}}
+              style={{ height: "100%" }}
               id="test-case-cql-editor"
             >
               <MadieEditor
                 value={measureCql}
-                height="calc(100% - 50px)"
+                height="100%"
                 readOnly={true}
                 validationsEnabled={false}
               />
