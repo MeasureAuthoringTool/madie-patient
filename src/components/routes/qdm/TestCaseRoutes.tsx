@@ -17,10 +17,11 @@ import SDEPage from "../../testCaseConfiguration/sde/SDEPage";
 import Expansion from "../../testCaseConfiguration/expansion/Expansion";
 
 const TestCaseRoutes = () => {
-  const [errors, setErrors] = useState<Array<string>>([]);
+  const [cqmMeasureErrors, setCqmMeasureErrors] = useState<Array<string>>([]);
   const [importWarnings, setImportWarnings] = useState<TestCaseImportOutcome[]>(
     []
   );
+  const [importErrors, setImportErrors] = useState<Array<string>>([]);
   const featureFlags = useFeatureFlags();
   const [executionContextReady, setExecutionContextReady] =
     useState<boolean>(false);
@@ -41,7 +42,7 @@ const TestCaseRoutes = () => {
   }, []);
 
   useEffect(() => {
-    const localErrors: Array<string> = [...errors];
+    const localErrors: Array<string> = [];
     if (measure) {
       if (measure.cqlErrors || !measure.elmJson) {
         localErrors.push(
@@ -57,7 +58,7 @@ const TestCaseRoutes = () => {
       if (!localErrors.length) {
         cqmService.current
           .convertToCqmMeasure(measure)
-          .then((convertedMeasure) => {
+          .then((convertedMeasure: CqmMeasure) => {
             if (convertedMeasure) {
               getQdmValueSets(convertedMeasure);
             }
@@ -74,11 +75,11 @@ const TestCaseRoutes = () => {
             );
           });
       }
-      setErrors(localErrors);
+      setCqmMeasureErrors(localErrors);
     }
   }, [measure]);
 
-  const getQdmValueSets = (convertedMeasure) => {
+  const getQdmValueSets = (convertedMeasure: CqmMeasure) => {
     const drcValueSets: ValueSet[] =
       terminologyService.current.getValueSetsForDRCs(convertedMeasure);
     terminologyService.current
@@ -99,7 +100,7 @@ const TestCaseRoutes = () => {
       })
       .catch((err) => {
         setContextFailure(true);
-        setErrors((prevState) => [...prevState, err.message]);
+        setCqmMeasureErrors((prevState) => [...prevState, err.message]);
       });
   };
 
@@ -115,11 +116,18 @@ const TestCaseRoutes = () => {
         contextFailure,
       }}
     >
-      {errors && errors.length > 0 && (
+      {cqmMeasureErrors && cqmMeasureErrors.length > 0 && (
         <StatusHandler
           error={true}
-          errorMessages={errors}
+          errorMessages={cqmMeasureErrors}
           testDataId="execution_context_loading_errors"
+        />
+      )}
+      {importErrors && importErrors.length > 0 && (
+        <StatusHandler
+          error={true}
+          errorMessages={importErrors}
+          testDataId="import-error-messages"
         />
       )}
       {importWarnings && importWarnings.length > 0 && (
@@ -149,9 +157,10 @@ const TestCaseRoutes = () => {
                 qdm
                 children={
                   <TestCaseLandingQdm
-                    errors={errors}
-                    setErrors={setErrors}
+                    errors={cqmMeasureErrors}
+                    setErrors={setCqmMeasureErrors}
                     setWarnings={setImportWarnings}
+                    setImportErrors={setImportErrors}
                   />
                 }
               />
@@ -164,9 +173,10 @@ const TestCaseRoutes = () => {
                 qdm
                 children={
                   <TestCaseLandingQdm
-                    errors={errors}
-                    setErrors={setErrors}
+                    errors={cqmMeasureErrors}
+                    setErrors={setCqmMeasureErrors}
                     setWarnings={setImportWarnings}
+                    setImportErrors={setImportErrors}
                   />
                 }
               />
