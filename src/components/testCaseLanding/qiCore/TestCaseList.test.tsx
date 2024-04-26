@@ -1656,7 +1656,7 @@ describe("TestCaseList component", () => {
   it("should display import test case button", async () => {
     renderTestCaseListComponent();
     const importButton = await screen.findByRole("button", {
-      name: /Import Test Cases/i,
+      name: /Import from MADiE/i,
     });
     expect(importButton).toBeInTheDocument();
     expect(importButton).toBeEnabled();
@@ -1666,7 +1666,7 @@ describe("TestCaseList component", () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => false);
     renderTestCaseListComponent();
     const importButton = await screen.findByRole("button", {
-      name: /Import Test Cases/i,
+      name: /Import from MADiE/i,
     });
     expect(importButton).toBeDisabled();
   });
@@ -1704,7 +1704,7 @@ describe("TestCaseList component", () => {
     renderTestCaseListComponent();
     // on test case list page
     const importTestCasesButton = await screen.findByRole("button", {
-      name: /Import Test Cases/i,
+      name: /Import from MADiE/i,
     });
     expect(importTestCasesButton).toBeInTheDocument();
     expect(importTestCasesButton).toBeEnabled();
@@ -1747,7 +1747,7 @@ describe("TestCaseList component", () => {
     renderTestCaseListComponent();
     // on test case list page
     const importTestCasesButton = await screen.findByRole("button", {
-      name: /Import Test Cases/i,
+      name: /Import from MADiE/i,
     });
     expect(importTestCasesButton).toBeInTheDocument();
     expect(importTestCasesButton).toBeEnabled();
@@ -1803,7 +1803,7 @@ describe("TestCaseList component", () => {
     renderTestCaseListComponent();
     // on test case list page
     const importTestCasesButton = await screen.findByRole("button", {
-      name: /Import Test Cases/i,
+      name: /Import from MADiE/i,
     });
     expect(importTestCasesButton).toBeInTheDocument();
     expect(importTestCasesButton).toBeEnabled();
