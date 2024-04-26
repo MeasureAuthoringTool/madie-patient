@@ -72,7 +72,7 @@ export class CqmConversionService {
     }
   }
 
-  async convertToCqmMeasure(measure: Measure) {
+  async convertToCqmMeasure(measure: Measure): Promise<CqmMeasure> {
     if (_.isNil(measure) || _.isNil(measure.cql)) {
       return null;
     }
