@@ -9,7 +9,7 @@ import {
 import { act } from "react-dom/test-utils";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
-import TestCaseList, {
+import {
   getCoverageValueFromHtml,
   IMPORT_ERROR,
   removeHtmlCoverageHeader,
@@ -27,7 +27,6 @@ import {
   PopulationType,
   TestCase,
   AggregateFunctionType,
-  TestCaseImportOutcome,
 } from "@madie/madie-models";
 import useTestCaseServiceApi, {
   TestCaseServiceApi,
@@ -38,14 +37,11 @@ import useMeasureServiceApi, {
 import userEvent from "@testing-library/user-event";
 import { buildMeasureBundle } from "../../../util/CalculationTestHelpers";
 import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
+// @ts-ignore
 import { checkUserCanEdit, useFeatureFlags } from "@madie/madie-util";
-import { CqmConversionService } from "../../../api/CqmModelConversionService";
-import { ScanValidationDto } from "../../../api/models/ScanValidationDto";
-import { ValueSet } from "cqm-models";
 import qdmCalculationService, {
   QdmCalculationService,
 } from "../../../api/QdmCalculationService";
-import * as _ from "lodash";
 import { measureCql } from "../../editTestCase/groupCoverage/_mocks_/QdmCovergaeMeasureCql";
 import { qdmCallStack } from "../../editTestCase/groupCoverage/_mocks_/QdmCallStack";
 import useCqlParsingService, {
@@ -53,11 +49,6 @@ import useCqlParsingService, {
 } from "../../../api/useCqlParsingService";
 import TestCaseLandingWrapper from "../common/TestCaseLandingWrapper";
 import TestCaseLanding from "../qdm/TestCaseLanding";
-const mockScanResult: ScanValidationDto = {
-  fileName: "testcaseExample.json",
-  valid: true,
-  error: null,
-};
 
 const serviceConfig: ServiceConfig = {
   elmTranslationService: { baseUrl: "translator.url" },
@@ -72,20 +63,6 @@ const serviceConfig: ServiceConfig = {
   },
   terminologyService: {
     baseUrl: "http.com",
-  },
-};
-const mappedCql = {
-  initialPopulation: {
-    id: "0223850b-df35-4d0d-98f1-df993f7de328",
-    text: 'define "Initial Population":\r\n  ["Encounter, Performed": "Emergency Department Visit"]',
-  },
-  denominator: {
-    id: "91ae58e2-aa5a-4163-ad39-835ff7d0822b",
-    text: 'define "IP2":\r\n    ["Encounter, Performed"] E',
-  },
-  numerator: {
-    id: "dc788738-8c66-4538-990c-7a57430c55e3",
-    text: 'define "IP2":\r\n    ["Encounter, Performed"] E',
   },
 };
 const MEASURE_CREATEDBY = "testuser";
@@ -172,7 +149,6 @@ const useCqlParsingServiceMockResolved = {
   getDefinitionCallstacks: jest.fn().mockResolvedValue(qdmCallStack),
 } as unknown as CqlParsingService;
 
-let importingTestCases = [];
 const mockOnImportTestCases = jest.fn();
 
 jest.mock(
@@ -201,12 +177,6 @@ jest.mock(
       );
     }
 );
-
-const mockedUsedNavigate = jest.fn();
-// jest.mock("react-router-dom", () => ({
-//   ...(jest.requireActual("react-router-dom") as any),
-//   useNavigate: () => mockedUsedNavigate,
-// }));
 
 // output from calculationService
 const executionResults = {
@@ -1355,11 +1325,9 @@ jest.mock("../../../api/QdmCalculationService");
 const qdmCalculationServiceMock =
   qdmCalculationService as jest.Mock<QdmCalculationService>;
 
-const mockProcessTestCaseResults = jest
-  .fn()
-  .mockImplementation((testCase, groups, results) => {
-    return failingTestCaseResults.find((tc) => tc.id === testCase.id);
-  });
+const mockProcessTestCaseResults = jest.fn().mockImplementation((testCase) => {
+  return failingTestCaseResults.find((tc) => tc.id === testCase.id);
+});
 const mockGetPassingPercentageForTestCases = jest
   .fn()
   .mockReturnValue({ passPercentage: 50, passFailRatio: "1/2" });
@@ -1405,10 +1373,8 @@ const useMeasureServiceMockResolved = {
     .mockResolvedValue(buildMeasureBundle(mockMeasure)),
 } as unknown as MeasureServiceApi;
 
-const getAccessToken = jest.fn();
 jest.useFakeTimers();
 jest.spyOn(global, "setTimeout");
-let cqmConversionService = new CqmConversionService("url", getAccessToken);
 
 const cqmMeasure = {
   cql_libraries: [
@@ -1564,12 +1530,11 @@ const cqmMeasure = {
     },
   ],
 };
-const valueSets = [] as ValueSet[];
 const setMeasure = jest.fn();
 const setCqmMeasure = jest.fn();
-const setValueSets = jest.fn();
 const setError = jest.fn();
 const setWarnings = jest.fn();
+const setImportErrors = jest.fn();
 
 window.URL.createObjectURL = jest.fn().mockImplementation(() => "url");
 
@@ -1628,6 +1593,7 @@ describe("TestCaseList component", () => {
               executing: false,
               setExecuting: jest.fn(),
               contextFailure: contextFailure,
+              setExecutionContextReady: jest.fn(),
             }}
           >
             <Routes>
@@ -1642,6 +1608,7 @@ describe("TestCaseList component", () => {
                           errors={errors}
                           setErrors={mockError}
                           setWarnings={setWarnings}
+                          setImportErrors={setImportErrors}
                         />
                       }
                     />
@@ -1657,6 +1624,7 @@ describe("TestCaseList component", () => {
                           errors={errors}
                           setErrors={mockError}
                           setWarnings={setWarnings}
+                          setImportErrors={setImportErrors}
                         />
                       }
                     />
@@ -1732,9 +1700,7 @@ describe("TestCaseList component", () => {
     });
 
     renderTestCaseListComponent();
-    expect(
-      await screen.queryByTestId("display-tests-error")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("display-tests-error")).not.toBeInTheDocument();
   });
 
   it("should render delete dialogue on Test Case list page when delete button is clicked", async () => {
@@ -1772,32 +1738,28 @@ describe("TestCaseList component", () => {
       } as unknown as TestCaseServiceApi;
     });
 
-    let nextState;
-    setError.mockImplementation((callback) => {
-      nextState = callback([]);
+    renderTestCaseListComponent();
+    const selectButton = await screen.findByRole("button", {
+      name: `select-action-${testCases[0].title}`,
     });
-
-    const { getByTestId } = renderTestCaseListComponent();
-    await waitFor(() => {
-      const selectButton = getByTestId(`select-action-${testCases[0].id}`);
-      expect(selectButton).toBeInTheDocument();
-      fireEvent.click(selectButton);
-    });
-    const deleteButton = getByTestId(`delete-test-case-btn-${testCases[0].id}`);
-    fireEvent.click(deleteButton);
+    userEvent.click(selectButton);
+    const deleteButton = screen.getByTestId(
+      `delete-test-case-btn-${testCases[0].id}`
+    );
+    userEvent.click(deleteButton);
 
     expect(screen.getByTestId("delete-dialog")).toBeInTheDocument();
-    const confirmDeleteBtn = screen.getByTestId(
-      "delete-dialog-continue-button"
-    );
-    expect(confirmDeleteBtn).toBeInTheDocument();
+    const confirmDeleteBtn = screen.getByRole("button", {
+      name: "Yes, Delete",
+    });
     expect(
       screen.getByTestId("delete-dialog-cancel-button")
     ).toBeInTheDocument();
 
     userEvent.click(confirmDeleteBtn);
-    await waitFor(() => expect(setError).toHaveBeenCalled());
-    expect(nextState).toEqual(["BAD THINGS"]);
+    expect(await screen.findByTestId("test-case-list-error")).toHaveTextContent(
+      `Unable to Delete test Case with ID ${testCases[0].id}. Please try again. If the issue continues, please contact helpdesk.`
+    );
   });
 
   it("Should delete all existing test cases", async () => {
@@ -1875,14 +1837,7 @@ describe("TestCaseList component", () => {
         }),
       } as unknown as TestCaseServiceApi;
     });
-
-    let nextState;
-    setError.mockImplementation((callback) => {
-      nextState = callback([]);
-    });
-
     renderTestCaseListComponent();
-
     const table = await screen.findByTestId("test-case-tbl");
     const tableRows = table.querySelectorAll("tbody tr");
     expect(tableRows.length).toBe(3);
@@ -1896,8 +1851,9 @@ describe("TestCaseList component", () => {
 
     expect(screen.queryByTestId("delete-dialog-body")).toBeNull();
 
-    await waitFor(() => expect(setError).toHaveBeenCalled());
-    expect(nextState).toEqual(["Unable to delete test cases."]);
+    expect(await screen.findByTestId("test-case-list-error")).toHaveTextContent(
+      "Unable to Delete All test Cases. Please try again. If the issue continues, please contact helpdesk."
+    );
   });
 
   it("Should disable delete all button", async () => {
@@ -2066,20 +2022,19 @@ describe("TestCaseList component", () => {
   it("accordions for cql parts", async () => {
     mockMeasure.createdBy = MEASURE_CREATEDBY;
     renderTestCaseListComponent();
-    const table = await screen.findByTestId("test-case-tbl");
 
-    userEvent.click(screen.getByTestId("coverage-tab"));
+    userEvent.click(await screen.findByTestId("coverage-tab"));
     const coverageTabList = await screen.findByTestId("coverage-tab-list");
     expect(coverageTabList).toBeInTheDocument();
     const allAccordions = await screen.findAllByTestId("accordion");
     expect(allAccordions[0]).toBeInTheDocument();
-    const firstAccordion = await screen.queryByText("Initial Population");
+    const firstAccordion = screen.queryByText("Initial Population");
     expect(firstAccordion).toBeInTheDocument();
-    const definitionsAccordion = await screen.queryByText("Definitions");
+    const definitionsAccordion = screen.queryByText("Definitions");
     expect(definitionsAccordion).toBeInTheDocument();
-    const unUsedDefinitionAccordion = await screen.queryByText("Unused");
+    const unUsedDefinitionAccordion = screen.queryByText("Unused");
     expect(unUsedDefinitionAccordion).toBeInTheDocument();
-    const functionsAccordion = await screen.queryByText("Functions");
+    const functionsAccordion = screen.queryByText("Functions");
     expect(functionsAccordion).toBeInTheDocument();
 
     const definitionSection = await screen.findByTestId(
@@ -2090,9 +2045,7 @@ describe("TestCaseList component", () => {
     const definitionAccordionButton = await screen.findByRole("button", {
       name: "Definitions",
     });
-    act(() => {
-      userEvent.click(definitionAccordionButton);
-    });
+    userEvent.click(definitionAccordionButton);
 
     const definitionsMessage = within(definitionSection).getByText(
       "No results available"
@@ -2108,9 +2061,7 @@ describe("TestCaseList component", () => {
     const unusedSectionButton = await screen.findByRole("button", {
       name: "Unused",
     });
-    act(() => {
-      userEvent.click(unusedSectionButton);
-    });
+    userEvent.click(unusedSectionButton);
 
     const unusedSection = screen.getByTestId("Unused-definition");
     const unusedMessage = within(unusedSection).getByText(
@@ -2134,7 +2085,7 @@ describe("TestCaseList component", () => {
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
       testCaseExport: true,
     }));
-    await renderTestCaseListComponent();
+    renderTestCaseListComponent();
     await waitFor(() => {
       const qrdaExportButton = screen.getByTestId(
         "show-export-test-cases-button"
@@ -2242,10 +2193,8 @@ describe("TestCaseList component", () => {
     await waitFor(() => {
       expect(qrdaExportButton).toBeEnabled();
     });
+    userEvent.click(qrdaExportButton);
 
-    act(() => {
-      fireEvent.click(qrdaExportButton);
-    });
     //popover opens
     const popoverButton = screen.getByTestId("export-qrda-1");
     expect(popoverButton).toBeVisible();
@@ -2301,14 +2250,10 @@ describe("TestCaseList component", () => {
     await waitFor(() => {
       expect(qrdaExportButton).toBeEnabled();
     });
-    act(() => {
-      fireEvent.click(qrdaExportButton);
-    });
+    userEvent.click(qrdaExportButton);
     //popover opens
     const popoverButton = screen.getByTestId("export-qrda-1");
-    act(() => {
-      fireEvent.click(popoverButton);
-    });
+    userEvent.click(popoverButton);
     await waitFor(() => {
       expect(
         screen.getByText("QRDA exported successfully")
@@ -2346,11 +2291,6 @@ describe("TestCaseList component", () => {
       return useTestCaseServiceMockReject;
     });
 
-    let nextState;
-    setError.mockClear().mockImplementation((callback) => {
-      nextState = callback([]);
-    });
-
     renderTestCaseListComponent();
     await screen.findByTestId("test-case-tbl");
     const executeAllTestCasesButton = screen.getByRole("button", {
@@ -2372,21 +2312,20 @@ describe("TestCaseList component", () => {
     await waitFor(() => {
       expect(qrdaExportButton).toBeEnabled();
     });
-    act(() => {
-      fireEvent.click(qrdaExportButton);
-    });
+    userEvent.click(qrdaExportButton);
 
     await waitFor(() => {
       const qrdaExportButton = screen.getByTestId(
         "show-export-test-cases-button"
       );
       expect(qrdaExportButton).toBeEnabled();
-      fireEvent.click(qrdaExportButton);
+      userEvent.click(qrdaExportButton);
       const popoverButton = screen.getByTestId("export-qrda-1"); // fail
-      fireEvent.click(popoverButton);
-      waitFor(() => expect(setError).toHaveBeenCalled());
-      expect(nextState).toEqual(["Unable to Export QRDA."]);
+      userEvent.click(popoverButton);
     });
+    expect(await screen.findByTestId("test-case-list-error")).toHaveTextContent(
+      "Unable to Export QRDA. Please try again. If the issue continues, please contact helpdesk."
+    );
   });
   it("Should display errors on test cases with special characters", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
@@ -2431,18 +2370,17 @@ describe("TestCaseList component", () => {
     await waitFor(() => {
       expect(qrdaExportButton).toBeEnabled();
     });
-    act(() => {
-      fireEvent.click(qrdaExportButton);
-    });
+
+    userEvent.click(qrdaExportButton);
 
     await waitFor(() => {
       const qrdaExportButton = screen.getByTestId(
         "show-export-test-cases-button"
       );
       expect(qrdaExportButton).toBeEnabled();
-      fireEvent.click(qrdaExportButton);
+      userEvent.click(qrdaExportButton);
       const popoverButton = screen.getByTestId("export-qrda-1");
-      fireEvent.click(popoverButton);
+      userEvent.click(popoverButton);
     });
     await waitFor(() => expect(setErrorMock2).toHaveBeenCalled());
   });
@@ -2451,12 +2389,6 @@ describe("TestCaseList component", () => {
     mockMeasure.createdBy = MEASURE_CREATEDBY;
     testCases[0].validResource = false;
     testCases[1].validResource = false;
-
-    let nextState;
-    setError.mockImplementation((callback) => {
-      nextState = callback([]);
-    });
-
     renderTestCaseListComponent();
 
     const table = await screen.findByTestId("test-case-tbl");
@@ -2503,10 +2435,10 @@ describe("TestCaseList component", () => {
       const executeAllTestCasesButton = getByTestId(
         "execute-test-cases-button"
       );
-      fireEvent.click(executeAllTestCasesButton);
+      userEvent.click(executeAllTestCasesButton);
 
       const errorMessage = screen.queryByTestId("display-tests-error");
-      await expect(errorMessage).not.toBeInTheDocument();
+      expect(errorMessage).not.toBeInTheDocument();
     });
   });
 
@@ -2713,14 +2645,12 @@ describe("TestCaseList component", () => {
       expect(tableRows[2]).toHaveTextContent("Invalid");
     });
 
-    mockProcessTestCaseResults
-      .mockClear()
-      .mockImplementation((testCase, groups, results) => {
-        return {
-          ...failingTestCaseResults.find((tc) => tc.id === testCase.id),
-          executionStatus: "pass",
-        };
-      });
+    mockProcessTestCaseResults.mockClear().mockImplementation((testCase) => {
+      return {
+        ...failingTestCaseResults.find((tc) => tc.id === testCase.id),
+        executionStatus: "pass",
+      };
+    });
 
     mockGetPassingPercentageForTestCases
       .mockClear()
@@ -2747,7 +2677,7 @@ describe("TestCaseList component", () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
 
     renderTestCaseListComponent();
-    const importBtn = await screen.queryByRole("button", {
+    const importBtn = screen.queryByRole("button", {
       name: /Import from Bonnie/i,
     });
     expect(importBtn).not.toBeInTheDocument();
@@ -2780,7 +2710,7 @@ describe("TestCaseList component", () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
 
     let nextState;
-    setError.mockImplementation((callback) => {
+    setImportErrors.mockImplementation((callback) => {
       nextState = callback([IMPORT_ERROR]);
     });
 
@@ -2798,9 +2728,7 @@ describe("TestCaseList component", () => {
     });
     expect(importBtn).toBeInTheDocument();
     userEvent.click(importBtn);
-    const removedImportDialog = await screen.queryByTestId(
-      "test-case-import-dialog"
-    );
+    const removedImportDialog = screen.queryByTestId("test-case-import-dialog");
     expect(removedImportDialog).not.toBeInTheDocument();
     expect(nextState).toEqual([]);
   });
@@ -2822,11 +2750,6 @@ describe("TestCaseList component", () => {
       return useTestCaseServiceMockRejected;
     });
 
-    let nextState;
-    setError.mockImplementation((callback) => {
-      nextState = callback([]);
-    });
-
     renderTestCaseListComponent();
     const showImportBtn = await screen.findByRole("button", {
       name: /Import from Bonnie/i,
@@ -2839,12 +2762,11 @@ describe("TestCaseList component", () => {
       name: "Import",
     });
     userEvent.click(importBtn);
-    const removedImportDialog = await screen.queryByTestId(
-      "test-case-import-dialog"
-    );
+    const removedImportDialog = screen.queryByTestId("test-case-import-dialog");
     expect(removedImportDialog).not.toBeInTheDocument();
-    await waitFor(() => expect(setError).toHaveBeenCalledTimes(2));
-    expect(nextState).toEqual([IMPORT_ERROR]);
+    expect(await screen.findByTestId("test-case-list-error")).toHaveTextContent(
+      IMPORT_ERROR
+    );
   });
 
   it("should display warning messages when importTestCasesQDM call succeeds with warnings", async () => {
@@ -2875,11 +2797,6 @@ describe("TestCaseList component", () => {
 
     useTestCaseServiceMock.mockImplementation(() => {
       return useTestCaseServiceMockRejected;
-    });
-
-    let nextState;
-    setError.mockImplementation((callback) => {
-      nextState = callback([]);
     });
 
     renderTestCaseListComponent();
@@ -2919,11 +2836,6 @@ describe("TestCaseList component", () => {
 
     useTestCaseServiceMock.mockImplementation(() => {
       return useTestCaseServiceMockRejected;
-    });
-
-    let nextState;
-    setError.mockImplementation((callback) => {
-      nextState = callback([]);
     });
 
     mockOnImportTestCases.mockImplementation((realOnImport) =>
@@ -3006,7 +2918,7 @@ describe("TestCaseList component", () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
 
     let nextState;
-    setError.mockImplementation((callback) => {
+    setImportErrors.mockImplementation((callback) => {
       nextState = callback([]);
     });
     renderTestCaseListComponent(setError, [IMPORT_ERROR]);
@@ -3029,7 +2941,7 @@ describe("TestCaseList component", () => {
         screen.queryByTestId("test-case-import-dialog")
       ).not.toBeInTheDocument();
     });
-    expect(setError).toHaveBeenCalled();
+    expect(setImportErrors).toHaveBeenCalled();
     expect(nextState).toEqual([]);
   });
 

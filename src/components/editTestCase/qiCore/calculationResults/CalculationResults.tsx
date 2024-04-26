@@ -91,17 +91,17 @@ export const mapCalculationResults = (
             populationRelevanceOutput,
             { criteriaExpression, populationId, populationType, result }
           ) => {
-            populationRelevanceOutput[criteriaExpression] = {
+            populationRelevanceOutput[populationId] = {
               populationId,
               populationType,
               result,
+              criteriaExpression,
             };
             return populationRelevanceOutput;
           },
           {}
         ),
       };
-
       return output;
     }, {});
     return mapCalculationResults;

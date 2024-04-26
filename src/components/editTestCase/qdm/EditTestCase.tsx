@@ -306,7 +306,11 @@ const EditTestCase = () => {
           measureId={measureId}
         />
 
-        <form id="edit-test-case-form" onSubmit={formik.handleSubmit}>
+        <form
+          id="edit-test-case-form"
+          data-testid={"edit-test-case-form"}
+          onSubmit={formik.handleSubmit}
+        >
           <div className="allotment-wrapper">
             <Allotment defaultSizes={[175, 125]} vertical={false}>
               <Allotment.Pane>
