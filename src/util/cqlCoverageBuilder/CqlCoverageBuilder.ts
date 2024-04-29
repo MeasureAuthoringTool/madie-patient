@@ -37,6 +37,34 @@ function updateGroupResults(groupResults) {
   return updatedGroupResults;
 }
 
+export function mergeCalcResults(calcResults1, calcResults2) {
+  if (_.isNil(calcResults2)) {
+    return calcResults1;
+  }
+  if (_.isNil(calcResults1)) {
+    return calcResults2;
+  }
+
+  // TODO: Improve performance here
+  return calcResults1.map((cr1) => {
+    const cr2 = calcResults2.find(
+      (tcr) =>
+        tcr.library_name === cr1.library_name && tcr.localId === cr1.localId
+    );
+    if (cr1.final === "TRUE") {
+      return cr1;
+    } else if (cr2?.final === "TRUE") {
+      return cr2;
+    } else if (cr1.final === "FALSE") {
+      return cr1;
+    } else if (cr2?.final === "FALSE") {
+      return cr2;
+    } else {
+      return cr1;
+    }
+  });
+}
+
 /**
  * Returns the coverage results for each cql definition that is being used in measure groups.
  * Definition is considered to be used iff it is used in one of the populations either directly or indirectly.
@@ -45,7 +73,7 @@ function updateGroupResults(groupResults) {
  * @param cqmMeasure - measure
  */
 
-function updateAllGroupResults(calculationOutput) {
+export function updateAllGroupResults(calculationOutput) {
   const updatedGroupResults = [];
 
   for (let patientId in calculationOutput) {
@@ -68,10 +96,11 @@ function updateAllGroupResults(calculationOutput) {
           )?.flatMap(Object.values);
         }
 
-        updatedGroupResults[existingGroupIndex].clauseResults = [
-          ...updatedGroupResults[existingGroupIndex].clauseResults,
-          ...newClauseResults,
-        ];
+        updatedGroupResults[existingGroupIndex].clauseResults =
+          mergeCalcResults(
+            [...updatedGroupResults[existingGroupIndex].clauseResults],
+            [...newClauseResults]
+          );
       } else {
         let newClauseResults = [];
         if (groupResult?.clause_results) {
@@ -166,6 +195,7 @@ export function buildHighlightingForAllGroups(
     },
     {}
   );
+
   // restructure the group results into an array
   const allUpdatedGroupResults = updateAllGroupResults(calculationOutput);
   // get the measure and included libraries

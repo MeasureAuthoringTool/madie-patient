@@ -6,7 +6,10 @@ import {
 import {
   buildHighlightingForGroups,
   buildHighlightingForAllGroups,
+  updateAllGroupResults,
 } from "./CqlCoverageBuilder";
+
+import ControllingHighBloodPressureResults from "../../mockdata/qdm/controllingHBPCalculationResults.json";
 
 const cqmMeasure = {
   cql_libraries: [testMeasureLibrary],
@@ -89,4 +92,33 @@ describe("Build Highlighting for all groups", () => {
 
   //   expect(coverageResults["group-2"].length).toEqual(6);
   // });
+});
+
+describe("updateAllGroupResults", () => {
+  it("should merge clause results from all test cases", () => {
+    const output = updateAllGroupResults(ControllingHighBloodPressureResults);
+
+    const clause66 = output[0]?.clauseResults?.find(
+      (s) =>
+        s.library_name === "ControllingHighBloodPressure2" && s.localId === "66"
+    );
+    expect(clause66).toBeTruthy();
+    expect(clause66.final).toEqual("TRUE");
+
+    const clause273 = output[0]?.clauseResults?.find(
+      (s) =>
+        s.library_name === "ControllingHighBloodPressure2" &&
+        s.localId === "273"
+    );
+    expect(clause273).toBeTruthy();
+    expect(clause273.final).toEqual("TRUE");
+
+    const clause252 = output[0]?.clauseResults?.find(
+      (s) =>
+        s.library_name === "ControllingHighBloodPressure2" &&
+        s.localId === "252"
+    );
+    expect(clause252).toBeTruthy();
+    expect(clause252.final).toEqual("FALSE");
+  });
 });
