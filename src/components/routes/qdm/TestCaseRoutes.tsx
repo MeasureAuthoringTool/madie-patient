@@ -42,6 +42,7 @@ const TestCaseRoutes = () => {
   }, []);
 
   useEffect(() => {
+    setContextFailure(null);
     const localErrors: Array<string> = [];
     if (measure) {
       if (measure.cqlErrors || !measure.elmJson) {
