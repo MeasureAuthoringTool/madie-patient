@@ -53,7 +53,9 @@ const RightPanel = ({
           />
         )}
         {activeTab === "details" && (
-          <DetailsSection canEdit={canEdit} measureName={measureName} />
+          <div style={{ marginTop: "32px" }}>
+            <DetailsSection canEdit={canEdit} measureName={measureName} />
+          </div>
         )}
 
         {activeTab === "measurecql" &&

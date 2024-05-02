@@ -1,6 +1,4 @@
 import React from "react";
-import parse from "html-react-parser";
-import "twin.macro";
 import "styled-components/macro";
 import { isEmpty } from "lodash";
 import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calculator";
@@ -133,7 +131,7 @@ const CalculationResults = ({
   );
 
   return (
-    <div tw="p-5" style={{ paddingRight: ".25rem" }}>
+    <div style={{ paddingRight: ".25rem" }}>
       {!calculationResults && !calculationErrors && (
         <MadieAlert
           type="info"

@@ -992,7 +992,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
                   {/* TODO Replace with re-usable form component
                label, input, and error => single input control component */}
 
-                  <div tw="flex flex-col flex-wrap p-5 w-9/12">
+                  <div id="details-panel">
                     <TextField
                       placeholder="Test Case Title"
                       required

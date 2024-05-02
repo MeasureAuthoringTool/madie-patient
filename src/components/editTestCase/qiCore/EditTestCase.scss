@@ -33,6 +33,10 @@
           padding-left: 16px;
           padding-right: 16px;
           height: calc(100% - 48px);
+
+          > #details-panel {
+            margin-right: 16px;
+          }
         }
         > .tab-container {
           > .MuiButtonBase-root {
@@ -74,7 +78,6 @@
           overflow: scroll;
         }
       }
-
       .sash {
         width: 16px;
         background-color: #ddd;
@@ -106,7 +109,6 @@
 
 #create-test-case-right-panel,
 #test-case-population-lower-tab {
-  margin: 0 31px;
   margin-right: 0;
   overflow-y: auto;
 
