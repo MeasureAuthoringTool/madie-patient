@@ -168,7 +168,7 @@ const TestCaseList = (props: TestCaseListProps) => {
       );
       setSelectedPopCriteria(selectedPopCriteria);
     }
-    if (!criteriaId && measure?.groups) {
+    if (!criteriaId && !_.isEmpty(measure?.groups)) {
       setSelectedPopCriteria(measure.groups[0]);
       const newPath = `/measures/${measureId}/edit/test-cases/list-page/${measure.groups[0].id}`;
       // we want to replace the current path to allow the back button to work as intended.
