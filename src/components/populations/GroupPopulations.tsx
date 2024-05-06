@@ -42,7 +42,7 @@ const GroupPopulations = ({
     {groupPopulations && groupPopulations.length > 0 ? (
       groupPopulations.map((gp, i) => {
         return (
-          <div key={gp.groupId} style={{ marginTop: 16 }}>
+          <div key={gp.groupId}>
             <TestCasePopulationList
               content={`Measure Group ${i + 1}`}
               i={i}
