@@ -54,7 +54,7 @@ export class CqmConversionService {
   ): Promise<Array<DataElement>> {
     try {
       const response = await axios.put(
-        `${this.baseUrl}/qdm/relevant-elements`,
+        `${this.baseUrl}/cql/relevant-elements`,
         measure,
         {
           headers: {
