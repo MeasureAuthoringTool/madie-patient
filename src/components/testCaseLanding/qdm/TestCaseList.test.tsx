@@ -31,6 +31,10 @@ import {
 import useTestCaseServiceApi, {
   TestCaseServiceApi,
 } from "../../../api/useTestCaseServiceApi";
+import useExcelExportService, {
+  ExcelExportService,
+} from "../../../api/useExcelExportService";
+import { AxiosError } from "axios";
 import useMeasureServiceApi, {
   MeasureServiceApi,
 } from "../../../api/useMeasureServiceApi";
@@ -1373,6 +1377,15 @@ const useMeasureServiceMockResolved = {
     .mockResolvedValue(buildMeasureBundle(mockMeasure)),
 } as unknown as MeasureServiceApi;
 
+// mocking excelExportService
+jest.mock("../../../api/useExcelExportService");
+const useExcelExportServiceMock =
+  useExcelExportService as jest.Mock<ExcelExportService>;
+
+const useExcelExportServiceMockResolved = {
+  generateExcel: jest.fn().mockResolvedValue("test excel"),
+} as unknown as ExcelExportService;
+
 jest.useFakeTimers();
 jest.spyOn(global, "setTimeout");
 
@@ -2327,6 +2340,279 @@ describe("TestCaseList component", () => {
       "Unable to Export QRDA. Please try again. If the issue continues, please contact helpdesk."
     );
   });
+
+  it("should display Excel Export button", async () => {
+    (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      testCaseExport: true,
+    }));
+    const useTestCaseServiceMockResolve = {
+      getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
+      getTestCaseSeriesForMeasure: jest
+        .fn()
+        .mockResolvedValue(["Series 1", "Series 2"]),
+    } as unknown as TestCaseServiceApi;
+
+    useTestCaseServiceMock.mockImplementation(() => {
+      return useTestCaseServiceMockResolve;
+    });
+    mockMeasure.cqlErrors = false;
+    mockMeasure.errors = [];
+    renderTestCaseListComponent();
+    await screen.findByTestId("test-case-tbl");
+
+    const executeAllTestCasesButton = screen.getByRole("button", {
+      name: "Run Test(s)",
+    });
+    await waitFor(() => {
+      expect(executeAllTestCasesButton).toBeEnabled();
+    });
+    userEvent.click(executeAllTestCasesButton);
+    await waitFor(() => {
+      expect(
+        qdmCalculationServiceMockResolved.calculateQdmTestCases
+      ).toHaveBeenCalled();
+    });
+
+    const excelExportButton = screen.getByTestId(
+      "show-export-test-cases-button"
+    );
+    await waitFor(() => {
+      expect(excelExportButton).toBeEnabled();
+    });
+    userEvent.click(excelExportButton);
+
+    //popover opens
+    const popoverButton = screen.getByTestId("export-excel-1");
+    expect(popoverButton).toBeVisible();
+    act(() => {
+      fireEvent.keyDown(popoverButton, {
+        key: "Escape",
+        code: "Escape",
+        keyCode: 27,
+        charCode: 27,
+      });
+    });
+
+    expect(screen.queryByTestId("export-excel-1")).not.toBeVisible();
+  });
+
+  it("should display success message when Excel Export button clicked", async () => {
+    (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      testCaseExport: true,
+    }));
+    const useTestCaseServiceMockResolve = {
+      getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
+      getTestCaseSeriesForMeasure: jest
+        .fn()
+        .mockResolvedValue(["Series 1", "Series 2"]),
+    } as unknown as TestCaseServiceApi;
+
+    useTestCaseServiceMock.mockImplementation(() => {
+      return useTestCaseServiceMockResolve;
+    });
+
+    const useExcelExportServiceMockResolved = {
+      generateExcel: jest.fn().mockResolvedValue("test excel"),
+    } as unknown as ExcelExportService;
+
+    useExcelExportServiceMock.mockImplementation(() => {
+      return useExcelExportServiceMockResolved;
+    });
+
+    mockMeasure.cqlErrors = false;
+    mockMeasure.errors = [];
+    renderTestCaseListComponent();
+    await screen.findByTestId("test-case-tbl");
+
+    const executeAllTestCasesButton = screen.getByRole("button", {
+      name: "Run Test(s)",
+    });
+    await waitFor(() => {
+      expect(executeAllTestCasesButton).toBeEnabled();
+    });
+    userEvent.click(executeAllTestCasesButton);
+    await waitFor(() => {
+      expect(
+        qdmCalculationServiceMockResolved.calculateQdmTestCases
+      ).toHaveBeenCalled();
+    });
+
+    const excelExportButton = screen.getByTestId(
+      "show-export-test-cases-button"
+    );
+    await waitFor(() => {
+      expect(excelExportButton).toBeEnabled();
+    });
+    userEvent.click(excelExportButton);
+    //popover opens
+    const popoverButton = screen.getByTestId("export-excel-1");
+    userEvent.click(popoverButton);
+    await waitFor(() => {
+      expect(
+        screen.getByText("Excel exported successfully")
+      ).toBeInTheDocument();
+    });
+    act(() => {
+      fireEvent.keyDown(screen.getByText("Excel exported successfully"), {
+        key: "Escape",
+        code: "Escape",
+        keyCode: 27,
+        charCode: 27,
+      });
+    });
+
+    expect(
+      screen.queryByText("Excel exported successfully")
+    ).not.toBeInTheDocument();
+  });
+
+  it("should display failed message when Excel Export failed", async () => {
+    (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      testCaseExport: true,
+    }));
+    const useTestCaseServiceMockResolve = {
+      getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
+      getTestCaseSeriesForMeasure: jest
+        .fn()
+        .mockResolvedValue(["Series 1", "Series 2"]),
+    } as unknown as TestCaseServiceApi;
+
+    useTestCaseServiceMock.mockImplementation(() => {
+      return useTestCaseServiceMockResolve;
+    });
+
+    const useExcelExportServiceMockRejected = {
+      generateExcel: jest
+        .fn()
+        .mockRejectedValue(new AxiosError("Excel export failed")),
+    } as unknown as ExcelExportService;
+
+    useExcelExportServiceMock.mockImplementation(() => {
+      return useExcelExportServiceMockRejected;
+    });
+
+    const errorMessage =
+      "Excel export failed. Please try again. If the issue continues, please contact helpdesk.";
+
+    mockMeasure.cqlErrors = false;
+    mockMeasure.errors = [];
+    renderTestCaseListComponent();
+    await screen.findByTestId("test-case-tbl");
+
+    const executeAllTestCasesButton = screen.getByRole("button", {
+      name: "Run Test(s)",
+    });
+    await waitFor(() => {
+      expect(executeAllTestCasesButton).toBeEnabled();
+    });
+    userEvent.click(executeAllTestCasesButton);
+    await waitFor(() => {
+      expect(
+        qdmCalculationServiceMockResolved.calculateQdmTestCases
+      ).toHaveBeenCalled();
+    });
+
+    const excelExportButton = screen.getByTestId(
+      "show-export-test-cases-button"
+    );
+    await waitFor(() => {
+      expect(excelExportButton).toBeEnabled();
+    });
+    userEvent.click(excelExportButton);
+    //popover opens
+    const popoverButton = screen.getByTestId("export-excel-1");
+    userEvent.click(popoverButton);
+    await waitFor(() => {
+      expect(screen.getByText(errorMessage)).toBeInTheDocument();
+    });
+    act(() => {
+      fireEvent.keyDown(screen.getByText(errorMessage), {
+        key: "Escape",
+        code: "Escape",
+        keyCode: 27,
+        charCode: 27,
+      });
+    });
+
+    expect(screen.queryByText(errorMessage)).not.toBeInTheDocument();
+  });
+
+  it("should display failed message when getDefinitionCallstacks failed", async () => {
+    (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      testCaseExport: true,
+    }));
+    const useTestCaseServiceMockResolve = {
+      getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
+      getTestCaseSeriesForMeasure: jest
+        .fn()
+        .mockResolvedValue(["Series 1", "Series 2"]),
+    } as unknown as TestCaseServiceApi;
+
+    useTestCaseServiceMock.mockImplementation(() => {
+      return useTestCaseServiceMockResolve;
+    });
+
+    const useCqlParsingServiceMockRejected = {
+      getAllDefinitionsAndFunctions: jest.fn().mockResolvedValue(qdmCallStack),
+      getDefinitionCallstacks: jest
+        .fn()
+        .mockRejectedValue("qdmCallStack failed"),
+    } as unknown as CqlParsingService;
+
+    useCqlParsingServiceMock.mockImplementation(() => {
+      return useCqlParsingServiceMockRejected;
+    });
+
+    const errorMessage =
+      "Error while Parsing CQL for callStack, Please try again. If the issue continues, please contact helpdesk.";
+
+    mockMeasure.cqlErrors = false;
+    mockMeasure.errors = [];
+    renderTestCaseListComponent();
+    await screen.findByTestId("test-case-tbl");
+
+    const executeAllTestCasesButton = screen.getByRole("button", {
+      name: "Run Test(s)",
+    });
+    await waitFor(() => {
+      expect(executeAllTestCasesButton).toBeEnabled();
+    });
+    userEvent.click(executeAllTestCasesButton);
+    await waitFor(() => {
+      expect(
+        qdmCalculationServiceMockResolved.calculateQdmTestCases
+      ).toHaveBeenCalled();
+    });
+
+    const excelExportButton = screen.getByTestId(
+      "show-export-test-cases-button"
+    );
+    await waitFor(() => {
+      expect(excelExportButton).toBeEnabled();
+    });
+    userEvent.click(excelExportButton);
+    //popover opens
+    const popoverButton = screen.getByTestId("export-excel-1");
+    userEvent.click(popoverButton);
+    await waitFor(() => {
+      expect(screen.getByText(errorMessage)).toBeInTheDocument();
+    });
+    act(() => {
+      fireEvent.keyDown(screen.getByText(errorMessage), {
+        key: "Escape",
+        code: "Escape",
+        keyCode: 27,
+        charCode: 27,
+      });
+    });
+
+    expect(screen.queryByText(errorMessage)).not.toBeInTheDocument();
+  });
+
   it("Should display errors on test cases with special characters", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
