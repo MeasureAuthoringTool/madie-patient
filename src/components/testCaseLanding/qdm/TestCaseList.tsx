@@ -555,7 +555,42 @@ const TestCaseList = (props: TestCaseListProps) => {
       return;
     }
     try {
-      const exportData = await testCaseService.current.exportQRDA(measureId);
+      const passPercentage: number = testCasePassFailStats.passPercentage;
+      const passFailRatio: string = testCasePassFailStats.passFailRatio;
+      const callstack = await cqlParsingService.current.getDefinitionCallstacks(
+        measure.cql
+      );
+      const excelTestCaseDtos: TestCaseExcelExportDto[] =
+        createExcelExportDtosForAllTestCases(
+          measure,
+          cqmMeasure,
+          calculationOutput,
+          callstack
+        );
+      const testCaseDtos: TestCaseExcelExportDto[] = excelTestCaseDtos.map(
+        (dto) => ({
+          groupId: dto.groupId,
+          groupNumber: dto.groupNumber,
+          testCaseExecutionResults: dto.testCaseExecutionResults.map((r) => ({
+            testCaseId: r.testCaseId,
+            populations: r.populations,
+            stratifications: r.stratifications,
+            last: r.last,
+            first: r.first,
+            definitions: [],
+            functions: [],
+          })),
+        })
+      );
+      // Overwrite saved test cases with calculated test cases
+      measure.testCases = testCases;
+      const exportData = await testCaseService.current.exportQRDA(measureId, {
+        measure,
+        coveragePercentage,
+        passPercentage,
+        passFailRatio,
+        testCaseDtos,
+      });
       FileSaver.saveAs(
         exportData,
         `${measure.ecqmTitle}-v${measure.version}-QDM-TestCases.zip`

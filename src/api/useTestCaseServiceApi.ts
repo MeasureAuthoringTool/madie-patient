@@ -3,13 +3,23 @@ import useServiceConfig from "./useServiceConfig";
 import { ServiceConfig } from "./ServiceContext";
 import {
   HapiOperationOutcome,
+  Measure,
   TestCase,
+  TestCaseExcelExportDto,
   TestCaseImportRequest,
 } from "@madie/madie-models";
 import { useOktaTokens } from "@madie/madie-util";
 import { ScanValidationDto } from "./models/ScanValidationDto";
 import { addValues } from "../util/DefaultValueProcessor";
 import { MadieError } from "../util/Utils";
+
+export type QrdaRequestDTO = {
+  measure: Measure;
+  coveragePercentage: string;
+  passPercentage: number;
+  passFailRatio: string;
+  testCaseDtos: TestCaseExcelExportDto[];
+};
 
 export class TestCaseServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
@@ -289,9 +299,13 @@ export class TestCaseServiceApi {
     fileReader.readAsText(file);
   }
 
-  async exportQRDA(measureId: string): Promise<Blob> {
-    const response = await axios.get(
+  async exportQRDA(
+    measureId: string,
+    requestDto: QrdaRequestDTO
+  ): Promise<Blob> {
+    const response = await axios.put(
       `${this.baseUrl}/measures/${measureId}/test-cases/qrda`,
+      requestDto,
       {
         headers: {
           Authorization: `Bearer ${this.getAccessToken()}`,
