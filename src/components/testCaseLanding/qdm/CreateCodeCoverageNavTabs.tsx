@@ -86,7 +86,6 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     hidden: !activeTip || executeAllTestCases,
   });
   const featureFlags = useFeatureFlags();
-  // const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
   const executionResultsDisplayTemplate = (label) => {
