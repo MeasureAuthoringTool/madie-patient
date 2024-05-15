@@ -128,6 +128,9 @@ const TestCaseList = (props: TestCaseListProps) => {
   const [importDialogState, setImportDialogState] = useState<any>({
     open: false,
   });
+  const [exportExecuting, setExportExecuting] = useState(false);
+  const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
+
   const cqlParsingService = useRef(useCqlParsingService());
 
   // const [callstackMap, setCallstackMap] = useState<CqlDefinitionCallstack>();
@@ -482,6 +485,8 @@ const TestCaseList = (props: TestCaseListProps) => {
 
   const exportExcel = async () => {
     if (measure?.cql) {
+      setExportExecuting(true);
+      setOptionsOpen(false);
       cqlParsingService.current
         .getDefinitionCallstacks(measure.cql)
         .then((callstack: CqlDefinitionCallstack) => {
@@ -512,6 +517,7 @@ const TestCaseList = (props: TestCaseListProps) => {
               setToastType("success");
               setToastMessage("Excel exported successfully");
               document.body.removeChild(link);
+              setExportExecuting(false);
             })
             .catch((error: AxiosError) => {
               setToastOpen(true);
@@ -520,6 +526,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                 error?.message +
                   ". Please try again. If the issue continues, please contact helpdesk."
               );
+              setExportExecuting(false);
             });
         })
         .catch((error) => {
@@ -532,11 +539,14 @@ const TestCaseList = (props: TestCaseListProps) => {
           setToastMessage(
             "Error while Parsing CQL for callStack, Please try again. If the issue continues, please contact helpdesk."
           );
+          setExportExecuting(false);
         });
     }
   };
 
   const exportQRDA = async () => {
+    setExportExecuting(true);
+    setOptionsOpen(false);
     const failedTCs = checkSpecialCharactersForExport(testCases);
     if (failedTCs.length) {
       setErrors((prevState) => [...prevState, ...failedTCs]);
@@ -558,6 +568,7 @@ const TestCaseList = (props: TestCaseListProps) => {
         "Unable to Export QRDA. Please try again. If the issue continues, please contact helpdesk."
       );
     }
+    setExportExecuting(false);
   };
 
   return (
@@ -605,6 +616,9 @@ const TestCaseList = (props: TestCaseListProps) => {
                 }
                 onExportQRDA={exportQRDA}
                 onExportExcel={exportExcel}
+                exportExecuting={exportExecuting}
+                optionsOpen={optionsOpen}
+                setOptionsOpen={setOptionsOpen}
               />
             </div>
             <CreateNewTestCaseDialog

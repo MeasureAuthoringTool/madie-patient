@@ -4,6 +4,7 @@ import {
   Tabs,
   Tab,
   Popover,
+  MadieSpinner,
 } from "@madie/madie-design-system/dist/react";
 import AddIcon from "@mui/icons-material/Add";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
@@ -13,8 +14,6 @@ import {
   MeasureErrorType,
   TestCase,
   Group,
-  MeasureObservation,
-  Stratification,
 } from "@madie/madie-models";
 import { TestCasesPassingDetailsProps } from "../common/interfaces";
 import { useFeatureFlags } from "@madie/madie-util";
@@ -41,6 +40,9 @@ export interface NavTabProps {
   onDeleteAllTestCases: () => void;
   onExportQRDA: () => void;
   onExportExcel: (fileType: string) => void;
+  exportExecuting: boolean;
+  optionsOpen: boolean;
+  setOptionsOpen: (exportExecuting: boolean) => void;
 }
 
 const defaultStyle = {
@@ -74,6 +76,9 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     onDeleteAllTestCases,
     onExportQRDA,
     onExportExcel,
+    exportExecuting,
+    optionsOpen,
+    setOptionsOpen,
   } = props;
   const [activeTip, setActiveTip] = useState<boolean>(false);
   const toolTipClass = classNames("madie-tooltip", {
@@ -81,7 +86,6 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
     hidden: !activeTip || executeAllTestCases,
   });
   const featureFlags = useFeatureFlags();
-  const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
   const executionResultsDisplayTemplate = (label) => {
@@ -243,7 +247,7 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
                 onClick={(e) => {
                   handleOpen(e);
                 }}
-                disabled={!executeAllTestCases}
+                disabled={!executeAllTestCases || exportExecuting}
                 id="show-export-test-cases-button"
                 aria-describedby="show-export-test-cases-button-tooltip"
                 data-testid="show-export-test-cases-button"
@@ -263,6 +267,11 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
                   style={{ margin: "0 5px 0 5px" }}
                   fontSize="small"
                 />
+                {exportExecuting ? (
+                  <MadieSpinner style={{ height: 10, width: 10 }} />
+                ) : (
+                  ""
+                )}
               </Button>
             </div>
           )}
