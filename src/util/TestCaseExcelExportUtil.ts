@@ -106,16 +106,19 @@ const populateStratificationDtos = (
 
 export const createExcelExportDtosForAllTestCases = (
   measure: Measure,
+  testCases: TestCase[],
   cqmMeasure: CqmMeasure,
   calculationOutput: CqmExecutionResultsByPatient,
   callstack: CqlDefinitionCallstack
 ): TestCaseExcelExportDto[] => {
   const testCaseExcelExportDtos: TestCaseExcelExportDto[] = [];
 
+  console.log("calculationOutput: ", calculationOutput);
+
   let groupNumber = 1;
   measure.groups?.forEach((group) => {
     const testCaseExecutionResultDtos: TestCaseExecutionResultDto[] = [];
-    measure?.testCases?.forEach((currentTestCase) => {
+    testCases?.forEach((currentTestCase) => {
       const groupPopulation = currentTestCase.groupPopulations?.find(
         (groupPopulation) => {
           return groupPopulation.groupId === group.id;
@@ -157,6 +160,8 @@ export const createExcelExportDtosForAllTestCases = (
     testCaseExcelExportDtos.push(testCaseExcelExportDto);
     groupNumber += groupNumber;
   });
+
+  console.log("testCaseExcelExportDtos: ", testCaseExcelExportDtos);
 
   return testCaseExcelExportDtos;
 };
