@@ -1,0 +1,429 @@
+{
+  "composite": false,
+  "component": false,
+  "component_hqmf_set_ids": [],
+  "measure_scoring": "COHORT",
+  "calculation_method": "PATIENT",
+  "source_data_criteria": [],
+  "measure_attributes": [],
+  "patients": [],
+  "value_sets": [],
+  "_id": "664d07552626fb000068bf9e",
+  "cql_libraries": [
+    {
+      "is_main_library": true,
+      "is_top_level": true,
+      "_id": "664d07562626fb000068bfa0",
+      "statement_dependencies": [
+        {
+          "_id": "664d07562626fb000068bfa2",
+          "statement_name": "Patient",
+          "statement_references": []
+        },
+        {
+          "_id": "664d07562626fb000068bfa4",
+          "statement_name": "SDE Ethnicity",
+          "statement_references": []
+        }
+      ],
+      "library_name": "MAT6264Lib",
+      "library_version": "3.0.000",
+      "elm": {
+        "library": {
+          "annotation": [
+            {
+              "translatorVersion": "3.3.2",
+              "translatorOptions": "EnableAnnotations,EnableLocators,EnableResultTypes,EnableDetailedErrors,DisableListDemotion,DisableListPromotion",
+              "signatureLevel": "None",
+              "type": "CqlToElmInfo"
+            },
+            {
+              "type": "Annotation",
+              "s": {
+                "r": "12",
+                "s": [
+                  {
+                    "value": ["", "library MAT6264Lib version '3.0.000'"]
+                  }
+                ]
+              }
+            }
+          ],
+          "identifier": {
+            "id": "MAT6264Lib",
+            "version": "3.0.000"
+          },
+          "schemaIdentifier": {
+            "id": "urn:hl7-org:elm",
+            "version": "r1"
+          },
+          "usings": {
+            "def": [
+              {
+                "localIdentifier": "System",
+                "uri": "urn:hl7-org:elm-types:r1"
+              },
+              {
+                "localId": "1",
+                "locator": "3:1-3:23",
+                "localIdentifier": "QDM",
+                "uri": "urn:healthit-gov:qdm:v5_6",
+                "version": "5.6",
+                "annotation": [
+                  {
+                    "type": "Annotation",
+                    "s": {
+                      "r": "1",
+                      "s": [
+                        {
+                          "value": ["", "using "]
+                        },
+                        {
+                          "s": [
+                            {
+                              "value": ["QDM"]
+                            }
+                          ]
+                        },
+                        {
+                          "value": [" version '5.6'"]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "parameters": {
+            "def": [
+              {
+                "localId": "10",
+                "locator": "12:1-12:49",
+                "name": "Measurement Period",
+                "accessLevel": "Public",
+                "annotation": [
+                  {
+                    "type": "Annotation",
+                    "s": {
+                      "r": "10",
+                      "s": [
+                        {
+                          "value": [
+                            "",
+                            "parameter ",
+                            "\"Measurement Period\"",
+                            " "
+                          ]
+                        },
+                        {
+                          "r": "9",
+                          "s": [
+                            {
+                              "value": ["Interval<"]
+                            },
+                            {
+                              "r": "8",
+                              "s": [
+                                {
+                                  "value": ["DateTime"]
+                                }
+                              ]
+                            },
+                            {
+                              "value": [">"]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "resultTypeSpecifier": {
+                  "type": "IntervalTypeSpecifier",
+                  "pointType": {
+                    "name": "{urn:hl7-org:elm-types:r1}DateTime",
+                    "type": "NamedTypeSpecifier"
+                  }
+                },
+                "parameterTypeSpecifier": {
+                  "localId": "9",
+                  "locator": "12:32-12:49",
+                  "type": "IntervalTypeSpecifier",
+                  "resultTypeSpecifier": {
+                    "type": "IntervalTypeSpecifier",
+                    "pointType": {
+                      "name": "{urn:hl7-org:elm-types:r1}DateTime",
+                      "type": "NamedTypeSpecifier"
+                    }
+                  },
+                  "pointType": {
+                    "localId": "8",
+                    "locator": "12:41-12:48",
+                    "resultTypeName": "{urn:hl7-org:elm-types:r1}DateTime",
+                    "name": "{urn:hl7-org:elm-types:r1}DateTime",
+                    "type": "NamedTypeSpecifier"
+                  }
+                }
+              }
+            ]
+          },
+          "codeSystems": {
+            "def": [
+              {
+                "localId": "2",
+                "locator": "5:1-5:51",
+                "resultTypeName": "{urn:hl7-org:elm-types:r1}CodeSystem",
+                "name": "LOINC",
+                "id": "2.16.840.1.113883.6.1",
+                "accessLevel": "Public",
+                "annotation": [
+                  {
+                    "type": "Annotation",
+                    "s": {
+                      "r": "2",
+                      "s": [
+                        {
+                          "value": [
+                            "",
+                            "codesystem ",
+                            "\"LOINC\"",
+                            ": ",
+                            "'urn:oid:2.16.840.1.113883.6.1'"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "localId": "3",
+                "locator": "6:1-6:55",
+                "resultTypeName": "{urn:hl7-org:elm-types:r1}CodeSystem",
+                "name": "SNOMEDCT",
+                "id": "2.16.840.1.113883.6.96",
+                "accessLevel": "Public",
+                "annotation": [
+                  {
+                    "type": "Annotation",
+                    "s": {
+                      "r": "3",
+                      "s": [
+                        {
+                          "value": [
+                            "",
+                            "codesystem ",
+                            "\"SNOMEDCT\"",
+                            ": ",
+                            "'urn:oid:2.16.840.1.113883.6.96'"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "codes": {
+            "def": [
+              {
+                "localId": "5",
+                "locator": "9:1-9:125",
+                "resultTypeName": "{urn:hl7-org:elm-types:r1}Code",
+                "name": "Above reference range (qualifier value)",
+                "id": "281302008",
+                "display": "Above reference range (qualifier value)",
+                "accessLevel": "Public",
+                "annotation": [
+                  {
+                    "type": "Annotation",
+                    "s": {
+                      "r": "5",
+                      "s": [
+                        {
+                          "value": [
+                            "",
+                            "code ",
+                            "\"Above reference range (qualifier value)\"",
+                            ": ",
+                            "'281302008'",
+                            " from "
+                          ]
+                        },
+                        {
+                          "r": "4",
+                          "s": [
+                            {
+                              "value": ["\"SNOMEDCT\""]
+                            }
+                          ]
+                        },
+                        {
+                          "value": [
+                            " display ",
+                            "'Above reference range (qualifier value)'"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "codeSystem": {
+                  "localId": "4",
+                  "locator": "9:66-9:75",
+                  "resultTypeName": "{urn:hl7-org:elm-types:r1}CodeSystem",
+                  "name": "SNOMEDCT"
+                }
+              },
+              {
+                "localId": "7",
+                "locator": "10:1-10:184",
+                "resultTypeName": "{urn:hl7-org:elm-types:r1}Code",
+                "name": "Glucose tolerance 2 hours gestational panel - Urine and Serum or Plasma",
+                "id": "24353-5",
+                "display": "Glucose tolerance 2 hours gestational panel - Urine and Serum or Plasma",
+                "accessLevel": "Public",
+                "annotation": [
+                  {
+                    "type": "Annotation",
+                    "s": {
+                      "r": "7",
+                      "s": [
+                        {
+                          "value": [
+                            "",
+                            "code ",
+                            "\"Glucose tolerance 2 hours gestational panel - Urine and Serum or Plasma\"",
+                            ": ",
+                            "'24353-5'",
+                            " from "
+                          ]
+                        },
+                        {
+                          "r": "6",
+                          "s": [
+                            {
+                              "value": ["\"LOINC\""]
+                            }
+                          ]
+                        },
+                        {
+                          "value": [
+                            " display ",
+                            "'Glucose tolerance 2 hours gestational panel - Urine and Serum or Plasma'"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "codeSystem": {
+                  "localId": "6",
+                  "locator": "10:96-10:102",
+                  "resultTypeName": "{urn:hl7-org:elm-types:r1}CodeSystem",
+                  "name": "LOINC"
+                }
+              }
+            ]
+          },
+          "contexts": {
+            "def": [
+              {
+                "locator": "14:1-14:15",
+                "name": "Patient"
+              }
+            ]
+          },
+          "statements": {
+            "def": [
+              {
+                "locator": "14:1-14:15",
+                "name": "Patient",
+                "context": "Patient",
+                "expression": {
+                  "type": "SingletonFrom",
+                  "operand": {
+                    "locator": "14:1-14:15",
+                    "dataType": "{urn:healthit-gov:qdm:v5_6}Patient",
+                    "templateId": "Patient",
+                    "type": "Retrieve"
+                  }
+                }
+              },
+              {
+                "localId": "12",
+                "locator": "16:1-17:6",
+                "resultTypeName": "{urn:hl7-org:elm-types:r1}Boolean",
+                "name": "SDE Ethnicity",
+                "context": "Patient",
+                "accessLevel": "Public",
+                "annotation": [
+                  {
+                    "type": "Annotation",
+                    "s": {
+                      "r": "12",
+                      "s": [
+                        {
+                          "r": "11",
+                          "value": [
+                            "",
+                            "define ",
+                            "\"SDE Ethnicity\"",
+                            ":\n  ",
+                            "true"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "expression": {
+                  "localId": "11",
+                  "locator": "17:3-17:6",
+                  "resultTypeName": "{urn:hl7-org:elm-types:r1}Boolean",
+                  "valueType": "{urn:hl7-org:elm-types:r1}Boolean",
+                  "value": "true",
+                  "type": "Literal"
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "population_sets": [
+    {
+      "_id": "664d07562626fb000068bfab",
+      "title": "Population Criteria Section",
+      "population_set_id": "6644abb851745d27d6c9fddf",
+      "populations": {
+        "_id": "664d07562626fb000068bfac",
+        "IPP": {
+          "_id": "664d07562626fb000068bfad",
+          "library_name": "MAT6264Lib",
+          "statement_name": "SDE Ethnicity",
+          "hqmf_id": null
+        }
+      },
+      "stratifications": [],
+      "supplemental_data_elements": [],
+      "observations": []
+    }
+  ],
+  "title": "A Library",
+  "description": null,
+  "main_cql_library": "MAT6264Lib",
+  "hqmf_set_id": "041bdb5f-3616-4d81-835e-a1cbc4d17c24",
+  "calculate_sdes": false,
+  "measure_period": {
+    "low": {
+      "value": "202301010000"
+    },
+    "high": {
+      "value": "202401012359"
+    }
+  }
+}

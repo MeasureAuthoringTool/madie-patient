@@ -34,6 +34,22 @@ export class MeasureServiceApi {
       },
     });
   }
+  async getCqmMeasure(measureId: String): Promise<Response> {
+    try {
+      const result = await axios.get(
+        `${this.baseUrl}/measures/${measureId}/cqmmeasure`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
+        }
+      );
+      return result.data;
+    } catch (err) {
+      const message = `Unable to retrieve CqmMeasure`;
+      throw new Error(message);
+    }
+  }
 }
 
 export default function useMeasureServiceApi(): MeasureServiceApi {
