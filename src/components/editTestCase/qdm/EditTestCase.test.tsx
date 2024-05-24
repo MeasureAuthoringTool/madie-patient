@@ -944,9 +944,7 @@ describe("EditTestCase QDM Component", () => {
     expect(livingStatusInput.value).toBe("Expired");
 
     expect(saveTestCaseButton).toBeEnabled();
-    act(() => {
-      userEvent.click(saveTestCaseButton);
-    });
+    userEvent.click(saveTestCaseButton);
 
     await waitFor(
       () => {
