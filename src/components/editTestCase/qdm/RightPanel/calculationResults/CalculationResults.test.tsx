@@ -5,14 +5,14 @@ import { GroupPopulation } from "@madie/madie-models";
 import userEvent from "@testing-library/user-event";
 import { measureCql } from "../../../groupCoverage/_mocks_/QdmMeasureCql";
 import QdmGroupCoverage from "../../../groupCoverage/QdmGroupCoverage";
-import useCqlParsingService, {
+import useQdmCqlParsingService, {
   CqlParsingService,
-} from "../../../../../api/useCqlParsingService";
+} from "../../../../../api/useQdmCqlParsingService";
 import { qdmCallStack } from "../../../groupCoverage/_mocks_/QdmCallStack";
 
-jest.mock("../../../../../api/useCqlParsingService");
+jest.mock("../../../../../api/useQdmCqlParsingService");
 const useCqlParsingServiceMock =
-  useCqlParsingService as jest.Mock<CqlParsingService>;
+  useQdmCqlParsingService as jest.Mock<CqlParsingService>;
 
 const useCqlParsingServiceMockResolved = {
   getDefinitionCallstacks: jest.fn().mockResolvedValue(qdmCallStack),

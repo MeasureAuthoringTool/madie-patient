@@ -36,9 +36,9 @@ import { MadieError } from "../../../util/Utils";
 import qdmCalculationService, {
   QdmCalculationService,
 } from "../../../api/QdmCalculationService";
-import useCqlParsingService, {
+import useQdmCqlParsingService, {
   CqlParsingService,
-} from "../../../api/useCqlParsingService";
+} from "../../../api/useQdmCqlParsingService";
 import { qdmCallStack } from "../groupCoverage/_mocks_/QdmCallStack";
 
 const serviceConfig = {
@@ -325,9 +325,9 @@ const qdmExecutionResults = {
   },
 };
 
-jest.mock("../../../api/useCqlParsingService");
+jest.mock("../../../api/useQdmCqlParsingService");
 const useCqlParsingServiceMock =
-  useCqlParsingService as jest.Mock<CqlParsingService>;
+  useQdmCqlParsingService as jest.Mock<CqlParsingService>;
 
 const useCqlParsingServiceMockResolved = {
   getAllDefinitionsAndFunctions: jest.fn().mockResolvedValue(qdmCallStack),

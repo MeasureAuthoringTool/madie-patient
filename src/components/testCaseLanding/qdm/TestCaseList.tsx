@@ -43,7 +43,7 @@ import {
 import { uniqWith } from "lodash";
 import { checkSpecialCharactersForExport } from "../../../util/checkSpecialCharacters";
 import { createExcelExportDtosForAllTestCases } from "../../../util/TestCaseExcelExportUtil";
-import useCqlParsingService from "../../../api/useCqlParsingService";
+import useQdmCqlParsingService from "../../../api/useQdmCqlParsingService";
 import { CqlDefinitionCallstack } from "../../editTestCase/groupCoverage/QiCoreGroupCoverage";
 import useExcelExportService from "../../../api/useExcelExportService";
 import FileSaver from "file-saver";
@@ -132,7 +132,7 @@ const TestCaseList = (props: TestCaseListProps) => {
   const [exportExecuting, setExportExecuting] = useState(false);
   const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
 
-  const cqlParsingService = useRef(useCqlParsingService());
+  const qdmCqlParsingService = useRef(useQdmCqlParsingService());
 
   // const [callstackMap, setCallstackMap] = useState<CqlDefinitionCallstack>();
   // callStackMap is used for generating Excel Export
@@ -488,7 +488,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     if (measure?.cql) {
       setExportExecuting(true);
       setOptionsOpen(false);
-      cqlParsingService.current
+      qdmCqlParsingService.current
         .getDefinitionCallstacks(measure.cql)
         .then((callstack: CqlDefinitionCallstack) => {
           const testCaseDtos: TestCaseExcelExportDto[] =

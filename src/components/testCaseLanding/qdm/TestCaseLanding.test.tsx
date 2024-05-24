@@ -7,9 +7,9 @@ import { Measure, Model } from "@madie/madie-models";
 import { CqmMeasure, ValueSet } from "cqm-models";
 import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
 import { checkUserCanEdit } from "@madie/madie-util";
-import useCqlParsingService, {
+import useQdmCqlParsingService, {
   CqlParsingService,
-} from "../../../api/useCqlParsingService";
+} from "../../../api/useQdmCqlParsingService";
 import { qdmCallStack } from "../../editTestCase/groupCoverage/_mocks_/QdmCallStack";
 
 const serviceConfig: ServiceConfig = {
@@ -27,9 +27,9 @@ const serviceConfig: ServiceConfig = {
   },
 };
 
-jest.mock("../../../api/useCqlParsingService");
+jest.mock("../../../api/useQdmCqlParsingService");
 const useCqlParsingServiceMock =
-  useCqlParsingService as jest.Mock<CqlParsingService>;
+  useQdmCqlParsingService as jest.Mock<CqlParsingService>;
 
 const useCqlParsingServiceMockResolved = {
   getAllDefinitionsAndFunctions: jest.fn().mockResolvedValue(qdmCallStack),

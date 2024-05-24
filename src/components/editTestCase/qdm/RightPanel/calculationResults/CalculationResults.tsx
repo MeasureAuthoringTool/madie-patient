@@ -5,7 +5,7 @@ import { MadieAlert } from "@madie/madie-design-system/dist/react";
 import "twin.macro";
 import "styled-components/macro";
 import { CqlDefinitionCallstack } from "../../../groupCoverage/QiCoreGroupCoverage";
-import useCqlParsingService from "../../../../../api/useCqlParsingService";
+import useQdmCqlParsingService from "../../../../../api/useQdmCqlParsingService";
 
 const CalculationResults = ({
   groupCoverageResult,
@@ -15,11 +15,11 @@ const CalculationResults = ({
   measureCql,
   includeSDE,
 }) => {
-  const cqlParsingService = useRef(useCqlParsingService());
+  const qdmCqlParsingService = useRef(useQdmCqlParsingService());
   const [callstackMap, setCallstackMap] = useState<CqlDefinitionCallstack>();
 
   useEffect(() => {
-    cqlParsingService.current
+    qdmCqlParsingService.current
       .getDefinitionCallstacks(measureCql)
       .then((callstack: CqlDefinitionCallstack) => {
         setCallstackMap(callstack);

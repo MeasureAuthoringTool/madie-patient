@@ -48,9 +48,9 @@ import qdmCalculationService, {
 } from "../../../api/QdmCalculationService";
 import { measureCql } from "../../editTestCase/groupCoverage/_mocks_/QdmCovergaeMeasureCql";
 import { qdmCallStack } from "../../editTestCase/groupCoverage/_mocks_/QdmCallStack";
-import useCqlParsingService, {
+import useQdmCqlParsingService, {
   CqlParsingService,
-} from "../../../api/useCqlParsingService";
+} from "../../../api/useQdmCqlParsingService";
 import TestCaseLandingWrapper from "../common/TestCaseLandingWrapper";
 import TestCaseLanding from "../qdm/TestCaseLanding";
 
@@ -144,9 +144,9 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
   unobserve: jest.fn(),
   disconnect: jest.fn(),
 }));
-jest.mock("../../../api/useCqlParsingService");
+jest.mock("../../../api/useQdmCqlParsingService");
 const useCqlParsingServiceMock =
-  useCqlParsingService as jest.Mock<CqlParsingService>;
+  useQdmCqlParsingService as jest.Mock<CqlParsingService>;
 
 const useCqlParsingServiceMockResolved = {
   getAllDefinitionsAndFunctions: jest.fn().mockResolvedValue(qdmCallStack),

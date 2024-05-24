@@ -5,13 +5,13 @@ import { useOktaTokens } from "@madie/madie-util";
 import { CqlDefinitionExpression } from "../util/GroupCoverageHelpers";
 import { CqlDefinitionCallstack } from "../components/editTestCase/groupCoverage/QiCoreGroupCoverage";
 
-export class CqlParsingService {
+export class QdmCqlParsingService {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
 
   async getDefinitionCallstacks(cql: string): Promise<CqlDefinitionCallstack> {
     try {
       const response = await axios.put<string>(
-        `${this.baseUrl}/cql/callstacks`,
+        `${this.baseUrl}/qdm/cql/callstacks`,
         cql,
         {
           headers: {
@@ -32,7 +32,7 @@ export class CqlParsingService {
   ): Promise<CqlDefinitionExpression[]> {
     try {
       const response = await axios.put<string>(
-        `${this.baseUrl}/cql/definitions`,
+        `${this.baseUrl}/qdm/cql/definitions`,
         cql,
         {
           headers: {
@@ -49,13 +49,13 @@ export class CqlParsingService {
   }
 }
 
-const useCqlParsingService = (): CqlParsingService => {
+const useQdmCqlParsingService = (): QdmCqlParsingService => {
   const serviceConfig: ServiceConfig = useServiceConfig();
   const { getAccessToken } = useOktaTokens();
-  return new CqlParsingService(
-    serviceConfig?.elmTranslationService.baseUrl,
+  return new QdmCqlParsingService(
+    serviceConfig?.qdmElmTranslationService.baseUrl,
     getAccessToken
   );
 };
 
-export default useCqlParsingService;
+export default useQdmCqlParsingService;
