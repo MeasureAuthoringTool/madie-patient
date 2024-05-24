@@ -26,8 +26,11 @@ const serviceConfig: ServiceConfig = {
   terminologyService: {
     baseUrl: "something.com",
   },
-  elmTranslationService: {
-    baseUrl: "elmTranslationService.com",
+  qdmElmTranslationService: {
+    baseUrl: "qdm-elmTranslationService.com",
+  },
+  fhirElmTranslationService: {
+    baseUrl: "fhir-elmTranslationService.com",
   },
   excelExportService: {
     baseUrl: "excelexport.com",
