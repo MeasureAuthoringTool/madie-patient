@@ -5,7 +5,7 @@ import { MadieAlert } from "@madie/madie-design-system/dist/react";
 import "twin.macro";
 import "styled-components/macro";
 import { CqlDefinitionCallstack } from "../../../groupCoverage/QiCoreGroupCoverage";
-import useQdmCqlParsingService from "../../../../../api/useQdmCqlParsingService";
+import useQdmCqlParsingService from "../../../../../api/cqlElmTranslationService/useQdmCqlParsingService";
 
 const CalculationResults = ({
   groupCoverageResult,

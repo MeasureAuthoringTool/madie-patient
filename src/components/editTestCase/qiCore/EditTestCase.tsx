@@ -76,7 +76,7 @@ import { Allotment } from "allotment";
 import ElementsTab from "./LeftPanel/ElementsTab/ElementsTab";
 import { QiCoreResourceProvider } from "../../../util/QiCorePatientProvider";
 import { CqlDefinitionCallstack } from "../groupCoverage/QiCoreGroupCoverage";
-import useFhirCqlParsingService from "../../../api/useFhirCqlParsingService";
+import useFhirCqlParsingService from "../../../api/cqlElmTranslationService/useFhirCqlParsingService";
 
 const TestCaseForm = tw.form`m-3`;
 const ValidationErrorsButton = tw.button`

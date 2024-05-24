@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import CoverageTabList from "./CoverageTabs/CoverageTabList";
-import useQdmCqlParsingService from "../../../../api/useQdmCqlParsingService";
 import { CqlDefinitionCallstack } from "../../../editTestCase/groupCoverage/QiCoreGroupCoverage";
+import useQdmCqlParsingService from "../../../../api/cqlElmTranslationService/useQdmCqlParsingService";
 
 const TestCaseCoverage = ({
   populationCriteria,

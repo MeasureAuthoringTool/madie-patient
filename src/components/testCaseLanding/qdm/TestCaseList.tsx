@@ -43,12 +43,12 @@ import {
 import { uniqWith } from "lodash";
 import { checkSpecialCharactersForExport } from "../../../util/checkSpecialCharacters";
 import { createExcelExportDtosForAllTestCases } from "../../../util/TestCaseExcelExportUtil";
-import useQdmCqlParsingService from "../../../api/useQdmCqlParsingService";
 import { CqlDefinitionCallstack } from "../../editTestCase/groupCoverage/QiCoreGroupCoverage";
 import useExcelExportService from "../../../api/useExcelExportService";
 import FileSaver from "file-saver";
 import { AxiosError, AxiosResponse } from "axios";
 import ExportModal from "./ExportModal";
+import useQdmCqlParsingService from "../../../api/cqlElmTranslationService/useQdmCqlParsingService";
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
 export const coverageHeaderRegex =

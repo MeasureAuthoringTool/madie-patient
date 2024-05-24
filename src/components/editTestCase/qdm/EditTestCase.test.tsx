@@ -25,20 +25,19 @@ import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
 import useTestCaseServiceApi, {
   TestCaseServiceApi,
 } from "../../../api/useTestCaseServiceApi";
+// @ts-ignore
 import { useFeatureFlags } from "@madie/madie-util";
-
 import useCqmConversionService, {
   CqmConversionService,
 } from "../../../api/CqmModelConversionService";
 import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
-import { QdmPatientProvider } from "../../../util/QdmPatientContext";
 import { MadieError } from "../../../util/Utils";
 import qdmCalculationService, {
   QdmCalculationService,
 } from "../../../api/QdmCalculationService";
 import useQdmCqlParsingService, {
-  CqlParsingService,
-} from "../../../api/useQdmCqlParsingService";
+  QdmCqlParsingService,
+} from "../../../api/cqlElmTranslationService/useQdmCqlParsingService";
 import { qdmCallStack } from "../groupCoverage/_mocks_/QdmCallStack";
 
 const serviceConfig = {
@@ -325,14 +324,14 @@ const qdmExecutionResults = {
   },
 };
 
-jest.mock("../../../api/useQdmCqlParsingService");
+jest.mock("../../../api/cqlElmTranslationService/useQdmCqlParsingService");
 const useCqlParsingServiceMock =
-  useQdmCqlParsingService as jest.Mock<CqlParsingService>;
+  useQdmCqlParsingService as jest.Mock<QdmCqlParsingService>;
 
 const useCqlParsingServiceMockResolved = {
   getAllDefinitionsAndFunctions: jest.fn().mockResolvedValue(qdmCallStack),
   getDefinitionCallstacks: jest.fn().mockResolvedValue(qdmCallStack),
-} as unknown as CqlParsingService;
+} as unknown as QdmCqlParsingService;
 
 const mockProcessTestCaseResults = jest.fn().mockImplementation(() => {
   return {
@@ -387,7 +386,7 @@ jest.mock("@madie/madie-util", () => ({
     return true;
   }),
   routeHandlerStore: {
-    subscribe: (set) => {
+    subscribe: () => {
       return { unsubscribe: () => null };
     },
     updateRouteHandlerState: () => null,
@@ -400,6 +399,7 @@ const { findByTestId, findByText, queryByTestId, queryByText } = screen;
 const measure = mockMeasure;
 const setMeasure = jest.fn();
 const setCqmMeasure = jest.fn;
+const setExecutionContextReady = jest.fn;
 const getAccessToken = jest.fn();
 let cqmConversionService = new CqmConversionService("url", getAccessToken);
 const cqmMeasure = cqmConversionService.convertToCqmMeasure(mockMeasure);
@@ -413,8 +413,10 @@ const renderEditTestCaseComponent = () => {
             measureState: [measure, setMeasure],
             cqmMeasureState: [cqmMeasure, setCqmMeasure],
             executionContextReady: true,
+            setExecutionContextReady: setExecutionContextReady,
             executing: false,
             setExecuting: jest.fn(),
+            contextFailure: false,
           }}
         >
           <EditTestCase />
@@ -466,8 +468,8 @@ describe("ElementsTab", () => {
       };
     });
     await waitFor(() => renderEditTestCaseComponent());
-    const json = await queryByText("JSON");
-    const elements = await queryByTestId("json-tab");
+    const json = queryByText("JSON");
+    const elements = queryByTestId("json-tab");
     expect(json).not.toBeInTheDocument();
     expect(elements).not.toBeInTheDocument();
   });
@@ -531,7 +533,7 @@ describe("EditTestCase QDM Component", () => {
 
   it("should run qdm test case", async () => {
     await waitFor(() => renderEditTestCaseComponent());
-    const runTestCaseButton = await getByRole("button", {
+    const runTestCaseButton = getByRole("button", {
       name: "Run Test",
     });
     expect(runTestCaseButton).toBeInTheDocument();
@@ -555,7 +557,7 @@ describe("EditTestCase QDM Component", () => {
 
   it("should see that the JSON changed", async () => {
     await waitFor(() => renderEditTestCaseComponent());
-    const runTestCaseButton = await getByRole("button", {
+    const runTestCaseButton = getByRole("button", {
       name: "Run Test",
     });
     expect(runTestCaseButton).toBeInTheDocument();
@@ -580,7 +582,7 @@ describe("EditTestCase QDM Component", () => {
 
   it("should render qdm edit test case component along with action buttons", async () => {
     await waitFor(() => renderEditTestCaseComponent());
-    const runTestCaseButton = await getByRole("button", {
+    const runTestCaseButton = getByRole("button", {
       name: "Run Test",
     });
     expect(runTestCaseButton).toBeInTheDocument();
@@ -828,7 +830,7 @@ describe("EditTestCase QDM Component", () => {
       return useTestCaseServiceMockRejectedNonUniqueName;
     });
     renderEditTestCaseComponent();
-    const saveTestCaseButton = await screen.getByRole("button", {
+    const saveTestCaseButton = screen.getByRole("button", {
       name: "Save",
     });
 
@@ -897,7 +899,7 @@ describe("EditTestCase QDM Component", () => {
       return useTestCaseServiceMockRejected;
     });
     renderEditTestCaseComponent();
-    const saveTestCaseButton = await screen.getByRole("button", {
+    const saveTestCaseButton = screen.getByRole("button", {
       name: "Save",
     });
 

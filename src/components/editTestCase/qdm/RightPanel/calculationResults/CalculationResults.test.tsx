@@ -4,19 +4,20 @@ import CalculationResults from "./CalculationResults";
 import { GroupPopulation } from "@madie/madie-models";
 import userEvent from "@testing-library/user-event";
 import { measureCql } from "../../../groupCoverage/_mocks_/QdmMeasureCql";
-import QdmGroupCoverage from "../../../groupCoverage/QdmGroupCoverage";
 import useQdmCqlParsingService, {
-  CqlParsingService,
-} from "../../../../../api/useQdmCqlParsingService";
+  QdmCqlParsingService,
+} from "../../../../../api/cqlElmTranslationService/useQdmCqlParsingService";
 import { qdmCallStack } from "../../../groupCoverage/_mocks_/QdmCallStack";
 
-jest.mock("../../../../../api/useQdmCqlParsingService");
+jest.mock(
+  "../../../../../api/cqlElmTranslationService/useQdmCqlParsingService"
+);
 const useCqlParsingServiceMock =
-  useQdmCqlParsingService as jest.Mock<CqlParsingService>;
+  useQdmCqlParsingService as jest.Mock<QdmCqlParsingService>;
 
 const useCqlParsingServiceMockResolved = {
   getDefinitionCallstacks: jest.fn().mockResolvedValue(qdmCallStack),
-} as unknown as CqlParsingService;
+} as unknown as QdmCqlParsingService;
 import { calculationResults } from "../../../groupCoverage/_mocks_/QdmCalculationResults";
 
 const groups = [
