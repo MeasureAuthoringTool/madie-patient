@@ -171,8 +171,6 @@ export const createExcelExportDtosForAllTestCases = (
     groupNumber += groupNumber;
   });
 
-  console.log("testCaseExcelExportDtos: ", testCaseExcelExportDtos);
-
   return testCaseExcelExportDtos;
 };
 
