@@ -495,7 +495,6 @@ const TestCaseList = (props: TestCaseListProps) => {
           const testCaseDtos: TestCaseExcelExportDto[] =
             createExcelExportDtosForAllTestCases(
               measure,
-              testCases,
               cqmMeasure,
               calculationOutput,
               callstack
@@ -512,7 +511,7 @@ const TestCaseList = (props: TestCaseListProps) => {
               link.href = url;
               link.setAttribute(
                 "download",
-                `${measure.ecqmTitle}-v${measure.version}-QDM-TestCases.xls`
+                `${measure.ecqmTitle}-v${measure.version}-QDM-TestCases.xlsx`
               );
               document.body.appendChild(link);
               link.click();

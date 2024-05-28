@@ -23,6 +23,7 @@ import {
   StatementCoverageResult,
   buildHighlightingForGroups,
 } from "./cqlCoverageBuilder/CqlCoverageBuilder";
+import { QdmCalculationService } from "../api/QdmCalculationService";
 
 export const convertToNumber = (value: number | boolean | string) => {
   let convertedNumber: number = 0;
@@ -106,19 +107,30 @@ const populateStratificationDtos = (
 
 export const createExcelExportDtosForAllTestCases = (
   measure: Measure,
-  testCases: TestCase[],
   cqmMeasure: CqmMeasure,
   calculationOutput: CqmExecutionResultsByPatient,
   callstack: CqlDefinitionCallstack
 ): TestCaseExcelExportDto[] => {
   const testCaseExcelExportDtos: TestCaseExcelExportDto[] = [];
-
-  console.log("calculationOutput: ", calculationOutput);
+  const qdmCalculationService = new QdmCalculationService();
+  const testCasesForExport = _.cloneDeep(measure.testCases).map((testCase) => {
+    const patient: QDMPatient = JSON.parse(testCase.json);
+    const patientResults = calculationOutput[patient._id];
+    return qdmCalculationService.processTestCaseResults(
+      testCase,
+      [...measure.groups],
+      measure,
+      patientResults
+    );
+  });
 
   let groupNumber = 1;
-  measure.groups?.forEach((group) => {
+  measure.groups?.forEach((group: Group) => {
     const testCaseExecutionResultDtos: TestCaseExecutionResultDto[] = [];
-    testCases?.forEach((currentTestCase) => {
+    testCasesForExport?.forEach((currentTestCase) => {
+      const patient: QDMPatient = JSON.parse(currentTestCase.json);
+      const patientResults = calculationOutput[patient._id];
+
       const groupPopulation = currentTestCase.groupPopulations?.find(
         (groupPopulation) => {
           return groupPopulation.groupId === group.id;
@@ -136,8 +148,6 @@ export const createExcelExportDtosForAllTestCases = (
         currentTestCase.id
       );
 
-      const patient = JSON.parse(currentTestCase.json);
-      const patientResults = calculationOutput[patient._id];
       const coverageResults = buildHighlightingForGroups(
         patientResults,
         cqmMeasure
