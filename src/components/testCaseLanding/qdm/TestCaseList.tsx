@@ -49,6 +49,7 @@ import useExcelExportService from "../../../api/useExcelExportService";
 import FileSaver from "file-saver";
 import { AxiosError, AxiosResponse } from "axios";
 import ExportModal from "./ExportModal";
+
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
 export const coverageHeaderRegex =
@@ -510,7 +511,7 @@ const TestCaseList = (props: TestCaseListProps) => {
               link.href = url;
               link.setAttribute(
                 "download",
-                `${measure.ecqmTitle}-v${measure.version}-QDM-TestCases.xls`
+                `${measure.ecqmTitle}-v${measure.version}-QDM-TestCases.xlsx`
               );
               document.body.appendChild(link);
               link.click();
