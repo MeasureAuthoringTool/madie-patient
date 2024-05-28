@@ -32,7 +32,9 @@ import { TranslatedLibrary } from "./models/TranslatedLibrary";
 
 export class CqmConversionService {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
-
+  //disablign eslint check because React doensn't want me to use the prefix "use" except if I'm using it for a hook
+  // eslint-disable-next-line
+  measureService = useMeasureServiceApi();
   elmDependencyFinder = new ElmDependencyFinder();
 
   // get the translated artifacts for CQL including the included libraries.
@@ -79,15 +81,12 @@ export class CqmConversionService {
   }
 
   async convertToCqmMeasure(measure: Measure): Promise<CqmMeasure> {
-    //disablign eslint check because React doensn't want me to use the prefix "use" except if I'm using it for a hook
-    // eslint-disable-next-line
-    const measureService = useMeasureServiceApi();
     if (_.isNil(measure) || _.isNil(measure.cql)) {
       return null;
     }
     //instead of converting the measure, let's get it from the measure-service
 
-    const cqmMeasure: CqmMeasure = await measureService.getCqmMeasure(
+    const cqmMeasure: CqmMeasure = await this.measureService.getCqmMeasure(
       measure.id
     );
     //TODO.. leaving this commented code until the cqmMeasure conversion is completed
