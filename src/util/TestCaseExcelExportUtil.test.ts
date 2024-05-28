@@ -503,11 +503,6 @@ describe("TestCaseExcelExportUtil", () => {
       .mockResolvedValueOnce({ data: translatedLibraries })
       .mockResolvedValueOnce({ data: population_sets });
 
-    // const singleGroupMeasure: Measure = {
-    //   ...measure,
-    //   groups: measure.groups.filter((g) => g.id === "65c51ed069853c1ce9726179"),
-    // };
-
     const cqmMeasure = await cqmConversionService.convertToCqmMeasure(measure);
 
     const testCaseExcelExportDtos: TestCaseExcelExportDto[] =
