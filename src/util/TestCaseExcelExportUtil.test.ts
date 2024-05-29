@@ -15,7 +15,7 @@ import {
 } from "@madie/madie-models";
 import { CqmConversionService } from "../api/CqmModelConversionService";
 import { PopulationSet } from "cqm-models";
-import calculationOutputMultipleTestCases from "../__mocks__/calculationOutputMultipleTestCases.json";
+import calculationOutputMultipleTestCasesMultiplePopCrits from "../__mocks__/calculationOutputMultipleTestCasesMultiplePopCrits.json";
 import translatedLibrariesData from "../__mocks__/translatedLibraries.json";
 import cqlDefinitionCallstack from "../__mocks__/cqlDefinitionCallstack.json";
 import { DataCriteria } from "../api/models/DataCriteria";
@@ -424,6 +424,76 @@ describe("TestCaseExcelExportUtil", () => {
           },
         ],
       },
+      {
+        id: "6605623a387d4b542a847fa8",
+        title: "Population Criteria Section",
+        population_set_id: "6605623a387d4b542a847fa8",
+        populations: {
+          IPP: {
+            id: "148f7693-2806-46f1-b657-3331064382e0",
+            library_name: "MAT6264Lib",
+            statement_name: "Initial Population",
+            hqmf_id: null,
+          },
+          DENOM: {
+            id: "3ba054e0-652a-469c-8362-e4ebf92397f0",
+            library_name: "MAT6264Lib",
+            statement_name: "Denominator",
+            hqmf_id: null,
+          },
+          DENEX: {
+            id: "8f60d611-c156-4a5e-9aff-929b41960583",
+            library_name: "MAT6264Lib",
+            statement_name: "",
+            hqmf_id: null,
+          },
+          NUMER: {
+            id: "ee80607f-9e9d-446d-8c31-50831ac738ba",
+            library_name: "MAT6264Lib",
+            statement_name: "Numerator",
+            hqmf_id: null,
+          },
+          NUMEX: {
+            id: "7144fb7e-43a0-44dd-8ca8-97d83ced6908",
+            library_name: "MAT6264Lib",
+            statement_name: "",
+            hqmf_id: null,
+          },
+          DENEXCEP: {
+            id: "e9340bbe-88ca-4c64-ac05-56294e724ac3",
+            library_name: "MAT6264Lib",
+            statement_name: "",
+            hqmf_id: null,
+          },
+        },
+        stratifications: [],
+        supplemental_data_elements: [
+          {
+            id: "bbbbfc39-409a-42e1-9104-59a27d4b3d56",
+            library_name: "MAT6264Lib",
+            statement_name: "SDE Ethnicity",
+            hqmf_id: null,
+          },
+          {
+            id: "dec78ff4-e1c6-4ed5-8831-dd963b98abf5",
+            library_name: "MAT6264Lib",
+            statement_name: "SDE Payer",
+            hqmf_id: null,
+          },
+          {
+            id: "d3397d58-28d3-494e-ab97-37056ba6acf7",
+            library_name: "MAT6264Lib",
+            statement_name: "SDE Race",
+            hqmf_id: null,
+          },
+          {
+            id: "20597a36-6644-4b03-a121-59a9620f68f5",
+            library_name: "MAT6264Lib",
+            statement_name: "SDE Sex",
+            hqmf_id: null,
+          },
+        ],
+      },
     ];
   });
 
@@ -439,7 +509,7 @@ describe("TestCaseExcelExportUtil", () => {
       createExcelExportDtosForAllTestCases(
         measure,
         cqmMeasure,
-        calculationOutputMultipleTestCases,
+        calculationOutputMultipleTestCasesMultiplePopCrits,
         cqlDefinitionCallstack
       );
 
@@ -472,7 +542,7 @@ describe("TestCaseExcelExportUtil", () => {
     expect(
       testCaseExcelExportDtos[0].testCaseExecutionResults[0].populations[1]
         .actual
-    ).toBe(4);
+    ).toBe(2);
     expect(
       testCaseExcelExportDtos[0].testCaseExecutionResults[0].populations[2].name
     ).toBe("numerator");
@@ -483,7 +553,7 @@ describe("TestCaseExcelExportUtil", () => {
     expect(
       testCaseExcelExportDtos[0].testCaseExecutionResults[0].populations[2]
         .actual
-    ).toBe(6);
+    ).toBe(2);
     expect(testCaseExcelExportDtos[0].testCaseExecutionResults[0].last).toBe(
       "testSeries1"
     );

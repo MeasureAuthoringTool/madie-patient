@@ -23,6 +23,7 @@ import {
   StatementCoverageResult,
   buildHighlightingForGroups,
 } from "./cqlCoverageBuilder/CqlCoverageBuilder";
+import { QdmCalculationService } from "../api/QdmCalculationService";
 
 export const convertToNumber = (value: number | boolean | string) => {
   let convertedNumber: number = 0;
@@ -111,11 +112,30 @@ export const createExcelExportDtosForAllTestCases = (
   callstack: CqlDefinitionCallstack
 ): TestCaseExcelExportDto[] => {
   const testCaseExcelExportDtos: TestCaseExcelExportDto[] = [];
+  const qdmCalculationService = new QdmCalculationService();
+  const testCasesForExport = _.cloneDeep(measure.testCases)
+    .map((testCase) => {
+      const patient: QDMPatient = JSON.parse(testCase.json);
+      if (_.isNil(patient?._id)) {
+        return null;
+      }
+      const patientResults = calculationOutput[patient._id];
+      return qdmCalculationService.processTestCaseResults(
+        testCase,
+        [...measure.groups],
+        measure,
+        patientResults
+      );
+    })
+    .filter((tc) => !_.isNil(tc));
 
   let groupNumber = 1;
-  measure.groups?.forEach((group) => {
+  measure.groups?.forEach((group: Group) => {
     const testCaseExecutionResultDtos: TestCaseExecutionResultDto[] = [];
-    measure?.testCases?.forEach((currentTestCase) => {
+    testCasesForExport?.forEach((currentTestCase) => {
+      const patient: QDMPatient = JSON.parse(currentTestCase.json);
+      const patientResults = calculationOutput[patient._id];
+
       const groupPopulation = currentTestCase.groupPopulations?.find(
         (groupPopulation) => {
           return groupPopulation.groupId === group.id;
@@ -133,8 +153,6 @@ export const createExcelExportDtosForAllTestCases = (
         currentTestCase.id
       );
 
-      const patient = JSON.parse(currentTestCase.json);
-      const patientResults = calculationOutput[patient._id];
       const coverageResults = buildHighlightingForGroups(
         patientResults,
         cqmMeasure
