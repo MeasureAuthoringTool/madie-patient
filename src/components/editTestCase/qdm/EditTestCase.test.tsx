@@ -433,11 +433,11 @@ describe("ElementsTab", () => {
   useCqlParsingServiceMock.mockImplementation(() => {
     return useCqlParsingServiceMockResolved;
   });
+  CQMConversionMock.mockImplementation(() => {
+    return useCqmConversionServiceMockResolved;
+  });
 
   test("Icons present and navigate correctly.", async () => {
-    CQMConversionMock.mockImplementation(() => {
-      return useCqmConversionServiceMockResolved;
-    });
     await waitFor(() => renderEditTestCaseComponent());
     const json = await findByText("JSON");
     // const elements = await findByText("Elements"); // this doesn't work?
@@ -648,8 +648,8 @@ describe("EditTestCase QDM Component", () => {
     );
   });
 
-  it("should render qdm edit Demographics component with default values", () => {
-    renderEditTestCaseComponent();
+  it("should render qdm edit Demographics component with default values", async () => {
+    await renderEditTestCaseComponent();
 
     const raceInput = screen.getByTestId(
       "demographics-race-input"
@@ -670,7 +670,7 @@ describe("EditTestCase QDM Component", () => {
 
   it("should render qdm edit Demographics component with values from TestCase JSON", async () => {
     testCase.json = testCaseJson;
-    renderEditTestCaseComponent();
+    await renderEditTestCaseComponent();
 
     const raceInput = screen.getByTestId(
       "demographics-race-input"
@@ -829,7 +829,7 @@ describe("EditTestCase QDM Component", () => {
     useTestCaseServiceMock.mockImplementation(() => {
       return useTestCaseServiceMockRejectedNonUniqueName;
     });
-    renderEditTestCaseComponent();
+    await renderEditTestCaseComponent();
     const saveTestCaseButton = screen.getByRole("button", {
       name: "Save",
     });
@@ -893,12 +893,13 @@ describe("EditTestCase QDM Component", () => {
       { timeout: 1500 }
     );
   });
+
   it("test update test case fails with failure toast", async () => {
     testCase.json = testCaseJson;
     useTestCaseServiceMock.mockImplementation(() => {
       return useTestCaseServiceMockRejected;
     });
-    renderEditTestCaseComponent();
+    await renderEditTestCaseComponent();
     const saveTestCaseButton = screen.getByRole("button", {
       name: "Save",
     });
