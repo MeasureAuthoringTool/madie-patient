@@ -2,15 +2,16 @@ import React, { useEffect, useRef, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import * as _ from "lodash";
+import { uniqWith } from "lodash";
 import {
   Group,
   MeasureErrorType,
   TestCase,
+  TestCaseExcelExportDto,
   TestCaseImportOutcome,
   TestCaseImportRequest,
-  TestCaseExcelExportDto,
 } from "@madie/madie-models";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import calculationService from "../../../api/CalculationService";
 import { checkUserCanEdit, measureStore } from "@madie/madie-util";
 import CreateCodeCoverageNavTabs from "./CreateCodeCoverageNavTabs";
@@ -22,8 +23,8 @@ import {
 } from "@madie/madie-design-system/dist/react";
 import Typography from "@mui/material/Typography";
 import {
-  TestCasesPassingDetailsProps,
   TestCaseListProps,
+  TestCasesPassingDetailsProps,
 } from "../common/interfaces";
 import TestCaseTable from "../common/TestCaseTable/TestCaseTable";
 import UseTestCases from "../common/Hooks/UseTestCases";
@@ -37,10 +38,9 @@ import TestCaseCoverage from "./TestCaseCoverage/TestCaseCoverage";
 import { QDMPatient } from "cqm-models";
 import { cloneTestCase } from "../../../util/QdmTestCaseHelper";
 import {
-  GroupCoverageResult,
   buildHighlightingForAllGroups,
+  GroupCoverageResult,
 } from "../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
-import { uniqWith } from "lodash";
 import { checkSpecialCharactersForExport } from "../../../util/checkSpecialCharacters";
 import { createExcelExportDtosForAllTestCases } from "../../../util/TestCaseExcelExportUtil";
 import useCqlParsingService from "../../../api/useCqlParsingService";
@@ -248,70 +248,66 @@ const TestCaseList = (props: TestCaseListProps) => {
       });
       setTestCases([...testCases]);
     }
-    clauseCoverageProcessor(calculationOutput);
+    setCoveragePercentage(clauseCoverageProcessor());
   }, [calculationOutput, selectedPopCriteria]);
 
-  const clauseCoverageProcessor = (calculationOutput) => {
-    //generates current populations coverage %
-    if (calculationOutput && selectedPopCriteria) {
-      let allClauses = [];
-      let relevantStatements;
-      const patientIDs = Object.keys(calculationOutput);
-      patientIDs.forEach((patientID) => {
-        let newClauseResults = [];
-        const clauseResults =
-          calculationOutput[patientID][selectedPopCriteria.id]?.clause_results;
-        if (clauseResults) {
-          newClauseResults = Object.values(
-            calculationOutput[patientID][selectedPopCriteria.id]?.clause_results
+  const clauseCoverageProcessor = (measureGroup?: Group): string => {
+    //generates populations' coverage %
+    if (!calculationOutput) {
+      return;
+    }
+    const group = measureGroup ?? selectedPopCriteria;
+    if (!group) {
+      return;
+    }
+    let allClauses = [];
+    let relevantStatements;
+    const patientIDs = Object.keys(calculationOutput);
+    patientIDs.forEach((patientID) => {
+      let newClauseResults = [];
+      const clauseResults =
+        calculationOutput[patientID][group.id]?.clause_results;
+      if (clauseResults) {
+        newClauseResults = Object.values(
+          calculationOutput[patientID][group.id]?.clause_results
+        )?.flatMap(Object.values);
+      }
+      // we only need one copy of relevantStatements from the first group to match against
+      if (!relevantStatements) {
+        const statementResults =
+          calculationOutput[patientID][group.id]?.statement_results;
+        if (statementResults) {
+          relevantStatements = Object.values(
+            calculationOutput[patientID][group.id]?.statement_results
           )?.flatMap(Object.values);
         }
-        // we only need one copy of relevantStatements from the first group to match against
-        if (!relevantStatements) {
-          const statementResults =
-            calculationOutput[patientID][selectedPopCriteria.id]
-              ?.statement_results;
-          if (statementResults) {
-            const newStatementResults = Object.values(
-              calculationOutput[patientID][selectedPopCriteria.id]
-                ?.statement_results
-            )?.flatMap(Object.values);
-            relevantStatements = newStatementResults;
-          }
-        }
-        allClauses = [...allClauses, ...newClauseResults];
-      });
-      // get a list of used statements
-      relevantStatements = relevantStatements.filter(
-        (s) => s.relevance !== "NA"
-      );
-      const allRelevantClauses = allClauses
-        .filter((c) =>
-          relevantStatements.some(
-            (s) =>
-              s.statementName === c.statementName &&
-              s.libraryName === c.libraryName
-          )
+      }
+      allClauses = [...allClauses, ...newClauseResults];
+    });
+    // get a list of used statements
+    relevantStatements = relevantStatements.filter((s) => s.relevance !== "NA");
+    const allRelevantClauses = allClauses
+      .filter((c) =>
+        relevantStatements.some(
+          (s) =>
+            s.statementName === c.statementName &&
+            s.libraryName === c.libraryName
         )
-        .filter((result) => result.final !== "NA");
-      // get a list of all unique used clauses
-      const allUniqueClauses = uniqWith(
-        allRelevantClauses,
-        (c1, c2) =>
-          c1.libraryName === c2.libraryName && c1.localId === c2.localId
-      ).sort((a, b) => a.localId - b.localId);
-      // get a list of all unique covered clauses
-      const coveredClauses = uniqWith(
-        allRelevantClauses.filter((clause) => clause.final === "TRUE"),
-        (c1, c2) =>
-          c1.libraryName === c2.libraryName && c1.localId === c2.localId
-      );
-      setCoveragePercentage(
-        Math.floor(
-          (coveredClauses.length / allUniqueClauses.length) * 100
-        ).toString()
-      );
-    }
+      )
+      .filter((result) => result.final !== "NA");
+    // get a list of all unique used clauses
+    const allUniqueClauses = uniqWith(
+      allRelevantClauses,
+      (c1, c2) => c1.libraryName === c2.libraryName && c1.localId === c2.localId
+    ).sort((a, b) => a.localId - b.localId);
+    // get a list of all unique covered clauses
+    const coveredClauses = uniqWith(
+      allRelevantClauses.filter((clause) => clause.final === "TRUE"),
+      (c1, c2) => c1.libraryName === c2.libraryName && c1.localId === c2.localId
+    );
+    return Math.floor(
+      (coveredClauses.length / allUniqueClauses.length) * 100
+    ).toString();
   };
   const createNewTestCase = () => {
     setCreateOpen(true);
