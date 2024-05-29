@@ -15,9 +15,6 @@ import { MadieError } from "../util/Utils";
 
 export type QrdaRequestDTO = {
   measure: Measure;
-  coveragePercentage: string;
-  passPercentage: number;
-  passFailRatio: string;
   testCaseDtos: TestCaseExcelExportDto[];
 };
 

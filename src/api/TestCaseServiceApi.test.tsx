@@ -1,11 +1,57 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { TestCaseServiceApi } from "./useTestCaseServiceApi";
 import { ScanValidationDto } from "./models/ScanValidationDto";
-import { TestCase } from "@madie/madie-models";
+import {
+  Measure,
+  MeasureScoring,
+  Model,
+  PopulationType,
+  TestCase,
+  TestCaseExcelExportDto,
+} from "@madie/madie-models";
 import { waitFor } from "@testing-library/react";
 import { addValues } from "../util/DefaultValueProcessor";
+import { measureCql } from "../components/editTestCase/groupCoverage/_mocks_/QdmCovergaeMeasureCql";
 
 jest.mock("axios");
+
+const mockMeasure = {
+  id: "1",
+  measureName: "measureName",
+  createdBy: "testuser",
+  cqlLibraryName: "testLibrary",
+  cmsId: "1234",
+  measureSetId: "1234",
+
+  scoring: MeasureScoring.PROPORTION,
+  groups: [
+    {
+      id: "1",
+      scoring: MeasureScoring.PROPORTION,
+      populationBasis: "boolean",
+      populations: [
+        {
+          id: "id-1",
+          name: PopulationType.INITIAL_POPULATION,
+          definition: "ipp",
+        },
+        {
+          id: "id-2",
+          name: PopulationType.DENOMINATOR,
+          definition: "denom",
+        },
+        {
+          id: "id-3",
+          name: PopulationType.NUMERATOR,
+          definition: "num",
+        },
+      ],
+    },
+  ],
+  model: Model.QDM_5_6,
+  acls: [{ userId: "othertestuseratexample.com", roles: ["SHARED_WITH"] }],
+  cql: measureCql,
+} as unknown as Measure;
 
 describe("TestCaseServiceApi Tests", () => {
   let testCaseService: TestCaseServiceApi;
@@ -187,10 +233,18 @@ describe("TestCaseServiceApi Tests", () => {
       type: "application/octet-stream",
     };
     const resp = { status: 200, data: zippedQRDAData };
-    axios.get = jest.fn().mockResolvedValueOnce(resp);
+    axios.put = jest.fn().mockResolvedValueOnce(resp);
 
-    const qrdaData = await testCaseService.exportQRDA("testMeasureId");
-    expect(axios.get).toBeCalledTimes(1);
+    const testCaseDtos: TestCaseExcelExportDto[] = [
+      {
+        groupId: "1",
+      } as TestCaseExcelExportDto,
+    ];
+    const qrdaData = await testCaseService.exportQRDA("testMeasureId", {
+      measure: mockMeasure,
+      testCaseDtos,
+    });
+    expect(axios.put).toBeCalledTimes(1);
     expect(qrdaData).toEqual(zippedQRDAData);
   });
 
@@ -198,11 +252,19 @@ describe("TestCaseServiceApi Tests", () => {
     const resp = {
       status: 500,
     };
-    axios.get = jest.fn().mockRejectedValueOnce(resp);
+    axios.put = jest.fn().mockRejectedValueOnce(resp);
 
+    const testCaseDtos: TestCaseExcelExportDto[] = [
+      {
+        groupId: "1",
+      } as TestCaseExcelExportDto,
+    ];
     try {
-      await testCaseService.exportQRDA("testMeasureId");
-      expect(axios.get).toBeCalledTimes(1);
+      await testCaseService.exportQRDA("testMeasureId", {
+        measure: mockMeasure,
+        testCaseDtos,
+      });
+      expect(axios.put).toBeCalledTimes(1);
     } catch (error) {
       expect(error.status).toBe(500);
     }

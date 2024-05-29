@@ -550,15 +550,30 @@ const TestCaseList = (props: TestCaseListProps) => {
       setErrors((prevState) => [...prevState, ...failedTCs]);
       return;
     }
+
+    const localMeasure = _.cloneDeep(measure);
     try {
-      const passPercentage: number = testCasePassFailStats.passPercentage;
-      const passFailRatio: string = testCasePassFailStats.passFailRatio;
+      const executionResults: CqmExecutionResultsByPatient = calculationOutput;
+      // process calculation results for every population criteria
+      localMeasure.testCases.forEach((testCase) => {
+        const patient: QDMPatient = JSON.parse(testCase.json);
+        const patientResults = executionResults[patient._id];
+        const testCaseWithResults =
+          qdmCalculation.current.processTestCaseResults(
+            testCase,
+            localMeasure.groups,
+            localMeasure,
+            patientResults
+          );
+        testCase.groupPopulations = testCaseWithResults.groupPopulations;
+        testCase.executionStatus = testCaseWithResults.executionStatus;
+      });
       const callstack = await cqlParsingService.current.getDefinitionCallstacks(
         measure.cql
       );
       const excelTestCaseDtos: TestCaseExcelExportDto[] =
         createExcelExportDtosForAllTestCases(
-          measure,
+          localMeasure,
           cqmMeasure,
           calculationOutput,
           callstack
@@ -567,6 +582,9 @@ const TestCaseList = (props: TestCaseListProps) => {
         (dto) => ({
           groupId: dto.groupId,
           groupNumber: dto.groupNumber,
+          coverage: clauseCoverageProcessor(
+            localMeasure.groups.find((g) => g.id === dto.groupId)
+          ),
           testCaseExecutionResults: dto.testCaseExecutionResults.map((r) => ({
             testCaseId: r.testCaseId,
             populations: r.populations,
@@ -578,18 +596,13 @@ const TestCaseList = (props: TestCaseListProps) => {
           })),
         })
       );
-      // Overwrite saved test cases with calculated test cases
-      measure.testCases = testCases;
       const exportData = await testCaseService.current.exportQRDA(measureId, {
-        measure,
-        coveragePercentage,
-        passPercentage,
-        passFailRatio,
+        measure: localMeasure,
         testCaseDtos,
       });
       FileSaver.saveAs(
         exportData,
-        `${measure.ecqmTitle}-v${measure.version}-QDM-TestCases.zip`
+        `${localMeasure.ecqmTitle}-v${localMeasure.version}-QDM-TestCases.zip`
       );
       setToastOpen(true);
       setToastType("success");
