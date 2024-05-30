@@ -586,7 +586,7 @@ describe("EditTestCase QDM Component", () => {
       "demographics-gender-input"
     ) as HTMLInputElement;
     expect(genderInput).toBeInTheDocument();
-    expect(genderInput.value).toBe("Female");
+    expect(genderInput.value).toBe("Male");
     const livingStatusInput = screen.getByTestId(
       "demographics-living-status-input"
     ) as HTMLInputElement;
@@ -757,14 +757,14 @@ describe("EditTestCase QDM Component", () => {
       "demographics-gender-input"
     ) as HTMLInputElement;
     expect(genderInput).toBeInTheDocument();
-    expect(genderInput.value).toBe("Female");
+    expect(genderInput.value).toBe("Male");
 
     act(() => {
       fireEvent.change(genderInput, {
-        target: { value: "Male" },
+        target: { value: "Female" },
       });
     });
-    expect(genderInput.value).toBe("Male");
+    expect(genderInput.value).toBe("Female");
 
     const livingStatusInput = screen.getByTestId(
       "demographics-living-status-input"
@@ -827,14 +827,14 @@ describe("EditTestCase QDM Component", () => {
       "demographics-gender-input"
     ) as HTMLInputElement;
     expect(genderInput).toBeInTheDocument();
-    expect(genderInput.value).toBe("Female");
+    expect(genderInput.value).toBe("Male");
 
     act(() => {
       fireEvent.change(genderInput, {
-        target: { value: "Male" },
+        target: { value: "Female" },
       });
     });
-    expect(genderInput.value).toBe("Male");
+    expect(genderInput.value).toBe("Female");
 
     const livingStatusInput = screen.getByTestId(
       "demographics-living-status-input"
