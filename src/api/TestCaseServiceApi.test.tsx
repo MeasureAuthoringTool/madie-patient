@@ -242,7 +242,7 @@ describe("TestCaseServiceApi Tests", () => {
     ];
     const qrdaData = await testCaseService.exportQRDA("testMeasureId", {
       measure: mockMeasure,
-      testCaseDtos,
+      groupDTOs: testCaseDtos,
     });
     expect(axios.put).toBeCalledTimes(1);
     expect(qrdaData).toEqual(zippedQRDAData);
@@ -262,7 +262,7 @@ describe("TestCaseServiceApi Tests", () => {
     try {
       await testCaseService.exportQRDA("testMeasureId", {
         measure: mockMeasure,
-        testCaseDtos,
+        groupDTOs: testCaseDtos,
       });
       expect(axios.put).toBeCalledTimes(1);
     } catch (error) {

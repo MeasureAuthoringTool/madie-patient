@@ -5,7 +5,9 @@ import * as _ from "lodash";
 import { uniqWith } from "lodash";
 import {
   Group,
+  GroupedStratificationDto,
   MeasureErrorType,
+  PopulationDto,
   TestCase,
   TestCaseExcelExportDto,
   TestCaseImportOutcome,
@@ -42,13 +44,21 @@ import {
   GroupCoverageResult,
 } from "../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
 import { checkSpecialCharactersForExport } from "../../../util/checkSpecialCharacters";
-import { createExcelExportDtosForAllTestCases } from "../../../util/TestCaseExcelExportUtil";
+import {
+  createExcelExportDtosForAllTestCases,
+  populatePopulationDtos,
+  populateStratificationDtos,
+} from "../../../util/TestCaseExcelExportUtil";
 import useCqlParsingService from "../../../api/useCqlParsingService";
 import { CqlDefinitionCallstack } from "../../editTestCase/groupCoverage/QiCoreGroupCoverage";
 import useExcelExportService from "../../../api/useExcelExportService";
 import FileSaver from "file-saver";
 import { AxiosError, AxiosResponse } from "axios";
 import ExportModal from "./ExportModal";
+import {
+  QrdaTestCaseDTO,
+  QrdaGroupExportDTO,
+} from "../../../api/useTestCaseServiceApi";
 
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
@@ -543,62 +553,71 @@ const TestCaseList = (props: TestCaseListProps) => {
   };
 
   const exportQRDA = async () => {
-    setExportExecuting(true);
-    setOptionsOpen(false);
     const failedTCs = checkSpecialCharactersForExport(testCases);
     if (failedTCs.length) {
       setErrors((prevState) => [...prevState, ...failedTCs]);
       return;
     }
-
+    setExportExecuting(true);
+    setOptionsOpen(false);
     const localMeasure = _.cloneDeep(measure);
+    const executionResults: CqmExecutionResultsByPatient = calculationOutput;
+    const groupExportDTOs: QrdaGroupExportDTO[] = [];
+    let groupNumber = 1;
     try {
-      const executionResults: CqmExecutionResultsByPatient = calculationOutput;
       // process calculation results for every population criteria
-      localMeasure.testCases.forEach((testCase) => {
-        const patient: QDMPatient = JSON.parse(testCase.json);
-        const patientResults = executionResults[patient._id];
-        const testCaseWithResults =
-          qdmCalculation.current.processTestCaseResults(
-            testCase,
-            localMeasure.groups,
-            localMeasure,
-            patientResults
+      localMeasure.groups?.forEach((group) => {
+        const testCaseDTOs: QrdaTestCaseDTO[] = [];
+        localMeasure.testCases.forEach((testCase) => {
+          const patient: QDMPatient = JSON.parse(testCase.json);
+          const patientResults = executionResults[patient._id];
+          const testCaseWithResults =
+            qdmCalculation.current.processTestCaseResults(
+              testCase,
+              [group],
+              localMeasure,
+              patientResults
+            );
+          testCase.groupPopulations = testCaseWithResults.groupPopulations;
+          testCase.executionStatus = testCaseWithResults.executionStatus;
+
+          const groupPopulation = testCase.groupPopulations?.find(
+            (groupPopulation) => {
+              return groupPopulation.groupId === group.id;
+            }
           );
-        testCase.groupPopulations = testCaseWithResults.groupPopulations;
-        testCase.executionStatus = testCaseWithResults.executionStatus;
-      });
-      const callstack = await cqlParsingService.current.getDefinitionCallstacks(
-        measure.cql
-      );
-      const excelTestCaseDtos: TestCaseExcelExportDto[] =
-        createExcelExportDtosForAllTestCases(
-          localMeasure,
-          cqmMeasure,
-          calculationOutput,
-          callstack
-        );
-      const testCaseDtos: TestCaseExcelExportDto[] = excelTestCaseDtos.map(
-        (dto) => ({
-          groupId: dto.groupId,
-          groupNumber: dto.groupNumber,
+
+          let stratNumber = 1;
+          const populationDtos: PopulationDto[] =
+            populatePopulationDtos(groupPopulation);
+          const groupedStratDtos: GroupedStratificationDto[] =
+            populateStratificationDtos(
+              groupPopulation,
+              groupNumber,
+              stratNumber,
+              testCase.id
+            );
+          testCaseDTOs.push({
+            testCaseId: testCase.id,
+            lastName: testCase.series,
+            firstName: testCase.title,
+            populations: populationDtos,
+            stratifications: groupedStratDtos,
+          });
+        });
+        groupExportDTOs.push({
+          groupId: group.id,
+          groupNumber: groupNumber.toString(),
           coverage: clauseCoverageProcessor(
-            localMeasure.groups.find((g) => g.id === dto.groupId)
+            localMeasure.groups.find((g) => g.id === group.id)
           ),
-          testCaseExecutionResults: dto.testCaseExecutionResults.map((r) => ({
-            testCaseId: r.testCaseId,
-            populations: r.populations,
-            stratifications: r.stratifications,
-            last: r.last,
-            first: r.first,
-            definitions: [],
-            functions: [],
-          })),
-        })
-      );
+          testCaseDTOs,
+        });
+        groupNumber++;
+      });
       const exportData = await testCaseService.current.exportQRDA(measureId, {
         measure: localMeasure,
-        testCaseDtos,
+        groupDTOs: groupExportDTOs,
       });
       FileSaver.saveAs(
         exportData,
