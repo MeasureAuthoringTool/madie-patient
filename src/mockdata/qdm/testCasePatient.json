@@ -6,68 +6,68 @@
         {
           "code": "2135-2",
           "system": "2.16.840.1.113883.6.238",
-          "version": "1.2",
+          "version": null,
           "display": "Hispanic or Latino"
         }
       ],
-      "_id": "64ad6ac03bdeb0000056a5af",
+      "_id": "6655ffd49dd6390000adf60f",
       "qdmTitle": "Patient Characteristic Ethnicity",
       "hqmfOid": "2.16.840.1.113883.10.20.28.4.56",
       "qdmCategory": "patient_characteristic",
       "qdmStatus": "ethnicity",
       "qdmVersion": "5.6",
       "_type": "QDM::PatientCharacteristicEthnicity",
-      "id": "64ad6ac03bdeb0000056a5af"
-    },
-    {
-      "dataElementCodes": [
-        {
-          "code": "M",
-          "system": "2.16.840.1.113883.5.1",
-          "version": "2022-11",
-          "display": "Male"
-        }
-      ],
-      "_id": "648c6a93f48905000012a6a2",
-      "qdmTitle": "Patient Characteristic Sex",
-      "hqmfOid": "2.16.840.1.113883.10.20.28.4.55",
-      "qdmCategory": "patient_characteristic",
-      "qdmStatus": "gender",
-      "qdmVersion": "5.6",
-      "_type": "QDM::PatientCharacteristicSex",
-      "id": "648c6a93f48905000012a6a2"
+      "id": "6655ffd49dd6390000adf60f"
     },
     {
       "dataElementCodes": [
         {
           "code": "2028-9",
           "system": "2.16.840.1.113883.6.238",
-          "version": "1.2",
+          "version": null,
           "display": "Asian"
         }
       ],
-      "_id": "648c6a90f48905000012a694",
+      "_id": "6655ffd29dd6390000adf60d",
       "qdmTitle": "Patient Characteristic Race",
       "hqmfOid": "2.16.840.1.113883.10.20.28.4.59",
       "qdmCategory": "patient_characteristic",
       "qdmStatus": "race",
       "qdmVersion": "5.6",
       "_type": "QDM::PatientCharacteristicRace",
-      "id": "648c6a90f48905000012a694"
+      "id": "6655ffd29dd6390000adf60d"
     },
     {
       "dataElementCodes": [],
-      "_id": "648c6a8ef48905000012a68d",
+      "_id": "6655ffc39dd6390000adf5f6",
       "qdmTitle": "Patient Characteristic Birthdate",
       "hqmfOid": "2.16.840.1.113883.10.20.28.4.54",
       "qdmCategory": "patient_characteristic",
       "qdmStatus": "birthdate",
       "qdmVersion": "5.6",
       "_type": "QDM::PatientCharacteristicBirthdate",
-      "id": "648c6a8ef48905000012a68d",
-      "birthDatetime": "2009-12-22T14:58:38.000+00:00"
+      "id": "6655ffc39dd6390000adf5f6",
+      "birthDatetime": "2024-05-28T16:01:07.000+00:00"
+    },
+    {
+      "dataElementCodes": [
+        {
+          "code": "F",
+          "system": "2.16.840.1.113883.5.1",
+          "version": null,
+          "display": "Female"
+        }
+      ],
+      "_id": "6655ffbd9dd6390000adf5e4",
+      "qdmTitle": "Patient Characteristic Sex",
+      "hqmfOid": "2.16.840.1.113883.10.20.28.4.55",
+      "qdmCategory": "patient_characteristic",
+      "qdmStatus": "gender",
+      "qdmVersion": "5.6",
+      "_type": "QDM::PatientCharacteristicSex",
+      "id": "6655ffbd9dd6390000adf5e4"
     }
   ],
-  "_id": "648c6a89f48905000012a680",
-  "birthDatetime": "2009-12-22T14:58:38.691+00:00"
+  "_id": "66267bd247cd110000d4a0e7",
+  "birthDatetime": "2024-05-28T16:01:07.763+00:00"
 }
