@@ -2,7 +2,10 @@ import axios, { AxiosResponse } from "axios";
 import useServiceConfig from "./useServiceConfig";
 import { ServiceConfig } from "./ServiceContext";
 import {
+  GroupedStratificationDto,
   HapiOperationOutcome,
+  Measure,
+  PopulationDto,
   TestCase,
   TestCaseImportRequest,
 } from "@madie/madie-models";
@@ -10,6 +13,27 @@ import { useOktaTokens } from "@madie/madie-util";
 import { ScanValidationDto } from "./models/ScanValidationDto";
 import { addValues } from "../util/DefaultValueProcessor";
 import { MadieError } from "../util/Utils";
+import { TestCaseExecutionResultDto } from "@madie/madie-models/dist/TestCaseExcelExportDto";
+
+export interface QrdaTestCaseDTO {
+  testCaseId: string;
+  lastName: string;
+  firstName: string;
+  populations: Array<PopulationDto>;
+  stratifications?: Array<GroupedStratificationDto>;
+}
+
+export interface QrdaGroupExportDTO {
+  groupId: string;
+  groupNumber: string;
+  coverage: string;
+  testCaseDTOs: QrdaTestCaseDTO[];
+}
+
+export type QrdaRequestDTO = {
+  measure: Measure;
+  groupDTOs: QrdaGroupExportDTO[];
+};
 
 export class TestCaseServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
@@ -289,9 +313,13 @@ export class TestCaseServiceApi {
     fileReader.readAsText(file);
   }
 
-  async exportQRDA(measureId: string): Promise<Blob> {
-    const response = await axios.get(
+  async exportQRDA(
+    measureId: string,
+    requestDto: QrdaRequestDTO
+  ): Promise<Blob> {
+    const response = await axios.put(
       `${this.baseUrl}/measures/${measureId}/test-cases/qrda`,
+      requestDto,
       {
         headers: {
           Authorization: `Bearer ${this.getAccessToken()}`,
