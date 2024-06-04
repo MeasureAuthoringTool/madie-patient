@@ -164,12 +164,34 @@ const TestCaseTable = (props: TestCaseTableProps) => {
           <tr key={headerGroup.id}>
             {headerGroup.headers.map((header) => (
               <TH key={header.id} scope="col">
-                {header.isPlaceholder
-                  ? null
-                  : flexRender(
+                {header.isPlaceholder ? null : (
+                  <button
+                    className={
+                      header.column.getCanSort()
+                        ? "cursor-pointer select-none"
+                        : ""
+                    }
+                    onClick={header.column.getToggleSortingHandler()}
+                    title={
+                      header.column.getCanSort()
+                        ? header.column.getNextSortingOrder() === "asc"
+                          ? "Sort ascending"
+                          : header.column.getNextSortingOrder() === "desc"
+                          ? "Sort descending"
+                          : "Clear sort"
+                        : undefined
+                    }
+                  >
+                    {flexRender(
                       header.column.columnDef.header,
                       header.getContext()
                     )}
+                    {{
+                      asc: " ↑",
+                      desc: " ↓",
+                    }[header.column.getIsSorted() as string] ?? null}
+                  </button>
+                )}
               </TH>
             ))}
           </tr>
