@@ -49,7 +49,6 @@ import {
   populatePopulationDtos,
   populateStratificationDtos,
 } from "../../../util/TestCaseExcelExportUtil";
-import useCqlParsingService from "../../../api/useCqlParsingService";
 import { CqlDefinitionCallstack } from "../../editTestCase/groupCoverage/QiCoreGroupCoverage";
 import useExcelExportService from "../../../api/useExcelExportService";
 import FileSaver from "file-saver";
@@ -60,6 +59,7 @@ import {
   QrdaGroupExportDTO,
 } from "../../../api/useTestCaseServiceApi";
 
+import useQdmCqlParsingService from "../../../api/cqlElmTranslationService/useQdmCqlParsingService";
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
 export const coverageHeaderRegex =
@@ -143,7 +143,7 @@ const TestCaseList = (props: TestCaseListProps) => {
   const [exportExecuting, setExportExecuting] = useState(false);
   const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
 
-  const cqlParsingService = useRef(useCqlParsingService());
+  const qdmCqlParsingService = useRef(useQdmCqlParsingService());
 
   // const [callstackMap, setCallstackMap] = useState<CqlDefinitionCallstack>();
   // callStackMap is used for generating Excel Export
@@ -495,7 +495,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     if (measure?.cql) {
       setExportExecuting(true);
       setOptionsOpen(false);
-      cqlParsingService.current
+      qdmCqlParsingService.current
         .getDefinitionCallstacks(measure.cql)
         .then((callstack: CqlDefinitionCallstack) => {
           const testCaseDtos: TestCaseExcelExportDto[] =

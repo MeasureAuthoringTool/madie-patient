@@ -1,6 +1,6 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext } from "react";
 import { Measure } from "@madie/madie-models";
-import { CqmMeasure, ValueSet } from "cqm-models";
+import { CqmMeasure } from "cqm-models";
 
 export interface QdmExecutionContextHolder {
   measureState: [measure: Measure, setMeasure: (measure: Measure) => void];

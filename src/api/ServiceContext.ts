@@ -10,7 +10,10 @@ export interface ServiceConfig {
   terminologyService: {
     baseUrl: string;
   };
-  elmTranslationService: {
+  qdmElmTranslationService: {
+    baseUrl: string;
+  };
+  fhirElmTranslationService: {
     baseUrl: string;
   };
   excelExportService: {
