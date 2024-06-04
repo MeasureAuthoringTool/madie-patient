@@ -37,7 +37,7 @@ export const convertToNumber = (value: number | boolean | string) => {
   return convertedNumber;
 };
 
-const populatePopulationDtos = (
+export const populatePopulationDtos = (
   groupPopulation: GroupPopulation
 ): PopulationDto[] => {
   const populationDtos: PopulationDto[] = [];
@@ -83,7 +83,7 @@ const convertToStratDto = (strat): StratificationDto[] => {
 
   return stratificationDtos;
 };
-const populateStratificationDtos = (
+export const populateStratificationDtos = (
   groupPopulation: GroupPopulation,
   groupNumber: number,
   stratNumber: number,
