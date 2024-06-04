@@ -7,6 +7,8 @@ import {
   ColumnDef,
   getCoreRowModel,
   flexRender,
+  getSortedRowModel,
+  SortingState,
 } from "@tanstack/react-table";
 import * as _ from "lodash";
 import { TestCaseStatus, TestCaseActionButton } from "./TestCaseTableHelpers";
@@ -50,6 +52,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
   // Popover utilities
   const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [sorting, setSorting] = React.useState<SortingState>([]);
   const [selectedTestCase, setSelectedTestCase] = useState<TestCase>(null);
   const handleOpen = (
     selected: TestCase,
@@ -116,27 +119,27 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     () => [
       {
         header: "Status",
-        cell: (row) => row.renderValue(),
+        cell: (info) => info.getValue(),
         accessorKey: "status",
       },
       {
         header: "Group",
-        cell: (row) => row.renderValue(),
+        cell: (info) => info.getValue(),
         accessorKey: "group",
       },
       {
         header: "Title",
-        cell: (row) => row.renderValue(),
+        cell: (info) => info.getValue(),
         accessorKey: "title",
       },
       {
         header: "Description",
-        cell: (row) => row.renderValue(),
+        cell: (info) => info.getValue(),
         accessorKey: "description",
       },
       {
         header: "Action",
-        cell: (row) => row.renderValue(),
+        cell: (info) => info.getValue(),
         accessorKey: "action",
       },
     ],
@@ -147,6 +150,11 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    onSortingChange: setSorting,
+    state: {
+      sorting,
+    },
   });
 
   return (
