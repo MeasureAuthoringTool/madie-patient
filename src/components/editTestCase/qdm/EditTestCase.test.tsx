@@ -25,123 +25,31 @@ import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
 import useTestCaseServiceApi, {
   TestCaseServiceApi,
 } from "../../../api/useTestCaseServiceApi";
+// @ts-ignore
 import { useFeatureFlags } from "@madie/madie-util";
-
 import useCqmConversionService, {
   CqmConversionService,
 } from "../../../api/CqmModelConversionService";
 import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
-import { QdmPatientProvider } from "../../../util/QdmPatientContext";
 import { MadieError } from "../../../util/Utils";
 import qdmCalculationService, {
   QdmCalculationService,
 } from "../../../api/QdmCalculationService";
-import useCqlParsingService, {
-  CqlParsingService,
-} from "../../../api/useCqlParsingService";
+import useQdmCqlParsingService, {
+  QdmCqlParsingService,
+} from "../../../api/cqlElmTranslationService/useQdmCqlParsingService";
 import { qdmCallStack } from "../groupCoverage/_mocks_/QdmCallStack";
+// @ts-ignore
+import testCaseJson from "../../../mockdata/qdm/testCasePatient.json";
 
-const serviceConfig = {
-  testCaseService: {
-    baseUrl: "base.url",
-  },
-  measureService: {
-    baseUrl: "base.url",
-  },
-  terminologyService: {
-    baseUrl: "http.com",
-  },
-} as ServiceConfig;
-
-const testCaseJson =
-  "{\n" +
-  '  "qdmVersion": "5.6",\n' +
-  '  "dataElements": [\n' +
-  "    {\n" +
-  '      "dataElementCodes": [\n' +
-  "        {\n" +
-  '          "code": "F",\n' +
-  '          "system": "2.16.840.1.113883.5.1",\n' +
-  '          "version": "2022-11",\n' +
-  '          "display": "Female"\n' +
-  "        }\n" +
-  "      ],\n" +
-  '      "_id": "64de40efbaf96ab41f3c6092",\n' +
-  '      "qdmTitle": "Patient Characteristic Sex",\n' +
-  '      "hqmfOid": "2.16.840.1.113883.10.20.28.4.55",\n' +
-  '      "qdmCategory": "patient_characteristic",\n' +
-  '      "qdmStatus": "gender",\n' +
-  '      "qdmVersion": "5.6",\n' +
-  '      "_type": "QDM::PatientCharacteristicSex",\n' +
-  '      "description": "Patient Characteristic Sex: ONCAdministrativeSex",\n' +
-  '      "codeListId": "2.16.840.1.113762.1.4.1",\n' +
-  '      "id": "64de40efbaf96ab41f3c6092"\n' +
-  "    },\n" +
-  "    {\n" +
-  '      "dataElementCodes": [\n' +
-  "        {\n" +
-  '          "code": "21112-8",\n' +
-  '          "system": "2.16.840.1.113883.6.1",\n' +
-  '          "version": "2022-11",\n' +
-  '          "display": "Birth date"\n' +
-  "        }\n" +
-  "      ],\n" +
-  '      "_id": "64de40efbaf96ab41f3c6094",\n' +
-  '      "qdmTitle": "Patient Characteristic Birthdate",\n' +
-  '      "hqmfOid": "2.16.840.1.113883.10.20.28.4.54",\n' +
-  '      "qdmCategory": "patient_characteristic",\n' +
-  '      "qdmStatus": "birthdate",\n' +
-  '      "qdmVersion": "5.6",\n' +
-  '      "_type": "QDM::PatientCharacteristicBirthdate",\n' +
-  '      "description": "Patient Characteristic Birthdate: Birth date",\n' +
-  '      "birthDatetime": "1985-01-01T08:00:00.000+00:00",\n' +
-  '      "codeListId": "drc-c48426f721cede4d865df946157d5e2dc90bd32763ffcb982ca45b3bd97a29db",\n' +
-  '      "id": "64de40efbaf96ab41f3c6094"\n' +
-  "    },\n" +
-  "    {\n" +
-  '      "dataElementCodes": [\n' +
-  "        {\n" +
-  '          "code": "2135-2",\n' +
-  '          "system": "2.16.840.1.113883.6.238",\n' +
-  '          "version": "1.2",\n' +
-  '          "display": "Hispanic or Latino"\n' +
-  "        }\n" +
-  "      ],\n" +
-  '      "_id": "64de40efbaf96ab41f3c6096",\n' +
-  '      "qdmTitle": "Patient Characteristic Ethnicity",\n' +
-  '      "hqmfOid": "2.16.840.1.113883.10.20.28.4.56",\n' +
-  '      "qdmCategory": "patient_characteristic",\n' +
-  '      "qdmStatus": "ethnicity",\n' +
-  '      "qdmVersion": "5.6",\n' +
-  '      "_type": "QDM::PatientCharacteristicEthnicity",\n' +
-  '      "description": "Patient Characteristic Ethnicity: Ethnicity",\n' +
-  '      "codeListId": "2.16.840.1.114222.4.11.837",\n' +
-  '      "id": "64de40efbaf96ab41f3c6096"\n' +
-  "    },\n" +
-  "    {\n" +
-  '      "dataElementCodes": [\n' +
-  "        {\n" +
-  '          "code": "2028-9",\n' +
-  '          "system": "2.16.840.1.113883.6.238",\n' +
-  '          "version": "1.2",\n' +
-  '          "display": "Asian"\n' +
-  "        }\n" +
-  "      ],\n" +
-  '      "_id": "64de40efbaf96ab41f3c6098",\n' +
-  '      "qdmTitle": "Patient Characteristic Race",\n' +
-  '      "hqmfOid": "2.16.840.1.113883.10.20.28.4.59",\n' +
-  '      "qdmCategory": "patient_characteristic",\n' +
-  '      "qdmStatus": "race",\n' +
-  '      "qdmVersion": "5.6",\n' +
-  '      "_type": "QDM::PatientCharacteristicRace",\n' +
-  '      "description": "Patient Characteristic Race: Race",\n' +
-  '      "codeListId": "2.16.840.1.114222.4.11.836",\n' +
-  '      "id": "64de40efbaf96ab41f3c6098"\n' +
-  "    }\n" +
-  "  ],\n" +
-  '  "_id": "646628cb235ff80000718c1a",\n' +
-  '  "birthDatetime": "1985-01-01T08:00:00.000+00:00"\n' +
-  "}";
+const serviceConfig: ServiceConfig = {
+  excelExportService: { baseUrl: "base.url" },
+  fhirElmTranslationService: { baseUrl: "base.url" },
+  qdmElmTranslationService: { baseUrl: "base.url" },
+  testCaseService: { baseUrl: "base.url" },
+  measureService: { baseUrl: "base.url" },
+  terminologyService: { baseUrl: "http.com" },
+};
 
 const measureOwner = "testUser";
 
@@ -278,11 +186,6 @@ const useTestCaseServiceMockRejectedGetTestCase = {
   getTestCase: jest.fn().mockRejectedValue("404"),
 } as unknown as TestCaseServiceApi;
 
-const useTestCaseServiceMockResolvedWithTestCaseJson = {
-  getTestCase: jest.fn().mockResolvedValue({ ...testCase, json: testCaseJson }),
-  updateTestCase: jest.fn().mockResolvedValue(testCase),
-} as unknown as TestCaseServiceApi;
-
 const useTestCaseServiceMockRejected = {
   getTestCase: jest.fn().mockResolvedValue(testCase),
   getTestCaseSeriesForMeasure: jest
@@ -325,14 +228,14 @@ const qdmExecutionResults = {
   },
 };
 
-jest.mock("../../../api/useCqlParsingService");
+jest.mock("../../../api/cqlElmTranslationService/useQdmCqlParsingService");
 const useCqlParsingServiceMock =
-  useCqlParsingService as jest.Mock<CqlParsingService>;
+  useQdmCqlParsingService as jest.Mock<QdmCqlParsingService>;
 
 const useCqlParsingServiceMockResolved = {
   getAllDefinitionsAndFunctions: jest.fn().mockResolvedValue(qdmCallStack),
   getDefinitionCallstacks: jest.fn().mockResolvedValue(qdmCallStack),
-} as unknown as CqlParsingService;
+} as unknown as QdmCqlParsingService;
 
 const mockProcessTestCaseResults = jest.fn().mockImplementation(() => {
   return {
@@ -387,7 +290,7 @@ jest.mock("@madie/madie-util", () => ({
     return true;
   }),
   routeHandlerStore: {
-    subscribe: (set) => {
+    subscribe: () => {
       return { unsubscribe: () => null };
     },
     updateRouteHandlerState: () => null,
@@ -400,6 +303,7 @@ const { findByTestId, findByText, queryByTestId, queryByText } = screen;
 const measure = mockMeasure;
 const setMeasure = jest.fn();
 const setCqmMeasure = jest.fn;
+const setExecutionContextReady = jest.fn;
 const getAccessToken = jest.fn();
 let cqmConversionService = new CqmConversionService("url", getAccessToken);
 const cqmMeasure = cqmConversionService.convertToCqmMeasure(mockMeasure);
@@ -413,8 +317,10 @@ const renderEditTestCaseComponent = () => {
             measureState: [measure, setMeasure],
             cqmMeasureState: [cqmMeasure, setCqmMeasure],
             executionContextReady: true,
+            setExecutionContextReady: setExecutionContextReady,
             executing: false,
             setExecuting: jest.fn(),
+            contextFailure: false,
           }}
         >
           <EditTestCase />
@@ -431,11 +337,11 @@ describe("ElementsTab", () => {
   useCqlParsingServiceMock.mockImplementation(() => {
     return useCqlParsingServiceMockResolved;
   });
+  CQMConversionMock.mockImplementation(() => {
+    return useCqmConversionServiceMockResolved;
+  });
 
   test("Icons present and navigate correctly.", async () => {
-    CQMConversionMock.mockImplementation(() => {
-      return useCqmConversionServiceMockResolved;
-    });
     await waitFor(() => renderEditTestCaseComponent());
     const json = await findByText("JSON");
     // const elements = await findByText("Elements"); // this doesn't work?
@@ -466,8 +372,8 @@ describe("ElementsTab", () => {
       };
     });
     await waitFor(() => renderEditTestCaseComponent());
-    const json = await queryByText("JSON");
-    const elements = await queryByTestId("json-tab");
+    const json = queryByText("JSON");
+    const elements = queryByTestId("json-tab");
     expect(json).not.toBeInTheDocument();
     expect(elements).not.toBeInTheDocument();
   });
@@ -521,7 +427,6 @@ describe("EditTestCase QDM Component", () => {
     useCqlParsingServiceMock.mockImplementation(() => {
       return useCqlParsingServiceMockResolved;
     });
-
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => {
       return {
         applyDefaults: mockApplyDefaults,
@@ -531,7 +436,7 @@ describe("EditTestCase QDM Component", () => {
 
   it("should run qdm test case", async () => {
     await waitFor(() => renderEditTestCaseComponent());
-    const runTestCaseButton = await getByRole("button", {
+    const runTestCaseButton = getByRole("button", {
       name: "Run Test",
     });
     expect(runTestCaseButton).toBeInTheDocument();
@@ -555,7 +460,7 @@ describe("EditTestCase QDM Component", () => {
 
   it("should see that the JSON changed", async () => {
     await waitFor(() => renderEditTestCaseComponent());
-    const runTestCaseButton = await getByRole("button", {
+    const runTestCaseButton = getByRole("button", {
       name: "Run Test",
     });
     expect(runTestCaseButton).toBeInTheDocument();
@@ -580,7 +485,7 @@ describe("EditTestCase QDM Component", () => {
 
   it("should render qdm edit test case component along with action buttons", async () => {
     await waitFor(() => renderEditTestCaseComponent());
-    const runTestCaseButton = await getByRole("button", {
+    const runTestCaseButton = getByRole("button", {
       name: "Run Test",
     });
     expect(runTestCaseButton).toBeInTheDocument();
@@ -616,7 +521,7 @@ describe("EditTestCase QDM Component", () => {
 
   it("should render group populations from DB and able to update the values and save test case", async () => {
     // line breaks in JSON cause Formik to think JSON has changed so use stringify to get rid of those
-    testCase.json = JSON.stringify(JSON.parse(testCaseJson));
+    testCase.json = JSON.stringify(testCaseJson);
     mockedAxios.put.mockResolvedValueOnce(testCase);
     renderEditTestCaseComponent();
 
@@ -646,8 +551,8 @@ describe("EditTestCase QDM Component", () => {
     );
   });
 
-  it("should render qdm edit Demographics component with default values", () => {
-    renderEditTestCaseComponent();
+  it("should render qdm edit Demographics component with default values", async () => {
+    await renderEditTestCaseComponent();
 
     const raceInput = screen.getByTestId(
       "demographics-race-input"
@@ -667,8 +572,8 @@ describe("EditTestCase QDM Component", () => {
   });
 
   it("should render qdm edit Demographics component with values from TestCase JSON", async () => {
-    testCase.json = testCaseJson;
-    renderEditTestCaseComponent();
+    testCase.json = JSON.stringify(testCaseJson);
+    await renderEditTestCaseComponent();
 
     const raceInput = screen.getByTestId(
       "demographics-race-input"
@@ -681,7 +586,7 @@ describe("EditTestCase QDM Component", () => {
       "demographics-gender-input"
     ) as HTMLInputElement;
     expect(genderInput).toBeInTheDocument();
-    expect(genderInput.value).toBe("Female");
+    expect(genderInput.value).toBe("Male");
     const livingStatusInput = screen.getByTestId(
       "demographics-living-status-input"
     ) as HTMLInputElement;
@@ -768,8 +673,9 @@ describe("EditTestCase QDM Component", () => {
   });
 
   it("test update test case successfully with success toast", async () => {
+    testCase.json = JSON.stringify(testCaseJson);
     useTestCaseServiceMock.mockImplementation(() => {
-      return useTestCaseServiceMockResolvedWithTestCaseJson;
+      return useTestCaseServiceMockResolved;
     });
 
     await waitFor(() => renderEditTestCaseComponent());
@@ -822,13 +728,14 @@ describe("EditTestCase QDM Component", () => {
       );
     });
   });
+
   it("test update test case fails with non-unique test name failure toast", async () => {
-    testCase.json = testCaseJson;
+    testCase.json = JSON.stringify(testCaseJson);
     useTestCaseServiceMock.mockImplementation(() => {
       return useTestCaseServiceMockRejectedNonUniqueName;
     });
-    renderEditTestCaseComponent();
-    const saveTestCaseButton = await screen.getByRole("button", {
+    await renderEditTestCaseComponent();
+    const saveTestCaseButton = screen.getByRole("button", {
       name: "Save",
     });
 
@@ -850,14 +757,14 @@ describe("EditTestCase QDM Component", () => {
       "demographics-gender-input"
     ) as HTMLInputElement;
     expect(genderInput).toBeInTheDocument();
-    expect(genderInput.value).toBe("Female");
+    expect(genderInput.value).toBe("Male");
 
     act(() => {
       fireEvent.change(genderInput, {
-        target: { value: "Male" },
+        target: { value: "Female" },
       });
     });
-    expect(genderInput.value).toBe("Male");
+    expect(genderInput.value).toBe("Female");
 
     const livingStatusInput = screen.getByTestId(
       "demographics-living-status-input"
@@ -891,13 +798,14 @@ describe("EditTestCase QDM Component", () => {
       { timeout: 1500 }
     );
   });
+
   it("test update test case fails with failure toast", async () => {
-    testCase.json = testCaseJson;
+    testCase.json = JSON.stringify(testCaseJson);
     useTestCaseServiceMock.mockImplementation(() => {
       return useTestCaseServiceMockRejected;
     });
-    renderEditTestCaseComponent();
-    const saveTestCaseButton = await screen.getByRole("button", {
+    await renderEditTestCaseComponent();
+    const saveTestCaseButton = screen.getByRole("button", {
       name: "Save",
     });
 
@@ -919,14 +827,14 @@ describe("EditTestCase QDM Component", () => {
       "demographics-gender-input"
     ) as HTMLInputElement;
     expect(genderInput).toBeInTheDocument();
-    expect(genderInput.value).toBe("Female");
+    expect(genderInput.value).toBe("Male");
 
     act(() => {
       fireEvent.change(genderInput, {
-        target: { value: "Male" },
+        target: { value: "Female" },
       });
     });
-    expect(genderInput.value).toBe("Male");
+    expect(genderInput.value).toBe("Female");
 
     const livingStatusInput = screen.getByTestId(
       "demographics-living-status-input"
@@ -942,9 +850,7 @@ describe("EditTestCase QDM Component", () => {
     expect(livingStatusInput.value).toBe("Expired");
 
     expect(saveTestCaseButton).toBeEnabled();
-    act(() => {
-      userEvent.click(saveTestCaseButton);
-    });
+    userEvent.click(saveTestCaseButton);
 
     await waitFor(
       () => {
@@ -998,7 +904,7 @@ describe("EditTestCase QDM Component", () => {
   });
 
   it("Should render the details tab with relevant information", async () => {
-    testCase.json = testCaseJson;
+    testCase.json = JSON.stringify(testCaseJson);
     await waitFor(() => renderEditTestCaseComponent());
 
     const detailsTab = getByRole("tab", { name: "Details tab panel" });
@@ -1051,7 +957,7 @@ describe("EditTestCase QDM Component", () => {
   }, 30000);
 
   it("Should not update test case because of special characters", async () => {
-    testCase.json = testCaseJson;
+    testCase.json = JSON.stringify(testCaseJson);
     await waitFor(() => renderEditTestCaseComponent());
 
     const detailsTab = getByRole("tab", { name: "Details tab panel" });

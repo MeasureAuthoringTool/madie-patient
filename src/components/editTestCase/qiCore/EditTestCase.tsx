@@ -30,7 +30,7 @@ import Editor from "../../editor/Editor";
 import { TestCaseValidator } from "../../../validators/TestCaseValidator";
 import { MadieError, sanitizeUserInput } from "../../../util/Utils";
 import TestCaseSeries from "../../createTestCase/TestCaseSeries";
-import * as _ from "lodash";
+import _ from "lodash";
 import { Ace } from "ace-builds";
 import {
   FHIR_POPULATION_CODES,
@@ -75,8 +75,8 @@ import { Bundle } from "fhir/r4";
 import { Allotment } from "allotment";
 import ElementsTab from "./LeftPanel/ElementsTab/ElementsTab";
 import { QiCoreResourceProvider } from "../../../util/QiCorePatientProvider";
-import useCqlParsingService from "../../../api/useCqlParsingService";
 import { CqlDefinitionCallstack } from "../groupCoverage/QiCoreGroupCoverage";
+import useFhirCqlParsingService from "../../../api/cqlElmTranslationService/useFhirCqlParsingService";
 
 const TestCaseForm = tw.form`m-3`;
 const ValidationErrorsButton = tw.button`
@@ -114,8 +114,8 @@ previous color system based off of tw.
 success #249A5B vs #A4FAA8, 3:1 fail dark green to light green
 warning #B87A06 vs #FCEB9D, 3:1 fail, orange yellow
 error: #BA1C32 vs #FBC4AB 4.1 fail red to red orange
-// meta: 000 #b0EEFF: pass 
-default: #2469B7 vs #b0EEFF  d-L  teal 4.4:1 
+// meta: 000 #b0EEFF: pass
+default: #2469B7 vs #b0EEFF  d-L  teal 4.4:1
 */
 
 const Alert = styled.div<AlertProps>(({ status = "default" }) => [
@@ -207,7 +207,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
   // Avoid infinite dependency render. May require additional error handling for timeouts.
   const testCaseService = useRef(useTestCaseServiceApi());
   const calculation = useRef(calculationService());
-  const cqlParsingService = useRef(useCqlParsingService());
+  const fhirCqlParsingService = useRef(useFhirCqlParsingService());
   const [alert, setAlert] = useState<AlertProps>(null);
   const { errors, setErrors } = props;
   if (!errors) {
@@ -421,7 +421,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
     }
 
     if (_.isNil(callstackMap) && measure?.cql) {
-      cqlParsingService.current
+      fhirCqlParsingService.current
         .getDefinitionCallstacks(measure.cql)
         .then((callstack: CqlDefinitionCallstack) => {
           setCallstackMap(callstack);

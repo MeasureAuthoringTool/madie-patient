@@ -38,10 +38,10 @@ import { ExecutionContextProvider } from "../../routes/qiCore/ExecutionContext";
 import { multiGroupMeasureFixture } from "../../createTestCase/__mocks__/multiGroupMeasureFixture";
 import { nonBoolTestCaseFixture } from "../../createTestCase/__mocks__/nonBoolTestCaseFixture";
 import { TestCaseValidator } from "../../../validators/TestCaseValidator";
+// @ts-ignore
 import { checkUserCanEdit } from "@madie/madie-util";
 import { PopulationType as FqmPopulationType } from "fqm-execution/build/types/Enums";
 import { addValues } from "../../../util/DefaultValueProcessor";
-import { defineElm } from "../../../__mocks__/define-elm-fixture";
 
 //temporary solution (after jest updated to version 27) for error: thrown: "Exceeded timeout of 5000 ms for a test.
 jest.setTimeout(60000);
@@ -80,7 +80,8 @@ jest.mock(
 const testCaseAlertToast = false;
 
 const serviceConfig: ServiceConfig = {
-  elmTranslationService: { baseUrl: "cql-to-elm.com" },
+  qdmElmTranslationService: { baseUrl: "qdm-cql-to-elm.com" },
+  fhirElmTranslationService: { baseUrl: "fhir-cql-to-elm.com" },
   excelExportService: {
     baseUrl: "excelexport.com",
   },
@@ -122,7 +123,7 @@ jest.mock("@madie/madie-util", () => {
       return true;
     }),
     routeHandlerStore: {
-      subscribe: (set) => {
+      subscribe: () => {
         return { unsubscribe: () => null };
       },
       updateRouteHandlerState: () => null,
