@@ -41,7 +41,7 @@ export class CqmConversionService {
   // returns the array of TranslatedLibrary{name, version, cql, elmJson, elmXml}
   async fetchTranslationForCql(cql: string): Promise<Array<TranslatedLibrary>> {
     try {
-      const response = await axios.put(`${this.baseUrl}/cql/elm`, cql, {
+      const response = await axios.put(`${this.baseUrl}/qdm/cql/elm`, cql, {
         headers: {
           Authorization: `Bearer ${this.getAccessToken()}`,
           "Content-Type": "text/plain",
@@ -58,7 +58,7 @@ export class CqmConversionService {
   ): Promise<Array<DataElement>> {
     try {
       const response = await axios.put(
-        `${this.baseUrl}/cql/relevant-elements`,
+        `${this.baseUrl}/qdm/cql/relevant-elements`,
         measure,
         {
           headers: {
@@ -346,7 +346,7 @@ export default function useCqmConversionService(): CqmConversionService {
   const serviceConfig: ServiceConfig = useServiceConfig();
   const { getAccessToken } = useOktaTokens();
   return new CqmConversionService(
-    serviceConfig.elmTranslationService?.baseUrl,
+    serviceConfig.qdmElmTranslationService?.baseUrl,
     getAccessToken
   );
 }

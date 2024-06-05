@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import CoverageTabList from "./CoverageTabs/CoverageTabList";
-import useCqlParsingService from "../../../../api/useCqlParsingService";
 import { CqlDefinitionCallstack } from "../../../editTestCase/groupCoverage/QiCoreGroupCoverage";
+import useQdmCqlParsingService from "../../../../api/cqlElmTranslationService/useQdmCqlParsingService";
 
 const TestCaseCoverage = ({
   populationCriteria,
@@ -13,7 +13,7 @@ const TestCaseCoverage = ({
   measureGroups,
   testCases,
 }) => {
-  const cqlParsingService = useRef(useCqlParsingService());
+  const qdmCqlParsingService = useRef(useQdmCqlParsingService());
   const [callstackMap, setCallstackMap] = useState<CqlDefinitionCallstack>();
   const [testCaseGroups, setTestCaseGroups] = useState([]); //tc.map((tc) => tc.groupPopulations)
 
@@ -36,7 +36,7 @@ const TestCaseCoverage = ({
     }
   }, [testCases]);
   useEffect(() => {
-    cqlParsingService.current
+    qdmCqlParsingService.current
       .getDefinitionCallstacks(measureCql)
       .then((callstack: CqlDefinitionCallstack) => {
         setCallstackMap(callstack);

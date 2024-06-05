@@ -48,14 +48,15 @@ import qdmCalculationService, {
 } from "../../../api/QdmCalculationService";
 import { measureCql } from "../../editTestCase/groupCoverage/_mocks_/QdmCovergaeMeasureCql";
 import { qdmCallStack } from "../../editTestCase/groupCoverage/_mocks_/QdmCallStack";
-import useCqlParsingService, {
-  CqlParsingService,
-} from "../../../api/useCqlParsingService";
+import useQdmCqlParsingService, {
+  QdmCqlParsingService,
+} from "../../../api/cqlElmTranslationService/useQdmCqlParsingService";
 import TestCaseLandingWrapper from "../common/TestCaseLandingWrapper";
 import TestCaseLanding from "../qdm/TestCaseLanding";
 
 const serviceConfig: ServiceConfig = {
-  elmTranslationService: { baseUrl: "translator.url" },
+  qdmElmTranslationService: { baseUrl: "translator.url" },
+  fhirElmTranslationService: { baseUrl: "translator.url" },
   excelExportService: {
     baseUrl: "excelexport.com",
   },
@@ -131,7 +132,7 @@ jest.mock("@madie/madie-util", () => ({
     getUserName: () => MEASURE_CREATEDBY,
   }),
   routeHandlerStore: {
-    subscribe: (set) => {
+    subscribe: () => {
       return { unsubscribe: () => null };
     },
     updateRouteHandlerState: () => null,
@@ -144,14 +145,14 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
   unobserve: jest.fn(),
   disconnect: jest.fn(),
 }));
-jest.mock("../../../api/useCqlParsingService");
+jest.mock("../../../api/cqlElmTranslationService/useQdmCqlParsingService");
 const useCqlParsingServiceMock =
-  useCqlParsingService as jest.Mock<CqlParsingService>;
+  useQdmCqlParsingService as jest.Mock<QdmCqlParsingService>;
 
 const useCqlParsingServiceMockResolved = {
   getAllDefinitionsAndFunctions: jest.fn().mockResolvedValue(qdmCallStack),
   getDefinitionCallstacks: jest.fn().mockResolvedValue(qdmCallStack),
-} as unknown as CqlParsingService;
+} as unknown as QdmCqlParsingService;
 
 const mockOnImportTestCases = jest.fn();
 
@@ -2561,7 +2562,7 @@ describe("TestCaseList component", () => {
       getDefinitionCallstacks: jest
         .fn()
         .mockRejectedValue("qdmCallStack failed"),
-    } as unknown as CqlParsingService;
+    } as unknown as QdmCqlParsingService;
 
     useCqlParsingServiceMock.mockImplementation(() => {
       return useCqlParsingServiceMockRejected;

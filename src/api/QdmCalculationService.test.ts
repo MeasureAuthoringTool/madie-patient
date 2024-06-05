@@ -1,4 +1,6 @@
+// @ts-ignore
 import cqmMeasure from "../mockdata/qdm/CMS108/cqm_measure.json";
+// @ts-ignore
 import patientJson from "../mockdata/qdm/testCasePatient.json";
 import qdmCalculationService, {
   CqmExecutionPatientResultsByPopulationSet,

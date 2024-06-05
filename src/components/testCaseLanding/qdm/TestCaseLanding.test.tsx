@@ -4,12 +4,13 @@ import TestCaseLanding from "./TestCaseLanding";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
 import { Measure, Model } from "@madie/madie-models";
-import { CqmMeasure, ValueSet } from "cqm-models";
+import { CqmMeasure } from "cqm-models";
 import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
+// @ts-ignore
 import { checkUserCanEdit } from "@madie/madie-util";
-import useCqlParsingService, {
-  CqlParsingService,
-} from "../../../api/useCqlParsingService";
+import useQdmCqlParsingService, {
+  QdmCqlParsingService,
+} from "../../../api/cqlElmTranslationService/useQdmCqlParsingService";
 import { qdmCallStack } from "../../editTestCase/groupCoverage/_mocks_/QdmCallStack";
 
 const serviceConfig: ServiceConfig = {
@@ -17,6 +18,12 @@ const serviceConfig: ServiceConfig = {
     baseUrl: "measure.url",
   },
   testCaseService: {
+    baseUrl: "base.url",
+  },
+  qdmElmTranslationService: {
+    baseUrl: "base.url",
+  },
+  fhirElmTranslationService: {
     baseUrl: "base.url",
   },
   terminologyService: {
@@ -27,14 +34,14 @@ const serviceConfig: ServiceConfig = {
   },
 };
 
-jest.mock("../../../api/useCqlParsingService");
+jest.mock("../../../api/cqlElmTranslationService/useQdmCqlParsingService");
 const useCqlParsingServiceMock =
-  useCqlParsingService as jest.Mock<CqlParsingService>;
+  useQdmCqlParsingService as jest.Mock<QdmCqlParsingService>;
 
 const useCqlParsingServiceMockResolved = {
   getAllDefinitionsAndFunctions: jest.fn().mockResolvedValue(qdmCallStack),
   getDefinitionCallstacks: jest.fn().mockResolvedValue(qdmCallStack),
-} as unknown as CqlParsingService;
+} as unknown as QdmCqlParsingService;
 
 const MEASURE_CREATEDBY = "testuser";
 
@@ -47,10 +54,9 @@ const measure = {
 } as unknown as Measure;
 
 const cqmMeasure = {} as CqmMeasure;
-const valueSets = [] as ValueSet[];
 const setMeasure = jest.fn();
 const setCqmMeasure = jest.fn();
-const setValueSets = jest.fn();
+const setExecutionContextReady = jest.fn();
 const setExecuting = jest.fn();
 const setError = jest.fn();
 
@@ -87,10 +93,11 @@ describe("TestCaseLanding component", () => {
             value={{
               measureState: [measure, setMeasure],
               cqmMeasureState: [cqmMeasure, setCqmMeasure],
-              valueSetsState: [valueSets, setValueSets],
               executionContextReady: true,
+              setExecutionContextReady: setExecutionContextReady,
               executing: false,
               setExecuting: setExecuting,
+              contextFailure: false,
             }}
           >
             <Routes>
@@ -120,7 +127,7 @@ describe("TestCaseLanding component", () => {
     });
     const readOnlyMeasure = { ...measure, createdBy: "not me" };
     renderTestCaseLandingComponent(readOnlyMeasure);
-    const newTestCase = await screen.queryByRole("button", {
+    const newTestCase = screen.queryByRole("button", {
       name: "New Test Case",
     });
     expect(newTestCase).not.toBeInTheDocument();

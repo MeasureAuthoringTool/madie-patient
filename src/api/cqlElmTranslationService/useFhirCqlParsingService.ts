@@ -1,17 +1,17 @@
 import axios from "axios";
-import useServiceConfig from "./useServiceConfig";
-import { ServiceConfig } from "./ServiceContext";
+import { CqlDefinitionCallstack } from "../../components/editTestCase/groupCoverage/QiCoreGroupCoverage";
+import { CqlDefinitionExpression } from "../../util/GroupCoverageHelpers";
+import useServiceConfig from "../useServiceConfig";
+import { ServiceConfig } from "../ServiceContext";
 import { useOktaTokens } from "@madie/madie-util";
-import { CqlDefinitionExpression } from "../util/GroupCoverageHelpers";
-import { CqlDefinitionCallstack } from "../components/editTestCase/groupCoverage/QiCoreGroupCoverage";
 
-export class CqlParsingService {
+export class FhirCqlParsingService {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
 
   async getDefinitionCallstacks(cql: string): Promise<CqlDefinitionCallstack> {
     try {
       const response = await axios.put<string>(
-        `${this.baseUrl}/cql/callstacks`,
+        `${this.baseUrl}/fhir/cql/callstacks`,
         cql,
         {
           headers: {
@@ -32,7 +32,7 @@ export class CqlParsingService {
   ): Promise<CqlDefinitionExpression[]> {
     try {
       const response = await axios.put<string>(
-        `${this.baseUrl}/cql/definitions`,
+        `${this.baseUrl}/fhir/cql/definitions`,
         cql,
         {
           headers: {
@@ -49,13 +49,13 @@ export class CqlParsingService {
   }
 }
 
-const useCqlParsingService = (): CqlParsingService => {
+const useFhirCqlParsingService = (): FhirCqlParsingService => {
   const serviceConfig: ServiceConfig = useServiceConfig();
   const { getAccessToken } = useOktaTokens();
-  return new CqlParsingService(
-    serviceConfig?.elmTranslationService.baseUrl,
+  return new FhirCqlParsingService(
+    serviceConfig?.fhirElmTranslationService.baseUrl,
     getAccessToken
   );
 };
 
-export default useCqlParsingService;
+export default useFhirCqlParsingService;
