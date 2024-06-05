@@ -9,6 +9,7 @@ import {
   flexRender,
   getSortedRowModel,
   SortingState,
+  SortingFn,
 } from "@tanstack/react-table";
 import * as _ from "lodash";
 import { TestCaseStatus, TestCaseActionButton } from "./TestCaseTableHelpers";
@@ -28,6 +29,8 @@ interface TestCaseTableProps {
   onCloneTestCase?: (testCase: TestCase) => void;
   measure: Measure;
 }
+
+
 
 const TestCaseTable = (props: TestCaseTableProps) => {
   const {
@@ -49,6 +52,11 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     setToastMessage("");
     setToastOpen(false);
   };
+  const sortStatusFn: SortingFn<TCRow> = (rowA, rowB, _columnId) => {
+    console.log(rowA)
+    console.log(typeof rowA.original.group)
+    return rowA.original.group > rowB.original.group? 1:0
+  }
   // Popover utilities
   const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -124,8 +132,9 @@ const TestCaseTable = (props: TestCaseTableProps) => {
       },
       {
         header: "Group",
-        cell: (info) => info.getValue(),
+        cell: (row) => row.renderValue(),
         accessorKey: "group",
+        sortingFn: sortStatusFn
       },
       {
         header: "Title",
@@ -141,6 +150,8 @@ const TestCaseTable = (props: TestCaseTableProps) => {
         header: "Action",
         cell: (info) => info.getValue(),
         accessorKey: "action",
+        enableSorting: false
+        
       },
     ],
     []
