@@ -67,3 +67,6 @@
     align-self: center;
   }
 }
+th:hover {
+  background-color: lighten(#333, 60%);
+}

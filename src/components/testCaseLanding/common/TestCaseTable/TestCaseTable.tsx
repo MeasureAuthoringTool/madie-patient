@@ -177,15 +177,18 @@ const TestCaseTable = (props: TestCaseTableProps) => {
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id}>
             {headerGroup.headers.map((header) => (
-              <TH key={header.id} scope="col">
+              <TH
+                key={header.id}
+                scope="col"
+                onClick={header.column.getToggleSortingHandler()}
+              >
                 {header.isPlaceholder ? null : (
                   <button
                     className={
                       header.column.getCanSort()
-                        ? "cursor-pointer select-none"
-                        : ""
+                        ? "cursor-pointer select-none header-button"
+                        : "header-button"
                     }
-                    onClick={header.column.getToggleSortingHandler()}
                     title={
                       header.column.getCanSort()
                         ? header.column.getNextSortingOrder() === "asc"
