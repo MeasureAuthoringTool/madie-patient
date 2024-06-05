@@ -9,7 +9,6 @@ import {
   flexRender,
   getSortedRowModel,
   SortingState,
-  SortingFn,
 } from "@tanstack/react-table";
 import * as _ from "lodash";
 import { TestCaseStatus, TestCaseActionButton } from "./TestCaseTableHelpers";
@@ -29,8 +28,6 @@ interface TestCaseTableProps {
   onCloneTestCase?: (testCase: TestCase) => void;
   measure: Measure;
 }
-
-
 
 const TestCaseTable = (props: TestCaseTableProps) => {
   const {
@@ -52,11 +49,6 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     setToastMessage("");
     setToastOpen(false);
   };
-  const sortStatusFn: SortingFn<TCRow> = (rowA, rowB, _columnId) => {
-    console.log(rowA)
-    console.log(typeof rowA.original.group)
-    return rowA.original.group > rowB.original.group? 1:0
-  }
   // Popover utilities
   const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -76,38 +68,15 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     setAnchorEl(null);
   };
   const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
-  const transFormData = (testCases) => {
-    const results = testCases.map((tc: TestCase) => ({
+  const transFormData = (testCases: TestCase[]): TCRow[] => {
+    return testCases.map((tc: TestCase) => ({
       id: tc.id,
-      status: <TestCaseStatus executionStatus={tc.executionStatus} />,
-      group: (
-        <TruncateText
-          text={tc.series}
-          maxLength={120}
-          name="series"
-          dataTestId={`test-case-series-${tc.id}`}
-        />
-      ),
-      title: (
-        <TruncateText
-          text={tc.title}
-          maxLength={60}
-          name="title"
-          dataTestId={`test-case-title-${tc.id}`}
-        />
-      ),
-      description: (
-        <TruncateText
-          text={tc.description}
-          maxLength={120}
-          name="description"
-          dataTestId={`test-case-description-${tc.id}`}
-        />
-      ),
-      action: <TestCaseActionButton testCase={tc} handleOpen={handleOpen} />,
+      status: tc.executionStatus,
+      group: tc.series,
+      title: tc.title,
+      description: tc.description,
+      action: tc,
     }));
-
-    return results;
   };
 
   type TCRow = {
@@ -127,31 +96,57 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     () => [
       {
         header: "Status",
-        cell: (info) => info.getValue(),
+        cell: (info) => (
+          <TestCaseStatus executionStatus={info.row.original.status} />
+        ),
         accessorKey: "status",
       },
       {
         header: "Group",
-        cell: (row) => row.renderValue(),
+        cell: (info) => (
+          <TruncateText
+            text={info.row.original.group}
+            maxLength={120}
+            name="series"
+            dataTestId={`test-case-series-${info.row.original.group}`}
+          />
+        ),
         accessorKey: "group",
-        sortingFn: sortStatusFn
       },
       {
         header: "Title",
-        cell: (info) => info.getValue(),
+        cell: (info) => (
+          <TruncateText
+            text={info.row.original.title}
+            maxLength={60}
+            name="title"
+            dataTestId={`test-case-title-${info.row.original.title}`}
+          />
+        ),
         accessorKey: "title",
       },
       {
         header: "Description",
-        cell: (info) => info.getValue(),
+        cell: (info) => (
+          <TruncateText
+            text={info.row.original.description}
+            maxLength={120}
+            name="description"
+            dataTestId={`test-case-description-${info.row.original.description}`}
+          />
+        ),
         accessorKey: "description",
       },
       {
         header: "Action",
-        cell: (info) => info.getValue(),
+        cell: (info) => (
+          <TestCaseActionButton
+            testCase={info.row.original.action}
+            handleOpen={handleOpen}
+          />
+        ),
         accessorKey: "action",
-        enableSorting: false
-        
+        enableSorting: false,
       },
     ],
     []
