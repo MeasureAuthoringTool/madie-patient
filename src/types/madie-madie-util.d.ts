@@ -22,7 +22,10 @@ declare module "@madie/madie-util" {
     measureService: {
       baseUrl: string;
     };
-    elmTranslationService: {
+    qdmElmTranslationService: {
+      baseUrl: string;
+    };
+    fhirElmTranslationService: {
       baseUrl: string;
     };
     terminologyService: {
