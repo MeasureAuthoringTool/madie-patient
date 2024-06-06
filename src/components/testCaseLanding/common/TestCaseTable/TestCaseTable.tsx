@@ -86,6 +86,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     title: string;
     description: string;
     action: any;
+    id: string;
   };
   const [data, setData] = useState<TCRow[]>([]);
   useEffect(() => {
@@ -109,21 +110,19 @@ const TestCaseTable = (props: TestCaseTableProps) => {
             text={info.row.original.group}
             maxLength={120}
             name="series"
-            dataTestId={`test-case-series-${info.row.original.group}`}
+            dataTestId={`test-case-series-${info.row.original.id}`}
           />
         ),
         accessorKey: "group",
-        sortUndefined: 1,
       },
       {
         header: "Title",
-        sortUndefined: 1,
         cell: (info) => (
           <TruncateText
             text={info.row.original.title}
             maxLength={60}
             name="title"
-            dataTestId={`test-case-title-${info.row.original.title}`}
+            dataTestId={`test-case-title-${info.row.original.id}`}
           />
         ),
         accessorKey: "title",
@@ -135,11 +134,10 @@ const TestCaseTable = (props: TestCaseTableProps) => {
             text={info.row.original.description}
             maxLength={120}
             name="description"
-            dataTestId={`test-case-description-${info.row.original.description}`}
+            dataTestId={`test-case-description-${info.row.original.id}`}
           />
         ),
         accessorKey: "description",
-        sortUndefined: false,
       },
       {
         header: "Action",

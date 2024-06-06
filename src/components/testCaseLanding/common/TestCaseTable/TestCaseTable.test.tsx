@@ -123,8 +123,8 @@ describe("TestCase component", () => {
 
     const buttons = await screen.findAllByRole("button");
     expect(buttons).toHaveLength(9);
-    expect(buttons[0]).toHaveTextContent("Select");
-    fireEvent.click(buttons[0]);
+    expect(buttons[5]).toHaveTextContent("Select");
+    fireEvent.click(buttons[5]);
     expect(screen.getByText("edit")).toBeInTheDocument();
     expect(screen.getByText("export transaction bundle")).toBeInTheDocument();
     expect(screen.getByText("export collection bundle")).toBeInTheDocument();
@@ -165,8 +165,8 @@ describe("TestCase component", () => {
 
     const buttons = await screen.findAllByRole("button");
     expect(buttons).toHaveLength(9);
-    expect(buttons[0]).toHaveTextContent("Select");
-    fireEvent.click(buttons[0]);
+    expect(buttons[5]).toHaveTextContent("Select");
+    fireEvent.click(buttons[5]);
     expect(screen.getByText("view")).toBeInTheDocument();
   });
 
@@ -186,8 +186,8 @@ describe("TestCase component", () => {
 
     const buttons = await screen.findAllByRole("button");
     expect(buttons).toHaveLength(9);
-    expect(buttons[0]).toHaveTextContent("Select");
-    fireEvent.click(buttons[0]);
+    expect(buttons[5]).toHaveTextContent("Select");
+    fireEvent.click(buttons[5]);
 
     expect(screen.getByText("edit")).toBeInTheDocument();
 
@@ -222,8 +222,8 @@ describe("TestCase component", () => {
 
     const buttons = await screen.findAllByRole("button");
     expect(buttons).toHaveLength(9);
-    expect(buttons[0]).toHaveTextContent("Select");
-    fireEvent.click(buttons[0]);
+    expect(buttons[5]).toHaveTextContent("Select");
+    fireEvent.click(buttons[5]);
     expect(screen.getByText("edit")).toBeInTheDocument();
     expect(screen.getByText("export transaction bundle")).toBeInTheDocument();
 
