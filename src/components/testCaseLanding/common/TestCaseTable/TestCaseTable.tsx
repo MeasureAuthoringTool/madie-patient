@@ -214,7 +214,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
                     >
                       <span className="arrowDisplay">
                         {header.column.getCanSort() &&
-                          // isHovered &&
+                          isHovered &&
                           !header.column.getIsSorted() &&
                           "↕"}
                         {{
