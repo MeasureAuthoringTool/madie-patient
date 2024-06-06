@@ -19,6 +19,9 @@ import {
 } from "@madie/madie-design-system/dist/react";
 import "../TestCase.scss";
 import TestCaseTablePopover from "./TestCaseTablePopover";
+import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 interface TestCaseTableProps {
   testCases: TestCase[];
@@ -215,11 +218,11 @@ const TestCaseTable = (props: TestCaseTableProps) => {
                       <span className="arrowDisplay">
                         {header.column.getCanSort() &&
                           isHovered &&
-                          !header.column.getIsSorted() &&
-                          "↕"}
+                          !header.column.getIsSorted() && <UnfoldMoreIcon />}
+
                         {{
-                          asc: " ↑",
-                          desc: "↓",
+                          asc: <KeyboardArrowUpIcon />,
+                          desc: <KeyboardArrowDownIcon />,
                         }[header.column.getIsSorted() as string] ?? null}
                       </span>
                       {flexRender(
