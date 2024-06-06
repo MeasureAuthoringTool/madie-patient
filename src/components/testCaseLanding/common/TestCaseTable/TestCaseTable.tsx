@@ -157,6 +157,11 @@ const TestCaseTable = (props: TestCaseTableProps) => {
   const table = useReactTable({
     data,
     columns,
+    defaultColumn: {
+      size: 200, //starting column size
+      minSize: 50, //enforced during column resizing
+      maxSize: 500, //enforced during column resizing
+    },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
@@ -170,6 +175,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
       tw="min-w-full"
       data-testid="test-case-tbl"
       className="tcl-table"
+      id="testCaseListTable"
       style={{
         borderTop: "solid 1px #8c8c8c",
         borderSpacing: "0 2em !important",
@@ -206,18 +212,20 @@ const TestCaseTable = (props: TestCaseTableProps) => {
                           : undefined
                       }
                     >
+                      <span className="arrowDisplay">
+                        {header.column.getCanSort() &&
+                          // isHovered &&
+                          !header.column.getIsSorted() &&
+                          "↕"}
+                        {{
+                          asc: " ↑",
+                          desc: "↓",
+                        }[header.column.getIsSorted() as string] ?? null}
+                      </span>
                       {flexRender(
                         header.column.columnDef.header,
                         header.getContext()
                       )}
-                      {header.column.getCanSort() &&
-                        isHovered &&
-                        !header.column.getIsSorted() &&
-                        " ↕"}
-                      {{
-                        asc: " ↑",
-                        desc: " ↓",
-                      }[header.column.getIsSorted() as string] ?? null}
                     </button>
                   )}
                 </TH>
