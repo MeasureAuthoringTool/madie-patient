@@ -18,6 +18,8 @@ import {
 } from "cqm-models";
 import { ServiceConfig } from "./ServiceContext";
 import useServiceConfig from "./useServiceConfig";
+import useMeasureServiceApi from "../api/useMeasureServiceApi";
+
 import { useOktaTokens } from "@madie/madie-util";
 import axios from "axios";
 import { CalculationMethod } from "./models/CalculationMethod";
@@ -30,7 +32,9 @@ import { TranslatedLibrary } from "./models/TranslatedLibrary";
 
 export class CqmConversionService {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
-
+  //disablign eslint check because React doensn't want me to use the prefix "use" except if I'm using it for a hook
+  // eslint-disable-next-line
+  measureService = useMeasureServiceApi();
   elmDependencyFinder = new ElmDependencyFinder();
 
   // get the translated artifacts for CQL including the included libraries.
@@ -63,7 +67,11 @@ export class CqmConversionService {
           },
         }
       );
-      return response.data.map((dc) => this.buildSourceDataCriteria(dc));
+      const results: Array<DataElement> = response.data.map((dc) =>
+        this.buildSourceDataCriteria(dc)
+      );
+
+      return results;
     } catch (error) {
       throw new Error(
         error.message ||
@@ -76,47 +84,12 @@ export class CqmConversionService {
     if (_.isNil(measure) || _.isNil(measure.cql)) {
       return null;
     }
-    const cqmMeasure = new CqmMeasure();
-    cqmMeasure.title = measure.measureName;
-    cqmMeasure.description = measure.measureMetaData?.description;
-    cqmMeasure.cms_id = measure.cmsId;
-    cqmMeasure.main_cql_library = measure.cqlLibraryName;
-    cqmMeasure.measure_scoring = measure.scoring.toUpperCase();
-    cqmMeasure.hqmf_set_id = measure.measureSetId;
-    cqmMeasure.calculation_method = measure.patientBasis
-      ? CalculationMethod.PATIENT
-      : CalculationMethod.EPISODE_OF_CARE;
-    cqmMeasure.composite = false; // for now
-    cqmMeasure.component = false; // for now
-    cqmMeasure.id = measure.id;
-    cqmMeasure.source_data_criteria = await this.fetchRelevantDataElements(
-      measure
-    );
-    const translatedLibraries = await this.fetchTranslationForCql(measure.cql);
-    const elms = translatedLibraries.map((t) => t.elmJson);
-    // Fetch statement dependencies
-    const statementDependenciesMap =
-      await this.elmDependencyFinder.findDependencies(
-        elms,
-        measure.cqlLibraryName
-      );
+    //instead of converting the measure, let's get it from the measure-service
 
-    cqmMeasure.cql_libraries = elms.map((elm) =>
-      this.buildCQLLibrary(
-        elm,
-        measure.cqlLibraryName,
-        statementDependenciesMap
-      )
+    const cqmMeasure: CqmMeasure = await this.measureService.getCqmMeasure(
+      measure.id
     );
 
-    cqmMeasure.calculate_sdes = !!measure.testCaseConfiguration?.sdeIncluded;
-    const populationSets: PopulationSet[] =
-      this.buildCqmPopulationSets(measure);
-    cqmMeasure.measure_period = this.measurePeriodData(
-      this.convertDateToCustomFormat(measure.measurementPeriodStart),
-      this.convertDateToCustomFormat(measure.measurementPeriodEnd)
-    );
-    cqmMeasure.population_sets = populationSets;
     return cqmMeasure;
   }
 
