@@ -44,6 +44,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
   const [toastOpen, setToastOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>("");
   const [toastType, setToastType] = useState<string>("danger");
+  const [hoveredHeader, setHoveredHeader] = useState<string>("");
   const onToastClose = () => {
     setToastType("danger");
     setToastMessage("");
@@ -112,9 +113,11 @@ const TestCaseTable = (props: TestCaseTableProps) => {
           />
         ),
         accessorKey: "group",
+        sortUndefined: 1,
       },
       {
         header: "Title",
+        sortUndefined: 1,
         cell: (info) => (
           <TruncateText
             text={info.row.original.title}
@@ -136,6 +139,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
           />
         ),
         accessorKey: "description",
+        sortUndefined: false,
       },
       {
         header: "Action",
@@ -176,41 +180,51 @@ const TestCaseTable = (props: TestCaseTableProps) => {
       <thead tw="bg-slate">
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id}>
-            {headerGroup.headers.map((header) => (
-              <TH
-                key={header.id}
-                scope="col"
-                onClick={header.column.getToggleSortingHandler()}
-              >
-                {header.isPlaceholder ? null : (
-                  <button
-                    className={
-                      header.column.getCanSort()
-                        ? "cursor-pointer select-none header-button"
-                        : "header-button"
-                    }
-                    title={
-                      header.column.getCanSort()
-                        ? header.column.getNextSortingOrder() === "asc"
-                          ? "Sort ascending"
-                          : header.column.getNextSortingOrder() === "desc"
-                          ? "Sort descending"
-                          : "Clear sort"
-                        : undefined
-                    }
-                  >
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                    {{
-                      asc: " ↑",
-                      desc: " ↓",
-                    }[header.column.getIsSorted() as string] ?? null}
-                  </button>
-                )}
-              </TH>
-            ))}
+            {headerGroup.headers.map((header) => {
+              const isHovered = hoveredHeader?.includes(header.id);
+              return (
+                <TH
+                  key={header.id}
+                  scope="col"
+                  onClick={header.column.getToggleSortingHandler()}
+                  onMouseEnter={() => setHoveredHeader(header.id)}
+                  onMouseLeave={() => setHoveredHeader(null)}
+                  className="header-cell"
+                >
+                  {header.isPlaceholder ? null : (
+                    <button
+                      className={
+                        header.column.getCanSort()
+                          ? "cursor-pointer select-none header-button"
+                          : "header-button"
+                      }
+                      title={
+                        header.column.getCanSort()
+                          ? header.column.getNextSortingOrder() === "asc"
+                            ? "Sort ascending"
+                            : header.column.getNextSortingOrder() === "desc"
+                            ? "Sort descending"
+                            : "Clear sort"
+                          : undefined
+                      }
+                    >
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                      {header.column.getCanSort() &&
+                        isHovered &&
+                        !header.column.getIsSorted() &&
+                        " ↕"}
+                      {{
+                        asc: " ↑",
+                        desc: " ↓",
+                      }[header.column.getIsSorted() as string] ?? null}
+                    </button>
+                  )}
+                </TH>
+              );
+            })}
           </tr>
         ))}
       </thead>
