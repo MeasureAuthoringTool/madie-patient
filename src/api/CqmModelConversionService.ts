@@ -89,49 +89,6 @@ export class CqmConversionService {
     const cqmMeasure: CqmMeasure = await this.measureService.getCqmMeasure(
       measure.id
     );
-    //TODO.. leaving this commented code until the cqmMeasure conversion is completed
-    // const cqmMeasure:CqmMeasure = new CqmMeasure();
-    // cqmMeasure.title = measure.measureName;
-    // cqmMeasure.description = measure.measureMetaData?.description;
-    // cqmMeasure.cms_id = measure.cmsId;
-    // cqmMeasure.main_cql_library = measure.cqlLibraryName;
-    // cqmMeasure.measure_scoring = measure.scoring.toUpperCase();
-    // cqmMeasure.hqmf_set_id = measure.measureSetId;
-    // cqmMeasure.calculation_method = measure.patientBasis
-    //   ? CalculationMethod.PATIENT
-    //   : CalculationMethod.EPISODE_OF_CARE;
-    // cqmMeasure.composite = false; // for now
-    // cqmMeasure.component = false; // for now
-    // cqmMeasure.id = measure.id;
-    // cqmMeasure.source_data_criteria = await this.fetchRelevantDataElements(
-    //   measure
-    // );
-
-    // const translatedLibraries = await this.fetchTranslationForCql(measure.cql);
-    // const elms = translatedLibraries.map((t) => t.elmJson);
-    // // Fetch statement dependencies
-    // const statementDependenciesMap =
-    //   await this.elmDependencyFinder.findDependencies(
-    //     elms,
-    //     measure.cqlLibraryName
-    //   );
-
-    // cqmMeasure.cql_libraries = elms.map((elm) =>
-    //   this.buildCQLLibrary(
-    //     elm,
-    //     measure.cqlLibraryName,
-    //     statementDependenciesMap
-    //   )
-    // );
-
-    // cqmMeasure.calculate_sdes = !!measure.testCaseConfiguration?.sdeIncluded;
-    // const populationSets: PopulationSet[] =
-    //   this.buildCqmPopulationSets(measure);
-    // cqmMeasure.measure_period = this.measurePeriodData(
-    //   this.convertDateToCustomFormat(measure.measurementPeriodStart),
-    //   this.convertDateToCustomFormat(measure.measurementPeriodEnd)
-    // );
-    // cqmMeasure.population_sets = populationSets;
 
     return cqmMeasure;
   }
