@@ -77,9 +77,7 @@ const TestCaseRoutes = () => {
             ]);
           });
       }
-      setCqmMeasureErrors((prevState) =>
-        _.isNil(prevState) ? localErrors : [...prevState, ...localErrors]
-      );
+      setCqmMeasureErrors((prevState) => [...prevState, ...localErrors]);
     }
   }, [measure]);
 
