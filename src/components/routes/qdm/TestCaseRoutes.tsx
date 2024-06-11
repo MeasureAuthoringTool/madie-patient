@@ -71,12 +71,13 @@ const TestCaseRoutes = () => {
               err
             );
             setContextFailure(true);
-            localErrors.push(
-              "An error occurred, please try again. If the error persists, please contact the help desk"
-            );
+            setCqmMeasureErrors((prevState) => [
+              ...prevState,
+              "An error occurred, please try again. If the error persists, please contact the help desk",
+            ]);
           });
       }
-      setCqmMeasureErrors(localErrors);
+      setCqmMeasureErrors((prevState) => [...prevState, ...localErrors]);
     }
   }, [measure]);
 
