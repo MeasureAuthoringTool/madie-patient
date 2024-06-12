@@ -100,11 +100,9 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     } else if (b === undefined || b === "") {
       return -1;
     }
-
-    // Alphanumerical comparison
     if (a < b) return -1;
     if (a > b) return 1;
-    return 0; // Elements are equal
+    return 0;
   }
   function customSortDesc(rowA, rowB) {
     const a = rowA.original.description;
@@ -114,8 +112,6 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     } else if (b === undefined || b === "") {
       return -1;
     }
-
-    // Alphanumerical comparison
     if (a < b) return -1;
     if (a > b) return 1;
     return 0;
