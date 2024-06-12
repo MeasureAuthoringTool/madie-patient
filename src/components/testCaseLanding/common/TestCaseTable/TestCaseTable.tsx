@@ -7,6 +7,8 @@ import {
   ColumnDef,
   getCoreRowModel,
   flexRender,
+  getSortedRowModel,
+  SortingState,
 } from "@tanstack/react-table";
 import * as _ from "lodash";
 import { TestCaseStatus, TestCaseActionButton } from "./TestCaseTableHelpers";
@@ -17,6 +19,9 @@ import {
 } from "@madie/madie-design-system/dist/react";
 import "../TestCase.scss";
 import TestCaseTablePopover from "./TestCaseTablePopover";
+import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 interface TestCaseTableProps {
   testCases: TestCase[];
@@ -42,6 +47,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
   const [toastOpen, setToastOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>("");
   const [toastType, setToastType] = useState<string>("danger");
+  const [hoveredHeader, setHoveredHeader] = useState<string>("");
   const onToastClose = () => {
     setToastType("danger");
     setToastMessage("");
@@ -50,6 +56,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
   // Popover utilities
   const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [sorting, setSorting] = React.useState<SortingState>([]);
   const [selectedTestCase, setSelectedTestCase] = useState<TestCase>(null);
   const handleOpen = (
     selected: TestCase,
@@ -65,38 +72,15 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     setAnchorEl(null);
   };
   const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
-  const transFormData = (testCases) => {
-    const results = testCases.map((tc: TestCase) => ({
+  const transFormData = (testCases: TestCase[]): TCRow[] => {
+    return testCases.map((tc: TestCase) => ({
       id: tc.id,
-      status: <TestCaseStatus executionStatus={tc.executionStatus} />,
-      group: (
-        <TruncateText
-          text={tc.series}
-          maxLength={120}
-          name="series"
-          dataTestId={`test-case-series-${tc.id}`}
-        />
-      ),
-      title: (
-        <TruncateText
-          text={tc.title}
-          maxLength={60}
-          name="title"
-          dataTestId={`test-case-title-${tc.id}`}
-        />
-      ),
-      description: (
-        <TruncateText
-          text={tc.description}
-          maxLength={120}
-          name="description"
-          dataTestId={`test-case-description-${tc.id}`}
-        />
-      ),
-      action: <TestCaseActionButton testCase={tc} handleOpen={handleOpen} />,
+      status: tc.executionStatus,
+      group: tc.series,
+      title: tc.title,
+      description: tc.description,
+      action: tc,
     }));
-
-    return results;
   };
 
   type TCRow = {
@@ -105,6 +89,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     title: string;
     description: string;
     action: any;
+    id: string;
   };
   const [data, setData] = useState<TCRow[]>([]);
   useEffect(() => {
@@ -116,28 +101,57 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     () => [
       {
         header: "Status",
-        cell: (row) => row.renderValue(),
+        cell: (info) => (
+          <TestCaseStatus executionStatus={info.row.original.status} />
+        ),
         accessorKey: "status",
       },
       {
         header: "Group",
-        cell: (row) => row.renderValue(),
+        cell: (info) => (
+          <TruncateText
+            text={info.row.original.group}
+            maxLength={120}
+            name="series"
+            dataTestId={`test-case-series-${info.row.original.id}`}
+          />
+        ),
         accessorKey: "group",
       },
       {
         header: "Title",
-        cell: (row) => row.renderValue(),
+        cell: (info) => (
+          <TruncateText
+            text={info.row.original.title}
+            maxLength={60}
+            name="title"
+            dataTestId={`test-case-title-${info.row.original.id}`}
+          />
+        ),
         accessorKey: "title",
       },
       {
         header: "Description",
-        cell: (row) => row.renderValue(),
+        cell: (info) => (
+          <TruncateText
+            text={info.row.original.description}
+            maxLength={120}
+            name="description"
+            dataTestId={`test-case-description-${info.row.original.id}`}
+          />
+        ),
         accessorKey: "description",
       },
       {
         header: "Action",
-        cell: (row) => row.renderValue(),
+        cell: (info) => (
+          <TestCaseActionButton
+            testCase={info.row.original.action}
+            handleOpen={handleOpen}
+          />
+        ),
         accessorKey: "action",
+        enableSorting: false,
       },
     ],
     []
@@ -146,7 +160,17 @@ const TestCaseTable = (props: TestCaseTableProps) => {
   const table = useReactTable({
     data,
     columns,
+    defaultColumn: {
+      size: 200, //starting column size
+      minSize: 50, //enforced during column resizing
+      maxSize: 500, //enforced during column resizing
+    },
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    onSortingChange: setSorting,
+    state: {
+      sorting,
+    },
   });
 
   return (
@@ -154,6 +178,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
       tw="min-w-full"
       data-testid="test-case-tbl"
       className="tcl-table"
+      id="testCaseListTable"
       style={{
         borderTop: "solid 1px #8c8c8c",
         borderSpacing: "0 2em !important",
@@ -162,16 +187,53 @@ const TestCaseTable = (props: TestCaseTableProps) => {
       <thead tw="bg-slate">
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id}>
-            {headerGroup.headers.map((header) => (
-              <TH key={header.id} scope="col">
-                {header.isPlaceholder
-                  ? null
-                  : flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-              </TH>
-            ))}
+            {headerGroup.headers.map((header) => {
+              const isHovered = hoveredHeader?.includes(header.id);
+              return (
+                <TH
+                  key={header.id}
+                  scope="col"
+                  onClick={header.column.getToggleSortingHandler()}
+                  onMouseEnter={() => setHoveredHeader(header.id)}
+                  onMouseLeave={() => setHoveredHeader(null)}
+                  className="header-cell"
+                >
+                  {header.isPlaceholder ? null : (
+                    <button
+                      className={
+                        header.column.getCanSort()
+                          ? "cursor-pointer select-none header-button"
+                          : "header-button"
+                      }
+                      title={
+                        header.column.getCanSort()
+                          ? header.column.getNextSortingOrder() === "asc"
+                            ? "Sort ascending"
+                            : header.column.getNextSortingOrder() === "desc"
+                            ? "Sort descending"
+                            : "Clear sort"
+                          : undefined
+                      }
+                    >
+                      <span className="arrowDisplay">
+                        {header.column.getCanSort() &&
+                          isHovered &&
+                          !header.column.getIsSorted() && <UnfoldMoreIcon />}
+
+                        {{
+                          asc: <KeyboardArrowUpIcon />,
+                          desc: <KeyboardArrowDownIcon />,
+                        }[header.column.getIsSorted() as string] ?? null}
+                      </span>
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                    </button>
+                  )}
+                </TH>
+              );
+            })}
           </tr>
         ))}
       </thead>
