@@ -185,6 +185,63 @@ describe("Expansion component", () => {
     });
   });
 
+  it("Should disable save buttons when values match previously selected values from measure store", async () => {
+    mockedAxios.get.mockImplementation((args) => {
+      if (
+        args &&
+        args.startsWith(mockServiceConfig.terminologyService.baseUrl)
+      ) {
+        return Promise.resolve({
+          data: mockManifestList,
+          status: 200,
+        });
+      }
+    });
+    renderExpansionComponent();
+
+    const latestRadioInput = screen.getByLabelText(
+      "Latest"
+    ) as HTMLInputElement;
+    const manifestRadioInput = screen.getByLabelText(
+      "Manifest"
+    ) as HTMLInputElement;
+
+    // Verify default selection
+    expect(latestRadioInput).toBeChecked();
+    expect(manifestRadioInput).not.toBeChecked();
+
+    const saveButton = screen.getByRole("button", { name: "Save" });
+    const discardButton = screen.getByRole("button", {
+      name: "Discard Changes",
+    });
+    expect(saveButton).toBeDisabled();
+    expect(discardButton).toBeDisabled();
+
+    // Update form
+    userEvent.click(manifestRadioInput);
+    const manifestSelectWrapperDiv = await screen.findByTestId(
+      "manifest-select"
+    );
+    const manifestSelect = manifestSelectWrapperDiv.children[0];
+    userEvent.click(manifestSelect);
+    const manifestOptions = screen.getAllByRole("option");
+    expect(manifestOptions).toHaveLength(3);
+    userEvent.click(manifestOptions[0]);
+    await waitFor(() => {
+      const manifestSelectInput = screen.getByTestId("manifest-select-input");
+      expect(manifestSelectInput).toHaveValue(
+        "cms-pre-rulemaking-ecqm-2019-08-30"
+      );
+      expect(saveButton).toBeEnabled();
+    });
+    userEvent.click(latestRadioInput);
+
+    expect(latestRadioInput).toBeChecked();
+    expect(manifestRadioInput).not.toBeChecked();
+    expect(saveButton).toBeDisabled();
+    expect(discardButton).toBeDisabled();
+  });
+
   it("Should throw a toast error when we are unable to fetch manifest list from service", async () => {
     mockedAxios.get.mockImplementation((args) => {
       if (

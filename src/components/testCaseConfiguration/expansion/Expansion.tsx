@@ -151,6 +151,13 @@ const Expansion = () => {
           );
         });
     }
+
+    if (
+      formik.values.isManifestExpansion ===
+      formik.initialValues.isManifestExpansion
+    ) {
+      resetForm();
+    }
   }, [formik.values.isManifestExpansion]);
 
   return (
