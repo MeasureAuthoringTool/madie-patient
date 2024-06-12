@@ -390,6 +390,7 @@ const TestCaseList = (props: TestCaseListProps) => {
         setCalculationOutput(calculationOutput);
       } catch (error) {
         console.error("calculateTestCases: error.message = " + error.message);
+        console.error(error);
         setToastOpen(true);
         setToastType("danger");
         setToastMessage(

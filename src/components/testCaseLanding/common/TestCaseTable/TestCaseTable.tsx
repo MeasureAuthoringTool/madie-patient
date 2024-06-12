@@ -91,6 +91,36 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     action: any;
     id: string;
   };
+
+  function customSortGroup(rowA, rowB) {
+    const a = rowA.original.group;
+    const b = rowB.original.group;
+    if (a === undefined || a === "") {
+      return 1;
+    } else if (b === undefined || b === "") {
+      return -1;
+    }
+
+    // Alphanumerical comparison
+    if (a < b) return -1;
+    if (a > b) return 1;
+    return 0; // Elements are equal
+  }
+  function customSortDesc(rowA, rowB) {
+    const a = rowA.original.description;
+    const b = rowB.original.description;
+    if (a === undefined || a === "") {
+      return 1;
+    } else if (b === undefined || b === "") {
+      return -1;
+    }
+
+    // Alphanumerical comparison
+    if (a < b) return -1;
+    if (a > b) return 1;
+    return 0;
+  }
+
   const [data, setData] = useState<TCRow[]>([]);
   useEffect(() => {
     if (testCases) {
@@ -117,6 +147,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
           />
         ),
         accessorKey: "group",
+        sortingFn: customSortGroup,
       },
       {
         header: "Title",
@@ -141,6 +172,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
           />
         ),
         accessorKey: "description",
+        sortingFn: customSortDesc,
       },
       {
         header: "Action",
