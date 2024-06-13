@@ -91,6 +91,18 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     action: any;
     id: string;
   };
+
+  function customSort(a, b) {
+    if (a === undefined || a === "") {
+      return 1;
+    } else if (b === undefined || b === "") {
+      return -1;
+    }
+    if (a < b) return -1;
+    if (a > b) return 1;
+    return 0;
+  }
+
   const [data, setData] = useState<TCRow[]>([]);
   useEffect(() => {
     if (testCases) {
@@ -117,6 +129,8 @@ const TestCaseTable = (props: TestCaseTableProps) => {
           />
         ),
         accessorKey: "group",
+        sortingFn: (rowA, rowB) =>
+          customSort(rowA.original.group, rowB.original.group),
       },
       {
         header: "Title",
@@ -141,6 +155,8 @@ const TestCaseTable = (props: TestCaseTableProps) => {
           />
         ),
         accessorKey: "description",
+        sortingFn: (rowA, rowB) =>
+          customSort(rowA.original.description, rowB.original.description),
       },
       {
         header: "Action",
