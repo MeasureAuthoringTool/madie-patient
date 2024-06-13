@@ -16,9 +16,11 @@ import JSZip from "jszip";
 import prettyBytes from "pretty-bytes";
 import CloseIcon from "@mui/icons-material/Close";
 import { CircularProgress } from "@mui/material";
-import { TestCaseImportRequest } from "@madie/madie-models";
+import {
+  TestCaseImportRequest,
+  TestCaseExportMetaData,
+} from "@madie/madie-models";
 import validator from "validator";
-import { TestCaseExportMetaData } from "../../../../../../madie-models";
 
 const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
   const [uploadedFile, setUploadedFile] = useState(null);
