@@ -6,7 +6,12 @@ import { ScanValidationDto } from "../../../../api/models/ScanValidationDto";
 import TestCaseImportDialog from "./TestCaseImportDialog";
 // @ts-ignore
 import JSZip from "jszip";
-import { Measure, TestCaseImportRequest } from "@madie/madie-models";
+import {
+  Measure,
+  TestCaseExportMetaData,
+  TestCaseImportRequest,
+} from "@madie/madie-models";
+import * as _ from "lodash";
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -67,6 +72,7 @@ const createZipFile = async (
   patientIds: string[],
   jsonBundle?: string[],
   jsonFileName?: string[],
+  madieMetaData?: string,
   zipFileName = "CMS136FHIR-v0.0.000-FHIR4-TestCases"
 ) => {
   try {
@@ -80,6 +86,10 @@ const createZipFile = async (
         jsonBundle[index]
       );
     });
+
+    if (!_.isNil(madieMetaData)) {
+      parentFolder.file(".madie", madieMetaData);
+    }
 
     const zipContent = await zip.generateAsync({ type: "nodebuffer" });
     const blob = new Blob([zipContent], { type: "application/zip" });
@@ -170,16 +180,80 @@ describe("TestCaseImportDialog", () => {
       {
         patientId: patientId1,
         json: jsonBundle,
+        testCaseMetaData: undefined,
       },
       {
         patientId: patientId2,
         json: jsonBundle,
+        testCaseMetaData: undefined,
       },
     ];
 
     const zipFile = await createZipFile(
       [patientId1, patientId2],
       [jsonBundle, jsonBundle]
+    );
+
+    mockedAxios.post.mockReset().mockResolvedValue({ data: scanResult });
+
+    render(
+      <TestCaseImportDialog
+        dialogOpen={true}
+        handleClose={handleClose}
+        onImport={onImport}
+      />
+    );
+
+    const dropZone = screen.getByTestId("file-drop-input");
+    userEvent.upload(dropZone, zipFile);
+
+    await waitFor(async () => {
+      const importBtn = await screen.getByRole("button", { name: "Import" });
+      expect(importBtn).toBeEnabled();
+      userEvent.click(importBtn);
+      expect(onImport).toHaveBeenCalledWith(expectedOutCome);
+      expect(screen.getByTestId("test-case-preview-header")).toHaveTextContent(
+        "Complete"
+      );
+    });
+  });
+
+  it("should preview a valid file including .madie file", async () => {
+    const madieFileContents: TestCaseExportMetaData[] = [
+      {
+        patientId: patientId1,
+        testCaseId: "tc1ID",
+        description: "the first test case",
+        title: "TC1",
+        series: undefined,
+      },
+      {
+        patientId: patientId2,
+        testCaseId: "tc2ID",
+        description: "the second test case",
+        title: "TC2",
+        series: "IPFAIL",
+      },
+    ];
+
+    const expectedOutCome: TestCaseImportRequest[] = [
+      {
+        patientId: patientId1,
+        json: jsonBundle,
+        testCaseMetaData: madieFileContents[0],
+      },
+      {
+        patientId: patientId2,
+        json: jsonBundle,
+        testCaseMetaData: madieFileContents[1],
+      },
+    ];
+
+    const zipFile = await createZipFile(
+      [patientId1, patientId2],
+      [jsonBundle, jsonBundle],
+      ["file1.json", "file2.json"],
+      JSON.stringify(madieFileContents)
     );
 
     mockedAxios.post.mockReset().mockResolvedValue({ data: scanResult });
@@ -307,6 +381,7 @@ describe("TestCaseImportDialog", () => {
       {
         patientId: patientId2,
         json: jsonBundle,
+        testCaseMetaData: undefined,
       },
     ];
 
@@ -344,6 +419,7 @@ describe("TestCaseImportDialog", () => {
       {
         patientId: patientId2,
         json: jsonBundle,
+        testCaseMetaData: undefined,
       },
     ];
 
@@ -378,21 +454,41 @@ describe("TestCaseImportDialog", () => {
   });
 
   it("Should send a blank file if folder is empty", async () => {
+    const madieFileContents: TestCaseExportMetaData[] = [
+      {
+        patientId: patientId1,
+        testCaseId: "tc1ID",
+        description: "the first test case",
+        title: "TC1",
+        series: undefined,
+      },
+      {
+        patientId: patientId2,
+        testCaseId: "tc2ID",
+        description: "the second test case",
+        title: "TC2",
+        series: "IPFAIL",
+      },
+    ];
+
     const expectedOutCome: TestCaseImportRequest[] = [
       {
         patientId: patientId1,
         json: jsonBundle,
+        testCaseMetaData: madieFileContents[0],
       },
       {
         patientId: patientId2,
         json: "",
+        testCaseMetaData: madieFileContents[1],
       },
     ];
 
     const zipFile = await createZipFile(
       [patientId1, patientId2],
       [jsonBundle, ""],
-      [defaultFileName, "ReadMe.txt"]
+      [defaultFileName, "ReadMe.txt"],
+      JSON.stringify(madieFileContents)
     );
 
     mockedAxios.post.mockReset().mockResolvedValue({ data: scanResult });
@@ -424,10 +520,12 @@ describe("TestCaseImportDialog", () => {
       {
         patientId: patientId1,
         json: jsonBundle,
+        testCaseMetaData: undefined,
       },
       {
         patientId: patientId2,
         json: jsonBundle,
+        testCaseMetaData: undefined,
       },
     ];
 
@@ -466,10 +564,12 @@ describe("TestCaseImportDialog", () => {
       {
         patientId: patientId1,
         json: jsonBundle,
+        testCaseMetaData: undefined,
       },
       {
         patientId: patientId2,
         json: jsonBundle,
+        testCaseMetaData: undefined,
       },
     ];
 

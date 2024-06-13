@@ -18,6 +18,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { CircularProgress } from "@mui/material";
 import { TestCaseImportRequest } from "@madie/madie-models";
 import validator from "validator";
+import { TestCaseExportMetaData } from "../../../../../../madie-models";
 
 const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
   const [uploadedFile, setUploadedFile] = useState(null);
@@ -79,14 +80,25 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
       showErrorToast(response.error.defaultMessage);
     } else {
       const zip = new JSZip();
-      const filesMap = [];
+      const filesMap: TestCaseImportRequest[] = [];
       let fileNames = [];
+      let madieFileMetaData: TestCaseExportMetaData[];
       const parentFolderName = acceptedFiles[0].name
         .replace(".zip", "")
         .split(" ")[0];
       zip
         .loadAsync(acceptedFiles[0])
-        .then((content) => {
+        .then(async (content) => {
+          // first load .madie file contents if it exists
+          const madieFile = _.keys(content.files).find((fileName) =>
+            fileName.endsWith(".madie")
+          );
+          if (!_.isEmpty(madieFile)) {
+            madieFileMetaData = JSON.parse(
+              await zip.file(madieFile).async("string")
+            );
+          }
+
           // Filtering out all the fileNames that are valid, based on following format
           // Format => Zip file name followed with a valid UUID followed by json file extension
           // Ex: CMS136FHIR-v0.0.000-FHIR4-TestCases/a648e724-ce72-4cac-b0a7-3c4d52784f73/CMS136FHIR-v0.0.000-tcseries-tctitle001.json
@@ -155,13 +167,19 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
                 filesMap.push({
                   patientId: patientId,
                   json: val,
-                });
+                  testCaseMetaData: madieFileMetaData?.find(
+                    (md) => md.patientId === patientId
+                  ),
+                } as TestCaseImportRequest);
               }
             } else {
               filesMap.push({
                 patientId: patientId,
                 json: val,
-              });
+                testCaseMetaData: madieFileMetaData?.find(
+                  (md) => md.patientId === patientId
+                ),
+              } as TestCaseImportRequest);
             }
           });
 
