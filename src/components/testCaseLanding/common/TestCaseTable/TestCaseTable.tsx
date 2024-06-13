@@ -92,17 +92,6 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     id: string;
   };
 
-  function customSortGroup(rowA, rowB) {
-    const a = rowA.original.group;
-    const b = rowB.original.group;
-    return customSort(a, b);
-  }
-  function customSortDesc(rowA, rowB) {
-    const a = rowA.original.description;
-    const b = rowB.original.description;
-    return customSort(a, b);
-  }
-
   function customSort(a, b) {
     if (a === undefined || a === "") {
       return 1;
@@ -140,7 +129,8 @@ const TestCaseTable = (props: TestCaseTableProps) => {
           />
         ),
         accessorKey: "group",
-        sortingFn: customSortGroup,
+        sortingFn: (rowA, rowB) =>
+          customSort(rowA.original.group, rowB.original.group),
       },
       {
         header: "Title",
@@ -165,7 +155,8 @@ const TestCaseTable = (props: TestCaseTableProps) => {
           />
         ),
         accessorKey: "description",
-        sortingFn: customSortDesc,
+        sortingFn: (rowA, rowB) =>
+          customSort(rowA.original.description, rowB.original.description),
       },
       {
         header: "Action",
