@@ -95,18 +95,15 @@ const TestCaseTable = (props: TestCaseTableProps) => {
   function customSortGroup(rowA, rowB) {
     const a = rowA.original.group;
     const b = rowB.original.group;
-    if (a === undefined || a === "") {
-      return 1;
-    } else if (b === undefined || b === "") {
-      return -1;
-    }
-    if (a < b) return -1;
-    if (a > b) return 1;
-    return 0;
+    return customSort(a, b);
   }
   function customSortDesc(rowA, rowB) {
     const a = rowA.original.description;
     const b = rowB.original.description;
+    return customSort(a, b);
+  }
+
+  function customSort(a, b) {
     if (a === undefined || a === "") {
       return 1;
     } else if (b === undefined || b === "") {
