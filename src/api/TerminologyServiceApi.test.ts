@@ -145,15 +145,13 @@ describe("TerminologyServiceApi Tests", () => {
 
   it("throws an error if ValueSets not found in VSAC for cqm measure", async () => {
     const response = {
-      timestamp: "2022-06-02T21:36:46.592+00:00",
+      timestamp: "2024-06-13T16:20:58.424+00:00",
       status: 404,
       error: "Not Found",
-      message:
-        "404 Not Found from GET https://vsac.nlm.nih.gov/vsac/svs/RetrieveMultipleValueSets?id=2.16.840.1.113883.3.464.1003.101.12.10011&ticket=ST-106586-7gtyv4fwl3xjfcyy-cas&profile=eCQM%20Update%202022-05-05&includeDraft=yes",
-      validationErrors: {
-        "/api":
-          "404 Not Found from GET https://vsac.nlm.nih.gov/vsac/svs/RetrieveMultipleValueSets?id=2.16.840.1.113883.3.464.1003.101.12.10011&ticket=ST-106586-7gtyv4fwl3xjfcyy-cas&profile=eCQM%20Update%202022-05-05&includeDraft=yes",
-      },
+      message: "No message available",
+      diagnostic:
+        "Requested resource was not found. Either the resource doesn't exist, or you don't have the permission to view it.",
+      valueSet: "2.16.840.1.113762.1.4.1147.82",
     };
     axios.put = jest
       .fn()
@@ -165,9 +163,39 @@ describe("TerminologyServiceApi Tests", () => {
         false
       );
     } catch (error) {
-      expect(error.message).toEqual(
-        "An error exists with the measure CQL, please review the CQL Editor tab."
+      expect(error.message).toContain(response.valueSet);
+      expect(error.message).toContain("Latest");
+      expect(error.message).not.toContain("Manifest");
+      expect(error.message).toContain(`Per VSAC, \"${response.diagnostic}\"`);
+    }
+  });
+
+  test("throws an error when VSAC throws an error during expansion with manifest", async () => {
+    const response = {
+      timestamp: "2024-06-13T16:34:55.931+00:00",
+      status: 400,
+      error: "Bad Request",
+      message: "No message available",
+      diagnostic:
+        "Content returned as invalid against the specification. Either the specification contains invalid elements, or the server failed to process due to internal errors.",
+      valueSet: "2.16.840.1.114222.4.11.837",
+      manifest: "mu2-update-2015-05-01",
+    };
+    axios.put = jest
+      .fn()
+      .mockRejectedValue({ response: { status: 400, data: response } });
+    try {
+      await terminologyService.getQdmValueSetsExpansion(
+        cqm_measure_basic,
+        testManifestExpansion,
+        true
       );
+    } catch (error) {
+      expect(error.message).toContain(response.valueSet);
+      expect(error.message).not.toContain("Latest");
+      expect(error.message).toContain("Manifest");
+      expect(error.message).toContain(response.manifest);
+      expect(error.message).toContain(`Per VSAC, \"${response.diagnostic}\"`);
     }
   });
 
@@ -175,7 +203,7 @@ describe("TerminologyServiceApi Tests", () => {
     const result = terminologyService.getQdmValueSetsExpansion(
       testCqmMeasure,
       testManifestExpansion,
-      false
+      true
     );
     expect(_.isEmpty(result)).toBe(true);
   });

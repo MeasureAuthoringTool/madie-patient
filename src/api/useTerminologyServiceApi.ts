@@ -110,14 +110,11 @@ export class TerminologyServiceApi {
     } catch (error) {
       let message =
         "An error occurred, please try again. If the error persists, please contact the help desk. (004)";
-      if (error.response && error.response.status === 404) {
-        const data = error.response.data?.message;
-        console.error(
-          "ValueSet not found in vsac: ",
-          this.getOidFromString(data)
-        );
-        message =
-          "An error exists with the measure CQL, please review the CQL Editor tab.";
+      if (error.response?.data?.diagnostic) {
+        const data = error.response.data;
+        message = `Value Set ${data?.valueSet} could not be expanded using ${
+          data?.manifest === undefined ? "Latest" : "Manifest " + data.manifest
+        }. Per VSAC, \"${data.diagnostic}\"`;
       }
       throw new Error(message);
     }
