@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useCallback, useRef, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import TestCaseLandingQdm from "../../testCaseLanding/qdm/TestCaseLanding";
 import EditTestCase from "../../editTestCase/qdm/EditTestCase";
@@ -47,55 +47,69 @@ const TestCaseRoutes = () => {
     new AbortController()
   );
 
+  const onAbort = useCallback(async () => {
+    // TODO: gracefully fail when we abort so that the cqmMeasure begins a rebuild
+    if (!cqmMeasureConvertAbortController.current.signal.aborted) {
+      cqmMeasureConvertAbortController.current.abort();
+      cqmMeasureConvertAbortController.current = new AbortController();
+    }
+    if (!getValueSetAbortController.current.signal.aborted) {
+      getValueSetAbortController.current.abort();
+      getValueSetAbortController.current = new AbortController();
+    }
+  }, [
+    cqmMeasureConvertAbortController.current,
+    getValueSetAbortController.current,
+  ]);
+
   useEffect(() => {
-    setContextFailure(null);
-    setCqmMeasure(null);
-    setExecutionContextReady(false);
-    // cut the lines on previous calls to prevent overlapping state updates
-
-    getValueSetAbortController.current.abort(); // this abort triggers a catch block that stops the rest of this.
-    cqmMeasureConvertAbortController.current.abort();
-    getValueSetAbortController.current = new AbortController();
-    cqmMeasureConvertAbortController.current = new AbortController();
-    const localErrors: Array<string> = [];
     if (measure) {
-      if (measure.cqlErrors || !measure.elmJson) {
-        localErrors.push(
-          "An error exists with the measure CQL, please review the CQL Editor tab."
-        );
-      }
-      if (!measure?.groups?.length) {
-        localErrors.push(
-          "No Population Criteria is associated with this measure. Please review the Population Criteria tab."
-        );
-      }
+      setContextFailure(null);
+      setCqmMeasure(null);
+      setExecutionContextReady(false);
+      onAbort();
+      // cut the lines on previous calls to prevent overlapping state updates
+      // getValueSetAbortController.current.abort(); // this abort triggers a catch block that stops the rest of this.
+      const localErrors: Array<string> = [];
+      if (measure) {
+        if (measure.cqlErrors || !measure.elmJson) {
+          localErrors.push(
+            "An error exists with the measure CQL, please review the CQL Editor tab."
+          );
+        }
+        if (!measure?.groups?.length) {
+          localErrors.push(
+            "No Population Criteria is associated with this measure. Please review the Population Criteria tab."
+          );
+        }
 
-      if (!localErrors.length) {
-        cqmMeasureConvertAbortController.current = new AbortController();
-        cqmService.current
-          .convertToCqmMeasure(
-            measure,
-            cqmMeasureConvertAbortController.current
-          )
-          .then((convertedMeasure: CqmMeasure) => {
-            if (convertedMeasure) {
-              getQdmValueSets(convertedMeasure);
-            }
-          })
-          .catch((err) => {
-            // Added a console log because anytime this fails, we get an error banner with no other information
-            console.error(
-              "An error occurred while converting to CQM measure: ",
-              err
-            );
-            setContextFailure(true);
-            setCqmMeasureErrors((prevState) => [
-              ...prevState,
-              "An error occurred, please try again. If the error persists, please contact the help desk",
-            ]);
-          });
+        if (!localErrors.length) {
+          cqmMeasureConvertAbortController.current = new AbortController();
+          cqmService.current
+            .convertToCqmMeasure(
+              measure,
+              cqmMeasureConvertAbortController.current
+            )
+            .then((convertedMeasure: CqmMeasure) => {
+              if (convertedMeasure) {
+                getQdmValueSets(convertedMeasure);
+              }
+            })
+            .catch((err) => {
+              // Added a console log because anytime this fails, we get an error banner with no other information
+              console.error(
+                "An error occurred while converting to CQM measure: ",
+                err
+              );
+              setContextFailure(true);
+              setCqmMeasureErrors((prevState) => [
+                ...prevState,
+                "An error occurred, please try again. If the error persists, please contact the help desk",
+              ]);
+            });
+        }
+        setCqmMeasureErrors((prevState) => [...prevState, ...localErrors]);
       }
-      setCqmMeasureErrors((prevState) => [...prevState, ...localErrors]);
     }
   }, [measure]);
   //given a converted measure, append valuesets to it using the service
