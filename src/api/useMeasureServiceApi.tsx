@@ -3,7 +3,7 @@ import axios from "axios";
 import useServiceConfig from "./useServiceConfig";
 import { ServiceConfig } from "./ServiceContext";
 import { Measure } from "@madie/madie-models";
-import { useOktaTokens } from "@madie/madie-util";
+import { useOktaTokens, wafIntercept } from "@madie/madie-util";
 import { Bundle } from "fhir/r4";
 
 export class MeasureServiceApi {
@@ -59,3 +59,7 @@ export default function useMeasureServiceApi(): MeasureServiceApi {
 
   return new MeasureServiceApi(baseUrl, getAccessToken);
 }
+
+axios.interceptors.response.use((response) => {
+  return response;
+}, wafIntercept);

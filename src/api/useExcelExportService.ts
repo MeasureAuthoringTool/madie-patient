@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import useServiceConfig from "./useServiceConfig";
 import { ServiceConfig } from "./ServiceContext";
 import { TestCaseExcelExportDto } from "@madie/madie-models";
-import { useOktaTokens } from "@madie/madie-util";
+import { useOktaTokens, wafIntercept } from "@madie/madie-util";
 
 export class ExcelExportService {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
@@ -31,3 +31,6 @@ export default function useExcelExportService(): ExcelExportService {
 
   return new ExcelExportService(baseUrl, getAccessToken);
 }
+axios.interceptors.response.use((response) => {
+  return response;
+}, wafIntercept);

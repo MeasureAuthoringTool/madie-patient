@@ -3,12 +3,16 @@ import { BrowserRouter } from "react-router-dom";
 import RoutesWrapper from "./routes/RoutesWrapper";
 import { ServiceConfig, ApiContextProvider } from "../api/ServiceContext";
 import axios from "axios";
+import { wafIntercept } from "@madie/madie-util";
 
 export default function Home() {
   const [configError, setConfigError] = useState<boolean>(false);
   const [serviceConfig, setServiceConfig] = useState<ServiceConfig | null>(
     null
   );
+  axios.interceptors.response.use((response) => {
+    return response;
+  }, wafIntercept);
 
   // Use an effect hook to fetch the serviceConfig and set the state
   useEffect(() => {

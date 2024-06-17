@@ -20,7 +20,7 @@ import { ServiceConfig } from "./ServiceContext";
 import useServiceConfig from "./useServiceConfig";
 import useMeasureServiceApi from "../api/useMeasureServiceApi";
 
-import { useOktaTokens } from "@madie/madie-util";
+import { useOktaTokens, wafIntercept } from "@madie/madie-util";
 import axios from "axios";
 import { CalculationMethod } from "./models/CalculationMethod";
 import { DataCriteria } from "./models/DataCriteria";
@@ -29,6 +29,10 @@ import { CqmModelFactory } from "./model-factory/CqmModelFactory";
 import { ElmDependencyFinder } from "./elmDependencyFinder/ElmDependencyFinder";
 import { v4 as uuidv4 } from "uuid";
 import { TranslatedLibrary } from "./models/TranslatedLibrary";
+
+axios.interceptors.response.use((response) => {
+  return response;
+}, wafIntercept);
 
 export class CqmConversionService {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}

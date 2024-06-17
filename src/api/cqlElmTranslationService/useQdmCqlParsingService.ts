@@ -3,7 +3,7 @@ import { CqlDefinitionCallstack } from "../../components/editTestCase/groupCover
 import { CqlDefinitionExpression } from "../../util/GroupCoverageHelpers";
 import { ServiceConfig } from "../ServiceContext";
 import useServiceConfig from "../useServiceConfig";
-import { useOktaTokens } from "@madie/madie-util";
+import { useOktaTokens, wafIntercept } from "@madie/madie-util";
 
 export class QdmCqlParsingService {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
@@ -48,6 +48,10 @@ export class QdmCqlParsingService {
     }
   }
 }
+
+axios.interceptors.response.use((response) => {
+  return response;
+}, wafIntercept);
 
 const useQdmCqlParsingService = (): QdmCqlParsingService => {
   const serviceConfig: ServiceConfig = useServiceConfig();

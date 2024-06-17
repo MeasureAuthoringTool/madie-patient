@@ -9,7 +9,7 @@ import {
   TestCase,
   TestCaseImportRequest,
 } from "@madie/madie-models";
-import { useOktaTokens } from "@madie/madie-util";
+import { useOktaTokens, wafIntercept } from "@madie/madie-util";
 import { ScanValidationDto } from "./models/ScanValidationDto";
 import { addValues } from "../util/DefaultValueProcessor";
 import { MadieError } from "../util/Utils";
@@ -330,6 +330,10 @@ export class TestCaseServiceApi {
     return response.data;
   }
 }
+
+axios.interceptors.response.use((response) => {
+  return response;
+}, wafIntercept);
 
 const useTestCaseServiceApi = (): TestCaseServiceApi => {
   const serviceConfig: ServiceConfig = useServiceConfig();

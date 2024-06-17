@@ -1,7 +1,11 @@
 import axios from "axios";
 import useServiceConfig from "./useServiceConfig";
 import { ServiceConfig } from "./ServiceContext";
-import { getOidFromString, useOktaTokens } from "@madie/madie-util";
+import {
+  getOidFromString,
+  useOktaTokens,
+  wafIntercept,
+} from "@madie/madie-util";
 import { Bundle, Library, ValueSet } from "fhir/r4";
 import { CqmMeasure, CQL, ValueSet as QdmValueSet } from "cqm-models";
 import * as _ from "lodash";
@@ -272,3 +276,7 @@ export default function useTerminologyServiceApi(): TerminologyServiceApi {
     getAccessToken
   );
 }
+
+axios.interceptors.response.use((response) => {
+  return response;
+}, wafIntercept);

@@ -3,7 +3,7 @@ import { CqlDefinitionCallstack } from "../../components/editTestCase/groupCover
 import { CqlDefinitionExpression } from "../../util/GroupCoverageHelpers";
 import useServiceConfig from "../useServiceConfig";
 import { ServiceConfig } from "../ServiceContext";
-import { useOktaTokens } from "@madie/madie-util";
+import { useOktaTokens, wafIntercept } from "@madie/madie-util";
 
 export class FhirCqlParsingService {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
@@ -48,6 +48,10 @@ export class FhirCqlParsingService {
     }
   }
 }
+
+axios.interceptors.response.use((response) => {
+  return response;
+}, wafIntercept);
 
 const useFhirCqlParsingService = (): FhirCqlParsingService => {
   const serviceConfig: ServiceConfig = useServiceConfig();
