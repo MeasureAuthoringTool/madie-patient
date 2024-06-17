@@ -92,14 +92,16 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     id: string;
   };
 
-  function customSort(a, b) {
+  function customSort(a: string, b: string) {
     if (a === undefined || a === "") {
       return 1;
     } else if (b === undefined || b === "") {
       return -1;
     }
-    if (a < b) return -1;
-    if (a > b) return 1;
+    const aComp = a.trim().toLocaleLowerCase();
+    const bComp = b.trim().toLocaleLowerCase();
+    if (aComp < bComp) return -1;
+    if (aComp > bComp) return 1;
     return 0;
   }
 
@@ -143,6 +145,8 @@ const TestCaseTable = (props: TestCaseTableProps) => {
           />
         ),
         accessorKey: "title",
+        sortingFn: (rowA, rowB) =>
+          customSort(rowA.original.title, rowB.original.title),
       },
       {
         header: "Description",
