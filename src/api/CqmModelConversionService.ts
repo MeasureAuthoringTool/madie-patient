@@ -2,7 +2,6 @@ import {
   Measure,
   Population,
   PopulationType,
-  MeasureObservation,
   SupplementalData,
   Stratification,
 } from "@madie/madie-models";
@@ -22,7 +21,6 @@ import useMeasureServiceApi from "../api/useMeasureServiceApi";
 
 import { useOktaTokens } from "@madie/madie-util";
 import axios from "axios";
-import { CalculationMethod } from "./models/CalculationMethod";
 import { DataCriteria } from "./models/DataCriteria";
 import _ from "lodash";
 import { CqmModelFactory } from "./model-factory/CqmModelFactory";
@@ -70,7 +68,6 @@ export class CqmConversionService {
       const results: Array<DataElement> = response.data.map((dc) =>
         this.buildSourceDataCriteria(dc)
       );
-
       return results;
     } catch (error) {
       throw new Error(
@@ -80,14 +77,18 @@ export class CqmConversionService {
     }
   }
 
-  async convertToCqmMeasure(measure: Measure): Promise<CqmMeasure> {
+  async convertToCqmMeasure(
+    measure: Measure,
+    abortController: AbortController
+  ): Promise<CqmMeasure> {
     if (_.isNil(measure) || _.isNil(measure.cql)) {
       return null;
     }
     //instead of converting the measure, let's get it from the measure-service
 
     const cqmMeasure: CqmMeasure = await this.measureService.getCqmMeasure(
-      measure.id
+      measure.id,
+      abortController
     );
 
     return cqmMeasure;
