@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
 import * as _ from "lodash";
@@ -176,13 +176,6 @@ const TestCaseList = (props: TestCaseListProps) => {
       }
     }
   }, [measure]);
-
-  useEffect(() => {
-    if (testCases?.length != measure?.testCases?.length) {
-      const newMeasure = { ...measure, testCases };
-      updateMeasure(newMeasure);
-    }
-  }, [testCases]);
 
   useEffect(() => {
     if (criteriaId && measure?.groups?.length) {
@@ -363,7 +356,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     setCreateOpen(false);
   };
 
-  const executeTestCases = async () => {
+  const executeTestCases = useCallback(async () => {
     if (measure && measure.cqlErrors) {
       console.error(
         "executeTestCases: Cannot execute test cases while errors exist in the measure CQL! "
@@ -375,13 +368,13 @@ const TestCaseList = (props: TestCaseListProps) => {
       );
       return null;
     }
-    const validTestCases: TestCase[] = testCases?.filter(
-      (tc) => tc.validResource
-    );
+
+    const validTestCases = testCases?.filter((tc) => tc.validResource);
+
     if (validTestCases && validTestCases.length > 0 && cqmMeasure) {
       setExecuting(true);
       try {
-        // calculation service needs to be changed: currently it is using QI Core calaculation service
+        // calculation service needs to be changed: currently it is using QI Core calculation service
         const patients = validTestCases.map((tc) => JSON.parse(tc.json));
         const calculationOutput: CqmExecutionResultsByPatient =
           await qdmCalculation.current.calculateQdmTestCases(
@@ -404,7 +397,18 @@ const TestCaseList = (props: TestCaseListProps) => {
       setToastType("danger");
       setToastMessage("No valid test cases to execute");
     }
-  };
+  }, [
+    measure,
+    testCases,
+    cqmMeasure,
+    qdmCalculation,
+    setExecuting,
+    setCalculationOutput,
+    setToastOpen,
+    setToastType,
+    setToastMessage,
+  ]);
+
   // Test case 2 "test case name" has a status of "status".
   const generateSRString = (testCaseList) => {
     let string = "";
