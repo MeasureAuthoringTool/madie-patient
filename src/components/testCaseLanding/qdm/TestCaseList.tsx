@@ -177,7 +177,6 @@ const TestCaseList = (props: TestCaseListProps) => {
     }
   }, [measure]);
 
-
   useEffect(() => {
     if (criteriaId && measure?.groups?.length) {
       const selectedPopCriteria = measure.groups?.find(
@@ -377,7 +376,7 @@ const TestCaseList = (props: TestCaseListProps) => {
       try {
         // calculation service needs to be changed: currently it is using QI Core calculation service
         const patients = validTestCases.map((tc) => JSON.parse(tc.json));
-        const calculationOutput =
+        const calculationOutput: CqmExecutionResultsByPatient =
           await qdmCalculation.current.calculateQdmTestCases(
             cqmMeasure,
             patients
