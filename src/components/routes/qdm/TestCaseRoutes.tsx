@@ -40,9 +40,23 @@ const TestCaseRoutes = () => {
       subscription.unsubscribe();
     };
   }, []);
+  const cqmMeasureConvertAbortController = useRef<AbortController>(
+    new AbortController()
+  );
+  const getValueSetAbortController = useRef<AbortController>(
+    new AbortController()
+  );
 
   useEffect(() => {
     setContextFailure(null);
+    setCqmMeasure(null);
+    setExecutionContextReady(false);
+    // cut the lines on previous calls to prevent overlapping state updates
+
+    getValueSetAbortController.current.abort(); // this abort triggers a catch block that stops the rest of this.
+    cqmMeasureConvertAbortController.current.abort();
+    getValueSetAbortController.current = new AbortController();
+    cqmMeasureConvertAbortController.current = new AbortController();
     const localErrors: Array<string> = [];
     if (measure) {
       if (measure.cqlErrors || !measure.elmJson) {
@@ -57,8 +71,12 @@ const TestCaseRoutes = () => {
       }
 
       if (!localErrors.length) {
+        cqmMeasureConvertAbortController.current = new AbortController();
         cqmService.current
-          .convertToCqmMeasure(measure)
+          .convertToCqmMeasure(
+            measure,
+            cqmMeasureConvertAbortController.current
+          )
           .then((convertedMeasure: CqmMeasure) => {
             if (convertedMeasure) {
               getQdmValueSets(convertedMeasure);
@@ -80,7 +98,7 @@ const TestCaseRoutes = () => {
       setCqmMeasureErrors((prevState) => [...prevState, ...localErrors]);
     }
   }, [measure]);
-
+  //given a converted measure, append valuesets to it using the service
   const getQdmValueSets = (convertedMeasure: CqmMeasure) => {
     const drcValueSets: ValueSet[] =
       terminologyService.current.getValueSetsForDRCs(convertedMeasure);
@@ -88,7 +106,8 @@ const TestCaseRoutes = () => {
       .getQdmValueSetsExpansion(
         convertedMeasure,
         measure.testCaseConfiguration?.manifestExpansion,
-        featureFlags.manifestExpansion
+        featureFlags.manifestExpansion,
+        getValueSetAbortController.current.signal
       )
       .then((vs: ValueSet[]) => {
         const newCqmMeasure = {
