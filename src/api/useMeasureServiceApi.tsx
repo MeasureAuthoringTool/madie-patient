@@ -34,7 +34,11 @@ export class MeasureServiceApi {
       },
     });
   }
-  async getCqmMeasure(measureId: String): Promise<Response> {
+
+  async getCqmMeasure(
+    measureId: String,
+    abortController: AbortController
+  ): Promise<Response> {
     try {
       const result = await axios.get(
         `${this.baseUrl}/measures/${measureId}/cqmmeasure`,
@@ -42,6 +46,7 @@ export class MeasureServiceApi {
           headers: {
             Authorization: `Bearer ${this.getAccessToken()}`,
           },
+          signal: abortController.signal,
         }
       );
       return result.data;

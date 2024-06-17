@@ -75,7 +75,8 @@ export class TerminologyServiceApi {
   async getQdmValueSetsExpansion(
     cqmMeasure: CqmMeasure,
     manifestExpansion: ManifestExpansion,
-    manifestExpansionFeatureFlag: boolean
+    manifestExpansionFeatureFlag: boolean,
+    signal: AbortSignal
   ): Promise<QdmValueSet[]> {
     if (!cqmMeasure) {
       return null;
@@ -108,6 +109,7 @@ export class TerminologyServiceApi {
           headers: {
             Authorization: `Bearer ${this.getAccessToken()}`,
           },
+          signal,
         }
       );
       return response.data;
