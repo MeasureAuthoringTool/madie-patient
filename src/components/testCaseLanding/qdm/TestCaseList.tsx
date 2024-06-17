@@ -176,7 +176,13 @@ const TestCaseList = (props: TestCaseListProps) => {
       }
     }
   }, [measure]);
-  // removed area where test cases were saved to measure here with updateMeasure. Unsure why this existed. Doesn't break tests.
+
+  useEffect(() => {
+    if (testCases?.length != measure?.testCases?.length) {
+      const newMeasure = { ...measure, testCases };
+      updateMeasure(newMeasure);
+    }
+  }, [testCases]);
 
   useEffect(() => {
     if (criteriaId && measure?.groups?.length) {
