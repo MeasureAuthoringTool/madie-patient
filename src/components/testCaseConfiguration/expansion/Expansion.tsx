@@ -109,8 +109,6 @@ const Expansion = () => {
       .updateMeasure(updatedMeasure)
       .then(() => {
         handleToast("success", "Expansion details Updated Successfully", true);
-        // To disable Run test case button, until cqmMeasure is rebuilt
-        setExecutionContextReady(false);
         // updating measure will propagate update state site wide.
         updateMeasure(updatedMeasure);
       })
