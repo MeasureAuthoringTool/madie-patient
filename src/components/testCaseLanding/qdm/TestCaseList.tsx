@@ -177,12 +177,6 @@ const TestCaseList = (props: TestCaseListProps) => {
     }
   }, [measure]);
 
-  useEffect(() => {
-    if (testCases?.length != measure?.testCases?.length) {
-      const newMeasure = { ...measure, testCases };
-      updateMeasure(newMeasure);
-    }
-  }, [testCases]);
 
   useEffect(() => {
     if (criteriaId && measure?.groups?.length) {
