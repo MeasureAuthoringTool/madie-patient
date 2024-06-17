@@ -98,8 +98,8 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     } else if (b === undefined || b === "") {
       return -1;
     }
-    const aComp = a.toLocaleLowerCase().trim();
-    const bComp = b.toLocaleLowerCase().trim();
+    const aComp = a.trim().toLocaleLowerCase();
+    const bComp = b.trim().toLocaleLowerCase();
     if (aComp < bComp) return -1;
     if (aComp > bComp) return 1;
     return 0;
