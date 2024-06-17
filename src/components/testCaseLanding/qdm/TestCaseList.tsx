@@ -60,6 +60,7 @@ import {
 } from "../../../api/useTestCaseServiceApi";
 
 import useQdmCqlParsingService from "../../../api/cqlElmTranslationService/useQdmCqlParsingService";
+
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
 export const coverageHeaderRegex =
@@ -389,7 +390,7 @@ const TestCaseList = (props: TestCaseListProps) => {
           );
         setCalculationOutput(calculationOutput);
       } catch (error) {
-        console.error("calculateTestCases: error.message = " + error.message);
+        console.error("calculateTestCases: error.message = ", error);
         setToastOpen(true);
         setToastType("danger");
         setToastMessage(

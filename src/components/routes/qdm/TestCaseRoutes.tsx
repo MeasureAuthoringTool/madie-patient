@@ -99,6 +99,13 @@ const TestCaseRoutes = () => {
         setExecutionContextReady(
           !!newCqmMeasure && !_.isEmpty(newCqmMeasure?.value_sets) && !!measure
         );
+        if (cqmMeasureErrors) {
+          setCqmMeasureErrors(
+            cqmMeasureErrors.filter((err) => {
+              !err.includes("VSAC");
+            })
+          );
+        }
       })
       .catch((err) => {
         setContextFailure(true);
