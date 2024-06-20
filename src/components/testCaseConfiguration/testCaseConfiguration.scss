@@ -41,6 +41,12 @@
     .select {
       width: 300px;
     }
+    #integer-field-basic-number-input {
+      input[type=number]::-webkit-inner-spin-button,
+      input[type=number]::-webkit-outer-spin-button {
+        opacity: 1;
+      }
+    }
   }
   .form-actions {
     display: flex;

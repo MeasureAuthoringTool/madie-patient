@@ -1,27 +1,22 @@
 import React, { useEffect, useState } from "react";
 import {
   Button,
-  RadioButton,
   MadieDiscardDialog,
   Toast,
+  NumberInput,
 } from "@madie/madie-design-system/dist/react";
 import { useFormik } from "formik";
-import { Measure } from "@madie/madie-models";
 import {
   measureStore,
   checkUserCanEdit,
   routeHandlerStore,
 } from "@madie/madie-util";
 import "../testCaseConfiguration.scss";
-import useMeasureServiceApi from "../../../api/useMeasureServiceApi";
 import { Typography } from "@mui/material";
-import { useQdmExecutionContext } from "../../routes/qdm/QdmExecutionContext";
+import _ from "lodash";
 
 const TestCaseData = () => {
-  const { setExecutionContextReady } = useQdmExecutionContext();
   const [measure, setMeasure] = useState<any>(measureStore.state);
-  const measureServiceApi = useMeasureServiceApi();
-  const { updateMeasure } = measureStore;
   const { updateRouteHandlerState } = routeHandlerStore;
   const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
   const [toastOpen, setToastOpen] = useState<boolean>(false);
@@ -42,8 +37,9 @@ const TestCaseData = () => {
   );
 
   const formik = useFormik({
-    initialValues: { shiftTestCaseDates: null },
-    onSubmit: async () => await handleSubmit(),
+    initialValues: { shiftTestCaseDates: "" },
+    enableReinitialize: true,
+    onSubmit: async (values) => await handleSubmit(values),
   });
   const { resetForm } = formik;
 
@@ -65,40 +61,7 @@ const TestCaseData = () => {
     setToastOpen(open);
   };
 
-  const handleSubmit = async () => {
-    // const newMeasure: Measure = {
-    //   ...measure,
-    //   testCaseConfiguration: {
-    //     ...measure.testCaseConfiguration,
-    //     sdeIncluded: formik.values.sdeIncluded,
-    //   },
-    // };
-    //
-    // measureServiceApi
-    //   .updateMeasure(newMeasure)
-    //   .then(() => {
-    //     handleToast(
-    //       "success",
-    //       "Test Case Configuration Updated Successfully",
-    //       true
-    //     );
-    //     // To disable Run test case button, until cqmMeasure is rebuilt
-    //     setExecutionContextReady(false);
-    //     // updating measure will propagate update state site wide.
-    //     updateMeasure(newMeasure);
-    //   })
-    //   // update to alert
-    //   .catch((err) => {
-    //     handleToast(
-    //       "danger",
-    //       "Error updating Test Case Configuration: " +
-    //         err?.response?.data?.message?.toString(),
-    //       true
-    //     );
-    //   });
-  };
-
-  const [value, setValue] = React.useState(null);
+  const handleSubmit = async (values) => {};
 
   return (
     <form
@@ -114,8 +77,16 @@ const TestCaseData = () => {
           Indicates required field
         </Typography>
       </div>
-      <div className="form-elements" data-testId="test-case-data-page">
-        <div></div>
+      <div className="form-elements">
+        <NumberInput
+          label="Shift Test Case Dates"
+          id="shift-test-case-dates"
+          disabled={!canEdit || _.isEmpty(measure?.testCases)}
+          value={formik.values.shiftTestCaseDates}
+          onChange={(e) => {
+            formik.setFieldValue("shiftTestCaseDates", e.target.value);
+          }}
+        />
       </div>
       <div className="form-actions">
         <Button
@@ -130,7 +101,7 @@ const TestCaseData = () => {
         <Button
           variant="cyan"
           disabled={!(formik.isValid && formik.dirty) || !canEdit}
-          data-testid={`sde-save`}
+          data-testid={`test-case-data-save`}
           type="submit"
           className="save-button"
         >
