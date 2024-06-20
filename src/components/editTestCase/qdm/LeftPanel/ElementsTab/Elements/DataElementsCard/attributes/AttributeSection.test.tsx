@@ -40,6 +40,8 @@ jest.mock("@madie/madie-util", () => ({
   },
 }));
 
+const setExecutionContextReady = jest.fn();
+
 describe("AttributeSection", () => {
   let encounterElement;
   let assessmentElement;
@@ -56,6 +58,7 @@ describe("AttributeSection", () => {
             measureState: [null, jest.fn],
             cqmMeasureState: [mockCqmMeasure, jest.fn],
             executionContextReady: true,
+            setExecutionContextReady: setExecutionContextReady,
             executing: false,
             setExecuting: jest.fn(),
             contextFailure: false,
@@ -417,7 +420,7 @@ describe("AttributeSection", () => {
     expect(highInput).toBeInTheDocument();
   });
 
-  it("Clicking the add button calls works", async () => {
+  it.only("Clicking the add button calls works", async () => {
     renderAttributeSection(assessmentElement, [], onAddClicked);
     const attributeSelectBtn = screen.getByRole("button", {
       name: "Attribute Select Attribute",
@@ -442,11 +445,17 @@ describe("AttributeSection", () => {
     const typeSelect = await screen.findByRole("listbox");
     expect(typeSelect).toBeInTheDocument();
     userEvent.click(within(typeSelect).getByText("Date"));
-    const dateInput = await screen.findByTestId("CalendarIcon");
+    const dateInput = (await screen.findByPlaceholderText(
+      "MM/DD/YYYY"
+    )) as HTMLInputElement;
+    const dateInput2 = await screen.findByTestId("CalendarIcon");
     expect(dateInput).toBeInTheDocument();
-    userEvent.click(dateInput);
-    userEvent.type(dateInput, "12121912");
-    const addButton = await screen.findByTestId("add-attribute-button");
+    expect(dateInput2).toBeInTheDocument();
+
+    fireEvent.change(dateInput, { target: { value: "01/01/2023" } });
+    expect(dateInput.value).toBe("01/01/2023");
+
+    const addButton = screen.getByTestId("add-attribute-button");
     expect(addButton).toBeInTheDocument();
     userEvent.click(addButton);
     expect(onAddClicked).toHaveBeenCalled();
