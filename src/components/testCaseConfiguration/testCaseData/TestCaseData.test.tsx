@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
 import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
 import TestCaseData from "./TestCaseData";
@@ -125,9 +125,7 @@ describe("TestCaseData", () => {
     expect(discardButton).toBeEnabled();
   });
 
-  // can't test it as we can't type negative numbers, it has to be done using up/down arrow keys
-  // and I am unable to stimulate keydown action in jest
-  it.skip("should allow negative numbers to be entered", () => {
+  it("should allow negative numbers to be entered", () => {
     renderTestCaseDataComponent();
     const shiftTestCaseDatesInput = screen.getByRole("spinbutton", {
       name: "Shift Test Case Dates",
@@ -144,7 +142,31 @@ describe("TestCaseData", () => {
     expect(shiftTestCaseDatesInput.value).toBe("-3");
     expect(saveButton).toBeEnabled();
     expect(discardButton).toBeEnabled();
+  });
+
+  it("should display error message when a invalid integer is entered", async () => {
     renderTestCaseDataComponent();
+    const shiftTestCaseDatesInput = screen.getByRole("spinbutton", {
+      name: "Shift Test Case Dates",
+    }) as HTMLInputElement;
+    const saveButton = screen.getByRole("button", { name: "Save" });
+    const discardButton = screen.getByRole("button", {
+      name: "Discard Changes",
+    });
+    expect(shiftTestCaseDatesInput).not.toBeDisabled();
+    expect(saveButton).toBeDisabled();
+    expect(discardButton).toBeDisabled();
+
+    userEvent.type(shiftTestCaseDatesInput, "-3-5");
+    expect(shiftTestCaseDatesInput.value).toBe("");
+    expect(saveButton).not.toBeEnabled();
+    expect(discardButton).not.toBeEnabled();
+    userEvent.tab();
+    expect(
+      await screen.findByTestId(
+        "integer-field-shift-test-case-dates-helper-text"
+      )
+    ).toHaveTextContent("Must be a valid number of years");
   });
 
   it("should display discard dialog and clear out form when confirmed", () => {

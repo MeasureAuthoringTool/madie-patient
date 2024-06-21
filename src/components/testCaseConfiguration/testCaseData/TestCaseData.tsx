@@ -6,6 +6,8 @@ import {
   NumberInput,
 } from "@madie/madie-design-system/dist/react";
 import { useFormik } from "formik";
+import "twin.macro";
+import "styled-components/macro";
 import {
   measureStore,
   checkUserCanEdit,
@@ -14,6 +16,7 @@ import {
 import "../testCaseConfiguration.scss";
 import { Typography } from "@mui/material";
 import _ from "lodash";
+import * as Yup from "yup";
 
 const TestCaseData = () => {
   const [measure, setMeasure] = useState<any>(measureStore.state);
@@ -38,6 +41,11 @@ const TestCaseData = () => {
 
   const formik = useFormik({
     initialValues: { shiftTestCaseDates: "" },
+    validationSchema: Yup.object().shape({
+      shiftTestCaseDates: Yup.string().required(
+        "Must be a valid number of years"
+      ),
+    }),
     enableReinitialize: true,
     onSubmit: async (values) => await handleSubmit(values),
   });
@@ -81,12 +89,22 @@ const TestCaseData = () => {
         <NumberInput
           label="Shift Test Case Dates"
           id="shift-test-case-dates"
+          placeholder="# of Years"
           disabled={!canEdit || _.isEmpty(measure?.testCases)}
-          value={formik.values.shiftTestCaseDates}
-          onChange={(e) => {
-            formik.setFieldValue("shiftTestCaseDates", e.target.value);
-          }}
+          {...formik.getFieldProps("shiftTestCaseDates")}
+          error={
+            formik.touched.shiftTestCaseDates &&
+            Boolean(formik.errors.shiftTestCaseDates)
+          }
+          helperText={
+            formik.touched.shiftTestCaseDates &&
+            formik.errors.shiftTestCaseDates
+          }
         />
+        <span className="helper-info-text">
+          Shift dates on this test case by the number of years being changed.
+          Feb 29 in Leap Years = Feb 28 in non Leap Years
+        </span>
       </div>
       <div className="form-actions">
         <Button
