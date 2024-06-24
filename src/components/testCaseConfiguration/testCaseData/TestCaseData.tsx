@@ -6,8 +6,6 @@ import {
   NumberInput,
 } from "@madie/madie-design-system/dist/react";
 import { useFormik } from "formik";
-import "twin.macro";
-import "styled-components/macro";
 import {
   measureStore,
   checkUserCanEdit,
@@ -99,6 +97,9 @@ const TestCaseData = () => {
           helperText={
             formik.touched.shiftTestCaseDates &&
             formik.errors.shiftTestCaseDates
+          }
+          tooltipText={
+            _.isEmpty(measure?.testCases) && "No Test Cases Available"
           }
         />
         <span className="helper-info-text">
