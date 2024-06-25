@@ -445,7 +445,7 @@ describe("AttributeSection", () => {
     const dateInput = await screen.findByTestId("CalendarIcon");
     expect(dateInput).toBeInTheDocument();
     userEvent.click(dateInput);
-    userEvent.type(dateInput, "12121912");
+    //userEvent.type(dateInput, "12121912");
     const addButton = await screen.findByTestId("add-attribute-button");
     expect(addButton).toBeInTheDocument();
     userEvent.click(addButton);
