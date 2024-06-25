@@ -9,6 +9,8 @@ declare module "@madie/madie-util" {
     redirectUri: string;
   }
 
+  export function wafIntercept(): void;
+
   interface FeatureFlags {
     includeSDEValues: boolean;
     manifestExpansion: boolean;
@@ -100,6 +102,7 @@ declare module "@madie/madie-util" {
     oidString: string,
     dataModel: string
   ): string;
+  export function wafIntercept(): void;
 
   export const bootstrap: LifeCycleFn<void>;
   export const mount: LifeCycleFn<void>;

@@ -1,4 +1,5 @@
-import axios from "axios";
+import { axiosInstance as axios } from "../../util/axios-insatnce";
+
 import { CqlDefinitionCallstack } from "../../components/editTestCase/groupCoverage/QiCoreGroupCoverage";
 import { CqlDefinitionExpression } from "../../util/GroupCoverageHelpers";
 import { ServiceConfig } from "../ServiceContext";

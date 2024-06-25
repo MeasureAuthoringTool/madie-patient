@@ -2,7 +2,7 @@ import React, { Suspense, useEffect, useState } from "react";
 import { BrowserRouter } from "react-router-dom";
 import RoutesWrapper from "./routes/RoutesWrapper";
 import { ServiceConfig, ApiContextProvider } from "../api/ServiceContext";
-import axios from "axios";
+import { axiosInstance as axios } from "../util/axios-insatnce";
 
 export default function Home() {
   const [configError, setConfigError] = useState<boolean>(false);
