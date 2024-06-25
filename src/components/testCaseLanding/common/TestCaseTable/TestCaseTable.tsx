@@ -58,6 +58,9 @@ const TestCaseTable = (props: TestCaseTableProps) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [selectedTestCase, setSelectedTestCase] = useState<TestCase>(null);
+  const [shiftDatesDialogOpen, setShiftDatesDialogOpen] =
+    useState<boolean>(false);
+
   const handleOpen = (
     selected: TestCase,
     event: React.MouseEvent<HTMLButtonElement>
@@ -70,6 +73,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     setOptionsOpen(false);
     setSelectedTestCase(null);
     setAnchorEl(null);
+    setShiftDatesDialogOpen(false);
   };
   const TH = tw.th`p-3 text-left text-sm font-bold capitalize`;
   const transFormData = (testCases: TestCase[]): TCRow[] => {
@@ -285,6 +289,8 @@ const TestCaseTable = (props: TestCaseTableProps) => {
         onCloneTestCase={onCloneTestCase}
         setDeleteDialogModalOpen={setDeleteDialogModalOpen}
         handleClose={handleClose}
+        shiftDatesDialogOpen={shiftDatesDialogOpen}
+        setShiftDatesDialogOpen={setShiftDatesDialogOpen}
       />
 
       {/* This sees to have gotten disconnected at some point in the past. */}
