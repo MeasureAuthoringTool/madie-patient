@@ -83,8 +83,14 @@ const TestCaseData = () => {
           Indicates required field
         </Typography>
       </div>
+      <span className="helper-info-text">
+        Shift dates on this test case by the number of years being changed.
+        Entering a negative number will shift the test cases years backwards.
+        Feb 29 in Leap Years - Feb 28 in on Leap Years
+      </span>
       <div className="form-elements">
         <NumberInput
+          className="input-field"
           label="Shift Test Case Dates"
           id="shift-test-case-dates"
           placeholder="# of Years"
@@ -102,10 +108,6 @@ const TestCaseData = () => {
             _.isEmpty(measure?.testCases) && "No Test Cases Available"
           }
         />
-        <span className="helper-info-text">
-          Shift dates on this test case by the number of years being changed.
-          Feb 29 in Leap Years = Feb 28 in non Leap Years
-        </span>
       </div>
       <div className="form-actions">
         <Button
