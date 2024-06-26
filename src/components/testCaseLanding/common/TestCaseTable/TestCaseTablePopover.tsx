@@ -3,6 +3,8 @@ import { Popover } from "@mui/material";
 import { Group, TestCase } from "@madie/madie-models";
 import { useNavigate } from "react-router-dom";
 import * as _ from "lodash";
+import { useFeatureFlags } from "@madie/madie-util";
+import ShiftDatesDialog from "../shiftDates/ShiftDatesDialog";
 
 interface TestCaseTablePopoverProps {
   optionsOpen: boolean;
@@ -17,6 +19,8 @@ interface TestCaseTablePopoverProps {
   model: string;
   groups: Group[];
   setDeleteDialogModalOpen: Function;
+  shiftDatesDialogOpen: boolean;
+  setShiftDatesDialogOpen: (boolean) => void;
 }
 
 const TestCaseTablePopover = (props: TestCaseTablePopoverProps) => {
@@ -33,10 +37,14 @@ const TestCaseTablePopover = (props: TestCaseTablePopoverProps) => {
     model,
     onCloneTestCase,
     setDeleteDialogModalOpen,
+    shiftDatesDialogOpen,
+    setShiftDatesDialogOpen,
   } = props;
   const editTestCaseUrl = _.isEmpty(props.groups)
     ? `../${selectedTestCase?.id}`
     : `../../${selectedTestCase?.id}`;
+
+  const featureFlags = useFeatureFlags();
 
   return (
     <Popover
@@ -175,6 +183,26 @@ const TestCaseTablePopover = (props: TestCaseTablePopoverProps) => {
               delete
             </button>
           )}
+
+          {canEdit && featureFlags?.ShiftTestCasesDates && (
+            <button
+              id={`shift-dates-btn-${selectedTestCase?.id}`}
+              aria-label={`shift-dates-${selectedTestCase?.title}`}
+              data-testid={`shift-dates-btn-${selectedTestCase?.id}`}
+              onClick={() => {
+                setShiftDatesDialogOpen(true);
+              }}
+            >
+              Increment Dates
+            </button>
+          )}
+
+          <ShiftDatesDialog
+            open={shiftDatesDialogOpen}
+            onClose={handleClose}
+            canEdit={canEdit}
+            testCase={selectedTestCase}
+          />
         </div>
       </div>
     </Popover>

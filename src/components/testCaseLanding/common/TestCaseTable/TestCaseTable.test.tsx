@@ -7,7 +7,10 @@ import {
   MeasureScoring,
   PopulationType,
   TestCase,
+  Model,
 } from "@madie/madie-models";
+import userEvent from "@testing-library/user-event";
+
 const testCase = {
   id: "ID",
   title: "TEST IPP",
@@ -69,7 +72,7 @@ const defaultMeasure = {
 let mockApplyDefaults = false;
 jest.mock("@madie/madie-util", () => ({
   useFeatureFlags: () => {
-    return { applyDefaults: mockApplyDefaults };
+    return { applyDefaults: mockApplyDefaults, ShiftTestCasesDates: true };
   },
 }));
 
@@ -129,6 +132,7 @@ describe("TestCase component", () => {
     expect(screen.getByText("export transaction bundle")).toBeInTheDocument();
     expect(screen.getByText("export collection bundle")).toBeInTheDocument();
     expect(screen.getByText("delete")).toBeInTheDocument();
+    expect(screen.getByText("Increment Dates")).toBeInTheDocument();
 
     const deleteButton = screen.getByText("delete");
     fireEvent.click(deleteButton);
@@ -230,5 +234,153 @@ describe("TestCase component", () => {
     const exportButton = screen.getByText("export transaction bundle");
     fireEvent.click(exportButton);
     expect(exportTestCase).toHaveBeenCalled();
+  });
+
+  it("should display ShiftDatesDialog", async () => {
+    const deleteTestCase = jest.fn();
+    const exportTestCase = jest.fn();
+    const onCloneTestCase = jest.fn();
+
+    renderWithTestCase(
+      testCases,
+      true,
+      deleteTestCase,
+      exportTestCase,
+      onCloneTestCase,
+      defaultMeasure
+    );
+
+    const buttons = await screen.findAllByRole("button");
+    expect(buttons).toHaveLength(9);
+    expect(buttons[5]).toHaveTextContent("Select");
+    fireEvent.click(buttons[5]);
+    expect(screen.getByText("edit")).toBeInTheDocument();
+    expect(screen.getByText("export transaction bundle")).toBeInTheDocument();
+    expect(screen.getByText("export collection bundle")).toBeInTheDocument();
+    expect(screen.getByText("delete")).toBeInTheDocument();
+    const incrementDatesBtn = screen.getByText("Increment Dates");
+    expect(incrementDatesBtn).toBeInTheDocument();
+
+    userEvent.click(incrementDatesBtn);
+
+    const shiftDatesDiaglog = screen.getByTestId("shift-dates-dialog");
+    expect(shiftDatesDiaglog).toBeInTheDocument();
+
+    const currentTCGroup = screen.getByTestId(
+      "current-testcase-series"
+    ) as HTMLInputElement;
+    expect(currentTCGroup).toBeInTheDocument();
+    expect(currentTCGroup.value).toBe("TEST SERIES");
+
+    const currentTCTitle = screen.getByTestId(
+      "current-testcase-title"
+    ) as HTMLInputElement;
+    expect(currentTCTitle).toBeInTheDocument();
+    expect(currentTCTitle.value).toBe("TEST IPP");
+  });
+
+  it("should not display Increment Dates button", async () => {
+    const deleteTestCase = jest.fn();
+    const exportTestCase = jest.fn();
+    const onCloneTestCase = jest.fn();
+
+    renderWithTestCase(
+      testCases,
+      false,
+      deleteTestCase,
+      exportTestCase,
+      onCloneTestCase,
+      defaultMeasure
+    );
+
+    const buttons = await screen.findAllByRole("button");
+    expect(buttons).toHaveLength(9);
+    expect(buttons[5]).toHaveTextContent("Select");
+    fireEvent.click(buttons[5]);
+    expect(screen.getByText("view")).toBeInTheDocument();
+    const incrementDatesBtn = screen.queryByText("Increment Dates");
+    expect(incrementDatesBtn).not.toBeInTheDocument();
+  });
+
+  it("export collection bundle called", async () => {
+    const deleteTestCase = jest.fn();
+    const exportTestCase = jest.fn();
+    const onCloneTestCase = jest.fn();
+
+    renderWithTestCase(
+      testCases,
+      true,
+      deleteTestCase,
+      exportTestCase,
+      onCloneTestCase,
+      defaultMeasure
+    );
+
+    const buttons = await screen.findAllByRole("button");
+    expect(buttons).toHaveLength(9);
+    expect(buttons[5]).toHaveTextContent("Select");
+    fireEvent.click(buttons[5]);
+    expect(screen.getByText("edit")).toBeInTheDocument();
+    const exportBtn = screen.getByText("export collection bundle");
+    expect(exportBtn).toBeInTheDocument();
+
+    userEvent.click(exportBtn);
+
+    expect(exportTestCase).toHaveBeenCalled();
+  });
+
+  it("export test case for QDM called", async () => {
+    const deleteTestCase = jest.fn();
+    const exportTestCase = jest.fn();
+    const onCloneTestCase = jest.fn();
+
+    defaultMeasure.model = Model.QDM_5_6;
+    renderWithTestCase(
+      testCases,
+      true,
+      deleteTestCase,
+      exportTestCase,
+      onCloneTestCase,
+      defaultMeasure
+    );
+
+    const buttons = await screen.findAllByRole("button");
+    expect(buttons).toHaveLength(9);
+    expect(buttons[5]).toHaveTextContent("Select");
+    fireEvent.click(buttons[5]);
+
+    const exportBtn = screen.getByTestId("export-test-case-ID");
+    expect(exportBtn).toBeInTheDocument();
+
+    userEvent.click(exportBtn);
+
+    expect(exportTestCase).toHaveBeenCalled();
+  });
+
+  it("clone test case", async () => {
+    const deleteTestCase = jest.fn();
+    const exportTestCase = jest.fn();
+    const onCloneTestCase = jest.fn();
+
+    renderWithTestCase(
+      testCases,
+      true,
+      deleteTestCase,
+      exportTestCase,
+      onCloneTestCase,
+      defaultMeasure
+    );
+
+    const buttons = await screen.findAllByRole("button");
+    expect(buttons).toHaveLength(9);
+    expect(buttons[5]).toHaveTextContent("Select");
+    fireEvent.click(buttons[5]);
+
+    const cloneBtn = screen.getByTestId("clone-test-case-btn-ID");
+    expect(cloneBtn).toBeInTheDocument();
+
+    userEvent.click(cloneBtn);
+
+    expect(onCloneTestCase).toHaveBeenCalled();
   });
 });
