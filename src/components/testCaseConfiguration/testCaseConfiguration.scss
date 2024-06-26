@@ -22,11 +22,16 @@
       }
     }
   }
+  .helper-info-text {
+    padding-bottom: 20px;
+    font-size: 14px;
+  }
   .form-elements {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    max-width: 50%;
+    .input-field {
+      width: 25%;
+    }
     .radio-button-group {
       > div {
         > div {
