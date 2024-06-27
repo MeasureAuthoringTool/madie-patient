@@ -110,6 +110,10 @@ export class TerminologyServiceApi {
       );
       return response.data;
     } catch (error) {
+      // preserve original error to bubble to getQDMValuesets
+      if (error.code === "ERR_CANCELED") {
+        throw error;
+      }
       let message =
         "An error occurred, please try again. If the error persists, please contact the help desk. (004)";
       if (error.response?.data?.diagnostic) {
