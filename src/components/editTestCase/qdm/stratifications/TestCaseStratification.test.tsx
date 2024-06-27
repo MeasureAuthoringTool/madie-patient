@@ -26,6 +26,7 @@ describe("Test Case Stratification Component", () => {
         strataCode={strataCode}
         executionRun={executionRun}
         stratification={stratification}
+        stratResult={stratification}
         populationBasis={populationBasis}
         showExpected={showExpected}
         onStratificationChange={onStratificationChange}

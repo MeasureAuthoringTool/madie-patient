@@ -26,6 +26,7 @@ describe("TestCasePopulation component", () => {
             <TestCasePopulation
               isTestCaseExecuted
               population={testCasePopulation}
+              populationResult={testCasePopulation}
               onChange={handleChange}
               populationBasis="true"
               error={error}
@@ -60,6 +61,7 @@ describe("TestCasePopulation component", () => {
             <TestCasePopulation
               isTestCaseExecuted
               population={testCasePopulation}
+              populationResult={testCasePopulation}
               onChange={handleChange}
               populationBasis="true"
               error={error}
