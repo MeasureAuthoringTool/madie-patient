@@ -1,4 +1,4 @@
-import { axiosInstance as axios } from "../util/axios-insatnce";
+import axios from "./axios-instance";
 import useServiceConfig from "./useServiceConfig";
 import { ServiceConfig } from "./ServiceContext";
 import { getOidFromString, useOktaTokens } from "@madie/madie-util";
