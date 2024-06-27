@@ -106,7 +106,7 @@ const EditTestCase = () => {
   const [selectedDataElement, setSelectedDataElement] = useState<DataElement>();
   const [groupCoverageResult, setGroupCoverageResult] =
     useState<GroupCoverageResult>();
-
+  const [testCaseResults, setTestCaseResults] = useState<any>();
   dayjs.extend(utc);
   dayjs.utc().format(); // utc format
 
@@ -125,6 +125,8 @@ const EditTestCase = () => {
     validationSchema: QDMPatientSchemaValidator,
     onSubmit: async (values: any) => await handleSubmit(values),
   });
+  console.log("currentTestCase", currentTestCase);
+  console.log("initialValues", formik.values);
   const { resetForm } = formik;
 
   // Fetches test case based on ID, identifies measure.group converts it to testcase.groupPopulation
@@ -246,10 +248,11 @@ const EditTestCase = () => {
       );
       // From processTestCaseResults we will be losing information about updatedTestCase.executionStatus,
       // but that is not required on Edit TestCase page at-least for now.
-      formik.setFieldValue(
-        "groupPopulations",
-        testCaseWithResults.groupPopulations
-      );
+      // formik.setFieldValue(
+      //   "groupPopulations",
+      //   testCaseWithResults.groupPopulations
+      // );
+      setTestCaseResults(testCaseWithResults.groupPopulations);
       const coverageResults = buildHighlightingForGroups(
         patientResults,
         cqmMeasure
@@ -328,6 +331,7 @@ const EditTestCase = () => {
                   isTestCaseExecuted={isTestCaseExecuted}
                   errors={formik.errors.groupPopulations}
                   groupCoverageResult={groupCoverageResult}
+                  testCaseResults={testCaseResults}
                   calculationErrors={qdmExecutionErrors}
                   onChange={(
                     groupPopulations,

@@ -6,6 +6,7 @@ import ExpectActualInput from "./ExpectActualInput";
 
 export interface TestCasePopulationProps {
   population: DisplayPopulationValue;
+  populationResult: any;
   populationBasis: string;
   showExpected?: boolean;
   disableExpected?: boolean;
@@ -20,6 +21,7 @@ export interface TestCasePopulationProps {
 
 const TestCasePopulation = ({
   population,
+  populationResult,
   populationBasis,
   disableExpected = false,
   onChange,
@@ -92,19 +94,19 @@ const TestCasePopulation = ({
           />
         </td>
         <td role="cell">
-          {isTestCaseExecuted ? (
+          {isTestCaseExecuted && populationResult ? (
             <ExpectActualInput
-              id={`${population.id}-actual-cb`}
-              aria-labelledby={`${population.name}-actual`}
-              name={population.name}
-              expectedValue={population.actual}
+              id={`${populationResult?.id}-actual-cb`}
+              aria-labelledby={`${populationResult?.name}-actual`}
+              name={populationResult?.name}
+              expectedValue={populationResult?.actual}
               onChange={() => {}} // do nothing - should not be editable here
               populationBasis={populationBasis}
               disabled={true}
               data-testid={
                 strat
-                  ? `strat-test-population-${population.name}-actual-${i}`
-                  : `test-population-${population.name}-actual`
+                  ? `strat-test-population-${populationResult?.name}-actual-${i}`
+                  : `test-population-${populationResult?.name}-actual`
               }
               displayType="actual"
             />
@@ -112,8 +114,8 @@ const TestCasePopulation = ({
             <pre
               data-testid={
                 strat
-                  ? `test-population-${population.name}-actual-${i}`
-                  : `test-population-${population.name}-actual`
+                  ? `test-population-${populationResult?.name}-actual-${i}`
+                  : `test-population-${populationResult?.name}-actual`
               }
             >
               {" "}
