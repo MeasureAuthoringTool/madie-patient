@@ -291,10 +291,12 @@ export class QdmCalculationService {
             strat.actual = measure.patientBasis ? !!value : value;
             let stratPopulationMap = new Map<String, number>();
             Object.entries(CqmPopulationType).forEach((value, key) => {
-              stratPopulationMap.set(
-                value[1],
-                populationGroupResults[stratId][value[0]]
-              );
+              if (populationGroupResults?.stratId) {
+                stratPopulationMap.set(
+                  value[1],
+                  populationGroupResults[stratId][value[0]]
+                );
+              }
             });
             // groupsMap.set(groupId, populationMap);
             this.setTestCaseGroupResultsForStratificationPopulations(
