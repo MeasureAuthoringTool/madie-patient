@@ -133,6 +133,7 @@ jest.mock("@madie/madie-util", () => ({
   useDocumentTitle: jest.fn(),
   measureStore: {
     updateMeasure: jest.fn((measure) => measure),
+    updateTestCases: jest.fn().mockImplementation(() => {}),
     state: jest.fn().mockImplementation(() => mockMeasure),
     initialState: null,
     subscribe: (set) => {

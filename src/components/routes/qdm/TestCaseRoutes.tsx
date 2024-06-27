@@ -33,6 +33,7 @@ const TestCaseRoutes = () => {
   const cqmService = useRef(useCqmConversionService());
   const terminologyService = useRef(useTerminologyServiceApi());
 
+  const prevMeasureRef = useRef(null);
   const [measure, setMeasure] = useState<Measure>(measureStore.state);
 
   useEffect(() => {
@@ -64,7 +65,18 @@ const TestCaseRoutes = () => {
   ]);
 
   useEffect(() => {
-    if (measure) {
+    // only run updates if measure has changed, ignoring test cases
+    if (
+      _.isNil(prevMeasureRef.current) ||
+      !_.isEqual(
+        {
+          ...measure,
+          testCases: null,
+        },
+        { ...prevMeasureRef.current, testCases: null }
+      )
+    ) {
+      prevMeasureRef.current = measure;
       setContextFailure(null);
       setCqmMeasure(null);
       setExecutionContextReady(false);

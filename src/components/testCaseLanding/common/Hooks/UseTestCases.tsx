@@ -1,6 +1,7 @@
 import { useCallback, useState, useEffect, useRef } from "react";
 import useTestCaseServiceApi from "../../../../api/useTestCaseServiceApi";
 import { TestCase } from "@madie/madie-models";
+import { measureStore } from "@madie/madie-util";
 import * as _ from "lodash";
 
 function UseFetchTestCases({ measureId, setErrors }) {
@@ -10,8 +11,8 @@ function UseFetchTestCases({ measureId, setErrors }) {
     loading: true,
     message: "",
   });
+  const { updateTestCases } = measureStore;
 
-  // We need testCase.json to be a QDMPatient object for execution
   const retrieveTestCases = useCallback(() => {
     setLoadingState(() => ({
       loading: true,
@@ -24,6 +25,7 @@ function UseFetchTestCases({ measureId, setErrors }) {
           testCase.executionStatus = testCase.validResource ? "NA" : "Invalid";
         });
         testCaseList = _.orderBy(testCaseList, ["lastModifiedAt"], ["desc"]);
+        updateTestCases(testCaseList);
         setTestCases(testCaseList);
       })
       .catch((err) => {
@@ -47,4 +49,5 @@ function UseFetchTestCases({ measureId, setErrors }) {
     retrieveTestCases,
   };
 }
+
 export default UseFetchTestCases;

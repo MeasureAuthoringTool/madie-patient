@@ -42,7 +42,11 @@ import userEvent from "@testing-library/user-event";
 import { buildMeasureBundle } from "../../../util/CalculationTestHelpers";
 import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
 // @ts-ignore
-import { checkUserCanEdit, useFeatureFlags } from "@madie/madie-util";
+import {
+  checkUserCanEdit,
+  useFeatureFlags,
+  measureStore,
+} from "@madie/madie-util";
 import qdmCalculationService, {
   QdmCalculationService,
 } from "../../../api/QdmCalculationService";
@@ -115,6 +119,7 @@ jest.mock("@madie/madie-util", () => ({
   checkUserCanEdit: jest.fn().mockImplementation(() => true),
   measureStore: {
     updateMeasure: jest.fn((measure) => measure),
+    updateTestCases: jest.fn().mockImplementation(() => {}),
     state: jest.fn().mockImplementation(() => mockMeasure),
     initialState: null,
     subscribe: (set) => {
@@ -1739,6 +1744,9 @@ describe("TestCaseList component", () => {
     await waitFor(() => {
       const submitButton = screen.queryByText("Yes, Delete");
       expect(submitButton).not.toBeInTheDocument();
+      expect(measureStore.updateTestCases as jest.Mock).toHaveBeenCalledTimes(
+        2
+      );
     });
   });
 
@@ -1803,6 +1811,7 @@ describe("TestCaseList component", () => {
     expect(toastMessage).toHaveTextContent("Test cases successfully deleted");
     expect(screen.queryByTestId("delete-dialog-body")).toBeNull();
     expect(deleteTestCasesApiMock).toHaveBeenCalled();
+    expect(measureStore.updateTestCases as jest.Mock).toHaveBeenCalledTimes(3);
   });
 
   it("Should hide delete all dialogue when cancel is clicked", async () => {
