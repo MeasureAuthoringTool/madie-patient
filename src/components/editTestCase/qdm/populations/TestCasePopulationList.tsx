@@ -61,7 +61,6 @@ const TestCasePopulationList = ({
   errors,
   groupIndex,
 }: TestCasePopulationListProps) => {
-  console.log("populationResults", populationResults);
   let measureObservations = [];
   let numeratorObservations = [];
   let denominatorObservations = [];
