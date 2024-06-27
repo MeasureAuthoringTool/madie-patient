@@ -15,6 +15,7 @@ import "../testCaseConfiguration.scss";
 import { Typography } from "@mui/material";
 import _ from "lodash";
 import * as Yup from "yup";
+import Tooltip from "@mui/material/Tooltip";
 
 const TestCaseData = () => {
   const [measure, setMeasure] = useState<any>(measureStore.state);
@@ -86,7 +87,7 @@ const TestCaseData = () => {
       <span className="helper-info-text">
         Shift dates on this test case by the number of years being changed.
         Entering a negative number will shift the test cases years backwards.
-        Feb 29 in Leap Years - Feb 28 in on Leap Years
+        Feb 29 in Leap Years - Feb 28 in non Leap Years
       </span>
       <div className="form-elements">
         <NumberInput
@@ -104,9 +105,7 @@ const TestCaseData = () => {
             formik.touched.shiftTestCaseDates &&
             formik.errors.shiftTestCaseDates
           }
-          tooltipText={
-            _.isEmpty(measure?.testCases) && "No Test Cases Available"
-          }
+          title={_.isEmpty(measure?.testCases) && "No Test Cases Available"}
         />
       </div>
       <div className="form-actions">
@@ -119,15 +118,21 @@ const TestCaseData = () => {
         >
           Discard Changes
         </Button>
-        <Button
-          variant="cyan"
-          disabled={!(formik.isValid && formik.dirty) || !canEdit}
-          data-testid={`test-case-data-save`}
-          type="submit"
-          className="save-button"
+        <Tooltip
+          title={_.isEmpty(measure?.testCases) && "No Test Cases Available"}
         >
-          Save
-        </Button>
+          <span>
+            <Button
+              variant="cyan"
+              disabled={!(formik.isValid && formik.dirty) || !canEdit}
+              data-testid={`test-case-data-save`}
+              type="submit"
+              className="save-button"
+            >
+              Save
+            </Button>
+          </span>
+        </Tooltip>
       </div>
       <Toast
         toastKey="sde-toast"
