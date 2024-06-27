@@ -173,7 +173,7 @@ const Expansion = () => {
         </Typography>
       </div>
       <div className="form-elements">
-        <div className="radio-button-group">
+        <div className="radio-button-group input-field">
           <RadioButton
             row
             id="manifest-expansion"

@@ -85,6 +85,7 @@ jest.mock("@madie/madie-util", () => ({
     applyDefaults: false,
     includeSDEValues: true,
     manifestExpansion: true,
+    ShiftTestCasesDates: true,
   })),
   useOktaTokens: () => ({
     getAccessToken: () => "test.jwt",
@@ -209,6 +210,36 @@ describe("TestCaseRoutes", () => {
       </MemoryRouter>
     );
     expect(screen.getByTestId("manifest-expansion-form")).toBeInTheDocument();
+  });
+
+  it("should render the Test case data Component", async () => {
+    mockedAxios.get.mockImplementation(() => {
+      return Promise.resolve({
+        data: [
+          {
+            id: "id1",
+            title: "TC12",
+            description: "Desc1",
+            series: "IPP_Pass",
+            status: null,
+          },
+        ],
+      });
+    });
+    render(
+      <MemoryRouter
+        initialEntries={[
+          "/measures/m1234/edit/test-cases/list-page/test-case-data",
+        ]}
+      >
+        <ApiContextProvider value={serviceConfig}>
+          <TestCaseRoutes />
+        </ApiContextProvider>
+      </MemoryRouter>
+    );
+    expect(
+      await screen.findByTestId("test-case-data-form")
+    ).toBeInTheDocument();
   });
 
   it("should render the Edit test case component", async () => {

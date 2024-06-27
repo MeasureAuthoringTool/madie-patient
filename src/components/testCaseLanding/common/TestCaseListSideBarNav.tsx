@@ -140,6 +140,16 @@ const TestCaseListSideBarNav = ({
                     onChange={handleChange}
                   />
                 )}
+                {featureFlags?.ShiftTestCasesDates && (
+                  <Tab
+                    label="Test Case Data"
+                    value="test-case-data"
+                    data-testid="test-case-data"
+                    type="C"
+                    orientation="vertical"
+                    onChange={handleChange}
+                  />
+                )}
               </Tabs>
             )}
           </>

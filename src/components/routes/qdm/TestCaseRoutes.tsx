@@ -15,6 +15,7 @@ import RedirectToList from "../RedirectToList";
 import _ from "lodash";
 import SDEPage from "../../testCaseConfiguration/sde/SDEPage";
 import Expansion from "../../testCaseConfiguration/expansion/Expansion";
+import TestCaseData from "../../testCaseConfiguration/testCaseData/TestCaseData";
 
 const TestCaseRoutes = () => {
   const [cqmMeasureErrors, setCqmMeasureErrors] = useState<Array<string>>([]);
@@ -202,6 +203,14 @@ const TestCaseRoutes = () => {
             <Route
               path="/measures/:measureId/edit/test-cases/list-page/expansion"
               element={<TestCaseLandingWrapper qdm children={<Expansion />} />}
+            />
+          )}
+          {featureFlags?.ShiftTestCasesDates && (
+            <Route
+              path="/measures/:measureId/edit/test-cases/list-page/test-case-data"
+              element={
+                <TestCaseLandingWrapper qdm children={<TestCaseData />} />
+              }
             />
           )}
           <Route
