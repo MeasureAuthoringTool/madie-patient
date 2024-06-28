@@ -293,7 +293,7 @@ export class QdmCalculationService {
             Object.entries(CqmPopulationType).forEach((value, key) => {
               stratPopulationMap.set(
                 value[1],
-                populationGroupResults[stratId][value[0]]
+                populationGroupResults[stratId]?.[value[0]]
               );
             });
             // groupsMap.set(groupId, populationMap);
