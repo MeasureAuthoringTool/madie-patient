@@ -1,6 +1,7 @@
 declare module "@madie/madie-util" {
   import { LifeCycleFn } from "single-spa";
   import { Measure, Acl } from "@madie/madie-models/dist/Measure";
+  import { TestCase } from "@madie/madie-models";
 
   export interface OktaConfig {
     baseUrl: string;
@@ -47,6 +48,7 @@ declare module "@madie/madie-util" {
       setMeasureState: React.Dispatch<React.SetStateAction<Measure>>
     ) => import("rxjs").Subscription;
     updateMeasure: (measure: Measure | null) => void;
+    updateTestCases: (testCases: TestCase[] | null) => void;
     initialState: null;
     state: Measure;
   };

@@ -203,7 +203,9 @@ const TestCaseList = (props: TestCaseListProps) => {
   }, [measure]);
 
   useEffect(() => {
-    retrieveTestCases();
+    if (!_.isNil(measureId) && testCaseService) {
+      retrieveTestCases();
+    }
   }, [measureId, testCaseService]);
 
   useEffect(() => {

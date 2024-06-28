@@ -170,6 +170,34 @@ describe("TerminologyServiceApi Tests", () => {
     }
   });
 
+  it("throws an error if ValueSets not found in VSAC for cqm measure", async () => {
+    const response = {
+      timestamp: "2024-06-13T16:20:58.424+00:00",
+      status: 404,
+      error: "Not Found",
+      message: "No message available",
+      diagnostic:
+        "Requested resource was not found. Either the resource doesn't exist, or you don't have the permission to view it.",
+      valueSet: "2.16.840.1.113762.1.4.1147.82",
+    };
+
+    const error = new Error("Request canceled");
+    error.code = "ERR_CANCELED";
+    error.response = { status: 404, data: response };
+
+    axios.put = jest.fn().mockRejectedValue(error);
+
+    try {
+      await terminologyService.getQdmValueSetsExpansion(
+        cqm_measure_basic,
+        testManifestExpansion,
+        false
+      );
+    } catch (error) {
+      expect(error.code).toBe("ERR_CANCELED");
+    }
+  });
+
   test("throws an error when VSAC throws an error during expansion with manifest", async () => {
     const response = {
       timestamp: "2024-06-13T16:34:55.931+00:00",
