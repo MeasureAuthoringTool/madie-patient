@@ -14,7 +14,7 @@ import EditTestCase, {
 } from "./EditTestCase";
 import userEvent from "@testing-library/user-event";
 import { AxiosError, AxiosResponse } from "axios";
-import axios from "../../../api/axios-instance"
+import axios from "../../../api/axios-instance";
 import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
 import {
   HapiOperationOutcome,

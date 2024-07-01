@@ -1,5 +1,5 @@
 import { AxiosError, AxiosResponse } from "axios";
-import axios from "./axios-instance"
+import axios from "./axios-instance";
 import { TestCaseServiceApi } from "./useTestCaseServiceApi";
 import { ScanValidationDto } from "./models/ScanValidationDto";
 import {
