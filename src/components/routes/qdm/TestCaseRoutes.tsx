@@ -15,6 +15,7 @@ import RedirectToList from "../RedirectToList";
 import _ from "lodash";
 import SDEPage from "../../testCaseConfiguration/sde/SDEPage";
 import Expansion from "../../testCaseConfiguration/expansion/Expansion";
+import TestCaseData from "../../testCaseConfiguration/testCaseData/TestCaseData";
 
 const TestCaseRoutes = () => {
   const [cqmMeasureErrors, setCqmMeasureErrors] = useState<Array<string>>([]);
@@ -32,6 +33,7 @@ const TestCaseRoutes = () => {
   const cqmService = useRef(useCqmConversionService());
   const terminologyService = useRef(useTerminologyServiceApi());
 
+  const prevMeasureRef = useRef(null);
   const [measure, setMeasure] = useState<Measure>(measureStore.state);
 
   useEffect(() => {
@@ -46,28 +48,42 @@ const TestCaseRoutes = () => {
   const getValueSetAbortController = useRef<AbortController>(
     new AbortController()
   );
-
+  // arbitraty number that's just supposed to increment on abort calls
+  // sole purpose is only to spin off the useEffect that typically listens for measure changes
+  const [aborted, setAborted] = useState(0);
+  // instantiating both at once is not the play here.
+  // we instantiate only once on load. We abort individually, instantiate individually through the useEffect
   const onAbort = useCallback(async () => {
     // TODO: gracefully fail when we abort so that the cqmMeasure begins a rebuild
     if (!cqmMeasureConvertAbortController.current.signal.aborted) {
       cqmMeasureConvertAbortController.current.abort();
-      cqmMeasureConvertAbortController.current = new AbortController();
     }
     if (!getValueSetAbortController.current.signal.aborted) {
       getValueSetAbortController.current.abort();
-      getValueSetAbortController.current = new AbortController();
     }
   }, [
     cqmMeasureConvertAbortController.current,
     getValueSetAbortController.current,
   ]);
-
+  const handleAbort = () => {
+    setAborted(aborted + 1);
+  };
   useEffect(() => {
-    if (measure) {
+    // only run updates if measure has changed, ignoring test cases
+    if (
+      _.isNil(prevMeasureRef.current) ||
+      !_.isEqual(
+        {
+          ...measure,
+          testCases: null,
+        },
+        { ...prevMeasureRef.current, testCases: null }
+      )
+    ) {
+      prevMeasureRef.current = measure;
       setContextFailure(null);
       setCqmMeasure(null);
       setExecutionContextReady(false);
-      onAbort();
       // cut the lines on previous calls to prevent overlapping state updates
       // getValueSetAbortController.current.abort(); // this abort triggers a catch block that stops the rest of this.
       const localErrors: Array<string> = [];
@@ -82,20 +98,26 @@ const TestCaseRoutes = () => {
             "No Population Criteria is associated with this measure. Please review the Population Criteria tab."
           );
         }
-
         if (!localErrors.length) {
+          onAbort();
           cqmMeasureConvertAbortController.current = new AbortController();
           cqmService.current
             .convertToCqmMeasure(
               measure,
               cqmMeasureConvertAbortController.current
             )
-            .then((convertedMeasure: CqmMeasure) => {
+            .then((convertedMeasure: any) => {
               if (convertedMeasure) {
+                getValueSetAbortController.current = new AbortController();
                 getQdmValueSets(convertedMeasure);
               }
             })
             .catch((err) => {
+              if (err.name === "CanceledError") {
+                handleAbort();
+                return;
+                // not doing anything else after this, we're looping back in
+              }
               // Added a console log because anytime this fails, we get an error banner with no other information
               console.error(
                 "An error occurred while converting to CQM measure: ",
@@ -111,39 +133,41 @@ const TestCaseRoutes = () => {
         setCqmMeasureErrors((prevState) => [...prevState, ...localErrors]);
       }
     }
-  }, [measure]);
+  }, [measure, aborted]);
   //given a converted measure, append valuesets to it using the service
-  const getQdmValueSets = (convertedMeasure: CqmMeasure) => {
-    const drcValueSets: ValueSet[] =
-      terminologyService.current.getValueSetsForDRCs(convertedMeasure);
-    terminologyService.current
-      .getQdmValueSetsExpansion(
+  const getQdmValueSets = async (convertedMeasure: CqmMeasure) => {
+    try {
+      const drcValueSets: ValueSet[] =
+        terminologyService.current.getValueSetsForDRCs(convertedMeasure);
+      const vs = await terminologyService.current.getQdmValueSetsExpansion(
         convertedMeasure,
         measure.testCaseConfiguration?.manifestExpansion,
         featureFlags.manifestExpansion,
         getValueSetAbortController.current.signal
-      )
-      .then((vs: ValueSet[]) => {
-        const newCqmMeasure = {
-          ...convertedMeasure,
-          value_sets: [...vs, ...drcValueSets],
-        };
-        setCqmMeasure(newCqmMeasure);
-        setExecutionContextReady(
-          !!newCqmMeasure && !_.isEmpty(newCqmMeasure?.value_sets) && !!measure
+      );
+      const newCqmMeasure = {
+        ...convertedMeasure,
+        value_sets: [...vs, ...drcValueSets],
+      };
+      setCqmMeasure(newCqmMeasure);
+      setExecutionContextReady(
+        !!newCqmMeasure && !_.isEmpty(newCqmMeasure?.value_sets) && !!measure
+      );
+      if (cqmMeasureErrors) {
+        setCqmMeasureErrors(
+          cqmMeasureErrors.filter((err) => {
+            !err.includes("VSAC");
+          })
         );
-        if (cqmMeasureErrors) {
-          setCqmMeasureErrors(
-            cqmMeasureErrors.filter((err) => {
-              !err.includes("VSAC");
-            })
-          );
-        }
-      })
-      .catch((err) => {
+      }
+    } catch (e) {
+      if (e.code === "ERR_CANCELED") {
+        handleAbort();
+      } else {
         setContextFailure(true);
-        setCqmMeasureErrors((prevState) => [...prevState, err.message]);
-      });
+        setCqmMeasureErrors((prevState) => [...prevState, e.message]);
+      }
+    }
   };
 
   return (
@@ -190,6 +214,14 @@ const TestCaseRoutes = () => {
             <Route
               path="/measures/:measureId/edit/test-cases/list-page/expansion"
               element={<TestCaseLandingWrapper qdm children={<Expansion />} />}
+            />
+          )}
+          {featureFlags?.ShiftTestCasesDates && (
+            <Route
+              path="/measures/:measureId/edit/test-cases/list-page/test-case-data"
+              element={
+                <TestCaseLandingWrapper qdm children={<TestCaseData />} />
+              }
             />
           )}
           <Route

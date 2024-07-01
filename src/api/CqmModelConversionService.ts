@@ -81,17 +81,18 @@ export class CqmConversionService {
     measure: Measure,
     abortController: AbortController
   ): Promise<CqmMeasure> {
-    if (_.isNil(measure) || _.isNil(measure.cql)) {
-      return null;
+    try {
+      if (_.isNil(measure) || _.isNil(measure.cql)) {
+        return null;
+      }
+      return await this.measureService.getCqmMeasure(
+        measure.id,
+        abortController
+      );
+    } catch (e) {
+      // we want to throw the preserved error
+      throw e;
     }
-    //instead of converting the measure, let's get it from the measure-service
-
-    const cqmMeasure: CqmMeasure = await this.measureService.getCqmMeasure(
-      measure.id,
-      abortController
-    );
-
-    return cqmMeasure;
   }
 
   private measurePeriodData(startDate: string, endDate: string): MeasurePeriod {

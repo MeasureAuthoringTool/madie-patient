@@ -130,6 +130,7 @@ describe("TestCasePopulationList component", () => {
         <TestCasePopulationList
           populations={testCasePopulations}
           stratification={testCaseStratification}
+          stratResult={testCaseStratification}
           onChange={handleChange}
           onStratificationChange={handleStratificationChange}
           disableExpected={false}
@@ -179,6 +180,7 @@ describe("TestCasePopulationList component", () => {
         <TestCasePopulationList
           populations={testCasePopulations}
           stratification={testCaseStratification}
+          stratResult={testCaseStratification}
           onChange={handleChange}
           onStratificationChange={handleStratificationChange}
           disableExpected={false}

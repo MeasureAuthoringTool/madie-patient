@@ -10,6 +10,7 @@ import { MadieEditor } from "@madie/madie-editor";
 const RightPanel = ({
   canEdit,
   testCaseGroups,
+  testCaseResults,
   isTestCaseExecuted,
   errors,
   groupCoverageResult,
@@ -47,6 +48,7 @@ const RightPanel = ({
           <GroupPopulations
             disableExpected={!canEdit}
             groupPopulations={testCaseGroups}
+            testCaseResults={testCaseResults}
             onChange={onChange}
             errors={errors}
             isTestCaseExecuted={isTestCaseExecuted}

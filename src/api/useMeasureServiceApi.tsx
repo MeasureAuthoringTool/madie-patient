@@ -52,7 +52,8 @@ export class MeasureServiceApi {
       return result.data;
     } catch (err) {
       const message = `Unable to retrieve CqmMeasure`;
-      throw new Error(message);
+      console.warn(message);
+      throw err;
     }
   }
 }

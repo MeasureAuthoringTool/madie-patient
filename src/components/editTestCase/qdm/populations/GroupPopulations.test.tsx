@@ -83,6 +83,7 @@ describe("Group Populations", () => {
         disableExpected={false}
         isTestCaseExecuted={true}
         groupPopulations={groupPopulations}
+        testCaseResults={groupPopulations}
         onChange={handleChange}
         errors={errors}
       />
@@ -196,6 +197,7 @@ describe("Group Populations", () => {
         disableExpected={true}
         isTestCaseExecuted={true}
         groupPopulations={testCaseGroups}
+        testCaseResults={testCaseGroups}
         onChange={handleChange}
         errors={errors}
       />

@@ -15,6 +15,7 @@ import { GroupPopulation } from "@madie/madie-models/dist/TestCase";
 
 interface GroupPopulationsProps {
   disableExpected: boolean;
+  testCaseResults: any;
   isTestCaseExecuted: boolean;
   groupPopulations: GroupPopulation[];
   onChange?: (
@@ -29,6 +30,7 @@ interface GroupPopulationsProps {
 const GroupPopulations = ({
   disableExpected = false,
   isTestCaseExecuted = false,
+  testCaseResults,
   groupPopulations = [],
   onChange,
   errors,
@@ -55,6 +57,12 @@ const GroupPopulations = ({
                 disableExpected={disableExpected}
                 isTestCaseExecuted={isTestCaseExecuted}
                 populations={gp.populationValues}
+                populationResults={
+                  testCaseResults
+                    ? testCaseResults.find((pop) => pop.groupId === gp.groupId)
+                        ?.populationValues
+                    : []
+                }
                 populationBasis={gp?.populationBasis}
                 onChange={(
                   updatedPopulationValues: DisplayPopulationValue[],
@@ -89,7 +97,21 @@ const GroupPopulations = ({
                         disableExpected={disableExpected}
                         isTestCaseExecuted={isTestCaseExecuted}
                         populations={strat.populationValues}
+                        populationResults={
+                          testCaseResults
+                            ? testCaseResults.find(
+                                (pop) => pop.groupId === gp.groupId
+                              )?.populationValues
+                            : []
+                        }
                         stratification={strat}
+                        stratResult={
+                          testCaseResults
+                            ? testCaseResults.find(
+                                (pop) => pop.groupId === gp.groupId
+                              )?.stratificationValues[stratIndex]
+                            : []
+                        }
                         populationBasis={gp.populationBasis}
                         onStratificationChange={(updatedStratification) => {
                           // onStratificationChange will only update if the stratification expected/actual value changes

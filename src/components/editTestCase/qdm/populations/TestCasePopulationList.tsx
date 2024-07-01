@@ -26,7 +26,9 @@ export interface TestCasePopulationListProps {
   groupIndex?: number;
   scoring: string;
   populations: DisplayPopulationValue[];
+  populationResults: any;
   stratification?: StratificationExpectedValue;
+  stratResult?: any;
   populationBasis: string;
   disableExpected?: boolean;
   isTestCaseExecuted?: boolean;
@@ -48,7 +50,9 @@ const TestCasePopulationList = ({
   content,
   scoring,
   populations,
+  populationResults,
   stratification,
+  stratResult,
   populationBasis,
   disableExpected = true,
   isTestCaseExecuted = false,
@@ -223,6 +227,7 @@ const TestCasePopulationList = ({
               isTestCaseExecuted={isTestCaseExecuted}
               strataCode={stratification?.name}
               stratification={stratification}
+              stratResult={stratResult}
               populationBasis={populationBasis}
               key={stratification?.id}
               disableExpected={disableExpected}
@@ -237,6 +242,7 @@ const TestCasePopulationList = ({
               isTestCaseExecuted={isTestCaseExecuted}
               strat={!_.isEmpty(stratification)}
               population={population}
+              populationResult={populationResults ? populationResults[j] : null}
               populationBasis={populationBasis}
               key={population.id}
               disableExpected={disableExpected}

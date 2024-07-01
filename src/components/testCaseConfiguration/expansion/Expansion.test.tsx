@@ -16,10 +16,9 @@ const mockServiceConfig: ServiceConfig = {
   measureService: { baseUrl: "measure.url" },
   testCaseService: { baseUrl: "testcase.url" },
   terminologyService: { baseUrl: "terminology.url" },
-  elmTranslationService: { baseUrl: "translator.url" },
-  excelExportService: {
-    baseUrl: "excelexport.com",
-  },
+  qdmElmTranslationService: { baseUrl: "qdm-translator.url" },
+  fhirElmTranslationService: { baseUrl: "fhir-translator.url" },
+  excelExportService: { baseUrl: "excel-export.com" },
 };
 
 const mockManifestList = [
