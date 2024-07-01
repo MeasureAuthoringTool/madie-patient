@@ -103,6 +103,7 @@ declare module "@madie/madie-util" {
     oidString: string,
     dataModel: string
   ): string;
+  export function wafIntercept(): void;
 
   export const bootstrap: LifeCycleFn<void>;
   export const mount: LifeCycleFn<void>;

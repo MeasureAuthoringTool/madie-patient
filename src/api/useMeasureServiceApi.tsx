@@ -1,5 +1,5 @@
 import React from "react";
-import axios from "axios";
+import axios from "./axios-instance";
 import useServiceConfig from "./useServiceConfig";
 import { ServiceConfig } from "./ServiceContext";
 import { Measure } from "@madie/madie-models";

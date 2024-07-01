@@ -1,7 +1,7 @@
 import * as React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import axios from "axios";
+import axios from "../../../../api/axios-instance";
 import { ScanValidationDto } from "../../../../api/models/ScanValidationDto";
 import TestCaseImportDialog from "./TestCaseImportDialog";
 // @ts-ignore
@@ -13,7 +13,7 @@ import {
 } from "@madie/madie-models";
 import * as _ from "lodash";
 
-jest.mock("axios");
+jest.mock("../../../../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 jest.mock("@madie/madie-util", () => ({

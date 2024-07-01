@@ -5,10 +5,10 @@ import { act, Simulate } from "react-dom/test-utils";
 import userEvent from "@testing-library/user-event";
 import CreateNewTestCaseDialog from "./CreateNewTestCaseDialog";
 import { Measure } from "@madie/madie-models";
-import axios from "axios";
+import axios from "../../api/axios-instance";
 import { specialChars } from "../../util/checkSpecialCharacters";
 
-jest.mock("axios");
+jest.mock("../../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const MEASURE_CREATEDBY = "testuser";

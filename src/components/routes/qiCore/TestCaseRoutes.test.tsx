@@ -5,7 +5,7 @@ import TestCaseRoutes, {
   CQL_RETURN_TYPES_MISMATCH_ERROR,
 } from "./TestCaseRoutes";
 import userEvent from "@testing-library/user-event";
-import axios from "axios";
+import axios from "../../../api/axios-instance";
 import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
 import {
   MeasureErrorType,
@@ -19,7 +19,7 @@ import { act } from "react-dom/test-utils";
 // mock the editor cause we don't care for this test and it gets rid of errors
 jest.mock("../../editor/Editor", () => () => <div>editor contents</div>);
 
-jest.mock("axios");
+jest.mock("../../../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const serviceConfig: ServiceConfig = {

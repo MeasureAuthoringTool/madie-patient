@@ -20,7 +20,7 @@ import useServiceConfig from "./useServiceConfig";
 import useMeasureServiceApi from "../api/useMeasureServiceApi";
 
 import { useOktaTokens } from "@madie/madie-util";
-import axios from "axios";
+import axios from "./axios-instance";
 import { DataCriteria } from "./models/DataCriteria";
 import _ from "lodash";
 import { CqmModelFactory } from "./model-factory/CqmModelFactory";

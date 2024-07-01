@@ -1,4 +1,5 @@
-import axios, { AxiosError, AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
+import axios from "./axios-instance";
 import { TestCaseServiceApi } from "./useTestCaseServiceApi";
 import { ScanValidationDto } from "./models/ScanValidationDto";
 import {
@@ -13,7 +14,7 @@ import { waitFor } from "@testing-library/react";
 import { addValues } from "../util/DefaultValueProcessor";
 import { measureCql } from "../components/editTestCase/groupCoverage/_mocks_/QdmCovergaeMeasureCql";
 
-jest.mock("axios");
+jest.mock("./axios-instance");
 
 const mockMeasure = {
   id: "1",

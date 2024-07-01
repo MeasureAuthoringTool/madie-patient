@@ -2,13 +2,13 @@ import * as React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { Measure } from "@madie/madie-models";
 import userEvent from "@testing-library/user-event";
-import axios from "axios";
+import axios from "../../../../api/axios-instance";
 import { ScanValidationDto } from "../../../../api/models/ScanValidationDto";
 // @ts-ignore
 import bonnieQdmJson from "../../../../__mocks__/bonnieQDM56Patients.json";
 import TestCaseImportFromBonnieDialogQDM from "./TestCaseImportFromBonnieDialogQDM";
 
-jest.mock("axios");
+jest.mock("../../../../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 jest.mock("@madie/madie-util", () => ({

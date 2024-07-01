@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import TestCaseImportFromBonnieDialog from "./TestCaseImportFromBonnieDialog";
 import { Measure } from "@madie/madie-models";
 import userEvent from "@testing-library/user-event";
-import axios from "axios";
+import axios from "../../../../api/axios-instance";
 import { ScanValidationDto } from "../../../../api/models/ScanValidationDto";
 import {
   processPatientBundles,
@@ -12,7 +12,7 @@ import {
 // @ts-ignore
 import bonnieJson from "../../../../__mocks__/bonniePatient.json";
 
-jest.mock("axios");
+jest.mock("../../../../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 let mockProcessedTestCases;

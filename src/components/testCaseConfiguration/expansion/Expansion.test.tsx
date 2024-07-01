@@ -10,7 +10,7 @@ import { checkUserCanEdit, measureStore } from "@madie/madie-util";
 import Expansion from "./Expansion";
 import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
 import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
-import axios from "axios";
+import axios from "../../../api/axios-instance";
 
 const mockServiceConfig: ServiceConfig = {
   measureService: { baseUrl: "measure.url" },
@@ -69,7 +69,7 @@ const measureServiceApiMock = {
 } as unknown as MeasureServiceApi;
 useMeasureServiceApiMock.mockImplementation(() => measureServiceApiMock);
 
-jest.mock("axios");
+jest.mock("../../../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 jest.mock("@madie/madie-util", () => ({

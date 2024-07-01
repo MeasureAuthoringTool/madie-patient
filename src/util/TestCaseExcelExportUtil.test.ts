@@ -20,7 +20,7 @@ import translatedLibrariesData from "../__mocks__/translatedLibraries.json";
 import cqlDefinitionCallstack from "../__mocks__/cqlDefinitionCallstack.json";
 import { DataCriteria } from "../api/models/DataCriteria";
 import { TranslatedLibrary } from "../api/models/TranslatedLibrary";
-import axios from "axios";
+import axios from "../api/axios-instance";
 import * as fs from "fs";
 
 const group1Id: string = "65c51ed069853c1ce9726179";
@@ -247,7 +247,7 @@ cqmConversionService.convertToCqmMeasure = jest
   .fn()
   .mockResolvedValueOnce(cqmMeasure);
 
-jest.mock("axios");
+jest.mock("../api/axios-instance");
 const axiosMock = axios as jest.Mocked<typeof axios>;
 
 describe("TestCaseExcelExportUtil", () => {

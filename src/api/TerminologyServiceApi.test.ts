@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "./axios-instance";
 import { TerminologyServiceApi } from "./useTerminologyServiceApi";
 import { officeVisitValueSet } from "./__mocks__/OfficeVisitValueSet";
 import { officeVisitMeasureBundle } from "./__mocks__/OfficeVisitMeasureBundle";
@@ -10,7 +10,7 @@ import { ManifestExpansion } from "@madie/madie-models";
 import { Simulate } from "react-dom/test-utils";
 import error = Simulate.error;
 
-jest.mock("axios");
+jest.mock("./axios-instance");
 
 jest.mock("@madie/madie-util", () => ({
   getOidFromString: (oid) => oid.split("urn:oid:")[1],
