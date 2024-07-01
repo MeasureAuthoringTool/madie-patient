@@ -18,7 +18,7 @@ import {
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
-import axios from "axios";
+import axios from "../../../api/axios-instance";
 import { test } from "@jest/globals";
 import { mockCqlWithAllCategoriesPresent } from "./mockCql";
 import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
@@ -132,7 +132,7 @@ const testTitle = async (title: string, clear = false) => {
   });
 };
 
-jest.mock("axios");
+jest.mock("../../../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const mockNavigate = jest.fn();

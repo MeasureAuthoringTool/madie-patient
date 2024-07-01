@@ -1,8 +1,8 @@
-import axios from "axios";
+import axios from "../axios-instance";
 import { ServiceConfig } from "../ServiceContext";
 import { QdmCqlParsingService } from "./useQdmCqlParsingService";
 
-jest.mock("axios");
+jest.mock("../axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const mockGetAccessToken = jest.fn().mockImplementation(() => {

@@ -4,7 +4,7 @@ import {
   Measure,
   PopulationType,
 } from "@madie/madie-models";
-import axios from "axios";
+import axios from "../api/axios-instance";
 import { DataCriteria } from "./models/DataCriteria";
 import { CqmConversionService } from "./CqmModelConversionService";
 import { Measure as CqmMeasure, PopulationSet } from "cqm-models";
@@ -14,7 +14,7 @@ import useMeasureServiceApi, {
 } from "../api/useMeasureServiceApi";
 import * as fs from "fs";
 
-jest.mock("axios");
+jest.mock("../api/axios-instance");
 const axiosMock = axios as jest.Mocked<typeof axios>;
 const codeJson = fs.readFileSync(
   "src/api/__mocks__/CqmMeasureForConversion.json",

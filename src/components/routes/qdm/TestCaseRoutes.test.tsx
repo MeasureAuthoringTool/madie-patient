@@ -2,14 +2,14 @@ import * as React from "react";
 import { render, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import TestCaseRoutes from "./TestCaseRoutes";
-import axios from "axios";
+import axios from "../../../api/axios-instance";
 import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
 import { Model, PopulationType } from "@madie/madie-models";
 import useCqmConversionService, {
   CqmConversionService,
 } from "../../../api/CqmModelConversionService";
 
-jest.mock("axios");
+jest.mock("../../../api/axios-instance");
 global.ResizeObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
   unobserve: jest.fn(),
