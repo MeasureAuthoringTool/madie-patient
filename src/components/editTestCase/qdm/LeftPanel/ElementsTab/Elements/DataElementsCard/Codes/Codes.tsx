@@ -154,7 +154,7 @@ const Codes = ({
     const cqlCode = new CQL.Code(
       code,
       concept.code_system_oid,
-      null,
+      `urn:hl7:version:2022-05`,
       concept.display_name
     );
     setSavedCode(cqlCode);
