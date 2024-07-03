@@ -160,17 +160,30 @@ const TestCasePopulationList = ({
       localView = determineGroupResultStratification(
         populationBasis,
         stratification,
+        stratResult,
         isTestCaseExecuted
       );
     }
-    if (populations?.length > 0 && localView === "pass") {
+    if (populationResults?.length > 0 && localView === "pass") {
       setView(
-        determineGroupResult(populationBasis, populations, isTestCaseExecuted)
+        determineGroupResult(
+          populationBasis,
+          populations,
+          populationResults,
+          isTestCaseExecuted
+        )
       );
     } else {
       setView(localView);
     }
-  }, [isTestCaseExecuted, populationBasis, populations, stratification]);
+  }, [
+    isTestCaseExecuted,
+    populationBasis,
+    populationResults,
+    populations,
+    stratification,
+    stratResult,
+  ]);
 
   /*
     we have three separate views
