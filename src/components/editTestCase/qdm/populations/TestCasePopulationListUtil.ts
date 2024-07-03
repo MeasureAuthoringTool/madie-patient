@@ -8,6 +8,7 @@ import _ from "lodash";
 export const determineGroupResult = (
   populationBasis: string,
   populations: DisplayPopulationValue[],
+  populationResult?: any,
   isTestCaseExecuted?: boolean
 ) => {
   if (!isTestCaseExecuted) {
@@ -15,7 +16,8 @@ export const determineGroupResult = (
   }
   for (let i = 0; i < populations?.length; i++) {
     const population = populations[i];
-    const { expected, actual } = population;
+    const { actual } = populationResult[i];
+    const { expected } = population;
     if (populationBasis === "boolean" && expected != actual) {
       return "fail";
     } else if (populationBasis !== "boolean") {
@@ -40,12 +42,14 @@ export const determineGroupResult = (
 export const determineGroupResultStratification = (
   populationBasis: string,
   stratification: StratificationExpectedValue,
+  stratificationResult?: any,
   isTestCaseExecuted?: boolean
 ) => {
   if (!isTestCaseExecuted) {
     return "initial";
   }
-  const { expected, actual } = stratification;
+  const { expected } = stratification;
+  const { actual } = stratificationResult;
   if (populationBasis === "boolean" && expected != actual) {
     return "fail";
   } else if (populationBasis !== "boolean") {
