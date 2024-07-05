@@ -3339,6 +3339,138 @@ describe("TestCaseList component", () => {
       expect(executeButton).toBeDisabled();
     });
   });
+
+  it("should render shift test case dates dialogue on Test Case list page when shift test case dates button is clicked", async () => {
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      ShiftTestCasesDates: true,
+    }));
+
+    const { getByTestId } = renderTestCaseListComponent();
+    await waitFor(() => {
+      const selectButton = getByTestId(`select-action-${testCases[0].id}`);
+      expect(selectButton).toBeInTheDocument();
+      fireEvent.click(selectButton);
+    });
+
+    const shiftDatesButton = getByTestId(`shift-dates-btn-${testCases[0].id}`);
+    fireEvent.click(shiftDatesButton);
+
+    expect(screen.getByTestId("shift-dates-dialog")).toBeInTheDocument();
+    expect(screen.getByTestId("shift-dates-save-button")).toBeInTheDocument();
+    expect(screen.getByTestId("shift-dates-cancel-button")).toBeInTheDocument();
+  });
+
+  it("should shift test case dates successfully", async () => {
+    testCases[0].title = "WhenAllGood";
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      ShiftTestCasesDates: true,
+    }));
+    const responseDto: TestCase = {
+      id: "1234",
+      json: "date2",
+    } as TestCase;
+    const shiftTestCaseDatesApiMock = jest
+      .fn()
+      .mockResolvedValueOnce({ data: responseDto });
+    useTestCaseServiceMock.mockImplementationOnce(() => {
+      return {
+        getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
+        shiftTestCaseDates: shiftTestCaseDatesApiMock,
+      } as unknown as TestCaseServiceApi;
+    });
+    const { getByTestId } = renderTestCaseListComponent();
+    await waitFor(() => {
+      const selectButton = getByTestId(`select-action-${testCases[0].id}`);
+      expect(selectButton).toBeInTheDocument();
+      fireEvent.click(selectButton);
+    });
+
+    const shiftDatesButton = getByTestId(`shift-dates-btn-${testCases[0].id}`);
+    fireEvent.click(shiftDatesButton);
+
+    expect(screen.getByTestId("shift-dates-dialog")).toBeInTheDocument();
+    expect(screen.getByTestId("shift-dates-save-button")).toBeInTheDocument();
+    expect(screen.getByTestId("shift-dates-cancel-button")).toBeInTheDocument();
+
+    const shiftDatesInput = (await screen.findByTestId(
+      "shift-dates-input"
+    )) as HTMLInputElement;
+    expect(shiftDatesInput).toBeInTheDocument();
+
+    const saveBtn = await screen.findByTestId("shift-dates-save-button");
+    expect(saveBtn).toBeInTheDocument();
+    expect(saveBtn).not.toBeEnabled();
+
+    userEvent.type(shiftDatesInput, "1");
+    expect(shiftDatesInput.value).toBe("1");
+    expect(saveBtn).toBeEnabled();
+
+    userEvent.click(saveBtn);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("test-case-list-success")).toHaveTextContent(
+        "Test Case Shift Dates for IPP-Pass - WhenAllGood successful."
+      );
+      expect(measureStore.updateTestCases as jest.Mock).toHaveBeenCalledTimes(
+        2
+      );
+    });
+  });
+
+  it("should handle shift test case dates failure", async () => {
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      ShiftTestCasesDates: true,
+    }));
+    const responseDto = {
+      err: { response: { status: 400 } },
+    };
+    const shiftTestCaseDatesApiMock = jest
+      .fn()
+      .mockRejectedValueOnce({ data: responseDto });
+    useTestCaseServiceMock.mockImplementationOnce(() => {
+      return {
+        getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
+        shiftTestCaseDates: shiftTestCaseDatesApiMock,
+      } as unknown as TestCaseServiceApi;
+    });
+    const { getByTestId } = renderTestCaseListComponent();
+    await waitFor(() => {
+      const selectButton = getByTestId(`select-action-${testCases[0].id}`);
+      expect(selectButton).toBeInTheDocument();
+      fireEvent.click(selectButton);
+    });
+
+    const shiftDatesButton = getByTestId(`shift-dates-btn-${testCases[0].id}`);
+    fireEvent.click(shiftDatesButton);
+
+    expect(screen.getByTestId("shift-dates-dialog")).toBeInTheDocument();
+    expect(screen.getByTestId("shift-dates-save-button")).toBeInTheDocument();
+    expect(screen.getByTestId("shift-dates-cancel-button")).toBeInTheDocument();
+
+    const shiftDatesInput = (await screen.findByTestId(
+      "shift-dates-input"
+    )) as HTMLInputElement;
+    expect(shiftDatesInput).toBeInTheDocument();
+
+    const saveBtn = await screen.findByTestId("shift-dates-save-button");
+    expect(saveBtn).toBeInTheDocument();
+    expect(saveBtn).not.toBeEnabled();
+
+    userEvent.type(shiftDatesInput, "1");
+    expect(shiftDatesInput.value).toBe("1");
+    expect(saveBtn).toBeEnabled();
+
+    userEvent.click(saveBtn);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("test-case-list-error")).toHaveTextContent(
+        "Unable to shift test Case dates with ID 1. Please try again. If the issue continues, please contact helpdesk."
+      );
+      expect(measureStore.updateTestCases as jest.Mock).toHaveBeenCalledTimes(
+        2
+      );
+    });
+  });
 });
 
 describe("retrieve coverage value from HTML coverage", () => {

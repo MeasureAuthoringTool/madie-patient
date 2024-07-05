@@ -311,4 +311,47 @@ describe("TestCaseServiceApi Tests", () => {
       expect(err).not.toBeNull();
     }
   });
+
+  it("should shift test case dates successfully", async () => {
+    const responseDto: TestCase = {
+      id: "1234",
+      json: "date2",
+    } as TestCase;
+
+    axios.put = jest.fn().mockResolvedValueOnce({ data: responseDto });
+
+    const testCase: TestCase = {
+      id: "1234",
+      json: "date1",
+    } as TestCase;
+
+    const result = await testCaseService.shiftTestCaseDates(
+      testCase,
+      "testMeasureId",
+      1
+    );
+    expect(axios.put).toBeCalledTimes(1);
+    expect(result).not.toEqual(testCase);
+  });
+
+  it("should handle shift test case dates failure", async () => {
+    const responseDto = {
+      err: { response: { status: 400 } },
+    };
+
+    axios.put = jest.fn().mockResolvedValueOnce({ data: responseDto });
+
+    const testCase: TestCase = {
+      id: "1234",
+      json: "date1",
+    } as TestCase;
+
+    const result = await testCaseService.shiftTestCaseDates(
+      testCase,
+      "testMeasureId",
+      1
+    );
+    expect(axios.put).toBeCalledTimes(1);
+    expect(result).not.toEqual(testCase);
+  });
 });

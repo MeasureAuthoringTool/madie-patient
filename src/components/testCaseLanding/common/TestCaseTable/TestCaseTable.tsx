@@ -30,6 +30,7 @@ interface TestCaseTableProps {
   exportTestCase: Function;
   onCloneTestCase?: (testCase: TestCase) => void;
   measure: Measure;
+  onTestCaseShiftDates?: (testCase: TestCase, shifted: number) => void;
 }
 
 const TestCaseTable = (props: TestCaseTableProps) => {
@@ -40,6 +41,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     exportTestCase,
     onCloneTestCase,
     measure,
+    onTestCaseShiftDates,
   } = props;
   const viewOrEdit = canEdit ? "edit" : "view";
   const [deleteDialogModalOpen, setDeleteDialogModalOpen] =
@@ -291,6 +293,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
         handleClose={handleClose}
         shiftDatesDialogOpen={shiftDatesDialogOpen}
         setShiftDatesDialogOpen={setShiftDatesDialogOpen}
+        onTestCaseShiftDates={onTestCaseShiftDates}
       />
 
       {/* This sees to have gotten disconnected at some point in the past. */}

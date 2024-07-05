@@ -643,6 +643,28 @@ const TestCaseList = (props: TestCaseListProps) => {
     setExportExecuting(false);
   };
 
+  const onTestCaseShiftDates = (testCase: TestCase, shifted: number) => {
+    testCaseService.current
+      .shiftTestCaseDates(testCase, measureId, shifted)
+      .then(() => {
+        setToastOpen(true);
+        setToastType("success");
+        setToastMessage(
+          `Test Case Shift Dates for ${testCase.series} - ${testCase.title} successful.`
+        );
+      })
+      .catch((err) => {
+        console.error(
+          "shiftTestCaseDatesByTestCaseId: err.message = " + err.message
+        );
+        setToastOpen(true);
+        setToastType("danger");
+        setToastMessage(
+          `Unable to shift test Case dates with ID ${testCase.id}. Please try again. If the issue continues, please contact helpdesk.`
+        );
+      });
+  };
+
   return (
     <div>
       {!loadingState.loading && (
@@ -730,6 +752,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                         exportTestCase={null}
                         onCloneTestCase={handleCloneTestCase}
                         measure={measure}
+                        onTestCaseShiftDates={onTestCaseShiftDates}
                       />
                     </>
                   )}
