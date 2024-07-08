@@ -3421,12 +3421,7 @@ describe("TestCaseList component", () => {
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
       ShiftTestCasesDates: true,
     }));
-    const responseDto = {
-      err: { response: { status: 400 } },
-    };
-    const shiftTestCaseDatesApiMock = jest
-      .fn()
-      .mockRejectedValueOnce({ data: responseDto });
+    const shiftTestCaseDatesApiMock = jest.fn().mockRejectedValueOnce(null);
     useTestCaseServiceMock.mockImplementationOnce(() => {
       return {
         getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),

@@ -347,11 +347,11 @@ export class TestCaseServiceApi {
           params: { shifted: shifted },
         }
       );
+      if (!response || !response.data) {
+        throw new Error(`Unable to shift test case dates`);
+      }
       return response.data;
     } catch (err) {
-      if (err?.response?.status === 400 || err?.response?.status === 500) {
-        throw new MadieError(err.response.data.message);
-      }
       const message = `Unable to shift test case dates`;
       throw new Error(message);
     }

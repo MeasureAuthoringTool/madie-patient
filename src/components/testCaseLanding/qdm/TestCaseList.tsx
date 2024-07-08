@@ -654,9 +654,6 @@ const TestCaseList = (props: TestCaseListProps) => {
         );
       })
       .catch((err) => {
-        console.error(
-          "shiftTestCaseDatesByTestCaseId: err.message = " + err.message
-        );
         setToastOpen(true);
         setToastType("danger");
         setToastMessage(
