@@ -235,10 +235,11 @@ export class TerminologyServiceApi {
           const codeSystem = codeSystemDefs.find(
             (cs) => cs.name === def.codeSystem.name
           );
+          const csVersion = codeSystem.version ? codeSystem.version : "N/A";
           const cqlCode = new CQL.Code(
             def?.id, //code
             def.codeSystem.name, //system
-            "N/A", //version,
+            csVersion, //version,
             def.display //display
           );
           cqlCodeWithCodeSystemOid.push({

@@ -15,12 +15,12 @@ describe("determineGroupResult", () => {
   });
 
   it("should return pass for empty populations for boolean PopBasis", () => {
-    const output = determineGroupResult("boolean", [], true);
+    const output = determineGroupResult("boolean", [], [], true);
     expect(output).toEqual("pass");
   });
 
   it("should return pass for empty populations for non-boolean PopBasis", () => {
-    const output = determineGroupResult("Encounter", [], true);
+    const output = determineGroupResult("Encounter", [], [], true);
     expect(output).toEqual("pass");
   });
 
@@ -45,7 +45,12 @@ describe("determineGroupResult", () => {
         expected: true,
       },
     ];
-    const output = determineGroupResult("Encounter", populations, true);
+    const output = determineGroupResult(
+      "Encounter",
+      populations,
+      populations,
+      true
+    );
     expect(output).toEqual("pass");
   });
 
@@ -70,7 +75,12 @@ describe("determineGroupResult", () => {
         expected: false,
       },
     ];
-    const output = determineGroupResult("Encounter", populations, true);
+    const output = determineGroupResult(
+      "Encounter",
+      populations,
+      populations,
+      true
+    );
     expect(output).toEqual("pass");
   });
 
@@ -95,7 +105,12 @@ describe("determineGroupResult", () => {
         expected: undefined,
       },
     ];
-    const output = determineGroupResult("Encounter", populations, true);
+    const output = determineGroupResult(
+      "Encounter",
+      populations,
+      populations,
+      true
+    );
     expect(output).toEqual("pass");
   });
 
@@ -120,7 +135,12 @@ describe("determineGroupResult", () => {
         expected: undefined,
       },
     ];
-    const output = determineGroupResult("Encounter", populations, true);
+    const output = determineGroupResult(
+      "Encounter",
+      populations,
+      populations,
+      true
+    );
     expect(output).toEqual("fail");
   });
 
@@ -145,7 +165,12 @@ describe("determineGroupResult", () => {
         expected: false,
       },
     ];
-    const output = determineGroupResult("Encounter", populations, true);
+    const output = determineGroupResult(
+      "Encounter",
+      populations,
+      populations,
+      true
+    );
     expect(output).toEqual("fail");
   });
 
@@ -170,7 +195,12 @@ describe("determineGroupResult", () => {
         expected: 1,
       },
     ];
-    const output = determineGroupResult("Encounter", populations, true);
+    const output = determineGroupResult(
+      "Encounter",
+      populations,
+      populations,
+      true
+    );
     expect(output).toEqual("pass");
   });
 
@@ -195,7 +225,12 @@ describe("determineGroupResult", () => {
         expected: undefined,
       },
     ];
-    const output = determineGroupResult("Encounter", populations, true);
+    const output = determineGroupResult(
+      "Encounter",
+      populations,
+      populations,
+      true
+    );
     expect(output).toEqual("pass");
   });
 
@@ -220,7 +255,12 @@ describe("determineGroupResult", () => {
         expected: "" as any,
       },
     ];
-    const output = determineGroupResult("Encounter", populations, true);
+    const output = determineGroupResult(
+      "Encounter",
+      populations,
+      populations,
+      true
+    );
     expect(output).toEqual("pass");
   });
 
@@ -233,7 +273,12 @@ describe("determineGroupResult", () => {
         expected: 0,
       },
     ];
-    const output = determineGroupResult("Encounter", populations, true);
+    const output = determineGroupResult(
+      "Encounter",
+      populations,
+      populations,
+      true
+    );
     expect(output).toEqual("fail");
   });
 
@@ -246,7 +291,12 @@ describe("determineGroupResult", () => {
         expected: undefined,
       },
     ];
-    const output = determineGroupResult("Encounter", populations, true);
+    const output = determineGroupResult(
+      "Encounter",
+      populations,
+      populations,
+      true
+    );
     expect(output).toEqual("fail");
   });
 
@@ -259,7 +309,12 @@ describe("determineGroupResult", () => {
         expected: "" as any,
       },
     ];
-    const output = determineGroupResult("Encounter", populations, true);
+    const output = determineGroupResult(
+      "Encounter",
+      populations,
+      populations,
+      true
+    );
     expect(output).toEqual("fail");
   });
 
@@ -290,14 +345,19 @@ describe("determineGroupResult", () => {
         expected: undefined,
       },
     ];
-    const output = determineGroupResult("Encounter", populations, true);
+    const output = determineGroupResult(
+      "Encounter",
+      populations,
+      populations,
+      true
+    );
     expect(output).toEqual("pass");
   });
 });
 
 describe("determineGroupResultStratification", () => {
   it("Should return initial state when isTestCaseExported is false", () => {
-    const output = determineGroupResultStratification(null, null, false);
+    const output = determineGroupResultStratification(null, null, null, false);
     expect(output).toEqual("initial");
   });
 
@@ -310,6 +370,7 @@ describe("determineGroupResultStratification", () => {
     };
     const output = determineGroupResultStratification(
       "boolean",
+      stratification,
       stratification,
       true
     );
@@ -326,6 +387,7 @@ describe("determineGroupResultStratification", () => {
     const output = determineGroupResultStratification(
       "boolean",
       stratification,
+      stratification,
       true
     );
     expect(output).toEqual("pass");
@@ -340,6 +402,7 @@ describe("determineGroupResultStratification", () => {
     };
     const output = determineGroupResultStratification(
       "boolean",
+      stratification,
       stratification,
       true
     );
@@ -356,6 +419,7 @@ describe("determineGroupResultStratification", () => {
     const output = determineGroupResultStratification(
       "boolean",
       stratification,
+      stratification,
       true
     );
     expect(output).toEqual("fail");
@@ -370,6 +434,7 @@ describe("determineGroupResultStratification", () => {
     };
     const output = determineGroupResultStratification(
       "boolean",
+      stratification,
       stratification,
       true
     );
@@ -386,6 +451,7 @@ describe("determineGroupResultStratification", () => {
     const output = determineGroupResultStratification(
       "Encounter",
       stratification,
+      stratification,
       true
     );
     expect(output).toEqual("fail");
@@ -400,6 +466,7 @@ describe("determineGroupResultStratification", () => {
     };
     const output = determineGroupResultStratification(
       "Encounter",
+      stratification,
       stratification,
       true
     );
@@ -416,6 +483,7 @@ describe("determineGroupResultStratification", () => {
     const output = determineGroupResultStratification(
       "Encounter",
       stratification,
+      stratification,
       true
     );
     expect(output).toEqual("fail");
@@ -431,6 +499,7 @@ describe("determineGroupResultStratification", () => {
     const output = determineGroupResultStratification(
       "Encounter",
       stratification,
+      stratification,
       true
     );
     expect(output).toEqual("fail");
@@ -445,6 +514,7 @@ describe("determineGroupResultStratification", () => {
     };
     const output = determineGroupResultStratification(
       "Encounter",
+      stratification,
       stratification,
       true
     );
