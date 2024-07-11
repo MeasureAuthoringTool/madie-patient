@@ -3,10 +3,14 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
 import { QdmExecutionContextProvider } from "../../routes/qdm/QdmExecutionContext";
 import TestCaseData from "./TestCaseData";
-import { Measure } from "@madie/madie-models";
+import { Measure, TestCase } from "@madie/madie-models";
 // @ts-ignore
 import { checkUserCanEdit, measureStore } from "@madie/madie-util";
 import userEvent from "@testing-library/user-event";
+import useTestCaseServiceApi, {
+  TestCaseServiceApi,
+} from "../../../api/useTestCaseServiceApi";
+import { act } from "react-dom/test-utils";
 
 const mockServiceConfig: ServiceConfig = {
   measureService: { baseUrl: "measure.url" },
@@ -55,6 +59,11 @@ jest.mock("@madie/madie-util", () => ({
 }));
 
 const setExecutionContextReady = jest.fn();
+
+// mocking testCaseService
+jest.mock("../../../api/useTestCaseServiceApi");
+const useTestCaseServiceMock =
+  useTestCaseServiceApi as jest.Mock<TestCaseServiceApi>;
 
 function renderTestCaseDataComponent() {
   return render(
@@ -264,7 +273,89 @@ describe("TestCaseData", () => {
     expect(discardButton).toBeDisabled();
   });
 
-  it("should successfully update the test case dates and saves the measure", () => {});
+  it("should successfully shift all test case dates", async () => {
+    const responseDto: TestCase[] = [
+      {
+        id: "1234",
+        json: "date2",
+      },
+    ] as TestCase[];
+    const shiftAllTestCaseDatesApiMock = jest
+      .fn()
+      .mockResolvedValueOnce({ data: responseDto });
+    useTestCaseServiceMock.mockImplementationOnce(() => {
+      return {
+        shiftAllTestCaseDates: shiftAllTestCaseDatesApiMock,
+      } as unknown as TestCaseServiceApi;
+    });
 
-  it("should display an error message when unable to shift test case dates", () => {});
+    renderTestCaseDataComponent();
+    const shiftTestCaseDatesInput = screen.getByRole("spinbutton", {
+      name: "Shift Test Case Dates",
+    }) as HTMLInputElement;
+    const saveButton = screen.getByRole("button", { name: "Save" });
+    const discardButton = screen.getByRole("button", {
+      name: "Discard Changes",
+    });
+    expect(shiftTestCaseDatesInput).not.toBeDisabled();
+    expect(saveButton).toBeDisabled();
+    expect(discardButton).toBeDisabled();
+
+    userEvent.type(shiftTestCaseDatesInput, "1");
+    expect(shiftTestCaseDatesInput.value).toBe("1");
+    expect(saveButton).toBeEnabled();
+    expect(discardButton).toBeEnabled();
+
+    act(() => {
+      fireEvent.click(saveButton);
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByTestId("shift-all-test-case-dates-success-text")
+      ).toHaveTextContent(
+        "Test Case Shift Dates for measure: m1234 successful."
+      );
+    });
+  });
+
+  it("should display an error message when unable to shift all test case dates", async () => {
+    const shiftAllTestCaseDatesApiMock = jest
+      .fn()
+      .mockRejectedValueOnce({ error: "something went wrong" });
+    useTestCaseServiceMock.mockImplementationOnce(() => {
+      return {
+        shiftAllTestCaseDates: shiftAllTestCaseDatesApiMock,
+      } as unknown as TestCaseServiceApi;
+    });
+
+    renderTestCaseDataComponent();
+    const shiftTestCaseDatesInput = screen.getByRole("spinbutton", {
+      name: "Shift Test Case Dates",
+    }) as HTMLInputElement;
+    const saveButton = screen.getByRole("button", { name: "Save" });
+    const discardButton = screen.getByRole("button", {
+      name: "Discard Changes",
+    });
+    expect(shiftTestCaseDatesInput).not.toBeDisabled();
+    expect(saveButton).toBeDisabled();
+    expect(discardButton).toBeDisabled();
+
+    userEvent.type(shiftTestCaseDatesInput, "1");
+    expect(shiftTestCaseDatesInput.value).toBe("1");
+    expect(saveButton).toBeEnabled();
+    expect(discardButton).toBeEnabled();
+
+    act(() => {
+      fireEvent.click(saveButton);
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByTestId("shift-all-test-case-dates-generic-error-text")
+      ).toHaveTextContent(
+        "Unable to shift test Case dates for measure: m1234. Please try again. If the issue continues, please contact helpdesk."
+      );
+    });
+  });
 });

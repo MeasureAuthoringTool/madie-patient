@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Button,
   MadieDiscardDialog,
@@ -16,6 +16,7 @@ import { Typography } from "@mui/material";
 import _ from "lodash";
 import * as Yup from "yup";
 import Tooltip from "@mui/material/Tooltip";
+import useTestCaseServiceApi from "../../../api/useTestCaseServiceApi";
 
 const TestCaseData = () => {
   const [measure, setMeasure] = useState<any>(measureStore.state);
@@ -24,6 +25,7 @@ const TestCaseData = () => {
   const [toastOpen, setToastOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>("");
   const [toastType, setToastType] = useState<string>("danger");
+  const testCaseService = useRef(useTestCaseServiceApi());
 
   useEffect(() => {
     const subscription = measureStore.subscribe(setMeasure);
@@ -68,7 +70,27 @@ const TestCaseData = () => {
     setToastOpen(open);
   };
 
-  const handleSubmit = async (values) => {};
+  const handleSubmit = async (values) => {
+    testCaseService.current
+      .shiftAllTestCaseDates(
+        measure.id,
+        parseInt(formik.values.shiftTestCaseDates)
+      )
+      .then(() => {
+        setToastOpen(true);
+        setToastType("success");
+        setToastMessage(
+          `Test Case Shift Dates for measure: ${measure.id} successful.`
+        );
+      })
+      .catch((err) => {
+        setToastOpen(true);
+        setToastType("danger");
+        setToastMessage(
+          `Unable to shift test Case dates for measure: ${measure.id}. Please try again. If the issue continues, please contact helpdesk.`
+        );
+      });
+  };
 
   return (
     <form
@@ -135,13 +157,13 @@ const TestCaseData = () => {
         </Tooltip>
       </div>
       <Toast
-        toastKey="sde-toast"
+        toastKey="shift-all-test-case-dates-toast"
         aria-live="polite"
         toastType={toastType}
         testId={
           toastType === "danger"
-            ? "edit-sde-generic-error-text"
-            : "edit-sde-success-text"
+            ? "shift-all-test-case-dates-generic-error-text"
+            : "shift-all-test-case-dates-success-text"
         }
         open={toastOpen}
         message={toastMessage}
