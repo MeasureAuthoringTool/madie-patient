@@ -47,6 +47,7 @@ describe("Shift Test Case Dates Dialog", () => {
           onClose={onClose}
           canEdit={true}
           testCase={testCase}
+          onTestCaseShiftDates={jest.fn()}
         />
       );
 

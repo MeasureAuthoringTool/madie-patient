@@ -4,6 +4,7 @@ import {
   MadieDialog,
   ReadOnlyTextField,
   NumberInput,
+  Toast,
 } from "@madie/madie-design-system/dist/react";
 import { useFormik } from "formik";
 import * as _ from "lodash";
@@ -14,6 +15,7 @@ interface shiftDatesDialogProps {
   onClose: (boolean) => void;
   canEdit?: boolean;
   testCase?: TestCase;
+  onTestCaseShiftDates?: (testCase: TestCase, shifted: number) => void;
 }
 
 const ShiftDatesDialog = ({
@@ -21,6 +23,7 @@ const ShiftDatesDialog = ({
   onClose,
   canEdit,
   testCase,
+  onTestCaseShiftDates,
 }: shiftDatesDialogProps) => {
   const formik = useFormik({
     initialValues: {
@@ -30,6 +33,7 @@ const ShiftDatesDialog = ({
   });
 
   const handleSubmit = async (value) => {
+    onTestCaseShiftDates(testCase, value.shiftDatesInput);
     onClose(true);
   };
 
