@@ -332,7 +332,7 @@ export class TestCaseServiceApi {
   }
 
   async shiftAllTestCaseDates(measureId: string, shifted: number) {
-    const response = await axios.put(
+    const response = await axios.get(
       `${this.baseUrl}/measures/${measureId}/test-cases/qdm/shiftDatesAll`,
       {
         params: { shifted: shifted },
