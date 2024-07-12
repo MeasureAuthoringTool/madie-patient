@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React from "react";
 import { TestCase } from "@madie/madie-models";
 import {
   MadieDialog,
