@@ -282,9 +282,7 @@ describe("TestCaseData", () => {
     await waitFor(() => {
       expect(
         screen.getByTestId("shift-all-test-case-dates-success-text")
-      ).toHaveTextContent(
-        "Test Case Shift Dates for measure: m1234 successful."
-      );
+      ).toHaveTextContent("All Test Case dates successfully shifted.");
       userEvent.click(screen.getByTestId("ClearIcon"));
       expect(
         screen.queryByTestId("shift-all-test-case-dates-success-text")
@@ -328,7 +326,7 @@ describe("TestCaseData", () => {
       expect(
         screen.getByTestId("shift-all-test-case-dates-generic-error-text")
       ).toHaveTextContent(
-        "Unable to shift test Case dates for measure: m1234. Please try again. If the issue continues, please contact helpdesk."
+        "Test Case dates could not be shifted. Please try again."
       );
     });
   });

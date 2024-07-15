@@ -79,14 +79,14 @@ const TestCaseData = () => {
       .then(() => {
         handleToast(
           "success",
-          `Test Case Shift Dates for measure: ${measure.id} successful.`,
+          `All Test Case dates successfully shifted.`,
           true
         );
       })
       .catch((err) => {
         handleToast(
           "danger",
-          `Unable to shift test Case dates for measure: ${measure.id}. Please try again. If the issue continues, please contact helpdesk.`,
+          `Test Case dates could not be shifted. Please try again.`,
           true
         );
       });
