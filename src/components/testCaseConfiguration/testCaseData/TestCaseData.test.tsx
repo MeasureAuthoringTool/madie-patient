@@ -31,7 +31,12 @@ const measure = {
   createdBy: "john doe",
   measureSetId: "testMeasureId",
   acls: [{ userId: "othertestuser@example.com", roles: ["SHARED_WITH"] }],
-  testCases: [{}],
+  testCases: [
+    {
+      id: "t1234",
+      json: "date1",
+    },
+  ] as TestCase[],
 } as unknown as Measure;
 
 jest.mock("@madie/madie-util", () => ({
@@ -236,43 +241,6 @@ describe("TestCaseData", () => {
     expect(shiftTestCaseDatesInput.value).toBe("5");
   });
 
-  it("should display disabled state of the form when user doesn't have authorization to edit", () => {
-    (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => {
-      return false;
-    });
-    renderTestCaseDataComponent();
-    const shiftTestCaseDatesInput = screen.getByRole("spinbutton", {
-      name: "Shift Test Case Dates",
-    }) as HTMLInputElement;
-    const saveButton = screen.getByRole("button", { name: "Save" });
-    const discardButton = screen.getByRole("button", {
-      name: "Discard Changes",
-    });
-    expect(shiftTestCaseDatesInput).toBeDisabled();
-    expect(saveButton).toBeDisabled();
-    expect(discardButton).toBeDisabled();
-  });
-
-  it("should display disabled state when no patient are found for the measure", () => {
-    measureStore.state.mockImplementation(() => {
-      return {
-        ...measure,
-        testCases: [],
-      };
-    });
-    renderTestCaseDataComponent();
-    const shiftTestCaseDatesInput = screen.getByRole("spinbutton", {
-      name: "Shift Test Case Dates",
-    }) as HTMLInputElement;
-    const saveButton = screen.getByRole("button", { name: "Save" });
-    const discardButton = screen.getByRole("button", {
-      name: "Discard Changes",
-    });
-    expect(shiftTestCaseDatesInput).toBeDisabled();
-    expect(saveButton).toBeDisabled();
-    expect(discardButton).toBeDisabled();
-  });
-
   it("should successfully shift all test case dates", async () => {
     const responseDto: TestCase[] = [
       {
@@ -301,8 +269,9 @@ describe("TestCaseData", () => {
     expect(saveButton).toBeDisabled();
     expect(discardButton).toBeDisabled();
 
-    userEvent.type(shiftTestCaseDatesInput, "1");
-    expect(shiftTestCaseDatesInput.value).toBe("1");
+    userEvent.type(shiftTestCaseDatesInput, "5");
+
+    expect(shiftTestCaseDatesInput.value).toBe("5");
     expect(saveButton).toBeEnabled();
     expect(discardButton).toBeEnabled();
 
@@ -316,6 +285,10 @@ describe("TestCaseData", () => {
       ).toHaveTextContent(
         "Test Case Shift Dates for measure: m1234 successful."
       );
+      userEvent.click(screen.getByTestId("ClearIcon"));
+      expect(
+        screen.queryByTestId("shift-all-test-case-dates-success-text")
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -341,8 +314,9 @@ describe("TestCaseData", () => {
     expect(saveButton).toBeDisabled();
     expect(discardButton).toBeDisabled();
 
-    userEvent.type(shiftTestCaseDatesInput, "1");
-    expect(shiftTestCaseDatesInput.value).toBe("1");
+    userEvent.type(shiftTestCaseDatesInput, "5");
+
+    expect(shiftTestCaseDatesInput.value).toBe("5");
     expect(saveButton).toBeEnabled();
     expect(discardButton).toBeEnabled();
 
@@ -357,5 +331,42 @@ describe("TestCaseData", () => {
         "Unable to shift test Case dates for measure: m1234. Please try again. If the issue continues, please contact helpdesk."
       );
     });
+  });
+
+  it("should display disabled state of the form when user doesn't have authorization to edit", () => {
+    (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => {
+      return false;
+    });
+    renderTestCaseDataComponent();
+    const shiftTestCaseDatesInput = screen.getByRole("spinbutton", {
+      name: "Shift Test Case Dates",
+    }) as HTMLInputElement;
+    const saveButton = screen.getByRole("button", { name: "Save" });
+    const discardButton = screen.getByRole("button", {
+      name: "Discard Changes",
+    });
+    expect(shiftTestCaseDatesInput).toBeDisabled();
+    expect(saveButton).toBeDisabled();
+    expect(discardButton).toBeDisabled();
+  });
+
+  it("should display disabled state when no patient are found for the measure", () => {
+    measureStore.state.mockImplementationOnce(() => {
+      return {
+        ...measure,
+        testCases: [],
+      };
+    });
+    renderTestCaseDataComponent();
+    const shiftTestCaseDatesInput = screen.getByRole("spinbutton", {
+      name: "Shift Test Case Dates",
+    }) as HTMLInputElement;
+    const saveButton = screen.getByRole("button", { name: "Save" });
+    const discardButton = screen.getByRole("button", {
+      name: "Discard Changes",
+    });
+    expect(shiftTestCaseDatesInput).toBeDisabled();
+    expect(saveButton).toBeDisabled();
+    expect(discardButton).toBeDisabled();
   });
 });

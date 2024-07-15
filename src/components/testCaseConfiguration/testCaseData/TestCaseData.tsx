@@ -77,19 +77,20 @@ const TestCaseData = () => {
         parseInt(formik.values.shiftTestCaseDates)
       )
       .then(() => {
-        setToastOpen(true);
-        setToastType("success");
-        setToastMessage(
-          `Test Case Shift Dates for measure: ${measure.id} successful.`
+        handleToast(
+          "success",
+          `Test Case Shift Dates for measure: ${measure.id} successful.`,
+          true
         );
       })
       .catch((err) => {
-        setToastOpen(true);
-        setToastType("danger");
-        setToastMessage(
-          `Unable to shift test Case dates for measure: ${measure.id}. Please try again. If the issue continues, please contact helpdesk.`
+        handleToast(
+          "danger",
+          `Unable to shift test Case dates for measure: ${measure.id}. Please try again. If the issue continues, please contact helpdesk.`,
+          true
         );
       });
+    formik.resetForm();
   };
 
   return (
