@@ -356,6 +356,22 @@ export class TestCaseServiceApi {
       throw new Error(message);
     }
   }
+
+  async shiftAllTestCaseDates(measureId: string, shifted: number) {
+    const response = await axios.get(
+      `${this.baseUrl}/measures/${measureId}/test-cases/qdm/shiftAllDates`,
+      {
+        params: { shifted: shifted },
+        headers: {
+          Authorization: `Bearer ${this.getAccessToken()}`,
+        },
+      }
+    );
+    if (!response || !response.data) {
+      throw new Error(`Unable to shift test case dates`);
+    }
+    return response.data;
+  }
 }
 
 const useTestCaseServiceApi = (): TestCaseServiceApi => {
