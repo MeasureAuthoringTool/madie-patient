@@ -85,6 +85,7 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
       const filesMap: TestCaseImportRequest[] = [];
       let fileNames = [];
       let madieFileMetaData: TestCaseExportMetaData[];
+      let madieFilePresent = true;
       const parentFolderName = acceptedFiles[0].name
         .replace(".zip", "")
         .split(" ")[0];
@@ -95,31 +96,18 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
           const madieFile = _.keys(content.files).find((fileName) =>
             fileName.endsWith(".madie")
           );
-          if (!_.isEmpty(madieFile)) {
+          if (_.isEmpty(madieFile)) {
+            madieFilePresent = false;
+          } else {
             madieFileMetaData = JSON.parse(
               await zip.file(madieFile).async("string")
             );
-          }
 
-          // Filtering out all the fileNames that are valid, based on following format
-          // Format => Zip file name followed with a valid UUID followed by json file extension
-          // Ex: CMS136FHIR-v0.0.000-FHIR4-TestCases/a648e724-ce72-4cac-b0a7-3c4d52784f73/CMS136FHIR-v0.0.000-tcseries-tctitle001.json
-          fileNames = _.filter(
-            _.keys(content.files).map((fileName) => {
-              // file compressed from MAC has a parentFolderName and also contains several other hidden files
-              if (fileName.startsWith(parentFolderName)) {
-                const folderNameSplit = fileName.split("/");
-                if (validator.isUUID(folderNameSplit[1])) {
-                  if (fileName.endsWith(".json")) {
-                    return fileName;
-                  }
-                  // Insert a blank file for each directory so that we can return an appropriate error message
-                  else if (content.files[fileName].dir) {
-                    content.file(fileName, "");
-                    return fileName;
-                  }
-                }
-              } else {
+            // Filtering out all the fileNames that are valid, based on following format
+            // Format => Zip file name followed with a valid UUID followed by json file extension
+            // Ex: CMS136FHIR-v0.0.000-FHIR4-TestCases/a648e724-ce72-4cac-b0a7-3c4d52784f73/CMS136FHIR-v0.0.000-tcseries-tctitle001.json
+            fileNames = _.filter(
+              _.keys(content.files).map((fileName) => {
                 // Zip downloaded from MADiE doesn't have a parentFolderName
                 // Ex: a648e724-ce72-4cac-b0a7-3c4d52784f73/CMS136FHIR-v0.0.000-tcseries-tctitle001.json
                 const folderNameSplit = fileName.split("/");
@@ -133,10 +121,10 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
                     return fileName;
                   }
                 }
-              }
-            }),
-            (v) => !!v
-          );
+              }),
+              (v) => !!v
+            );
+          }
           return Promise.all(
             fileNames.map((filename) => zip.file(filename).async("string"))
           );
@@ -184,8 +172,11 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
               } as TestCaseImportRequest);
             }
           });
-
-          if (_.isEmpty(filesMap)) {
+          if (!madieFilePresent) {
+            setErrorMessage(
+              "Zip file is in an incorrect format. If this is an export prior to June 20, 2024 please reexport your test case and try again."
+            );
+          } else if (_.isEmpty(filesMap)) {
             setErrorMessage(
               "Unable to find any valid test case json. Please make sure the format is accurate"
             );
