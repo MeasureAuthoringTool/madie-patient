@@ -104,8 +104,6 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
             );
 
             // Filtering out all the fileNames that are valid, based on following format
-            // Format => Zip file name followed with a valid UUID followed by json file extension
-            // Ex: CMS136FHIR-v0.0.000-FHIR4-TestCases/a648e724-ce72-4cac-b0a7-3c4d52784f73/CMS136FHIR-v0.0.000-tcseries-tctitle001.json
             fileNames = _.filter(
               _.keys(content.files).map((fileName) => {
                 // Zip downloaded from MADiE doesn't have a parentFolderName
