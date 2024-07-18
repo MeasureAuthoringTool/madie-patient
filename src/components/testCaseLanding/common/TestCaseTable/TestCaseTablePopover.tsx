@@ -21,6 +21,7 @@ interface TestCaseTablePopoverProps {
   setDeleteDialogModalOpen: Function;
   shiftDatesDialogOpen: boolean;
   setShiftDatesDialogOpen: (boolean) => void;
+  onTestCaseShiftDates?: (testCase: TestCase, shifted: number) => void;
 }
 
 const TestCaseTablePopover = (props: TestCaseTablePopoverProps) => {
@@ -39,6 +40,7 @@ const TestCaseTablePopover = (props: TestCaseTablePopoverProps) => {
     setDeleteDialogModalOpen,
     shiftDatesDialogOpen,
     setShiftDatesDialogOpen,
+    onTestCaseShiftDates,
   } = props;
   const editTestCaseUrl = _.isEmpty(props.groups)
     ? `../${selectedTestCase?.id}`
@@ -202,6 +204,7 @@ const TestCaseTablePopover = (props: TestCaseTablePopoverProps) => {
             onClose={handleClose}
             canEdit={canEdit}
             testCase={selectedTestCase}
+            onTestCaseShiftDates={onTestCaseShiftDates}
           />
         </div>
       </div>

@@ -311,4 +311,145 @@ describe("TestCaseServiceApi Tests", () => {
       expect(err).not.toBeNull();
     }
   });
+
+  it("should shift test case dates successfully", async () => {
+    const responseDto: TestCase = {
+      id: "1234",
+      json: "date2",
+    } as TestCase;
+
+    axios.put = jest.fn().mockResolvedValueOnce({ data: responseDto });
+
+    const testCase: TestCase = {
+      id: "1234",
+      json: "date1",
+    } as TestCase;
+
+    const result = await testCaseService.shiftTestCaseDates(
+      testCase,
+      "testMeasureId",
+      1
+    );
+    expect(axios.put).toBeCalledTimes(1);
+    expect(result).not.toEqual(testCase);
+  });
+
+  it("should handle shift test case dates failure with bad response", async () => {
+    const responseDto = {
+      status: 400,
+      error: "Bad Request",
+      message: "Error",
+    };
+
+    axios.put = jest.fn().mockResolvedValueOnce({ error: responseDto });
+
+    const testCase: TestCase = {
+      id: "1234",
+      json: "date1",
+    } as TestCase;
+
+    try {
+      const result = await testCaseService.shiftTestCaseDates(
+        testCase,
+        "testMeasureId",
+        1
+      );
+      expect(axios.put).toBeCalledTimes(1);
+      expect(result).not.toEqual(testCase);
+    } catch (err) {
+      expect(err).toEqual(new Error("Unable to shift test case dates"));
+    }
+  });
+
+  it("should handle shift test case dates failure with no response", async () => {
+    axios.put = jest.fn().mockResolvedValueOnce(null);
+
+    const testCase: TestCase = {
+      id: "1234",
+      json: "date1",
+    } as TestCase;
+
+    try {
+      const result = await testCaseService.shiftTestCaseDates(
+        testCase,
+        "testMeasureId",
+        1
+      );
+      expect(axios.put).toBeCalledTimes(1);
+      expect(result).not.toEqual(testCase);
+    } catch (err) {
+      expect(err).toEqual(new Error("Unable to shift test case dates"));
+    }
+  });
+
+  it("should shift all test case dates successfully", async () => {
+    const responseDto: TestCase[] = [
+      {
+        id: "1234",
+        json: "date2",
+      },
+    ] as TestCase[];
+
+    axios.get = jest.fn().mockResolvedValueOnce({ data: responseDto });
+
+    const testCases: TestCase[] = [
+      {
+        id: "1234",
+        json: "date1",
+      },
+    ] as TestCase[];
+
+    const result = await testCaseService.shiftAllTestCaseDates(
+      "testMeasureId",
+      1
+    );
+    expect(axios.get).toBeCalledTimes(1);
+    expect(result[0]).not.toEqual(testCases[0]);
+  });
+
+  it("should handle shift all test case dates failure with no response", async () => {
+    axios.put = jest.fn().mockResolvedValueOnce(null);
+
+    const testCases: TestCase[] = [
+      {
+        id: "1234",
+        json: "date1",
+      },
+    ] as TestCase[];
+
+    try {
+      const result = await testCaseService.shiftAllTestCaseDates(
+        "testMeasureId",
+        1
+      );
+      expect(axios.get).toBeCalledTimes(1);
+      expect(result[0]).not.toEqual(testCases[0]);
+    } catch (err) {
+      expect(err).toEqual(new Error("Unable to shift test case dates"));
+    }
+  });
+
+  it("should handle shift all test case dates failure with no response data", async () => {
+    axios.get = jest
+      .fn()
+      .mockResolvedValueOnce({ error: "something went wrong" });
+
+    const testCases: TestCase[] = [
+      {
+        id: "1234",
+        json: "date1",
+      },
+    ] as TestCase[];
+
+    try {
+      const result = await testCaseService.shiftAllTestCaseDates(
+        "testMeasureId",
+        1
+      );
+      expect(axios.get).toBeCalledTimes(1);
+      expect(result[0]).not.toEqual(testCases[0]);
+    } catch (err) {
+      expect(err).toEqual(new Error("Unable to shift test case dates"));
+    }
+  });
 });

@@ -149,7 +149,7 @@ describe("Codes section", () => {
     const cqlCode = new CQL.Code(
       expectedConcept.code,
       expectedConcept.code_system_oid,
-      null,
+      `urn:hl7:version:${expectedConcept.code_system_version}`,
       expectedConcept.display_name
     );
     expect(handleChange).toHaveBeenCalledWith(cqlCode);
@@ -286,7 +286,7 @@ describe("Codes section", () => {
     const cqlCode = new CQL.Code(
       expectedConcept.code,
       expectedConcept.code_system_oid,
-      null,
+      `urn:hl7:version:${expectedConcept.code_system_version}`,
       expectedConcept.display_name
     );
     expect(handleChange).toHaveBeenCalledWith(cqlCode);
