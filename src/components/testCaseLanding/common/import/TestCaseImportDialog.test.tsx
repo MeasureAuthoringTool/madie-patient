@@ -116,44 +116,6 @@ const createZipFile = async (
   }
 };
 
-const createZipFileBadMadie = async (
-  patientIds: string[],
-  jsonBundle?: string[],
-  jsonFileName?: string[],
-  zipFileName = "CMS136FHIR-v0.0.000-FHIR4-TestCases"
-) => {
-  try {
-    const zip = new JSZip();
-
-    patientIds.forEach((patientId, index) => {
-      const subFolderEntry = zip.folder(patientId);
-      subFolderEntry.file(
-        jsonFileName ? jsonFileName[index] : defaultFileName,
-        jsonBundle[index]
-      );
-    });
-
-    zip.file(
-      ".madie",
-      JSON.stringify({
-        patientId: "a",
-        testCaseId: "a",
-        description: "the first test case",
-        title: "TC1",
-        series: undefined,
-      })
-    );
-
-    const zipContent = await zip.generateAsync({ type: "nodebuffer" });
-    const blob = new Blob([zipContent], { type: "application/zip" });
-    return new File([blob], "CMS136FHIR-v0.0.000-FHIR4-TestCases", {
-      type: "application/zip",
-    });
-  } catch (error) {
-    throw error;
-  }
-};
-
 const createZipFileWithNoParentFolder = async (
   patientIds: string[],
   jsonBundle?: string[],
