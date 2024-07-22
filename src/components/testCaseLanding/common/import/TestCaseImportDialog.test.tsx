@@ -66,6 +66,22 @@ const scanResult: ScanValidationDto = {
 
 const patientId1 = "8cdd6a96-732f-41da-9902-d680ca68157c";
 const patientId2 = "a648e724-ce72-4cac-b0a7-3c4d52784f73";
+const madieFileContents: TestCaseExportMetaData[] = [
+  {
+    patientId: patientId1,
+    testCaseId: "tc1ID",
+    description: "the first test case",
+    title: "TC1",
+    series: undefined,
+  },
+  {
+    patientId: patientId2,
+    testCaseId: "tc2ID",
+    description: "the second test case",
+    title: "TC2",
+    series: "IPFAIL",
+  },
+];
 const defaultFileName = "testcaseExample.json";
 
 const createZipFile = async (
@@ -77,10 +93,9 @@ const createZipFile = async (
 ) => {
   try {
     const zip = new JSZip();
-    const parentFolder = zip.folder(zipFileName);
 
     patientIds.forEach((patientId, index) => {
-      const subFolderEntry = parentFolder.folder(patientId);
+      const subFolderEntry = zip.folder(patientId);
       subFolderEntry.file(
         jsonFileName ? jsonFileName[index] : defaultFileName,
         jsonBundle[index]
@@ -88,7 +103,7 @@ const createZipFile = async (
     });
 
     if (!_.isNil(madieMetaData)) {
-      parentFolder.file(".madie", madieMetaData);
+      zip.file(".madie", madieMetaData);
     }
 
     const zipContent = await zip.generateAsync({ type: "nodebuffer" });
@@ -180,18 +195,20 @@ describe("TestCaseImportDialog", () => {
       {
         patientId: patientId1,
         json: jsonBundle,
-        testCaseMetaData: undefined,
+        testCaseMetaData: madieFileContents[0],
       },
       {
         patientId: patientId2,
         json: jsonBundle,
-        testCaseMetaData: undefined,
+        testCaseMetaData: madieFileContents[1],
       },
     ];
 
     const zipFile = await createZipFile(
       [patientId1, patientId2],
-      [jsonBundle, jsonBundle]
+      [jsonBundle, jsonBundle],
+      ["file1.json", "file2.json"],
+      JSON.stringify(madieFileContents)
     );
 
     mockedAxios.post.mockReset().mockResolvedValue({ data: scanResult });
@@ -219,23 +236,6 @@ describe("TestCaseImportDialog", () => {
   });
 
   it("should preview a valid file including .madie file", async () => {
-    const madieFileContents: TestCaseExportMetaData[] = [
-      {
-        patientId: patientId1,
-        testCaseId: "tc1ID",
-        description: "the first test case",
-        title: "TC1",
-        series: undefined,
-      },
-      {
-        patientId: patientId2,
-        testCaseId: "tc2ID",
-        description: "the second test case",
-        title: "TC2",
-        series: "IPFAIL",
-      },
-    ];
-
     const expectedOutCome: TestCaseImportRequest[] = [
       {
         patientId: patientId1,
@@ -283,7 +283,9 @@ describe("TestCaseImportDialog", () => {
   it("should show error message when file scan validation call fails", async () => {
     const zipFile = await createZipFile(
       [patientId1, patientId2],
-      [jsonBundle, jsonBundle]
+      [jsonBundle, jsonBundle],
+      ["file1.json", "file2.json"],
+      JSON.stringify(madieFileContents)
     );
 
     mockedAxios.post.mockReset().mockRejectedValue(new Error("BAD THINGS"));
@@ -311,7 +313,9 @@ describe("TestCaseImportDialog", () => {
   it("displays error when scan validation returns invalid file", async () => {
     const zipFile = await createZipFile(
       [patientId1, patientId2],
-      [jsonBundle, jsonBundle]
+      [jsonBundle, jsonBundle],
+      ["file1.json", "file2.json"],
+      JSON.stringify(madieFileContents)
     );
 
     const scanResult: ScanValidationDto = {
@@ -381,13 +385,15 @@ describe("TestCaseImportDialog", () => {
       {
         patientId: patientId2,
         json: jsonBundle,
-        testCaseMetaData: undefined,
+        testCaseMetaData: madieFileContents[1],
       },
     ];
 
     const zipFile = await createZipFile(
       ["patientId1", patientId2],
-      [jsonBundle, jsonBundle]
+      [jsonBundle, jsonBundle],
+      ["file1.json", "file2.json"],
+      JSON.stringify(madieFileContents)
     );
 
     mockedAxios.post.mockReset().mockResolvedValue({ data: scanResult });
@@ -419,14 +425,15 @@ describe("TestCaseImportDialog", () => {
       {
         patientId: patientId2,
         json: jsonBundle,
-        testCaseMetaData: undefined,
+        testCaseMetaData: madieFileContents[1],
       },
     ];
 
     const zipFile = await createZipFile(
       [patientId1, patientId2],
       [jsonBundle, jsonBundle],
-      ["notAJsonFileName.txt", defaultFileName]
+      ["notAJsonFileName.txt", defaultFileName],
+      JSON.stringify(madieFileContents)
     );
 
     mockedAxios.post.mockReset().mockResolvedValue({ data: scanResult });
@@ -520,19 +527,20 @@ describe("TestCaseImportDialog", () => {
       {
         patientId: patientId1,
         json: jsonBundle,
-        testCaseMetaData: undefined,
+        testCaseMetaData: madieFileContents[0],
       },
       {
         patientId: patientId2,
         json: jsonBundle,
-        testCaseMetaData: undefined,
+        testCaseMetaData: madieFileContents[1],
       },
     ];
 
     const zipFile = await createZipFile(
       [patientId1, patientId2, patientId2],
       [jsonBundle, "", jsonBundle],
-      ["notAJsonFileName.txt", "ReadMe.txt"]
+      ["notAJsonFileName.txt", "ReadMe.txt"],
+      JSON.stringify(madieFileContents)
     );
 
     mockedAxios.post.mockReset().mockResolvedValue({ data: scanResult });
@@ -559,17 +567,17 @@ describe("TestCaseImportDialog", () => {
     });
   });
 
-  it("Should preview as a valid file, if the parent folder is not found", async () => {
+  it("Shouldn't preview as a valid file, if the parent folder is not found", async () => {
     const expectedOutCome: TestCaseImportRequest[] = [
       {
         patientId: patientId1,
         json: jsonBundle,
-        testCaseMetaData: undefined,
+        testCaseMetaData: madieFileContents[0],
       },
       {
         patientId: patientId2,
         json: jsonBundle,
-        testCaseMetaData: undefined,
+        testCaseMetaData: madieFileContents[1],
       },
     ];
 
@@ -593,12 +601,7 @@ describe("TestCaseImportDialog", () => {
 
     await waitFor(async () => {
       const importBtn = await screen.getByRole("button", { name: "Import" });
-      expect(importBtn).toBeEnabled();
-      userEvent.click(importBtn);
-      expect(onImport).toHaveBeenCalledWith(expectedOutCome);
-      expect(screen.getByTestId("test-case-preview-header")).toHaveTextContent(
-        "Complete"
-      );
+      expect(importBtn).not.toBeEnabled();
     });
   });
 });

@@ -12,7 +12,7 @@ import "./TestCaseImportDialog.css";
 import * as _ from "lodash";
 import useTestCaseServiceApi from "../../../../api/useTestCaseServiceApi";
 import { ScanValidationDto } from "../../../../api/models/ScanValidationDto";
-import JSZip from "jszip";
+import JSZip, { file } from "jszip";
 import prettyBytes from "pretty-bytes";
 import CloseIcon from "@mui/icons-material/Close";
 import { CircularProgress } from "@mui/material";
@@ -142,7 +142,6 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
                 return true;
               }
             });
-
             // replace the blank file with the new file
             if (existingFile.length > 0) {
               if (val.length > 0) {

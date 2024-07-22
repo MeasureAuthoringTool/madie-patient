@@ -1,0 +1,289 @@
+{
+  "resourceType": "Bundle",
+  "id": "41643131",
+  "type": "collection",
+  "entry": [
+    {
+      "fullUrl": "https://madie.cms.gov/Patient/1fca1565-c241-48d2-acbc-ba5edae92e7c",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "1fca1565-c241-48d2-acbc-ba5edae92e7c",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-patient"
+          ]
+        },
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+            "extension": [
+              {
+                "url": "ombCategory",
+                "valueCoding": {
+                  "system": "urn:oid:2.16.840.1.113883.6.238",
+                  "code": "1002-5",
+                  "display": "American Indian or Alaska Native",
+                  "userSelected": true
+                }
+              },
+              {
+                "url": "text",
+                "valueString": "American Indian or Alaska Native"
+              }
+            ]
+          },
+          {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+            "extension": [
+              {
+                "url": "ombCategory",
+                "valueCoding": {
+                  "system": "urn:oid:2.16.840.1.113883.6.238",
+                  "code": "2135-2",
+                  "display": "Hispanic or Latino",
+                  "userSelected": true
+                }
+              },
+              {
+                "url": "text",
+                "valueString": "Hispanic or Latino"
+              }
+            ]
+          }
+        ],
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MR"
+                }
+              ]
+            },
+            "system": "https://bonnie-fhir.healthit.gov/",
+            "value": "3153213131"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "use": "usual",
+            "family": "NUMERPass",
+            "given": ["1stUSS1moAfterBPHEdge"]
+          }
+        ],
+        "gender": "male",
+        "birthDate": "1948-12-22"
+      }
+    },
+    {
+      "fullUrl": "https://madie.cms.gov/Observation/15833b72-34fd-4c43-a3fc-bfb7798943f3",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "15833b72-34fd-4c43-a3fc-bfb7798943f3",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "80976-4"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "http://myGoodHealthcare.com/fhir/Patient/3153213131"
+        },
+        "effectivePeriod": {
+          "start": "2022-07-01T08:00:00.000+00:00"
+        },
+        "valueInteger": 3
+      }
+    },
+    {
+      "fullUrl": "https://madie.cms.gov/Observation/8192ea79-c891-421a-8887-0e47e8ca02df",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "8192ea79-c891-421a-8887-0e47e8ca02df",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "80976-4"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "http://myGoodHealthcare.com/fhir/Patient/3153213131"
+        },
+        "effectivePeriod": {
+          "start": "2022-02-01T08:00:00.000+00:00"
+        },
+        "valueInteger": 6
+      }
+    },
+    {
+      "fullUrl": "https://madie.cms.gov/Condition/f581b84c-04a3-445e-9956-7ef03e10815f",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "f581b84c-04a3-445e-9956-7ef03e10815f",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active",
+              "display": "active",
+              "userSelected": true
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed",
+              "display": "Confirmed",
+              "userSelected": true
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "problem-list-item",
+                "display": "Problem List Item"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/icd-10-cm",
+              "code": "N40.1"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "http://myGoodHealthcare.com/fhir/Patient/3153213131"
+        },
+        "onsetPeriod": {
+          "start": "2022-01-01T08:00:00.000+00:00"
+        }
+      }
+    },
+    {
+      "fullUrl": "https://madie.cms.gov/Encounter/e0af7e1b-1ee0-40a4-9bf1-4cfacc252355",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "e0af7e1b-1ee0-40a4-9bf1-4cfacc252355",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "IMP",
+          "display": "inpatient encounter"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://www.ama-assn.org/go/cpt",
+                "code": "99203"
+              }
+            ]
+          }
+        ],
+        "subject": {
+          "reference": "http://myGoodHealthcare.com/fhir/Patient/3153213131"
+        },
+        "period": {
+          "start": "2022-01-01T08:00:00+00:00",
+          "end": "2022-01-01T08:15:00+00:00"
+        }
+      }
+    },
+    {
+      "fullUrl": "https://madie.cms.gov/MeasureReport/11f32a02-063e-4349-863c-fba776079109",
+      "resource": {
+        "resourceType": "MeasureReport",
+        "id": "11f32a02-063e-4349-863c-fba776079109",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/test-case-cqfm"
+          ]
+        },
+        "contained": [
+          {
+            "resourceType": "Parameters",
+            "id": "17865686-f07b-462d-bebb-8094529de9bc-parameters",
+            "parameter": [
+              {
+                "name": "subject",
+                "valueString": "1fca1565-c241-48d2-acbc-ba5edae92e7c"
+              }
+            ]
+          }
+        ],
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-inputParameters",
+            "valueReference": {
+              "reference": "#17865686-f07b-462d-bebb-8094529de9bc-parameters"
+            }
+          }
+        ],
+        "modifierExtension": [
+          {
+            "url": "http://hl7.org/fhir/us/cqfmeasures/StructureDefinition/cqfm-isTestCase",
+            "valueBoolean": true
+          }
+        ],
+        "status": "complete",
+        "type": "individual",
+        "measure": "https://madie.cms.gov/Measure/TestQi",
+        "period": {
+          "start": "1912-12-12",
+          "end": "2012-12-12"
+        },
+        "group": [
+          {
+            "population": [
+              {
+                "code": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/measure-population",
+                      "code": "initial-population",
+                      "display": "Initial Population"
+                    }
+                  ]
+                },
+                "count": 0
+              }
+            ]
+          }
+        ],
+        "evaluatedResource": [
+          {
+            "reference": "Patient/1fca1565-c241-48d2-acbc-ba5edae92e7c"
+          },
+          {
+            "reference": "Observation/15833b72-34fd-4c43-a3fc-bfb7798943f3"
+          },
+          {
+            "reference": "Observation/8192ea79-c891-421a-8887-0e47e8ca02df"
+          },
+          {
+            "reference": "Condition/f581b84c-04a3-445e-9956-7ef03e10815f"
+          },
+          {
+            "reference": "Encounter/e0af7e1b-1ee0-40a4-9bf1-4cfacc252355"
+          }
+        ]
+      }
+    }
+  ]
+}
