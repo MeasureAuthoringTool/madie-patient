@@ -116,6 +116,44 @@ const createZipFile = async (
   }
 };
 
+const createZipFileBadMadie = async (
+  patientIds: string[],
+  jsonBundle?: string[],
+  jsonFileName?: string[],
+  zipFileName = "CMS136FHIR-v0.0.000-FHIR4-TestCases"
+) => {
+  try {
+    const zip = new JSZip();
+
+    patientIds.forEach((patientId, index) => {
+      const subFolderEntry = zip.folder(patientId);
+      subFolderEntry.file(
+        jsonFileName ? jsonFileName[index] : defaultFileName,
+        jsonBundle[index]
+      );
+    });
+
+    zip.file(
+      ".madie",
+      JSON.stringify({
+        patientId: "a",
+        testCaseId: "a",
+        description: "the first test case",
+        title: "TC1",
+        series: undefined,
+      })
+    );
+
+    const zipContent = await zip.generateAsync({ type: "nodebuffer" });
+    const blob = new Blob([zipContent], { type: "application/zip" });
+    return new File([blob], "CMS136FHIR-v0.0.000-FHIR4-TestCases", {
+      type: "application/zip",
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
 const createZipFileWithNoParentFolder = async (
   patientIds: string[],
   jsonBundle?: string[],
@@ -567,20 +605,7 @@ describe("TestCaseImportDialog", () => {
     });
   });
 
-  it("Shouldn't preview as a valid file, if the parent folder is not found", async () => {
-    const expectedOutCome: TestCaseImportRequest[] = [
-      {
-        patientId: patientId1,
-        json: jsonBundle,
-        testCaseMetaData: madieFileContents[0],
-      },
-      {
-        patientId: patientId2,
-        json: jsonBundle,
-        testCaseMetaData: madieFileContents[1],
-      },
-    ];
-
+  it("Shouldn't preview as a valid file, if the madie file is not found", async () => {
     const zipFile = await createZipFileWithNoParentFolder(
       [patientId1, patientId2],
       [jsonBundle, jsonBundle]
@@ -602,6 +627,40 @@ describe("TestCaseImportDialog", () => {
     await waitFor(async () => {
       const importBtn = await screen.getByRole("button", { name: "Import" });
       expect(importBtn).not.toBeEnabled();
+      const noMadie = await screen.getByText(
+        "Zip file is in an incorrect format. If this is an export prior to June 20, 2024 please reexport your test case and try again."
+      );
+      expect(noMadie).toBeInTheDocument();
+    });
+  });
+  it("Shouldn't preview as a valid file, if there's an error", async () => {
+    const zipFile = await createZipFile(
+      [patientId1, patientId2],
+      [jsonBundle, ""],
+      [defaultFileName, "ReadMe.txt"],
+      JSON.stringify({
+        patientId: patientId1,
+        json: jsonBundle,
+        testCaseMetaData: madieFileContents[0],
+      })
+    );
+
+    mockedAxios.post.mockReset().mockResolvedValue({ data: scanResult });
+
+    render(
+      <TestCaseImportDialog
+        dialogOpen={true}
+        handleClose={handleClose}
+        onImport={onImport}
+      />
+    );
+
+    const dropZone = screen.getByTestId("file-drop-input");
+    userEvent.upload(dropZone, zipFile);
+
+    await waitFor(async () => {
+      const errorMessage = await screen.getByText("Error uploading zip file");
+      expect(errorMessage).toBeInTheDocument();
     });
   });
 });
