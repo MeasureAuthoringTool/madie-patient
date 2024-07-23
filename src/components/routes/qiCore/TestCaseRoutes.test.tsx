@@ -23,7 +23,8 @@ jest.mock("../../../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const serviceConfig: ServiceConfig = {
-  elmTranslationService: { baseUrl: "translator.url" },
+  qdmElmTranslationService: { baseUrl: "qdm/translator" },
+  fhirElmTranslationService: { baseUrl: "fhir/translator" },
   excelExportService: {
     baseUrl: "excelexport.com",
   },
@@ -667,6 +668,33 @@ describe("TestCaseRoutes", () => {
       "measure.url/measures/m1234/bundle",
       { headers: { Authorization: "Bearer test.jwt" } }
     );
+  });
+
+  it("should show error if failed to load measure bundle", async () => {
+    mockedAxios.get.mockImplementation((args) => {
+      if (args?.endsWith("/bundle")) {
+        return Promise.reject({
+          status: 500,
+          data: "failure",
+        });
+      }
+      return Promise.resolve({
+        data: [],
+      });
+    });
+    render(
+      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases"]}>
+        <ApiContextProvider value={serviceConfig}>
+          <TestCaseRoutes />
+        </ApiContextProvider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole("alert")).toHaveTextContent(
+        "An error occurred, please try again. If the error persists, please contact the help desk."
+      );
+    });
   });
 
   it("should render 404 page", async () => {

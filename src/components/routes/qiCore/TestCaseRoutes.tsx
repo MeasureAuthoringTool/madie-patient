@@ -73,7 +73,7 @@ const TestCaseRoutes = () => {
           })
           .catch((err) => {
             setContextFailure(true);
-            localErrors.push(err.message);
+            setErrors((prevState) => [...prevState, err.message]);
           });
       }
 
