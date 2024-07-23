@@ -51,6 +51,7 @@ import { ScanValidationDto } from "../../../api/models/ScanValidationDto";
 import JSZip from "jszip";
 import TestCaseLandingWrapper from "../common/TestCaseLandingWrapper";
 import TestCaseLanding from "../qiCore/TestCaseLanding";
+import dotMadieFile from "./testDataImport/dotMadie.json";
 
 const createZipFile = async (
   patientIds: string[],
@@ -60,16 +61,15 @@ const createZipFile = async (
 ) => {
   try {
     const zip = new JSZip();
-    const parentFolder = zip.folder(zipFileName);
+    zip.file(".madie", JSON.stringify(dotMadieFile));
 
     patientIds.forEach((patientId, index) => {
-      const subFolderEntry = parentFolder.folder(patientId);
+      const subFolderEntry = zip.folder(patientId);
       subFolderEntry.file(
         jsonFileName ? jsonFileName[index] : "testcaseExample.json",
         jsonBundle[index]
       );
     });
-
     const zipContent = await zip.generateAsync({ type: "nodebuffer" });
     const blob = new Blob([zipContent], { type: "application/zip" });
     return new File([blob], "CMS136FHIR-v0.0.000-FHIR4-TestCases", {
@@ -1720,7 +1720,6 @@ describe("TestCaseList component", () => {
 
     const dropZone = screen.getByTestId("file-drop-input");
     userEvent.upload(dropZone, zipFile);
-
     await waitFor(async () => {
       expect(importButton).toBeEnabled();
       userEvent.click(importButton);
