@@ -679,15 +679,7 @@ describe("TestCaseRoutes", () => {
         });
       }
       return Promise.resolve({
-        data: [
-          {
-            id: "id1",
-            title: "TC1",
-            description: "Desc1",
-            series: "IPP_Pass",
-            status: null,
-          },
-        ],
+        data: [],
       });
     });
     render(
