@@ -1,13 +1,8 @@
-import {
-  CalculationService,
-  ExecutionStatusType,
-  PopulationEpisodeResult,
-} from "./CalculationService";
+import { CalculationService, ExecutionStatusType } from "./CalculationService";
 import { officeVisitMeasure } from "./__mocks__/OfficeVisitMeasure";
 import { officeVisitValueSet } from "./__mocks__/OfficeVisitValueSet";
 import { officeVisitMeasureBundle } from "./__mocks__/OfficeVisitMeasureBundle";
 import { testCaseOfficeVisit } from "./__mocks__/TestCaseOfficeVisit";
-import { groupResults } from "./__mocks__/GroupExecutionResults";
 import {
   ContinuousVariable_Encounter_Fail,
   ContinuousVariable_Encounter_Pass,
@@ -859,7 +854,7 @@ describe("CalculationService Tests", () => {
     });
 
     it("should return Pass executionStatus if groupPopulations are null but actual result is false", () => {
-      const testCase: TestCase = {
+      const testCase = {
         id: "TC1",
         name: "TestCase1",
         title: "TestCase1",
@@ -873,7 +868,7 @@ describe("CalculationService Tests", () => {
         executionStatus: "NA",
         series: undefined,
         hapiOperationOutcome: undefined,
-      };
+      } as TestCase;
 
       const groups: Group[] = [
         {
@@ -917,7 +912,7 @@ describe("CalculationService Tests", () => {
     });
 
     it("should return Fail executionStatus if groupPopulations are empty and actual result is true", () => {
-      const testCase: TestCase = {
+      const testCase = {
         id: "TC1",
         name: "TestCase1",
         title: "TestCase1",
@@ -931,7 +926,7 @@ describe("CalculationService Tests", () => {
         executionStatus: "NA",
         series: undefined,
         hapiOperationOutcome: undefined,
-      };
+      } as TestCase;
 
       const groups: Group[] = [
         {
@@ -976,7 +971,7 @@ describe("CalculationService Tests", () => {
     });
 
     it("should return Fail executionStatus for provided measure groups when no matching groups are found and actual result is true", () => {
-      const testCase: TestCase = {
+      const testCase = {
         id: "TC1",
         name: "TestCase1",
         title: "TestCase1",
@@ -1005,7 +1000,7 @@ describe("CalculationService Tests", () => {
         executionStatus: "NA",
         series: undefined,
         hapiOperationOutcome: undefined,
-      };
+      } as TestCase;
 
       const groups: Group[] = [
         {
@@ -1076,7 +1071,7 @@ describe("CalculationService Tests", () => {
           ],
         },
       ];
-      const testCase: TestCase = {
+      const testCase = {
         id: "TC1",
         name: "TestCase1",
         title: "TestCase1",
@@ -1105,7 +1100,7 @@ describe("CalculationService Tests", () => {
         executionStatus: "NA",
         series: undefined,
         hapiOperationOutcome: undefined,
-      };
+      } as TestCase;
       const groups: Group[] = [
         {
           id: "groupID",
@@ -1155,7 +1150,7 @@ describe("CalculationService Tests", () => {
           ],
         },
       ];
-      const testCase: TestCase = {
+      const testCase = {
         id: "TC1",
         name: "TestCase1",
         title: "TestCase1",
@@ -1184,7 +1179,7 @@ describe("CalculationService Tests", () => {
         executionStatus: "NA",
         series: undefined,
         hapiOperationOutcome: undefined,
-      };
+      } as TestCase;
       const groups: Group[] = [
         {
           id: "groupID",
@@ -1250,7 +1245,7 @@ describe("CalculationService Tests", () => {
           ],
         },
       ];
-      const testCase: TestCase = {
+      const testCase = {
         id: "TC1",
         name: "TestCase1",
         title: "TestCase1",
@@ -1289,7 +1284,7 @@ describe("CalculationService Tests", () => {
         executionStatus: "NA",
         series: undefined,
         hapiOperationOutcome: undefined,
-      };
+      } as TestCase;
       const groups: Group[] = [
         {
           id: "groupID",

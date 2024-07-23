@@ -68,9 +68,7 @@ export class CalculationService {
     const calculationOutput: CalculationOutput<any> = await this.calculate(
       measureBundle,
       TestCaseBundles,
-      valueSets,
-      measure.measurementPeriodStart,
-      measure.measurementPeriodEnd
+      valueSets
     );
 
     // set onto window for any environment debug purposes
@@ -98,9 +96,7 @@ export class CalculationService {
   async calculate(
     measureBundle: Bundle,
     patientBundles: Bundle[],
-    valueSets: ValueSet[],
-    measurementPeriodStart,
-    measurementPeriodEnd
+    valueSets: ValueSet[]
   ): Promise<CalculationOutput<any>> {
     try {
       return await Calculator.calculate(
@@ -110,8 +106,6 @@ export class CalculationService {
           includeClauseResults: false,
           trustMetaProfile: true,
           buildStatementLevelHTML: true,
-          measurementPeriodStart: measurementPeriodStart,
-          measurementPeriodEnd: measurementPeriodEnd,
         },
         valueSets
       );
