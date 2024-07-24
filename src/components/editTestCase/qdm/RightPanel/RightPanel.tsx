@@ -28,10 +28,12 @@ const RightPanel = ({
     <div className="right-panel">
       <div className="tab-container">
         <RightPanelNavTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+
+        {/* Commenting out at the request of MAT-6229
         <div className="spacer" />
         <IconButton>
           <KeyboardTabIcon className="back-icon" />
-        </IconButton>
+        </IconButton> */}
       </div>
       <div className="panel-content">
         {activeTab === "highlighting" && (
