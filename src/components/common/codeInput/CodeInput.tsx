@@ -108,6 +108,9 @@ const CodeInput = ({
     handleChange(cqlCode);
   };
 
+  const getOid = (item) => item.oid;
+  const uniqueValueSetMenuOptions = _.uniqBy(valueSets, getOid);
+
   const valueSetMenuOptions = [
     <MenuItem
       key={`custom-vs${type}`}
@@ -116,7 +119,7 @@ const CodeInput = ({
     >
       Custom Code
     </MenuItem>,
-    _.sortBy(valueSets, "display_name")?.map((vs) => {
+    _.sortBy(uniqueValueSetMenuOptions, "display_name")?.map((vs) => {
       return (
         <MenuItem key={vs.oid} value={vs.oid} data-testid={`option-${vs.oid}`}>
           {vs.display_name}
