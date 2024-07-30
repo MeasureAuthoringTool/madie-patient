@@ -142,7 +142,6 @@ const TestCaseRoutes = () => {
       const vs = await terminologyService.current.getQdmValueSetsExpansion(
         convertedMeasure,
         measure.testCaseConfiguration?.manifestExpansion,
-        featureFlags.manifestExpansion,
         getValueSetAbortController.current.signal
       );
       const newCqmMeasure = {
@@ -204,18 +203,14 @@ const TestCaseRoutes = () => {
       )}
       <Routes>
         <Route path="/measures/:measureId/edit/test-cases/list-page">
-          {featureFlags?.includeSDEValues && (
-            <Route
-              path="/measures/:measureId/edit/test-cases/list-page/sde"
-              element={<TestCaseLandingWrapper qdm children={<SDEPage />} />}
-            />
-          )}
-          {featureFlags?.manifestExpansion && (
-            <Route
-              path="/measures/:measureId/edit/test-cases/list-page/expansion"
-              element={<TestCaseLandingWrapper qdm children={<Expansion />} />}
-            />
-          )}
+          <Route
+            path="/measures/:measureId/edit/test-cases/list-page/sde"
+            element={<TestCaseLandingWrapper qdm children={<SDEPage />} />}
+          />
+          <Route
+            path="/measures/:measureId/edit/test-cases/list-page/expansion"
+            element={<TestCaseLandingWrapper qdm children={<Expansion />} />}
+          />
           {featureFlags?.ShiftTestCasesDates && (
             <Route
               path="/measures/:measureId/edit/test-cases/list-page/test-case-data"
