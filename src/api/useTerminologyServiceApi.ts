@@ -71,7 +71,6 @@ export class TerminologyServiceApi {
   async getQdmValueSetsExpansion(
     cqmMeasure: CqmMeasure,
     manifestExpansion: ManifestExpansion,
-    manifestExpansionFeatureFlag: boolean,
     signal: AbortSignal
   ): Promise<QdmValueSet[]> {
     if (!cqmMeasure) {
