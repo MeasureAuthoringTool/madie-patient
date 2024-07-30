@@ -11,7 +11,6 @@ declare module "@madie/madie-util" {
   }
 
   interface FeatureFlags {
-    manifestExpansion: boolean;
     qiCoreBonnieTestCases: boolean;
     qiCoreElementsTab: boolean;
     qdmHideJson: boolean;
