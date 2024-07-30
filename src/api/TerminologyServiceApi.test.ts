@@ -120,7 +120,7 @@ describe("TerminologyServiceApi Tests", () => {
       .getQdmValueSetsExpansion(cqm_measure_basic, testManifestExpansion, false)
       .then((data: ValueSet[]) => {
         expect(axios.put).toBeCalledWith(
-          "test.url/vsac/qdm/value-sets/searches",
+          "test.url/terminology/value-sets/expansion/qdm",
           {
             includeDraft: "yes",
             manifestExpansion: {
