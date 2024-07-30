@@ -107,7 +107,7 @@ describe("TerminologyServiceApi Tests", () => {
           { oid: "2.16.840.1.113883.3.464.1003.103.12.1001" },
         ],
       },
-      { headers: { Authorization: "Bearer undefined" } }
+      { headers: { Authorization: "Bearer undefined" }, signal: true }
     );
   });
 
@@ -134,7 +134,7 @@ describe("TerminologyServiceApi Tests", () => {
               { oid: "2.16.840.1.113883.3.464.1003.103.12.1001" },
             ],
           },
-          { headers: { Authorization: "Bearer undefined" } }
+          { headers: { Authorization: "Bearer undefined" }, signal: false }
         );
         expect(data.length).toEqual(2);
         expect(data[0].display_name).toEqual("Encounter Inpatient");
