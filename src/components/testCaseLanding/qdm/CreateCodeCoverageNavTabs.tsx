@@ -236,45 +236,42 @@ export default function CreateCodeCoverageNavTabs(props: NavTabProps) {
 
           {/* disabled elements do not fire events. we wrap a listener around it to bypass */}
 
-          {/* render focus trap only when needed */}
-          {featureFlags?.testCaseExport && (
-            <div
-              {...focusTrapAttributes}
-              id="export-button-focus-trap"
-              data-testid="export-button-focus-trap"
+          <div
+            {...focusTrapAttributes}
+            id="export-button-focus-trap"
+            data-testid="export-button-focus-trap"
+          >
+            <Button
+              onClick={(e) => {
+                handleOpen(e);
+              }}
+              disabled={!executeAllTestCases || exportExecuting}
+              id="show-export-test-cases-button"
+              aria-describedby="show-export-test-cases-button-tooltip"
+              data-testid="show-export-test-cases-button"
+              tabIndex={0}
             >
-              <Button
-                onClick={(e) => {
-                  handleOpen(e);
-                }}
-                disabled={!executeAllTestCases || exportExecuting}
-                id="show-export-test-cases-button"
-                aria-describedby="show-export-test-cases-button-tooltip"
-                data-testid="show-export-test-cases-button"
-                tabIndex={0}
+              Export Test Cases
+              <div
+                role="tooltip"
+                id="show-export-test-cases-button-tooltip"
+                data-testid="show-export-test-case-button-tooltip"
+                aria-live="polite"
+                className={toolTipClass}
               >
-                Export Test Cases
-                <div
-                  role="tooltip"
-                  id="show-export-test-cases-button-tooltip"
-                  data-testid="show-export-test-case-button-tooltip"
-                  aria-live="polite"
-                  className={toolTipClass}
-                >
-                  <p>{exportMessage}</p>
-                </div>
-                <ExpandMoreIcon
-                  style={{ margin: "0 5px 0 5px" }}
-                  fontSize="small"
-                />
-                {exportExecuting ? (
-                  <MadieSpinner style={{ height: 10, width: 10 }} />
-                ) : (
-                  ""
-                )}
-              </Button>
-            </div>
-          )}
+                <p>{exportMessage}</p>
+              </div>
+              <ExpandMoreIcon
+                style={{ margin: "0 5px 0 5px" }}
+                fontSize="small"
+              />
+              {exportExecuting ? (
+                <MadieSpinner style={{ height: 10, width: 10 }} />
+              ) : (
+                ""
+              )}
+            </Button>
+          </div>
           <Popover
             optionsOpen={optionsOpen}
             anchorEl={anchorEl}

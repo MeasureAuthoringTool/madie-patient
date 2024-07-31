@@ -22,13 +22,10 @@ const groups: Group[] = [
 ];
 jest.mock("@madie/madie-util", () => ({
   useFeatureFlags: jest.fn(() => {
-    return {
-      includeSDEValues: true,
-    };
+    return {};
   }),
 }));
 describe("TestCase component", () => {
-  useFeatureFlags.mockReturnValue({ includeSDEValues: true });
   afterEach(() => {
     jest.clearAllMocks();
   });

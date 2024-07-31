@@ -95,7 +95,7 @@ const TestCaseListSideBarNav = ({
           </Tabs>
         )}
 
-        {qdm && featureFlags?.includeSDEValues && (
+        {qdm && (
           <>
             <div className="nav-collapse-container">
               <button
@@ -130,16 +130,14 @@ const TestCaseListSideBarNav = ({
                   orientation="vertical"
                   onChange={handleChange}
                 />
-                {featureFlags?.manifestExpansion && (
-                  <Tab
-                    label="Expansion"
-                    value="expansion"
-                    data-testid="nav-link-expansion"
-                    type="C"
-                    orientation="vertical"
-                    onChange={handleChange}
-                  />
-                )}
+                <Tab
+                  label="Expansion"
+                  value="expansion"
+                  data-testid="nav-link-expansion"
+                  type="C"
+                  orientation="vertical"
+                  onChange={handleChange}
+                />
                 {featureFlags?.ShiftTestCasesDates && (
                   <Tab
                     label="Test Case Data"
