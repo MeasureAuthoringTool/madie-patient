@@ -55,6 +55,7 @@ const DateTimeInput = ({
   const handleDateTimeChange = (newValue) => {
     for (const prop in newValue) {
       if (Number.isNaN(newValue[prop])) {
+        onDateTimeChange(null, attributeName);
         return;
       }
     }
