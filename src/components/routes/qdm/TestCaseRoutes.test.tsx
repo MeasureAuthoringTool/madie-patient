@@ -83,8 +83,6 @@ jest.mock("@madie/madie-util", () => ({
   },
   useFeatureFlags: jest.fn().mockImplementation(() => ({
     applyDefaults: false,
-    includeSDEValues: true,
-    manifestExpansion: true,
     ShiftTestCasesDates: true,
   })),
   useOktaTokens: () => ({
