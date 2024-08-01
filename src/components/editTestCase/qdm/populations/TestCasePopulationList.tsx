@@ -214,7 +214,11 @@ const TestCasePopulationList = ({
               errors={view === "fail"}
             />
           )}
-          <span data-testid={contentId} className={captionClass}>
+          <span
+            data-testid={contentId}
+            className={captionClass}
+            style={{ color: "black" }}
+          >
             {content}
           </span>
           <span
