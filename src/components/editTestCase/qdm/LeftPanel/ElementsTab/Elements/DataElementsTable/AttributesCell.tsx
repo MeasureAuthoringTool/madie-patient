@@ -17,7 +17,7 @@ const generateAttributeCell = (a: DisplayAttributes) => {
       <div tw="flex flex-col text-xs">
         <span tw="whitespace-nowrap">
           <b>{a?.title}</b> -{" "}
-          {a?.title.toLowerCase() == a?.name.toLowerCase() ? "" : a?.name}{" "}
+          {a?.title.toLowerCase() === a?.name.toLowerCase() ? "" : a?.name}{" "}
         </span>
         <span>{a?.value}</span>
       </div>
