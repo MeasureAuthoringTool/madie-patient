@@ -155,7 +155,7 @@ const TestCasePopulationList = ({
   // If the PC is not stratified, then we determine the PC results only based on its populations.
   const [view, setView] = useState<string>();
   useEffect(() => {
-    let localView = "pass";
+    let localView = view;
     if (stratification) {
       localView = determineGroupResultStratification(
         populationBasis,
@@ -164,7 +164,7 @@ const TestCasePopulationList = ({
         isTestCaseExecuted
       );
     }
-    if (populationResults?.length > 0 && localView === "pass") {
+    if (populationResults?.length > 0) {
       setView(
         determineGroupResult(
           populationBasis,
