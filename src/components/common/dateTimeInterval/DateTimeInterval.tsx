@@ -23,19 +23,35 @@ const DateTimeInterval = ({
   displayAttributeName,
 }: DateTimeIntervalProps) => {
   const handleStartDateTimeChange = (newValue) => {
-    onDateTimeIntervalChange(
-      {
-        ...dateTimeInterval,
-        low: newValue,
-      },
-      attributeName
-    );
+    if (newValue === null || newValue === undefined) {
+      if (dateTimeInterval.high) {
+        onDateTimeIntervalChange({ ...dateTimeInterval }, attributeName);
+      } else {
+        onDateTimeIntervalChange(null, attributeName);
+      }
+    } else {
+      onDateTimeIntervalChange(
+        {
+          ...dateTimeInterval,
+          low: newValue,
+        },
+        attributeName
+      );
+    }
   };
   const handleEndDateTimeChange = (newValue) => {
-    onDateTimeIntervalChange(
-      { ...dateTimeInterval, high: newValue },
-      attributeName
-    );
+    if (newValue === null || newValue === undefined) {
+      if (dateTimeInterval.low) {
+        onDateTimeIntervalChange({ ...dateTimeInterval }, attributeName);
+      } else {
+        onDateTimeIntervalChange(null, attributeName);
+      }
+    } else {
+      onDateTimeIntervalChange(
+        { ...dateTimeInterval, high: newValue },
+        attributeName
+      );
+    }
   };
   return (
     <div>
