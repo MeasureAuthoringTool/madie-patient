@@ -147,16 +147,14 @@ const CreateNewTestCaseDialog = ({
   };
 
   const createTestCase = async (testCase: TestCase) => {
-    if (measure?.model === Model.QDM_5_6) {
-      const errorMsg = checkSpecialCharacters(testCase);
-      if (errorMsg) {
-        setToast({
-          toastOpen: true,
-          toastType: "danger",
-          toastMessage: errorMsg,
-        });
-        return;
-      }
+    const errorMsg = checkSpecialCharacters(testCase);
+    if (errorMsg) {
+      setToast({
+        toastOpen: true,
+        toastType: "danger",
+        toastMessage: errorMsg,
+      });
+      return;
     }
     try {
       const savedTestCase = await testCaseService.current.createTestCase(
