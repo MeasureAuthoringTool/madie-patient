@@ -6,7 +6,7 @@ export const testCaseFixture: TestCase = {
   executionStatus: "false",
   name: "Initial Population",
   title: "Encounter",
-  series: "DENOM_Pass",
+  series: "DENOMPass",
   description: "Encounter start within MP.",
   createdAt: "2022-03-24T17:40:15.921Z",
   createdBy: "joseph.kotanchik@semanticbits.com",
