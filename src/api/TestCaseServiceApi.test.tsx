@@ -325,7 +325,7 @@ describe("TestCaseServiceApi Tests", () => {
       json: "date1",
     } as TestCase;
 
-    const result = await testCaseService.shiftTestCaseDates(
+    const result = await testCaseService.shiftQdmTestCaseDates(
       testCase,
       "testMeasureId",
       1
@@ -349,7 +349,7 @@ describe("TestCaseServiceApi Tests", () => {
     } as TestCase;
 
     try {
-      const result = await testCaseService.shiftTestCaseDates(
+      const result = await testCaseService.shiftQdmTestCaseDates(
         testCase,
         "testMeasureId",
         1
@@ -370,7 +370,7 @@ describe("TestCaseServiceApi Tests", () => {
     } as TestCase;
 
     try {
-      const result = await testCaseService.shiftTestCaseDates(
+      const result = await testCaseService.shiftQdmTestCaseDates(
         testCase,
         "testMeasureId",
         1
@@ -399,7 +399,7 @@ describe("TestCaseServiceApi Tests", () => {
       },
     ] as TestCase[];
 
-    const result = await testCaseService.shiftAllTestCaseDates(
+    const result = await testCaseService.shiftAllQdmTestCaseDates(
       "testMeasureId",
       1
     );
@@ -418,7 +418,7 @@ describe("TestCaseServiceApi Tests", () => {
     ] as TestCase[];
 
     try {
-      const result = await testCaseService.shiftAllTestCaseDates(
+      const result = await testCaseService.shiftAllQdmTestCaseDates(
         "testMeasureId",
         1
       );
@@ -442,7 +442,7 @@ describe("TestCaseServiceApi Tests", () => {
     ] as TestCase[];
 
     try {
-      const result = await testCaseService.shiftAllTestCaseDates(
+      const result = await testCaseService.shiftAllQdmTestCaseDates(
         "testMeasureId",
         1
       );

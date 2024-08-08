@@ -3353,7 +3353,7 @@ describe("TestCaseList component", () => {
     useTestCaseServiceMock.mockImplementationOnce(() => {
       return {
         getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
-        shiftTestCaseDates: shiftTestCaseDatesApiMock,
+        shiftQdmTestCaseDates: shiftTestCaseDatesApiMock,
       } as unknown as TestCaseServiceApi;
     });
     const { getByTestId } = renderTestCaseListComponent();
@@ -3403,7 +3403,7 @@ describe("TestCaseList component", () => {
     useTestCaseServiceMock.mockImplementationOnce(() => {
       return {
         getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
-        shiftTestCaseDates: shiftTestCaseDatesApiMock,
+        shiftQdmTestCaseDates: shiftTestCaseDatesApiMock,
       } as unknown as TestCaseServiceApi;
     });
     const { getByTestId } = renderTestCaseListComponent();

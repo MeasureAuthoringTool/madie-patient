@@ -3,7 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import TestCaseLanding from "../../testCaseLanding/qiCore/TestCaseLanding";
 import EditTestCase from "../../editTestCase/qiCore/EditTestCase";
 import NotFound from "../../notfound/NotFound";
-import { measureStore } from "@madie/madie-util";
+import { measureStore, useFeatureFlags } from "@madie/madie-util";
 import { Bundle, ValueSet } from "fhir/r4";
 import useTerminologyServiceApi from "../../../api/useTerminologyServiceApi";
 import { ExecutionContextProvider } from "./ExecutionContext";
@@ -17,11 +17,13 @@ import {
   MeasureErrorType,
   TestCaseImportOutcome,
 } from "@madie/madie-models";
+import TestCaseData from "../../testCaseConfiguration/testCaseData/TestCaseData";
 
 export const CQL_RETURN_TYPES_MISMATCH_ERROR =
   "One or more Population Criteria has a mismatch with CQL return types. Test Cases cannot be executed until this is resolved.";
 
 const TestCaseRoutes = () => {
+  const featureFlags = useFeatureFlags();
   const [measureBundle, setMeasureBundle] = useState<Bundle>();
   const [valueSets, setValueSets] = useState<ValueSet[]>();
   const [errors, setErrors] = useState<Array<string>>([]);
@@ -163,6 +165,17 @@ const TestCaseRoutes = () => {
               />
             }
           />
+          {featureFlags?.ShiftTestCasesDates && (
+            <Route
+              path="/measures/:measureId/edit/test-cases/list-page/test-case-data"
+              element={
+                <TestCaseLandingWrapper
+                  qdm={false}
+                  children={<TestCaseData />}
+                />
+              }
+            />
+          )}
         </Route>
 
         <Route

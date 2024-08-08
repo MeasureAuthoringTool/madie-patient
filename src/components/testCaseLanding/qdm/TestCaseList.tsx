@@ -645,7 +645,7 @@ const TestCaseList = (props: TestCaseListProps) => {
 
   const onTestCaseShiftDates = (testCase: TestCase, shifted: number) => {
     testCaseService.current
-      .shiftTestCaseDates(testCase, measureId, shifted)
+      .shiftQdmTestCaseDates(testCase, measureId, shifted)
       .then(() => {
         setToastOpen(true);
         setToastType("success");

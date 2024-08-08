@@ -59,4 +59,9 @@
       float: right;
     }
   }
+
+  #message > .test-case-list-container > ul {
+    list-style: inside;
+    margin-left: 1rem;
+  }
 }
