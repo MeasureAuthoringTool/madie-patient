@@ -24,6 +24,8 @@ const TestCaseListSideBarNav = ({
   qdm,
 }: TestCaseListSideBarNavProps) => {
   const featureFlags = useFeatureFlags();
+  const showConfigurationSection =
+    (!qdm && featureFlags?.ShiftTestCasesDates) || qdm;
   let navigate = useNavigate();
   const { measureId, criteriaId } = useParams<{
     measureId: string;
@@ -95,7 +97,7 @@ const TestCaseListSideBarNav = ({
           </Tabs>
         )}
 
-        {qdm && (
+        {showConfigurationSection && (
           <>
             <div className="nav-collapse-container">
               <button
@@ -122,22 +124,26 @@ const TestCaseListSideBarNav = ({
                 onChange={handleChange}
                 value={endRoute}
               >
-                <Tab
-                  label="SDE"
-                  value="sde"
-                  data-testid="nav-link-sde"
-                  type="C"
-                  orientation="vertical"
-                  onChange={handleChange}
-                />
-                <Tab
-                  label="Expansion"
-                  value="expansion"
-                  data-testid="nav-link-expansion"
-                  type="C"
-                  orientation="vertical"
-                  onChange={handleChange}
-                />
+                {qdm && (
+                  <Tab
+                    label="SDE"
+                    value="sde"
+                    data-testid="nav-link-sde"
+                    type="C"
+                    orientation="vertical"
+                    onChange={handleChange}
+                  />
+                )}
+                {qdm && (
+                  <Tab
+                    label="Expansion"
+                    value="expansion"
+                    data-testid="nav-link-expansion"
+                    type="C"
+                    orientation="vertical"
+                    onChange={handleChange}
+                  />
+                )}
                 {featureFlags?.ShiftTestCasesDates && (
                   <Tab
                     label="Test Case Data"

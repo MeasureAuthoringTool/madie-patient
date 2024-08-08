@@ -331,7 +331,7 @@ export class TestCaseServiceApi {
     return response.data;
   }
 
-  async shiftTestCaseDates(
+  async shiftQdmTestCaseDates(
     testCase: TestCase,
     measureId: string,
     shifted: number
@@ -357,7 +357,7 @@ export class TestCaseServiceApi {
     }
   }
 
-  async shiftAllTestCaseDates(measureId: string, shifted: number) {
+  async shiftAllQdmTestCaseDates(measureId: string, shifted: number) {
     const response = await axios.get(
       `${this.baseUrl}/measures/${measureId}/test-cases/qdm/shiftAllDates`,
       {
@@ -371,6 +371,53 @@ export class TestCaseServiceApi {
       throw new Error(`Unable to shift test case dates`);
     }
     return response.data;
+  }
+
+  async shiftQiCoreTestCaseDates(
+    measureId: string,
+    testCaseId: string,
+    shifted: number
+  ) {
+    try {
+      await axios.put(
+        `${this.baseUrl}/measures/${measureId}/test-cases/${testCaseId}/shift-dates`,
+        null,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
+          params: { shifted: shifted },
+        }
+      );
+    } catch (err) {
+      const message = `Unable to shift test case dates`;
+      throw new Error(message);
+    }
+  }
+
+  async shiftAllQiCoreTestCaseDates(
+    measureId: string,
+    shifted: number
+  ): Promise<string[]> {
+    try {
+      const response = await axios.put(
+        `${this.baseUrl}/measures/${measureId}/test-cases/shift-dates`,
+        null,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
+          params: { shifted: shifted },
+        }
+      );
+      if (!response || !response.data) {
+        throw new Error(`Unable to shift test case dates`);
+      }
+      return response.data;
+    } catch (err) {
+      const message = `Unable to shift test case dates`;
+      throw new Error(message);
+    }
   }
 }
 

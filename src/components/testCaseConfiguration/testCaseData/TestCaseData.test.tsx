@@ -26,6 +26,7 @@ const measure = {
   measureName: "the measure for testing",
   cqlLibraryName: "TestCqlLibraryName",
   ecqmTitle: "ecqmTitle",
+  model: "QDM v5.6",
   measurementPeriodStart: "01/01/2022",
   measurementPeriodEnd: "12/02/2022",
   createdBy: "john doe",
@@ -253,7 +254,7 @@ describe("TestCaseData", () => {
       .mockResolvedValueOnce({ data: responseDto });
     useTestCaseServiceMock.mockImplementationOnce(() => {
       return {
-        shiftAllTestCaseDates: shiftAllTestCaseDatesApiMock,
+        shiftAllQdmTestCaseDates: shiftAllTestCaseDatesApiMock,
       } as unknown as TestCaseServiceApi;
     });
 
@@ -296,7 +297,7 @@ describe("TestCaseData", () => {
       .mockRejectedValueOnce({ error: "something went wrong" });
     useTestCaseServiceMock.mockImplementationOnce(() => {
       return {
-        shiftAllTestCaseDates: shiftAllTestCaseDatesApiMock,
+        shiftAllQdmTestCaseDates: shiftAllTestCaseDatesApiMock,
       } as unknown as TestCaseServiceApi;
     });
 
