@@ -22,6 +22,7 @@ import TestCaseTablePopover from "./TestCaseTablePopover";
 import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import ShiftDatesDialog from "../shiftDates/ShiftDatesDialog";
 
 interface TestCaseTableProps {
   testCases: TestCase[];
@@ -321,6 +322,13 @@ const TestCaseTable = (props: TestCaseTableProps) => {
         }}
         dialogTitle={`Delete Test Case`}
         name={selectedTestCase?.title}
+      />
+      <ShiftDatesDialog
+        open={shiftDatesDialogOpen}
+        onClose={handleClose}
+        canEdit={canEdit}
+        testCase={selectedTestCase}
+        onTestCaseShiftDates={onTestCaseShiftDates}
       />
     </table>
   );
