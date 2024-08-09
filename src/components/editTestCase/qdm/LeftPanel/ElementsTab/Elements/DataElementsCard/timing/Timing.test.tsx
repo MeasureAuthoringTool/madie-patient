@@ -1,5 +1,5 @@
 import * as React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Timing from "./Timing";
 import {
@@ -229,5 +229,45 @@ describe("Timing", () => {
     //change Result Date/Time
     fireEvent.change(inputs[4], { target: { value: "08/03/2023 08:00 AM" } });
     expect(inputs[4].value).toBe("08/03/2023 08:00 AM");
+  });
+
+  it("should remove attribtute when changed to null", async () => {
+    const symptomDataElement: Symptom = new Symptom();
+
+    render(
+      <Timing
+        onChange={updateDataElement}
+        selectedDataElement={symptomDataElement}
+        canEdit={true}
+      />
+    );
+
+    expect(screen.getByTestId("prevalence-period-start")).toBeInTheDocument();
+    expect(screen.getByTestId("prevalence-period-end")).toBeInTheDocument();
+    expect(screen.getByText("Prevalence Period - Start")).toBeInTheDocument();
+    expect(screen.getByText("Prevalence Period - End")).toBeInTheDocument();
+
+    const inputs = screen.getAllByPlaceholderText(
+      "MM/DD/YYYY hh:mm aa"
+    ) as HTMLInputElement[];
+    expect(inputs.length).toBe(2);
+
+    //change Prevalence Period - Start
+    fireEvent.change(inputs[0], { target: { value: "08/02/2023 07:49 AM" } });
+    expect(inputs[0].value).toBe("08/02/2023 07:49 AM");
+
+    //change Prevalence Period - End
+    fireEvent.change(inputs[1], { target: { value: "08/03/2023 07:58 AM" } });
+    expect(inputs[1].value).toBe("08/03/2023 07:58 AM");
+
+    fireEvent.change(inputs[0], { target: { value: null } });
+    await waitFor(() => {
+      expect(inputs[0].value).toBe("");
+    });
+
+    fireEvent.change(inputs[1], { target: { value: null } });
+    await waitFor(() => {
+      expect(inputs[1].value).toBe("");
+    });
   });
 });
