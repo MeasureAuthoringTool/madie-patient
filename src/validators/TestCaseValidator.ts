@@ -4,6 +4,7 @@ import { PopulationType } from "@madie/madie-models";
 export const TestCaseValidator = Yup.object().shape({
   title: Yup.string()
     .required("Test Case Title is required.")
+    .matches(/[a-zA-Z]/, "Test Case Title is required.")
     .max(250, "Test Case Title cannot be more than 250 characters."),
   description: Yup.string()
     .max(250, "Test Case Description cannot be more than 250 characters.")
