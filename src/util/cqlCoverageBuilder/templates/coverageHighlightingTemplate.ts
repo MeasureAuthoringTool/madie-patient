@@ -35,6 +35,7 @@ export const clauseNotCoveredStyleFail = {
   color: "#AE1C1C",
   "border-bottom-color": "#AE1C1C",
   "border-bottom-style": "double",
+  "background-color": "#edd8d0",
 };
 
 export const clauseNotApplicableStyle = {
