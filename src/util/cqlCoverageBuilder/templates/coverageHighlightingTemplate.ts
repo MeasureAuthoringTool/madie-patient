@@ -46,6 +46,7 @@ export const clauseNotApplicableStyle = {
 // blue with dashed underline
 export const clauseHighlightedStyle = {
   color: "#036CB4",
+  "background-color": "#daeaf5",
   "text-decoration": "underline",
   "text-decoration-style": "dashed",
   "text-decoration-color": "#036CB4",

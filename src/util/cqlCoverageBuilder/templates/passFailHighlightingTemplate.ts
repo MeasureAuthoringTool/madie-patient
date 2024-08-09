@@ -34,6 +34,7 @@ export const clauseCoveredStylePass = {
   color: "#4D7E23",
   "border-bottom-color": "#4D7E23",
   "border-bottom-width": "3px",
+  "background-color": "#ccebe0",
 };
 
 // clause covered fail (red with double underline)
