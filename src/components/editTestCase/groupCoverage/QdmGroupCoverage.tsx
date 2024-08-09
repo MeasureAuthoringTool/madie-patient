@@ -12,7 +12,7 @@ import {
 import "twin.macro";
 import "styled-components/macro";
 import parse from "html-react-parser";
-import { Group, GroupPopulation } from "@madie/madie-models";
+import { Group, GroupPopulation, SupplementalData } from "@madie/madie-models";
 import {
   GroupCoverageResult,
   StatementCoverageResult,
@@ -27,6 +27,7 @@ interface Props {
   groupCoverageResult: GroupCoverageResult;
   cqlDefinitionCallstack;
   includeSDE: boolean;
+  supplementalData: SupplementalData[];
 }
 
 const allDefinitions = [
@@ -43,20 +44,13 @@ const getCriteriaLabel = (index, numberOfGroups) => {
     : populationCriteriaLabel;
 };
 
-const sdeFilter = (statementResult) => {
-  return (
-    statementResult.type === undefined &&
-    statementResult.relevance !== "NA" &&
-    statementResult.name.includes("SDE")
-  );
-};
-
 const QdmGroupCoverage = ({
   testCaseGroups,
   measureGroups,
   groupCoverageResult,
   cqlDefinitionCallstack,
   includeSDE,
+  supplementalData,
 }: Props) => {
   const [selectedTab, setSelectedTab] = useState<Population>(
     getFirstPopulation(testCaseGroups[0])
@@ -146,7 +140,11 @@ const QdmGroupCoverage = ({
       if (statementResults) {
         result = statementResults
           .sort((a, b) => a.name.localeCompare(b.name))
-          .filter((statementResult) => sdeFilter(statementResult));
+          .filter((statementResult) =>
+            supplementalData.some(
+              (sde) => sde?.definition === statementResult?.name
+            )
+          );
       }
       setSelectedDefinitionResults(result);
     }
@@ -185,7 +183,7 @@ const QdmGroupCoverage = ({
   };
 
   // coverage html and results
-  const getCoverageResult = (coverageResult: StatementCoverageResult) => {
+  const getCoverageResult = (coverageResult: StatementCoverageResult, i) => {
     if (isNil(coverageResult)) {
       return "No results available";
     }
@@ -195,7 +193,7 @@ const QdmGroupCoverage = ({
       <GroupCoverageResultsSection results={coverageResult.result} />,
       isPopulation(selectedTab.name) && cqlDefinitionCallstack && (
         <DefinitionsUsedSection
-          result={selectedDefinitionResults[0]}
+          result={selectedDefinitionResults[i]}
           cqlDefinitionCallstack={cqlDefinitionCallstack}
           groupCoverageResult={groupCoverageResult[selectedCriteria]}
         />
@@ -286,8 +284,8 @@ const QdmGroupCoverage = ({
           data-testid={"cql-highlighting"}
         >
           {selectedDefinitionResults &&
-            selectedDefinitionResults.map((definitionResults) =>
-              getCoverageResult(definitionResults)
+            selectedDefinitionResults.map((definitionResults, i) =>
+              getCoverageResult(definitionResults, i)
             )}
         </div>
       </div>
