@@ -13,7 +13,11 @@ import { labelStyle } from "./TimingStyles";
 
 const Timing = ({ canEdit, onChange, selectedDataElement }) => {
   const handleChange = (newValue, attributeName) => {
-    selectedDataElement.set(attributeName, newValue);
+    if (newValue === null || newValue === undefined) {
+      selectedDataElement.set(attributeName, undefined);
+    } else {
+      selectedDataElement.set(attributeName, newValue);
+    }
     onChange(selectedDataElement);
   };
 
