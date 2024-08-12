@@ -128,6 +128,19 @@ const measureGroups = [
   },
 ];
 
+const supplementalData = [
+  {
+    definition: "SDE Numerator",
+    description: "",
+    includeInReportType: null,
+  },
+  {
+    definition: "Qualifying Encounters",
+    description: "",
+    includeInReportType: null,
+  },
+];
+
 const getTab = (name) => screen.findByRole("tab", { name: name });
 const getCriteriaOptions = () => {
   const criteriaSelector = screen.getByTestId("population-criterion-selector");
@@ -166,6 +179,7 @@ const renderCoverageComponent = (
       calculationErrors={calculationErrors}
       measureCql={measureCql}
       includeSDE={true}
+      supplementalData={supplementalData}
     />
   );
 };
@@ -185,6 +199,7 @@ describe("CalculationResults with tabbed highlighting layout off", () => {
         calculationErrors={null}
         measureCql={measureCql}
         includeSDE={false}
+        supplementalData={supplementalData}
       />
     );
     expect(
@@ -209,6 +224,7 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
         calculationErrors={null}
         measureCql={measureCql}
         includeSDE={false}
+        supplementalData={supplementalData}
       />
     );
     expect(
@@ -320,6 +336,7 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
         calculationErrors={calculationErrors}
         measureCql={measureCql}
         includeSDE={true}
+        supplementalData={supplementalData}
       />
     );
     await assertPopulationTabs();
@@ -366,7 +383,7 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     // Check for SDE result value
     const result2 = await screen.findByTestId("results-section");
     expect(result2).toHaveTextContent(
-      "[PatientCharacteristicEthnicity CODE: CDCREC 2135-2]"
+      "[Encounter, Performed: Encounter Inpatient START: 01/09/2020 12:00 AM STOP: 01/10/2020 12:00 AM CODE: SNOMEDCT 183452005]"
     );
 
     const expandLess = await screen.findByTestId("ExpandLessIcon");
