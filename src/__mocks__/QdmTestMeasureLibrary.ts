@@ -2796,5 +2796,5 @@ export const ipHighlighting = `<pre style="tab-size: 2;"
   data-library-name="QDMTestMeasure" data-statement-name="Initial Population">
 <code>
 <span data-ref-id="18" style="color:#4D7E23;border-bottom-color:#4D7E23;border-bottom-width:3px;background-color:#ccebe0"><span>define &quot;Initial Population&quot;:
-</span><span data-ref-id="17" style="color:#4D7E23;border-bottom-color:#4D7E23;border-bottom-width:3px;background-color:#ccebe0"><span>&quot;Qualifying Encounters&quot;</span></span></span></code>
+  </span><span data-ref-id="17" style="color:#4D7E23;border-bottom-color:#4D7E23;border-bottom-width:3px;background-color:#ccebe0"><span>&quot;Qualifying Encounters&quot;</span></span></span></code>
 </pre>`;
