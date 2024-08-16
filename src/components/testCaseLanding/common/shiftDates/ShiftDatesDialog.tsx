@@ -42,7 +42,7 @@ const ShiftDatesDialog = ({
   return (
     <MadieDialog
       form
-      title="Auto Increment Test Dates"
+      title="Shift Test Case dates"
       dialogProps={{
         onClose,
         open,

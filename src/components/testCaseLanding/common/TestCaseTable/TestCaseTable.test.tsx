@@ -132,7 +132,7 @@ describe("TestCase component", () => {
     expect(screen.getByText("export transaction bundle")).toBeInTheDocument();
     expect(screen.getByText("export collection bundle")).toBeInTheDocument();
     expect(screen.getByText("delete")).toBeInTheDocument();
-    expect(screen.getByText("Increment Dates")).toBeInTheDocument();
+    expect(screen.getByText("Shift Test Case dates")).toBeInTheDocument();
 
     const deleteButton = screen.getByText("delete");
     fireEvent.click(deleteButton);
@@ -258,10 +258,10 @@ describe("TestCase component", () => {
     expect(screen.getByText("export transaction bundle")).toBeInTheDocument();
     expect(screen.getByText("export collection bundle")).toBeInTheDocument();
     expect(screen.getByText("delete")).toBeInTheDocument();
-    const incrementDatesBtn = screen.getByText("Increment Dates");
-    expect(incrementDatesBtn).toBeInTheDocument();
+    const shiftDatesBtn = screen.getByText("Shift Test Case dates");
+    expect(shiftDatesBtn).toBeInTheDocument();
 
-    userEvent.click(incrementDatesBtn);
+    userEvent.click(shiftDatesBtn);
 
     const shiftDatesDiaglog = screen.getByTestId("shift-dates-dialog");
     expect(shiftDatesDiaglog).toBeInTheDocument();
@@ -279,7 +279,7 @@ describe("TestCase component", () => {
     expect(currentTCTitle.value).toBe("TEST IPP");
   });
 
-  it("should not display Increment Dates button", async () => {
+  it("should not display Shift Test Case dates button", async () => {
     const deleteTestCase = jest.fn();
     const exportTestCase = jest.fn();
     const onCloneTestCase = jest.fn();
@@ -298,8 +298,8 @@ describe("TestCase component", () => {
     expect(buttons[5]).toHaveTextContent("Select");
     fireEvent.click(buttons[5]);
     expect(screen.getByText("view")).toBeInTheDocument();
-    const incrementDatesBtn = screen.queryByText("Increment Dates");
-    expect(incrementDatesBtn).not.toBeInTheDocument();
+    const shiftDatesBtn = screen.queryByText("Shift Test Case dates");
+    expect(shiftDatesBtn).not.toBeInTheDocument();
   });
 
   it("export collection bundle called", async () => {
