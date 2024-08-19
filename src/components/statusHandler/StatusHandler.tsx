@@ -1,5 +1,6 @@
 import React from "react";
 import { MadieAlert } from "@madie/madie-design-system/dist/react";
+
 import "./StatusHandler.scss";
 import { TestCaseImportOutcome } from "@madie/madie-models";
 import "twin.macro";
@@ -49,6 +50,7 @@ const StatusHandler = ({
       return (
         <div id="status-handler">
           <MadieAlert
+            copyButton="true"
             data-testid="generic-error-text-header"
             type="error"
             content={
@@ -68,6 +70,7 @@ const StatusHandler = ({
       return (
         <div id="status-handler">
           <MadieAlert
+            copyButton="true"
             type="error"
             content={
               <div aria-live="polite" role="alert" data-testid={testDataId}>
@@ -97,6 +100,7 @@ const StatusHandler = ({
     return (
       <div id="status-handler">
         <MadieAlert
+          copyButton="true"
           type="warning"
           content={
             <div aria-live="polite" role="alert" data-testid={testDataId}>
