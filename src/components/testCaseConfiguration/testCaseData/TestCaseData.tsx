@@ -92,11 +92,7 @@ const TestCaseData = () => {
           );
         })
         .catch((err) => {
-          handleToast(
-            "danger",
-            `Test Case dates could not be shifted. Please try again.`,
-            true
-          );
+          handleToast("danger", err?.response?.data?.message, true);
         })
         .finally(() => {
           setExecuting(false);
