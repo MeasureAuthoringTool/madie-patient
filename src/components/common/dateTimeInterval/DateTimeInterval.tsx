@@ -23,12 +23,11 @@ const DateTimeInterval = ({
   displayAttributeName,
 }: DateTimeIntervalProps) => {
   const handleStartDateTimeChange = (newValue) => {
-    if (newValue === null || newValue === undefined) {
-      if (dateTimeInterval.high) {
-        onDateTimeIntervalChange({ ...dateTimeInterval }, attributeName);
-      } else {
-        onDateTimeIntervalChange(null, attributeName);
-      }
+    if (
+      (newValue === null || newValue === undefined) &&
+      !dateTimeInterval.high
+    ) {
+      onDateTimeIntervalChange(null, attributeName);
     } else {
       onDateTimeIntervalChange(
         {
@@ -40,12 +39,11 @@ const DateTimeInterval = ({
     }
   };
   const handleEndDateTimeChange = (newValue) => {
-    if (newValue === null || newValue === undefined) {
-      if (dateTimeInterval.low) {
-        onDateTimeIntervalChange({ ...dateTimeInterval }, attributeName);
-      } else {
-        onDateTimeIntervalChange(null, attributeName);
-      }
+    if (
+      (newValue === null || newValue === undefined) &&
+      !dateTimeInterval.low
+    ) {
+      onDateTimeIntervalChange(null, attributeName);
     } else {
       onDateTimeIntervalChange(
         { ...dateTimeInterval, high: newValue },
