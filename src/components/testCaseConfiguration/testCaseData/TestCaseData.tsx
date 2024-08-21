@@ -168,7 +168,7 @@ const TestCaseData = () => {
         </Typography>
       </div>
       <span className="helper-info-text">
-        Shift dates on this test case by the number of years being changed.
+        Shift dates on all test cases by the number of years being changed.
         Entering a negative number will shift the test cases years backwards.
         Feb 29 in Leap Years - Feb 28 in non Leap Years
       </span>
