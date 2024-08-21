@@ -195,7 +195,7 @@ const TestCaseTablePopover = (props: TestCaseTablePopoverProps) => {
                 setOptionsOpen(false);
               }}
             >
-              Increment Dates
+              Shift Test Case dates
             </button>
           )}
         </div>
