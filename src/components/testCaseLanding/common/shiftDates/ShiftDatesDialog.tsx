@@ -12,7 +12,7 @@ import "./ShiftDatesDialog.scss";
 
 interface shiftDatesDialogProps {
   open: boolean;
-  onClose: (boolean) => void;
+  onClose: Function;
   canEdit?: boolean;
   testCase?: TestCase;
   onTestCaseShiftDates?: (testCase: TestCase, shifted: number) => void;
@@ -29,18 +29,20 @@ const ShiftDatesDialog = ({
     initialValues: {
       shiftDatesInput: "",
     },
-    onSubmit: async (value) => await handleSubmit(value),
+    onSubmit: async (value) => {
+      await handleSubmit(value);
+      onClose();
+    },
   });
 
   const handleSubmit = async (value) => {
     onTestCaseShiftDates(testCase, value.shiftDatesInput);
-    onClose(true);
   };
 
   return (
     <MadieDialog
       form
-      title="Auto Increment Test Dates"
+      title="Shift Test Case dates"
       dialogProps={{
         onClose,
         open,

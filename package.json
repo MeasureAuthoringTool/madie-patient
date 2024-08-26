@@ -91,7 +91,7 @@
     "@fortawesome/react-fontawesome": "^0.1.16",
     "@lhncbc/ucum-lhc": "^5.0.0",
     "@madie/cql-antlr-parser": "^1.0.0",
-    "@madie/madie-design-system": "^1.2.21",
+    "@madie/madie-design-system": "^1.2.28",
     "@madie/madie-models": "^1.4.4",
     "@mui/icons-material": "^5.8.2",
     "@mui/lab": "^5.0.0-alpha.82",
@@ -104,10 +104,10 @@
     "@tanstack/react-table": "^8.10.3",
     "ace-builds": "~1.4.13",
     "allotment": "^1.19.0",
-    "axios": "^1.6.1",
+    "axios": "^1.6.8",
     "blueimp-md5": "^2.19.0",
     "classnames": "^2.3.1",
-    "cqm-execution": "4.2.0",
+    "cqm-execution": "4.2.1",
     "dayjs": "^1.11.7",
     "fhir": "^4.11.1",
     "file-saver": "^2.0.5",
@@ -135,7 +135,7 @@
   "overrides": {
     "loader-utils@<2.0.3": "2.0.4",
     "dset": "3.1.2",
-    "axios": "^1.6.1"
+    "axios": "^1.6.8"
   },
   "types": "dist/madie-madie-patient.d.ts",
   "browserslist": [

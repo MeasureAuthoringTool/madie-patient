@@ -77,6 +77,7 @@ import ElementsTab from "./LeftPanel/ElementsTab/ElementsTab";
 import { QiCoreResourceProvider } from "../../../util/QiCorePatientProvider";
 import { CqlDefinitionCallstack } from "../groupCoverage/QiCoreGroupCoverage";
 import useFhirCqlParsingService from "../../../api/cqlElmTranslationService/useFhirCqlParsingService";
+import checkSpecialCharacters from "../../../util/checkSpecialCharacters";
 
 const TestCaseForm = tw.form`m-3`;
 const ValidationErrorsButton = tw.button`
@@ -473,6 +474,11 @@ const EditTestCase = (props: EditTestCaseProps) => {
   };
 
   const updateTestCase = async (testCase: TestCase) => {
+    const errorMsg = checkSpecialCharacters(testCase);
+    if (errorMsg) {
+      showToast(errorMsg, "danger");
+      return;
+    }
     try {
       if (editorVal !== testCase.json) {
         testCase.json = editorVal;

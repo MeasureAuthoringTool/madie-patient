@@ -130,7 +130,6 @@ jest.mock("@madie/madie-util", () => ({
   },
   useFeatureFlags: jest.fn().mockImplementation(() => ({
     applyDefaults: false,
-    testCaseExport: false,
   })),
   useOktaTokens: () => ({
     getAccessToken: () => "test.jwt",
@@ -1580,7 +1579,6 @@ describe("TestCaseList component", () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
       applyDefaults: false,
-      testCaseExport: false,
     }));
     setError.mockClear();
 
@@ -2093,9 +2091,7 @@ describe("TestCaseList component", () => {
     expect(unusedMessage).toBeInTheDocument();
   });
   it("should display export qrda button with feature flag set to true", async () => {
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      testCaseExport: true,
-    }));
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({}));
     renderTestCaseListComponent();
     await waitFor(() => {
       const qrdaExportButton = screen.getByTestId(
@@ -2105,9 +2101,7 @@ describe("TestCaseList component", () => {
     });
   });
   it("should trigger tooltip when disabled", async () => {
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      testCaseExport: true,
-    }));
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({}));
     renderTestCaseListComponent();
     await waitFor(() => {
       const qrdaExportButton = screen.getByTestId(
@@ -2178,9 +2172,7 @@ describe("TestCaseList component", () => {
   });
   it("should display success message when QRDA Export button clicked", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      testCaseExport: true,
-    }));
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({}));
     const useTestCaseServiceMockResolve = {
       getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
       getTestCaseSeriesForMeasure: jest
@@ -2235,9 +2227,7 @@ describe("TestCaseList component", () => {
 
   it("should display success message when QRDA Export button clicked", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      testCaseExport: true,
-    }));
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({}));
     const useTestCaseServiceMockResolve = {
       getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
       getTestCaseSeriesForMeasure: jest
@@ -2298,9 +2288,7 @@ describe("TestCaseList component", () => {
 
   it("should display error message when QRDA Export failed", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      testCaseExport: true,
-    }));
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({}));
     const useTestCaseServiceMockReject = {
       getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
       getTestCaseSeriesForMeasure: jest
@@ -2353,9 +2341,7 @@ describe("TestCaseList component", () => {
 
   it("should display Excel Export button", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      testCaseExport: true,
-    }));
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({}));
     const useTestCaseServiceMockResolve = {
       getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
       getTestCaseSeriesForMeasure: jest
@@ -2409,9 +2395,7 @@ describe("TestCaseList component", () => {
 
   it("should display success message when Excel Export button clicked", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      testCaseExport: true,
-    }));
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({}));
     const useTestCaseServiceMockResolve = {
       getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
       getTestCaseSeriesForMeasure: jest
@@ -2480,9 +2464,7 @@ describe("TestCaseList component", () => {
 
   it("should display failed message when Excel Export failed", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      testCaseExport: true,
-    }));
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({}));
     const useTestCaseServiceMockResolve = {
       getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
       getTestCaseSeriesForMeasure: jest
@@ -2552,9 +2534,7 @@ describe("TestCaseList component", () => {
 
   it("should display failed message when getDefinitionCallstacks failed", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      testCaseExport: true,
-    }));
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({}));
     const useTestCaseServiceMockResolve = {
       getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
       getTestCaseSeriesForMeasure: jest
@@ -2625,9 +2605,7 @@ describe("TestCaseList component", () => {
 
   it("Should display errors on test cases with special characters", async () => {
     (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      testCaseExport: true,
-    }));
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({}));
     const failedExports = [...testCases];
     testCases[0].title = "~title";
     testCases[1].series = "+series";
@@ -3375,7 +3353,7 @@ describe("TestCaseList component", () => {
     useTestCaseServiceMock.mockImplementationOnce(() => {
       return {
         getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
-        shiftTestCaseDates: shiftTestCaseDatesApiMock,
+        shiftQdmTestCaseDates: shiftTestCaseDatesApiMock,
       } as unknown as TestCaseServiceApi;
     });
     const { getByTestId } = renderTestCaseListComponent();
@@ -3425,7 +3403,7 @@ describe("TestCaseList component", () => {
     useTestCaseServiceMock.mockImplementationOnce(() => {
       return {
         getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
-        shiftTestCaseDates: shiftTestCaseDatesApiMock,
+        shiftQdmTestCaseDates: shiftTestCaseDatesApiMock,
       } as unknown as TestCaseServiceApi;
     });
     const { getByTestId } = renderTestCaseListComponent();

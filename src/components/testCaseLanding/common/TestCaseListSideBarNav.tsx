@@ -24,6 +24,8 @@ const TestCaseListSideBarNav = ({
   qdm,
 }: TestCaseListSideBarNavProps) => {
   const featureFlags = useFeatureFlags();
+  const showConfigurationSection =
+    (!qdm && featureFlags?.ShiftTestCasesDates) || qdm;
   let navigate = useNavigate();
   const { measureId, criteriaId } = useParams<{
     measureId: string;
@@ -95,7 +97,7 @@ const TestCaseListSideBarNav = ({
           </Tabs>
         )}
 
-        {qdm && featureFlags?.includeSDEValues && (
+        {showConfigurationSection && (
           <>
             <div className="nav-collapse-container">
               <button
@@ -122,15 +124,17 @@ const TestCaseListSideBarNav = ({
                 onChange={handleChange}
                 value={endRoute}
               >
-                <Tab
-                  label="SDE"
-                  value="sde"
-                  data-testid="nav-link-sde"
-                  type="C"
-                  orientation="vertical"
-                  onChange={handleChange}
-                />
-                {featureFlags?.manifestExpansion && (
+                {qdm && (
+                  <Tab
+                    label="SDE"
+                    value="sde"
+                    data-testid="nav-link-sde"
+                    type="C"
+                    orientation="vertical"
+                    onChange={handleChange}
+                  />
+                )}
+                {qdm && (
                   <Tab
                     label="Expansion"
                     value="expansion"

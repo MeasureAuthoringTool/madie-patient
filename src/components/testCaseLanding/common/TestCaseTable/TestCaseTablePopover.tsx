@@ -4,7 +4,6 @@ import { Group, TestCase } from "@madie/madie-models";
 import { useNavigate } from "react-router-dom";
 import * as _ from "lodash";
 import { useFeatureFlags } from "@madie/madie-util";
-import ShiftDatesDialog from "../shiftDates/ShiftDatesDialog";
 
 interface TestCaseTablePopoverProps {
   optionsOpen: boolean;
@@ -193,19 +192,12 @@ const TestCaseTablePopover = (props: TestCaseTablePopoverProps) => {
               data-testid={`shift-dates-btn-${selectedTestCase?.id}`}
               onClick={() => {
                 setShiftDatesDialogOpen(true);
+                setOptionsOpen(false);
               }}
             >
-              Increment Dates
+              Shift Test Case dates
             </button>
           )}
-
-          <ShiftDatesDialog
-            open={shiftDatesDialogOpen}
-            onClose={handleClose}
-            canEdit={canEdit}
-            testCase={selectedTestCase}
-            onTestCaseShiftDates={onTestCaseShiftDates}
-          />
         </div>
       </div>
     </Popover>

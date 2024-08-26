@@ -11,12 +11,9 @@ declare module "@madie/madie-util" {
   }
 
   interface FeatureFlags {
-    includeSDEValues: boolean;
-    manifestExpansion: boolean;
     qiCoreBonnieTestCases: boolean;
     qiCoreElementsTab: boolean;
     qdmHideJson: boolean;
-    testCaseExport: boolean;
     ShiftTestCasesDates: boolean;
   }
 

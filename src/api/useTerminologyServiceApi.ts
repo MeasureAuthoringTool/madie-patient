@@ -71,7 +71,6 @@ export class TerminologyServiceApi {
   async getQdmValueSetsExpansion(
     cqmMeasure: CqmMeasure,
     manifestExpansion: ManifestExpansion,
-    manifestExpansionFeatureFlag: boolean,
     signal: AbortSignal
   ): Promise<QdmValueSet[]> {
     if (!cqmMeasure) {
@@ -86,12 +85,7 @@ export class TerminologyServiceApi {
       ),
     };
 
-    let path;
-    if (manifestExpansionFeatureFlag) {
-      path = "/terminology/value-sets/expansion/qdm";
-    } else {
-      path = "/vsac/qdm/value-sets/searches";
-    }
+    let path = "/terminology/value-sets/expansion/qdm";
 
     if (_.isEmpty(searchCriteria.valueSetParams)) {
       return [];
