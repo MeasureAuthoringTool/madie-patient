@@ -86,6 +86,7 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
       let fileNames = [];
       let madieFileMetaData: TestCaseExportMetaData[];
       let madieFilePresent = true;
+      console.log("acceptedFiles: ", acceptedFiles);
       const parentFolderName = acceptedFiles[0].name
         .replace(".zip", "")
         .split(" ")[0];
@@ -106,6 +107,7 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
             // Filtering out all the fileNames that are valid, based on following format
             fileNames = _.filter(
               _.keys(content.files).map((fileName) => {
+                console.log("fileName: ", fileName);
                 // Zip downloaded from MADiE doesn't have a parentFolderName
                 // Ex: a648e724-ce72-4cac-b0a7-3c4d52784f73/CMS136FHIR-v0.0.000-tcseries-tctitle001.json
                 const folderNameSplit = fileName.split("/");
@@ -128,6 +130,7 @@ const TestCaseImportDialog = ({ dialogOpen, handleClose, onImport }) => {
           );
         })
         .then((values) => {
+          console.log("values: ", values);
           _.forEach(values, (val, i) => {
             let patientId;
             if (fileNames[i].startsWith(parentFolderName)) {

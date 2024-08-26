@@ -1,13 +1,12 @@
 import React, { useEffect, useRef } from "react";
-import DemographicsSection from "./Demographics/DemographicsSection";
-import ElementsSection from "./Elements/ElementsSection";
 import {
   ResourceActionType,
   useQiCoreResource,
 } from "../../../../../util/QiCorePatientProvider";
 import _ from "lodash";
+import Builder from "./builder/Builder";
 
-const ElementsTab = ({ canEdit, setEditorVal, editorVal }) => {
+const ElementsTab = ({ canEdit, setEditorVal, editorVal, testCase }) => {
   const { state, dispatch } = useQiCoreResource();
   const lastJsonRef = useRef(null);
 
@@ -44,12 +43,7 @@ const ElementsTab = ({ canEdit, setEditorVal, editorVal }) => {
     }
   }, [state]);
 
-  return (
-    <>
-      <DemographicsSection canEdit={canEdit} />
-      <ElementsSection canEdit={canEdit} />
-    </>
-  );
+  return <Builder testCase={testCase} />;
 };
 
 export default ElementsTab;

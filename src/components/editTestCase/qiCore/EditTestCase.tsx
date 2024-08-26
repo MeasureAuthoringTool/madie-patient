@@ -836,6 +836,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
                           canEdit={canEdit}
                           setEditorVal={setEditorVal}
                           editorVal={editorVal}
+                          testCase={testCase}
                         />
                       </div>
                     </div>
