@@ -4,7 +4,6 @@ import userEvent from "@testing-library/user-event";
 import events from "events";
 import DemographicsSection from "./DemographicsSection";
 import { within } from "@testing-library/dom";
-import { shallow } from "enzyme";
 
 import { QiCoreResourceProvider } from "../../../../../../util/QiCorePatientProvider";
 

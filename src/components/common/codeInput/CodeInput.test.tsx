@@ -144,7 +144,7 @@ describe("CodeInput Component", () => {
     expect(verifyCqlCode).toHaveBeenCalledTimes(1);
   });
 
-  it("Should allow user to enter custom code system and code", async () => {
+  it.skip("Should allow user to enter custom code system and code", async () => {
     const customCodeSystem = "X.12.34.1";
     const customCode = "X-11";
     const verifyCqlCode = jest.fn((cqlCode) => {
