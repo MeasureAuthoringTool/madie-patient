@@ -35,14 +35,14 @@ describe("NotFound component", () => {
       </MemoryRouter>
     );
 
-  const link = screen.getByRole("link", { name: /home/i });
+    const link = screen.getByRole("link", { name: /home/i });
 
-  // Simulate clicking the link
-  fireEvent.click(link);
+    // Simulate clicking the link
+    fireEvent.click(link);
 
-  // Wait for the 404 page to be rendered and assert it is not found
-  await waitFor(() => {
-    expect(screen.queryByText("404-page")).not.toBeInTheDocument();
-  });
+    // Wait for the 404 page to be rendered and assert it is not found
+    await waitFor(() => {
+      expect(screen.queryByText("404-page")).not.toBeInTheDocument();
+    });
   });
 });

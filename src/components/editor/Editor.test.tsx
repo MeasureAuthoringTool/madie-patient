@@ -12,7 +12,6 @@ describe("Test Case Editor component", () => {
     expect(container).toBeDefined();
   });
 
-
   it("calls handleChange on change", async () => {
     jest.useFakeTimers("modern");
     const handleValueChanges = jest.fn();
