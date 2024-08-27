@@ -99,7 +99,10 @@ const ShiftDatesDialog = ({
           Shift years on this test case by the number you enter. February 29th
           in leap years = February 28th in non leap years.
         </div>
-
+        <div id="shift-test-case-dates-info" style={{ fontSize: 15 }}>
+          Note that resulting years prior to 0000 will be set to 0000 and after
+          9999 will be set to 9999.
+        </div>
         <div>
           <NumberInput
             id="shift-dates"
