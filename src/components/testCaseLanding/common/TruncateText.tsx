@@ -1,5 +1,5 @@
 import React from "react";
-import ButtonUnstyled from "@mui/base/ButtonUnstyled";
+import ButtonUnstyled from "@mui/core/ButtonUnstyled";
 import { styled } from "@mui/system";
 import Tooltip from "@mui/material/Tooltip";
 import { truncateInput } from "../../../util/Utils";
