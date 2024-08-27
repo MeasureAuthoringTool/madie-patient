@@ -94,7 +94,9 @@ const TestCaseData = () => {
         .catch((err) => {
           handleToast(
             "danger",
-            `Test Case dates could not be shifted. Please try again.`,
+            err?.response?.data?.message
+              ? err?.response?.data?.message
+              : "Test Case dates could not be shifted. Please try again.",
             true
           );
         })

@@ -1,9 +1,7 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import * as React from "react";
 import NotFound from "./NotFound";
 import { MemoryRouter } from "react-router";
-import Enzyme, { shallow, mount } from "enzyme";
-import Adapter from "@wojtekmaj/enzyme-adapter-react-17";
 
 describe("NotFound component", () => {
   it("should render NotFound component", () => {
@@ -31,15 +29,20 @@ describe("NotFound component", () => {
   });
 
   it("should render home page after clicking link", async () => {
-    Enzyme.configure({ adapter: new Adapter() });
-    const wrapper = mount(
+    render(
       <MemoryRouter>
         <NotFound />
       </MemoryRouter>
     );
 
-    expect(wrapper.exists()).toBeTruthy();
-    wrapper.find("a").simulate("click", { button: 0 });
-    expect(screen.findByText("404-page")).notFound;
+    const link = screen.getByRole("link", { name: /home/i });
+
+    // Simulate clicking the link
+    fireEvent.click(link);
+
+    // Wait for the 404 page to be rendered and assert it is not found
+    await waitFor(() => {
+      expect(screen.queryByText("404-page")).not.toBeInTheDocument();
+    });
   });
 });
