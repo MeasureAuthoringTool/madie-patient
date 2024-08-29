@@ -52,20 +52,20 @@ const GroupCoverageNav = ({
               }}
             />
           ))}
-        {/* {includeSDE && ( */}
-        <Tab
-          type="C"
-          label="SDE"
-          key="SDE"
-          value="SDE"
-          aria-label="SDE-tab"
-          orientation="vertical"
-          data-testid="sde-tab"
-          onClick={() => {
-            onClick({ name: "SDE", id: "SDE" });
-          }}
-        />
-        {/* )} */}
+        {includeSDE && (
+          <Tab
+            type="C"
+            label="SDE"
+            key="SDE"
+            value="SDE"
+            aria-label="SDE-tab"
+            orientation="vertical"
+            data-testid="sde-tab"
+            onClick={() => {
+              onClick({ name: "SDE", id: "SDE" });
+            }}
+          />
+        )}
       </Tabs>
       <Tabs
         type="C"
