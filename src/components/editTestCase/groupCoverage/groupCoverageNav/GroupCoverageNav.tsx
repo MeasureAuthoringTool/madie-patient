@@ -52,7 +52,7 @@ const GroupCoverageNav = ({
               }}
             />
           ))}
-        {includeSDE && (
+        {/* {includeSDE && ( */}
           <Tab
             type="C"
             label="SDE"
@@ -62,10 +62,10 @@ const GroupCoverageNav = ({
             orientation="vertical"
             data-testid="sde-tab"
             onClick={() => {
-              onClick({ name: "SDE" });
+              onClick({ name: "SDE", id: "SDE" });
             }}
           />
-        )}
+        {/* )} */}
       </Tabs>
       <Tabs
         type="C"

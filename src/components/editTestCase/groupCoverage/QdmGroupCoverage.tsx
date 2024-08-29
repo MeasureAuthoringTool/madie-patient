@@ -52,14 +52,13 @@ const QdmGroupCoverage = ({
   includeSDE,
   supplementalData,
 }: Props) => {
-  const [selectedTab, setSelectedTab] = useState<Population>(
+  const [selectedTab, setSelectedTab] = useState<any>(
     getFirstPopulation(testCaseGroups[0])
   );
   const [selectedCriteria, setSelectedCriteria] = useState<string>("");
   const [selectedDefinitionResults, setSelectedDefinitionResults] = useState<
     Array<StatementCoverageResult>
   >([]);
-
   const changeCriteria = useMemo(
     () => (criteriaId: string) => {
       const group = testCaseGroups.find((gp) => gp.groupId === criteriaId);
@@ -73,7 +72,7 @@ const QdmGroupCoverage = ({
   const changePopulation = useMemo(
     () => (population: Population) => {
       if (!isEmpty(measureGroups) && population.id) {
-        setSelectedTab(population);
+        // setSelectedTab(population);
         const selectedGroup = measureGroups?.find(
           (group) => group.id === selectedCriteria
         );
@@ -86,7 +85,7 @@ const QdmGroupCoverage = ({
             (coverageResult) =>
               coverageResult.name === selectedPopulation?.definition
           );
-        setSelectedDefinitionResults([coverage]);
+        setSelectedDefinitionResults([coverage]); 
       }
     },
     [groupCoverageResult, measureGroups, selectedCriteria]
@@ -98,9 +97,6 @@ const QdmGroupCoverage = ({
     }
   }, [changeCriteria, testCaseGroups]);
 
-  useEffect(() => {
-    changePopulation(selectedTab);
-  }, [selectedTab, selectedCriteria, changePopulation]);
 
   const populationCriteriaOptions = [
     ...testCaseGroups?.map((gp, index) => {
@@ -116,8 +112,8 @@ const QdmGroupCoverage = ({
     }),
   ];
 
-  const changeDefinitions = (population) => {
-    setSelectedTab(population);
+  const changeDefinitions = useMemo(
+    () => (population) => {
     if (groupCoverageResult) {
       let result: StatementCoverageResult[];
       const statementResults = groupCoverageResult[selectedCriteria];
@@ -130,10 +126,11 @@ const QdmGroupCoverage = ({
       }
       setSelectedDefinitionResults(result);
     }
-  };
+  }, [
+    groupCoverageResult, selectedCriteria
+  ]);
 
-  const changeSDE = (population) => {
-    setSelectedTab(population);
+  const changeSDE = useMemo(() => () => {
     if (groupCoverageResult) {
       let result: StatementCoverageResult[];
       const statementResults = groupCoverageResult[selectedCriteria];
@@ -148,16 +145,35 @@ const QdmGroupCoverage = ({
       }
       setSelectedDefinitionResults(result);
     }
-  };
+  }, [
+    groupCoverageResult, selectedCriteria
+  ]);
+// 
+  useEffect(() => {
+    // if we conditionally run changePopulation only when it's a population and nothing after, everything breaks. 
+    if (isPopulation(selectedTab.name)){
+      console.log('a population', selectedTab);
+      changePopulation(selectedTab);
+    } 
+    else {
+      if (selectedTab.name !== 'SDE'){
+        changeDefinitions(selectedTab)
+      } 
+      if(selectedTab.name === 'SDE'){
+        changeSDE()
+      }
+    }
+  }, [
+    selectedTab, 
+    selectedCriteria, 
+    changePopulation,
+    changeDefinitions, 
+    changeSDE,
+    groupCoverageResult
+  ]);
 
   const onHighlightingNavTabClick = (selectedTab) => {
-    if (selectedTab.name === "SDE") {
-      changeSDE(selectedTab);
-    } else if (isPopulation(selectedTab.name)) {
-      changePopulation(selectedTab);
-    } else {
-      changeDefinitions(selectedTab);
-    }
+    setSelectedTab(selectedTab)
   };
 
   const getRelevantPopulations = () => {
@@ -262,6 +278,7 @@ const QdmGroupCoverage = ({
         tw="flex mt-5"
         key={selectedCriteria}
         style={{ paddingBottom: "7px" }}
+        data-testid="group-coverage-container"
       >
         <div tw="flex-none w-1/5">
           <GroupCoverageNav

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { act, getByTestId, render, screen, waitFor, within } from "@testing-library/react";
 import CalculationResults from "./CalculationResults";
 import { GroupPopulation } from "@madie/madie-models";
 import userEvent from "@testing-library/user-event";
@@ -255,6 +255,12 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
   test("render highlighting view with coverage results for 2 groups", async () => {
     renderCoverageComponent();
     await assertPopulationTabs();
+    screen.debug(screen.getByTestId("group-coverage-container"))
+    const ip = await getTab("IP")
+    act(() => {
+      userEvent.click(ip);
+    })
+
     expect(screen.getByTestId("cql-highlighting")).toHaveTextContent(
       `define "Initial Population": "Qualifying Encounters" Results[Encounter, Performed: Encounter Inpatient START: 01/09/2020 12:00 AM STOP: 01/10/2020 12:00 AM CODE: SNOMEDCT 183452005]`
     );
