@@ -98,10 +98,6 @@ const QdmGroupCoverage = ({
     }
   }, [changeCriteria, testCaseGroups]);
 
-  useEffect(() => {
-    changePopulation(selectedTab);
-  }, [selectedTab, selectedCriteria, changePopulation]);
-
   const populationCriteriaOptions = [
     ...testCaseGroups?.map((gp, index) => {
       return (
@@ -116,48 +112,67 @@ const QdmGroupCoverage = ({
     }),
   ];
 
-  const changeDefinitions = (population) => {
-    setSelectedTab(population);
-    if (groupCoverageResult) {
-      let result: StatementCoverageResult[];
-      const statementResults = groupCoverageResult[selectedCriteria];
-      if (statementResults) {
-        result = statementResults
-          .sort((a, b) => a.name.localeCompare(b.name))
-          .filter((statementResult) =>
-            definitionFilterCondition(statementResult, population.name)
-          );
+  const changeDefinitions = useMemo(
+    () => (population) => {
+      if (groupCoverageResult) {
+        let result: StatementCoverageResult[];
+        const statementResults = groupCoverageResult[selectedCriteria];
+        if (statementResults) {
+          result = statementResults
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .filter((statementResult) =>
+              definitionFilterCondition(statementResult, population.name)
+            );
+        }
+        setSelectedDefinitionResults(result);
       }
-      setSelectedDefinitionResults(result);
-    }
-  };
+    },
+    [groupCoverageResult, selectedCriteria]
+  );
 
-  const changeSDE = (population) => {
-    setSelectedTab(population);
-    if (groupCoverageResult) {
-      let result: StatementCoverageResult[];
-      const statementResults = groupCoverageResult[selectedCriteria];
-      if (statementResults) {
-        result = statementResults
-          .sort((a, b) => a.name.localeCompare(b.name))
-          .filter((statementResult) =>
-            supplementalData.some(
-              (sde) => sde?.definition === statementResult?.name
-            )
-          );
+  const changeSDE = useMemo(
+    () => () => {
+      if (groupCoverageResult) {
+        let result: StatementCoverageResult[];
+        const statementResults = groupCoverageResult[selectedCriteria];
+        if (statementResults) {
+          result = statementResults
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .filter((statementResult) =>
+              supplementalData.some(
+                (sde) => sde?.definition === statementResult?.name
+              )
+            );
+        }
+        setSelectedDefinitionResults(result);
       }
-      setSelectedDefinitionResults(result);
-    }
-  };
+    },
+    [groupCoverageResult, selectedCriteria]
+  );
 
-  const onHighlightingNavTabClick = (selectedTab) => {
-    if (selectedTab.name === "SDE") {
-      changeSDE(selectedTab);
-    } else if (isPopulation(selectedTab.name)) {
+  useEffect(() => {
+    // if we conditionally run changePopulation only when it's a population and nothing after, everything breaks.
+    if (isPopulation(selectedTab.name)) {
       changePopulation(selectedTab);
     } else {
-      changeDefinitions(selectedTab);
+      if (selectedTab.name !== "SDE") {
+        changeDefinitions(selectedTab);
+      }
+      if (selectedTab.name === "SDE") {
+        changeSDE();
+      }
     }
+  }, [
+    selectedTab,
+    selectedCriteria,
+    changePopulation,
+    changeDefinitions,
+    changeSDE,
+    groupCoverageResult,
+  ]);
+
+  const onHighlightingNavTabClick = (selectedTab) => {
+    setSelectedTab(selectedTab);
   };
 
   const getRelevantPopulations = () => {
