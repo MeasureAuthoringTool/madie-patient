@@ -74,7 +74,12 @@ export const getFirstPopulation = (group) => {
 };
 
 export const isPopulation = (name: string) => {
-  return name !== "Functions" && name !== "Definitions" && name !== "Unused";
+  return (
+    name !== "Functions" &&
+    name !== "Definitions" &&
+    name !== "Unused" &&
+    name !== "SDE"
+  );
 };
 
 // there's no coverage here at all.
