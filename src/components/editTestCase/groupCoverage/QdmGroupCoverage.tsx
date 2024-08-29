@@ -85,7 +85,7 @@ const QdmGroupCoverage = ({
             (coverageResult) =>
               coverageResult.name === selectedPopulation?.definition
           );
-        setSelectedDefinitionResults([coverage]); 
+        setSelectedDefinitionResults([coverage]);
       }
     },
     [groupCoverageResult, measureGroups, selectedCriteria]
@@ -96,7 +96,6 @@ const QdmGroupCoverage = ({
       changeCriteria(testCaseGroups[0].groupId);
     }
   }, [changeCriteria, testCaseGroups]);
-
 
   const populationCriteriaOptions = [
     ...testCaseGroups?.map((gp, index) => {
@@ -114,66 +113,65 @@ const QdmGroupCoverage = ({
 
   const changeDefinitions = useMemo(
     () => (population) => {
-    if (groupCoverageResult) {
-      let result: StatementCoverageResult[];
-      const statementResults = groupCoverageResult[selectedCriteria];
-      if (statementResults) {
-        result = statementResults
-          .sort((a, b) => a.name.localeCompare(b.name))
-          .filter((statementResult) =>
-            definitionFilterCondition(statementResult, population.name)
-          );
+      if (groupCoverageResult) {
+        let result: StatementCoverageResult[];
+        const statementResults = groupCoverageResult[selectedCriteria];
+        if (statementResults) {
+          result = statementResults
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .filter((statementResult) =>
+              definitionFilterCondition(statementResult, population.name)
+            );
+        }
+        setSelectedDefinitionResults(result);
       }
-      setSelectedDefinitionResults(result);
-    }
-  }, [
-    groupCoverageResult, selectedCriteria
-  ]);
+    },
+    [groupCoverageResult, selectedCriteria]
+  );
 
-  const changeSDE = useMemo(() => () => {
-    if (groupCoverageResult) {
-      let result: StatementCoverageResult[];
-      const statementResults = groupCoverageResult[selectedCriteria];
-      if (statementResults) {
-        result = statementResults
-          .sort((a, b) => a.name.localeCompare(b.name))
-          .filter((statementResult) =>
-            supplementalData.some(
-              (sde) => sde?.definition === statementResult?.name
-            )
-          );
+  const changeSDE = useMemo(
+    () => () => {
+      if (groupCoverageResult) {
+        let result: StatementCoverageResult[];
+        const statementResults = groupCoverageResult[selectedCriteria];
+        if (statementResults) {
+          result = statementResults
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .filter((statementResult) =>
+              supplementalData.some(
+                (sde) => sde?.definition === statementResult?.name
+              )
+            );
+        }
+        setSelectedDefinitionResults(result);
       }
-      setSelectedDefinitionResults(result);
-    }
-  }, [
-    groupCoverageResult, selectedCriteria
-  ]);
-// 
+    },
+    [groupCoverageResult, selectedCriteria]
+  );
+
   useEffect(() => {
-    // if we conditionally run changePopulation only when it's a population and nothing after, everything breaks. 
-    if (isPopulation(selectedTab.name)){
-      console.log('a population', selectedTab);
+    // if we conditionally run changePopulation only when it's a population and nothing after, everything breaks.
+    if (isPopulation(selectedTab.name)) {
       changePopulation(selectedTab);
-    } 
-    else {
-      if (selectedTab.name !== 'SDE'){
-        changeDefinitions(selectedTab)
-      } 
-      if(selectedTab.name === 'SDE'){
-        changeSDE()
+    } else {
+      if (selectedTab.name !== "SDE") {
+        changeDefinitions(selectedTab);
+      }
+      if (selectedTab.name === "SDE") {
+        changeSDE();
       }
     }
   }, [
-    selectedTab, 
-    selectedCriteria, 
+    selectedTab,
+    selectedCriteria,
     changePopulation,
-    changeDefinitions, 
+    changeDefinitions,
     changeSDE,
-    groupCoverageResult
+    groupCoverageResult,
   ]);
 
   const onHighlightingNavTabClick = (selectedTab) => {
-    setSelectedTab(selectedTab)
+    setSelectedTab(selectedTab);
   };
 
   const getRelevantPopulations = () => {

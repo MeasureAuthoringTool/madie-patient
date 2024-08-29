@@ -52,7 +52,7 @@ const GroupCoverageNav = ({
               }}
             />
           ))}
-        {/* {includeSDE && ( */}
+        {includeSDE && (
           <Tab
             type="C"
             label="SDE"
@@ -65,7 +65,7 @@ const GroupCoverageNav = ({
               onClick({ name: "SDE", id: "SDE" });
             }}
           />
-        {/* )} */}
+        )}
       </Tabs>
       <Tabs
         type="C"
