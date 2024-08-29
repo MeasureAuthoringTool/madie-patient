@@ -173,7 +173,7 @@ const TestCaseData = () => {
         Feb 29 in Leap Years - Feb 28 in non Leap Years.
       </span>
       <span className="helper-info-text">
-        Note that resulting years prior to 0000 will be set to 0000 and after
+        Note that resulting years prior to 1900 will be set to 1900 and after
         9999 will be set to 9999.
       </span>
       <div className="form-elements">
