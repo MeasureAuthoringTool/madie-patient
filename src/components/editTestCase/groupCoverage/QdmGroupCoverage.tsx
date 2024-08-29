@@ -52,14 +52,13 @@ const QdmGroupCoverage = ({
   includeSDE,
   supplementalData,
 }: Props) => {
-  const [selectedTab, setSelectedTab] = useState<Population>(
+  const [selectedTab, setSelectedTab] = useState<any>(
     getFirstPopulation(testCaseGroups[0])
   );
   const [selectedCriteria, setSelectedCriteria] = useState<string>("");
   const [selectedDefinitionResults, setSelectedDefinitionResults] = useState<
     Array<StatementCoverageResult>
   >([]);
-
   const changeCriteria = useMemo(
     () => (criteriaId: string) => {
       const group = testCaseGroups.find((gp) => gp.groupId === criteriaId);
@@ -73,7 +72,7 @@ const QdmGroupCoverage = ({
   const changePopulation = useMemo(
     () => (population: Population) => {
       if (!isEmpty(measureGroups) && population.id) {
-        setSelectedTab(population);
+        // setSelectedTab(population);
         const selectedGroup = measureGroups?.find(
           (group) => group.id === selectedCriteria
         );
@@ -277,6 +276,7 @@ const QdmGroupCoverage = ({
         tw="flex mt-5"
         key={selectedCriteria}
         style={{ paddingBottom: "7px" }}
+        data-testid="group-coverage-container"
       >
         <div tw="flex-none w-1/5">
           <GroupCoverageNav
