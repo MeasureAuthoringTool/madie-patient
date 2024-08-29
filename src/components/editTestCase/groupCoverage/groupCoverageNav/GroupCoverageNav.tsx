@@ -62,7 +62,7 @@ const GroupCoverageNav = ({
             orientation="vertical"
             data-testid="sde-tab"
             onClick={() => {
-              onClick({ name: "SDE" });
+              onClick({ name: "SDE", id: "SDE" });
             }}
           />
         )}
