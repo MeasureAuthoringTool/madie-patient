@@ -247,12 +247,17 @@ const DemographicsSection = ({ canEdit }) => {
                             : null
                         }
                         onChange={(newValue: any) => {
+                          console.log("newValue: ", newValue);
+                          // console.log("currentDate: ", currentDate);
+                          // console.log("newDate: ", newDate);
                           const currentDate = dayjs(patient?.birthDatetime);
-                          const newDate = dayjs(currentDate)
+                          const futureDate = patient?.birthDatetime
+                            ? dayjs(currentDate)
+                            : dayjs();
+                          const newDate = futureDate
                             .set("year", newValue?.$y)
                             .set("month", newValue?.$M)
                             .set("date", newValue?.$D);
-
                           handleTimeChange(newDate);
                         }}
                         slotProps={{

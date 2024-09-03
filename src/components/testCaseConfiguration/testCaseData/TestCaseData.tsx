@@ -94,7 +94,9 @@ const TestCaseData = () => {
         .catch((err) => {
           handleToast(
             "danger",
-            `Test Case dates could not be shifted. Please try again.`,
+            err?.response?.data?.message
+              ? err?.response?.data?.message
+              : "Test Case dates could not be shifted. Please try again.",
             true
           );
         })
@@ -168,7 +170,11 @@ const TestCaseData = () => {
       <span className="helper-info-text">
         Shift dates on all test cases by the number of years being changed.
         Entering a negative number will shift the test cases years backwards.
-        Feb 29 in Leap Years - Feb 28 in non Leap Years
+        Feb 29 in Leap Years - Feb 28 in non Leap Years.
+      </span>
+      <span className="helper-info-text">
+        Note that resulting years prior to 1900 will be set to 1900 and after
+        9999 will be set to 9999.
       </span>
       <div className="form-elements">
         <NumberInput

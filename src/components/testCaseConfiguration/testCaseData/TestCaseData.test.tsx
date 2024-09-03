@@ -292,9 +292,13 @@ describe("TestCaseData", () => {
   });
 
   it("should display an error message when unable to shift all test case dates", async () => {
-    const shiftAllTestCaseDatesApiMock = jest
-      .fn()
-      .mockRejectedValueOnce({ error: "something went wrong" });
+    const shiftAllTestCaseDatesApiMock = jest.fn().mockRejectedValueOnce({
+      response: {
+        data: {
+          message: "something went wrong",
+        },
+      },
+    });
     useTestCaseServiceMock.mockImplementationOnce(() => {
       return {
         shiftAllQdmTestCaseDates: shiftAllTestCaseDatesApiMock,
@@ -326,9 +330,7 @@ describe("TestCaseData", () => {
     await waitFor(() => {
       expect(
         screen.getByTestId("shift-all-test-case-dates-generic-error-text")
-      ).toHaveTextContent(
-        "Test Case dates could not be shifted. Please try again."
-      );
+      ).toHaveTextContent("something went wrong");
     });
   });
 

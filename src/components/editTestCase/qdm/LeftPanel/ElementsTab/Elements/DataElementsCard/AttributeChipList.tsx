@@ -29,6 +29,7 @@ const AttributeChipList = ({
         };
       }
     });
+    //@ts-ignore
     setChipsToDisplay(_.flattenDeep(mappedAttributeList));
   }, [attributeChipList]);
 
