@@ -43,7 +43,9 @@ const ElementsTab = ({ canEdit, setEditorVal, editorVal, testCase }) => {
     }
   }, [state]);
 
-  return <Builder testCase={testCase} />;
+  return (
+    <Builder testCase={testCase} bundleJson={editorVal} canEdit={canEdit} />
+  );
 };
 
 export default ElementsTab;
