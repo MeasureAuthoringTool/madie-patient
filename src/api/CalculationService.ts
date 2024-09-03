@@ -354,7 +354,6 @@ export class CalculationService {
       const tcPopTypeCount = {};
       const patientBased =
         "boolean" === _.lowerCase(measureGroup.populationBasis);
-
       const processedResults = patientBased
         ? this.buildPatientResults(populationGroupResult?.populationResults)
         : this.buildEpisodeResults(populationGroupResult?.episodeResults);
@@ -396,13 +395,14 @@ export class CalculationService {
         }
       });
 
+      const stratifierResults = populationGroupResult.stratifierResults;
       tcGroupPopulation?.stratificationValues?.forEach((stratValue) => {
-        const strataDefinition = measureGroup.stratifications.find(
-          (stratification) => stratification.id === stratValue.id
-        )?.cqlDefinition;
-        stratValue.actual = patientBased
-          ? groupResultsMap[groupId]?.[strataDefinition] > 0
-          : groupResultsMap[groupId]?.[strataDefinition];
+        const appliedStratValue = stratifierResults.find(
+          (stratR) => stratR.strataId === stratValue.id
+        );
+        stratValue.actual = appliedStratValue?.appliesResult
+          ? appliedStratValue.appliesResult
+          : false;
       });
 
       allGroupsPass = allGroupsPass && this.isGroupPass(tcGroupPopulation);
