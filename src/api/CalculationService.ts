@@ -292,7 +292,6 @@ export class CalculationService {
 
   isGroupPass(groupPopulation: GroupPopulation) {
     let groupPass = true;
-
     if (groupPopulation) {
       const patientBased =
         "boolean" === _.lowerCase(groupPopulation.populationBasis);
@@ -324,6 +323,8 @@ export class CalculationService {
     measureGroups: Group[],
     populationGroupResults: DetailedPopulationGroupResult[]
   ): TestCase {
+    // console.log('populationGroupResults', populationGroupResults);
+    // console.log('measureGroups', measureGroups)
     if (_.isNil(testCase)) {
       return testCase;
     }
@@ -395,16 +396,15 @@ export class CalculationService {
         }
       });
 
-      const stratifierResults = populationGroupResult.stratifierResults;
+      const stratifierResults = populationGroupResult?.stratifierResults;
       tcGroupPopulation?.stratificationValues?.forEach((stratValue) => {
-        const appliedStratValue = stratifierResults.find(
+        const appliedStratValue = stratifierResults?.find(
           (stratR) => stratR.strataId === stratValue.id
         );
         stratValue.actual = appliedStratValue?.appliesResult
           ? appliedStratValue.appliesResult
           : false;
       });
-
       allGroupsPass = allGroupsPass && this.isGroupPass(tcGroupPopulation);
     }
 

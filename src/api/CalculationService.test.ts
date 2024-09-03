@@ -1248,6 +1248,20 @@ describe("CalculationService Tests", () => {
               result: true,
             },
           ],
+          stratifierResults: [
+            {
+              strataCode: "stratcode1",
+              result: true,
+              appliesResult: true,
+              strataId: "strata1",
+            },
+            {
+              strataCode: "stratcode2",
+              result: true,
+              appliesResult: false,
+              strataId: "strata2",
+            },
+          ],
         },
       ];
       const testCase: TestCase = {
@@ -1323,6 +1337,7 @@ describe("CalculationService Tests", () => {
         groups,
         popGroupResults
       );
+      //fails
       expect(output).toBeTruthy();
       expect(output.executionStatus).toEqual(ExecutionStatusType.PASS);
       const outputGroupPopulations = output.groupPopulations;
