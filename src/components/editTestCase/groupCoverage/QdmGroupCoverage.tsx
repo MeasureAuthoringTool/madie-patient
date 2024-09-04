@@ -52,14 +52,13 @@ const QdmGroupCoverage = ({
   includeSDE,
   supplementalData,
 }: Props) => {
-  const [selectedTab, setSelectedTab] = useState<Population>(
+  const [selectedTab, setSelectedTab] = useState<any>(
     getFirstPopulation(testCaseGroups[0])
   );
   const [selectedCriteria, setSelectedCriteria] = useState<string>("");
   const [selectedDefinitionResults, setSelectedDefinitionResults] = useState<
     Array<StatementCoverageResult>
   >([]);
-
   const changeCriteria = useMemo(
     () => (criteriaId: string) => {
       const group = testCaseGroups.find((gp) => gp.groupId === criteriaId);
@@ -73,7 +72,7 @@ const QdmGroupCoverage = ({
   const changePopulation = useMemo(
     () => (population: Population) => {
       if (!isEmpty(measureGroups) && population.id) {
-        setSelectedTab(population);
+        // setSelectedTab(population);
         const selectedGroup = measureGroups?.find(
           (group) => group.id === selectedCriteria
         );
@@ -98,10 +97,6 @@ const QdmGroupCoverage = ({
     }
   }, [changeCriteria, testCaseGroups]);
 
-  useEffect(() => {
-    changePopulation(selectedTab);
-  }, [selectedTab, selectedCriteria, changePopulation]);
-
   const populationCriteriaOptions = [
     ...testCaseGroups?.map((gp, index) => {
       return (
@@ -116,48 +111,67 @@ const QdmGroupCoverage = ({
     }),
   ];
 
-  const changeDefinitions = (population) => {
-    setSelectedTab(population);
-    if (groupCoverageResult) {
-      let result: StatementCoverageResult[];
-      const statementResults = groupCoverageResult[selectedCriteria];
-      if (statementResults) {
-        result = statementResults
-          .sort((a, b) => a.name.localeCompare(b.name))
-          .filter((statementResult) =>
-            definitionFilterCondition(statementResult, population.name)
-          );
+  const changeDefinitions = useMemo(
+    () => (population) => {
+      if (groupCoverageResult) {
+        let result: StatementCoverageResult[];
+        const statementResults = groupCoverageResult[selectedCriteria];
+        if (statementResults) {
+          result = statementResults
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .filter((statementResult) =>
+              definitionFilterCondition(statementResult, population.name)
+            );
+        }
+        setSelectedDefinitionResults(result);
       }
-      setSelectedDefinitionResults(result);
-    }
-  };
+    },
+    [groupCoverageResult, selectedCriteria]
+  );
 
-  const changeSDE = (population) => {
-    setSelectedTab(population);
-    if (groupCoverageResult) {
-      let result: StatementCoverageResult[];
-      const statementResults = groupCoverageResult[selectedCriteria];
-      if (statementResults) {
-        result = statementResults
-          .sort((a, b) => a.name.localeCompare(b.name))
-          .filter((statementResult) =>
-            supplementalData.some(
-              (sde) => sde?.definition === statementResult?.name
-            )
-          );
+  const changeSDE = useMemo(
+    () => () => {
+      if (groupCoverageResult) {
+        let result: StatementCoverageResult[];
+        const statementResults = groupCoverageResult[selectedCriteria];
+        if (statementResults) {
+          result = statementResults
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .filter((statementResult) =>
+              supplementalData.some(
+                (sde) => sde?.definition === statementResult?.name
+              )
+            );
+        }
+        setSelectedDefinitionResults(result);
       }
-      setSelectedDefinitionResults(result);
-    }
-  };
+    },
+    [groupCoverageResult, selectedCriteria]
+  );
 
-  const onHighlightingNavTabClick = (selectedTab) => {
-    if (selectedTab.name === "SDE") {
-      changeSDE(selectedTab);
-    } else if (isPopulation(selectedTab.name)) {
+  useEffect(() => {
+    // if we conditionally run changePopulation only when it's a population and nothing after, everything breaks.
+    if (isPopulation(selectedTab.name)) {
       changePopulation(selectedTab);
     } else {
-      changeDefinitions(selectedTab);
+      if (selectedTab.name !== "SDE") {
+        changeDefinitions(selectedTab);
+      }
+      if (selectedTab.name === "SDE") {
+        changeSDE();
+      }
     }
+  }, [
+    selectedTab,
+    selectedCriteria,
+    changePopulation,
+    changeDefinitions,
+    changeSDE,
+    groupCoverageResult,
+  ]);
+
+  const onHighlightingNavTabClick = (selectedTab) => {
+    setSelectedTab(selectedTab);
   };
 
   const getRelevantPopulations = () => {
@@ -262,6 +276,7 @@ const QdmGroupCoverage = ({
         tw="flex mt-5"
         key={selectedCriteria}
         style={{ paddingBottom: "7px" }}
+        data-testid="group-coverage-container"
       >
         <div tw="flex-none w-1/5">
           <GroupCoverageNav
