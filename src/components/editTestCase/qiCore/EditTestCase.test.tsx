@@ -1652,6 +1652,14 @@ describe("EditTestCase component", () => {
       );
       expect(debugOutput).toBeInTheDocument();
 
+      expect(screen.getByTestId("json-error-alert")).toBeInTheDocument();
+      expect(screen.getByText("JSON Failing")).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "All JSON errors must be cleared before the UI Builder can be used."
+        )
+      ).toBeInTheDocument();
+
       const showValidationErrorsBtn = screen.getByRole("button", {
         name: "Validation Errors",
       });
