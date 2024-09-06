@@ -3,6 +3,7 @@ import { DateTimeField } from "@madie/madie-design-system/dist/react";
 import dayjs from "dayjs";
 import { CQL } from "cqm-models";
 import utc from "dayjs/plugin/utc";
+import { kebabCase } from "lodash";
 
 dayjs.extend(utc);
 dayjs.utc();
@@ -66,7 +67,7 @@ const DateTimeInput = ({
   };
   return (
     <DateTimeField
-      id={label}
+      id={kebabCase(label)}
       disabled={!canEdit}
       label={label}
       handleDateTimeChange={handleDateTimeChange}

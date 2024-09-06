@@ -56,24 +56,15 @@ describe("DemographicsSection", () => {
 
     expect(screen.getByText("Date of Birth")).toBeInTheDocument();
 
-    const birthdateInputs = screen.getAllByPlaceholderText(
-      "MM/DD/YYYY"
+    const birthdateTimeInputs = screen.getAllByLabelText(
+      "Date of Birth"
     ) as HTMLInputElement[];
-    expect(birthdateInputs.length).toBe(1);
-    const birthtimeInputs = screen.getAllByPlaceholderText(
-      "hh:mm aa"
-    ) as HTMLInputElement[];
-    expect(birthtimeInputs.length).toBe(1);
+    expect(birthdateTimeInputs.length).toBe(1);
 
-    fireEvent.change(birthdateInputs[0], {
-      target: { value: "08/02/2023" },
+    fireEvent.change(birthdateTimeInputs[0], {
+      target: { value: "08/02/2023 11:00 AM" },
     });
-    expect(birthdateInputs[0].value).toBe("08/02/2023");
-
-    fireEvent.change(birthtimeInputs[0], {
-      target: { value: "02:24 PM" },
-    });
-    expect(birthtimeInputs[0].value).toBe("02:24 PM");
+    expect(birthdateTimeInputs[0].value).toBe("08/02/2023 11:00 AM");
     await waitFor(() => {
       expect(mockUseQdmPatientDispatch).toHaveBeenLastCalledWith({
         type: PatientActionType.SET_BIRTHDATETIME,
@@ -103,8 +94,8 @@ describe("DemographicsSection", () => {
 
     expect(screen.getByText("Date/Time Expiration")).toBeInTheDocument();
 
-    const dateTimeExpiration = screen.getAllByPlaceholderText(
-      "MM/DD/YYYY hh:mm aa"
+    const dateTimeExpiration = screen.getAllByLabelText(
+      "Date/Time Expiration"
     ) as HTMLInputElement[];
     expect(dateTimeExpiration.length).toBe(1);
     // start date
