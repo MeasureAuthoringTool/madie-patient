@@ -1,22 +1,14 @@
 import React, { useEffect, useState } from "react";
 import ElementSection from "../../../../../common/ElementSection";
-import { InputLabel, Select } from "@madie/madie-design-system/dist/react";
+import { Select } from "@madie/madie-design-system/dist/react";
 import FormControl from "@mui/material/FormControl";
 import {
   DataElement,
   QDMPatient,
   PatientCharacteristicExpired,
 } from "cqm-models";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { TimePicker } from "@mui/x-date-pickers";
+import DateTimeInput from "../../../../../common/dateTimeInput/DateTimeInput";
 import dayjs from "dayjs";
-import {
-  birthDateLabelStyle,
-  textFieldStyle,
-  timeTextFieldStyle,
-} from "./DemographicsSectionStyles";
 import "./DemographicsSection.scss";
 import utc from "dayjs/plugin/utc";
 
@@ -37,7 +29,6 @@ import {
   PatientActionType,
   useQdmPatient,
 } from "../../../../../../util/QdmPatientContext";
-import DateTimeInput from "../../../../../common/dateTimeInput/DateTimeInput";
 
 export interface CodeSystem {
   code: string;
@@ -228,66 +219,17 @@ const DemographicsSection = ({ canEdit }) => {
           <div className="demographics-container">
             {/* container */}
             <div className="demographics-row">
-              <div className="birth-date">
-                <FormControl>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <InputLabel
-                      htmlFor={"birth-date"}
-                      style={{ marginBottom: 0, height: 16 }} // force a heignt
-                      sx={birthDateLabelStyle}
-                    >
-                      Date of Birth
-                    </InputLabel>
-                    <div style={{ display: "flex" }}>
-                      <DatePicker
-                        disabled={!canEdit}
-                        value={
-                          patient?.birthDatetime
-                            ? dayjs(patient?.birthDatetime)
-                            : null
-                        }
-                        onChange={(newValue: any) => {
-                          const currentDate = dayjs(patient?.birthDatetime);
-                          const newDate = dayjs(currentDate)
-                            .set("year", newValue?.$y)
-                            .set("month", newValue?.$M)
-                            .set("date", newValue?.$D);
-
-                          handleTimeChange(newDate);
-                        }}
-                        slotProps={{
-                          textField: {
-                            id: "birth-date",
-                            sx: textFieldStyle,
-                          },
-                        }}
-                      />
-                      <TimePicker
-                        disableOpenPicker
-                        disabled={!canEdit}
-                        value={
-                          patient?.birthDatetime
-                            ? dayjs(patient?.birthDatetime)
-                            : null
-                        }
-                        onChange={(newValue: any, v) => {
-                          const currentDate = patient?.birthDatetime;
-                          // hours and minute seem to already take into account AMPM
-                          const newDate = dayjs(currentDate)
-                            .set("hour", newValue?.$H)
-                            .set("minute", newValue?.$m);
-                          handleTimeChange(newDate);
-                        }}
-                        slotProps={{
-                          textField: {
-                            sx: timeTextFieldStyle,
-                          },
-                        }}
-                      />
-                    </div>
-                  </LocalizationProvider>
-                </FormControl>
-              </div>
+              <DateTimeInput
+                label="Date of Birth"
+                canEdit={canEdit}
+                dateTime={
+                  patient?.birthDatetime ? dayjs(patient?.birthDatetime) : null
+                }
+                attributeName="DateTime"
+                onDateTimeChange={(newValue) => {
+                  handleTimeChange(newValue);
+                }}
+              />
               <FormControl>
                 <Select
                   labelId="demographics-living-status-select-label"

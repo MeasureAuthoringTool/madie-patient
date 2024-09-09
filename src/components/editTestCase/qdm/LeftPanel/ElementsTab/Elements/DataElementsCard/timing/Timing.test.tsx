@@ -55,14 +55,16 @@ describe("Timing", () => {
       />
     );
 
-    expect(screen.getByTestId("relevant-period-start")).toBeInTheDocument();
-    expect(screen.getByTestId("relevant-period-end")).toBeInTheDocument();
+    expect(
+      screen.getByTestId("relevant-period-start-input")
+    ).toBeInTheDocument();
+    expect(screen.getByTestId("relevant-period-end-input")).toBeInTheDocument();
     expect(screen.queryByText("Relevant Period - Start")).toBeInTheDocument();
     expect(screen.queryByText("Relevant Period - End")).toBeInTheDocument();
-    expect(screen.getByTestId("relevant-datetime")).toBeInTheDocument();
+    expect(screen.getByTestId("relevant-datetime-input")).toBeInTheDocument();
     expect(screen.queryByText("Relevant Datetime")).toBeInTheDocument();
 
-    expect(screen.getByTestId("author-datetime")).toBeInTheDocument();
+    expect(screen.getByTestId("author-datetime-input")).toBeInTheDocument();
     expect(screen.queryByText("Author Datetime")).toBeInTheDocument();
   });
 
@@ -77,8 +79,12 @@ describe("Timing", () => {
       />
     );
 
-    expect(screen.getByTestId("prevalence-period-start")).toBeInTheDocument();
-    expect(screen.getByTestId("prevalence-period-end")).toBeInTheDocument();
+    expect(
+      screen.getByTestId("prevalence-period-start-input")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId("prevalence-period-end-input")
+    ).toBeInTheDocument();
     expect(screen.getByText("Prevalence Period - Start")).toBeInTheDocument();
     expect(screen.getByText("Prevalence Period - End")).toBeInTheDocument();
   });
@@ -95,9 +101,11 @@ describe("Timing", () => {
     );
 
     expect(
-      screen.getByTestId("participation-period-start")
+      screen.getByTestId("participation-period-start-input")
     ).toBeInTheDocument();
-    expect(screen.getByTestId("participation-period-end")).toBeInTheDocument();
+    expect(
+      screen.getByTestId("participation-period-end-input")
+    ).toBeInTheDocument();
     expect(
       screen.getByText("Participation Period - Start")
     ).toBeInTheDocument();
@@ -116,17 +124,19 @@ describe("Timing", () => {
       />
     );
 
-    expect(screen.getByTestId("relevant-period-start")).toBeInTheDocument();
-    expect(screen.getByTestId("relevant-period-end")).toBeInTheDocument();
+    expect(
+      screen.getByTestId("relevant-period-start-input")
+    ).toBeInTheDocument();
+    expect(screen.getByTestId("relevant-period-end-input")).toBeInTheDocument();
     expect(screen.queryByText("Relevant Period - Start")).toBeInTheDocument();
     expect(screen.queryByText("Relevant Period - End")).toBeInTheDocument();
 
-    expect(screen.getByTestId("relevant-datetime")).toBeInTheDocument();
+    expect(screen.getByTestId("relevant-datetime-input")).toBeInTheDocument();
     expect(screen.queryByText("Relevant Datetime")).toBeInTheDocument();
-    expect(screen.getByTestId("author-datetime")).toBeInTheDocument();
+    expect(screen.getByTestId("author-datetime-input")).toBeInTheDocument();
     expect(screen.queryByText("Author Datetime")).toBeInTheDocument();
 
-    expect(screen.getByTestId("result-datetime")).toBeInTheDocument();
+    expect(screen.getByTestId("result-datetime-input")).toBeInTheDocument();
     expect(screen.queryByText("Result Datetime")).toBeInTheDocument();
   });
 
@@ -141,8 +151,12 @@ describe("Timing", () => {
       />
     );
 
-    expect(screen.getByTestId("prevalence-period-start")).toBeInTheDocument();
-    expect(screen.getByTestId("prevalence-period-end")).toBeInTheDocument();
+    expect(
+      screen.getByTestId("prevalence-period-start-input")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId("prevalence-period-end-input")
+    ).toBeInTheDocument();
     expect(screen.getByText("Prevalence Period - Start")).toBeInTheDocument();
     expect(screen.getByText("Prevalence Period - End")).toBeInTheDocument();
 
@@ -172,9 +186,11 @@ describe("Timing", () => {
     );
 
     expect(
-      screen.getByTestId("participation-period-start")
+      screen.getByTestId("participation-period-start-input")
     ).toBeInTheDocument();
-    expect(screen.getByTestId("participation-period-end")).toBeInTheDocument();
+    expect(
+      screen.getByTestId("participation-period-end-input")
+    ).toBeInTheDocument();
     expect(
       screen.getByText("Participation Period - Start")
     ).toBeInTheDocument();
@@ -242,8 +258,12 @@ describe("Timing", () => {
       />
     );
 
-    expect(screen.getByTestId("prevalence-period-start")).toBeInTheDocument();
-    expect(screen.getByTestId("prevalence-period-end")).toBeInTheDocument();
+    expect(
+      screen.getByTestId("prevalence-period-start-input")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByTestId("prevalence-period-end-input")
+    ).toBeInTheDocument();
     expect(screen.getByText("Prevalence Period - Start")).toBeInTheDocument();
     expect(screen.getByText("Prevalence Period - End")).toBeInTheDocument();
 
