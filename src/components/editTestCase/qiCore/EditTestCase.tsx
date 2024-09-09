@@ -242,12 +242,14 @@ const EditTestCase = (props: EditTestCaseProps) => {
     series: [],
   });
   const [editor, setEditor] = useState<Ace.Editor>(null);
+
   function resizeEditor() {
     // hack to force Ace to resize as it doesn't seem to be responsive
     setTimeout(() => {
       editor?.resize(true);
     }, 500);
   }
+
   // we need this to fire on initial load because it doesn't know about allotment's client width
   useEffect(() => {
     if (editor) {
@@ -835,18 +837,48 @@ const EditTestCase = (props: EditTestCaseProps) => {
                 </div>
 
                 <QiCoreResourceProvider>
-                  {leftPanelActiveTab === "elements" && (
-                    <div className="panel-content">
-                      <div data-testid="elements-content">
-                        <ElementsTab
-                          canEdit={canEdit}
-                          setEditorVal={setEditorVal}
-                          editorVal={editorVal}
-                          testCase={testCase}
+                  {leftPanelActiveTab === "elements" &&
+                    severityOfValidationErrors(validationErrors) !==
+                      "error" && (
+                      <div className="panel-content">
+                        <div data-testid="elements-content">
+                          <ElementsTab
+                            canEdit={canEdit}
+                            setEditorVal={setEditorVal}
+                            editorVal={editorVal}
+                            testCase={testCase}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  {leftPanelActiveTab === "elements" &&
+                    severityOfValidationErrors(validationErrors) ===
+                      "error" && (
+                      <div style={{ width: "98%" }}>
+                        <MadieAlert
+                          type="error"
+                          content={
+                            <div
+                              aria-live="polite"
+                              role="alert"
+                              data-testid="json-error-alert-div"
+                              style={{
+                                paddingTop: "10px",
+                                paddingBottom: "8px",
+                              }}
+                            >
+                              <h3>JSON Failing</h3>
+                              All JSON errors must be cleared before the UI
+                              Builder can be used.
+                            </div>
+                          }
+                          alertProps={{
+                            "data-testid": "json-error-alert",
+                          }}
+                          canClose={false}
                         />
                       </div>
-                    </div>
-                  )}
+                    )}
                   {leftPanelActiveTab === "json" && (
                     <Editor
                       onChange={(val: string) => setEditorVal(val)}

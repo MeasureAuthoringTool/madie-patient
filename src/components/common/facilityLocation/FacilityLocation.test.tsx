@@ -63,7 +63,9 @@ describe("FacilityLocation Component", () => {
       />
     );
     expect(screen.getByTestId("value-set-selector")).toBeInTheDocument();
-    expect(screen.getByTestId("location-period-start")).toBeInTheDocument();
-    expect(screen.getByTestId("location-period-end")).toBeInTheDocument();
+    expect(
+      screen.getByTestId("location-period-start-input")
+    ).toBeInTheDocument();
+    expect(screen.getByTestId("location-period-end-input")).toBeInTheDocument();
   });
 });

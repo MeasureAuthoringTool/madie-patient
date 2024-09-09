@@ -3,8 +3,7 @@ import { DateTimeField } from "@madie/madie-design-system/dist/react";
 import dayjs from "dayjs";
 import { CQL } from "cqm-models";
 import utc from "dayjs/plugin/utc";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { kebabCase } from "lodash";
 
 dayjs.extend(utc);
 dayjs.utc();
@@ -67,15 +66,13 @@ const DateTimeInput = ({
     }
   };
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DateTimeField
-        id={label}
-        disabled={!canEdit}
-        label={label}
-        handleDateTimeChange={handleDateTimeChange}
-        dateTimeValue={toDayJS(dateTime)}
-      />
-    </LocalizationProvider>
+    <DateTimeField
+      id={kebabCase(label)}
+      disabled={!canEdit}
+      label={label}
+      handleDateTimeChange={handleDateTimeChange}
+      dateTimeValue={toDayJS(dateTime)}
+    />
   );
 };
 
