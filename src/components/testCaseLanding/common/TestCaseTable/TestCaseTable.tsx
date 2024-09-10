@@ -86,6 +86,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
       group: tc.series,
       title: tc.title,
       description: tc.description,
+      lastSaved: tc.lastModifiedAt,
       action: tc,
     }));
   };
@@ -95,6 +96,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     group: string;
     title: string;
     description: string;
+    lastSaved: string;
     action: any;
     id: string;
   };
@@ -168,6 +170,24 @@ const TestCaseTable = (props: TestCaseTableProps) => {
         accessorKey: "description",
         sortingFn: (rowA, rowB) =>
           customSort(rowA.original.description, rowB.original.description),
+      },
+      {
+        header: "Last Saved",
+        cell: (info) => (
+          <TruncateText
+            text={info.row.original.lastSaved
+              ?.replace("T", " ")
+              .replace("Z", "")}
+            maxLength={23}
+            name="lastSaved"
+            dataTestId={`test-case-lastSaved-${
+              info.row.original.lastSaved ? info.row.original.lastSaved : ""
+            }`}
+          />
+        ),
+        accessorKey: "lastSaved",
+        sortingFn: (rowA, rowB) =>
+          customSort(rowA.original.lastSaved, rowB.original.lastSaved),
       },
       {
         header: "Action",
