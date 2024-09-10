@@ -15,6 +15,7 @@ declare module "@madie/madie-util" {
     qiCoreElementsTab: boolean;
     qdmHideJson: boolean;
     ShiftTestCasesDates: boolean;
+    TestCaseListSearch: boolean;
   }
 
   export interface ServiceConfig {

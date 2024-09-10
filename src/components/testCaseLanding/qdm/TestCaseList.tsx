@@ -15,7 +15,11 @@ import {
 } from "@madie/madie-models";
 import { useNavigate, useParams } from "react-router-dom";
 import calculationService from "../../../api/CalculationService";
-import { checkUserCanEdit, measureStore } from "@madie/madie-util";
+import {
+  checkUserCanEdit,
+  measureStore,
+  useFeatureFlags,
+} from "@madie/madie-util";
 import CreateCodeCoverageNavTabs from "./CreateCodeCoverageNavTabs";
 import CreateNewTestCaseDialog from "../../createTestCase/CreateNewTestCaseDialog";
 import {
@@ -60,6 +64,7 @@ import {
 } from "../../../api/useTestCaseServiceApi";
 
 import useQdmCqlParsingService from "../../../api/cqlElmTranslationService/useQdmCqlParsingService";
+import ActionCenter from "./ActionCenter/ActionCenter";
 
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
@@ -143,7 +148,7 @@ const TestCaseList = (props: TestCaseListProps) => {
   });
   const [exportExecuting, setExportExecuting] = useState(false);
   const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
-
+  const featureFlags = useFeatureFlags();
   const qdmCqlParsingService = useRef(useQdmCqlParsingService());
 
   // const [callstackMap, setCallstackMap] = useState<CqlDefinitionCallstack>();
@@ -741,7 +746,9 @@ const TestCaseList = (props: TestCaseListProps) => {
                           </span>
                         </div>
                       )}
-
+                      {featureFlags.TestCaseListSearch && (
+                        <ActionCenter />
+                      )}
                       <TestCaseTable
                         testCases={testCases}
                         canEdit={canEdit}
