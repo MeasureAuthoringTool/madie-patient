@@ -746,9 +746,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                           </span>
                         </div>
                       )}
-                      {featureFlags.TestCaseListSearch && (
-                        <ActionCenter />
-                      )}
+                      {featureFlags.TestCaseListSearch && <ActionCenter />}
                       <TestCaseTable
                         testCases={testCases}
                         canEdit={canEdit}
