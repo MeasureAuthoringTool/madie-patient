@@ -64,7 +64,7 @@ import {
 } from "../../../api/useTestCaseServiceApi";
 
 import useQdmCqlParsingService from "../../../api/cqlElmTranslationService/useQdmCqlParsingService";
-import ActionCenter from "./ActionCenter/ActionCenter";
+import ActionCenter from "../common/ActionCenter/ActionCenter";
 
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";

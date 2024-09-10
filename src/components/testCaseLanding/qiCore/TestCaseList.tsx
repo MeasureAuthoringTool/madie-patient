@@ -15,7 +15,11 @@ import {
   CalculationOutput,
   DetailedPopulationGroupResult,
 } from "fqm-execution/build/types/Calculator";
-import { checkUserCanEdit, measureStore } from "@madie/madie-util";
+import {
+  checkUserCanEdit,
+  measureStore,
+  useFeatureFlags,
+} from "@madie/madie-util";
 import useExecutionContext from "../../routes/qiCore/useExecutionContext";
 import CreateCodeCoverageNavTabs from "./CreateCodeCoverageNavTabs";
 import CodeCoverageHighlighting from "../common/CodeCoverageHighlighting";
@@ -37,6 +41,7 @@ import UseToast from "../common/Hooks/UseToast";
 import getModelFamily from "../../../util/measureModelHelpers";
 import FileSaver from "file-saver";
 import TestCaseImportDialog from "../common/import/TestCaseImportDialog";
+import ActionCenter from "../common/ActionCenter/ActionCenter";
 
 export const IMPORT_ERROR =
   "An error occurred while importing your test cases. Please try again, or reach out to the Help Desk.";
@@ -129,6 +134,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     useState<boolean>(false);
   const abortController = useRef(null);
   const [createOpen, setCreateOpen] = useState<boolean>(false);
+  const featureFlags = useFeatureFlags();
 
   useEffect(() => {
     if (testCases?.length != measure?.testCases?.length) {
@@ -572,6 +578,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                           </span>
                         </div>
                       )}
+                      {featureFlags.TestCaseListSearch && <ActionCenter />}
                       <TestCaseTable
                         testCases={testCases}
                         canEdit={canEdit}
