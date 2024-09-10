@@ -25,7 +25,7 @@ const DateTimeInterval = ({
   const handleStartDateTimeChange = (newValue) => {
     if (
       (newValue === null || newValue === undefined) &&
-      !dateTimeInterval.high
+      !dateTimeInterval?.high
     ) {
       onDateTimeIntervalChange(null, attributeName);
     } else {
@@ -41,7 +41,7 @@ const DateTimeInterval = ({
   const handleEndDateTimeChange = (newValue) => {
     if (
       (newValue === null || newValue === undefined) &&
-      !dateTimeInterval.low
+      !dateTimeInterval?.low
     ) {
       onDateTimeIntervalChange(null, attributeName);
     } else {
