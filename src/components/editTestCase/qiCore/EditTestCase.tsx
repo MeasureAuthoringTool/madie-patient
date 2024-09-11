@@ -763,11 +763,12 @@ const EditTestCase = (props: EditTestCaseProps) => {
   // An empty string is also considered to be valid, as it is not malformed
   // and allows a user to edit for the first time
   const isValidJson = (str) => {
-    if (!_.isEmpty(str)) {
+    if (!_.isEmpty(str) && "Loading..." !== str) {
       try {
         JSON.parse(str);
         return true;
       } catch (error) {
+        console.log(`Error parsing json [${str}]`, error);
         return false;
       }
     }

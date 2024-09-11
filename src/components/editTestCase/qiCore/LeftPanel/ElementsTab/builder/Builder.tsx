@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { BuilderUtils } from "./BuilderUtils";
 import { Box, Checkbox, Divider, TextField } from "@mui/material";
 import * as _ from "lodash";
 import ResourceSelector from "./resourceSelector/ResourceSelector";
@@ -13,6 +12,7 @@ import {
   ResourceActionType,
   useQiCoreResource,
 } from "../../../../../../util/QiCorePatientProvider";
+import useFhirDefinitionsServiceApi from "../../../../../../api/useFhirDefinitionsService";
 
 interface BuilderProps {
   testCase: TestCase;
@@ -21,12 +21,12 @@ interface BuilderProps {
 
 const Builder = ({ testCase, canEdit }: BuilderProps) => {
   const [resources, setResources] = useState([]);
-  const builderUtils = useRef(new BuilderUtils());
+  const fhirDefinitionsService = useRef(useFhirDefinitionsServiceApi());
   const [activeResource, setActiveResource] = useState(null);
   const { state, dispatch } = useQiCoreResource();
 
   useEffect(() => {
-    builderUtils.current
+    fhirDefinitionsService.current
       .getResources()
       .then((resources) => setResources(_.uniq(resources.sort())))
       .catch((err) =>
@@ -38,7 +38,7 @@ const Builder = ({ testCase, canEdit }: BuilderProps) => {
     // eslint-disable-next-line no-console
     console.log("resource selected: ", bundleEntry);
     const resourceName = bundleEntry?.resource?.resourceType;
-    const resourceTree = await builderUtils.current.getResourceTree(
+    const resourceTree = await fhirDefinitionsService.current.getResourceTree(
       resourceName
     );
     // eslint-disable-next-line no-console

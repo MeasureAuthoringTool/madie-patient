@@ -1,21 +1,20 @@
-import React, { useEffect, useState } from "react";
-import IdentifierInput from "../../../../../common/Identifier/IdentifierInput";
+import React, { useEffect, useRef, useState } from "react";
 import * as _ from "lodash";
-import { BuilderUtils } from "../builder/BuilderUtils";
 import Box from "@mui/material/Box";
 import { TextField, InputLabel } from "@madie/madie-design-system/dist/react";
-import DateTimeInterval from "../../../../../common/dateTimeInterval/DateTimeInterval";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimeField } from "@mui/x-date-pickers";
+import useFhirDefinitionsServiceApi from "../../../../../../api/useFhirDefinitionsService";
 
 const TypeEditor = ({ type, value, onChange }) => {
   const [typeDefinition, setTypeDefinition] = useState(null);
+  const fhirDefinitionsService = useRef(useFhirDefinitionsServiceApi());
 
   useEffect(() => {
     if (type && type.toUpperCase() !== "CODE") {
       console.log(`TypeEditor - load resourceTree for type [${type}]`);
-      BuilderUtils.getResourceTree(type).then((def) => {
+      fhirDefinitionsService.current.getResourceTree(type).then((def) => {
         console.log("TypeEditor - got type def: ", def);
         setTypeDefinition(def?.definition ?? {});
       });

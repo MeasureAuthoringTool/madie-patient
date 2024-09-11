@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Box, Divider, IconButton, Tab, Tabs } from "@mui/material";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
 import CloseIcon from "@mui/icons-material/Close";
-import { BuilderUtils } from "../BuilderUtils";
-import { TabPanel } from "@mui/lab";
 import ElementEditor from "../../element/ElementEditor";
 import ElementSelector from "../../element/ElementSelector";
 import * as _ from "lodash";
+import useFhirDefinitionsServiceApi from "../../../../../../../api/useFhirDefinitionsService";
 
 interface ResourceEditorProps {
   selectedResource: any;
@@ -25,11 +23,13 @@ const ResourceEditor = ({
   const [allElements, setAllElements] = useState([]);
   const [displayedElements, setDisplayedElements] = useState([]);
   const [editingResource, setEditingResource] = useState(null);
+  const fhirDefinitionsService = useRef(useFhirDefinitionsServiceApi());
 
   useEffect(() => {
     if (selectedResource) {
       // TODO: look at the data that exists on the resource and combine fields from that
-      const topElements = BuilderUtils.getAllElements(selectedResource);
+      const topElements =
+        fhirDefinitionsService.current.getAllElements(selectedResource);
       setAllElements(topElements);
       setDisplayedElements([...topElements.filter((e) => e.min > 0)]);
       setEditingResource({});
@@ -41,7 +41,8 @@ const ResourceEditor = ({
   }, [selectedResource]);
 
   // BuilderUtils.buildElementTree(selectedResource);
-  const resourceBasePath = BuilderUtils.getBasePath(selectedResource);
+  const resourceBasePath =
+    fhirDefinitionsService.current.getBasePath(selectedResource);
 
   console.log("resourceEditor: ", selectedResource);
   return (
