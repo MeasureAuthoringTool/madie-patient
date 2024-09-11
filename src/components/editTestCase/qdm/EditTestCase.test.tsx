@@ -7,6 +7,8 @@ import {
   within,
 } from "@testing-library/react";
 import EditTestCase from "./EditTestCase";
+import { testCaseFixture } from "../../createTestCase/__mocks__/testCaseFixture";
+import { QDMPatientSchemaValidator } from "./QDMPatientSchemaValidator";
 import {
   Measure,
   MeasureScoring,
@@ -1008,4 +1010,134 @@ describe("EditTestCase QDM Component", () => {
       );
     });
   }, 30000);
+  describe("validator", () => {
+    it("should provide error for non boolean populations when value is in decimal", () => {
+      const tc = {
+        ...testCaseFixture,
+        groupPopulations: [
+          {
+            group: "Group One",
+            groupId: "1",
+            scoring: MeasureScoring.PROPORTION,
+            populationBasis: "Encounter",
+            populationValues: [
+              {
+                name: PopulationType.INITIAL_POPULATION,
+                expected: "1.5",
+                actual: false,
+              },
+              {
+                name: PopulationType.NUMERATOR,
+                expected: false,
+                actual: false,
+              },
+              {
+                name: PopulationType.DENOMINATOR,
+                expected: true,
+                actual: false,
+              },
+            ],
+          },
+        ],
+      };
+      let expectedError: Error = null;
+      try {
+        QDMPatientSchemaValidator.validateSync(tc);
+        fail("Expected an error");
+      } catch (error) {
+        expectedError = error;
+      }
+
+      expect(expectedError).toBeTruthy();
+      expect(expectedError.message).toEqual(
+        "Decimals values cannot be entered in the population expected values"
+      );
+    });
+
+    it("should provide error for bad boolean value", () => {
+      const tc = {
+        ...testCaseFixture,
+        groupPopulations: [
+          {
+            group: "Group One",
+            groupId: "1",
+            scoring: MeasureScoring.PROPORTION,
+            populationBasis: "boolean",
+            populationValues: [
+              {
+                name: PopulationType.INITIAL_POPULATION,
+                expected: "WRONG",
+                actual: false,
+              },
+              {
+                name: PopulationType.NUMERATOR,
+                expected: false,
+                actual: false,
+              },
+              {
+                name: PopulationType.DENOMINATOR,
+                expected: true,
+                actual: false,
+              },
+            ],
+          },
+        ],
+      };
+      let expectedError: Error = null;
+      try {
+        QDMPatientSchemaValidator.validateSync(tc);
+        fail("Expected an error");
+      } catch (error) {
+        expectedError = error;
+      }
+
+      expect(expectedError).toBeTruthy();
+      expect(expectedError.message).toEqual(
+        "Expected value type must match population basis type"
+      );
+    });
+
+    it("should provide error for non boolean populations when the value is negative", () => {
+      const tc = {
+        ...testCaseFixture,
+        groupPopulations: [
+          {
+            group: "Group One",
+            groupId: "1",
+            scoring: MeasureScoring.PROPORTION,
+            populationBasis: "Encounter",
+            populationValues: [
+              {
+                name: PopulationType.INITIAL_POPULATION,
+                expected: "-1.5",
+                actual: false,
+              },
+              {
+                name: PopulationType.NUMERATOR,
+                expected: false,
+                actual: false,
+              },
+              {
+                name: PopulationType.DENOMINATOR,
+                expected: true,
+                actual: false,
+              },
+            ],
+          },
+        ],
+      };
+      let expectedError: Error = null;
+      try {
+        QDMPatientSchemaValidator.validateSync(tc);
+        fail("Expected an error");
+      } catch (error) {
+        expectedError = error;
+      }
+
+      expect(expectedError).toBeTruthy();
+      expect(expectedError.message).toEqual(
+        "Only positive numeric values can be entered in the expected values"
+      );
+    });
+  });
 });
