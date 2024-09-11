@@ -10,11 +10,18 @@ export class BuilderUtils {
   }
 
   static async getResourceTree(resourceName) {
-    const response = await axios.get<any>(
-      `http://localhost:3001/structure-definitions/${resourceName}`
-    );
-    console.log("response: ", response);
-    return response.data;
+    try {
+      const response = await axios.get<any>(
+        `http://localhost:3001/api/structure-definitions/${resourceName}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        `An error occurred while loading definition for resourceName [${resourceName}]: `,
+        error
+      );
+    }
+    return null;
   }
 
   async getResourceTree(resourceName) {
@@ -60,7 +67,6 @@ export class BuilderUtils {
   static getAllElements(resource: any) {
     const elements = [...resource?.definition?.snapshot?.element];
     const basePath = this.getBasePath(resource);
-    // console.log("elements: ", elements);
     const nextElements = elements?.filter(
       (e) => e.path.split(".")?.length === 2
     );

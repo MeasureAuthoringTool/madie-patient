@@ -25,7 +25,7 @@ const ElementSelector = ({
       <Autocomplete
         multiple
         limitTags={2}
-        id="checkboxes-tags-demo"
+        id="resource-element-selector-autocomplete"
         options={options}
         value={value}
         onChange={onChange}
@@ -44,7 +44,7 @@ const ElementSelector = ({
         )}
         style={{ width: 500 }}
         renderInput={(params) => (
-          <TextField {...params} label="Checkboxes" placeholder="Elements" />
+          <TextField {...params} label="Elements" placeholder="Elements" />
         )}
       />
     </>

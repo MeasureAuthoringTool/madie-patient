@@ -760,6 +760,20 @@ const EditTestCase = (props: EditTestCaseProps) => {
     );
   };
 
+  // An empty string is also considered to be valid, as it is not malformed
+  // and allows a user to edit for the first time
+  const isValidJson = (str) => {
+    if (!_.isEmpty(str)) {
+      try {
+        JSON.parse(str);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    }
+    return true;
+  };
+
   const severityOfValidationErrors = (validationErrors) => {
     const errorsWithNoSeverity = validationErrors?.filter(
       (validationError) => !validationError.hasOwnProperty("severity")
@@ -838,8 +852,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
 
                 <QiCoreResourceProvider>
                   {leftPanelActiveTab === "elements" &&
-                    severityOfValidationErrors(validationErrors) !==
-                      "error" && (
+                    isValidJson(editorVal) && (
                       <div className="panel-content">
                         <div data-testid="elements-content">
                           <ElementsTab
@@ -852,8 +865,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
                       </div>
                     )}
                   {leftPanelActiveTab === "elements" &&
-                    severityOfValidationErrors(validationErrors) ===
-                      "error" && (
+                    !isValidJson(editorVal) && (
                       <div style={{ width: "98%" }}>
                         <MadieAlert
                           type="error"

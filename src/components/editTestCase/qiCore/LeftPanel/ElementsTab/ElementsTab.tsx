@@ -10,13 +10,6 @@ const ElementsTab = ({ canEdit, setEditorVal, editorVal, testCase }) => {
   const { state, dispatch } = useQiCoreResource();
   const lastJsonRef = useRef(null);
 
-  const standardizeJson = (editorVal) => {
-    try {
-      return JSON.parse(editorVal);
-    } catch (e) {
-      return editorVal;
-    }
-  };
   useEffect(() => {
     if (
       !_.isEmpty(editorVal) &&
@@ -24,27 +17,26 @@ const ElementsTab = ({ canEdit, setEditorVal, editorVal, testCase }) => {
       (_.isNil(lastJsonRef.current) || editorVal !== lastJsonRef.current)
     ) {
       lastJsonRef.current = editorVal;
-      const resource = standardizeJson(editorVal);
+      const bundle = JSON.parse(editorVal);
       dispatch({
-        type: ResourceActionType.LOAD_RESOURCE,
-        payload: resource,
+        type: ResourceActionType.LOAD_BUNDLE,
+        payload: bundle,
       });
     }
   }, [dispatch, editorVal]);
 
   useEffect(() => {
-    const patientStr =
-      state?.resource !== editorVal
-        ? JSON.stringify(state?.resource, null, 2)
-        : state?.resource;
-    if (state.resource && editorVal && patientStr !== editorVal) {
-      lastJsonRef.current = patientStr;
-      setEditorVal(patientStr);
+    const bundleStr = JSON.stringify(state?.bundle, null, 2);
+    if (state.bundle && !_.isEmpty(bundleStr) && bundleStr !== editorVal) {
+      lastJsonRef.current = bundleStr;
+      setEditorVal(bundleStr);
     }
   }, [state]);
 
   return (
-    <Builder testCase={testCase} bundleJson={editorVal} canEdit={canEdit} />
+    <>
+      <Builder testCase={testCase} canEdit={canEdit} />
+    </>
   );
 };
 

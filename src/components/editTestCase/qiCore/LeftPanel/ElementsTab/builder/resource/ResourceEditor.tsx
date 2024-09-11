@@ -97,7 +97,7 @@ const ResourceEditor = ({
             console.log("newValue: ", newValue);
             setActiveTab(newValue);
           }}
-          aria-label="Vertical tabs example"
+          aria-label="Resource element tabs"
           sx={{
             borderRight: 1,
             borderColor: "divider",
