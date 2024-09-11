@@ -34,6 +34,17 @@ interface TestCaseTableProps {
   onTestCaseShiftDates?: (testCase: TestCase, shifted: number) => void;
 }
 
+export const convertDate = (date: string) => {
+  if (!date) {
+    return "";
+  }
+  const dateObj = new Date(date);
+  const year = dateObj.getUTCFullYear().toString();
+  const month = String(dateObj.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(dateObj.getUTCDate()).padStart(2, "0");
+  return `${month}/${day}/${year}`;
+};
+
 const TestCaseTable = (props: TestCaseTableProps) => {
   const {
     testCases,
@@ -175,9 +186,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
         header: "Last Saved",
         cell: (info) => (
           <TruncateText
-            text={info.row.original.lastSaved
-              ?.replace("T", " ")
-              .replace("Z", "")}
+            text={convertDate(info.row.original.lastSaved)}
             maxLength={23}
             name="lastSaved"
             dataTestId={`test-case-lastSaved-${

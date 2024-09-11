@@ -1,7 +1,7 @@
 import * as React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import TestCaseTable from "./TestCaseTable";
+import TestCaseTable, { convertDate } from "./TestCaseTable";
 import {
   Measure,
   MeasureScoring,
@@ -127,9 +127,7 @@ describe("TestCase component", () => {
     expect(columns[1]).toHaveTextContent(testCase.series);
     expect(columns[2]).toHaveTextContent(testCase.title);
     expect(columns[3]).toHaveTextContent(testCase.description);
-    expect(columns[4]).toHaveTextContent(
-      testCase.lastModifiedAt?.replace("T", " ").replace("Z", "")
-    );
+    expect(columns[4]).toHaveTextContent(convertDate(testCase.lastModifiedAt));
 
     const buttons = await screen.findAllByRole("button");
     expect(buttons).toHaveLength(10);
@@ -175,9 +173,7 @@ describe("TestCase component", () => {
     expect(columns[1]).toHaveTextContent(testCase.series);
     expect(columns[2]).toHaveTextContent(testCase.title);
     expect(columns[3]).toHaveTextContent(testCase.description);
-    expect(columns[4]).toHaveTextContent(
-      testCase.lastModifiedAt?.replace("T", " ").replace("Z", "")
-    );
+    expect(columns[4]).toHaveTextContent(convertDate(testCase.lastModifiedAt));
 
     const row2 = await screen.findByTestId(`test-case-row-1`);
     const column2 = row2.querySelectorAll("td");
@@ -186,16 +182,14 @@ describe("TestCase component", () => {
     expect(column2[2]).toHaveTextContent(testCaseFail.title);
     expect(column2[3]).toHaveTextContent(testCaseFail.description);
     expect(column2[4]).toHaveTextContent(
-      testCaseFail.lastModifiedAt?.replace("T", " ").replace("Z", "")
+      convertDate(testCaseFail.lastModifiedAt)
     );
 
     const buttons = await screen.findAllByRole("button");
     expect(buttons).toHaveLength(10);
     expect(buttons[4]).toHaveTextContent("Last Saved");
 
-    expect(columns[4]).toHaveTextContent(
-      testCase.lastModifiedAt?.replace("T", " ").replace("Z", "")
-    );
+    expect(columns[4]).toHaveTextContent(convertDate(testCase.lastModifiedAt));
 
     fireEvent.click(buttons[4]);
     //descend
@@ -204,7 +198,7 @@ describe("TestCase component", () => {
     const sortedRows = await screen.findByTestId(`test-case-row-3`);
     const sortedColumns = sortedRows.querySelectorAll("td");
     expect(sortedColumns[4]).toHaveTextContent(
-      testCaseInvalid.lastModifiedAt?.replace("T", " ").replace("Z", "")
+      convertDate(testCaseInvalid.lastModifiedAt)
     );
   });
 
