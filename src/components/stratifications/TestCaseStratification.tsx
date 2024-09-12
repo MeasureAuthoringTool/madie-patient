@@ -1,7 +1,7 @@
 import React from "react";
 import "styled-components/macro";
 import { DisplayStratificationValue } from "@madie/madie-models";
-import ExpectActualInput from "../populations/ExpectActualInput";
+import TestCaseStratificationRow from "./TestCaseStratificationRow";
 
 export interface TestCaseStratificationProps {
   strataCode: string;
@@ -10,7 +10,11 @@ export interface TestCaseStratificationProps {
   populationBasis: string;
   showExpected?: boolean;
   disableExpected?: boolean;
-  onStratificationChange: (stratification: DisplayStratificationValue) => void;
+  onStratificationChange: (
+    stratification: DisplayStratificationValue,
+    stratId: string
+  ) => void;
+  groupsStratificationAssociationMap?: any;
 }
 
 const TestCaseStratification = ({
@@ -20,62 +24,27 @@ const TestCaseStratification = ({
   populationBasis,
   disableExpected = false,
   onStratificationChange,
+  groupsStratificationAssociationMap,
 }: TestCaseStratificationProps) => {
+  const associations = groupsStratificationAssociationMap[stratification?.id];
+  const associatedPopulationValues = stratification?.populationValues?.filter(
+    (pop) => associations.includes(pop.name)
+  );
   return (
     <React.Fragment key={`fragment-key-${strataCode}`}>
-      <tr
-        tw="border-b"
-        key={strataCode}
-        data-testid={`test-row-population-id-${stratification.name}`}
-        role="row"
-      >
-        <td>&nbsp;</td>
-        <td role="cell">{strataCode}</td>
-        <td role="cell">
-          <ExpectActualInput
-            id={`${stratification.name}-expected-cb`}
-            expectedValue={stratification.expected}
-            onChange={(expectedValue) =>
-              onStratificationChange({
-                ...stratification,
-                expected: expectedValue,
-              })
-            }
+      {associatedPopulationValues?.map((strat, index) => {
+        return (
+          <TestCaseStratificationRow
+            stratification={strat} //actuall a population value
+            stratId={stratification.id}
+            strataCode={strataCode}
+            executionRun={executionRun}
             populationBasis={populationBasis}
-            disabled={disableExpected}
-            data-testid={`test-population-${stratification.name}-expected`}
-            displayType="expected"
+            disableExpected={disableExpected}
+            onStratificationChange={onStratificationChange}
           />
-        </td>
-        <td role="cell">
-          {executionRun ? (
-            <ExpectActualInput
-              id={`${stratification.name}-actual-cb`}
-              expectedValue={stratification.actual}
-              onChange={(expectedValue) =>
-                onStratificationChange({
-                  ...stratification,
-                  actual: expectedValue,
-                })
-              }
-              populationBasis={populationBasis}
-              disabled={true}
-              data-testid={`test-stratification-${stratification.name}-actual`}
-              displayType="actual"
-            />
-          ) : (
-            <pre
-              data-testid={`test-stratification-${stratification.name}-actual`}
-            >
-              {" "}
-              -
-            </pre>
-          )}
-        </td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-      </tr>
+        );
+      })}
     </React.Fragment>
   );
 };

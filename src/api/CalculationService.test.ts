@@ -1291,7 +1291,7 @@ describe("CalculationService Tests", () => {
               {
                 id: "strata2",
                 name: "strata-2 Initial Population",
-                expected: false,
+                expected: true,
               },
             ],
           },
@@ -1337,7 +1337,6 @@ describe("CalculationService Tests", () => {
         groups,
         popGroupResults
       );
-      //fails
       expect(output).toBeTruthy();
       expect(output.executionStatus).toEqual(ExecutionStatusType.PASS);
       const outputGroupPopulations = output.groupPopulations;
@@ -1353,7 +1352,7 @@ describe("CalculationService Tests", () => {
       expect(group1StratVals).toBeTruthy();
       expect(group1StratVals.length).toEqual(2);
       expect(group1StratVals[0].actual).toEqual(true);
-      expect(group1StratVals[1].actual).toEqual(false);
+      expect(group1StratVals[1].actual).toEqual(true);
     });
 
     it("should return test case results for continuous variable, boolean popBasis", () => {
