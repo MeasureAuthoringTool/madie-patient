@@ -95,7 +95,7 @@
     "@mui/material": "^5.6.2",
     "@mui/styles": "^5.8.0",
     "@mui/x-date-pickers": "^6.6.0",
-    "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/forms": "^0.5.9",
     "@tanstack/match-sorter-utils": "^8.8.4",
     "@tanstack/react-table": "^8.10.3",
     "ace-builds": "~1.4.13",
@@ -124,7 +124,7 @@
     "single-spa": "^5.9.3",
     "single-spa-react": "^4.4.0",
     "styled-components": "^5.3.1",
-    "tailwindcss": "^3.4.1",
+    "tailwindcss": "^3.4.11",
     "twin.macro": "^3.4.1",
     "validator": "^13.9.0",
     "yup": "^0.32.11"
