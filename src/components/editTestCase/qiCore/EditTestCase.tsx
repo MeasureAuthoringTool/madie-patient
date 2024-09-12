@@ -3,6 +3,7 @@ import React, {
   SetStateAction,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -810,16 +811,19 @@ const EditTestCase = (props: EditTestCaseProps) => {
 
   const allotmentRef = useRef(null);
   // we need to know which stratification rows to render
-  const stratificationsMap = {};
-  if (measure?.groups) {
-    measure.groups.forEach((group) => {
-      if (Array.isArray(group?.stratifications)) {
-        for (const strat of group.stratifications) {
-          stratificationsMap[strat.id] = strat.associations;
+  const stratificationsMap = useMemo(() => {
+    const map = {};
+    if (measure?.groups) {
+      measure.groups.forEach((group) => {
+        if (Array.isArray(group?.stratifications)) {
+          for (const strat of group.stratifications) {
+            map[strat.id] = strat.associations;
+          }
         }
-      }
-    });
-  }
+      });
+    }
+    return map;
+  }, [measure?.groups]);
 
   return (
     <TestCaseForm

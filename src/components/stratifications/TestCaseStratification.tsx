@@ -26,7 +26,9 @@ const TestCaseStratification = ({
   onStratificationChange,
   groupsStratificationAssociationMap,
 }: TestCaseStratificationProps) => {
-  const associations = groupsStratificationAssociationMap[stratification?.id];
+  const associations = groupsStratificationAssociationMap
+    ? groupsStratificationAssociationMap[stratification?.id]
+    : [];
   const associatedPopulationValues = stratification?.populationValues?.filter(
     (pop) => associations.includes(pop.name)
   );
