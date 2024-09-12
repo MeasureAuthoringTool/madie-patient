@@ -42,6 +42,7 @@ const TestCaseStratificationRow = ({
         <ExpectActualInput
           id={`${stratification.name}-expected-cb`}
           expectedValue={stratification.expected}
+          disabled={disableExpected}
           onChange={(expectedValue) => {
             onStratificationChange(
               {
@@ -52,7 +53,6 @@ const TestCaseStratificationRow = ({
             );
           }}
           populationBasis={populationBasis}
-          disabled={disableExpected}
           data-testid={`${strataCode}-${stratification.name}-expected`}
           displayType="expected"
         />

@@ -824,7 +824,6 @@ const EditTestCase = (props: EditTestCaseProps) => {
     }
     return map;
   }, [measure?.groups]);
-
   return (
     <TestCaseForm
       data-testid="create-test-case-form"
