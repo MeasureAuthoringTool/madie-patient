@@ -6,6 +6,34 @@ import axios from "./axios-instance";
 export class FhirDefinitionsServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
 
+  isComponentDataType(datatype) {
+    switch (datatype) {
+      case "boolean":
+      case "date":
+      case "dateTime":
+      case "http://hl7.org/fhirpath/System.DateTime":
+      case "decimal":
+      case "id":
+      case "instant":
+      case "integer":
+      case "integer64":
+      case "positiveInt":
+      case "time":
+      case "unsignedInt":
+      case "uri":
+      case "url":
+      case "uuid":
+      case "string":
+      case "http://hl7.org/fhirpath/System.String":
+      case "code":
+      case "Extension":
+      case "Reference":
+        return true;
+      default:
+        return false;
+    }
+  }
+
   async getResources() {
     try {
       const response = await axios.get<any>(`${this.baseUrl}/resources`, {
@@ -40,7 +68,11 @@ export class FhirDefinitionsServiceApi {
     return elements?.[0].path;
   }
 
-  getAllElements(resource: any) {
+  getTopLevelElements(resource: any) {
+    console.log("getTopLevelElements from: ", resource);
+    const element = resource?.definition?.snapshot?.element;
+    console.log("getTopLevelElements from element: ", element);
+
     const elements = [...resource?.definition?.snapshot?.element];
     const basePath = this.getBasePath(resource);
     const nextElements = elements?.filter(

@@ -23,6 +23,12 @@ const ElementEditor = ({
 
   const type = elementDefinition?.type?.[0];
   console.log("looking at type: ", type);
+  const required = +elementDefinition.min > 0;
+  const elementValue = _.get(resource, elementDefinition.path);
+  console.log(
+    `got value at path [${elementDefinition.path}] from resource: `,
+    _.cloneDeep(resource)
+  );
 
   return (
     <Box
@@ -34,11 +40,13 @@ const ElementEditor = ({
     >
       <TypeEditor
         type={type.code}
+        required={required}
         value={_.get(resource, elementDefinition.path)}
         onChange={(e) => {
           onChange(elementDefinition.path, e);
           console.log(e);
         }}
+        structureDefinition={elementDefinition}
       />
     </Box>
   );

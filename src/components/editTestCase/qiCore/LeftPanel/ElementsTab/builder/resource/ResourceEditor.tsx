@@ -28,10 +28,24 @@ const ResourceEditor = ({
   useEffect(() => {
     if (selectedResource) {
       // TODO: look at the data that exists on the resource and combine fields from that
+      console.log(
+        `ResourceEditor-useEffect[selectedResource]: `,
+        _.cloneDeep(selectedResource)
+      );
       const topElements =
-        fhirDefinitionsService.current.getAllElements(selectedResource);
+        fhirDefinitionsService.current.getTopLevelElements(selectedResource);
+      console.log("ResourceEditor-useEffect - topElements: ", topElements);
       setAllElements(topElements);
-      setDisplayedElements([...topElements.filter((e) => e.min > 0)]);
+      const requiredElements = [...topElements.filter((e) => e.min > 0)];
+      const elementsWithValues = [
+        ...topElements.filter((e) => {
+          console.log("elementsWithValues.filter: ", e);
+          return false;
+        }),
+      ];
+      setDisplayedElements(
+        _.uniq(_.concat(requiredElements, elementsWithValues))
+      );
       setEditingResource({});
     } else {
       setAllElements([]);
@@ -62,7 +76,9 @@ const ResourceEditor = ({
       >
         <Typography>{selectedResource.path}</Typography>
         <Box sx={{ flexGrow: 1 }} />
-        <Typography>ID: {selectedResource.id}</Typography>
+        <Typography>
+          ID: {selectedResource?.bundleEntry?.resource?.id}
+        </Typography>
         <IconButton onClick={() => onCancel(selectedResource)}>
           <CloseIcon />
         </IconButton>
@@ -120,7 +136,7 @@ const ResourceEditor = ({
         </Tabs>
         <ElementEditor
           elementDefinition={displayedElements?.[activeTab]}
-          resource={editingResource}
+          resource={selectedResource.bundleEntry?.resource}
           onChange={(path, value) => {
             setEditingResource((prevState) => {
               const nextState = _.cloneDeep(prevState);
