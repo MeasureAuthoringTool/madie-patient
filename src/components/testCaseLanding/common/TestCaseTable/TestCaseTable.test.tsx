@@ -1,7 +1,7 @@
 import * as React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import TestCaseTable from "./TestCaseTable";
+import TestCaseTable, { convertDate } from "./TestCaseTable";
 import {
   Measure,
   MeasureScoring,
@@ -16,6 +16,7 @@ const testCase = {
   title: "TEST IPP",
   description: "TEST DESCRIPTION",
   series: "TEST SERIES",
+  lastModifiedAt: "2024-09-06T15:15:14.382Z",
   executionStatus: "pass",
 } as unknown as TestCase;
 const testCaseFail = {
@@ -23,6 +24,7 @@ const testCaseFail = {
   title: "TEST IPP1",
   description: "TEST DESCRIPTION1",
   series: "TEST SERIES1",
+  lastModifiedAt: "2024-09-06T15:16:14.382Z",
   executionStatus: "fail",
 } as unknown as TestCase;
 const testCaseNA = {
@@ -30,6 +32,7 @@ const testCaseNA = {
   title: "TEST IPP2",
   description: "TEST DESCRIPTION2",
   series: "TEST SERIES2",
+  lastModifiedAt: "2024-09-06T15:17:14.382Z",
   executionStatus: "NA",
 } as unknown as TestCase;
 
@@ -38,6 +41,7 @@ const testCaseInvalid = {
   title: "TEST IPP3",
   description: "TEST DESCRIPTION3",
   series: "TEST SERIES3",
+  lastModifiedAt: "2024-09-06T15:18:14.382Z",
   executionStatus: "Invalid",
 } as unknown as TestCase;
 
@@ -123,11 +127,12 @@ describe("TestCase component", () => {
     expect(columns[1]).toHaveTextContent(testCase.series);
     expect(columns[2]).toHaveTextContent(testCase.title);
     expect(columns[3]).toHaveTextContent(testCase.description);
+    expect(columns[4]).toHaveTextContent(convertDate(testCase.lastModifiedAt));
 
     const buttons = await screen.findAllByRole("button");
-    expect(buttons).toHaveLength(9);
-    expect(buttons[5]).toHaveTextContent("Select");
-    fireEvent.click(buttons[5]);
+    expect(buttons).toHaveLength(10);
+    expect(buttons[6]).toHaveTextContent("Select");
+    fireEvent.click(buttons[6]);
     expect(screen.getByText("edit")).toBeInTheDocument();
     expect(screen.getByText("export transaction bundle")).toBeInTheDocument();
     expect(screen.getByText("export collection bundle")).toBeInTheDocument();
@@ -148,7 +153,56 @@ describe("TestCase component", () => {
     });
   });
 
-  it("should render test casee view for now owners and no delete option", async () => {
+  it("should render test case population table with sorting when button clicked", async () => {
+    const deleteTestCase = jest.fn();
+    const exportTestCase = jest.fn();
+    const onCloneTestCase = jest.fn();
+
+    renderWithTestCase(
+      testCases,
+      true,
+      deleteTestCase,
+      exportTestCase,
+      onCloneTestCase,
+      defaultMeasure
+    );
+
+    const rows = await screen.findByTestId(`test-case-row-0`);
+    const columns = rows.querySelectorAll("td");
+    expect(columns[0]).toHaveTextContent("Pass");
+    expect(columns[1]).toHaveTextContent(testCase.series);
+    expect(columns[2]).toHaveTextContent(testCase.title);
+    expect(columns[3]).toHaveTextContent(testCase.description);
+    expect(columns[4]).toHaveTextContent(convertDate(testCase.lastModifiedAt));
+
+    const row2 = await screen.findByTestId(`test-case-row-1`);
+    const column2 = row2.querySelectorAll("td");
+    expect(column2[0]).toHaveTextContent("Fail");
+    expect(column2[1]).toHaveTextContent(testCaseFail.series);
+    expect(column2[2]).toHaveTextContent(testCaseFail.title);
+    expect(column2[3]).toHaveTextContent(testCaseFail.description);
+    expect(column2[4]).toHaveTextContent(
+      convertDate(testCaseFail.lastModifiedAt)
+    );
+
+    const buttons = await screen.findAllByRole("button");
+    expect(buttons).toHaveLength(10);
+    expect(buttons[4]).toHaveTextContent("Last Saved");
+
+    expect(columns[4]).toHaveTextContent(convertDate(testCase.lastModifiedAt));
+
+    fireEvent.click(buttons[4]);
+    //descend
+    const sortDescendingBtn = screen.getByTestId("KeyboardArrowUpIcon");
+    fireEvent.click(sortDescendingBtn);
+    const sortedRows = await screen.findByTestId(`test-case-row-3`);
+    const sortedColumns = sortedRows.querySelectorAll("td");
+    expect(sortedColumns[4]).toHaveTextContent(
+      convertDate(testCaseInvalid.lastModifiedAt)
+    );
+  });
+
+  it("should render test case view for now owners and no delete option", async () => {
     const deleteTestCase = jest.fn();
     const exportTestCase = jest.fn();
     const onCloneTestCase = jest.fn();
@@ -168,9 +222,9 @@ describe("TestCase component", () => {
     expect(columns[3]).toHaveTextContent(testCase.description);
 
     const buttons = await screen.findAllByRole("button");
-    expect(buttons).toHaveLength(9);
-    expect(buttons[5]).toHaveTextContent("Select");
-    fireEvent.click(buttons[5]);
+    expect(buttons).toHaveLength(10);
+    expect(buttons[6]).toHaveTextContent("Select");
+    fireEvent.click(buttons[6]);
     expect(screen.getByText("view")).toBeInTheDocument();
   });
 
@@ -189,9 +243,9 @@ describe("TestCase component", () => {
     );
 
     const buttons = await screen.findAllByRole("button");
-    expect(buttons).toHaveLength(9);
-    expect(buttons[5]).toHaveTextContent("Select");
-    fireEvent.click(buttons[5]);
+    expect(buttons).toHaveLength(10);
+    expect(buttons[6]).toHaveTextContent("Select");
+    fireEvent.click(buttons[6]);
 
     expect(screen.getByText("edit")).toBeInTheDocument();
 
@@ -225,9 +279,9 @@ describe("TestCase component", () => {
     expect(columns[3]).toHaveTextContent(testCase.description);
 
     const buttons = await screen.findAllByRole("button");
-    expect(buttons).toHaveLength(9);
-    expect(buttons[5]).toHaveTextContent("Select");
-    fireEvent.click(buttons[5]);
+    expect(buttons).toHaveLength(10);
+    expect(buttons[6]).toHaveTextContent("Select");
+    fireEvent.click(buttons[6]);
     expect(screen.getByText("edit")).toBeInTheDocument();
     expect(screen.getByText("export transaction bundle")).toBeInTheDocument();
 
@@ -251,9 +305,9 @@ describe("TestCase component", () => {
     );
 
     const buttons = await screen.findAllByRole("button");
-    expect(buttons).toHaveLength(9);
-    expect(buttons[5]).toHaveTextContent("Select");
-    fireEvent.click(buttons[5]);
+    expect(buttons).toHaveLength(10);
+    expect(buttons[6]).toHaveTextContent("Select");
+    fireEvent.click(buttons[6]);
     expect(screen.getByText("edit")).toBeInTheDocument();
     expect(screen.getByText("export transaction bundle")).toBeInTheDocument();
     expect(screen.getByText("export collection bundle")).toBeInTheDocument();
@@ -294,9 +348,9 @@ describe("TestCase component", () => {
     );
 
     const buttons = await screen.findAllByRole("button");
-    expect(buttons).toHaveLength(9);
-    expect(buttons[5]).toHaveTextContent("Select");
-    fireEvent.click(buttons[5]);
+    expect(buttons).toHaveLength(10);
+    expect(buttons[6]).toHaveTextContent("Select");
+    fireEvent.click(buttons[6]);
     expect(screen.getByText("view")).toBeInTheDocument();
     const shiftDatesBtn = screen.queryByText("Shift Test Case dates");
     expect(shiftDatesBtn).not.toBeInTheDocument();
@@ -317,9 +371,9 @@ describe("TestCase component", () => {
     );
 
     const buttons = await screen.findAllByRole("button");
-    expect(buttons).toHaveLength(9);
-    expect(buttons[5]).toHaveTextContent("Select");
-    fireEvent.click(buttons[5]);
+    expect(buttons).toHaveLength(10);
+    expect(buttons[6]).toHaveTextContent("Select");
+    fireEvent.click(buttons[6]);
     expect(screen.getByText("edit")).toBeInTheDocument();
     const exportBtn = screen.getByText("export collection bundle");
     expect(exportBtn).toBeInTheDocument();
@@ -345,9 +399,9 @@ describe("TestCase component", () => {
     );
 
     const buttons = await screen.findAllByRole("button");
-    expect(buttons).toHaveLength(9);
-    expect(buttons[5]).toHaveTextContent("Select");
-    fireEvent.click(buttons[5]);
+    expect(buttons).toHaveLength(10);
+    expect(buttons[6]).toHaveTextContent("Select");
+    fireEvent.click(buttons[6]);
 
     const exportBtn = screen.getByTestId("export-test-case-ID");
     expect(exportBtn).toBeInTheDocument();
@@ -372,9 +426,9 @@ describe("TestCase component", () => {
     );
 
     const buttons = await screen.findAllByRole("button");
-    expect(buttons).toHaveLength(9);
-    expect(buttons[5]).toHaveTextContent("Select");
-    fireEvent.click(buttons[5]);
+    expect(buttons).toHaveLength(10);
+    expect(buttons[6]).toHaveTextContent("Select");
+    fireEvent.click(buttons[6]);
 
     const cloneBtn = screen.getByTestId("clone-test-case-btn-ID");
     expect(cloneBtn).toBeInTheDocument();

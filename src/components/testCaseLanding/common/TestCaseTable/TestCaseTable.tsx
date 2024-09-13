@@ -34,6 +34,17 @@ interface TestCaseTableProps {
   onTestCaseShiftDates?: (testCase: TestCase, shifted: number) => void;
 }
 
+export const convertDate = (date: string) => {
+  if (!date) {
+    return "";
+  }
+  const dateObj = new Date(date);
+  const year = dateObj.getUTCFullYear().toString();
+  const month = String(dateObj.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(dateObj.getUTCDate()).padStart(2, "0");
+  return `${month}/${day}/${year}`;
+};
+
 const TestCaseTable = (props: TestCaseTableProps) => {
   const {
     testCases,
@@ -86,6 +97,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
       group: tc.series,
       title: tc.title,
       description: tc.description,
+      lastSaved: tc.lastModifiedAt,
       action: tc,
     }));
   };
@@ -95,6 +107,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     group: string;
     title: string;
     description: string;
+    lastSaved: string;
     action: any;
     id: string;
   };
@@ -168,6 +181,22 @@ const TestCaseTable = (props: TestCaseTableProps) => {
         accessorKey: "description",
         sortingFn: (rowA, rowB) =>
           customSort(rowA.original.description, rowB.original.description),
+      },
+      {
+        header: "Last Saved",
+        cell: (info) => (
+          <TruncateText
+            text={convertDate(info.row.original.lastSaved)}
+            maxLength={23}
+            name="lastSaved"
+            dataTestId={`test-case-lastSaved-${
+              info.row.original.lastSaved ? info.row.original.lastSaved : ""
+            }`}
+          />
+        ),
+        accessorKey: "lastSaved",
+        sortingFn: (rowA, rowB) =>
+          customSort(rowA.original.lastSaved, rowB.original.lastSaved),
       },
       {
         header: "Action",
