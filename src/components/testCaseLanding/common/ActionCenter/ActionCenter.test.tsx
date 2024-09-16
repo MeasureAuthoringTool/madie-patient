@@ -7,8 +7,8 @@ describe("Action Center Component", () => {
   it("should render filter by with appropriate options and also a search input field", () => {
     render(<ActionCenter />);
 
-    const filterBySelect = screen.getByRole("button", {
-      name: "Filter By Filter By",
+    const filterBySelect = screen.getByRole("combobox", {
+      name: "Filter By",
     });
     expect(filterBySelect).toBeInTheDocument();
     userEvent.click(filterBySelect);
