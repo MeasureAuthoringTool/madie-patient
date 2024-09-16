@@ -2,10 +2,14 @@ import React, { useEffect, useRef, useState } from "react";
 import { Box, Divider, IconButton, Tab, Tabs } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import CloseIcon from "@mui/icons-material/Close";
-import ElementEditor from "../../element/ElementEditor";
-import ElementSelector from "../../element/ElementSelector";
+import ElementEditor from "../element/ElementEditor";
+import ElementSelector from "../element/ElementSelector";
 import * as _ from "lodash";
 import useFhirDefinitionsServiceApi from "../../../../../../../api/useFhirDefinitionsService";
+import {
+  ResourceActionType,
+  useQiCoreResource,
+} from "../../../../../../../util/QiCorePatientProvider";
 
 interface ResourceEditorProps {
   selectedResource: any;
@@ -24,6 +28,7 @@ const ResourceEditor = ({
   const [displayedElements, setDisplayedElements] = useState([]);
   const [editingResource, setEditingResource] = useState(null);
   const fhirDefinitionsService = useRef(useFhirDefinitionsServiceApi());
+  const { state, dispatch } = useQiCoreResource();
 
   useEffect(() => {
     if (selectedResource) {
@@ -34,23 +39,27 @@ const ResourceEditor = ({
       );
       const topElements =
         fhirDefinitionsService.current.getTopLevelElements(selectedResource);
-      console.log("ResourceEditor-useEffect - topElements: ", topElements);
       setAllElements(topElements);
       const requiredElements = [...topElements.filter((e) => e.min > 0)];
       const elementsWithValues = [
         ...topElements.filter((e) => {
-          console.log("elementsWithValues.filter: ", e);
-          return false;
+          const elemPath = fhirDefinitionsService.current.stripResourcePath(
+            selectedResource.path,
+            e.path
+          );
+          const elemValue = _.get(
+            selectedResource.bundleEntry.resource,
+            elemPath
+          );
+          return !_.isNil(elemValue);
         }),
       ];
       setDisplayedElements(
         _.uniq(_.concat(requiredElements, elementsWithValues))
       );
-      setEditingResource({});
     } else {
       setAllElements([]);
       setDisplayedElements([]);
-      setEditingResource(null);
     }
   }, [selectedResource]);
 
@@ -121,6 +130,7 @@ const ResourceEditor = ({
             "&& .MuiTab-root": {
               alignItems: "baseline",
             },
+            width: 150,
           }}
         >
           {displayedElements?.map((element) => {
@@ -137,13 +147,29 @@ const ResourceEditor = ({
         <ElementEditor
           elementDefinition={displayedElements?.[activeTab]}
           resource={selectedResource.bundleEntry?.resource}
+          resourcePath={selectedResource.path}
           onChange={(path, value) => {
-            setEditingResource((prevState) => {
-              const nextState = _.cloneDeep(prevState);
-              _.set(nextState, path, value);
-              console.log("setting resource: ", nextState);
-              return nextState;
+            console.log(`resource path [${path}] has new value: `, value);
+            console.log(
+              `update bundle entry resource at path [${path}]`,
+              selectedResource.bundleEntry
+            );
+            const nextEntry = _.cloneDeep(selectedResource.bundleEntry);
+            _.set(nextEntry.resource, path, value);
+            console.log(
+              "dispatching modifyBundleEntry for nextEntry: ",
+              nextEntry
+            );
+            dispatch({
+              type: ResourceActionType.MODIFY_BUNDLE_ENTRY,
+              payload: nextEntry,
             });
+            // setEditingResource((prevState) => {
+            //   const nextState = _.cloneDeep(prevState);
+            //   _.set(nextState, path, value);
+            //   console.log("setting resource: ", nextState);
+            //   return nextState;
+            // });
           }}
         />
       </Box>

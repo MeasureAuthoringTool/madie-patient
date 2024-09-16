@@ -69,10 +69,6 @@ export class FhirDefinitionsServiceApi {
   }
 
   getTopLevelElements(resource: any) {
-    console.log("getTopLevelElements from: ", resource);
-    const element = resource?.definition?.snapshot?.element;
-    console.log("getTopLevelElements from element: ", element);
-
     const elements = [...resource?.definition?.snapshot?.element];
     const basePath = this.getBasePath(resource);
     const nextElements = elements?.filter(
@@ -85,12 +81,15 @@ export class FhirDefinitionsServiceApi {
   getRequiredElements(resource: any) {
     const elements = [...resource?.definition?.snapshot?.element];
     const basePath = this.getBasePath(resource);
-    // console.log("elements: ", elements);
     const nextElements = elements?.filter(
       (e) => e.min > 0 && e.path.split(".")?.length === 2
     );
     console.log("getRequiredElements.nextElements: ", nextElements);
     return nextElements;
+  }
+
+  stripResourcePath(resourcePath, elementPath) {
+    return elementPath.substring(`${resourcePath}.`.length);
   }
 }
 

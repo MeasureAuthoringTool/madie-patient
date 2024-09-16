@@ -24,6 +24,7 @@ const ElementSelector = ({
     <>
       <Autocomplete
         multiple
+        fullWidth
         limitTags={2}
         id="resource-element-selector-autocomplete"
         options={options}
@@ -42,7 +43,6 @@ const ElementSelector = ({
             {option.path?.substring(basePath.length + 1)}
           </li>
         )}
-        style={{ width: 500 }}
         renderInput={(params) => (
           <TextField {...params} label="Elements" placeholder="Elements" />
         )}

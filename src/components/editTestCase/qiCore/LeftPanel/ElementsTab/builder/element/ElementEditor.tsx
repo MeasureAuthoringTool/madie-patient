@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Box } from "@mui/material";
 import * as _ from "lodash";
 import TypeEditor from "./TypeEditor";
+import useFhirDefinitionsServiceApi from "../../../../../../../api/useFhirDefinitionsService";
 
 interface ElementEditorProps {
   resource?: any;
   elementDefinition: any;
+  resourcePath: string;
   value?: any;
   onChange?: (path: string, value: any) => void;
 }
@@ -13,8 +15,11 @@ interface ElementEditorProps {
 const ElementEditor = ({
   elementDefinition,
   resource,
+  resourcePath,
   onChange,
 }: ElementEditorProps) => {
+  const fhirDefinitionsService = useRef(useFhirDefinitionsServiceApi());
+
   if (_.isNil(elementDefinition)) {
     return <span>No element selected</span>;
   }
@@ -23,12 +28,17 @@ const ElementEditor = ({
 
   const type = elementDefinition?.type?.[0];
   console.log("looking at type: ", type);
+  const elemPath = fhirDefinitionsService.current.stripResourcePath(
+    resourcePath,
+    elementDefinition.path
+  );
   const required = +elementDefinition.min > 0;
-  const elementValue = _.get(resource, elementDefinition.path);
+  const elementValue = _.get(resource, elemPath);
   console.log(
-    `got value at path [${elementDefinition.path}] from resource: `,
+    `got value at path [${elemPath}] from resource: `,
     _.cloneDeep(resource)
   );
+  console.log(`got value at path [${elemPath}]: `, elementValue);
 
   return (
     <Box
@@ -36,14 +46,15 @@ const ElementEditor = ({
         p: 3,
         display: "flex",
         flexDirection: "column",
+        width: "100%",
       }}
     >
       <TypeEditor
         type={type.code}
         required={required}
-        value={_.get(resource, elementDefinition.path)}
+        value={elementValue}
         onChange={(e) => {
-          onChange(elementDefinition.path, e);
+          onChange(elemPath, e);
           console.log(e);
         }}
         structureDefinition={elementDefinition}
