@@ -86,7 +86,7 @@
     "@fortawesome/react-fontawesome": "^0.1.16",
     "@lhncbc/ucum-lhc": "^5.0.0",
     "@madie/cql-antlr-parser": "^1.0.0",
-    "@madie/madie-design-system": "^1.2.30",
+    "@madie/madie-design-system": "^1.2.32",
     "@madie/madie-models": "^1.4.4",
     "@material-ui/core": "^4.12.4",
     "@mui/core": "^5.0.0-alpha.54",
