@@ -8,6 +8,7 @@ const ExpectedActual = ({
   onStratificationChange,
   errors,
   executionRun = false,
+  groupsStratificationAssociationMap,
 }) => {
   return (
     <div
@@ -15,6 +16,7 @@ const ExpectedActual = ({
       id="create-test-case-right-panel"
     >
       <GroupPopulations
+        groupsStratificationAssociationMap={groupsStratificationAssociationMap}
         disableExpected={!canEdit}
         groupPopulations={groupPopulations}
         onChange={onChange}
