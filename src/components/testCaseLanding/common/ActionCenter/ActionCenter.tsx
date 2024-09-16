@@ -16,8 +16,8 @@ const filterByOptions = ["Status", "Group", "Title", "Description"];
 export default function ActionCenter(props: ActionCenterProps) {
   const formik = useFormik({
     initialValues: {
-      filterBy: "",
-      searchValue: "",
+      filterBy: undefined,
+      searchValue: undefined,
     },
     onSubmit: async (formValues) => {
       props.onSubmit(formValues);
@@ -35,12 +35,13 @@ export default function ActionCenter(props: ActionCenterProps) {
               data-testid="filter-by-select"
               inputProps={{ "data-testid": "filter-by-select-input" }}
               placeHolder={{ name: "Filter By" }}
-              name="filter-by"
               SelectDisplayProps={{
                 "aria-required": "true",
               }}
               size="small"
-              {...formik.getFieldProps("filterBy")}
+              name="filterBy"
+              value={formik.values.filterBy}
+              onChange={formik.handleChange}
               options={filterByOptions?.map((option) => {
                 return (
                   <MenuItem
@@ -63,9 +64,10 @@ export default function ActionCenter(props: ActionCenterProps) {
               inputProps={{
                 "data-testid": "test-case-list-search-input",
               }}
-              name="test-case-list-search"
               data-testid="test-case-list-search"
-              {...formik.getFieldProps("searchValue")}
+              name="searchValue"
+              value={formik.values.searchValue}
+              onChange={formik.handleChange}
               slotProps={{
                 input: {
                   startAdornment: (
