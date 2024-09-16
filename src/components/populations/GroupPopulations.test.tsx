@@ -10,7 +10,11 @@ import userEvent from "@testing-library/user-event";
 
 describe("Group Populations", () => {
   let testCaseGroups: GroupPopulation[];
+  let groupStratificationsMap = {};
   beforeEach(() => {
+    groupStratificationsMap = {
+      "321": [PopulationType.INITIAL_POPULATION],
+    };
     testCaseGroups = [
       {
         groupId: "Group1_ID",
@@ -18,7 +22,7 @@ describe("Group Populations", () => {
         populationBasis: "boolean",
         populationValues: [
           {
-            id: "123",
+            id: "1",
             name: PopulationType.INITIAL_POPULATION,
             expected: true,
             actual: true,
@@ -27,15 +31,22 @@ describe("Group Populations", () => {
         stratificationValues: [
           {
             id: "321",
-            name: "strata-1 Initial Population",
+            name: "Strata 1",
             expected: true,
             actual: false,
+            populationValues: [
+              {
+                id: "1",
+                name: PopulationType.INITIAL_POPULATION,
+                expected: true,
+                actual: true,
+              },
+            ],
           },
         ],
       },
     ];
   });
-
   it("should render the populations", () => {
     const groupPopulations: GroupPopulation[] = [
       {
@@ -180,6 +191,7 @@ describe("Group Populations", () => {
         executionRun
         groupPopulations={testCaseGroups}
         onChange={handleChange}
+        groupsStratificationAssociationMap={groupStratificationsMap}
       />
     );
 
@@ -201,6 +213,7 @@ describe("Group Populations", () => {
         groupPopulations={testCaseGroups}
         onChange={handleChange}
         onStratificationChange={handleStratificationChange}
+        groupsStratificationAssociationMap={groupStratificationsMap}
       />
     );
 
@@ -216,7 +229,7 @@ describe("Group Populations", () => {
       1,
       testCaseGroups,
       "Group1_ID",
-      { actual: true, expected: false, id: "123", name: "initialPopulation" }
+      { actual: true, expected: false, id: "1", name: "initialPopulation" }
     );
 
     userEvent.click(ippCbs[0]);
@@ -224,11 +237,11 @@ describe("Group Populations", () => {
       2,
       testCaseGroups,
       "Group1_ID",
-      { actual: true, expected: false, id: "123", name: "initialPopulation" }
+      { actual: true, expected: false, id: "1", name: "initialPopulation" }
     );
 
     const stratRow = screen.getByRole("row", {
-      name: "strata-1 Initial Population",
+      name: "Strata 1 Initial Population",
     });
     const stratCbs = within(stratRow).getAllByRole("checkbox");
     expect(stratCbs[0]).not.toBeDisabled();
@@ -244,11 +257,11 @@ describe("Group Populations", () => {
         executionRun={false}
         groupPopulations={testCaseGroups}
         onChange={handleChange}
+        groupsStratificationAssociationMap={groupStratificationsMap}
       />
     );
-
     const actualColumn = screen.getByTestId(
-      "test-population-initialPopulation-actual"
+      "test-stratification-initialPopulation-actual"
     );
     expect(actualColumn).toBeInTheDocument();
   });
