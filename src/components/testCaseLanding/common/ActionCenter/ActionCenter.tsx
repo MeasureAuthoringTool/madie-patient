@@ -1,10 +1,11 @@
 import * as React from "react";
 import "twin.macro";
 import "styled-components/macro";
-import { MenuItem } from "@mui/material";
+import { IconButton, MenuItem } from "@mui/material";
 import { Select, TextField } from "@madie/madie-design-system/dist/react";
 import SearchIcon from "@mui/icons-material/Search";
 import InputAdornment from "@material-ui/core/InputAdornment";
+import ClearIcon from "@mui/icons-material/Clear";
 interface ActionCenterProps {}
 
 const filterByOptions = ["Status", "Group", "Title", "Description"];
@@ -12,6 +13,13 @@ const searchInputProps = {
   startAdornment: (
     <InputAdornment position="start">
       <SearchIcon />
+    </InputAdornment>
+  ),
+  endAdornment: (
+    <InputAdornment position="end">
+      <IconButton onClick={() => {}}>
+        <ClearIcon />
+      </IconButton>
     </InputAdornment>
   ),
 };
@@ -55,7 +63,7 @@ export default function ActionCenter(props: ActionCenterProps) {
               "data-testid": "test-case-list-search-input",
             }}
             data-testid="test-case-list-search"
-            InputProps={searchInputProps}
+            slotProps={{ input: searchInputProps }}
             name="test-case-list-search"
           />
         </div>
