@@ -1248,6 +1248,20 @@ describe("CalculationService Tests", () => {
               result: true,
             },
           ],
+          stratifierResults: [
+            {
+              strataCode: "stratcode1",
+              result: true,
+              appliesResult: true,
+              strataId: "strata1",
+            },
+            {
+              strataCode: "stratcode2",
+              result: true,
+              appliesResult: false,
+              strataId: "strata2",
+            },
+          ],
         },
       ];
       const testCase: TestCase = {
@@ -1277,7 +1291,7 @@ describe("CalculationService Tests", () => {
               {
                 id: "strata2",
                 name: "strata-2 Initial Population",
-                expected: false,
+                expected: true,
               },
             ],
           },
@@ -1338,7 +1352,7 @@ describe("CalculationService Tests", () => {
       expect(group1StratVals).toBeTruthy();
       expect(group1StratVals.length).toEqual(2);
       expect(group1StratVals[0].actual).toEqual(true);
-      expect(group1StratVals[1].actual).toEqual(false);
+      expect(group1StratVals[1].actual).toEqual(true);
     });
 
     it("should return test case results for continuous variable, boolean popBasis", () => {

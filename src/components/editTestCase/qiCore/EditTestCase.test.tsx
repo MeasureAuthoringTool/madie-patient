@@ -171,6 +171,7 @@ const defaultMeasure = {
           id: "strat-id-1",
           description: "strat1 description",
           cqlDefinition: "cql definition",
+          associations: [PopulationType.INITIAL_POPULATION],
         },
       ],
     },
@@ -2166,7 +2167,6 @@ describe("EditTestCase component", () => {
 
       expect(editor).toBeInTheDocument();
     });
-
     it("handles checking expected values", async () => {
       mockedAxios.get.mockClear().mockImplementation((args) => {
         if (args && args.endsWith("series")) {
@@ -2183,20 +2183,22 @@ describe("EditTestCase component", () => {
         measure
       );
       userEvent.click(screen.getByTestId("expectoractual-tab"));
-
+      //fail
       const ipCheckbox = await screen.findByTestId(
         "test-population-initialPopulation-expected"
       );
       expect(ipCheckbox).toBeInTheDocument();
       userEvent.click(ipCheckbox);
       await waitFor(() => expect(ipCheckbox).toBeChecked());
-
       const stratCheckbox = await screen.findByTestId(
-        "test-population-Strata-1 Initial Population-expected"
+        "Strata 1-initialPopulation-expected"
       );
+      screen.debug(); // This will print the entire DOM
       expect(stratCheckbox).toBeInTheDocument();
+      await waitFor(() => {
+        expect(stratCheckbox).toBeChecked();
+      });
       userEvent.click(stratCheckbox);
-      await waitFor(() => expect(stratCheckbox).toBeChecked());
       userEvent.click(screen.getByTestId("details-tab"));
 
       const tcTitle = await screen.findByTestId("test-case-title");

@@ -3,6 +3,7 @@ import React, {
   SetStateAction,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -290,6 +291,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
   const formik = useFormik({
     initialValues: { ...INITIAL_VALUES },
     validationSchema: TestCaseValidator,
+    // enableReinitialize: true,
     onSubmit: async (values: TestCase) => await handleSubmit(values),
   });
   const { resetForm } = formik;
@@ -315,30 +317,30 @@ const EditTestCase = (props: EditTestCaseProps) => {
 
   const mapMeasureGroup = (group: Group): GroupPopulation => {
     const calculateEpisodes = group.populationBasis === "boolean";
+    const populationValues = getPopulationTypesForScoring(group)?.map(
+      (population: PopulationExpectedValue) => ({
+        name: population.name,
+        expected: calculateEpisodes ? false : null,
+        actual: calculateEpisodes ? false : null,
+        id: population.id,
+        criteriaReference: population.criteriaReference,
+      })
+    );
     return {
       groupId: group.id,
       scoring: group.scoring,
       populationBasis: group.populationBasis,
+      populationValues,
       stratificationValues: group.stratifications
         ?.filter((stratification) => stratification.cqlDefinition)
         ?.map((stratification, index) => ({
-          name: `Strata-${index + 1} ${_.startCase(
-            stratification.association
-          )}`,
+          name: `Strata ${index + 1}`,
           expected: calculateEpisodes ? false : null,
           actual: calculateEpisodes ? false : null,
           id: stratification.id,
           criteriaReference: "",
+          populationValues,
         })),
-      populationValues: getPopulationTypesForScoring(group)?.map(
-        (population: PopulationExpectedValue) => ({
-          name: population.name,
-          expected: calculateEpisodes ? false : null,
-          actual: calculateEpisodes ? false : null,
-          id: population.id,
-          criteriaReference: population.criteriaReference,
-        })
-      ),
     };
   };
 
@@ -808,7 +810,20 @@ const EditTestCase = (props: EditTestCaseProps) => {
   };
 
   const allotmentRef = useRef(null);
-
+  // we need to know which stratification rows to render
+  const stratificationsMap = useMemo(() => {
+    const map = {};
+    if (measure?.groups) {
+      measure.groups.forEach((group) => {
+        if (Array.isArray(group?.stratifications)) {
+          for (const strat of group.stratifications) {
+            map[strat.id] = strat.associations;
+          }
+        }
+      });
+    }
+    return map;
+  }, [measure?.groups]);
   return (
     <TestCaseForm
       data-testid="create-test-case-form"
@@ -950,6 +965,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
                     groupPopulations={groupPopulations}
                     executionRun={!_.isNil(populationGroupResults)}
                     errors={formik.errors.groupPopulations}
+                    groupsStratificationAssociationMap={stratificationsMap}
                     onChange={(
                       groupPopulations,
                       changedGroupId,
