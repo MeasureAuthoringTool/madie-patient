@@ -22,7 +22,7 @@ const TestCaseSummaryGrid = ({
       field: "resourceType",
       headerName: "Resource & Value Set",
       width: 250,
-      valueGetter: ({ value, row }) => {
+      valueGetter: (_value, row) => {
         return row.resource.resourceType;
       },
     },
@@ -31,7 +31,7 @@ const TestCaseSummaryGrid = ({
       field: "id",
       headerName: "ID",
       width: 300,
-      valueGetter: ({ value, row }) => row.resource.id,
+      valueGetter: (_value, row) => row.resource.id,
     },
     // eslint-disable-next-line no-console
     {
