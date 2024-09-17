@@ -248,6 +248,10 @@ describe("EditTestCase component", () => {
     mockedAxios.get.mockImplementation((args) => {
       if (args && args.endsWith("series")) {
         return Promise.resolve({ data: ["SeriesA"] });
+      } else if (args && args.endsWith("resources")) {
+        return Promise.resolve({
+          data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+        });
       }
       return Promise.resolve({ data: null });
     });
@@ -447,13 +451,10 @@ describe("EditTestCase component", () => {
       );
 
       expect(screen.getByTestId("elements-content")).toBeInTheDocument();
-      const ombLabel = await screen.getByText("Ethnicity (OMB)");
+      const firstResource = await screen.findByText("Adverse Event");
 
-      expect(ombLabel).toBeInTheDocument();
-      const detailLabel = await screen.queryByText("Ethnicity (Detailed)");
-
-      expect(detailLabel).toBeNull();
-      expect(screen.getByText("Elements Section")).toBeInTheDocument();
+      expect(firstResource).toBeInTheDocument();
+      expect(screen.getByText("Resources")).toBeInTheDocument();
 
       userEvent.click(screen.getByTestId("json-tab"));
       expect(screen.getByTestId("test-case-json-editor")).toBeInTheDocument();
@@ -2174,6 +2175,10 @@ describe("EditTestCase component", () => {
       mockedAxios.get.mockClear().mockImplementation((args) => {
         if (args && args.endsWith("series")) {
           return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
+        } else if (args && args.endsWith("resources")) {
+          return Promise.resolve({
+            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          });
         }
         return Promise.resolve({ data: { ...testCaseFixture } });
       });
