@@ -92,6 +92,9 @@ const serviceConfig: ServiceConfig = {
   testCaseService: {
     baseUrl: "base.url",
   },
+  fhirDefinitionsService: {
+    baseUrl: "fhirservice.url",
+  },
   terminologyService: {
     baseUrl: "something.com",
   },
