@@ -20,10 +20,8 @@ const TypeEditor = ({
   useEffect(() => {
     if (!fhirDefinitionsService.current.isComponentDataType(type)) {
       fhirDefinitionsService.current.getResourceTree(type).then((def) => {
-        console.log("TypeEditor - got type def: ", def);
         const elements =
           fhirDefinitionsService.current.getTopLevelElements(def);
-        console.log("TypeEditor - elements for typedef: ", elements);
         setChildTypeDefs(elements);
       });
     }
@@ -73,14 +71,12 @@ const TypeEditor = ({
           />
         );
       default:
-        console.log(`TypeEditor - type [${type}]: `, structureDefinition);
         return <div>Unsupported Type [{type}]</div>;
     }
   } else if (!_.isEmpty(childTypeDefs)) {
     return (
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         {childTypeDefs?.map((childTypeDef) => {
-          console.log("need to pull type off: ", childTypeDef);
           const childType = childTypeDef?.type?.[0];
           const childRequired = +childTypeDef.min > 0;
           return (

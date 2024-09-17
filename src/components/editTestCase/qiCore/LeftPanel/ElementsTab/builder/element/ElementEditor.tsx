@@ -23,22 +23,13 @@ const ElementEditor = ({
   if (_.isNil(elementDefinition)) {
     return <span>No element selected</span>;
   }
-
-  console.log("editing element: ", elementDefinition);
-
   const type = elementDefinition?.type?.[0];
-  console.log("looking at type: ", type);
   const elemPath = fhirDefinitionsService.current.stripResourcePath(
     resourcePath,
     elementDefinition.path
   );
   const required = +elementDefinition.min > 0;
   const elementValue = _.get(resource, elemPath);
-  console.log(
-    `got value at path [${elemPath}] from resource: `,
-    _.cloneDeep(resource)
-  );
-  console.log(`got value at path [${elemPath}]: `, elementValue);
 
   return (
     <Box
@@ -55,7 +46,6 @@ const ElementEditor = ({
         value={elementValue}
         onChange={(e) => {
           onChange(elemPath, e);
-          console.log(e);
         }}
         structureDefinition={elementDefinition}
       />

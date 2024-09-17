@@ -33,10 +33,6 @@ const ResourceEditor = ({
   useEffect(() => {
     if (selectedResource) {
       // TODO: look at the data that exists on the resource and combine fields from that
-      console.log(
-        `ResourceEditor-useEffect[selectedResource]: `,
-        _.cloneDeep(selectedResource)
-      );
       const topElements =
         fhirDefinitionsService.current.getTopLevelElements(selectedResource);
       setAllElements(topElements);
@@ -67,7 +63,6 @@ const ResourceEditor = ({
   const resourceBasePath =
     fhirDefinitionsService.current.getBasePath(selectedResource);
 
-  console.log("resourceEditor: ", selectedResource);
   return (
     <Box
       sx={{
@@ -120,7 +115,6 @@ const ResourceEditor = ({
           variant="scrollable"
           value={activeTab}
           onChange={(e, newValue) => {
-            console.log("newValue: ", newValue);
             setActiveTab(newValue);
           }}
           aria-label="Resource element tabs"
@@ -149,27 +143,12 @@ const ResourceEditor = ({
           resource={selectedResource.bundleEntry?.resource}
           resourcePath={selectedResource.path}
           onChange={(path, value) => {
-            console.log(`resource path [${path}] has new value: `, value);
-            console.log(
-              `update bundle entry resource at path [${path}]`,
-              selectedResource.bundleEntry
-            );
             const nextEntry = _.cloneDeep(selectedResource.bundleEntry);
             _.set(nextEntry.resource, path, value);
-            console.log(
-              "dispatching modifyBundleEntry for nextEntry: ",
-              nextEntry
-            );
             dispatch({
               type: ResourceActionType.MODIFY_BUNDLE_ENTRY,
               payload: nextEntry,
             });
-            // setEditingResource((prevState) => {
-            //   const nextState = _.cloneDeep(prevState);
-            //   _.set(nextState, path, value);
-            //   console.log("setting resource: ", nextState);
-            //   return nextState;
-            // });
           }}
         />
       </Box>

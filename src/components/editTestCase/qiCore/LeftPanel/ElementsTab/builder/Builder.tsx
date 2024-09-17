@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Checkbox, Divider, TextField } from "@mui/material";
+import { Box, Divider } from "@mui/material";
 import * as _ from "lodash";
-import ResourceSelector from "./resourceSelector/ResourceSelector";
 import ResourceList from "./resource/ResourceList";
 import TestCaseSummaryGrid from "./grid/TestCaseSummaryGrid";
 import Typography from "@mui/material/Typography";
@@ -35,14 +34,10 @@ const Builder = ({ testCase, canEdit }: BuilderProps) => {
   }, []);
 
   const handleResourceSelected = async (bundleEntry: any) => {
-    // eslint-disable-next-line no-console
-    console.log("resource selected: ", bundleEntry);
     const resourceName = bundleEntry?.resource?.resourceType;
     const resourceTree = await fhirDefinitionsService.current.getResourceTree(
       resourceName
     );
-    // eslint-disable-next-line no-console
-    console.log("resourceTree", resourceTree);
     const resource = { ...resourceTree, bundleEntry };
     setActiveResource(resource);
   };
@@ -80,10 +75,10 @@ const Builder = ({ testCase, canEdit }: BuilderProps) => {
             selectedResource={activeResource}
             selectedResourceDefinition={null}
             onSave={(resource) => {
-              console.log("saving resource: ", resource);
+              // console.log("saving resource: ", resource);
             }}
             onCancel={(resource) => {
-              console.log("cancel edit: ", resource);
+              // console.log("cancel edit: ", resource);
               setActiveResource(null);
             }}
           />

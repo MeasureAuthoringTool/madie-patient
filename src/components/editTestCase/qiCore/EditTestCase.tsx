@@ -770,7 +770,6 @@ const EditTestCase = (props: EditTestCaseProps) => {
         JSON.parse(str);
         return true;
       } catch (error) {
-        console.log(`Error parsing json [${str}]`, error);
         return false;
       }
     }
