@@ -25,12 +25,13 @@ export interface PopulationsProps {
     changedGroupId: string,
     changedStratification: DisplayStratificationValue
   ) => void;
-
+  groupsStratificationAssociationMap?: any;
   errors?: any[];
 }
 
 const GroupPopulations = ({
   disableExpected = false,
+  groupsStratificationAssociationMap,
   // Execution run determines weather we display one of 3 views.
   executionRun = false,
   groupPopulations = [],
@@ -69,16 +70,19 @@ const GroupPopulations = ({
                 }
               }}
             />
-
+            {/* strat */}
             {gp?.stratificationValues?.length > 0 && (
               <TestCasePopulationList
                 i={i}
                 content={`Measure Group ${i + 1}: Stratifications`}
+                stratifications={gp.stratificationValues}
+                groupsStratificationAssociationMap={
+                  groupsStratificationAssociationMap
+                }
                 scoring={gp.scoring}
                 disableExpected={disableExpected}
                 executionRun={executionRun}
                 populations={null}
-                stratifications={gp.stratificationValues}
                 populationBasis={gp.populationBasis}
                 onStratificationChange={(
                   stratifications,

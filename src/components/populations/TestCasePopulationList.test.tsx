@@ -128,11 +128,15 @@ describe("TestCasePopulationList component", () => {
     const testCaseStratifications = [
       {
         id: "1",
-        name: "Strata-1 Initial Population",
+        name: "Strata 1",
         expected: true,
         actual: true,
+        populationValues: testCasePopulations,
       },
     ];
+    const groupStratificationsMap = {
+      "1": [PopulationType.INITIAL_POPULATION],
+    };
     const handleChange = jest.fn();
     const handleStratificationChange = jest.fn();
 
@@ -143,6 +147,7 @@ describe("TestCasePopulationList component", () => {
           stratifications={testCaseStratifications}
           onChange={handleChange}
           onStratificationChange={handleStratificationChange}
+          groupsStratificationAssociationMap={groupStratificationsMap}
           disableExpected={false}
           populationBasis="boolean"
           content="population"
@@ -157,9 +162,7 @@ describe("TestCasePopulationList component", () => {
     const tableRows = table.querySelectorAll("tbody tr");
     expect(tableRows[0]).toHaveTextContent("Initial Population");
 
-    const ippCb = screen.getByTestId(
-      "test-population-Strata-1 Initial Population-expected"
-    );
+    const ippCb = screen.getByTestId("Strata 1-initialPopulation-expected");
     expect(ippCb).toBeInTheDocument();
     userEvent.click(ippCb);
     await waitFor(() => {
@@ -179,20 +182,24 @@ describe("TestCasePopulationList component", () => {
     const testCaseStratifications = [
       {
         id: "1",
-        name: "Strata-1 Initial Population",
+        name: "Strata 1",
         expected: true,
         actual: true,
+        populationValues: testCasePopulations,
       },
     ];
     const handleChange = jest.fn();
     const handleStratificationChange = jest.fn();
-
+    const groupStratificationsMap = {
+      "1": [PopulationType.INITIAL_POPULATION],
+    };
     render(
       <MemoryRouter>
         <TestCasePopulationList
           populations={testCasePopulations}
           stratifications={testCaseStratifications}
           onChange={handleChange}
+          groupsStratificationAssociationMap={groupStratificationsMap}
           onStratificationChange={handleStratificationChange}
           disableExpected={false}
           populationBasis="boolean"
@@ -209,9 +216,7 @@ describe("TestCasePopulationList component", () => {
     const tableRows = table.querySelectorAll("tbody tr");
     expect(tableRows[0]).toHaveTextContent("Initial Population");
 
-    const ippCb = screen.getByTestId(
-      "test-population-Strata-1 Initial Population-expected"
-    );
+    const ippCb = screen.getByTestId("Strata 1-initialPopulation-expected");
     expect(ippCb).toBeInTheDocument();
     userEvent.click(ippCb);
     await waitFor(() => {

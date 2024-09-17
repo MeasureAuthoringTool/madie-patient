@@ -858,6 +858,7 @@ const testCases = [
     description: "Test IPP",
     title: "WhenAllGood",
     series: "IPP-Pass",
+    lastModifiedAt: "2024-09-10T08:49:14.382Z",
     validResource: true,
     json: "{}",
     groupPopulations: [
@@ -886,6 +887,7 @@ const testCases = [
     description: "Test IPP Fail when something is wrong",
     title: "WhenSomethingIsWrong",
     series: "IPP-Fail",
+    lastModifiedAt: "2024-09-10T08:49:15.382Z",
     validResource: true,
     json: "{}",
     groupPopulations: [
@@ -914,6 +916,7 @@ const testCases = [
     description: "Invalid test case",
     title: "WhenJsonIsInvalid",
     series: "IPP-Fail",
+    lastModifiedAt: "2024-09-10T08:49:16.382Z",
     validResource: false,
     json: "{}",
     groupPopulations: [
@@ -945,6 +948,7 @@ const failingTestCaseResults = [
     description: "Test IPP",
     title: "WhenAllGood",
     series: "IPP-Pass",
+    lastModifiedAt: "2024-09-10T08:49:14.382Z",
     validResource: true,
     executionStatus: "pass",
     groupPopulations: [
@@ -989,6 +993,7 @@ const failingTestCaseResults = [
     description: "Test IPP Fail when something is wrong",
     title: "WhenSomethingIsWrong",
     series: "IPP-Fail",
+    lastModifiedAt: "2024-09-10T08:49:15.382Z",
     validResource: true,
     executionStatus: "fail",
     groupPopulations: [
@@ -1033,6 +1038,7 @@ const failingTestCaseResults = [
     description: "Invalid test case",
     title: "WhenJsonIsInvalid",
     series: "IPP_Fail",
+    lastModifiedAt: "2024-09-10T08:49:16.382Z",
     validResource: false,
     groupPopulations: [
       {
@@ -1682,12 +1688,13 @@ describe("TestCaseList component", () => {
       expect(tableHeaders[1]).toHaveTextContent("Group");
       expect(tableHeaders[2]).toHaveTextContent("Title");
       expect(tableHeaders[3]).toHaveTextContent("Description");
-      expect(tableHeaders[4]).toHaveTextContent("Action");
+      expect(tableHeaders[4]).toHaveTextContent("Last Saved");
+      expect(tableHeaders[5]).toHaveTextContent("Action");
 
       const tableRows = table.querySelectorAll("tbody tr");
 
-      expect(tableRows[0]).toHaveTextContent(testCases[0].title);
-      expect(tableRows[0]).toHaveTextContent(testCases[0].series);
+      expect(tableRows[2]).toHaveTextContent(testCases[0].title);
+      expect(tableRows[2]).toHaveTextContent(testCases[0].series);
       expect(
         screen.getByTestId(`select-action-${testCases[0].id}`)
       ).toBeInTheDocument();
@@ -2019,9 +2026,9 @@ describe("TestCaseList component", () => {
     const table = await screen.findByTestId("test-case-tbl");
     const tableRows = table.querySelectorAll("tbody tr");
     await waitFor(() => {
-      expect(tableRows[0]).toHaveTextContent("N/A");
+      expect(tableRows[2]).toHaveTextContent("N/A");
       expect(tableRows[1]).toHaveTextContent("N/A");
-      expect(tableRows[2]).toHaveTextContent("Invalid");
+      expect(tableRows[0]).toHaveTextContent("Invalid");
     });
 
     const executeAllTestCasesButton = screen.getByRole("button", {
@@ -2030,9 +2037,9 @@ describe("TestCaseList component", () => {
 
     userEvent.click(executeAllTestCasesButton);
     await waitFor(() => {
-      expect(tableRows[0]).toHaveTextContent("Pass");
+      expect(tableRows[2]).toHaveTextContent("Pass");
       expect(tableRows[1]).toHaveTextContent("Fail");
-      expect(tableRows[2]).toHaveTextContent("Invalid");
+      expect(tableRows[0]).toHaveTextContent("Invalid");
     });
 
     userEvent.click(screen.getByTestId("coverage-tab"));
@@ -2725,6 +2732,7 @@ describe("TestCaseList component", () => {
           "1bcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxy",
         series:
           "2bcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxy",
+        lastModifiedAt: "2024-09-10T10:57:14.382Z",
       },
     ];
 
@@ -2868,9 +2876,9 @@ describe("TestCaseList component", () => {
     const table = await screen.findByTestId("test-case-tbl");
     const tableRows = table.querySelectorAll("tbody tr");
     await waitFor(() => {
-      expect(tableRows[0]).toHaveTextContent("Pass");
+      expect(tableRows[2]).toHaveTextContent("Pass");
       expect(tableRows[1]).toHaveTextContent("Fail");
-      expect(tableRows[2]).toHaveTextContent("Invalid");
+      expect(tableRows[0]).toHaveTextContent("Invalid");
     });
   });
 
@@ -3229,9 +3237,9 @@ describe("TestCaseList component", () => {
     const table = await screen.findByTestId("test-case-tbl");
     const tableRows = table.querySelectorAll("tbody tr");
     await waitFor(() => {
-      expect(tableRows[0]).toHaveTextContent("N/A");
+      expect(tableRows[2]).toHaveTextContent("N/A");
       expect(tableRows[1]).toHaveTextContent("N/A");
-      expect(tableRows[2]).toHaveTextContent("Invalid");
+      expect(tableRows[0]).toHaveTextContent("Invalid");
     });
 
     const executeAllTestCasesButton = screen.getByRole("button", {

@@ -179,9 +179,9 @@ export class CalculationService {
       groupId: group.id,
       scoring: group.scoring,
       populationBasis: group.populationBasis,
-      stratificationValues: group.stratifications?.map(
+      stratificationValues: group?.stratifications?.map(
         (stratification, index) => ({
-          name: `Strata-${index + 1} ${_.startCase(
+          name: `Strata ${index + 1} ${_.startCase(
             stratification.association
           )}`,
           expected: calculateEpisodes ? false : null,
@@ -292,7 +292,6 @@ export class CalculationService {
 
   isGroupPass(groupPopulation: GroupPopulation) {
     let groupPass = true;
-
     if (groupPopulation) {
       const patientBased =
         "boolean" === _.lowerCase(groupPopulation.populationBasis);
@@ -307,7 +306,6 @@ export class CalculationService {
           );
         return groupPass;
       });
-
       groupPopulation?.stratificationValues?.every((stratVal) => {
         groupPass =
           groupPass &&
@@ -315,7 +313,6 @@ export class CalculationService {
         return groupPass;
       });
     }
-
     return groupPass;
   }
 
@@ -354,12 +351,11 @@ export class CalculationService {
       const tcPopTypeCount = {};
       const patientBased =
         "boolean" === _.lowerCase(measureGroup.populationBasis);
-
       const processedResults = patientBased
         ? this.buildPatientResults(populationGroupResult?.populationResults)
         : this.buildEpisodeResults(populationGroupResult?.episodeResults);
 
-      tcGroupPopulation?.populationValues.forEach((tcPopVal, idx) => {
+      tcGroupPopulation?.populationValues?.forEach((tcPopVal, idx) => {
         // Set the actual population value for measure observations
         if (isTestCasePopulationObservation(tcPopVal)) {
           if (patientBased) {
@@ -396,18 +392,30 @@ export class CalculationService {
         }
       });
 
-      tcGroupPopulation?.stratificationValues?.forEach((stratValue) => {
-        const strataDefinition = measureGroup.stratifications.find(
-          (stratification) => stratification.id === stratValue.id
-        )?.cqlDefinition;
-        stratValue.actual = patientBased
-          ? groupResultsMap[groupId]?.[strataDefinition] > 0
-          : groupResultsMap[groupId]?.[strataDefinition];
-      });
+      const getExpectedStratResultAgainstPopulation = (
+        stratResult,
+        populationResult
+      ) => {
+        return stratResult && populationResult;
+      };
+      const stratifierResults = populationGroupResult?.stratifierResults;
+      tcGroupPopulation?.stratificationValues?.forEach((stratValue, index) => {
+        const appliedStratValue = stratifierResults?.find(
+          (stratR) => stratR.strataId === stratValue.id
+        );
+        const executedStratResult = appliedStratValue?.result;
+        stratValue.actual = executedStratResult ? executedStratResult : false;
 
+        stratValue.populationValues?.forEach((popValue) => {
+          popValue.actual = getExpectedStratResultAgainstPopulation(
+            popValue.actual,
+            executedStratResult
+          );
+        });
+      });
+      // need to do work here.
       allGroupsPass = allGroupsPass && this.isGroupPass(tcGroupPopulation);
     }
-
     updatedTestCase.executionStatus = allGroupsPass
       ? ExecutionStatusType.PASS
       : ExecutionStatusType.FAIL;

@@ -36,6 +36,7 @@ export interface TestCasePopulationListProps {
     changedStratification: DisplayStratificationValue
   ) => void;
   errors?: any;
+  groupsStratificationAssociationMap?: any;
 }
 const StyledIcon = styled(FontAwesomeIcon)(
   ({ errors }: { errors: boolean }) => [
@@ -77,28 +78,49 @@ export const determineGroupResult = (
 export const determineGroupResultStratification = (
   populationBasis: string,
   stratifications: DisplayStratificationValue[],
-  executionRun?: boolean
+  executionRun?: boolean,
+  groupsStratificationAssociationMap?: any
 ) => {
   if (!executionRun) {
     return "initial";
   }
+  // we need to go through and check each stratification.populationValue for equality
   for (let i = 0; i < stratifications?.length; i++) {
+    // second loop required
     const stratification = stratifications[i];
-    const { expected, actual } = stratification;
-
-    if (populationBasis === "boolean" && expected != actual) {
-      return "fail";
+    const associations = groupsStratificationAssociationMap[stratification?.id];
+    const associatedPopulationValues = stratification?.populationValues?.filter(
+      (pop) => associations?.includes(pop.name)
+    );
+    // const { expected, actual } = stratification; // no longer care about this.
+    // we need to run every
+    if (populationBasis === "boolean") {
+      if (
+        !_.every(
+          associatedPopulationValues,
+          (pop) => pop.actual === pop.expected
+        )
+      ) {
+        return "fail";
+      }
     } else if (populationBasis !== "boolean") {
-      const expectedNum =
-        _.isNil(expected) ||
-        (typeof expected === "string" && _.isEmpty(expected))
-          ? 0
-          : expected;
-      const actualNum =
-        _.isNil(actual) || (typeof actual === "string" && _.isEmpty(actual))
-          ? 0
-          : actual;
-      if (expectedNum != actualNum) {
+      if (
+        //@ts-ignore
+        !_.every(associatedPopulationValues, ({ expected, actual }) => {
+          const expectedNum =
+            _.isNil(expected) ||
+            (typeof expected === "string" && _.isEmpty(expected))
+              ? 0
+              : expected;
+          const actualNum =
+            _.isNil(actual) || (typeof actual === "string" && _.isEmpty(actual))
+              ? 0
+              : actual;
+          if (expectedNum != actualNum) {
+            return "fail";
+          }
+        })
+      ) {
         return "fail";
       }
     }
@@ -119,13 +141,13 @@ const TestCasePopulationList = ({
   onChange,
   onStratificationChange,
   errors,
+  groupsStratificationAssociationMap,
 }: TestCasePopulationListProps) => {
   let measureObservations = [];
   let numeratorObservations = [];
   let denominatorObservations = [];
   let initialPopulations = [];
   let contentId = content?.toLocaleLowerCase().replace(/(\W)+/g, "-");
-
   const getPopulationCount = (populations, type: PopulationType): number => {
     return populations.filter((res) => res.name === type).length;
   };
@@ -181,24 +203,25 @@ const TestCasePopulationList = ({
   };
 
   const handleStratificationChange = (
-    stratification: DisplayStratificationValue
+    stratification: DisplayStratificationValue,
+    stratId: string
   ) => {
-    const newStratifications = [...stratifications];
-    const newStrat = newStratifications.find(
-      (strat) => strat.id === stratification.id
+    const updatedStratifications = [...stratifications];
+    const stratToUpdate = updatedStratifications.find(
+      (str) => str.id === stratId
+    ); // stratification to update, now we need to find popvalue
+    const popValueToUpdate = stratToUpdate?.populationValues?.find(
+      (s) => s.id === stratification.id
     );
-
     const type =
-      newStrat.actual !== stratification.actual
+      popValueToUpdate.actual !== stratification.actual
         ? "actual"
-        : newStrat.expected !== stratification.expected
+        : popValueToUpdate.expected !== stratification.expected
         ? "expected"
         : null;
-
-    newStrat.actual = stratification.actual;
-    newStrat.expected = stratification.expected;
+    popValueToUpdate.expected = stratification.expected;
     if (onStratificationChange) {
-      onStratificationChange(newStratifications, type, stratification);
+      onStratificationChange(updatedStratifications, type, stratification);
     }
   };
 
@@ -219,22 +242,24 @@ const TestCasePopulationList = ({
 
   // we need to do an all check here for pass / no pass
   const view = determineGroupResult(populationBasis, populations, executionRun);
-
   const viewStratification = determineGroupResultStratification(
     populationBasis,
     stratifications,
-    executionRun
+    executionRun,
+    groupsStratificationAssociationMap
   );
 
+  const currentView = populations === null ? viewStratification : view;
   /*
     we have three separate views
     - not run
     - run and all pass
     - run and not all pass
   */
+
   const captionClass = classNames("caption", {
-    pass: view === "pass",
-    fail: view === "fail",
+    pass: currentView === "pass",
+    fail: currentView === "fail",
   });
 
   return (
@@ -246,9 +271,9 @@ const TestCasePopulationList = ({
         <caption>
           {executionRun && (
             <StyledIcon
-              icon={view === "pass" ? faCheckCircle : faTimesCircle}
+              icon={currentView === "pass" ? faCheckCircle : faTimesCircle}
               data-testid={`test-population-icon-${scoring}`}
-              errors={view === "fail"}
+              errors={currentView === "fail"}
             />
           )}
           <span data-testid={contentId} className={captionClass}>
@@ -288,8 +313,12 @@ const TestCasePopulationList = ({
             />
           ))}
 
+          {/* if stratifications */}
           {stratifications?.map((stratification, j) => (
             <TestCaseStratification
+              groupsStratificationAssociationMap={
+                groupsStratificationAssociationMap
+              }
               strataCode={stratification.name}
               executionRun={executionRun}
               stratification={stratification}

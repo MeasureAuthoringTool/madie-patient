@@ -128,6 +128,7 @@ describe("TestCaseRoutes", () => {
             description: "Desc1",
             series: "IPP_Pass",
             status: null,
+            lastModifiedAt: "2024-09-10T08:40:14.382Z",
           },
         ],
       });
@@ -149,8 +150,9 @@ describe("TestCaseRoutes", () => {
     expect(tBody.rows.item(0).cells[1]).toHaveTextContent("IPP_Pass");
     expect(tBody.rows.item(0).cells[2]).toHaveTextContent("TC12");
     expect(tBody.rows.item(0).cells[3]).toHaveTextContent("Desc1");
+    expect(tBody.rows.item(0).cells[4]).toHaveTextContent("09/10/2024");
     expect(
-      within(tBody.rows.item(0).cells[4]).getByRole("button", {
+      within(tBody.rows.item(0).cells[5]).getByRole("button", {
         name: "select-action-TC12",
       })
     ).toBeInTheDocument();

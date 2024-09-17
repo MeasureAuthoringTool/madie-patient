@@ -253,6 +253,7 @@ const testCases = [
     description: "Test IPP",
     title: "WhenAllGood",
     series: "IPP_Pass",
+    lastModifiedAt: "2024-09-10T09:56:14.382Z",
     validResource: true,
     groupPopulations: [
       {
@@ -280,6 +281,7 @@ const testCases = [
     description: "Test IPP Fail when something is wrong",
     title: "WhenSomethingIsWrong",
     series: "IPP_Fail",
+    lastModifiedAt: "2024-09-10T09:57:14.382Z",
     validResource: true,
     groupPopulations: [
       {
@@ -307,6 +309,7 @@ const testCases = [
     description: "Invalid test case",
     title: "WhenJsonIsInvalid",
     series: "IPP_Fail",
+    lastModifiedAt: "2024-09-10T09:58:14.382Z",
     validResource: false,
     groupPopulations: [
       {
@@ -337,6 +340,7 @@ const failingTestCaseResults = [
     description: "Test IPP",
     title: "WhenAllGood",
     series: "IPP_Pass",
+    lastModifiedAt: "2024-09-10T09:56:14.382Z",
     validResource: true,
     executionStatus: "pass",
     groupPopulations: [
@@ -381,6 +385,7 @@ const failingTestCaseResults = [
     description: "Test IPP Fail when something is wrong",
     title: "WhenSomethingIsWrong",
     series: "IPP_Fail",
+    lastModifiedAt: "2024-09-10T09:57:14.382Z",
     validResource: true,
     executionStatus: "fail",
     groupPopulations: [
@@ -425,6 +430,7 @@ const failingTestCaseResults = [
     description: "Invalid test case",
     title: "WhenJsonIsInvalid",
     series: "IPP_Fail",
+    lastModifiedAt: "2024-09-10T09:58:14.382Z",
     validResource: false,
     groupPopulations: [
       {
@@ -660,12 +666,13 @@ describe("TestCaseList component", () => {
       expect(tableHeaders[1]).toHaveTextContent("Group");
       expect(tableHeaders[2]).toHaveTextContent("Title");
       expect(tableHeaders[3]).toHaveTextContent("Description");
-      expect(tableHeaders[4]).toHaveTextContent("Action");
+      expect(tableHeaders[4]).toHaveTextContent("Last Saved");
+      expect(tableHeaders[5]).toHaveTextContent("Action");
 
       const tableRows = table.querySelectorAll("tbody tr");
 
-      expect(tableRows[0]).toHaveTextContent(testCases[0].title);
-      expect(tableRows[0]).toHaveTextContent(testCases[0].series);
+      expect(tableRows[0]).toHaveTextContent(testCases[2].title);
+      expect(tableRows[0]).toHaveTextContent(testCases[2].series);
       expect(
         screen.getByTestId(`select-action-${testCases[0].id}`)
       ).toBeInTheDocument();
@@ -846,9 +853,9 @@ describe("TestCaseList component", () => {
     const table = await screen.findByTestId("test-case-tbl");
     const tableRows = table.querySelectorAll("tbody tr");
     await waitFor(() => {
-      expect(tableRows[0]).toHaveTextContent("N/A");
+      expect(tableRows[2]).toHaveTextContent("N/A");
       expect(tableRows[1]).toHaveTextContent("N/A");
-      expect(tableRows[2]).toHaveTextContent("Invalid");
+      expect(tableRows[0]).toHaveTextContent("Invalid");
     });
 
     const executeAllTestCasesButton = screen.getByRole("button", {
@@ -857,9 +864,9 @@ describe("TestCaseList component", () => {
 
     userEvent.click(executeAllTestCasesButton);
     await waitFor(() => {
-      expect(tableRows[0]).toHaveTextContent("Pass");
+      expect(tableRows[2]).toHaveTextContent("Pass");
       expect(tableRows[1]).toHaveTextContent("Fail");
-      expect(tableRows[2]).toHaveTextContent("Invalid");
+      expect(tableRows[0]).toHaveTextContent("Invalid");
     });
 
     userEvent.click(screen.getByTestId("coverage-tab"));
@@ -944,6 +951,7 @@ describe("TestCaseList component", () => {
           "1bcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxy",
         series:
           "2bcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxyabcdefghijklmnopqrstuvwxy",
+        lastModifiedAt: "2024-09-10T10:09:14.382Z",
       },
     ];
 
@@ -1090,9 +1098,9 @@ describe("TestCaseList component", () => {
     const table = await screen.findByTestId("test-case-tbl");
     const tableRows = table.querySelectorAll("tbody tr");
     await waitFor(() => {
-      expect(tableRows[0]).toHaveTextContent("Pass");
+      expect(tableRows[2]).toHaveTextContent("Pass");
       expect(tableRows[1]).toHaveTextContent("Fail");
-      expect(tableRows[2]).toHaveTextContent("Invalid");
+      expect(tableRows[0]).toHaveTextContent("Invalid");
     });
   });
 
@@ -1134,9 +1142,9 @@ describe("TestCaseList component", () => {
     const table = await screen.findByTestId("test-case-tbl");
     const tableRows = table.querySelectorAll("tbody tr");
     await waitFor(() => {
-      expect(tableRows[0]).toHaveTextContent("Pass");
+      expect(tableRows[2]).toHaveTextContent("Pass");
       expect(tableRows[1]).toHaveTextContent("Fail");
-      expect(tableRows[2]).toHaveTextContent("Invalid");
+      expect(tableRows[0]).toHaveTextContent("Invalid");
     });
 
     mockProcessTestCaseResults
@@ -1159,11 +1167,11 @@ describe("TestCaseList component", () => {
     const table2 = await screen.findByTestId("test-case-tbl");
     const tableRows2 = table2.querySelectorAll("tbody tr");
     await waitFor(() => {
-      expect(tableRows2[0]).toHaveTextContent("Pass");
+      expect(tableRows2[2]).toHaveTextContent("Pass");
       screen.debug();
       expect(tableRows2[1]).toHaveTextContent("Fail");
       screen.debug();
-      expect(tableRows2[2]).toHaveTextContent("Invalid");
+      expect(tableRows2[0]).toHaveTextContent("Invalid");
     });
 
     expect(screen.getByText("Passing (2/3)")).toBeInTheDocument();
@@ -1329,9 +1337,9 @@ describe("TestCaseList component", () => {
     const table = await screen.findByTestId("test-case-tbl");
     const tableRows = table.querySelectorAll("tbody tr");
     await waitFor(() => {
-      expect(tableRows[0]).toHaveTextContent("N/A");
+      expect(tableRows[2]).toHaveTextContent("N/A");
       expect(tableRows[1]).toHaveTextContent("N/A");
-      expect(tableRows[2]).toHaveTextContent("Invalid");
+      expect(tableRows[0]).toHaveTextContent("Invalid");
     });
 
     const executeAllTestCasesButton = screen.getByRole("button", {
