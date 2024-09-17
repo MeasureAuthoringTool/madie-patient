@@ -97,8 +97,8 @@ describe("AttributeSection", () => {
 
   it("should render two empty dropdowns when null selectedDataElement is provided", () => {
     renderAttributeSection(null, [], onAddClicked);
-    const attributeSelectBtn = screen.getByRole("button", {
-      name: "Attribute Select Attribute",
+    const attributeSelectBtn = screen.getByRole("combobox", {
+      name: "Attribute",
     });
     expect(attributeSelectBtn).toBeInTheDocument();
     const attributeInput = within(attributeSelectBtn.parentElement).getByRole(
@@ -108,8 +108,8 @@ describe("AttributeSection", () => {
     expect(attributeInput).toBeInTheDocument();
     expect(attributeInput).toHaveValue("");
 
-    const typeSelectBtn = screen.getByRole("button", {
-      name: "Type Select Type",
+    const typeSelectBtn = screen.getByRole("combobox", {
+      name: "Type",
     });
     expect(typeSelectBtn).toBeInTheDocument();
     const typeInput = within(typeSelectBtn.parentElement).getByRole("textbox", {
@@ -120,8 +120,8 @@ describe("AttributeSection", () => {
 
   it("should render two empty dropdowns when undefined selectedDataElement is provided", () => {
     renderAttributeSection(undefined, [], onAddClicked);
-    const attributeSelectBtn = screen.getByRole("button", {
-      name: "Attribute Select Attribute",
+    const attributeSelectBtn = screen.getByRole("combobox", {
+      name: "Attribute",
     });
     expect(attributeSelectBtn).toBeInTheDocument();
     const attributeInput = within(attributeSelectBtn.parentElement).getByRole(
@@ -131,8 +131,8 @@ describe("AttributeSection", () => {
     expect(attributeInput).toBeInTheDocument();
     expect(attributeInput).toHaveValue("");
 
-    const typeSelectBtn = screen.getByRole("button", {
-      name: "Type Select Type",
+    const typeSelectBtn = screen.getByRole("combobox", {
+      name: "Type",
     });
     expect(typeSelectBtn).toBeInTheDocument();
     const typeInput = within(typeSelectBtn.parentElement).getByRole("textbox", {
@@ -143,8 +143,8 @@ describe("AttributeSection", () => {
 
   it("should render attribute select options when valid selectedDataElement is provided", async () => {
     renderAttributeSection(encounterElement, [], onAddClicked);
-    const attributeSelectBtn = screen.getByRole("button", {
-      name: "Attribute Select Attribute",
+    const attributeSelectBtn = screen.getByRole("combobox", {
+      name: "Attribute",
     });
     expect(attributeSelectBtn).toBeInTheDocument();
     const attributeInput = within(attributeSelectBtn.parentElement).getByRole(
@@ -162,8 +162,8 @@ describe("AttributeSection", () => {
 
   it("should auto select type when attribute only has single type option", async () => {
     renderAttributeSection(encounterElement, [], onAddClicked);
-    const attributeSelectBtn = screen.getByRole("button", {
-      name: "Attribute Select Attribute",
+    const attributeSelectBtn = screen.getByRole("combobox", {
+      name: "Attribute",
     });
     expect(attributeSelectBtn).toBeInTheDocument();
 
@@ -182,8 +182,8 @@ describe("AttributeSection", () => {
     expect(attributeInput).toHaveValue("Reason");
 
     // auto selects when there is only one option, which impacts the name
-    const typeSelectBtn = await screen.findByRole("button", {
-      name: "Type Code",
+    const typeSelectBtn = await screen.findByRole("combobox", {
+      name: "Type",
     });
     const typeInput = within(typeSelectBtn.parentElement).getByRole("textbox", {
       hidden: true,
@@ -196,8 +196,8 @@ describe("AttributeSection", () => {
 
   it("should render different type select options for different selected attributes", async () => {
     renderAttributeSection(encounterElement, [], onAddClicked);
-    const attributeSelectBtn = screen.getByRole("button", {
-      name: "Attribute Select Attribute",
+    const attributeSelectBtn = screen.getByRole("combobox", {
+      name: "Attribute",
     });
     expect(attributeSelectBtn).toBeInTheDocument();
 
@@ -216,8 +216,8 @@ describe("AttributeSection", () => {
     expect(attributeInput).toHaveValue("Reason");
 
     // auto selects when there is only one option, which impacts the name
-    const typeSelectBtn = await screen.findByRole("button", {
-      name: "Type Code",
+    const typeSelectBtn = await screen.findByRole("combobox", {
+      name: "Type",
     });
     const typeInput = within(typeSelectBtn.parentElement).getByRole("textbox", {
       hidden: true,
@@ -263,8 +263,8 @@ describe("AttributeSection", () => {
 
   it("date selection shows date input", async () => {
     renderAttributeSection(assessmentElement, [], onAddClicked);
-    const attributeSelectBtn = screen.getByRole("button", {
-      name: "Attribute Select Attribute",
+    const attributeSelectBtn = screen.getByRole("combobox", {
+      name: "Attribute",
     });
     expect(attributeSelectBtn).toBeInTheDocument();
 
@@ -281,7 +281,7 @@ describe("AttributeSection", () => {
     );
     expect(attributeInput).toBeInTheDocument();
     expect(attributeInput).toHaveValue("Result");
-    const typeSelectBtn = await screen.findByRole("button", {
+    const typeSelectBtn = await screen.findByRole("combobox", {
       name: /type/i,
     });
     expect(typeSelectBtn).toBeInTheDocument();
@@ -308,8 +308,8 @@ describe("AttributeSection", () => {
 
   it("shows RatioInput on selecting the Ratio type", async () => {
     renderAttributeSection(assessmentElement, [], onAddClicked);
-    const attributeSelectBtn = screen.getByRole("button", {
-      name: "Attribute Select Attribute",
+    const attributeSelectBtn = screen.getByRole("combobox", {
+      name: "Attribute",
     });
     expect(attributeSelectBtn).toBeInTheDocument();
 
@@ -326,7 +326,7 @@ describe("AttributeSection", () => {
     );
     expect(attributeInput).toBeInTheDocument();
     expect(attributeInput).toHaveValue("Result");
-    const typeSelectBtn = await screen.findByRole("button", {
+    const typeSelectBtn = await screen.findByRole("combobox", {
       name: /type/i,
     });
     expect(typeSelectBtn).toBeInTheDocument();
@@ -341,8 +341,8 @@ describe("AttributeSection", () => {
   it("DateTime selection shows date input", async () => {
     renderAttributeSection(assessmentElement, [], onAddClicked);
     const dateTimeVal = { value: "01/01/2023 12:00 AM" };
-    const attributeSelectBtn = screen.getByRole("button", {
-      name: "Attribute Select Attribute",
+    const attributeSelectBtn = screen.getByRole("combobox", {
+      name: "Attribute",
     });
     expect(attributeSelectBtn).toBeInTheDocument();
 
@@ -359,7 +359,7 @@ describe("AttributeSection", () => {
     );
     expect(attributeInput).toBeInTheDocument();
     expect(attributeInput).toHaveValue("Result");
-    const typeSelectBtn = await screen.findByRole("button", {
+    const typeSelectBtn = await screen.findByRole("combobox", {
       name: /type/i,
     });
     expect(typeSelectBtn).toBeInTheDocument();
@@ -386,8 +386,8 @@ describe("AttributeSection", () => {
   });
   it("Interval<Quantity> selection shows Interval<Quantity> input", async () => {
     renderAttributeSection(new LaboratoryTestPerformed(), [], onAddClicked);
-    const attributeSelectBtn = screen.getByRole("button", {
-      name: "Attribute Select Attribute",
+    const attributeSelectBtn = screen.getByRole("combobox", {
+      name: "Attribute",
     });
     expect(attributeSelectBtn).toBeInTheDocument();
 
@@ -404,7 +404,7 @@ describe("AttributeSection", () => {
     );
     expect(attributeInput).toBeInTheDocument();
     expect(attributeInput).toHaveValue("Reference Range");
-    const typeSelectBtn = await screen.findByRole("button", {
+    const typeSelectBtn = await screen.findByRole("combobox", {
       name: /type/i,
     });
     expect(typeSelectBtn).toBeInTheDocument();
@@ -420,10 +420,10 @@ describe("AttributeSection", () => {
     expect(highInput).toBeInTheDocument();
   });
 
-  it.only("Clicking the add button calls works", async () => {
+  it("Clicking the add button calls works", async () => {
     renderAttributeSection(assessmentElement, [], onAddClicked);
-    const attributeSelectBtn = screen.getByRole("button", {
-      name: "Attribute Select Attribute",
+    const attributeSelectBtn = screen.getByRole("combobox", {
+      name: "Attribute",
     });
     expect(attributeSelectBtn).toBeInTheDocument();
 
@@ -437,7 +437,7 @@ describe("AttributeSection", () => {
     );
     expect(attributeInput).toBeInTheDocument();
     expect(attributeInput).toHaveValue("Result");
-    const typeSelectBtn = await screen.findByRole("button", {
+    const typeSelectBtn = await screen.findByRole("combobox", {
       name: /type/i,
     });
     expect(typeSelectBtn).toBeInTheDocument();
@@ -463,8 +463,8 @@ describe("AttributeSection", () => {
 
   it("shows integer input on selecting the integer type", async () => {
     renderAttributeSection(assessmentElement, [], onAddClicked);
-    const attributeSelectBtn = screen.getByRole("button", {
-      name: "Attribute Select Attribute",
+    const attributeSelectBtn = screen.getByRole("combobox", {
+      name: "Attribute",
     });
     expect(attributeSelectBtn).toBeInTheDocument();
 
@@ -481,7 +481,7 @@ describe("AttributeSection", () => {
     );
     expect(attributeInput).toBeInTheDocument();
     expect(attributeInput).toHaveValue("Result");
-    const typeSelectBtn = await screen.findByRole("button", {
+    const typeSelectBtn = await screen.findByRole("combobox", {
       name: /type/i,
     });
     expect(typeSelectBtn).toBeInTheDocument();
@@ -503,8 +503,8 @@ describe("AttributeSection", () => {
 
   it("shows DecimalInput on selecting the Decimal type", async () => {
     renderAttributeSection(assessmentElement, [], onAddClicked);
-    const attributeSelectBtn = screen.getByRole("button", {
-      name: "Attribute Select Attribute",
+    const attributeSelectBtn = screen.getByRole("combobox", {
+      name: "Attribute",
     });
     expect(attributeSelectBtn).toBeInTheDocument();
 
@@ -521,7 +521,7 @@ describe("AttributeSection", () => {
     );
     expect(attributeInput).toBeInTheDocument();
     expect(attributeInput).toHaveValue("Result");
-    const typeSelectBtn = await screen.findByRole("button", {
+    const typeSelectBtn = await screen.findByRole("combobox", {
       name: /type/i,
     });
     expect(typeSelectBtn).toBeInTheDocument();
@@ -535,8 +535,8 @@ describe("AttributeSection", () => {
 
   it("shows DateTime on selecting the DateTime type", async () => {
     renderAttributeSection(assessmentElement, [], onAddClicked);
-    const attributeSelectBtn = screen.getByRole("button", {
-      name: "Attribute Select Attribute",
+    const attributeSelectBtn = screen.getByRole("combobox", {
+      name: "Attribute",
     });
     expect(attributeSelectBtn).toBeInTheDocument();
 
@@ -553,7 +553,7 @@ describe("AttributeSection", () => {
     );
     expect(attributeInput).toBeInTheDocument();
     expect(attributeInput).toHaveValue("Result");
-    const typeSelectBtn = await screen.findByRole("button", {
+    const typeSelectBtn = await screen.findByRole("combobox", {
       name: /type/i,
     });
     expect(typeSelectBtn).toBeInTheDocument();
@@ -567,8 +567,8 @@ describe("AttributeSection", () => {
 
   it("Should render Time component on selecting the Result attribute with Time as a choice type", async () => {
     renderAttributeSection(assessmentElement, [], onAddClicked);
-    const attributeSelectBtn = screen.getByRole("button", {
-      name: "Attribute Select Attribute",
+    const attributeSelectBtn = screen.getByRole("combobox", {
+      name: "Attribute",
     });
     expect(attributeSelectBtn).toBeInTheDocument();
 
@@ -585,7 +585,7 @@ describe("AttributeSection", () => {
     );
     expect(attributeInput).toBeInTheDocument();
     expect(attributeInput).toHaveValue("Result");
-    const typeSelectBtn = await screen.findByRole("button", {
+    const typeSelectBtn = await screen.findByRole("combobox", {
       name: /type/i,
     });
     expect(typeSelectBtn).toBeInTheDocument();
@@ -610,8 +610,8 @@ describe("AttributeSection", () => {
   it("shows Quantity on selecting the Quantity type", async () => {
     renderAttributeSection(assessmentElement, [], onAddClicked);
 
-    const attributeSelectBtn = screen.getByRole("button", {
-      name: "Attribute Select Attribute",
+    const attributeSelectBtn = screen.getByRole("combobox", {
+      name: "Attribute",
     });
     expect(attributeSelectBtn).toBeInTheDocument();
 
@@ -628,7 +628,7 @@ describe("AttributeSection", () => {
     );
     expect(attributeInput).toBeInTheDocument();
     expect(attributeInput).toHaveValue("Result");
-    const typeSelectBtn = await screen.findByRole("button", {
+    const typeSelectBtn = await screen.findByRole("combobox", {
       name: /type/i,
     });
     expect(typeSelectBtn).toBeInTheDocument();
@@ -645,8 +645,8 @@ describe("AttributeSection", () => {
 
   it("shows the Data element component when selecting relatedTo", async () => {
     renderAttributeSection(assessmentElement, [], onAddClicked);
-    const attributeSelectBtn = screen.getByRole("button", {
-      name: "Attribute Select Attribute",
+    const attributeSelectBtn = screen.getByRole("combobox", {
+      name: "Attribute",
     });
     expect(attributeSelectBtn).toBeInTheDocument();
 
@@ -664,8 +664,8 @@ describe("AttributeSection", () => {
     expect(attributeInput).toBeInTheDocument();
     expect(attributeInput).toHaveValue("Related To");
 
-    const typeSelectBtn = screen.getByRole("button", {
-      name: "Type DataElement",
+    const typeSelectBtn = screen.getByRole("combobox", {
+      name: "Type",
     });
     expect(typeSelectBtn).toBeInTheDocument();
     const typeInput = within(typeSelectBtn.parentElement).getByRole("textbox", {
@@ -673,7 +673,7 @@ describe("AttributeSection", () => {
     });
     expect(typeInput).toHaveValue("DataElement");
 
-    const DataElementSelectBtn = await screen.findByRole("button", {
+    const DataElementSelectBtn = await screen.findByRole("combobox", {
       name: /data elements select field/i,
     });
     expect(DataElementSelectBtn).toBeInTheDocument();
@@ -697,8 +697,8 @@ describe("AttributeSection", () => {
 
   it("renders code component on selecting the code type attribute", async () => {
     renderAttributeSection(assessmentElement, [], onAddClicked);
-    const attributeSelectBtn = screen.getByRole("button", {
-      name: "Attribute Select Attribute",
+    const attributeSelectBtn = screen.getByRole("combobox", {
+      name: "Attribute",
     });
     userEvent.click(attributeSelectBtn);
     const attributeSelect = await screen.findByRole("listbox");
@@ -710,7 +710,7 @@ describe("AttributeSection", () => {
     expect(attributeInput).toBeInTheDocument();
     expect(attributeInput).toHaveValue("Reason");
     userEvent.click(
-      await screen.findByRole("button", {
+      await screen.findByRole("combobox", {
         name: /type/i,
       })
     );
@@ -719,9 +719,9 @@ describe("AttributeSection", () => {
     fireEvent.click(within(typeSelect).getByText("Code"));
 
     const valueSetSelector = screen.getByTestId("value-set-selector");
-    const valueSetDropdown = within(valueSetSelector).getByRole(
-      "button"
-    ) as HTMLInputElement;
+    const valueSetDropdown = within(valueSetSelector).getByRole("combobox", {
+      name: "Value Set / Direct Reference Code",
+    }) as HTMLInputElement;
     userEvent.click(valueSetDropdown);
     const valueSetOptions = await screen.findAllByRole("option");
     expect(valueSetOptions).toHaveLength(1);

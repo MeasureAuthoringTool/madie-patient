@@ -1,13 +1,7 @@
 import * as React from "react";
 import { Measure } from "@madie/madie-models";
 import { MemoryRouter } from "react-router-dom";
-import {
-  prettyDOM,
-  render,
-  screen,
-  waitFor,
-  within,
-} from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import DataElementsCard, {
   applyAttribute,
@@ -880,6 +874,7 @@ const renderDataElementsCard = (
             measureState: [{} as Measure, jest.fn],
             cqmMeasureState: [{ value_sets: testValueSets }, jest.fn],
             executionContextReady: true,
+            setExecutionContextReady: jest.fn(),
             executing: false,
             setExecuting: jest.fn(),
             contextFailure: false,
@@ -1015,7 +1010,12 @@ describe("DataElementsCard", () => {
     ) as HTMLInputElement;
     expect(codeSystemSelectInput.value).toBe("");
     const codeSystemSelector = screen.getByTestId("code-system-selector");
-    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole(
+      "combobox",
+      {
+        name: "Code System",
+      }
+    );
     userEvent.click(codeSystemDropdown);
     const codeSystemOptions = await screen.findAllByTestId(
       /code-system-option/i
@@ -1030,7 +1030,9 @@ describe("DataElementsCard", () => {
     ) as HTMLInputElement;
     expect(codeSelectInput.value).toBe("");
     const codeSelector = screen.getByTestId("code-selector");
-    const codeDropdown = within(codeSelector).getByRole("button");
+    const codeDropdown = within(codeSelector).getByRole("combobox", {
+      name: "Code",
+    });
     userEvent.click(codeDropdown);
     const codeOptions = await screen.findAllByTestId(/code-option/i);
     expect(codeOptions).toHaveLength(1);
@@ -1153,9 +1155,9 @@ describe("Negation Rationale", () => {
     ) as HTMLInputElement;
     expect(valueSetsInput.value).toBe("");
     const valueSetSelector = screen.getByTestId("value-set-selector");
-    const valueSetDropdown = within(valueSetSelector).getByRole(
-      "button"
-    ) as HTMLInputElement;
+    const valueSetDropdown = within(valueSetSelector).getByRole("combobox", {
+      name: "Value Set / Direct Reference Code",
+    }) as HTMLInputElement;
     userEvent.click(valueSetDropdown);
 
     const valueSetOptions = await screen.findAllByRole("option");
@@ -1195,16 +1197,19 @@ describe("Negation Rationale", () => {
     ) as HTMLInputElement;
     expect(valueSetsInput.value).toBe("");
     const valueSetSelector = screen.getByTestId("value-set-selector");
-    const valueSetDropdown = within(valueSetSelector).getByRole(
-      "button"
-    ) as HTMLInputElement;
+    const valueSetDropdown = within(valueSetSelector).getByRole("combobox", {
+      name: "Value Set / Direct Reference Code",
+    }) as HTMLInputElement;
     userEvent.click(valueSetDropdown);
     const valueSetOptions = await screen.findAllByRole("option");
     userEvent.click(valueSetOptions[1]);
 
     // select the code system
     const codeSystemSelector = screen.getByTestId("code-system-selector");
-    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole(
+      "combobox",
+      { name: "Code System" }
+    );
     userEvent.click(codeSystemDropdown);
     const codeSystemOptions = await screen.findAllByRole("option");
     expect(codeSystemOptions[0]).toHaveTextContent("SNOMEDCT");
@@ -1212,7 +1217,9 @@ describe("Negation Rationale", () => {
 
     // select the code
     const codeSelector = screen.getByTestId("code-selector");
-    const codeDropdown = within(codeSelector).getByRole("button");
+    const codeDropdown = within(codeSelector).getByRole("combobox", {
+      name: "Code",
+    });
     userEvent.click(codeDropdown);
     const codeOptions = await screen.findAllByRole("option");
     expect(codeOptions).toHaveLength(1);

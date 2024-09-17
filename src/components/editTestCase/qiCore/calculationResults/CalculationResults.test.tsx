@@ -5,8 +5,6 @@ import CalculationResults, {
 } from "./CalculationResults";
 import { DetailedPopulationGroupResult } from "fqm-execution/build/types/Calculator";
 import { GroupPopulation } from "@madie/madie-models";
-// @ts-ignore
-import { useFeatureFlags } from "@madie/madie-util";
 import { FinalResult, PopulationType, Relevance } from "fqm-execution";
 import userEvent from "@testing-library/user-event";
 
@@ -95,7 +93,7 @@ describe("CalculationResults with tabbed highlighting layout off", () => {
   ];
 
   test("display info message when test case has not been ran yet", () => {
-    renderCoverageComponent();
+    renderCoverageComponent(null, null, "");
     expect(
       screen.getByText("To see the logic highlights, click 'Run Test'")
     ).toBeInTheDocument();
@@ -276,7 +274,7 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
       "population-criterion-selector"
     );
     const criteriaDropdown = within(criteriaSelector).getByRole(
-      "button"
+      "combobox"
     ) as HTMLInputElement;
     userEvent.click(criteriaDropdown);
     return screen.findAllByRole("option");
@@ -303,6 +301,8 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
         groupPopulations={[]}
         calculationResults={undefined}
         calculationErrors={undefined}
+        cqlDefinitionCallstack={null}
+        mainCqlLibraryName=""
       />
     );
     expect(
@@ -311,7 +311,7 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
   });
 
   test("render default highlighting view", async () => {
-    renderCoverageComponent();
+    renderCoverageComponent(null, null, "");
     expect(screen.getByText("Population Criteria 1")).toBeInTheDocument();
     expect(screen.getByText("No results available")).toBeInTheDocument();
     expect(screen.getByText("Definitions")).toBeInTheDocument();
@@ -329,10 +329,10 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     expect(criteriaOptions).toHaveLength(2);
     userEvent.click(criteriaOptions[1]);
     // check tabs are rendered for all populations of a group
-    expect(await getByRole("IP 1")).toBeInTheDocument();
-    expect(await getByRole("IP 2")).toBeInTheDocument();
-    expect(await getByRole("DENOM")).toBeInTheDocument();
-    expect(await getByRole("NUMER")).toBeInTheDocument();
+    expect(await screen.getByText("IP 1")).toBeInTheDocument();
+    expect(await screen.getByText("IP 2")).toBeInTheDocument();
+    expect(await screen.getByText("DENOM")).toBeInTheDocument();
+    expect(await screen.getByText("NUMER")).toBeInTheDocument();
   });
 
   test("render highlighting view with coverage results for 2 groups", async () => {

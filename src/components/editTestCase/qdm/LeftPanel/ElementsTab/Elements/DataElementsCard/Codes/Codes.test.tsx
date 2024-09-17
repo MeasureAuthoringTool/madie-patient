@@ -88,7 +88,10 @@ describe("Codes section", () => {
     expect(codeSystemSelectInput.value).toBe("");
 
     const codeSystemSelector = screen.getByTestId("code-system-selector");
-    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole(
+      "combobox",
+      { name: "Code System" }
+    );
     userEvent.click(codeSystemDropdown);
     const optionsList = await screen.findAllByTestId(/code-system-option/i);
     expect(optionsList).toHaveLength(4);
@@ -119,7 +122,10 @@ describe("Codes section", () => {
     ) as HTMLInputElement;
     expect(codeSystemSelectInput.value).toBe("");
     const codeSystemSelector = screen.getByTestId("code-system-selector");
-    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole(
+      "combobox",
+      { name: "Code System" }
+    );
     userEvent.click(codeSystemDropdown);
     const codeSystemOptions = await screen.findAllByTestId(
       /code-system-option/i
@@ -134,7 +140,9 @@ describe("Codes section", () => {
     ) as HTMLInputElement;
     expect(codeSelectInput.value).toBe("");
     const codeSelector = screen.getByTestId("code-selector");
-    const codeDropdown = within(codeSelector).getByRole("button");
+    const codeDropdown = within(codeSelector).getByRole("combobox", {
+      name: "Code",
+    });
     userEvent.click(codeDropdown);
     const codeOptions = await screen.findAllByTestId(/code-option/i);
     expect(codeOptions).toHaveLength(1);
@@ -191,7 +199,10 @@ describe("Codes section", () => {
     ) as HTMLInputElement;
     expect(codeSystemSelectInput.value).toBe("");
     const codeSystemSelector = screen.getByTestId("code-system-selector");
-    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole(
+      "combobox",
+      { name: "Code System" }
+    );
     userEvent.click(codeSystemDropdown);
     const optionsList = await screen.findAllByTestId(/code-system-option/i);
     expect(optionsList).toHaveLength(4);
@@ -256,7 +267,10 @@ describe("Codes section", () => {
     ) as HTMLInputElement;
     expect(codeSystemSelectInput.value).toBe("");
     const codeSystemSelector = screen.getByTestId("code-system-selector");
-    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole(
+      "combobox",
+      { name: "Code System" }
+    );
     userEvent.click(codeSystemDropdown);
     const codeSystemOptions = await screen.findAllByTestId(
       /code-system-option/i
@@ -271,7 +285,9 @@ describe("Codes section", () => {
     ) as HTMLInputElement;
     expect(codeSelectInput.value).toBe("");
     const codeSelector = screen.getByTestId("code-selector");
-    const codeDropdown = within(codeSelector).getByRole("button");
+    const codeDropdown = within(codeSelector).getByRole("combobox", {
+      name: "Code",
+    });
     userEvent.click(codeDropdown);
     const codeOptions = await screen.findAllByTestId(/code-option/i);
     expect(codeOptions).toHaveLength(1);
@@ -312,6 +328,7 @@ describe("Codes section", () => {
 
     rerender(
       <Codes
+        canEdit={true}
         cqmMeasure={cqmMeasure}
         handleChange={handleChange}
         selectedDataElement={selectedDataElement}
@@ -341,13 +358,17 @@ describe("Codes section", () => {
     expect(codeSystemSelectInput.value).toBe("");
 
     const codeSystemSelector = screen.getByTestId("code-system-selector");
-    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole(
+      "combobox",
+      { name: "Code System" }
+    );
     userEvent.click(codeSystemDropdown);
     const optionsList = await screen.findAllByTestId(/code-system-option/i);
     expect(optionsList).toHaveLength(2);
     expect(optionsList[0]).toHaveTextContent("Custom");
     expect(optionsList[1]).toHaveTextContent("LOINC");
   });
+
   it("No valueset found", async () => {
     const testSelectedDataElement = {
       codeListId: "testCodeListId",
@@ -368,11 +389,15 @@ describe("Codes section", () => {
     expect(codeSystemSelectInput.value).toBe("");
 
     const codeSystemSelector = screen.getByTestId("code-system-selector");
-    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole(
+      "combobox",
+      { name: "Code System" }
+    );
     userEvent.click(codeSystemDropdown);
     const optionsList = await screen.queryAllByTestId(/code-system-option/i);
     expect(optionsList).toHaveLength(0);
   });
+
   it("No concepts", async () => {
     const testCqmMeasure = {
       value_sets: [
@@ -399,7 +424,10 @@ describe("Codes section", () => {
     expect(codeSystemSelectInput.value).toBe("");
 
     const codeSystemSelector = screen.getByTestId("code-system-selector");
-    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole(
+      "combobox",
+      { name: "Code System" }
+    );
     userEvent.click(codeSystemDropdown);
     const optionsList = await screen.getAllByTestId(/code-system-option/i);
     expect(optionsList).toHaveLength(1);
