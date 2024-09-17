@@ -515,6 +515,10 @@ describe("EditTestCase component", () => {
       mockedAxios.get.mockClear().mockImplementation((args) => {
         if (args && args.endsWith("series")) {
           return Promise.resolve({ data: [] });
+        } else if (args && args.endsWith("resources")) {
+          return Promise.resolve({
+            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          });
         }
         return Promise.resolve({
           data: testCase,
@@ -580,6 +584,10 @@ describe("EditTestCase component", () => {
       mockedAxios.get.mockClear().mockImplementation((args) => {
         if (args && args.endsWith("series")) {
           return Promise.resolve({ data: [] });
+        } else if (args && args.endsWith("resources")) {
+          return Promise.resolve({
+            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          });
         }
         return Promise.resolve({
           data: testCase,
@@ -743,6 +751,10 @@ describe("EditTestCase component", () => {
       mockedAxios.get.mockClear().mockImplementation((args) => {
         if (args && args.endsWith("series")) {
           return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
+        } else if (args && args.endsWith("resources")) {
+          return Promise.resolve({
+            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          });
         }
         return Promise.resolve({ data: testCase });
       });
@@ -885,6 +897,10 @@ describe("EditTestCase component", () => {
       mockedAxios.get.mockClear().mockImplementation((args) => {
         if (args && args.endsWith("series")) {
           return Promise.resolve({ data: ["SeriesA"] });
+        } else if (args && args.endsWith("resources")) {
+          return Promise.resolve({
+            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          });
         }
         return Promise.resolve({ data: testCase });
       });
@@ -942,6 +958,10 @@ describe("EditTestCase component", () => {
       mockedAxios.get.mockClear().mockImplementation((args) => {
         if (args && args.endsWith("series")) {
           return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
+        } else if (args && args.endsWith("resources")) {
+          return Promise.resolve({
+            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          });
         }
         return Promise.resolve({ data: testCase });
       });
@@ -1093,6 +1113,10 @@ describe("EditTestCase component", () => {
       mockedAxios.get.mockClear().mockImplementation((args) => {
         if (args && args.endsWith("series")) {
           return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
+        } else if (args && args.endsWith("resources")) {
+          return Promise.resolve({
+            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          });
         }
         return Promise.resolve({ data: testCase });
       });
@@ -1229,6 +1253,10 @@ describe("EditTestCase component", () => {
       mockedAxios.get.mockClear().mockImplementation((args) => {
         if (args && args.endsWith("series")) {
           return Promise.resolve({ data: ["SeriesA"] });
+        } else if (args && args.endsWith("resources")) {
+          return Promise.resolve({
+            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          });
         }
         return Promise.resolve({ data: testCase });
       });
@@ -1285,6 +1313,10 @@ describe("EditTestCase component", () => {
       mockedAxios.get.mockClear().mockImplementation((args) => {
         if (args && args.endsWith("series")) {
           return Promise.resolve({ data: ["SeriesA"] });
+        } else if (args && args.endsWith("resources")) {
+          return Promise.resolve({
+            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          });
         }
         return Promise.resolve({ data: testCase });
       });
@@ -1338,6 +1370,10 @@ describe("EditTestCase component", () => {
       mockedAxios.get.mockClear().mockImplementation((args) => {
         if (args && args.endsWith("series")) {
           return Promise.resolve({ data: ["SeriesA"] });
+        } else if (args && args.endsWith("resources")) {
+          return Promise.resolve({
+            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          });
         }
         return Promise.resolve({ data: testCase });
       });
@@ -1379,6 +1415,10 @@ describe("EditTestCase component", () => {
       mockedAxios.get.mockClear().mockImplementation((args) => {
         if (args && args.endsWith("series")) {
           return Promise.resolve({ data: ["SeriesA"] });
+        } else if (args && args.endsWith("resources")) {
+          return Promise.resolve({
+            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          });
         }
         return Promise.resolve({ data: testCase });
       });
@@ -1482,6 +1522,10 @@ describe("EditTestCase component", () => {
             status: 500,
             data: null,
           });
+        } else if (args && args.endsWith("resources")) {
+          return Promise.resolve({
+            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          });
         }
         return Promise.resolve({ data: null });
       });
@@ -1517,6 +1561,10 @@ describe("EditTestCase component", () => {
           });
         } else if (args && args.endsWith("series")) {
           return Promise.reject(axiosError);
+        } else if (args && args.endsWith("resources")) {
+          return Promise.resolve({
+            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          });
         }
         return Promise.resolve({ data: null });
       });
@@ -1657,13 +1705,9 @@ describe("EditTestCase component", () => {
       );
       expect(debugOutput).toBeInTheDocument();
 
-      expect(screen.getByTestId("json-error-alert")).toBeInTheDocument();
-      expect(screen.getByText("JSON Failing")).toBeInTheDocument();
-      expect(
-        screen.getByText(
-          "All JSON errors must be cleared before the UI Builder can be used."
-        )
-      ).toBeInTheDocument();
+      expect(screen.queryByTestId("json-error-alert")).not.toBeInTheDocument(); // do not show JSON alert for valid JSON with HAPI FHIR validation issues
+      expect(screen.queryByText("JSON Failing")).not.toBeInTheDocument(); // do not show JSON alert for valid JSON with HAPI FHIR validation issues
+      expect(screen.getByTestId("elements-content")).toBeInTheDocument();
 
       const showValidationErrorsBtn = screen.getByRole("button", {
         name: "Validation Errors",
@@ -1684,6 +1728,57 @@ describe("EditTestCase component", () => {
         "Error: Patient.identifier is a required field"
       );
       expect(patientIdentifierError).toBeInTheDocument();
+    }, 15000);
+
+    it("should display JSON error notification and not display QICore test case builder for invalid JSON", async () => {
+      jest.useFakeTimers("modern");
+      const testCase = {
+        id: "1234",
+        createdBy: MEASURE_CREATEDBY,
+        description: "Test IPP",
+        series: "SeriesA",
+        json: `{"test":"test" BAD BAD JSON - DEFINITELY INVALID }`,
+      } as TestCase;
+
+      const measure = {
+        id: "m1234",
+        createdBy: MEASURE_CREATEDBY,
+        testCases: [],
+        groups: [
+          {
+            id: "Group1_ID",
+            scoring: "Cohort",
+            population: {
+              initialPopulation: "Pop1",
+            },
+          },
+        ],
+      } as unknown as Measure;
+      mockedAxios.get.mockClear().mockImplementation((args) => {
+        if (args && args.endsWith("series")) {
+          return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
+        } else if (args && args.endsWith("resources")) {
+          return Promise.resolve({
+            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          });
+        }
+        return Promise.resolve({ data: testCase });
+      });
+
+      await renderWithRouter(
+        ["/measures/m1234/edit/test-cases/1234"],
+        "/measures/:measureId/edit/test-cases/:id",
+        measure
+      );
+
+      expect(await screen.findByTestId("json-error-alert")).toBeInTheDocument();
+      expect(screen.queryByTestId("elements-content")).not.toBeInTheDocument();
+      expect(screen.getByText("JSON Failing")).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "All JSON errors must be cleared before the UI Builder can be used."
+        )
+      ).toBeInTheDocument();
     }, 15000);
 
     it("should display HAPI validation errors after update test case", async () => {
@@ -1715,6 +1810,10 @@ describe("EditTestCase component", () => {
       mockedAxios.get.mockClear().mockImplementation((args) => {
         if (args && args.endsWith("series")) {
           return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
+        } else if (args && args.endsWith("resources")) {
+          return Promise.resolve({
+            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          });
         }
         return Promise.resolve({ data: testCase });
       });
@@ -1820,6 +1919,10 @@ describe("EditTestCase component", () => {
       mockedAxios.get.mockClear().mockImplementation((args) => {
         if (args && args.endsWith("series")) {
           return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
+        } else if (args && args.endsWith("resources")) {
+          return Promise.resolve({
+            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          });
         }
         return Promise.resolve({ data: testCase });
       });
@@ -1947,6 +2050,10 @@ describe("EditTestCase component", () => {
           });
         } else if (args && args.endsWith("series")) {
           return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
+        } else if (args && args.endsWith("resources")) {
+          return Promise.resolve({
+            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          });
         }
         return Promise.resolve({ data: testCase });
       });
@@ -1983,6 +2090,10 @@ describe("EditTestCase component", () => {
       mockedAxios.get.mockClear().mockImplementation((args) => {
         if (args && args.endsWith("series")) {
           return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
+        } else if (args && args.endsWith("resources")) {
+          return Promise.resolve({
+            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          });
         }
         return Promise.resolve({ data: testCase });
       });
@@ -2056,6 +2167,10 @@ describe("EditTestCase component", () => {
           return Promise.resolve({ data: simpleMeasureFixture });
         } else if (args && args.endsWith("series")) {
           return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
+        } else if (args && args.endsWith("resources")) {
+          return Promise.resolve({
+            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          });
         }
         return Promise.resolve({ data: testCase });
       });
@@ -2201,7 +2316,6 @@ describe("EditTestCase component", () => {
       const stratCheckbox = await screen.findByTestId(
         "Strata 1-initialPopulation-expected"
       );
-      screen.debug(); // This will print the entire DOM
       expect(stratCheckbox).toBeInTheDocument();
       await waitFor(() => {
         expect(stratCheckbox).toBeChecked();
@@ -2228,6 +2342,10 @@ describe("EditTestCase component", () => {
       mockedAxios.get.mockClear().mockImplementation((args) => {
         if (args && args.endsWith("series")) {
           return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
+        } else if (args && args.endsWith("resources")) {
+          return Promise.resolve({
+            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          });
         }
         return Promise.resolve({ data: { ...nonBoolTestCaseFixture } });
       });
@@ -2315,6 +2433,10 @@ describe("EditTestCase component", () => {
           return Promise.resolve({ data: simpleMeasureFixture });
         } else if (args && args.endsWith("series")) {
           return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
+        } else if (args && args.endsWith("resources")) {
+          return Promise.resolve({
+            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          });
         }
         return Promise.resolve({
           data: testCase,
@@ -2347,6 +2469,10 @@ describe("EditTestCase component", () => {
       mockedAxios.get.mockClear().mockImplementation((args) => {
         if (args && args.endsWith("series")) {
           return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
+        } else if (args && args.endsWith("resources")) {
+          return Promise.resolve({
+            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          });
         }
         return Promise.resolve({
           data: { ...testCaseFixture, createdBy: MEASURE_CREATEDBY },
@@ -2408,6 +2534,10 @@ describe("EditTestCase component", () => {
       mockedAxios.get.mockClear().mockImplementation((args) => {
         if (args && args.endsWith("series")) {
           return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
+        } else if (args && args.endsWith("resources")) {
+          return Promise.resolve({
+            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          });
         }
         return Promise.resolve({
           data: { ...testCaseFixture, createdBy: MEASURE_CREATEDBY },
@@ -2461,6 +2591,10 @@ describe("EditTestCase component", () => {
       mockedAxios.get.mockClear().mockImplementation((args) => {
         if (args && args.endsWith("series")) {
           return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
+        } else if (args && args.endsWith("resources")) {
+          return Promise.resolve({
+            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          });
         }
         return Promise.resolve({
           data: { ...nonBoolTestCaseFixture, createdBy: MEASURE_CREATEDBY },
@@ -2525,6 +2659,10 @@ describe("EditTestCase component", () => {
       mockedAxios.get.mockClear().mockImplementation((args) => {
         if (args && args.endsWith("series")) {
           return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
+        } else if (args && args.endsWith("resources")) {
+          return Promise.resolve({
+            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          });
         }
         return Promise.resolve({
           data: { ...testCaseFixture, createdBy: MEASURE_CREATEDBY },
@@ -2597,6 +2735,10 @@ describe("EditTestCase component", () => {
       mockedAxios.get.mockClear().mockImplementation((args) => {
         if (args && args.endsWith("series")) {
           return Promise.resolve({ data: [] });
+        } else if (args && args.endsWith("resources")) {
+          return Promise.resolve({
+            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          });
         }
         return Promise.resolve({
           data: testCase,
@@ -2652,6 +2794,10 @@ describe("EditTestCase component", () => {
       mockedAxios.get.mockClear().mockImplementation((args) => {
         if (args && args.endsWith("series")) {
           return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
+        } else if (args && args.endsWith("resources")) {
+          return Promise.resolve({
+            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          });
         }
         return Promise.resolve({
           data: { ...testCaseFixture, createdBy: MEASURE_CREATEDBY },
@@ -2733,6 +2879,10 @@ describe("EditTestCase component", () => {
       mockedAxios.get.mockClear().mockImplementation((args) => {
         if (args && args.endsWith("series")) {
           return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
+        } else if (args && args.endsWith("resources")) {
+          return Promise.resolve({
+            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          });
         }
         return Promise.resolve({
           data: testCase,

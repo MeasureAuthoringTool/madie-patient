@@ -27,7 +27,11 @@ const Builder = ({ testCase, canEdit }: BuilderProps) => {
   useEffect(() => {
     fhirDefinitionsService.current
       .getResources()
-      .then((resources) => setResources(_.uniq(resources.sort())))
+      .then((resources) => {
+        if (!_.isEmpty(resources)) {
+          setResources(_.uniq(resources.sort()));
+        }
+      })
       .catch((err) =>
         console.error("An error occurred while fetching resources", err)
       );
