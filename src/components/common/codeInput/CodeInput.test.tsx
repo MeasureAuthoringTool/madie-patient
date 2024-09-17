@@ -76,9 +76,9 @@ describe("CodeInput Component", () => {
     ) as HTMLInputElement;
     expect(valueSetsInput.value).toBe("");
     const valueSetSelector = screen.getByTestId("value-set-selector");
-    const valueSetDropdown = within(valueSetSelector).getByRole(
-      "button"
-    ) as HTMLInputElement;
+    const valueSetDropdown = within(valueSetSelector).getByRole("combobox", {
+      name: "Value Set / Direct Reference Code",
+    }) as HTMLInputElement;
     userEvent.click(valueSetDropdown);
 
     const valueSetOptions = await screen.findAllByRole("option");
@@ -111,16 +111,19 @@ describe("CodeInput Component", () => {
 
     // select the value set
     const valueSetSelector = screen.getByTestId("value-set-selector");
-    const valueSetDropdown = within(valueSetSelector).getByRole(
-      "button"
-    ) as HTMLInputElement;
+    const valueSetDropdown = within(valueSetSelector).getByRole("combobox", {
+      name: "Value Set / Direct Reference Code",
+    }) as HTMLInputElement;
     userEvent.click(valueSetDropdown);
     const valueSetOptions = await screen.findAllByRole("option");
     userEvent.click(valueSetOptions[1]);
 
     // select the code system
     const codeSystemSelector = screen.getByTestId("code-system-selector");
-    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole(
+      "combobox",
+      { name: "Code System" }
+    );
     userEvent.click(codeSystemDropdown);
     const codeSystemOptions = await screen.findAllByRole("option");
     expect(codeSystemOptions[0]).toHaveTextContent("SNOMEDCT");
@@ -130,7 +133,9 @@ describe("CodeInput Component", () => {
 
     // select the code
     const codeSelector = screen.getByTestId("code-selector");
-    const codeDropdown = within(codeSelector).getByRole("button");
+    const codeDropdown = within(codeSelector).getByRole("combobox", {
+      name: "Code",
+    });
     userEvent.click(codeDropdown);
     const codeOptions = await screen.findAllByRole("option");
     expect(codeOptions).toHaveLength(2);

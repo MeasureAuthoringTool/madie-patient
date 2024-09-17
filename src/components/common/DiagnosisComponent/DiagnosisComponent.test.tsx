@@ -89,9 +89,9 @@ describe("Diagnosis Component", () => {
     ) as HTMLInputElement;
     expect(valueSetsInput.value).toBe("");
     const valueSetSelector = screen.getByTestId("value-set-selector");
-    const valueSetDropdown = within(valueSetSelector).getByRole(
-      "button"
-    ) as HTMLInputElement;
+    const valueSetDropdown = within(valueSetSelector).getByRole("combobox", {
+      name: "Value Set / Direct Reference Code",
+    }) as HTMLInputElement;
     userEvent.click(valueSetDropdown);
 
     const valueSetOptions = await screen.findAllByRole("option");
@@ -124,7 +124,9 @@ describe("Diagnosis Component", () => {
     );
     const presentOnAdmissionIndicatorDropdown = within(
       presentOnAdmissionIndicatorSelector
-    ).getByRole("button") as HTMLInputElement;
+    ).getByRole("combobox", {
+      name: "Value Set / Direct Reference Code",
+    }) as HTMLInputElement;
     userEvent.click(presentOnAdmissionIndicatorDropdown);
 
     const presentOnAdmissionIndicatorOptions = await screen.findAllByRole(
@@ -155,7 +157,10 @@ describe("Diagnosis Component", () => {
     const codeSystemSelector = screen.getByTestId(
       "code-system-selector-present-on-admission-indicator"
     );
-    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole(
+      "combobox",
+      { name: "Code System" }
+    );
     userEvent.click(codeSystemDropdown);
     const codeSystemOptions = await screen.findAllByRole("option");
     expect(codeSystemOptions[0]).toHaveTextContent("SNOMEDCT");
@@ -166,7 +171,9 @@ describe("Diagnosis Component", () => {
     const codeSelector = screen.getByTestId(
       "code-selector-present-on-admission-indicator"
     );
-    const codeDropdown = within(codeSelector).getByRole("button");
+    const codeDropdown = within(codeSelector).getByRole("combobox", {
+      name: "Code",
+    });
     userEvent.click(codeDropdown);
     const codeOptions = await screen.findAllByRole("option");
     expect(codeOptions).toHaveLength(2);
@@ -211,16 +218,19 @@ describe("Diagnosis Component", () => {
 
     // select the value set
     const valueSetSelector = screen.getByTestId("value-set-selector");
-    const valueSetDropdown = within(valueSetSelector).getByRole(
-      "button"
-    ) as HTMLInputElement;
+    const valueSetDropdown = within(valueSetSelector).getByRole("combobox", {
+      name: "Value Set / Direct Reference Code",
+    }) as HTMLInputElement;
     userEvent.click(valueSetDropdown);
     const valueSetOptions = await screen.findAllByRole("option");
     userEvent.click(valueSetOptions[1]);
 
     // select the code system
     const codeSystemSelector = screen.getByTestId("code-system-selector");
-    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole(
+      "combobox",
+      { name: "Code System" }
+    );
     userEvent.click(codeSystemDropdown);
     const codeSystemOptions = await screen.findAllByRole("option");
     expect(codeSystemOptions[0]).toHaveTextContent("SNOMEDCT");
@@ -230,7 +240,9 @@ describe("Diagnosis Component", () => {
 
     // select the code
     const codeSelector = screen.getByTestId("code-selector");
-    const codeDropdown = within(codeSelector).getByRole("button");
+    const codeDropdown = within(codeSelector).getByRole("combobox", {
+      name: "Code",
+    });
     userEvent.click(codeDropdown);
     const codeOptions = await screen.findAllByRole("option");
     expect(codeOptions).toHaveLength(2);
@@ -254,7 +266,9 @@ describe("Diagnosis Component", () => {
     );
     const presentOnAdmissionIndicatorDropdown = within(
       presentOnAdmissionIndicatorSelector
-    ).getByRole("button") as HTMLInputElement;
+    ).getByRole("combobox", {
+      name: "Value Set / Direct Reference Code",
+    }) as HTMLInputElement;
     userEvent.click(presentOnAdmissionIndicatorDropdown);
 
     const presentOnAdmissionIndicatorOptions = await screen.findAllByRole(
@@ -270,7 +284,8 @@ describe("Diagnosis Component", () => {
       "code-system-selector-present-on-admission-indicator"
     );
     const codeSystemDropdownPOAI = within(codeSystemSelectorPOAI).getByRole(
-      "button"
+      "combobox",
+      { name: "Code System" }
     );
     userEvent.click(codeSystemDropdownPOAI);
     const codeSystemOptionsPOAI = await screen.findAllByRole("option");
@@ -282,7 +297,9 @@ describe("Diagnosis Component", () => {
     const codeSelectorPOAI = screen.getByTestId(
       "code-selector-present-on-admission-indicator"
     );
-    const codeDropdownPOAI = within(codeSelectorPOAI).getByRole("button");
+    const codeDropdownPOAI = within(codeSelectorPOAI).getByRole("combobox", {
+      name: "Code",
+    });
     userEvent.click(codeDropdownPOAI);
     const codeOptionsPOAI = await screen.findAllByRole("option");
     expect(codeOptionsPOAI).toHaveLength(2);
@@ -321,9 +338,9 @@ describe("Diagnosis Component", () => {
 
     // select the value set
     const valueSetSelector = screen.getByTestId("value-set-selector");
-    const valueSetDropdown = within(valueSetSelector).getByRole(
-      "button"
-    ) as HTMLInputElement;
+    const valueSetDropdown = within(valueSetSelector).getByRole("combobox", {
+      name: "Value Set / Direct Reference Code",
+    }) as HTMLInputElement;
     userEvent.click(valueSetDropdown);
     const valueSetOptions = await screen.findAllByRole("option");
     userEvent.click(valueSetOptions[0]);
@@ -362,9 +379,9 @@ describe("Diagnosis Component", () => {
     const valueSetSelector = screen.getByTestId(
       "value-set-selector-present-on-admission-indicator"
     );
-    const valueSetDropdown = within(valueSetSelector).getByRole(
-      "button"
-    ) as HTMLInputElement;
+    const valueSetDropdown = within(valueSetSelector).getByRole("combobox", {
+      name: "Value Set / Direct Reference Code",
+    }) as HTMLInputElement;
     userEvent.click(valueSetDropdown);
     const valueSetOptions = await screen.findAllByRole("option");
     userEvent.click(valueSetOptions[0]);
@@ -410,7 +427,9 @@ describe("Diagnosis Component", () => {
     );
     const presentOnAdmissionIndicatorDropdown = within(
       presentOnAdmissionIndicatorSelector
-    ).getByRole("button") as HTMLInputElement;
+    ).getByRole("combobox", {
+      name: "Value Set / Direct Reference Code",
+    }) as HTMLInputElement;
     userEvent.click(presentOnAdmissionIndicatorDropdown);
 
     const presentOnAdmissionIndicatorOptions = await screen.findAllByRole(
@@ -426,7 +445,8 @@ describe("Diagnosis Component", () => {
       "code-system-selector-present-on-admission-indicator"
     );
     const codeSystemDropdownPOAI = within(codeSystemSelectorPOAI).getByRole(
-      "button"
+      "combobox",
+      { name: "Code System" }
     );
     userEvent.click(codeSystemDropdownPOAI);
     const codeSystemOptionsPOAI = await screen.findAllByRole("option");
@@ -438,7 +458,9 @@ describe("Diagnosis Component", () => {
     const codeSelectorPOAI = screen.getByTestId(
       "code-selector-present-on-admission-indicator"
     );
-    const codeDropdownPOAI = within(codeSelectorPOAI).getByRole("button");
+    const codeDropdownPOAI = within(codeSelectorPOAI).getByRole("combobox", {
+      name: "Code",
+    });
     userEvent.click(codeDropdownPOAI);
     const codeOptionsPOAI = await screen.findAllByRole("option");
     expect(codeOptionsPOAI).toHaveLength(2);
@@ -463,16 +485,19 @@ describe("Diagnosis Component", () => {
 
     // select the value set
     const valueSetSelector = screen.getByTestId("value-set-selector");
-    const valueSetDropdown = within(valueSetSelector).getByRole(
-      "button"
-    ) as HTMLInputElement;
+    const valueSetDropdown = within(valueSetSelector).getByRole("combobox", {
+      name: "Value Set / Direct Reference Code",
+    }) as HTMLInputElement;
     userEvent.click(valueSetDropdown);
     const valueSetOptions = await screen.findAllByRole("option");
     userEvent.click(valueSetOptions[1]);
 
     // select the code system
     const codeSystemSelector = screen.getByTestId("code-system-selector");
-    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole(
+      "combobox",
+      { name: "Code System" }
+    );
     userEvent.click(codeSystemDropdown);
     const codeSystemOptions = await screen.findAllByRole("option");
     expect(codeSystemOptions[0]).toHaveTextContent("SNOMEDCT");
@@ -482,7 +507,9 @@ describe("Diagnosis Component", () => {
 
     // select the code
     const codeSelector = screen.getByTestId("code-selector");
-    const codeDropdown = within(codeSelector).getByRole("button");
+    const codeDropdown = within(codeSelector).getByRole("combobox", {
+      name: "Code",
+    });
     userEvent.click(codeDropdown);
     const codeOptions = await screen.findAllByRole("option");
     expect(codeOptions).toHaveLength(2);
@@ -508,16 +535,19 @@ describe("Diagnosis Component", () => {
 
     // select the value set
     const valueSetSelector = screen.getByTestId("value-set-selector");
-    const valueSetDropdown = within(valueSetSelector).getByRole(
-      "button"
-    ) as HTMLInputElement;
+    const valueSetDropdown = within(valueSetSelector).getByRole("combobox", {
+      name: "Value Set / Direct Reference Code",
+    }) as HTMLInputElement;
     userEvent.click(valueSetDropdown);
     const valueSetOptions = await screen.findAllByRole("option");
     userEvent.click(valueSetOptions[1]);
 
     // select the code system
     const codeSystemSelector = screen.getByTestId("code-system-selector");
-    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole(
+      "combobox",
+      { name: "Code System" }
+    );
     userEvent.click(codeSystemDropdown);
     const codeSystemOptions = await screen.findAllByRole("option");
     expect(codeSystemOptions[0]).toHaveTextContent("SNOMEDCT");
@@ -527,7 +557,9 @@ describe("Diagnosis Component", () => {
 
     // select the code
     const codeSelector = screen.getByTestId("code-selector");
-    const codeDropdown = within(codeSelector).getByRole("button");
+    const codeDropdown = within(codeSelector).getByRole("combobox", {
+      name: "Code",
+    });
     userEvent.click(codeDropdown);
     const codeOptions = await screen.findAllByRole("option");
     expect(codeOptions).toHaveLength(2);
@@ -560,7 +592,9 @@ describe("Diagnosis Component", () => {
     );
     const presentOnAdmissionIndicatorDropdown = within(
       presentOnAdmissionIndicatorSelector
-    ).getByRole("button") as HTMLInputElement;
+    ).getByRole("combobox", {
+      name: "Value Set / Direct Reference Code",
+    }) as HTMLInputElement;
     userEvent.click(presentOnAdmissionIndicatorDropdown);
 
     const presentOnAdmissionIndicatorOptions = await screen.findAllByRole(
@@ -576,7 +610,8 @@ describe("Diagnosis Component", () => {
       "code-system-selector-present-on-admission-indicator"
     );
     const codeSystemDropdownPOAI = within(codeSystemSelectorPOAI).getByRole(
-      "button"
+      "combobox",
+      { name: "Code System" }
     );
     userEvent.click(codeSystemDropdownPOAI);
     const codeSystemOptionsPOAI = await screen.findAllByRole("option");
@@ -588,7 +623,9 @@ describe("Diagnosis Component", () => {
     const codeSelectorPOAI = screen.getByTestId(
       "code-selector-present-on-admission-indicator"
     );
-    const codeDropdownPOAI = within(codeSelectorPOAI).getByRole("button");
+    const codeDropdownPOAI = within(codeSelectorPOAI).getByRole("combobox", {
+      name: "Code",
+    });
     userEvent.click(codeDropdownPOAI);
     const codeOptionsPOAI = await screen.findAllByRole("option");
     expect(codeOptionsPOAI).toHaveLength(2);

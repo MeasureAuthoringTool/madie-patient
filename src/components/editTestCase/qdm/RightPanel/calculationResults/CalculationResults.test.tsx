@@ -1,12 +1,5 @@
 import * as React from "react";
-import {
-  act,
-  getByTestId,
-  render,
-  screen,
-  waitFor,
-  within,
-} from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import CalculationResults from "./CalculationResults";
 import { GroupPopulation } from "@madie/madie-models";
 import userEvent from "@testing-library/user-event";
@@ -152,7 +145,7 @@ const getTab = (name) => screen.findByRole("tab", { name: name });
 const getCriteriaOptions = () => {
   const criteriaSelector = screen.getByTestId("population-criterion-selector");
   const criteriaDropdown = within(criteriaSelector).getByRole(
-    "button"
+    "combobox"
   ) as HTMLInputElement;
   userEvent.click(criteriaDropdown);
   return screen.findAllByRole("option");
@@ -397,9 +390,7 @@ describe("CalculationResults with new tabbed highlighting layout on", () => {
     const expandLess = await screen.findByTestId("ExpandLessIcon");
     userEvent.click(expandLess);
     expect(
-      await screen.queryByText(
-        "[PatientCharacteristicEthnicity CODE: CDCREC 2135-2]"
-      )
+      screen.queryByText("[PatientCharacteristicEthnicity CODE: CDCREC 2135-2]")
     ).not.toBeInTheDocument();
   });
 });

@@ -1,11 +1,5 @@
 import * as React from "react";
-import {
-  render,
-  screen,
-  within,
-  fireEvent,
-  findByRole,
-} from "@testing-library/react";
+import { render, screen, within, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { QdmExecutionContextProvider } from "../../../../../../../routes/qdm/QdmExecutionContext";
@@ -32,7 +26,10 @@ const serviceConfig: ServiceConfig = {
   terminologyService: {
     baseUrl: "http.com",
   },
-  elmTranslationService: {
+  qdmElmTranslationService: {
+    baseUrl: "base.url",
+  },
+  fhirElmTranslationService: {
     baseUrl: "base.url",
   },
   excelExportService: {
@@ -101,6 +98,7 @@ describe("DisplayAttributeInputs component", () => {
                 measureState: [null, jest.fn],
                 cqmMeasureState: [mockCqmMeasure, jest.fn],
                 executionContextReady: true,
+                setExecutionContextReady: jest.fn(),
                 executing: false,
                 setExecuting: jest.fn(),
                 contextFailure: false,
@@ -130,7 +128,6 @@ describe("DisplayAttributeInputs component", () => {
   });
 
   it("should render the String selector and handle changes", async () => {
-    const onChange = jest.fn;
     const onInputAdd = jest.fn;
     renderDisplayAttributeInputs("String", onInputAdd);
     const selectorComponent = await findByTestId("string-field-string");
@@ -156,7 +153,6 @@ describe("DisplayAttributeInputs component", () => {
   });
 
   it("should render the Ratio selector", async () => {
-    const onChange = jest.fn;
     const onInputAdd = jest.fn;
     renderDisplayAttributeInputs("Ratio", onInputAdd);
     const selectorComponent = await findByText("Ratio");
@@ -164,7 +160,6 @@ describe("DisplayAttributeInputs component", () => {
   });
 
   it("should render the Integer selector and handle changes", async () => {
-    const onChange = jest.fn;
     const onInputAdd = jest.fn;
     renderDisplayAttributeInputs("Integer", onInputAdd);
     const selectorComponent = await findByTestId("integer-field-Integer");
@@ -209,16 +204,19 @@ describe("DisplayAttributeInputs component", () => {
 
     // select the value set
     const valueSetSelector = screen.getByTestId("value-set-selector");
-    const valueSetDropdown = within(valueSetSelector).getByRole(
-      "button"
-    ) as HTMLInputElement;
+    const valueSetDropdown = within(valueSetSelector).getByRole("combobox", {
+      name: "Value Set / Direct Reference Code",
+    }) as HTMLInputElement;
     userEvent.click(valueSetDropdown);
     const valueSetOptions = await screen.findAllByRole("option");
     userEvent.click(valueSetOptions[1]);
 
     // select the code system
     const codeSystemSelector = screen.getByTestId("code-system-selector");
-    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole(
+      "combobox",
+      { name: "Code System" }
+    );
     userEvent.click(codeSystemDropdown);
     const codeSystemOptions = await screen.findAllByRole("option");
     expect(codeSystemOptions[0]).toHaveTextContent("SNOMEDCT");
@@ -227,7 +225,9 @@ describe("DisplayAttributeInputs component", () => {
 
     // select the code
     const codeSelector = screen.getByTestId("code-selector");
-    const codeDropdown = within(codeSelector).getByRole("button");
+    const codeDropdown = within(codeSelector).getByRole("combobox", {
+      name: "Code",
+    });
     userEvent.click(codeDropdown);
     const codeOptions = await screen.findAllByRole("option");
     expect(codeOptions).toHaveLength(2);
@@ -288,16 +288,19 @@ describe("DisplayAttributeInputs component", () => {
 
     // select the value set
     const valueSetSelector = screen.getByTestId("value-set-selector");
-    const valueSetDropdown = within(valueSetSelector).getByRole(
-      "button"
-    ) as HTMLInputElement;
+    const valueSetDropdown = within(valueSetSelector).getByRole("combobox", {
+      name: "Value Set / Direct Reference Code",
+    }) as HTMLInputElement;
     userEvent.click(valueSetDropdown);
     const valueSetOptions = await screen.findAllByRole("option");
     userEvent.click(valueSetOptions[1]);
 
     // select the code system
     const codeSystemSelector = screen.getByTestId("code-system-selector");
-    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole(
+      "combobox",
+      { name: "Code System" }
+    );
     userEvent.click(codeSystemDropdown);
     const codeSystemOptions = await screen.findAllByRole("option");
     expect(codeSystemOptions[0]).toHaveTextContent("SNOMEDCT");
@@ -306,7 +309,9 @@ describe("DisplayAttributeInputs component", () => {
 
     // select the code
     const codeSelector = screen.getByTestId("code-selector");
-    const codeDropdown = within(codeSelector).getByRole("button");
+    const codeDropdown = within(codeSelector).getByRole("combobox", {
+      name: "Code",
+    });
     userEvent.click(codeDropdown);
     const codeOptions = await screen.findAllByRole("option");
     expect(codeOptions).toHaveLength(2);
@@ -328,7 +333,9 @@ describe("DisplayAttributeInputs component", () => {
     );
     const presentOnAdmissionIndicatorDropdown = within(
       presentOnAdmissionIndicatorSelector
-    ).getByRole("button") as HTMLInputElement;
+    ).getByRole("combobox", {
+      name: "Value Set / Direct Reference Code",
+    }) as HTMLInputElement;
     userEvent.click(presentOnAdmissionIndicatorDropdown);
 
     const presentOnAdmissionIndicatorOptions = await screen.findAllByRole(
@@ -343,7 +350,8 @@ describe("DisplayAttributeInputs component", () => {
       "code-system-selector-present-on-admission-indicator"
     );
     const codeSystemDropdownPOAI = within(codeSystemSelectorPOAI).getByRole(
-      "button"
+      "combobox",
+      { name: "Code System" }
     );
     userEvent.click(codeSystemDropdownPOAI);
     const codeSystemOptionsPOAI = await screen.findAllByRole("option");
@@ -355,7 +363,9 @@ describe("DisplayAttributeInputs component", () => {
     const codeSelectorPOAI = screen.getByTestId(
       "code-selector-present-on-admission-indicator"
     );
-    const codeDropdownPOAI = within(codeSelectorPOAI).getByRole("button");
+    const codeDropdownPOAI = within(codeSelectorPOAI).getByRole("combobox", {
+      name: "Code",
+    });
     userEvent.click(codeDropdownPOAI);
     const codeOptionsPOAI = await screen.findAllByRole("option");
     expect(codeOptionsPOAI).toHaveLength(2);
@@ -381,7 +391,7 @@ describe("DisplayAttributeInputs component", () => {
   it("should render default", async () => {
     const onInputAdd = jest.fn;
     renderDisplayAttributeInputs("Test", onInputAdd);
-    const selectorComponent = await queryByTestId("DiagnosisComponent");
+    const selectorComponent = queryByTestId("DiagnosisComponent");
     expect(selectorComponent).not.toBeInTheDocument();
   });
 
@@ -498,16 +508,19 @@ describe("DisplayAttributeInputs component", () => {
 
     // select the value set
     const valueSetSelector = screen.getByTestId("value-set-selector");
-    const valueSetDropdown = within(valueSetSelector).getByRole(
-      "button"
-    ) as HTMLInputElement;
+    const valueSetDropdown = within(valueSetSelector).getByRole("combobox", {
+      name: "Value Set / Direct Reference Code",
+    }) as HTMLInputElement;
     userEvent.click(valueSetDropdown);
     const valueSetOptions = await screen.findAllByRole("option");
     userEvent.click(valueSetOptions[1]);
 
     // select the code system
     const codeSystemSelector = screen.getByTestId("code-system-selector");
-    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole(
+      "combobox",
+      { name: "Code System" }
+    );
     userEvent.click(codeSystemDropdown);
     const codeSystemOptions = await screen.findAllByRole("option");
     expect(codeSystemOptions[0]).toHaveTextContent("SNOMEDCT");
@@ -516,7 +529,9 @@ describe("DisplayAttributeInputs component", () => {
 
     // select the code
     const codeSelector = screen.getByTestId("code-selector");
-    const codeDropdown = within(codeSelector).getByRole("button");
+    const codeDropdown = within(codeSelector).getByRole("combobox", {
+      name: "Code",
+    });
     userEvent.click(codeDropdown);
     const codeOptions = await screen.findAllByRole("option");
     expect(codeOptions).toHaveLength(2);
