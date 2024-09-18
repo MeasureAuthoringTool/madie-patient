@@ -7,6 +7,9 @@ import SearchIcon from "@mui/icons-material/Search";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import ClearIcon from "@mui/icons-material/Clear";
 import { useFormik } from "formik";
+import queryString from "query-string";
+import { useNavigate, useLocation } from "react-router-dom";
+
 interface ActionCenterProps {
   onSubmit?: any;
 }
@@ -14,16 +17,35 @@ interface ActionCenterProps {
 const filterByOptions = ["Status", "Group", "Title", "Description"];
 
 export default function ActionCenter(props: ActionCenterProps) {
+  const { search } = useLocation();
+  let navigate = useNavigate();
+  const values = queryString.parse(search);
+  // init against url
   const formik = useFormik({
     initialValues: {
-      filterBy: undefined,
-      searchValue: undefined,
+      filterBy: values.filter ? values.filter : "",
+      searchValue: values.search ? values.search : "",
     },
+    enableReinitialize: true,
+    // on submit will never fire without a button of type submit in top level of the form.
     onSubmit: async (formValues) => {
       props.onSubmit(formValues);
     },
   });
-
+  const handleNavigate = () => {
+    navigate(
+      `?filter=${formik.values.filterBy}&search=${
+        formik.values.searchValue
+      }&page=${1}&limit=${values.limit ? values.limit : 10}`
+    );
+  };
+  const handleClearClick = () => {
+    formik.setValues({
+      filterBy: "",
+      searchValue: "",
+    });
+    navigate(window.location.pathname);
+  };
   return (
     <form onSubmit={formik.handleSubmit}>
       <div tw="flex py-4">
@@ -34,7 +56,7 @@ export default function ActionCenter(props: ActionCenterProps) {
               id="filter-by-select"
               data-testid="filter-by-select"
               inputProps={{ "data-testid": "filter-by-select-input" }}
-              placeHolder={{ name: "Filter By" }}
+              placeHolder={{ name: "Filter By", value: "" }}
               SelectDisplayProps={{
                 "aria-required": "true",
               }}
@@ -61,6 +83,7 @@ export default function ActionCenter(props: ActionCenterProps) {
               tw="w-full"
               label="Search"
               placeholder="Search"
+              disabled={!formik.values.filterBy}
               inputProps={{
                 "data-testid": "test-case-list-search-input",
               }}
@@ -68,20 +91,21 @@ export default function ActionCenter(props: ActionCenterProps) {
               name="searchValue"
               value={formik.values.searchValue}
               onChange={formik.handleChange}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  handleNavigate();
+                }
+              }}
               slotProps={{
                 input: {
                   startAdornment: (
-                    <InputAdornment position="start">
+                    <InputAdornment position="start" onClick={handleNavigate}>
                       <SearchIcon />
                     </InputAdornment>
                   ),
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => {
-                          formik.setFieldValue("searchValue", "");
-                        }}
-                      >
+                      <IconButton onClick={handleClearClick}>
                         <ClearIcon />
                       </IconButton>
                     </InputAdornment>

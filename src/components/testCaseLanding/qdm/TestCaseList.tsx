@@ -114,7 +114,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     setErrors,
   });
   // UseTestCases handles all the pagination and navigation independent of where we're at
-  const { 
+  const {
     totalItems,
     visibleItems,
     offset,
@@ -125,7 +125,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     handlePageChange,
     handleLimitChange,
     canGoNext,
-    canGoPrev
+    canGoPrev,
   } = testCasePage;
 
   const {
@@ -787,20 +787,20 @@ const TestCaseList = (props: TestCaseListProps) => {
                         measure={measure}
                         onTestCaseShiftDates={onTestCaseShiftDates}
                       />
-                        <Pagination
-                          totalItems={totalItems}
-                          visibleItems={visibleItems}
-                          limitOptions={[10, 25, 50]}
-                          offset={offset}
-                          handlePageChange={handlePageChange}
-                          handleLimitChange={handleLimitChange}
-                          page={page}
-                          limit={limit}
-                          count={count}
-                          shape="rounded"
-                          hideNextButton={!canGoNext}
-                          hidePrevButton={!canGoPrev}
-                        />
+                      <Pagination
+                        totalItems={totalItems}
+                        visibleItems={visibleItems}
+                        limitOptions={[10, 25, 50]}
+                        offset={offset}
+                        handlePageChange={handlePageChange}
+                        handleLimitChange={handleLimitChange}
+                        page={page}
+                        limit={limit}
+                        count={count}
+                        shape="rounded"
+                        hideNextButton={!canGoNext}
+                        hidePrevButton={!canGoPrev}
+                      />
                     </>
                   )}
                   {executing && (

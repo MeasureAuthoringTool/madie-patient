@@ -92,7 +92,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     setErrors,
   });
 
-  const { 
+  const {
     totalItems,
     visibleItems,
     offset,
@@ -103,7 +103,7 @@ const TestCaseList = (props: TestCaseListProps) => {
     handlePageChange,
     handleLimitChange,
     canGoNext,
-    canGoPrev
+    canGoPrev,
   } = testCasePage;
 
   const {
@@ -398,7 +398,7 @@ const TestCaseList = (props: TestCaseListProps) => {
       ]);
       return null;
     }
-    // request all test cases -> 
+    // request all test cases ->
     const validTestCases = testCases?.filter((tc) => tc.validResource);
 
     if (validTestCases && validTestCases.length > 0 && measureBundle) {
@@ -606,7 +606,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                         onTestCaseShiftDates={onTestCaseShiftDates}
                       />
                       {currentSlice?.length > 0 && (
-                          <Pagination
+                        <Pagination
                           totalItems={totalItems}
                           visibleItems={visibleItems}
                           limitOptions={[10, 25, 50]}

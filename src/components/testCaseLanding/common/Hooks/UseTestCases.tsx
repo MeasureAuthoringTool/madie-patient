@@ -27,32 +27,43 @@ function UseFetchTestCases({ measureId, setErrors }) {
     currentSlice: [],
     canGoNext: false,
     canGoPrev: false,
-    handlePageChange : (e,v) => {
-      navigate(`?filter=${values.filter ? values.filter : ""}&search=${values.search ? values.search : ""}&page=${v}&limit=${values.limit ? values.limit : 10}`);
+    handlePageChange: (e, v) => {
+      navigate(
+        `?filter=${values.filter ? values.filter : ""}&search=${
+          values.search ? values.search : ""
+        }&page=${v}&limit=${values.limit ? values.limit : 10}`
+      );
     },
-    handleLimitChange : (e) => {
-      navigate(`?filter=${values.filter ? values.filter : ""}&search=${values.search ? values.search : ""}&page=${1}&limit=${e.target.value}`);
+    handleLimitChange: (e) => {
+      navigate(
+        `?filter=${values.filter ? values.filter : ""}&search=${
+          values.search ? values.search : ""
+        }&page=${1}&limit=${e.target.value}`
+      );
     },
   });
   const { updateTestCases } = measureStore;
   const filter: string = values?.filter ? values.filter.toString() : "";
   // pull info from some query url
   let searchQuery: string = values?.search ? values.search.toString() : "";
-  const curLimit = values.limit && Number(values.limit) || 10;
+  const curLimit = (values.limit && Number(values.limit)) || 10;
   const curPage = (values.page && Number(values.page)) || 1;
   let navigate = useNavigate();
 
   const getTestCasePage = useCallback(() => {
     // first we want to get all the possible test cases based off of our filter
-    if (testCases){
+    if (testCases) {
       const filterMap = {
-        "Group": "series",
-        "Status": "executionStatus",
-        "Title": "title",
-        "Description": "description"
-      }
+        Group: "series",
+        Status: "executionStatus",
+        Title: "title",
+        Description: "description",
+      };
       // edge case that will certainly get hit
-      if (filterMap[filter] === "executionStatus" && searchQuery.toLowerCase() === "n/a"){
+      if (
+        filterMap[filter] === "executionStatus" &&
+        searchQuery.toLowerCase() === "n/a"
+      ) {
         searchQuery = "NA";
       }
       const start = (curPage - 1) * curLimit;
@@ -60,20 +71,31 @@ function UseFetchTestCases({ measureId, setErrors }) {
 
       const canGoPrev = Number(values?.page) > 1;
 
-    
-      const handlePageChange = (e,v) => {
-        navigate(`?filter=${values.filter ? values.filter : ""}&search=${values.search ? values.search : ""}&page=${v}&limit=${values.limit ? values.limit : 10}`);
+      const handlePageChange = (e, v) => {
+        navigate(
+          `?filter=${values.filter ? values.filter : ""}&search=${
+            values.search ? values.search : ""
+          }&page=${v}&limit=${values.limit ? values.limit : 10}`
+        );
       };
       const handleLimitChange = (e) => {
-        navigate(`?filter=${values.filter ? values.filter : ""}&search=${values.search ? values.search : ""}&page=${1}&limit=${e.target.value}`);
+        navigate(
+          `?filter=${values.filter ? values.filter : ""}&search=${
+            values.search ? values.search : ""
+          }&page=${1}&limit=${e.target.value}`
+        );
       };
-      if (searchQuery){
-        const filteredTestCases = testCases.filter((tc) => tc[filterMap[filter]]?.toLowerCase().includes(searchQuery?.toLocaleLowerCase()));
+      if (searchQuery) {
+        const filteredTestCases = testCases.filter((tc) =>
+          tc[filterMap[filter]]
+            ?.toLowerCase()
+            .includes(searchQuery?.toLocaleLowerCase())
+        );
         const currentSlice = [...filteredTestCases].slice(start, end);
         const count = Math.ceil(filteredTestCases.length / curLimit);
         const canGoNext = (() => {
           return curPage < count;
-        })();   
+        })();
         setTestCasePage({
           totalItems: filteredTestCases.length,
           visibleItems: currentSlice.length,
@@ -85,14 +107,14 @@ function UseFetchTestCases({ measureId, setErrors }) {
           handlePageChange,
           handleLimitChange,
           canGoNext,
-          canGoPrev
-        })
+          canGoPrev,
+        });
       } else {
         const currentSlice = [...testCases].slice(start, end);
         const count = Math.ceil(testCases.length / curLimit);
         const canGoNext = (() => {
           return curPage < count;
-        })();    
+        })();
         setTestCasePage({
           totalItems: testCases.length,
           visibleItems: currentSlice.length,
@@ -104,15 +126,14 @@ function UseFetchTestCases({ measureId, setErrors }) {
           handlePageChange,
           handleLimitChange,
           canGoNext,
-          canGoPrev
-        })
+          canGoPrev,
+        });
       }
     }
-
-  }, [testCases, curPage, curLimit, filter, searchQuery])
+  }, [testCases, curPage, curLimit, filter, searchQuery]);
   useEffect(() => {
     getTestCasePage();
-  },[getTestCasePage])
+  }, [getTestCasePage]);
   // this will only ever get the total test cases
   const retrieveTestCases = useCallback(() => {
     setLoadingState(() => ({
@@ -142,10 +163,8 @@ function UseFetchTestCases({ measureId, setErrors }) {
   }, [retrieveTestCases]);
   return {
     testCaseService,
-    testCases, //all test cases
-    testCasePage,
-    // page //what page we at
-    
+    testCases, //all test cases to run execution against
+    testCasePage, //all pagination required values
     setTestCases,
     loadingState,
     setLoadingState,
