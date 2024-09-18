@@ -27,6 +27,7 @@ import CreateNewTestCaseDialog from "../../createTestCase/CreateNewTestCaseDialo
 import {
   MadieDeleteDialog,
   MadieSpinner,
+  Pagination,
   Toast,
 } from "@madie/madie-design-system/dist/react";
 import Typography from "@mui/material/Typography";
@@ -85,10 +86,26 @@ const TestCaseList = (props: TestCaseListProps) => {
     loadingState,
     setLoadingState,
     retrieveTestCases,
+    testCasePage,
   } = UseTestCases({
     measureId,
     setErrors,
   });
+
+  const { 
+    totalItems,
+    visibleItems,
+    offset,
+    limit,
+    count,
+    page,
+    currentSlice,
+    handlePageChange,
+    handleLimitChange,
+    canGoNext,
+    canGoPrev
+  } = testCasePage;
+
   const {
     toastOpen,
     setToastOpen,
@@ -381,6 +398,7 @@ const TestCaseList = (props: TestCaseListProps) => {
       ]);
       return null;
     }
+    // request all test cases -> 
     const validTestCases = testCases?.filter((tc) => tc.validResource);
 
     if (validTestCases && validTestCases.length > 0 && measureBundle) {
@@ -472,7 +490,7 @@ const TestCaseList = (props: TestCaseListProps) => {
           `(${successfulImports}) Test cases imported successfully`
         );
       }
-      retrieveTestCases();
+      // retrieveTestCases();
     } catch (error) {
       setErrors((prevState) => [...prevState, IMPORT_ERROR]);
     } finally {
@@ -580,13 +598,29 @@ const TestCaseList = (props: TestCaseListProps) => {
                       )}
                       {featureFlags.TestCaseListSearch && <ActionCenter />}
                       <TestCaseTable
-                        testCases={testCases}
+                        testCases={currentSlice}
                         canEdit={canEdit}
                         deleteTestCase={deleteTestCase}
                         exportTestCase={exportTestCase}
                         measure={measure}
                         onTestCaseShiftDates={onTestCaseShiftDates}
                       />
+                      {currentSlice?.length > 0 && (
+                          <Pagination
+                          totalItems={totalItems}
+                          visibleItems={visibleItems}
+                          limitOptions={[10, 25, 50]}
+                          offset={offset}
+                          handlePageChange={handlePageChange}
+                          handleLimitChange={handleLimitChange}
+                          page={page}
+                          limit={limit}
+                          count={count}
+                          shape="rounded"
+                          hideNextButton={!canGoNext}
+                          hidePrevButton={!canGoPrev}
+                        />
+                      )}
                     </>
                   )}
                   {executing && (
