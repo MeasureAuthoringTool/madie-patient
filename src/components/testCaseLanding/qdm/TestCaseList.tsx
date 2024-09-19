@@ -316,6 +316,20 @@ const TestCaseList = (props: TestCaseListProps) => {
       allRelevantClauses.filter((clause) => clause.final === "TRUE"),
       (c1, c2) => c1.libraryName === c2.libraryName && c1.localId === c2.localId
     );
+    // set onto window for any environment debug purposes
+    if (localStorage.getItem("madieDebug") || (window as any).madieDebug) {
+      // eslint-disable-next-line no-console
+      console.log("coveredClauses: ", _.cloneDeep(coveredClauses));
+      // eslint-disable-next-line no-console
+      console.log("allUniqueClauses: ", _.cloneDeep(allUniqueClauses));
+      // eslint-disable-next-line no-console
+      console.log(
+        "uncoveredClauses: ",
+        _.cloneDeep(
+          _.pullAllBy(_.cloneDeep(allUniqueClauses), coveredClauses, "localId")
+        )
+      );
+    }
     return Math.floor(
       (coveredClauses.length / allUniqueClauses.length) * 100
     ).toString();
