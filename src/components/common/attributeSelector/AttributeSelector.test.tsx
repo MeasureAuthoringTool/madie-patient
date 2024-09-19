@@ -37,7 +37,8 @@ describe("AttributeSelector Component", () => {
 
     const attributeSelect = screen.getByTestId("test-attribute-select");
     const attributeSelectDropdown = within(attributeSelect).getByRole(
-      "button"
+      "combobox",
+      { name: "test Attribute" }
     ) as HTMLInputElement;
     userEvent.click(attributeSelectDropdown);
 
@@ -55,7 +56,8 @@ describe("AttributeSelector Component", () => {
 
     const attributeTypeSelect = screen.getByTestId("test-type-select");
     const attributeTypeSelectDropdown = within(attributeTypeSelect).getByRole(
-      "button"
+      "combobox",
+      { name: "test Type" }
     ) as HTMLInputElement;
     userEvent.click(attributeTypeSelectDropdown);
 
@@ -88,7 +90,8 @@ describe("AttributeSelector Component", () => {
 
     const attributeSelect = screen.getByTestId("test-attribute-select");
     const attributeSelectDropdown = within(attributeSelect).getByRole(
-      "button"
+      "combobox",
+      { name: "test Attribute" }
     ) as HTMLInputElement;
     userEvent.click(attributeSelectDropdown);
 
@@ -100,7 +103,8 @@ describe("AttributeSelector Component", () => {
 
     const attributeTypeSelect = screen.getByTestId("test-type-select");
     const attributeTypeSelectDropdown = within(attributeTypeSelect).getByRole(
-      "button"
+      "combobox",
+      { name: "test Type" }
     ) as HTMLInputElement;
     userEvent.click(attributeTypeSelectDropdown);
 

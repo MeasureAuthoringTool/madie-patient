@@ -1,7 +1,6 @@
-import React, { useContext } from "react";
+import * as React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import events from "events";
 import DemographicsSection from "./DemographicsSection";
 import { within } from "@testing-library/dom";
 
@@ -18,17 +17,17 @@ describe("Display Demographics Section", () => {
     expect(screen.getByText("Ethnicity (OMB)")).toBeInTheDocument();
   });
 
-  it.only("Shows 'Ethnicity (Detailed)' selection when Hispanic is chosen", async () => {
+  it("Shows 'Ethnicity (Detailed)' selection when Hispanic is chosen", async () => {
     render(
       <QiCoreResourceProvider>
         <DemographicsSection canEdit={true} />
       </QiCoreResourceProvider>
     );
-    const ethnicityOmbSelect = await screen.getByTestId(
+    const ethnicityOmbSelect = screen.getByTestId(
       "demographics-ethnicity-omb-select-id"
     );
     const selectDropdown = within(ethnicityOmbSelect).getByRole(
-      "button"
+      "combobox"
     ) as HTMLInputElement;
     userEvent.click(selectDropdown);
     const selectOption = screen.getByText("Hispanic or Latino");

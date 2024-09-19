@@ -1,7 +1,5 @@
 import * as React from "react";
-
 import { render, screen, within } from "@testing-library/react";
-
 import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
 import {
@@ -171,7 +169,8 @@ describe("QdmEntity Component", () => {
     expect(valueSetsInputs[0].value).toBe("");
     const valueSetSelectors = screen.getAllByTestId("value-set-selector");
     const valueSetDropdown1 = within(valueSetSelectors[0]).getByRole(
-      "button"
+      "combobox",
+      { name: "Value Set / Direct Reference Code" }
     ) as HTMLInputElement;
     userEvent.click(valueSetDropdown1);
 
@@ -185,7 +184,10 @@ describe("QdmEntity Component", () => {
 
     // select the code system
     const codeSystemSelector = screen.getByTestId("code-system-selector");
-    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole(
+      "combobox",
+      { name: "Code System" }
+    );
     userEvent.click(codeSystemDropdown);
     const codeSystemOptions = await screen.findAllByRole("option");
     expect(codeSystemOptions[0]).toHaveTextContent("SNOMEDCT");
@@ -194,7 +196,9 @@ describe("QdmEntity Component", () => {
 
     // select the code
     const codeSelector = screen.getByTestId("code-selector");
-    const codeDropdown = within(codeSelector).getByRole("button");
+    const codeDropdown = within(codeSelector).getByRole("combobox", {
+      name: "Code",
+    });
     userEvent.click(codeDropdown);
     const codeOptions = await screen.findAllByRole("option");
     expect(codeOptions).toHaveLength(2);
@@ -209,7 +213,8 @@ describe("QdmEntity Component", () => {
 
     //Specialty
     const valueSetDropdown2 = within(valueSetSelectors[1]).getByRole(
-      "button"
+      "combobox",
+      { name: "Value Set / Direct Reference Code" }
     ) as HTMLInputElement;
     userEvent.click(valueSetDropdown2);
     const valueSetOptions2 = await screen.findAllByRole("option");
@@ -219,7 +224,8 @@ describe("QdmEntity Component", () => {
     // select the code system
     const codeSystemSelector2 = screen.getAllByTestId("code-system-selector");
     const codeSystemDropdown2 = within(codeSystemSelector2[1]).getByRole(
-      "button"
+      "combobox",
+      { name: "Code System" }
     );
     userEvent.click(codeSystemDropdown2);
     const codeSystemOptions2 = await screen.findAllByRole("option");
@@ -229,7 +235,9 @@ describe("QdmEntity Component", () => {
 
     // select the code
     const codeSelector2 = screen.getAllByTestId("code-selector");
-    const codeDropdown2 = within(codeSelector2[1]).getByRole("button");
+    const codeDropdown2 = within(codeSelector2[1]).getByRole("combobox", {
+      name: "Code",
+    });
     userEvent.click(codeDropdown2);
     const codeOptions2 = await screen.findAllByRole("option");
     expect(codeOptions2).toHaveLength(2);
@@ -244,7 +252,8 @@ describe("QdmEntity Component", () => {
 
     //Qualification
     const valueSetDropdown3 = within(valueSetSelectors[2]).getByRole(
-      "button"
+      "combobox",
+      { name: "Value Set / Direct Reference Code" }
     ) as HTMLInputElement;
     userEvent.click(valueSetDropdown3);
     const valueSetOptions3 = await screen.findAllByRole("option");
@@ -254,7 +263,8 @@ describe("QdmEntity Component", () => {
     // select the code system
     const codeSystemSelector3 = screen.getAllByTestId("code-system-selector");
     const codeSystemDropdown3 = within(codeSystemSelector3[2]).getByRole(
-      "button"
+      "combobox",
+      { name: "Code System" }
     );
     userEvent.click(codeSystemDropdown3);
     const codeSystemOptions3 = await screen.findAllByRole("option");
@@ -264,7 +274,9 @@ describe("QdmEntity Component", () => {
 
     // select the code
     const codeSelector3 = screen.getAllByTestId("code-selector");
-    const codeDropdown3 = within(codeSelector3[2]).getByRole("button");
+    const codeDropdown3 = within(codeSelector3[2]).getByRole("combobox", {
+      name: "Code",
+    });
     userEvent.click(codeDropdown3);
     const codeOptions3 = await screen.findAllByRole("option");
     expect(codeOptions3).toHaveLength(2);
@@ -315,9 +327,9 @@ describe("QdmEntity Component", () => {
     ) as HTMLInputElement;
     expect(valueSetsInput.value).toBe("");
     const valueSetSelector = screen.getByTestId("value-set-selector");
-    const valueSetDropdown = within(valueSetSelector).getByRole(
-      "button"
-    ) as HTMLInputElement;
+    const valueSetDropdown = within(valueSetSelector).getByRole("combobox", {
+      name: "Value Set / Direct Reference Code",
+    }) as HTMLInputElement;
     userEvent.click(valueSetDropdown);
 
     const valueSetOptions = await screen.findAllByRole("option");
@@ -330,7 +342,10 @@ describe("QdmEntity Component", () => {
 
     // select the code system
     const codeSystemSelector = screen.getByTestId("code-system-selector");
-    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole(
+      "combobox",
+      { name: "Code System" }
+    );
     userEvent.click(codeSystemDropdown);
     const codeSystemOptions = await screen.findAllByRole("option");
     expect(codeSystemOptions[0]).toHaveTextContent("SNOMEDCT");
@@ -339,7 +354,9 @@ describe("QdmEntity Component", () => {
 
     // select the code
     const codeSelector = screen.getByTestId("code-selector");
-    const codeDropdown = within(codeSelector).getByRole("button");
+    const codeDropdown = within(codeSelector).getByRole("combobox", {
+      name: "Code",
+    });
     userEvent.click(codeDropdown);
     const codeOptions = await screen.findAllByRole("option");
     expect(codeOptions).toHaveLength(2);
@@ -387,9 +404,9 @@ describe("QdmEntity Component", () => {
     ) as HTMLInputElement;
     expect(valueSetsInput.value).toBe("");
     const valueSetSelector = screen.getByTestId("value-set-selector");
-    const valueSetDropdown = within(valueSetSelector).getByRole(
-      "button"
-    ) as HTMLInputElement;
+    const valueSetDropdown = within(valueSetSelector).getByRole("combobox", {
+      name: "Value Set / Direct Reference Code",
+    }) as HTMLInputElement;
     userEvent.click(valueSetDropdown);
 
     const valueSetOptions = await screen.findAllByRole("option");
@@ -402,7 +419,10 @@ describe("QdmEntity Component", () => {
 
     // select the code system
     const codeSystemSelector = screen.getByTestId("code-system-selector");
-    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole(
+      "combobox",
+      { name: "Code System" }
+    );
     userEvent.click(codeSystemDropdown);
     const codeSystemOptions = await screen.findAllByRole("option");
     expect(codeSystemOptions[0]).toHaveTextContent("SNOMEDCT");
@@ -411,7 +431,9 @@ describe("QdmEntity Component", () => {
 
     // select the code
     const codeSelector = screen.getByTestId("code-selector");
-    const codeDropdown = within(codeSelector).getByRole("button");
+    const codeDropdown = within(codeSelector).getByRole("combobox", {
+      name: "Code",
+    });
     userEvent.click(codeDropdown);
     const codeOptions = await screen.findAllByRole("option");
     expect(codeOptions).toHaveLength(2);
@@ -461,9 +483,9 @@ describe("QdmEntity Component", () => {
     ) as HTMLInputElement;
     expect(valueSetsInput.value).toBe("");
     const valueSetSelector = screen.getByTestId("value-set-selector");
-    const valueSetDropdown = within(valueSetSelector).getByRole(
-      "button"
-    ) as HTMLInputElement;
+    const valueSetDropdown = within(valueSetSelector).getByRole("combobox", {
+      name: "Value Set / Direct Reference Code",
+    }) as HTMLInputElement;
     userEvent.click(valueSetDropdown);
 
     const valueSetOptions = await screen.findAllByRole("option");
@@ -476,7 +498,10 @@ describe("QdmEntity Component", () => {
 
     // select the code system
     const codeSystemSelector = screen.getByTestId("code-system-selector");
-    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole(
+      "combobox",
+      { name: "Code System" }
+    );
     userEvent.click(codeSystemDropdown);
     const codeSystemOptions = await screen.findAllByRole("option");
     expect(codeSystemOptions[0]).toHaveTextContent("SNOMEDCT");
@@ -485,7 +510,9 @@ describe("QdmEntity Component", () => {
 
     // select the code
     const codeSelector = screen.getByTestId("code-selector");
-    const codeDropdown = within(codeSelector).getByRole("button");
+    const codeDropdown = within(codeSelector).getByRole("combobox", {
+      name: "Code",
+    });
     userEvent.click(codeDropdown);
     const codeOptions = await screen.findAllByRole("option");
     expect(codeOptions).toHaveLength(2);
@@ -548,9 +575,9 @@ describe("QdmEntity Component", () => {
     ) as HTMLInputElement;
     expect(valueSetsInput.value).toBe("");
     const valueSetSelector = screen.getByTestId("value-set-selector");
-    const valueSetDropdown = within(valueSetSelector).getByRole(
-      "button"
-    ) as HTMLInputElement;
+    const valueSetDropdown = within(valueSetSelector).getByRole("combobox", {
+      name: "Value Set / Direct Reference Code",
+    }) as HTMLInputElement;
     userEvent.click(valueSetDropdown);
 
     const valueSetOptions = await screen.findAllByRole("option");
@@ -563,7 +590,10 @@ describe("QdmEntity Component", () => {
 
     // select the code system
     const codeSystemSelector = screen.getByTestId("code-system-selector");
-    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole(
+      "combobox",
+      { name: "Code System" }
+    );
     userEvent.click(codeSystemDropdown);
     const codeSystemOptions = await screen.findAllByRole("option");
     expect(codeSystemOptions[0]).toHaveTextContent("SNOMEDCT");
@@ -572,7 +602,9 @@ describe("QdmEntity Component", () => {
 
     // select the code
     const codeSelector = screen.getByTestId("code-selector");
-    const codeDropdown = within(codeSelector).getByRole("button");
+    const codeDropdown = within(codeSelector).getByRole("combobox", {
+      name: "Code",
+    });
     userEvent.click(codeDropdown);
     const codeOptions = await screen.findAllByRole("option");
     expect(codeOptions).toHaveLength(2);
@@ -621,9 +653,9 @@ describe("QdmEntity Component", () => {
     ) as HTMLInputElement;
     expect(valueSetsInput.value).toBe("");
     const valueSetSelector = screen.getByTestId("value-set-selector");
-    const valueSetDropdown = within(valueSetSelector).getByRole(
-      "button"
-    ) as HTMLInputElement;
+    const valueSetDropdown = within(valueSetSelector).getByRole("combobox", {
+      name: "Value Set / Direct Reference Code",
+    }) as HTMLInputElement;
     userEvent.click(valueSetDropdown);
 
     const valueSetOptions = await screen.findAllByRole("option");
@@ -636,7 +668,10 @@ describe("QdmEntity Component", () => {
 
     // select the code system
     const codeSystemSelector = screen.getByTestId("code-system-selector");
-    const codeSystemDropdown = within(codeSystemSelector).getByRole("button");
+    const codeSystemDropdown = within(codeSystemSelector).getByRole(
+      "combobox",
+      { name: "Code System" }
+    );
     userEvent.click(codeSystemDropdown);
     const codeSystemOptions = await screen.findAllByRole("option");
     expect(codeSystemOptions[0]).toHaveTextContent("SNOMEDCT");
@@ -645,7 +680,9 @@ describe("QdmEntity Component", () => {
 
     // select the code
     const codeSelector = screen.getByTestId("code-selector");
-    const codeDropdown = within(codeSelector).getByRole("button");
+    const codeDropdown = within(codeSelector).getByRole("combobox", {
+      name: "Code",
+    });
     userEvent.click(codeDropdown);
     const codeOptions = await screen.findAllByRole("option");
     expect(codeOptions).toHaveLength(2);
@@ -677,7 +714,8 @@ describe("QdmEntity Component", () => {
 
     //Specialty
     const valueSetDropdown2 = within(valueSetSelectors[1]).getByRole(
-      "button"
+      "combobox",
+      { name: "Value Set / Direct Reference Code" }
     ) as HTMLInputElement;
     userEvent.click(valueSetDropdown2);
     const valueSetOptions2 = await screen.findAllByRole("option");
@@ -687,7 +725,8 @@ describe("QdmEntity Component", () => {
     // select the code system
     const codeSystemSelector2 = screen.getAllByTestId("code-system-selector");
     const codeSystemDropdown2 = within(codeSystemSelector2[1]).getByRole(
-      "button"
+      "combobox",
+      { name: "Code System" }
     );
     userEvent.click(codeSystemDropdown2);
     const codeSystemOptions2 = await screen.findAllByRole("option");
@@ -697,7 +736,9 @@ describe("QdmEntity Component", () => {
 
     // select the code
     const codeSelector2 = screen.getAllByTestId("code-selector");
-    const codeDropdown2 = within(codeSelector2[1]).getByRole("button");
+    const codeDropdown2 = within(codeSelector2[1]).getByRole("combobox", {
+      name: "Code",
+    });
     userEvent.click(codeDropdown2);
     const codeOptions2 = await screen.findAllByRole("option");
     expect(codeOptions2).toHaveLength(2);
@@ -712,7 +753,8 @@ describe("QdmEntity Component", () => {
 
     //Qualification
     const valueSetDropdown3 = within(valueSetSelectors[2]).getByRole(
-      "button"
+      "combobox",
+      { name: "Value Set / Direct Reference Code" }
     ) as HTMLInputElement;
     userEvent.click(valueSetDropdown3);
     const valueSetOptions3 = await screen.findAllByRole("option");
@@ -722,7 +764,8 @@ describe("QdmEntity Component", () => {
     // select the code system
     const codeSystemSelector3 = screen.getAllByTestId("code-system-selector");
     const codeSystemDropdown3 = within(codeSystemSelector3[2]).getByRole(
-      "button"
+      "combobox",
+      { name: "Code System" }
     );
     userEvent.click(codeSystemDropdown3);
     const codeSystemOptions3 = await screen.findAllByRole("option");
@@ -732,7 +775,9 @@ describe("QdmEntity Component", () => {
 
     // select the code
     const codeSelector3 = screen.getAllByTestId("code-selector");
-    const codeDropdown3 = within(codeSelector3[2]).getByRole("button");
+    const codeDropdown3 = within(codeSelector3[2]).getByRole("combobox", {
+      name: "Code",
+    });
     userEvent.click(codeDropdown3);
     const codeOptions3 = await screen.findAllByRole("option");
     expect(codeOptions3).toHaveLength(2);
