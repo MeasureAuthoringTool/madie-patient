@@ -25,14 +25,14 @@ const IdentifierInput = ({
   const handleNamingSystemChange = (e) => {
     onIdentifierChange({
       namingSystem: e.target.value,
-      value: identifier.value,
+      value: identifier?.value,
     });
   };
 
   const handleValueChange = (e) => {
     onIdentifierChange({
       value: e.target.value,
-      namingSystem: identifier.namingSystem,
+      namingSystem: identifier?.namingSystem,
     });
   };
 
@@ -44,7 +44,7 @@ const IdentifierInput = ({
       <div tw="flex flex-row">
         <div tw="w-72 mr-4">
           <TextField
-            value={identifier.namingSystem}
+            value={identifier?.namingSystem}
             label={namingLabel}
             disabled={!canEdit}
             id={`identifier-field-${namingPlaceholder}`}
@@ -59,7 +59,7 @@ const IdentifierInput = ({
         </div>
         <div tw="w-28">
           <TextField
-            value={identifier.value}
+            value={identifier?.value}
             label={valueLabel}
             disabled={!canEdit}
             id={`identifier-value-field-${valueLabel}`}
