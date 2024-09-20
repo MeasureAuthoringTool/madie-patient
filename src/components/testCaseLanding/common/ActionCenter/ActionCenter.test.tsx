@@ -2,10 +2,15 @@ import * as React from "react";
 import { render, screen } from "@testing-library/react";
 import ActionCenter from "./ActionCenter";
 import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router";
 
 describe("Action Center Component", () => {
   it("should render filter by with appropriate options and also a search input field", () => {
-    render(<ActionCenter />);
+    render(
+      <MemoryRouter>
+        <ActionCenter />
+      </MemoryRouter>
+    );
 
     const filterBySelect = screen.getByRole("combobox", {
       name: "Filter By",

@@ -40,10 +40,18 @@ export default function ActionCenter(props: ActionCenterProps) {
     );
   };
   const handleClearClick = () => {
-    formik.setValues({
-      filterBy: "",
-      searchValue: "",
-    });
+    const testCasePageOptions = JSON.parse(
+      window.localStorage.getItem("testCasesPageOptions")
+    );
+    localStorage.setItem(
+      "testCasesPageOptions",
+      JSON.stringify({
+        page: 1,
+        limit: testCasePageOptions?.limit ? testCasePageOptions.limit : 10,
+        filter: "",
+        search: "",
+      })
+    );
     navigate(window.location.pathname);
   };
   return (
@@ -99,12 +107,19 @@ export default function ActionCenter(props: ActionCenterProps) {
               slotProps={{
                 input: {
                   startAdornment: (
-                    <InputAdornment position="start" onClick={handleNavigate}>
+                    <InputAdornment
+                      position="start"
+                      onClick={handleNavigate}
+                      style={{ cursor: "pointer" }}
+                    >
                       <SearchIcon />
                     </InputAdornment>
                   ),
                   endAdornment: (
-                    <InputAdornment position="end">
+                    <InputAdornment
+                      position="end"
+                      style={{ cursor: "pointer" }}
+                    >
                       <IconButton onClick={handleClearClick}>
                         <ClearIcon />
                       </IconButton>

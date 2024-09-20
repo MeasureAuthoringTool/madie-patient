@@ -16,7 +16,24 @@ function UseFetchTestCases({ measureId, setErrors }) {
     message: "",
   });
 
-  // make a nice package for stuff to use
+  // Save local storage variable for page, filter, search, clear when navigating to different measure
+  const testCasePageOptions = JSON.parse(
+    window.localStorage.getItem("testCasesPageOptions")
+  );
+  useEffect(() => {
+    // given we're on the base page and no we're not intentionally using search query params, we want to load them from local state.
+    if (testCasePageOptions) {
+      if (
+        !Object.keys(values).length &&
+        Object.keys(testCasePageOptions).length
+      ) {
+        const { filter, limit, search, page } = testCasePageOptions;
+        navigate(
+          `?filter=${filter}&search=${search}&page=${page}&limit=${limit}`
+        );
+      }
+    }
+  }, [testCasePageOptions, values]);
   const [testCasePage, setTestCasePage] = useState({
     totalItems: null,
     visibleItems: null,
@@ -68,7 +85,16 @@ function UseFetchTestCases({ measureId, setErrors }) {
       }
       const start = (curPage - 1) * curLimit;
       const end = start + curLimit;
-
+      // save for navigation along the same measureId
+      localStorage.setItem(
+        "testCasesPageOptions",
+        JSON.stringify({
+          page: curPage,
+          limit: curLimit,
+          filter,
+          search: searchQuery,
+        })
+      );
       const canGoPrev = Number(values?.page) > 1;
 
       const handlePageChange = (e, v) => {
