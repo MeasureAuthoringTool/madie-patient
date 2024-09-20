@@ -109,6 +109,7 @@ export default function ActionCenter(props: ActionCenterProps) {
                   startAdornment: (
                     <InputAdornment
                       position="start"
+                      data-testId="test-cases-trigger-search"
                       onClick={handleNavigate}
                       style={{ cursor: "pointer" }}
                     >
@@ -117,10 +118,12 @@ export default function ActionCenter(props: ActionCenterProps) {
                   ),
                   endAdornment: (
                     <InputAdornment
+                      data-testId="test-cases-clear-search"
                       position="end"
                       style={{ cursor: "pointer" }}
+                      onClick={handleClearClick}
                     >
-                      <IconButton onClick={handleClearClick}>
+                      <IconButton>
                         <ClearIcon />
                       </IconButton>
                     </InputAdornment>
