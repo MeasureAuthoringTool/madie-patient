@@ -16,6 +16,9 @@ export interface ServiceConfig {
   fhirElmTranslationService: {
     baseUrl: string;
   };
+  fhirDefinitionsService: {
+    baseUrl: string;
+  };
   excelExportService: {
     baseUrl: string;
   };
