@@ -3,7 +3,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 import UseFetchTestCases from "./UseTestCases";
 import useTestCaseServiceApi from "../../../../api/useTestCaseServiceApi";
-import { renderHook } from "@testing-library/react-hooks";
+import { renderHook, act } from "@testing-library/react-hooks";
 import { measureStore } from "@madie/madie-util";
 
 const mockNavigate = jest.fn();
@@ -53,6 +53,7 @@ describe("UseFetchTestCases", () => {
       getTestCasesByMeasureId: mockGetTestCasesByMeasureId,
     });
   });
+
   it("should retrieve test cases on mount", async () => {
     const testCaseList = [
       { title: "Test Case 1", validResource: true, lastModifiedAt: new Date() },
@@ -73,7 +74,6 @@ describe("UseFetchTestCases", () => {
 
     expect(mockGetTestCasesByMeasureId).toHaveBeenCalledWith("123");
 
-    // Wait for the loading state to finish
     expect(await screen.findByText("Test Case 1")).toBeInTheDocument();
     expect(await screen.findByText("Test Case 2")).toBeInTheDocument();
   });
@@ -98,12 +98,16 @@ describe("UseFetchTestCases", () => {
       UseFetchTestCases({ measureId: "123", setErrors: mockSetErrors })
     );
 
-    result.current.testCasePage.handlePageChange(null, 2);
+    act(() => {
+      result.current.testCasePage.handlePageChange(null, 2);
+    });
     expect(mockNavigate).toHaveBeenCalledWith(
       expect.stringContaining("page=2")
     );
 
-    result.current.testCasePage.handleLimitChange({ target: { value: 20 } });
+    act(() => {
+      result.current.testCasePage.handleLimitChange({ target: { value: 20 } });
+    });
     expect(mockNavigate).toHaveBeenCalledWith(
       expect.stringContaining("limit=20")
     );
@@ -113,10 +117,12 @@ describe("UseFetchTestCases", () => {
     const { result } = renderHook(() =>
       UseFetchTestCases({ measureId: "123", setErrors: mockSetErrors })
     );
-    result.current.setTestCases([
-      { title: "Test Case 1" },
-      { title: "Test Case 2" },
-    ]);
+    act(() => {
+      result.current.setTestCases([
+        { title: "Test Case 1" },
+        { title: "Test Case 2" },
+      ]);
+    });
 
     expect(window.localStorage.getItem("testCasesPageOptions")).toContain(
       "page"
@@ -124,5 +130,67 @@ describe("UseFetchTestCases", () => {
     expect(window.localStorage.getItem("testCasesPageOptions")).toContain(
       "limit"
     );
+  });
+
+  it("should filter test cases based on search query", async () => {
+    jest.mock("react-router-dom", () => ({
+      ...jest.requireActual("react-router-dom"),
+      useNavigate: () => mockNavigate,
+      useLocation: () => ({
+        search: "?filter=Title&search=test%20case%201&page=1&limit=50",
+      }),
+    }));
+
+    const testCaseList = [
+      { title: "Test Case 1", validResource: true, lastModifiedAt: new Date() },
+      {
+        title: "Test Case 2",
+        validResource: false,
+        lastModifiedAt: new Date(),
+      },
+    ];
+
+    mockGetTestCasesByMeasureId.mockResolvedValue([testCaseList[0]]);
+
+    render(
+      <MemoryRouter>
+        <MockComponent measureId="123" setErrors={mockSetErrors} />
+      </MemoryRouter>
+    );
+
+    expect(mockGetTestCasesByMeasureId).toHaveBeenCalledWith("123");
+
+    expect(await screen.findByText("Test Case 1")).toBeInTheDocument();
+    expect(screen.queryByText("Test Case 2")).not.toBeInTheDocument();
+  });
+
+  it("should handle edge case where executionStatus is 'n/a'", async () => {
+    jest.mock("react-router-dom", () => ({
+      ...jest.requireActual("react-router-dom"),
+      useNavigate: () => mockNavigate,
+      useLocation: () => ({
+        search: "?filter=Status&search=n/a&page=1&limit=10",
+      }),
+    }));
+
+    const testCaseList = [
+      {
+        title: "Test Case 1",
+        validResource: false,
+        lastModifiedAt: new Date(),
+      },
+    ];
+
+    mockGetTestCasesByMeasureId.mockResolvedValue(testCaseList);
+
+    render(
+      <MemoryRouter>
+        <MockComponent measureId="123" setErrors={mockSetErrors} />
+      </MemoryRouter>
+    );
+
+    expect(mockGetTestCasesByMeasureId).toHaveBeenCalledWith("123");
+
+    expect(await screen.findByText("Test Case 1")).toBeInTheDocument();
   });
 });
