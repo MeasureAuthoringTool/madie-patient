@@ -326,7 +326,6 @@ export class CalculationService {
     }
 
     const updatedTestCase = _.cloneDeep(testCase);
-    const groupResultsMap = this.buildGroupResultsMap(populationGroupResults);
     let allGroupsPass = true;
     if (_.isNil(testCase?.groupPopulations)) {
       updatedTestCase.groupPopulations = [];
@@ -355,7 +354,7 @@ export class CalculationService {
         ? this.buildPatientResults(populationGroupResult?.populationResults)
         : this.buildEpisodeResults(populationGroupResult?.episodeResults);
 
-      tcGroupPopulation?.populationValues?.forEach((tcPopVal, idx) => {
+      tcGroupPopulation?.populationValues?.forEach((tcPopVal) => {
         // Set the actual population value for measure observations
         if (isTestCasePopulationObservation(tcPopVal)) {
           if (patientBased) {
@@ -392,25 +391,55 @@ export class CalculationService {
         }
       });
 
-      const getExpectedStratResultAgainstPopulation = (
-        stratResult,
-        populationResult
+      const getPatientBasedActualResultForAssociatedPopulation = (
+        stratifiedPopulation: PopulationExpectedValue,
+        strataResult: boolean
       ) => {
-        return stratResult && populationResult;
-      };
-      const stratifierResults = populationGroupResult?.stratifierResults;
-      tcGroupPopulation?.stratificationValues?.forEach((stratValue, index) => {
-        const appliedStratValue = stratifierResults?.find(
-          (stratR) => stratR.strataId === stratValue.id
+        // get the actual result for population
+        const associatedPopulation = tcGroupPopulation.populationValues.find(
+          (p) => p.id === stratifiedPopulation.id
         );
-        const executedStratResult = appliedStratValue?.result;
-        stratValue.actual = executedStratResult ? executedStratResult : false;
+        // adjust the stratified results for associated population
+        return associatedPopulation.actual && strataResult;
+      };
 
-        stratValue.populationValues?.forEach((popValue) => {
-          popValue.actual = getExpectedStratResultAgainstPopulation(
-            popValue.actual,
-            executedStratResult
-          );
+      const getEpisodeBasedActualResultForAssociatedPopulation = (
+        stratifiedPopulation: PopulationExpectedValue,
+        strataResult: boolean
+      ) => {
+        if (!populationGroupResult?.episodeResults) {
+          return 0;
+        }
+        // get the episodes that passes the stratified population & has same result as strata
+        const episodes = populationGroupResult.episodeResults?.filter(
+          (episode) =>
+            episode.populationResults.some(
+              (p) =>
+                p.populationId === stratifiedPopulation.id &&
+                p.result === strataResult
+            )
+        );
+        // adjust the stratified results for associated population
+        return episodes?.length || 0;
+      };
+
+      const stratifierResults = populationGroupResult?.stratifierResults;
+      tcGroupPopulation?.stratificationValues?.forEach((stratification) => {
+        const appliedStrataResult = stratifierResults?.find(
+          (stratifierResult) => stratifierResult.strataId === stratification.id
+        );
+        stratification.actual = appliedStrataResult?.result;
+
+        stratification.populationValues?.forEach((population) => {
+          population.actual = patientBased
+            ? getPatientBasedActualResultForAssociatedPopulation(
+                population,
+                appliedStrataResult?.result
+              )
+            : getEpisodeBasedActualResultForAssociatedPopulation(
+                population,
+                appliedStrataResult?.result
+              );
         });
       });
       // need to do work here.
