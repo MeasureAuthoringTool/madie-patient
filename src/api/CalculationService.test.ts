@@ -1,13 +1,8 @@
-import {
-  CalculationService,
-  ExecutionStatusType,
-  PopulationEpisodeResult,
-} from "./CalculationService";
+import { CalculationService, ExecutionStatusType } from "./CalculationService";
 import { officeVisitMeasure } from "./__mocks__/OfficeVisitMeasure";
 import { officeVisitValueSet } from "./__mocks__/OfficeVisitValueSet";
 import { officeVisitMeasureBundle } from "./__mocks__/OfficeVisitMeasureBundle";
 import { testCaseOfficeVisit } from "./__mocks__/TestCaseOfficeVisit";
-import { groupResults } from "./__mocks__/GroupExecutionResults";
 import {
   ContinuousVariable_Encounter_Fail,
   ContinuousVariable_Encounter_Pass,
@@ -18,7 +13,6 @@ import {
 
 import {
   DetailedPopulationGroupResult,
-  EpisodeResults,
   ExecutionResult,
 } from "fqm-execution/build/types/Calculator";
 import {
@@ -788,6 +782,159 @@ describe("CalculationService Tests", () => {
         },
       };
       expect(output).toEqual(expected);
+    });
+
+    it("should return test case results for episode based cohort stratification", () => {
+      const popGroupResults: DetailedPopulationGroupResult[] = [
+        {
+          groupId: "groupID",
+          statementResults: [],
+          episodeResults: [
+            {
+              episodeId: "episode-1",
+              populationResults: [
+                {
+                  populationType: FqmPopulationType.IPP,
+                  criteriaExpression: "Initial Population",
+                  result: true,
+                  populationId: "1",
+                },
+              ],
+              stratifierResults: [
+                {
+                  strataCode: "strata-1",
+                  result: true,
+                  appliesResult: false,
+                  strataId: "strata-1",
+                },
+              ],
+            },
+            {
+              episodeId: "episode-2",
+              populationResults: [
+                {
+                  populationType: FqmPopulationType.IPP,
+                  criteriaExpression: "Initial Population",
+                  result: true,
+                  populationId: "1",
+                },
+              ],
+              stratifierResults: [
+                {
+                  strataCode: "strata-1",
+                  result: false,
+                  appliesResult: false,
+                },
+              ],
+            },
+          ],
+          populationResults: [
+            {
+              populationId: "1",
+              populationType: FqmPopulationType.IPP,
+              criteriaExpression: "Initial Population",
+              result: true,
+            },
+          ],
+          stratifierResults: [
+            {
+              strataCode: "strata-1",
+              result: true,
+              appliesResult: true,
+              strataId: "strata-1",
+            },
+          ],
+        },
+      ];
+      const testCase = {
+        id: "TC1",
+        name: "TestCase1",
+        title: "TestCase1",
+        description: "first",
+        validResource: true,
+        groupPopulations: [
+          {
+            groupId: "groupID",
+            scoring: MeasureScoring.COHORT,
+            populationBasis: "boolean",
+            populationValues: [
+              {
+                id: "1",
+                name: PopulationType.INITIAL_POPULATION,
+                expected: 2,
+                actual: 2,
+              },
+            ],
+            stratificationValues: [
+              {
+                id: "strata-1",
+                name: "strata-1 Initial Population",
+                expected: true,
+                populationValues: [
+                  {
+                    id: "1",
+                    name: PopulationType.INITIAL_POPULATION,
+                    expected: 1,
+                    actual: 1,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        createdAt: "",
+        createdBy: "",
+        lastModifiedAt: "",
+        lastModifiedBy: "",
+        executionStatus: "NA",
+        series: undefined,
+        hapiOperationOutcome: undefined,
+      } as TestCase;
+
+      const groups: Group[] = [
+        {
+          id: "groupID",
+          scoring: MeasureScoring.COHORT,
+          populationBasis: "Encounter",
+          populations: [
+            {
+              id: "1",
+              name: PopulationType.INITIAL_POPULATION,
+              definition: "Initial Population",
+            },
+          ],
+          stratifications: [
+            {
+              id: "strata-1",
+              cqlDefinition: "Stratification 1",
+              association: PopulationType.INITIAL_POPULATION,
+            },
+          ],
+          measureObservations: [],
+          measureGroupTypes: [MeasureGroupTypes.OUTCOME],
+        },
+      ];
+      const output = calculationService.processTestCaseResults(
+        testCase,
+        groups,
+        popGroupResults
+      );
+      expect(output).toBeTruthy();
+      expect(output.executionStatus).toEqual(ExecutionStatusType.PASS);
+      const outputGroupPopulations = output.groupPopulations;
+      expect(outputGroupPopulations).toBeTruthy();
+      expect(outputGroupPopulations.length).toEqual(1);
+      const group1PopVals = outputGroupPopulations[0].populationValues;
+      expect(group1PopVals).toBeTruthy();
+      expect(group1PopVals.length).toEqual(1);
+      expect(group1PopVals[0]).toBeTruthy();
+      expect(group1PopVals[0].expected).toBeTruthy();
+      expect(group1PopVals[0].actual).toBeTruthy();
+      const group1StratVals = outputGroupPopulations[0].stratificationValues;
+      expect(group1StratVals).toBeTruthy();
+      expect(group1StratVals.length).toEqual(1);
+      expect(group1StratVals[0].populationValues[0].actual).toEqual(1);
+      expect(group1StratVals[0].populationValues[0].actual).toEqual(1);
     });
   });
 
