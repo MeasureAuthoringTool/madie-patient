@@ -429,6 +429,7 @@ export class CalculationService {
             );
             let stratification = episode.stratifierResults.find(
               (strata) =>
+                // TODO: workaround because fqm execution doesn't provide IDs for all cases
                 (strata.strataCode &&
                   strata.strataCode === strataResult.strataCode) ||
                 (strata.strataId && strata.strataId === strataResult.strataId)
@@ -444,6 +445,7 @@ export class CalculationService {
       tcGroupPopulation?.stratificationValues?.forEach((stratification) => {
         const appliedStrataResult = stratifierResults?.find(
           (stratifierResult) =>
+            // TODO: workaround because fqm execution doesn't provide IDs for all cases. so if present compare with id or compare with code
             stratifierResult.strataId === stratification.id ||
             _.toLower(stratifierResult.strataCode) ===
               _.kebabCase(stratification.name)
