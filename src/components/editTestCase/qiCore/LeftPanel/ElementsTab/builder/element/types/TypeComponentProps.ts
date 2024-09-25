@@ -1,6 +1,6 @@
 export interface TypeComponentProps {
   label?: string;
-  disabled: boolean;
+  canEdit: boolean;
   value?: any;
   onChange?: (nextValue: any) => void;
   structureDefinition: any;
