@@ -15,7 +15,7 @@ const UriComponent = ({
     <TextField
       required={fieldRequired}
       disabled={!canEdit}
-      id={`uri-filed-${label}`}
+      id={`uri-field-${label}`}
       label={label}
       placeholder={label}
       inputProps={{
@@ -25,7 +25,6 @@ const UriComponent = ({
         "aria-required": fieldRequired,
       }}
       data-testid={`uri-field-${label}`}
-      test-dd
       size="small"
       fullWidth
       value={value}
