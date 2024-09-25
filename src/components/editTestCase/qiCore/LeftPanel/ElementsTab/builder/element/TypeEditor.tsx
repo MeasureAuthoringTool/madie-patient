@@ -6,6 +6,7 @@ import StringComponent from "./types/StringComponent";
 import PeriodComponent from "./types/PeriodComponent";
 import DateTimeComponent from "./types/DateTimeComponent";
 import BooleanComponent from "./types/BooleanComponent";
+import UriComponent from "./types/UriComponent";
 
 const TypeEditor = ({
   type,
@@ -35,7 +36,7 @@ const TypeEditor = ({
         return (
           <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
             <StringComponent
-              disabled={false}
+              canEdit={false}
               value={value}
               onChange={onChange}
               structureDefinition={null}
@@ -47,7 +48,7 @@ const TypeEditor = ({
         return (
           <PeriodComponent
             label={label}
-            disabled={false}
+            canEdit={false}
             structureDefinition={null}
             fieldRequired={false}
           />
@@ -57,7 +58,7 @@ const TypeEditor = ({
         return (
           <DateTimeComponent
             label={""}
-            disabled={false}
+            canEdit={false}
             structureDefinition={null}
             fieldRequired={false}
           />
@@ -65,9 +66,20 @@ const TypeEditor = ({
       case "boolean":
         return (
           <BooleanComponent
-            disabled={false}
+            canEdit={false}
             structureDefinition={null}
             fieldRequired={false}
+          />
+        );
+      case "uri":
+        return (
+          <UriComponent
+            canEdit={true}
+            structureDefinition={structureDefinition}
+            fieldRequired={required}
+            label={label}
+            onChange={onChange}
+            value={value}
           />
         );
       default:

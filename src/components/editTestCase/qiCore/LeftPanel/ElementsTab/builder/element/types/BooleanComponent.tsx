@@ -4,7 +4,7 @@ import { Select } from "@madie/madie-design-system/dist/react";
 import { TypeComponentProps } from "./TypeComponentProps";
 
 const BooleanComponent = ({
-  disabled,
+  canEdit,
   value,
   onChange,
   label,
