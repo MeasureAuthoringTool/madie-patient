@@ -341,7 +341,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
           actual: calculateEpisodes ? false : null,
           id: stratification.id,
           criteriaReference: "",
-          populationValues,
+          populationValues: populationValues?.map((pv) => ({ ...pv })), // Return a copy of populationValues
         })),
     };
   };
