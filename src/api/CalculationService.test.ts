@@ -487,6 +487,14 @@ describe("CalculationService Tests", () => {
             name: "strata-1 Initial Population",
             expected: true,
             actual: true,
+            populationValues: [
+              {
+                id: "1",
+                name: PopulationType.INITIAL_POPULATION,
+                expected: true,
+                actual: true,
+              },
+            ],
           },
         ],
       };
@@ -514,6 +522,14 @@ describe("CalculationService Tests", () => {
             name: "strata-1 Initial Population",
             expected: true,
             actual: false,
+            populationValues: [
+              {
+                id: "1",
+                name: PopulationType.INITIAL_POPULATION,
+                expected: true,
+                actual: false,
+              },
+            ],
           },
         ],
       };
@@ -859,7 +875,7 @@ describe("CalculationService Tests", () => {
     });
 
     it("should return Pass executionStatus if groupPopulations are null but actual result is false", () => {
-      const testCase: TestCase = {
+      const testCase = {
         id: "TC1",
         name: "TestCase1",
         title: "TestCase1",
@@ -873,7 +889,7 @@ describe("CalculationService Tests", () => {
         executionStatus: "NA",
         series: undefined,
         hapiOperationOutcome: undefined,
-      };
+      } as TestCase;
 
       const groups: Group[] = [
         {
@@ -917,7 +933,7 @@ describe("CalculationService Tests", () => {
     });
 
     it("should return Fail executionStatus if groupPopulations are empty and actual result is true", () => {
-      const testCase: TestCase = {
+      const testCase = {
         id: "TC1",
         name: "TestCase1",
         title: "TestCase1",
@@ -931,7 +947,7 @@ describe("CalculationService Tests", () => {
         executionStatus: "NA",
         series: undefined,
         hapiOperationOutcome: undefined,
-      };
+      } as TestCase;
 
       const groups: Group[] = [
         {
@@ -976,7 +992,7 @@ describe("CalculationService Tests", () => {
     });
 
     it("should return Fail executionStatus for provided measure groups when no matching groups are found and actual result is true", () => {
-      const testCase: TestCase = {
+      const testCase = {
         id: "TC1",
         name: "TestCase1",
         title: "TestCase1",
@@ -1005,7 +1021,7 @@ describe("CalculationService Tests", () => {
         executionStatus: "NA",
         series: undefined,
         hapiOperationOutcome: undefined,
-      };
+      } as TestCase;
 
       const groups: Group[] = [
         {
@@ -1076,7 +1092,7 @@ describe("CalculationService Tests", () => {
           ],
         },
       ];
-      const testCase: TestCase = {
+      const testCase = {
         id: "TC1",
         name: "TestCase1",
         title: "TestCase1",
@@ -1105,7 +1121,7 @@ describe("CalculationService Tests", () => {
         executionStatus: "NA",
         series: undefined,
         hapiOperationOutcome: undefined,
-      };
+      } as TestCase;
       const groups: Group[] = [
         {
           id: "groupID",
@@ -1155,7 +1171,7 @@ describe("CalculationService Tests", () => {
           ],
         },
       ];
-      const testCase: TestCase = {
+      const testCase = {
         id: "TC1",
         name: "TestCase1",
         title: "TestCase1",
@@ -1184,7 +1200,7 @@ describe("CalculationService Tests", () => {
         executionStatus: "NA",
         series: undefined,
         hapiOperationOutcome: undefined,
-      };
+      } as TestCase;
       const groups: Group[] = [
         {
           id: "groupID",
@@ -1264,7 +1280,7 @@ describe("CalculationService Tests", () => {
           ],
         },
       ];
-      const testCase: TestCase = {
+      const testCase = {
         id: "TC1",
         name: "TestCase1",
         title: "TestCase1",
@@ -1287,11 +1303,27 @@ describe("CalculationService Tests", () => {
                 id: "strata1",
                 name: "strata-1 Initial Population",
                 expected: true,
+                populationValues: [
+                  {
+                    id: "pop1",
+                    name: PopulationType.INITIAL_POPULATION,
+                    expected: true,
+                    actual: true,
+                  },
+                ],
               },
               {
                 id: "strata2",
                 name: "strata-2 Initial Population",
                 expected: true,
+                populationValues: [
+                  {
+                    id: "pop1",
+                    name: PopulationType.INITIAL_POPULATION,
+                    expected: true,
+                    actual: true,
+                  },
+                ],
               },
             ],
           },
@@ -1303,7 +1335,8 @@ describe("CalculationService Tests", () => {
         executionStatus: "NA",
         series: undefined,
         hapiOperationOutcome: undefined,
-      };
+      } as TestCase;
+
       const groups: Group[] = [
         {
           id: "groupID",
@@ -1351,8 +1384,8 @@ describe("CalculationService Tests", () => {
       const group1StratVals = outputGroupPopulations[0].stratificationValues;
       expect(group1StratVals).toBeTruthy();
       expect(group1StratVals.length).toEqual(2);
-      expect(group1StratVals[0].actual).toEqual(true);
-      expect(group1StratVals[1].actual).toEqual(true);
+      expect(group1StratVals[0].populationValues[0].actual).toEqual(true);
+      expect(group1StratVals[1].populationValues[0].actual).toEqual(true);
     });
 
     it("should return test case results for continuous variable, boolean popBasis", () => {

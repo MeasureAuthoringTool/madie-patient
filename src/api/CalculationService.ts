@@ -311,12 +311,18 @@ export class CalculationService {
         return groupPass;
       }
       // verify stratification & stratified populations passing if they exist
-      return groupPopulation?.stratificationValues?.every((strata) => {
-        // verify stratified populations passing
-        return strata.populationValues.every((population) =>
-          this.isValuePass(population.actual, population.expected, patientBased)
-        );
-      });
+      if (groupPopulation.stratificationValues) {
+        return groupPopulation.stratificationValues.every((strata) => {
+          // verify stratified populations passing
+          return strata.populationValues.every((population) =>
+            this.isValuePass(
+              population.actual,
+              population.expected,
+              patientBased
+            )
+          );
+        });
+      }
     }
     return groupPass;
   }
