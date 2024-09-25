@@ -415,7 +415,7 @@ export class CalculationService {
         if (!populationGroupResult?.episodeResults) {
           return 0;
         }
-        // get the episodes that has passing stratified population & passing strata
+        // filter out the episodes that have passing stratified population & passing strata
         const episodes = populationGroupResult.episodeResults?.filter(
           (episode) => {
             const population = episode.populationResults.find(
@@ -430,7 +430,7 @@ export class CalculationService {
             return population.result && stratification.result;
           }
         );
-        // adjust the episode cunt for strata & associated population
+        // adjust the episode count for strata & associated population
         return episodes?.length || 0;
       };
 
