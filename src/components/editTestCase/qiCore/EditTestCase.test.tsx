@@ -2316,6 +2316,7 @@ describe("EditTestCase component", () => {
       const stratCheckbox = await screen.findByTestId(
         "Strata 1-initialPopulation-expected"
       );
+      userEvent.click(stratCheckbox);
       expect(stratCheckbox).toBeInTheDocument();
       await waitFor(() => {
         expect(stratCheckbox).toBeChecked();

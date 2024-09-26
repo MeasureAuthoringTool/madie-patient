@@ -1,4 +1,4 @@
-import { Calculator } from "fqm-execution";
+import { Calculator, StratifierResult } from "fqm-execution";
 import {
   CalculationOutput,
   DetailedPopulationGroupResult,
@@ -306,12 +306,23 @@ export class CalculationService {
           );
         return groupPass;
       });
-      groupPopulation?.stratificationValues?.every((stratVal) => {
-        groupPass =
-          groupPass &&
-          this.isValuePass(stratVal.actual, stratVal.expected, patientBased);
+      // if group populations failing return it. no need to verify stratification
+      if (!groupPass) {
         return groupPass;
-      });
+      }
+      // verify stratification & stratified populations passing if they exist
+      if (groupPopulation.stratificationValues) {
+        return groupPopulation.stratificationValues.every((strata) => {
+          // verify stratified populations passing
+          return strata.populationValues.every((population) =>
+            this.isValuePass(
+              population.actual,
+              population.expected,
+              patientBased
+            )
+          );
+        });
+      }
     }
     return groupPass;
   }
@@ -326,7 +337,6 @@ export class CalculationService {
     }
 
     const updatedTestCase = _.cloneDeep(testCase);
-    const groupResultsMap = this.buildGroupResultsMap(populationGroupResults);
     let allGroupsPass = true;
     if (_.isNil(testCase?.groupPopulations)) {
       updatedTestCase.groupPopulations = [];
@@ -355,7 +365,7 @@ export class CalculationService {
         ? this.buildPatientResults(populationGroupResult?.populationResults)
         : this.buildEpisodeResults(populationGroupResult?.episodeResults);
 
-      tcGroupPopulation?.populationValues?.forEach((tcPopVal, idx) => {
+      tcGroupPopulation?.populationValues?.forEach((tcPopVal) => {
         // Set the actual population value for measure observations
         if (isTestCasePopulationObservation(tcPopVal)) {
           if (patientBased) {
@@ -392,25 +402,64 @@ export class CalculationService {
         }
       });
 
-      const getExpectedStratResultAgainstPopulation = (
-        stratResult,
-        populationResult
+      const getPatientBasedActualResultForAssociatedPopulation = (
+        stratifiedPopulation: PopulationExpectedValue,
+        strataResult: boolean
       ) => {
-        return stratResult && populationResult;
-      };
-      const stratifierResults = populationGroupResult?.stratifierResults;
-      tcGroupPopulation?.stratificationValues?.forEach((stratValue, index) => {
-        const appliedStratValue = stratifierResults?.find(
-          (stratR) => stratR.strataId === stratValue.id
+        // get the actual result for population
+        const associatedPopulation = tcGroupPopulation.populationValues.find(
+          (p) => p.id === stratifiedPopulation.id
         );
-        const executedStratResult = appliedStratValue?.result;
-        stratValue.actual = executedStratResult ? executedStratResult : false;
+        // adjust the stratified results for strata & associated population
+        return associatedPopulation.actual && strataResult;
+      };
 
-        stratValue.populationValues?.forEach((popValue) => {
-          popValue.actual = getExpectedStratResultAgainstPopulation(
-            popValue.actual,
-            executedStratResult
-          );
+      const getEpisodeBasedActualResultForAssociatedPopulation = (
+        stratifiedPopulation: PopulationExpectedValue,
+        strataResult: StratifierResult
+      ) => {
+        if (!populationGroupResult?.episodeResults) {
+          return 0;
+        }
+        // filter out the episodes that have passing stratified population & passing strata
+        const episodes = populationGroupResult.episodeResults?.filter(
+          (episode) => {
+            const population = episode.populationResults.find(
+              (p) => p.populationId === stratifiedPopulation.id
+            );
+            let stratification = episode.stratifierResults.find(
+              (strata) =>
+                // TODO: workaround because fqm execution doesn't provide IDs for all cases
+                (strata.strataCode &&
+                  strata.strataCode === strataResult.strataCode) ||
+                (strata.strataId && strata.strataId === strataResult.strataId)
+            );
+            return population.result && stratification.result;
+          }
+        );
+        // adjust the episode count for strata & associated population
+        return episodes?.length || 0;
+      };
+
+      const stratifierResults = populationGroupResult?.stratifierResults;
+      tcGroupPopulation?.stratificationValues?.forEach((stratification) => {
+        const appliedStrataResult = stratifierResults?.find(
+          (stratifierResult) =>
+            // TODO: workaround because fqm execution doesn't provide IDs for all cases. so if present compare with id or compare with code
+            stratifierResult.strataId === stratification.id ||
+            _.toLower(stratifierResult.strataCode) ===
+              _.kebabCase(stratification.name)
+        );
+        stratification.populationValues?.forEach((population) => {
+          population.actual = patientBased
+            ? getPatientBasedActualResultForAssociatedPopulation(
+                population,
+                appliedStrataResult?.result
+              )
+            : getEpisodeBasedActualResultForAssociatedPopulation(
+                population,
+                appliedStrataResult
+              );
         });
       });
       // need to do work here.
