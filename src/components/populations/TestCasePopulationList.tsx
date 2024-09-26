@@ -92,37 +92,12 @@ export const determineGroupResultStratification = (
     const associatedPopulationValues = stratification?.populationValues?.filter(
       (pop) => associations?.includes(pop.name)
     );
-    // const { expected, actual } = stratification; // no longer care about this.
-    // we need to run every
-    if (populationBasis === "boolean") {
-      if (
-        !_.every(
-          associatedPopulationValues,
-          (pop) => pop.actual === pop.expected
-        )
-      ) {
-        return "fail";
-      }
-    } else if (populationBasis !== "boolean") {
-      if (
-        //@ts-ignore
-        !_.every(associatedPopulationValues, ({ expected, actual }) => {
-          const expectedNum =
-            _.isNil(expected) ||
-            (typeof expected === "string" && _.isEmpty(expected))
-              ? 0
-              : expected;
-          const actualNum =
-            _.isNil(actual) || (typeof actual === "string" && _.isEmpty(actual))
-              ? 0
-              : actual;
-          if (expectedNum != actualNum) {
-            return "fail";
-          }
-        })
-      ) {
-        return "fail";
-      }
+    const isFailing = _.some(
+      associatedPopulationValues,
+      ({ expected, actual }) => expected != actual
+    );
+    if (isFailing) {
+      return "fail";
     }
   }
   return "pass";
