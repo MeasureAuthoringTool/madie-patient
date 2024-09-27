@@ -243,12 +243,14 @@ const EditTestCase = (props: EditTestCaseProps) => {
     series: [],
   });
   const [editor, setEditor] = useState<Ace.Editor>(null);
+
   function resizeEditor() {
     // hack to force Ace to resize as it doesn't seem to be responsive
     setTimeout(() => {
       editor?.resize(true);
     }, 500);
   }
+
   // we need this to fire on initial load because it doesn't know about allotment's client width
   useEffect(() => {
     if (editor) {
@@ -339,7 +341,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
           actual: calculateEpisodes ? false : null,
           id: stratification.id,
           criteriaReference: "",
-          populationValues,
+          populationValues: populationValues?.map((pv) => ({ ...pv })), // Return a copy of populationValues
         })),
     };
   };
@@ -760,6 +762,20 @@ const EditTestCase = (props: EditTestCaseProps) => {
     );
   };
 
+  // An empty string is also considered to be valid, as it is not malformed
+  // and allows a user to edit for the first time
+  const isValidJson = (str) => {
+    if (!_.isEmpty(str) && "Loading..." !== str) {
+      try {
+        JSON.parse(str);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    }
+    return true;
+  };
+
   const severityOfValidationErrors = (validationErrors) => {
     const errorsWithNoSeverity = validationErrors?.filter(
       (validationError) => !validationError.hasOwnProperty("severity")
@@ -851,21 +867,20 @@ const EditTestCase = (props: EditTestCaseProps) => {
 
                 <QiCoreResourceProvider>
                   {leftPanelActiveTab === "elements" &&
-                    severityOfValidationErrors(validationErrors) !==
-                      "error" && (
+                    isValidJson(editorVal) && (
                       <div className="panel-content">
                         <div data-testid="elements-content">
                           <ElementsTab
                             canEdit={canEdit}
                             setEditorVal={setEditorVal}
                             editorVal={editorVal}
+                            testCase={testCase}
                           />
                         </div>
                       </div>
                     )}
                   {leftPanelActiveTab === "elements" &&
-                    severityOfValidationErrors(validationErrors) ===
-                      "error" && (
+                    !isValidJson(editorVal) && (
                       <div style={{ width: "98%" }}>
                         <MadieAlert
                           type="error"

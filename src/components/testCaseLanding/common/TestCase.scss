@@ -1,3 +1,5 @@
+@use "sass:color";
+
 #testCaseListTable {
   .tcl-tr {
     border-bottom: solid 1px #8c8c8c;
@@ -69,7 +71,7 @@
     }
   }
   th:hover {
-    background-color: lighten(#333, 60%);
+    background-color: color.adjust(#333, $lightness: 60%);
   }
   button > .arrowDisplay {
     position: absolute;

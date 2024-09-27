@@ -91,7 +91,7 @@ const TestCaseRoutes = () => {
           localErrors.filter((s) => s !== CQL_RETURN_TYPES_MISMATCH_ERROR)
         );
     }
-  }, [measure]);
+  }, [measure?.id]);
 
   useEffect(() => {
     if (measureBundle) {

@@ -25,6 +25,7 @@ import CreateNewTestCaseDialog from "../../createTestCase/CreateNewTestCaseDialo
 import {
   MadieDeleteDialog,
   MadieSpinner,
+  Pagination,
   Toast,
 } from "@madie/madie-design-system/dist/react";
 import Typography from "@mui/material/Typography";
@@ -107,10 +108,26 @@ const TestCaseList = (props: TestCaseListProps) => {
     loadingState,
     setLoadingState,
     retrieveTestCases,
+    testCasePage,
   } = UseTestCases({
     measureId,
     setErrors,
   });
+  // UseTestCases handles all the pagination and navigation independent of where we're at
+  const {
+    totalItems,
+    visibleItems,
+    offset,
+    limit,
+    count,
+    page,
+    currentSlice,
+    handlePageChange,
+    handleLimitChange,
+    canGoNext,
+    canGoPrev,
+  } = testCasePage;
+
   const {
     toastOpen,
     setToastOpen,
@@ -316,6 +333,20 @@ const TestCaseList = (props: TestCaseListProps) => {
       allRelevantClauses.filter((clause) => clause.final === "TRUE"),
       (c1, c2) => c1.libraryName === c2.libraryName && c1.localId === c2.localId
     );
+    // set onto window for any environment debug purposes
+    if (localStorage.getItem("madieDebug") || (window as any).madieDebug) {
+      // eslint-disable-next-line no-console
+      console.log("coveredClauses: ", _.cloneDeep(coveredClauses));
+      // eslint-disable-next-line no-console
+      console.log("allUniqueClauses: ", _.cloneDeep(allUniqueClauses));
+      // eslint-disable-next-line no-console
+      console.log(
+        "uncoveredClauses: ",
+        _.cloneDeep(
+          _.pullAllBy(_.cloneDeep(allUniqueClauses), coveredClauses, "localId")
+        )
+      );
+    }
     return Math.floor(
       (coveredClauses.length / allUniqueClauses.length) * 100
     ).toString();
@@ -748,13 +779,27 @@ const TestCaseList = (props: TestCaseListProps) => {
                       )}
                       {featureFlags.TestCaseListSearch && <ActionCenter />}
                       <TestCaseTable
-                        testCases={testCases}
+                        testCases={currentSlice}
                         canEdit={canEdit}
                         deleteTestCase={deleteTestCase}
                         exportTestCase={null}
                         onCloneTestCase={handleCloneTestCase}
                         measure={measure}
                         onTestCaseShiftDates={onTestCaseShiftDates}
+                      />
+                      <Pagination
+                        totalItems={totalItems}
+                        visibleItems={visibleItems}
+                        limitOptions={[10, 25, 50]}
+                        offset={offset}
+                        handlePageChange={handlePageChange}
+                        handleLimitChange={handleLimitChange}
+                        page={page}
+                        limit={limit}
+                        count={count}
+                        shape="rounded"
+                        hideNextButton={!canGoNext}
+                        hidePrevButton={!canGoPrev}
                       />
                     </>
                   )}

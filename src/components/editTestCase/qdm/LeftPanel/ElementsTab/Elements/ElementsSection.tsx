@@ -133,6 +133,8 @@ const ElementsSection = (props: {
     const modelClass = getDataElementClass(sourceCriteria);
     const newDataElement = new modelClass(data);
     setSelectedDataElement(newDataElement);
+    // default to codes tab when adding a new card.
+    setCardActiveTab("codes");
     dispatch({
       type: PatientActionType.ADD_DATA_ELEMENT,
       payload: newDataElement,
@@ -208,6 +210,7 @@ const ElementsSection = (props: {
             const updatedDataElement = new modelClass(dataElement);
             setSelectedDataElement(updatedDataElement);
             setActiveTab(updatedDataElement?.qdmCategory);
+            setCardActiveTab("codes"); // reset element card tab
           }}
           canEdit={canEdit}
           onDelete={deleteDataElement}
