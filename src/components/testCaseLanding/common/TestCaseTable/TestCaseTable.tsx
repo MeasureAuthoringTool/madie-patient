@@ -23,6 +23,7 @@ import UnfoldMoreIcon from "@mui/icons-material/UnfoldMore";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import ShiftDatesDialog from "../shiftDates/ShiftDatesDialog";
+import { useFeatureFlags } from "@madie/madie-util";
 
 interface TestCaseTableProps {
   testCases: TestCase[];
@@ -74,6 +75,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
   const [selectedTestCase, setSelectedTestCase] = useState<TestCase>(null);
   const [shiftDatesDialogOpen, setShiftDatesDialogOpen] =
     useState<boolean>(false);
+  const featureFlags = useFeatureFlags();
 
   const handleOpen = (
     selected: TestCase,
@@ -99,6 +101,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
       description: tc.description,
       lastSaved: tc.lastModifiedAt,
       action: tc,
+      caseNumber: tc.caseNumber,
     }));
   };
 
@@ -110,6 +113,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     lastSaved: string;
     action: any;
     id: string;
+    caseNumber: number;
   };
 
   function customSort(a: string, b: string) {
@@ -131,8 +135,27 @@ const TestCaseTable = (props: TestCaseTableProps) => {
       setData(transFormData(testCases));
     }
   }, [testCases]);
-  const columns = useMemo<ColumnDef<TCRow>[]>(
-    () => [
+  const columns = useMemo<ColumnDef<TCRow>[]>(() => {
+    const columnDefs = [];
+
+    if (featureFlags?.TestCaseID) {
+      columnDefs.push({
+        header: "Case #",
+        cell: (info) => (
+          <TruncateText
+            text={info.row.original.caseNumber}
+            maxLength={60}
+            name="caseNumber"
+            dataTestId={`test-case-caseNumber-${info.row.original.id}`}
+          />
+        ),
+        accessorKey: "caseNumber",
+        sortingFn: "alphanumeric",
+      });
+    }
+
+    return [
+      ...columnDefs,
       {
         header: "Status",
         cell: (info) => (
@@ -209,9 +232,8 @@ const TestCaseTable = (props: TestCaseTableProps) => {
         accessorKey: "action",
         enableSorting: false,
       },
-    ],
-    []
-  );
+    ];
+  }, [featureFlags?.TestCaseID]);
 
   const table = useReactTable({
     data,

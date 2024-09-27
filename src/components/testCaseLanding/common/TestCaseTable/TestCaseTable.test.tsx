@@ -9,6 +9,7 @@ import {
   TestCase,
   Model,
 } from "@madie/madie-models";
+import { useFeatureFlags } from "@madie/madie-util";
 import userEvent from "@testing-library/user-event";
 
 const testCase = {
@@ -18,6 +19,7 @@ const testCase = {
   series: "TEST SERIES",
   lastModifiedAt: "2024-09-06T15:15:14.382Z",
   executionStatus: "pass",
+  caseNumber: 1,
 } as unknown as TestCase;
 const testCaseFail = {
   id: "ID1",
@@ -26,6 +28,7 @@ const testCaseFail = {
   series: "TEST SERIES1",
   lastModifiedAt: "2024-09-06T15:16:14.382Z",
   executionStatus: "fail",
+  caseNumber: null,
 } as unknown as TestCase;
 const testCaseNA = {
   id: "ID2",
@@ -34,6 +37,7 @@ const testCaseNA = {
   series: "TEST SERIES2",
   lastModifiedAt: "2024-09-06T15:17:14.382Z",
   executionStatus: "NA",
+  caseNumber: null,
 } as unknown as TestCase;
 
 const testCaseInvalid = {
@@ -43,6 +47,7 @@ const testCaseInvalid = {
   series: "TEST SERIES3",
   lastModifiedAt: "2024-09-06T15:18:14.382Z",
   executionStatus: "Invalid",
+  caseNumber: null,
 } as unknown as TestCase;
 
 const testCases = [testCase, testCaseFail, testCaseNA, testCaseInvalid];
@@ -75,9 +80,11 @@ const defaultMeasure = {
 
 let mockApplyDefaults = false;
 jest.mock("@madie/madie-util", () => ({
-  useFeatureFlags: () => {
-    return { applyDefaults: mockApplyDefaults, ShiftTestCasesDates: true };
-  },
+  useFeatureFlags: jest.fn().mockImplementation(() => ({
+    applyDefaults: mockApplyDefaults,
+    ShiftTestCasesDates: true,
+    TestCaseID: false,
+  })),
 }));
 
 const renderWithTestCase = (
@@ -151,6 +158,36 @@ describe("TestCase component", () => {
       const submitButton = screen.queryByText("Yes, Delete");
       expect(submitButton).not.toBeInTheDocument();
     });
+  });
+
+  it("should render test case table with case numbers when flag is set", async () => {
+    const deleteTestCase = jest.fn();
+    const exportTestCase = jest.fn();
+    const onCloneTestCase = jest.fn();
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      TestCaseID: true,
+    }));
+
+    renderWithTestCase(
+      testCases,
+      true,
+      deleteTestCase,
+      exportTestCase,
+      onCloneTestCase,
+      defaultMeasure
+    );
+
+    const rows = await screen.findByTestId(`test-case-row-0`);
+    const columns = rows.querySelectorAll("td");
+    expect(columns[0]).toHaveTextContent("1");
+    expect(columns[1]).toHaveTextContent("Pass");
+    expect(columns[2]).toHaveTextContent(testCase.series);
+    expect(columns[3]).toHaveTextContent(testCase.title);
+    expect(columns[4]).toHaveTextContent(testCase.description);
+    expect(columns[5]).toHaveTextContent(convertDate(testCase.lastModifiedAt));
+
+    const buttons = await screen.findAllByRole("button");
+    expect(buttons).toHaveLength(11);
   });
 
   it("should render test case population table with sorting when button clicked", async () => {
