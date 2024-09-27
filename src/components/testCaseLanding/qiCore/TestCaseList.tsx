@@ -9,7 +9,8 @@ import {
   TestCaseImportRequest,
   TestCaseImportOutcome,
 } from "@madie/madie-models";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import queryString from "query-string";
 import calculationService from "../../../api/CalculationService";
 import {
   CalculationOutput,
@@ -116,7 +117,8 @@ const TestCaseList = (props: TestCaseListProps) => {
     onToastClose,
   } = UseToast();
   let navigate = useNavigate();
-
+  const { search } = useLocation();
+  const values = queryString.parse(search);
   const [executionResults, setExecutionResults] = useState<{
     [key: string]: DetailedPopulationGroupResult[];
   }>({});
@@ -439,7 +441,6 @@ const TestCaseList = (props: TestCaseListProps) => {
   };
   const readerString = generateSRString(testCases);
   const executionResultLength = Object.keys(executionResults).length;
-
   const onTestCaseImportFromBonnie = async (testCases: TestCase[]) => {
     setImportFromBonnieDialogState({
       ...importFromBonnieDialogState,
@@ -459,7 +460,6 @@ const TestCaseList = (props: TestCaseListProps) => {
       setLoadingState({ loading: false, message: "" });
     }
   };
-
   const onTestCaseImport = async (
     testCaseImportRequest: TestCaseImportRequest[]
   ) => {
@@ -469,7 +469,6 @@ const TestCaseList = (props: TestCaseListProps) => {
       loading: true,
       message: "Importing Test Cases...",
     }));
-
     try {
       const response = await testCaseService.current.importTestCases(
         measureId,
@@ -490,11 +489,20 @@ const TestCaseList = (props: TestCaseListProps) => {
           `(${successfulImports}) Test cases imported successfully`
         );
       }
-      // retrieveTestCases();
     } catch (error) {
       setErrors((prevState) => [...prevState, IMPORT_ERROR]);
     } finally {
       setLoadingState({ loading: false, message: "" });
+      const newPath = `/measures/${measureId}/edit/test-cases/list-page/${
+        measure.groups[0].id
+      }?filter=${values.filter ? values.filter : ""}&search=${
+        values.search ? values.search : ""
+      }&page=1&limit=${values.limit ? values.limit : 10}`;
+      navigate(newPath);
+      // navigate will call the page if it's not on that page only.
+      if (values.page === "1") {
+        retrieveTestCases();
+      }
     }
   };
 
