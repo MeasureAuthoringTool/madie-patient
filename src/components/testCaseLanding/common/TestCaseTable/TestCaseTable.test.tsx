@@ -194,6 +194,9 @@ describe("TestCase component", () => {
     const deleteTestCase = jest.fn();
     const exportTestCase = jest.fn();
     const onCloneTestCase = jest.fn();
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      TestCaseID: false,
+    }));
 
     renderWithTestCase(
       testCases,
@@ -243,6 +246,10 @@ describe("TestCase component", () => {
     const deleteTestCase = jest.fn();
     const exportTestCase = jest.fn();
     const onCloneTestCase = jest.fn();
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      TestCaseID: false,
+    }));
+
     renderWithTestCase(
       testCases,
       false,
@@ -269,6 +276,9 @@ describe("TestCase component", () => {
     const deleteTestCase = jest.fn();
     const exportTestCase = jest.fn();
     const onCloneTestCase = jest.fn();
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      TestCaseID: false,
+    }));
 
     renderWithTestCase(
       testCases,
@@ -298,6 +308,9 @@ describe("TestCase component", () => {
     const deleteTestCase = jest.fn();
     const exportTestCase = jest.fn();
     const onCloneTestCase = jest.fn();
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      TestCaseID: false,
+    }));
 
     renderWithTestCase(
       testCases,
@@ -331,6 +344,10 @@ describe("TestCase component", () => {
     const deleteTestCase = jest.fn();
     const exportTestCase = jest.fn();
     const onCloneTestCase = jest.fn();
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      ShiftTestCasesDates: true,
+      TestCaseID: false,
+    }));
 
     renderWithTestCase(
       testCases,
@@ -374,6 +391,9 @@ describe("TestCase component", () => {
     const deleteTestCase = jest.fn();
     const exportTestCase = jest.fn();
     const onCloneTestCase = jest.fn();
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      TestCaseID: false,
+    }));
 
     renderWithTestCase(
       testCases,
@@ -397,6 +417,9 @@ describe("TestCase component", () => {
     const deleteTestCase = jest.fn();
     const exportTestCase = jest.fn();
     const onCloneTestCase = jest.fn();
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      TestCaseID: false,
+    }));
 
     renderWithTestCase(
       testCases,
@@ -424,6 +447,9 @@ describe("TestCase component", () => {
     const deleteTestCase = jest.fn();
     const exportTestCase = jest.fn();
     const onCloneTestCase = jest.fn();
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      TestCaseID: false,
+    }));
 
     defaultMeasure.model = Model.QDM_5_6;
     renderWithTestCase(
@@ -452,6 +478,9 @@ describe("TestCase component", () => {
     const deleteTestCase = jest.fn();
     const exportTestCase = jest.fn();
     const onCloneTestCase = jest.fn();
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
+      TestCaseID: false,
+    }));
 
     renderWithTestCase(
       testCases,
