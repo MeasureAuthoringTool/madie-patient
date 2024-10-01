@@ -74,7 +74,7 @@ describe("Build Highlighting for all groups", () => {
     expect(coverageResults).toEqual({});
   });
 
-  it("Build coverage results for valid cqmMeasure and calculation results", () => {
+  it("Build coverage results for a measure that has a group with stratification", () => {
     const coverageResults = buildHighlightingForGroups(
       stratificationExecutionResults,
       stratificationTestMeasure
