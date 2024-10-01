@@ -8,8 +8,11 @@ import {
   buildHighlightingForAllGroups,
   updateAllGroupResults,
 } from "./CqlCoverageBuilder";
-
 import ControllingHighBloodPressureResults from "../../mockdata/qdm/controllingHBPCalculationResults.json";
+import {
+  stratificationTestMeasure,
+  stratificationExecutionResults,
+} from "../../mockdata/qdm/QdmStratifications/stratification_execution_results";
 
 const cqmMeasure = {
   cql_libraries: [testMeasureLibrary],
@@ -71,28 +74,25 @@ describe("Build Highlighting for all groups", () => {
     expect(coverageResults).toEqual({});
   });
 
-  // it("Build coverage results for valid cqmMeasure and calculation results", () => {
-  //   const coverageResults = buildHighlightingForAllGroups(
-  //     testMeasureCalculationResultMultiple,
-  //     cqmMeasure
-  //   );
-  //   expect(coverageResults["group-1"].length).toEqual(6);
-  //   const group1DefinitionResults = coverageResults["group-1"];
-  //   const ip = group1DefinitionResults.find(
-  //     (result) => result.name === "Initial Population"
-  //   );
-  //   expect(ip.type).toEqual(undefined);
-  //   expect(ip.relevance).toEqual("TRUE");
-  //   expect(ip.html).toEqual(ipHighlighting);
-  //   expect(ip.result).toEqual(
-  //     "[Encounter, Performed: Encounter Inpatient\n" +
-  //       "START: 01/09/2020 12:00 AM\n" +
-  //       "STOP: 01/10/2020 12:00 AM\n" +
-  //       "CODE: SNOMEDCT 183452005]"
-  //   );
-
-  //   expect(coverageResults["group-2"].length).toEqual(6);
-  // });
+  it("Build coverage results for valid cqmMeasure and calculation results", () => {
+    const coverageResults = buildHighlightingForGroups(
+      stratificationExecutionResults,
+      stratificationTestMeasure
+    );
+    expect(coverageResults["group-1"].length).toEqual(3);
+    const group1DefinitionResults = coverageResults["group-1"];
+    const qualifyingEnc = group1DefinitionResults[0];
+    expect(qualifyingEnc.name).toEqual("Qualifying Encounters");
+    expect(qualifyingEnc.relevance).toEqual("TRUE");
+    const ip = group1DefinitionResults[1];
+    expect(ip.name).toEqual("Initial Population");
+    expect(ip.result).toEqual("true");
+    expect(ip.relevance).toEqual("TRUE");
+    const strata = group1DefinitionResults[2];
+    expect(strata.name).toEqual("Stratificaction 1");
+    expect(strata.result).toEqual("true");
+    expect(strata.relevance).toEqual("TRUE");
+  });
 });
 
 describe("updateAllGroupResults", () => {
