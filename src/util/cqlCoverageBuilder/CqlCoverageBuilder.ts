@@ -138,8 +138,22 @@ export function buildHighlightingForGroups(
   );
 
   const coverageResults = {} as GroupCoverageResult;
-  for (const groupResult of updatedGroupResults) {
-    const { groupId, clauseResults, statementResults } = groupResult;
+  for (const populationSet of cqmMeasure.population_sets) {
+    const { groupId, clauseResults, statementResults } =
+      updatedGroupResults?.find(
+        (updatedGroupResult) => updatedGroupResult.groupId === populationSet.id
+      );
+
+    // collect stratification definitions if population group has stratification
+    const stratification = populationSet.stratifications?.reduce(
+      (stratification, currentStrata) => {
+        stratification[currentStrata.statement.statement_name] =
+          currentStrata.stratification_id;
+        return stratification;
+      },
+      {}
+    );
+
     coverageResults[groupId] = statementResults.reduce((result, statement) => {
       // matching cql library
       const library = measureLibraryMap[statement.library_name];
@@ -159,12 +173,31 @@ export function buildHighlightingForGroups(
       if (_.isNil(statementDef.annotation)) {
         return result;
       }
+      let clauseResultCopy = clauseResults;
+      // cqm-execution converts stratification into separate group(stratified group)
+      // e.g. if measure has one group with one stratification,
+      // then results returned by cqm-execution would contain 2 groups. "Group 1" & "Group 1 stratification 1".
+      // Following "if" block combines the stratification definition results from
+      // its stratified group i.e. "Group 1 stratification 1" into measure group i.e. "Group 1"
+      if (stratification && stratification[statement.statement_name]) {
+        const { statementResults, clauseResults } = updatedGroupResults?.find(
+          (updatedGroupResult) =>
+            updatedGroupResult.groupId ===
+            stratification[statement.statement_name]
+        );
+        statement = statementResults?.find(
+          (result) =>
+            result.statement_name === statement.statement_name &&
+            result.library_name === statement.library_name
+        );
+        clauseResultCopy = clauseResults;
+      }
 
       // build the coverage html
       const coverageHtml = passFailCoverage({
         libraryName: statement.library_name,
         statementName: statement.statement_name,
-        clauseResults: clauseResults,
+        clauseResults: clauseResultCopy,
         ...statementDef.annotation[0].s,
       });
       result.push({

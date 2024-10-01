@@ -13,6 +13,7 @@ import ControllingHighBloodPressureResults from "../../mockdata/qdm/controllingH
 
 const cqmMeasure = {
   cql_libraries: [testMeasureLibrary],
+  population_sets: [{ id: "group-1" }, { id: "group-2" }],
 };
 
 describe("CQL Coverage Builder", () => {
