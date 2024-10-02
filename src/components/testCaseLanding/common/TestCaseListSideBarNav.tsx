@@ -52,7 +52,7 @@ const TestCaseListSideBarNav = ({
             onClick={() => {
               setShowPopulationCriteriaTabs(!showPopulationCriteriaTabs);
             }}
-            data-testId="nav-collapser"
+            data-testid="nav-collapser"
             id="nav-collapser"
           >
             Population Criteria
@@ -105,7 +105,7 @@ const TestCaseListSideBarNav = ({
                 onClick={() => {
                   setShowConfigTabs(!showConfigTabs);
                 }}
-                data-testId="qdm-nav-collapser"
+                data-testid="qdm-nav-collapser"
                 id="qdm-nav-collapser"
                 tw="px-2"
               >

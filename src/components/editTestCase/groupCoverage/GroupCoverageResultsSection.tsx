@@ -48,7 +48,7 @@ const GroupCoverageResultsSection = ({ results }) => {
               borderRadius: "1px",
               color: "black",
             }}
-            data-testId="results-section"
+            data-testid="results-section"
             id="results"
           >
             <pre>
