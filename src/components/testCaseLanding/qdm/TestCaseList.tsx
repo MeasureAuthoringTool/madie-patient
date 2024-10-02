@@ -13,7 +13,8 @@ import {
   TestCaseImportOutcome,
   TestCaseImportRequest,
 } from "@madie/madie-models";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import queryString from "query-string";
 import calculationService from "../../../api/CalculationService";
 import {
   checkUserCanEdit,
@@ -96,6 +97,8 @@ export const getCoverageValueFromHtml = (
 
 const TestCaseList = (props: TestCaseListProps) => {
   let navigate = useNavigate();
+  const { search } = useLocation();
+  const values = queryString.parse(search);
   const { setErrors, setImportErrors, setWarnings } = props;
   const { measureId, criteriaId } = useParams<{
     measureId: string;
@@ -504,7 +507,6 @@ const TestCaseList = (props: TestCaseListProps) => {
         }
         return testCase;
       });
-
       const res = await testCaseService.current.importTestCasesQDM(
         measureId,
         testCases
@@ -524,13 +526,22 @@ const TestCaseList = (props: TestCaseListProps) => {
           `(${successfulImports}) Test cases imported successfully`
         );
       }
-      retrieveTestCases();
     } catch (error) {
       setToastOpen(true);
       setToastType("danger");
       setToastMessage(IMPORT_ERROR);
     } finally {
       setLoadingState({ loading: false, message: "" });
+      const newPath = `/measures/${measureId}/edit/test-cases/list-page/${
+        measure.groups[0].id
+      }?filter=${values.filter ? values.filter : ""}&search=${
+        values.search ? values.search : ""
+      }&page=1&limit=${values.limit ? values.limit : 10}`;
+      navigate(newPath);
+      // navigate will call the page if it's not on that page only.
+      if (values.page === "1") {
+        retrieveTestCases();
+      }
     }
   };
 
