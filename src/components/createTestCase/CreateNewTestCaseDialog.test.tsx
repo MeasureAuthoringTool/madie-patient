@@ -7,6 +7,7 @@ import CreateNewTestCaseDialog from "./CreateNewTestCaseDialog";
 import { Measure } from "@madie/madie-models";
 import axios from "../../api/axios-instance";
 import { specialChars } from "../../util/checkSpecialCharacters";
+import { MemoryRouter } from "react-router-dom";
 
 jest.mock("../../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -39,10 +40,18 @@ describe("Create New Test Case Dialog", () => {
     jest.clearAllMocks();
   });
 
+  const mockMeasure = { ...formikInfo, id: "test-id" };
+
   test("should render all the fields in the test case creation form", async () => {
     await act(async () => {
       const { findByTestId } = await render(
-        <CreateNewTestCaseDialog open={true} onClose={undefined} />
+        <MemoryRouter
+          initialEntries={[
+            `/measures/${mockMeasure.id}/edit/test-cases/list-page`,
+          ]}
+        >
+          <CreateNewTestCaseDialog open={true} onClose={undefined} />
+        </MemoryRouter>
       );
 
       expect(await findByTestId("create-test-case-title")).toBeInTheDocument();
@@ -64,7 +73,13 @@ describe("Create New Test Case Dialog", () => {
   test("Save button should not be enabled when required field is empty", async () => {
     await act(async () => {
       const { getByTestId } = await render(
-        <CreateNewTestCaseDialog open={true} onClose={undefined} />
+        <MemoryRouter
+          initialEntries={[
+            `/measures/${mockMeasure.id}/edit/test-cases/list-page`,
+          ]}
+        >
+          <CreateNewTestCaseDialog open={true} onClose={undefined} />
+        </MemoryRouter>
       );
 
       const titleInput = await getByTestId("create-test-case-title-input");
@@ -96,11 +111,17 @@ describe("Create New Test Case Dialog", () => {
     } as unknown as Measure;
     await act(async () => {
       const { getByRole, getByTestId, getByText, queryByTestId } = await render(
-        <CreateNewTestCaseDialog
-          open={true}
-          onClose={jest.fn()}
-          measure={measure}
-        />
+        <MemoryRouter
+          initialEntries={[
+            `/measures/${mockMeasure.id}/edit/test-cases/list-page`,
+          ]}
+        >
+          <CreateNewTestCaseDialog
+            open={true}
+            onClose={jest.fn()}
+            measure={measure}
+          />
+        </MemoryRouter>
       );
 
       const titleInput = await getByTestId("create-test-case-title-input");
@@ -143,7 +164,13 @@ describe("Create New Test Case Dialog", () => {
 
     await act(async () => {
       const { getByRole, getByTestId, getByText, queryByTestId } = await render(
-        <CreateNewTestCaseDialog open={true} onClose={jest.fn()} />
+        <MemoryRouter
+          initialEntries={[
+            `/measures/${mockMeasure.id}/edit/test-cases/list-page`,
+          ]}
+        >
+          <CreateNewTestCaseDialog open={true} onClose={jest.fn()} />
+        </MemoryRouter>
       );
 
       const titleInput = await getByTestId("create-test-case-title-input");
@@ -196,11 +223,17 @@ describe("Create New Test Case Dialog", () => {
     } as unknown as Measure;
     await act(async () => {
       const { getByRole, getByTestId, getByText, queryByTestId } = await render(
-        <CreateNewTestCaseDialog
-          open={true}
-          onClose={jest.fn()}
-          measure={measure}
-        />
+        <MemoryRouter
+          initialEntries={[
+            `/measures/${mockMeasure.id}/edit/test-cases/list-page`,
+          ]}
+        >
+          <CreateNewTestCaseDialog
+            open={true}
+            onClose={jest.fn()}
+            measure={measure}
+          />
+        </MemoryRouter>
       );
 
       const titleInput = await getByTestId("create-test-case-title-input");
