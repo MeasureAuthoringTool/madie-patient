@@ -49,7 +49,7 @@ const findByLabel = (value) => {
   }
   return result;
 };
-const convertToStandardTime = (dayLightTime) => {
+const convertToStandartTime = (dayLightTime) => {
   return dayLightTime.add(-1, "hour");
 };
 
