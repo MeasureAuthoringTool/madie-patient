@@ -25,7 +25,7 @@ describe("DateTimeComponent", () => {
     const inputTime = screen.getByPlaceholderText("hh:mm:ss aa");
     expect(inputTime).toBeInTheDocument();
 
-    const inputZone = screen.getByDisplayValue("America/Chicago - CST");
+    const inputZone = screen.getByTestId("timezone-input-field-DateTime");
     expect(inputZone).toBeInTheDocument();
   });
 
