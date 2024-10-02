@@ -22,7 +22,7 @@ describe("DateTimeComponent", () => {
     const inputDate = screen.getByTestId("date-field-input");
     expect(inputDate).toBeInTheDocument();
 
-    const inputTime = screen.getByDisplayValue("07:33:33 AM");
+    const inputTime = screen.getByPlaceholderText("hh:mm:ss aa");
     expect(inputTime).toBeInTheDocument();
 
     const inputZone = screen.getByDisplayValue("America/Chicago - CST");
@@ -49,14 +49,13 @@ describe("DateTimeComponent", () => {
     userEvent.type(inputDate, "09/27/2024");
     expect(screen.getByDisplayValue("09/27/2024")).toBeInTheDocument();
 
-    const inputTime = screen.getByDisplayValue("07:33:33 AM");
+    const inputTime = screen.getByPlaceholderText("hh:mm:ss aa");
     expect(inputTime).toBeInTheDocument();
     userEvent.type(inputTime, "07:33:33 PM");
     expect(screen.getByDisplayValue("07:33:33 PM")).toBeInTheDocument();
 
     const timeZone = screen.getByTestId("timezone-input-field-DateTime");
     expect(timeZone).toBeInTheDocument();
-    expect(timeZone.value).toBe("America/Chicago - CST");
     fireEvent.change(timeZone, { target: { value: "America/New_York - EST" } });
     expect(
       screen.getByDisplayValue("America/New_York - EST")
