@@ -74,11 +74,34 @@ describe("Build Highlighting for all groups", () => {
     expect(coverageResults).toEqual({});
   });
 
-  it("Build coverage results for a measure that has a group with stratification", () => {
+  it("should build coverage results for a measure that has a group with stratification", () => {
     const coverageResults = buildHighlightingForGroups(
       stratificationExecutionResults,
       stratificationTestMeasure
     );
+    expect(coverageResults["group-1"].length).toEqual(3);
+    const group1DefinitionResults = coverageResults["group-1"];
+    const qualifyingEnc = group1DefinitionResults[0];
+    expect(qualifyingEnc.name).toEqual("Qualifying Encounters");
+    expect(qualifyingEnc.relevance).toEqual("TRUE");
+    const ip = group1DefinitionResults[1];
+    expect(ip.name).toEqual("Initial Population");
+    expect(ip.result).toEqual("true");
+    expect(ip.relevance).toEqual("TRUE");
+    const strata = group1DefinitionResults[2];
+    expect(strata.name).toEqual("Stratificaction 1");
+    expect(strata.result).toEqual("true");
+    expect(strata.relevance).toEqual("TRUE");
+  });
+
+  it("should build highlighting for all the groups, include stratification if present", () => {
+    const coverageResults = buildHighlightingForAllGroups(
+      {
+        "66fc253ea450c10000890c30": stratificationExecutionResults,
+      },
+      stratificationTestMeasure
+    );
+
     expect(coverageResults["group-1"].length).toEqual(3);
     const group1DefinitionResults = coverageResults["group-1"];
     const qualifyingEnc = group1DefinitionResults[0];
