@@ -35,7 +35,7 @@ const TypeEditor = ({
         return (
           <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
             <StringComponent
-              disabled={false}
+              canEdit={false}
               value={value}
               onChange={onChange}
               structureDefinition={null}
@@ -47,7 +47,7 @@ const TypeEditor = ({
         return (
           <PeriodComponent
             label={label}
-            disabled={false}
+            canEdit={false}
             structureDefinition={null}
             fieldRequired={false}
           />
@@ -56,16 +56,18 @@ const TypeEditor = ({
       case "http://hl7.org/fhirpath/System.DateTime":
         return (
           <DateTimeComponent
-            label={""}
-            disabled={false}
-            structureDefinition={null}
-            fieldRequired={false}
+            canEdit={true}
+            structureDefinition={structureDefinition}
+            fieldRequired={required}
+            label={``}
+            onChange={onChange}
+            value={value}
           />
         );
       case "boolean":
         return (
           <BooleanComponent
-            disabled={false}
+            canEdit={false}
             structureDefinition={null}
             fieldRequired={false}
           />
