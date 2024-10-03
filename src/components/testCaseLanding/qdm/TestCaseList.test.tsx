@@ -58,7 +58,7 @@ import useQdmCqlParsingService, {
 import TestCaseLandingWrapper from "../common/TestCaseLandingWrapper";
 import TestCaseLanding from "../qdm/TestCaseLanding";
 
-const serviceConfig: ServiceConfig = {
+const serviceConfig = {
   qdmElmTranslationService: { baseUrl: "translator.url" },
   fhirElmTranslationService: { baseUrl: "translator.url" },
   excelExportService: {
@@ -73,7 +73,7 @@ const serviceConfig: ServiceConfig = {
   terminologyService: {
     baseUrl: "http.com",
   },
-};
+} as ServiceConfig;
 const MEASURE_CREATEDBY = "testuser";
 // Mock data for Measure retrieved from MeasureService
 
@@ -1553,6 +1553,7 @@ const cqmMeasure = {
       },
     },
   ],
+  population_sets: [{ id: "1" }],
 };
 const setMeasure = jest.fn();
 const setCqmMeasure = jest.fn();
@@ -2176,60 +2177,6 @@ describe("TestCaseList component", () => {
       );
       expect(qrdaExportButton).not.toBeInTheDocument();
     });
-  });
-  it("should display success message when QRDA Export button clicked", async () => {
-    (checkUserCanEdit as jest.Mock).mockClear().mockImplementation(() => true);
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({}));
-    const useTestCaseServiceMockResolve = {
-      getTestCasesByMeasureId: jest.fn().mockResolvedValue(testCases),
-      getTestCaseSeriesForMeasure: jest
-        .fn()
-        .mockResolvedValue(["Series 1", "Series 2"]),
-      exportQRDA: jest.fn().mockResolvedValue("test qrda"),
-    } as unknown as TestCaseServiceApi;
-
-    useTestCaseServiceMock.mockImplementation(() => {
-      return useTestCaseServiceMockResolve;
-    });
-    mockMeasure.cqlErrors = false;
-    mockMeasure.errors = [];
-    renderTestCaseListComponent();
-    await screen.findByTestId("test-case-tbl");
-
-    const executeAllTestCasesButton = screen.getByRole("button", {
-      name: "Run Test(s)",
-    });
-    await waitFor(() => {
-      expect(executeAllTestCasesButton).toBeEnabled();
-    });
-    userEvent.click(executeAllTestCasesButton);
-    await waitFor(() => {
-      expect(
-        qdmCalculationServiceMockResolved.calculateQdmTestCases
-      ).toHaveBeenCalled();
-    });
-
-    const qrdaExportButton = screen.getByTestId(
-      "show-export-test-cases-button"
-    );
-    await waitFor(() => {
-      expect(qrdaExportButton).toBeEnabled();
-    });
-    userEvent.click(qrdaExportButton);
-
-    //popover opens
-    const popoverButton = screen.getByTestId("export-qrda-1");
-    expect(popoverButton).toBeVisible();
-    act(() => {
-      fireEvent.keyDown(popoverButton, {
-        key: "Escape",
-        code: "Escape",
-        keyCode: 27,
-        charCode: 27,
-      });
-    });
-
-    expect(screen.queryByTestId("export-qrda-1")).not.toBeVisible();
   });
 
   it("should display success message when QRDA Export button clicked", async () => {
