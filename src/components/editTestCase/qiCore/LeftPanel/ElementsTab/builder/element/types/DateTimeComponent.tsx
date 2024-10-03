@@ -49,7 +49,7 @@ const findByLabel = (value) => {
   }
   return result;
 };
-const convertToStandartTime = (dayLightTime) => {
+const convertToStandardTime = (dayLightTime) => {
   return dayLightTime.add(-1, "hour");
 };
 
@@ -96,7 +96,7 @@ const DateTimeComponent = ({
       ?.split(" ")[2]; // e.g., timezoneName = "CDT"
 
     if (timezoneName.includes("DT")) {
-      converted = convertToStandartTime(converted).tz(userTimeZone);
+      converted = convertToStandardTime(converted).tz(userTimeZone);
 
       setTimeZone(findByLabel(timezoneName.replace("D", "S")));
     } else {
