@@ -6,6 +6,7 @@ import StringComponent from "./types/StringComponent";
 import PeriodComponent from "./types/PeriodComponent";
 import DateTimeComponent from "./types/DateTimeComponent";
 import BooleanComponent from "./types/BooleanComponent";
+import DateComponent from "./types/DateComponent";
 
 const TypeEditor = ({
   type,
@@ -70,6 +71,17 @@ const TypeEditor = ({
             canEdit={false}
             structureDefinition={null}
             fieldRequired={false}
+          />
+        );
+      case "date":
+        return (
+          <DateComponent
+            canEdit={true}
+            structureDefinition={structureDefinition}
+            fieldRequired={required}
+            label={``}
+            onChange={onChange}
+            value={value}
           />
         );
       default:
