@@ -37,7 +37,7 @@ const TypeEditor = ({
         return (
           <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
             <StringComponent
-              canEdit={false}
+              canEdit={true}
               value={value}
               onChange={onChange}
               structureDefinition={null}
