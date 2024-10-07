@@ -111,12 +111,23 @@ function UseFetchTestCases({ measureId, setErrors }) {
           }&page=${1}&limit=${e.target.value}`
         );
       };
+      // with filter specify filter key, without filter, check status, group, title, description
       if (searchQuery) {
-        const filteredTestCases = testCases.filter((tc) =>
-          tc[filterMap[filter]]
-            ?.toLowerCase()
-            .includes(searchQuery?.toLocaleLowerCase())
-        );
+        let filteredTestCases = [...testCases];
+        if (filter) {
+          filteredTestCases = testCases.filter((tc) =>
+            tc[filterMap[filter]]
+              ?.toLowerCase()
+              .includes(searchQuery?.toLocaleLowerCase())
+          );
+        } else if (!filter) {
+          // check for matches in any of the filter categories
+          filteredTestCases = testCases.filter((tc) =>
+            Object.values(filterMap).some((key) =>
+              tc[key]?.toLowerCase().includes(searchQuery?.toLowerCase())
+            )
+          );
+        }
         const currentSlice = [...filteredTestCases].slice(start, end);
         const count = Math.ceil(filteredTestCases.length / curLimit);
         const canGoNext = (() => {

@@ -72,17 +72,24 @@ export default function ActionCenter(props: ActionCenterProps) {
               name="filterBy"
               value={formik.values.filterBy}
               onChange={formik.handleChange}
-              options={filterByOptions?.map((option) => {
-                return (
-                  <MenuItem
-                    key={option}
-                    value={option}
-                    data-testid={`filter-by-${option}`}
-                  >
-                    {option}
+              options={filterByOptions
+                ?.map((option) => {
+                  return (
+                    <MenuItem
+                      key={option}
+                      value={option}
+                      data-testid={`filter-by-${option}`}
+                    >
+                      {option}
+                    </MenuItem>
+                  );
+                })
+                // blank filter option
+                .concat(
+                  <MenuItem key="-" value="" data-testid={`filter-by--`}>
+                    -
                   </MenuItem>
-                );
-              })}
+                )}
             />
           </div>
           <div tw="w-1/2 pl-2">
@@ -91,7 +98,6 @@ export default function ActionCenter(props: ActionCenterProps) {
               tw="w-full"
               label="Search"
               placeholder="Search"
-              disabled={!formik.values.filterBy}
               inputProps={{
                 "data-testid": "test-case-list-search-input",
               }}
