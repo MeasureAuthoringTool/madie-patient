@@ -6,6 +6,7 @@ import StringComponent from "./types/StringComponent";
 import PeriodComponent from "./types/PeriodComponent";
 import DateTimeComponent from "./types/DateTimeComponent";
 import BooleanComponent from "./types/BooleanComponent";
+import UriComponent from "./types/UriComponent";
 import DateComponent from "./types/DateComponent";
 
 const TypeEditor = ({
@@ -73,6 +74,17 @@ const TypeEditor = ({
             label={label}
             onChange={onChange}
             value={value === true ? "True" : "False"}
+          />
+        );
+      case "uri":
+        return (
+          <UriComponent
+            canEdit={true}
+            structureDefinition={structureDefinition}
+            fieldRequired={required}
+            label={label}
+            onChange={onChange}
+            value={value}
           />
         );
       case "date":
