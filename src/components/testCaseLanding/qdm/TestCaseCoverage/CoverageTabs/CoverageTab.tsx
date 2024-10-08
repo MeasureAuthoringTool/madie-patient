@@ -28,7 +28,7 @@ const CoverageTab = ({ definition, definitionResults }: Props) => {
       data-testid={`${definition}-population`}
     >
       <Accordion title={definition} isOpen={false}>
-        <pre data-testId={`${definition}-population-text`}>
+        <pre data-testid={`${definition}-population-text`}>
           {definitionResults.map((results) => getCoverageResult(results))}
         </pre>
       </Accordion>
@@ -40,7 +40,7 @@ const CoverageTab = ({ definition, definitionResults }: Props) => {
     >
       <Accordion title={definition} isOpen={false}>
         {!_.isEmpty(definitionResults) ? (
-          <div data-testId={`${definition}-definition-text`}>
+          <div data-testid={`${definition}-definition-text`}>
             {definitionResults.map((results) => getCoverageResult(results))}
           </div>
         ) : (
