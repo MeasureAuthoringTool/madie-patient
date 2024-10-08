@@ -104,11 +104,12 @@ interface navigationParams {
 }
 
 const styles = {
-  success: `color #006400; background-color: #90EE90`,
-  warning: `color #B0350C; background-color: #ECDF27`,
-  error: `color #C03030; background-color: #FFF829`,
-  meta: tw`bg-blue-100 text-black`,
-  default: `color #00688B; background-color: #E0FFFF`,
+  success: `color #333333; background-color: #90EE90; border: solid 1px #7cb342`,
+  warning: `color #333333; background-color: #FFF9EB; border: solid 1px #FFC438`,
+  error: `color #333333; background-color: #FDE7EA; border: solid 1px #D92F2F`,
+  // meta and default are same colors.
+  meta: `color #333333; background-color: #e6f5ff; border: solid 1px #0073c8`,
+  default: `color #333333; background-color: #e6f5ff; border: solid 1px #0073c8`,
 };
 
 /*
@@ -211,6 +212,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
   const calculation = useRef(calculationService());
   const fhirCqlParsingService = useRef(useFhirCqlParsingService());
   const [alert, setAlert] = useState<AlertProps>(null);
+  console.log("alert is", alert);
   const { errors, setErrors } = props;
   if (!errors) {
     setErrors([]);
@@ -1150,6 +1152,10 @@ const EditTestCase = (props: EditTestCaseProps) => {
                       });
                     }}
                   >
+                    {console.log(
+                      "severity~",
+                      severityOfValidationErrors(validationErrors)
+                    )}
                     <StyledIcon
                       icon={faExclamationCircle}
                       errorSeverity={severityOfValidationErrors(
