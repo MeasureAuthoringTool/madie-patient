@@ -212,7 +212,6 @@ const EditTestCase = (props: EditTestCaseProps) => {
   const calculation = useRef(calculationService());
   const fhirCqlParsingService = useRef(useFhirCqlParsingService());
   const [alert, setAlert] = useState<AlertProps>(null);
-  console.log("alert is", alert);
   const { errors, setErrors } = props;
   if (!errors) {
     setErrors([]);
@@ -1152,10 +1151,6 @@ const EditTestCase = (props: EditTestCaseProps) => {
                       });
                     }}
                   >
-                    {console.log(
-                      "severity~",
-                      severityOfValidationErrors(validationErrors)
-                    )}
                     <StyledIcon
                       icon={faExclamationCircle}
                       errorSeverity={severityOfValidationErrors(
