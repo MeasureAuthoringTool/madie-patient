@@ -54,7 +54,7 @@ const DetailsSection = (props: DetailsSectionProps) => {
     <ElementSection
       title={measureName}
       children={
-        <div data-testId="qdm-details-section" id="qdm-details-section">
+        <div data-testid="qdm-details-section" id="qdm-details-section">
           <TextField
             label="Title"
             placeholder="Test Case Title"

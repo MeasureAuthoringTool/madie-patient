@@ -88,6 +88,6 @@ describe("TypeEditor Component", () => {
         structureDefinition={null}
       />
     );
-    expect(screen.getByTestId("uri-input-field-")).toBeInTheDocument();
+    expect(screen.getByTestId("uri-input-field-URI")).toBeInTheDocument();
   });
 });
