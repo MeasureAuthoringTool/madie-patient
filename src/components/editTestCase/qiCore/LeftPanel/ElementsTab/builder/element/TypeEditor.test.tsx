@@ -74,7 +74,9 @@ describe("TypeEditor Component", () => {
         structureDefinition={null}
       />
     );
-    expect(screen.getByTestId("qicore-boolean-undefined")).toBeInTheDocument();
+    expect(
+      screen.getByTestId("boolean-input-field-undefined")
+    ).toBeInTheDocument();
   });
 
   test("Should render URI component", () => {
@@ -88,6 +90,6 @@ describe("TypeEditor Component", () => {
         structureDefinition={null}
       />
     );
-    expect(screen.getByTestId("uri-input-field-")).toBeInTheDocument();
+    expect(screen.getByTestId("uri-input-field-URI")).toBeInTheDocument();
   });
 });

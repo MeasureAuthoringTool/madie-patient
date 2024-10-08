@@ -115,7 +115,7 @@ const SDEPage = () => {
           Indicates required field
         </Typography>
       </div>
-      <div className="form-elements" data-testId="sde-page">
+      <div className="form-elements" data-testid="sde-page">
         <div className="radio-button-group">
           <RadioButton
             row
