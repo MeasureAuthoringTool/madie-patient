@@ -16,17 +16,21 @@ interface ResourceEditorProps {
   selectedResourceDefinition: any;
   onSave: (resource: any) => void;
   onCancel: (resource: any) => void;
+  canEdit: boolean;
 }
 
 const ResourceEditor = ({
   selectedResource,
   onSave,
   onCancel,
+  canEdit,
 }: ResourceEditorProps) => {
   const [activeTab, setActiveTab] = useState(0);
   const [allElements, setAllElements] = useState([]);
   const [displayedElements, setDisplayedElements] = useState([]);
-  const [editingResource, setEditingResource] = useState(null);
+  const [editingResource, setEditingResource] = useState(
+    selectedResource?.bundleEntry?.resource
+  );
   const fhirDefinitionsService = useRef(useFhirDefinitionsServiceApi());
   const { state, dispatch } = useQiCoreResource();
 
@@ -140,16 +144,18 @@ const ResourceEditor = ({
         </Tabs>
         <ElementEditor
           elementDefinition={displayedElements?.[activeTab]}
-          resource={selectedResource.bundleEntry?.resource}
+          resource={editingResource}
           resourcePath={selectedResource.path}
           onChange={(path, value) => {
             const nextEntry = _.cloneDeep(selectedResource.bundleEntry);
             _.set(nextEntry.resource, path, value);
+            setEditingResource(nextEntry.resource);
             dispatch({
               type: ResourceActionType.MODIFY_BUNDLE_ENTRY,
               payload: nextEntry,
             });
           }}
+          canEdit={canEdit}
         />
       </Box>
     </Box>

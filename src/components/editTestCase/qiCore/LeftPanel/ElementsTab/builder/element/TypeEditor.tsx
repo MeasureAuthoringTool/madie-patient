@@ -15,6 +15,8 @@ const TypeEditor = ({
   value,
   onChange,
   structureDefinition,
+  canEdit,
+  label,
 }) => {
   const [childTypeDefs, setChildTypeDefs] = useState([]);
   const fhirDefinitionsService = useRef(useFhirDefinitionsServiceApi());
@@ -30,7 +32,6 @@ const TypeEditor = ({
   }, [type]);
 
   if (fhirDefinitionsService.current.isComponentDataType(type)) {
-    const label = "";
     switch (type) {
       case "string":
       case "http://hl7.org/fhirpath/System.String":
@@ -69,9 +70,12 @@ const TypeEditor = ({
       case "boolean":
         return (
           <BooleanComponent
-            canEdit={false}
+            canEdit={canEdit}
             structureDefinition={null}
-            fieldRequired={false}
+            fieldRequired={required}
+            label={label}
+            onChange={onChange}
+            value={value === true ? "True" : "False"}
           />
         );
       case "uri":
@@ -108,10 +112,12 @@ const TypeEditor = ({
           return (
             <TypeEditor
               type={childType?.code}
-              onChange={() => {}}
+              onChange={(e) => {}}
               value={null}
               structureDefinition={childTypeDef}
               required={childRequired}
+              canEdit={canEdit}
+              label={childTypeDef?.id}
             />
           );
         })}
