@@ -74,7 +74,9 @@ describe("TypeEditor Component", () => {
         structureDefinition={null}
       />
     );
-    expect(screen.getByTestId("qicore-boolean-undefined")).toBeInTheDocument();
+    expect(
+      screen.getByTestId("boolean-input-field-undefined")
+    ).toBeInTheDocument();
   });
 
   test("Should render URI component", () => {
