@@ -59,10 +59,12 @@ const TypeEditor = ({
       case "http://hl7.org/fhirpath/System.DateTime":
         return (
           <DateTimeComponent
-            label={""}
-            canEdit={false}
-            structureDefinition={null}
-            fieldRequired={false}
+            canEdit={true}
+            structureDefinition={structureDefinition}
+            fieldRequired={required}
+            label={``}
+            onChange={onChange}
+            value={value}
           />
         );
       case "boolean":
