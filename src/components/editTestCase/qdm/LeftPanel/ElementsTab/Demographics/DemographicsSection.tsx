@@ -182,7 +182,7 @@ const DemographicsSection = ({ canEdit }) => {
     }
   };
 
-  const handleTimeChange = (val) => {
+  const handleDateTimeChange = (val) => {
     const formatted = dayjs.utc(val).format();
     const existingElement = getDataElementByStatus("birthdate", patient);
     const newTimeElement = getBirthDateElement(formatted, existingElement);
@@ -227,7 +227,7 @@ const DemographicsSection = ({ canEdit }) => {
                 }
                 attributeName="DateTime"
                 onDateTimeChange={(newValue) => {
-                  handleTimeChange(newValue);
+                  handleDateTimeChange(newValue);
                 }}
               />
               <FormControl>
