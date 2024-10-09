@@ -25,17 +25,27 @@ interface MenuObj {
   label: string;
 }
 const options: MenuObj[] = [
+  { value: "America/Puerto_Rico", label: "AST" },
   { value: "America/New_York", label: "EST" },
   { value: "America/Chicago", label: "CST" },
   { value: "America/Denver", label: "MST" },
   { value: "America/Los_Angeles", label: "PST" },
+  { value: "America/Anchorage", label: "AKST" },
+  { value: "America/honolulu", label: "HST" },
+  { value: "America/American_Samoa", label: "WST" },
+  { value: "America/Saipan", label: "CHST" },
 ];
 
 const offSets = [
+  { id: "America/Puerto_Rico - AST", value: "-04:00" },
   { id: "America/New_York - EST", value: "-05:00" },
   { id: "America/Chicago - CST", value: "-06:00" },
   { id: "America/Denver - MST", value: "-07:00" },
   { id: "America/Los_Angeles - PST", value: "-08:00" },
+  { id: "America/Anchorage - AKST", value: "-09:00" },
+  { id: "America/honolulu - HST", value: "-10:00" },
+  { id: "America/American_Samoa - WST", value: "-11:00" },
+  { id: "America/Saipan - CHST", value: "+10:00" },
 ];
 
 const findByLabel = (value) => {
@@ -59,6 +69,18 @@ const getOffSet = (value) => {
     offSets.forEach((opt) => {
       if (opt.id === value) {
         result = opt.value;
+      }
+    });
+  }
+  return result;
+};
+
+const findByOffSet = (value) => {
+  let result = "America/New_York - EST";
+  if (value) {
+    offSets.forEach((opt) => {
+      if (opt.value === value) {
+        result = opt.id;
       }
     });
   }
@@ -99,6 +121,9 @@ const DateTimeComponent = ({
       converted = convertToStandardTime(converted).tz(userTimeZone);
 
       setTimeZone(findByLabel(timezoneName.replace("D", "S")));
+    } else if (timezoneName.includes("GMT")) {
+      const zone = findByOffSet(timezoneName.substring(3, 6) + ":00");
+      setTimeZone(zone);
     } else {
       setTimeZone(findByLabel(timezoneName));
     }
