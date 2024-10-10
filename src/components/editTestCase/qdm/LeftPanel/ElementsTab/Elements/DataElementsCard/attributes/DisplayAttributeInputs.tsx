@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { CQL, DataElement } from "cqm-models";
+import { QDMDate, CQL, DataElement } from "cqm-models";
 import {
   DateField,
   TimeField,
   Button,
 } from "@madie/madie-design-system/dist/react";
-import dayjs from "dayjs";
 import IntegerInput from "../../../../../../../common/IntegerInput/IntegerInput";
 import "./DisplayAttributeInputs.scss";
 import RatioInput from "../../../../../../../common/ratioInput/RatioInput";
@@ -57,27 +56,26 @@ const DisplayAttributeInputs = ({
   };
   const { cqmMeasureState } = useQdmExecutionContext();
   const [cqmMeasure] = cqmMeasureState;
-
   const displayAttributeInput = () => {
     switch (attributeType) {
       case "Date":
         return (
           <DateField
             label="Date"
-            value={""}
+            value={attributeValue}
             data-testid="date-input"
-            handleDateChange={(e) => {
-              const newDate = dayjs.utc(e);
-              const newCQLDate: CQL.Date = new CQL.Date(
-                newDate.year(),
-                newDate.month() + 1,
-                newDate.date()
-              );
+            handleDateChange={(date) => {
+              const newCQLDate = new QDMDate().cast({
+                year: date.year(),
+                month: date.month() + 1,
+                day: date.date(),
+              });
               setAttributeValue(newCQLDate);
               if (onChangeForComponentType) {
                 onChangeForComponentType(newCQLDate);
               }
             }}
+            onBlur={() => {}}
           />
         );
       case "DateTime":
