@@ -30,7 +30,7 @@ describe("IntegerComponent", () => {
       const handleChange = jest.fn();
       render(
         <IntegerComponent
-          value={0}
+          value={1}
           label=""
           canEdit={true}
           fieldRequired={false}
@@ -44,7 +44,7 @@ describe("IntegerComponent", () => {
       expect(integerField).toBeInTheDocument();
       const integerFieldInput = screen.getByTestId("integer-field-input-");
       expect(integerFieldInput).toBeInTheDocument();
-      expect(integerFieldInput.value).toBe("0");
+      expect(integerFieldInput.value).toBe("1");
 
       fireEvent.change(integerFieldInput, { target: { value: "10" } });
       expect(
@@ -181,7 +181,7 @@ describe("IntegerComponent", () => {
       expect(integerField).toBeInTheDocument();
       const integerFieldInput = screen.getByTestId("integer-field-input-");
       expect(integerFieldInput).toBeInTheDocument();
-      expect(integerFieldInput.value).toBe("0");
+      expect(integerFieldInput.value).toBe("");
 
       fireEvent.change(integerFieldInput, { target: { value: "10" } });
       expect(
