@@ -151,6 +151,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
         ),
         accessorKey: "caseNumber",
         sortingFn: "alphanumeric",
+        sortDescFirst: false,
       });
     }
 
