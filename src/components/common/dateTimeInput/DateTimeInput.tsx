@@ -7,9 +7,18 @@ import { kebabCase } from "lodash";
 
 dayjs.extend(utc);
 dayjs.utc();
-
-export const getCQLDateTime = (value, first = false) => {
-  const newDateTime = first ? dayjs(value) : dayjs.utc(value);
+/**
+ * Converts dayjs value to CQL DateTime.
+ * @param value dayjs representation of the user entered dateTime.
+ * @param wasNull Indicates whether previous value was null. Going from null to a value,
+ *   use the dayjs value as opposed to making it utc, so it's relative to the local time.
+ */
+export const getCQLDateTime = (value, wasNull = false) => {
+  if (!value) {
+    // Clears out a populated field.
+    return null;
+  }
+  const newDateTime = wasNull ? dayjs(value) : dayjs.utc(value);
   const newCQLDateTime: CQL.DateTime = new CQL.DateTime(
     newDateTime.year(),
     newDateTime.month() + 1,
@@ -51,19 +60,13 @@ const DateTimeInput = ({
   canEdit,
   attributeName,
 }: DateTimeInputProps) => {
-  const handleDateTimeChange = (newValue) => {
-    for (const prop in newValue) {
-      if (Number.isNaN(newValue[prop])) {
-        onDateTimeChange(null, attributeName);
-        return;
-      }
+  const handleDateTimeChange = (newValue, context) => {
+    // Use MUI validation to identify complete dateTime entry.
+    if (context?.validationError === "invalidDate") {
+      // Partial dateTime entry.
+      return;
     }
-    if (newValue) {
-      onDateTimeChange(
-        getCQLDateTime(newValue, dateTime ? false : true),
-        attributeName
-      );
-    }
+    onDateTimeChange(getCQLDateTime(newValue, !dateTime), attributeName);
   };
   return (
     <DateTimeField
