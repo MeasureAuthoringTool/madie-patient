@@ -6,6 +6,7 @@ import StringComponent from "./types/StringComponent";
 import PeriodComponent from "./types/PeriodComponent";
 import DateTimeComponent from "./types/DateTimeComponent";
 import BooleanComponent from "./types/BooleanComponent";
+import UriComponent from "./types/UriComponent";
 import DateComponent from "./types/DateComponent";
 import CodesComponent from "./types/CodesComponent";
 
@@ -15,6 +16,8 @@ const TypeEditor = ({
   value,
   onChange,
   structureDefinition,
+  canEdit,
+  label,
 }) => {
   const [childTypeDefs, setChildTypeDefs] = useState([]);
   const fhirDefinitionsService = useRef(useFhirDefinitionsServiceApi());
@@ -30,14 +33,13 @@ const TypeEditor = ({
   }, [type]);
 
   if (fhirDefinitionsService.current.isComponentDataType(type)) {
-    const label = "";
     switch (type) {
       case "string":
       case "http://hl7.org/fhirpath/System.String":
         return (
           <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
             <StringComponent
-              canEdit={false}
+              canEdit={true}
               value={value}
               onChange={onChange}
               structureDefinition={null}
@@ -67,9 +69,23 @@ const TypeEditor = ({
       case "boolean":
         return (
           <BooleanComponent
-            canEdit={false}
+            canEdit={canEdit}
             structureDefinition={null}
-            fieldRequired={false}
+            fieldRequired={required}
+            label={label}
+            onChange={onChange}
+            value={value === true ? "True" : "False"}
+          />
+        );
+      case "uri":
+        return (
+          <UriComponent
+            canEdit={true}
+            structureDefinition={structureDefinition}
+            fieldRequired={required}
+            label={label}
+            onChange={onChange}
+            value={value}
           />
         );
       case "date":
@@ -103,10 +119,12 @@ const TypeEditor = ({
           return (
             <TypeEditor
               type={childType?.code}
-              onChange={() => {}}
+              onChange={(e) => {}}
               value={null}
               structureDefinition={childTypeDef}
               required={childRequired}
+              canEdit={canEdit}
+              label={childTypeDef?.id}
             />
           );
         })}

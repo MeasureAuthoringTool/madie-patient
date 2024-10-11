@@ -10,6 +10,7 @@ interface ElementEditorProps {
   resourcePath: string;
   value?: any;
   onChange?: (path: string, value: any) => void;
+  canEdit: boolean;
 }
 
 const ElementEditor = ({
@@ -17,6 +18,7 @@ const ElementEditor = ({
   resource,
   resourcePath,
   onChange,
+  canEdit,
 }: ElementEditorProps) => {
   const fhirDefinitionsService = useRef(useFhirDefinitionsServiceApi());
 
@@ -29,7 +31,7 @@ const ElementEditor = ({
     elementDefinition.path
   );
   const required = +elementDefinition.min > 0;
-  const elementValue = _.get(resource, elemPath);
+  let elementValue = _.get(resource, elemPath);
 
   return (
     <Box
@@ -45,9 +47,12 @@ const ElementEditor = ({
         required={required}
         value={elementValue}
         onChange={(e) => {
+          elementValue = e;
           onChange(elemPath, e);
         }}
         structureDefinition={elementDefinition}
+        canEdit={canEdit}
+        label={elementDefinition?.id}
       />
     </Box>
   );

@@ -849,7 +849,10 @@ const TestCaseList = (props: TestCaseListProps) => {
             alignItems: "center",
           }}
         >
-          <MadieSpinner style={{ height: 50, width: 50 }} />
+          <MadieSpinner
+            style={{ height: 50, width: 50 }}
+            data-testid="testcase-list-loading-spinner"
+          />
           <Typography color="inherit">{loadingState.message}</Typography>
         </div>
       )}

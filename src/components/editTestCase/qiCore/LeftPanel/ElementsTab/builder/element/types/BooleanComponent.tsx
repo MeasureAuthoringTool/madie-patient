@@ -5,28 +5,46 @@ import { TypeComponentProps } from "./TypeComponentProps";
 
 const BooleanComponent = ({
   canEdit,
+  fieldRequired,
   value,
   onChange,
   label,
 }: TypeComponentProps) => {
+  const booleanOptions = [
+    <MuiMenuItem
+      key={`boolean-True-${label}`}
+      value={`True`}
+      data-testid={`boolean-True-${label}`}
+      defaultValue={`True`}
+    >
+      True
+    </MuiMenuItem>,
+    <MuiMenuItem
+      key={`boolean-False-${label}`}
+      value={`False`}
+      data-testid={`boolean-False-${label}`}
+    >
+      False
+    </MuiMenuItem>,
+  ];
+
   return (
     <Select
-      defaultValue="True"
+      id={`boolean-selector-${label}`}
       inputProps={{
-        "data-testid": `qicore-boolean-${label}`,
+        "data-testid": `boolean-input-field-${label}`,
+        "aria-describedby": `boolean-input-field-helper-text-${label}`,
       }}
-      value={value ? "True" : "False"}
-      onChange={(e) => {
-        onChange(e.target.value === "true");
+      data-testid={`boolean-field-${label}`}
+      disabled={!canEdit}
+      SelectDisplayProps={{
+        "aria-required": "true",
       }}
-      options={[
-        <MuiMenuItem key={"True"} value={"true"}>
-          True
-        </MuiMenuItem>,
-        <MuiMenuItem key={"False"} value={"false"}>
-          False
-        </MuiMenuItem>,
-      ]}
+      value={value === "True" ? "True" : "False"}
+      onChange={(event) => {
+        onChange(event.target.value === "True");
+      }}
+      options={booleanOptions}
     ></Select>
   );
 };

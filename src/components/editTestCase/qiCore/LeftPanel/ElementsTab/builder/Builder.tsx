@@ -95,6 +95,7 @@ const Builder = ({ testCase, canEdit }: BuilderProps) => {
             onCancel={(resource) => {
               setActiveResource(null);
             }}
+            canEdit={canEdit}
           />
         )}
       </Box>
