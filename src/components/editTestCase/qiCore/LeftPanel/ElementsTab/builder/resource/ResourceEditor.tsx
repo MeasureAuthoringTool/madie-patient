@@ -66,10 +66,6 @@ const ResourceEditor = ({
   const resourceBasePath =
     fhirDefinitionsService.current.getBasePath(selectedResource);
 
-  const theResource = state?.bundle?.entry?.find(
-    (e) => e.resource.id === selectedResource.bundleEntry?.resource.id
-  ).resource;
-
   return (
     <Box
       sx={{
@@ -148,7 +144,7 @@ const ResourceEditor = ({
         <ElementEditor
           elementDefinition={displayedElements?.[activeTab]}
           resource={editingResource}
-          resourcePath={selectedResource.path}
+          resourcePath={resourceBasePath}
           onChange={(path, value) => {
             const nextEntry = _.cloneDeep(selectedResource.bundleEntry);
             _.set(nextEntry.resource, path, value);
