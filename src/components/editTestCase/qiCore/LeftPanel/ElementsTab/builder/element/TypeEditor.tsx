@@ -7,6 +7,7 @@ import PeriodComponent from "./types/PeriodComponent";
 import DateTimeComponent from "./types/DateTimeComponent";
 import BooleanComponent from "./types/BooleanComponent";
 import DateComponent from "./types/DateComponent";
+import CodesComponent from "./types/CodesComponent";
 
 const TypeEditor = ({
   type,
@@ -80,6 +81,14 @@ const TypeEditor = ({
             label={``}
             onChange={onChange}
             value={value}
+          />
+        );
+      case "code":
+        return (
+          <CodesComponent
+            canEdit={true}
+            structureDefinition={structureDefinition}
+            fieldRequired={required}
           />
         );
       default:

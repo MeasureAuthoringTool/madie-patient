@@ -128,7 +128,7 @@ const serviceConfig: ServiceConfig = {
   testCaseService: {
     baseUrl: "base.url",
   },
-  fhirDefinitionsService: {
+  fhirService: {
     baseUrl: "fhirservice.url",
   },
   terminologyService: {
@@ -181,7 +181,40 @@ describe("ElementsTab", () => {
     mockedAxios.get.mockImplementation((args) => {
       if (args && args.endsWith("resources")) {
         return Promise.resolve({
-          data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          data: [
+            {
+              id: "qicore-adverseevent",
+              type: "AdverseEvent",
+              title: "QICore AdverseEvent",
+              category: "Clinical.Summary",
+              profile:
+                "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-adverseevent",
+            },
+            {
+              id: "qicore-medicationstatement",
+              type: "MedicationStatement",
+              title: "QICore MedicationStatement",
+              category: "Clinical.Medications",
+              profile:
+                "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-medicationstatement",
+            },
+            {
+              id: "qicore-claim",
+              type: "Claim",
+              title: "QICore Claim",
+              category: "Financial.Billing",
+              profile:
+                "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-claim",
+            },
+            {
+              id: "qicore-procedure",
+              type: "Procedure",
+              title: "QICore Procedure",
+              category: "Clinical.Summary",
+              profile:
+                "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-procedure",
+            },
+          ],
         });
       }
       return Promise.resolve({ data: null });
@@ -208,8 +241,7 @@ describe("ElementsTab", () => {
 
   it("displays Element Tab for a QICore case", async () => {
     renderElementTab();
-    screen.debug();
     expect(screen.getByText("Resources")).toBeInTheDocument();
-    expect(await screen.findByText("Adverse Event")).toBeInTheDocument();
+    expect(await screen.findByText("QICore AdverseEvent")).toBeInTheDocument();
   });
 });

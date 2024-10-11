@@ -40,7 +40,7 @@ const ResourceEditor = ({
       const elementsWithValues = [
         ...topElements.filter((e) => {
           const elemPath = fhirDefinitionsService.current.stripResourcePath(
-            selectedResource.path,
+            selectedResource.definition.type,
             e.path
           );
           const elemValue = _.get(
@@ -59,9 +59,12 @@ const ResourceEditor = ({
     }
   }, [selectedResource]);
 
-  // BuilderUtils.buildElementTree(selectedResource);
   const resourceBasePath =
     fhirDefinitionsService.current.getBasePath(selectedResource);
+
+  const theResource = state?.bundle?.entry?.find(
+    (e) => e.resource.id === selectedResource.bundleEntry?.resource.id
+  ).resource;
 
   return (
     <Box
@@ -140,8 +143,8 @@ const ResourceEditor = ({
         </Tabs>
         <ElementEditor
           elementDefinition={displayedElements?.[activeTab]}
-          resource={selectedResource.bundleEntry?.resource}
-          resourcePath={selectedResource.path}
+          resource={theResource}
+          resourcePath={resourceBasePath}
           onChange={(path, value) => {
             const nextEntry = _.cloneDeep(selectedResource.bundleEntry);
             _.set(nextEntry.resource, path, value);

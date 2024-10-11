@@ -12,6 +12,7 @@ import {
   useQiCoreResource,
 } from "../../../../../../util/QiCorePatientProvider";
 import useFhirDefinitionsServiceApi from "../../../../../../api/useFhirDefinitionsService";
+import { ResourceIdentifier } from "../../../../../../api/models/ResourceIdentifier";
 
 interface BuilderProps {
   testCase: TestCase;
@@ -19,9 +20,10 @@ interface BuilderProps {
 }
 
 const Builder = ({ testCase, canEdit }: BuilderProps) => {
-  const [resources, setResources] = useState([]);
+  const [resources, setResources] = useState<ResourceIdentifier[]>([]);
   const fhirDefinitionsService = useRef(useFhirDefinitionsServiceApi());
   const [activeResource, setActiveResource] = useState(null);
+  const [activeDefinition, setActiveDefinition] = useState(null);
   const { state, dispatch } = useQiCoreResource();
 
   useEffect(() => {
@@ -38,12 +40,18 @@ const Builder = ({ testCase, canEdit }: BuilderProps) => {
   }, []);
 
   const handleResourceSelected = async (bundleEntry: any) => {
-    const resourceName = bundleEntry?.resource?.resourceType;
+    const profile = _.isArray(bundleEntry?.resource?.meta?.profile)
+      ? bundleEntry?.resource?.meta?.profile[0]
+      : bundleEntry?.resource?.meta?.profile;
+    const resourceId = profile
+      ? profile.substring(profile.lastIndexOf("/") + 1)
+      : bundleEntry?.resource?.resourceType;
     const resourceTree = await fhirDefinitionsService.current.getResourceTree(
-      resourceName
+      resourceId
     );
     const resource = { ...resourceTree, bundleEntry };
     setActiveResource(resource);
+    setActiveDefinition({ ...resourceTree });
   };
 
   return (
@@ -56,17 +64,22 @@ const Builder = ({ testCase, canEdit }: BuilderProps) => {
       >
         {!activeResource && canEdit && (
           <ResourceList
-            resources={resources}
-            onClick={(resourceName: string) => {
+            resourceIdentifiers={resources}
+            onClick={(resourceIdentifier: ResourceIdentifier) => {
               const id = uuidv4();
               const newEntry = {
-                fullUrl: `https://madie.cms.gov/${resourceName}/${id}`,
+                fullUrl: `https://madie.cms.gov/${resourceIdentifier.type}/${id}`,
                 resource: {
                   id,
-                  resourceType: resourceName,
+                  resourceType: resourceIdentifier.type,
                 },
               };
-              handleResourceSelected(newEntry);
+              if (!_.isEmpty(resourceIdentifier.profile)) {
+                newEntry.resource["meta"] = {
+                  profile: [resourceIdentifier.profile],
+                };
+              }
+              newEntry;
               dispatch({
                 type: ResourceActionType.ADD_BUNDLE_ENTRY,
                 payload: newEntry,
@@ -77,12 +90,9 @@ const Builder = ({ testCase, canEdit }: BuilderProps) => {
         {activeResource && (
           <ResourceEditor
             selectedResource={activeResource}
-            selectedResourceDefinition={null}
-            onSave={(resource) => {
-              // console.log("saving resource: ", resource);
-            }}
+            selectedResourceDefinition={activeDefinition}
+            onSave={(resource) => {}}
             onCancel={(resource) => {
-              // console.log("cancel edit: ", resource);
               setActiveResource(null);
             }}
           />
