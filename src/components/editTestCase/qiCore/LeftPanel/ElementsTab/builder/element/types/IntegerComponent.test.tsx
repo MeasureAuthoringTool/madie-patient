@@ -57,7 +57,6 @@ describe("IntegerComponent", () => {
       ).toBeInTheDocument();
     });
 
-    //works but seems not needed
     test("should ignore . and - keys", () => {
       const handleChange = jest.fn();
       render(
@@ -124,16 +123,6 @@ describe("IntegerComponent", () => {
       const integerFieldInput = screen.getByTestId("integer-field-input-");
       expect(integerFieldInput).toBeInTheDocument();
       expect(integerFieldInput.value).toBe("");
-      //   fireEvent.keyPress(integerFieldInput, { key: "4", charCode: 52 });
-      //   fireEvent.keyPress(integerFieldInput, { key: "2", charCode: 50 });
-      //   fireEvent.keyPress(integerFieldInput, { key: "9", charCode: 57 });
-      //   fireEvent.keyPress(integerFieldInput, { key: "4", charCode: 52 });
-      //   fireEvent.keyPress(integerFieldInput, { key: "9", charCode: 57 });
-      //   fireEvent.keyPress(integerFieldInput, { key: "6", charCode: 54 });
-      //   fireEvent.keyPress(integerFieldInput, { key: "7", charCode: 55 });
-      //   fireEvent.keyPress(integerFieldInput, { key: "2", charCode: 50 });
-      //   fireEvent.keyPress(integerFieldInput, { key: "9", charCode: 57 });
-      //   fireEvent.keyPress(integerFieldInput, { key: "6", charCode: 54 });
 
       fireEvent.change(integerFieldInput, { target: { value: "429496729" } });
       expect(integerFieldInput.value).toBe("429496729");
