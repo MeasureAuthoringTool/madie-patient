@@ -9,6 +9,7 @@ import BooleanComponent from "./types/BooleanComponent";
 import UriComponent from "./types/UriComponent";
 import DateComponent from "./types/DateComponent";
 import IntegerComponent from "./types/IntegerComponent";
+import CodesComponent from "./types/CodesComponent";
 
 const TypeEditor = ({
   type,
@@ -123,6 +124,14 @@ const TypeEditor = ({
             onChange={onChange}
             value={value}
             signed={true}
+          />
+        );
+      case "code":
+        return (
+          <CodesComponent
+            canEdit={true}
+            structureDefinition={structureDefinition}
+            fieldRequired={required}
           />
         );
       default:
