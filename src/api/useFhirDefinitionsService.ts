@@ -2,6 +2,8 @@ import { ServiceConfig } from "./ServiceContext";
 import useServiceConfig from "./useServiceConfig";
 import { useOktaTokens } from "@madie/madie-util";
 import axios from "./axios-instance";
+import { ResourceIdentifier } from "./models/ResourceIdentifier";
+import { StructureDefinitionDto } from "./models/StructureDefinitionDto";
 
 export class FhirDefinitionsServiceApi {
   constructor(private baseUrl: string, private getAccessToken: () => string) {}
@@ -34,11 +36,16 @@ export class FhirDefinitionsServiceApi {
     }
   }
 
-  async getResources() {
+  async getResources(): Promise<ResourceIdentifier[]> {
     try {
-      const response = await axios.get<any>(`${this.baseUrl}/resources`, {
-        headers: {},
-      });
+      const response = await axios.get<any>(
+        `${this.baseUrl}/qicore/resources`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
+        }
+      );
       return response.data;
     } catch (error) {
       console.error("Get Resources Error", error?.response);
@@ -48,15 +55,40 @@ export class FhirDefinitionsServiceApi {
     }
   }
 
-  async getResourceTree(resourceName) {
+  async getResourceTree(resourceId): Promise<StructureDefinitionDto> {
     try {
       const response = await axios.get<any>(
-        `${this.baseUrl}/structure-definitions/${resourceName}`
+        `${this.baseUrl}/qicore/resources/structure-definitions/${resourceId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
+        }
       );
       return response.data;
     } catch (error) {
       console.error(
-        `An error occurred while loading definition for resourceName [${resourceName}]: `,
+        `An error occurred while loading definition for resourceId [${resourceId}]: `,
+        error
+      );
+    }
+    return null;
+  }
+
+  async getFhirValueSetExpansion(valueSetId: string): Promise<any> {
+    try {
+      const response = await axios.get<any>(
+        `https://tx.fhir.org/r4/ValueSet/${valueSetId}/$expand`,
+        {
+          headers: {
+            Accept: "application/fhir+json",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        `An error occurred while loading definition for resourceName [${valueSetId}]: `,
         error
       );
     }
@@ -64,8 +96,9 @@ export class FhirDefinitionsServiceApi {
   }
 
   getBasePath(resource: any): string {
-    const elements = [...resource?.definition?.snapshot?.element];
-    return elements?.[0].path;
+    // const elements = [...resource?.definition?.snapshot?.element];
+    // return elements?.[0].path;
+    return resource?.definition?.snapshot?.element?.[0]?.path;
   }
 
   getTopLevelElements(resource: any) {
@@ -90,7 +123,7 @@ export class FhirDefinitionsServiceApi {
 export default function useFhirDefinitionsServiceApi(): FhirDefinitionsServiceApi {
   const serviceConfig: ServiceConfig = useServiceConfig();
   const { getAccessToken } = useOktaTokens();
-  const { baseUrl } = serviceConfig.fhirDefinitionsService;
+  const { baseUrl } = serviceConfig.fhirService;
 
   return new FhirDefinitionsServiceApi(baseUrl, getAccessToken);
 }

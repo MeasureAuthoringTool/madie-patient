@@ -44,7 +44,7 @@ const ResourceEditor = ({
       const elementsWithValues = [
         ...topElements.filter((e) => {
           const elemPath = fhirDefinitionsService.current.stripResourcePath(
-            selectedResource.path,
+            selectedResource.definition.type,
             e.path
           );
           const elemValue = _.get(
@@ -63,7 +63,6 @@ const ResourceEditor = ({
     }
   }, [selectedResource]);
 
-  // BuilderUtils.buildElementTree(selectedResource);
   const resourceBasePath =
     fhirDefinitionsService.current.getBasePath(selectedResource);
 
@@ -145,7 +144,7 @@ const ResourceEditor = ({
         <ElementEditor
           elementDefinition={displayedElements?.[activeTab]}
           resource={editingResource}
-          resourcePath={selectedResource.path}
+          resourcePath={resourceBasePath}
           onChange={(path, value) => {
             const nextEntry = _.cloneDeep(selectedResource.bundleEntry);
             _.set(nextEntry.resource, path, value);
