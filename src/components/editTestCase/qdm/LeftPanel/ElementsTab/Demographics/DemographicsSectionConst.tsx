@@ -16,6 +16,13 @@ export interface CodeSystem {
   system: string;
 }
 
+export const BIRTHDATE_CODE: DataElementCode = {
+  code: "21112-8",
+  system: "2.16.840.1.113883.6.1",
+  version: undefined,
+  display: "Birth date",
+};
+
 export const RACE_CODE_OPTIONS: DataElementCode[] = [
   {
     code: "1002-5",
@@ -95,6 +102,7 @@ export const getBirthDateElement = (
     ? new PatientCharacteristicBirthdate(existingElement)
     : new PatientCharacteristicBirthdate();
   pcb.birthDatetime = value;
+  pcb.dataElementCodes = [BIRTHDATE_CODE];
   return pcb;
 };
 
