@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TextField } from "@madie/madie-design-system/dist/react/";
 import "twin.macro";
 import "styled-components/macro";
@@ -11,14 +11,35 @@ const IntegerComponent = ({
   onChange,
   label = "Integer",
   structureDefinition,
-  signed = true,
+  unsignedInt = true,
 }: TypeComponentProps) => {
-  const SIGNED_MINIMUM = -2147483648;
-  const SIGNED_MAXIMUM = 2147483647;
+  const POSITIVEINT_MINIMUM = 1;
+  const POSITIVEINT_MAXIMUM = 2147483647;
   const UNSIGNED_MINIMUM = 0;
-  const UNSIGNED_MAXIMUN = 4294967295;
+  const UNSIGNED_MAXIMUN = 2147483647;
   const [inputValue, setInputValue] = useState<string>(value ? value : "");
   const [error, setError] = useState<string>("");
+  useEffect(() => {
+    if (unsignedInt) {
+      if (
+        Number(value) < UNSIGNED_MINIMUM ||
+        Number(value) > UNSIGNED_MAXIMUN
+      ) {
+        setError(
+          `Unsigned integer range is [${UNSIGNED_MINIMUM} to ${UNSIGNED_MAXIMUN}]`
+        );
+      }
+    } else {
+      if (
+        Number(value) < POSITIVEINT_MINIMUM ||
+        Number(value) > POSITIVEINT_MAXIMUM
+      ) {
+        setError(
+          `Positive integer range is [${POSITIVEINT_MINIMUM} to ${POSITIVEINT_MAXIMUM}]`
+        );
+      }
+    }
+  });
   return (
     <TextField
       required={fieldRequired}
@@ -36,11 +57,11 @@ const IntegerComponent = ({
       fullWidth
       value={inputValue}
       onKeyPress={(e) => {
-        if (!signed && !Number(e.key) && e.key != "0") {
+        if (unsignedInt && !Number(e.key) && e.key != "0") {
           //when input . after 12, or - for unsigned integer
           e.preventDefault();
-        } else if (signed) {
-          if (!inputValue && !Number(e.key) && e.key != "0" && e.key != "-") {
+        } else if (!unsignedInt) {
+          if (!inputValue && !Number(e.key) && e.key != "0") {
             e.preventDefault();
           } else if (
             inputValue?.includes("-") &&
@@ -54,8 +75,8 @@ const IntegerComponent = ({
             //when inputting the last - after a positive number: 12-
             e.preventDefault();
           } else if (
-            Number(inputValue + e.key) < SIGNED_MINIMUM ||
-            Number(inputValue + e.key) > SIGNED_MAXIMUM
+            Number(inputValue + e.key) < POSITIVEINT_MINIMUM ||
+            Number(inputValue + e.key) > POSITIVEINT_MAXIMUM
           ) {
             e.preventDefault();
           }
@@ -74,7 +95,7 @@ const IntegerComponent = ({
         } else {
           setError("");
         }
-        if (!signed) {
+        if (unsignedInt) {
           if (
             Number(value) >= UNSIGNED_MINIMUM &&
             Number(value) <= UNSIGNED_MAXIMUN
@@ -87,13 +108,13 @@ const IntegerComponent = ({
           }
         } else {
           if (
-            Number(value) >= SIGNED_MINIMUM &&
-            Number(value) <= SIGNED_MAXIMUM
+            Number(value) >= POSITIVEINT_MINIMUM &&
+            Number(value) <= POSITIVEINT_MAXIMUM
           ) {
             onChange(Number(value));
           } else {
             setError(
-              `Signed integer range is [${SIGNED_MINIMUM} to ${SIGNED_MAXIMUM}]`
+              `Positive integer range is [${POSITIVEINT_MINIMUM} to ${POSITIVEINT_MAXIMUM}]`
             );
           }
         }

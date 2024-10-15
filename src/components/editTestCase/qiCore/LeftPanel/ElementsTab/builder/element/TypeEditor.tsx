@@ -111,7 +111,7 @@ const TypeEditor = ({
             label={``}
             onChange={onChange}
             value={value}
-            signed={false}
+            unsignedInt={false}
           />
         );
       case "unsignedInt":
@@ -123,7 +123,7 @@ const TypeEditor = ({
             label={`Integer Field`}
             onChange={onChange}
             value={value}
-            signed={true}
+            unsignedInt={true}
           />
         );
       case "code":
