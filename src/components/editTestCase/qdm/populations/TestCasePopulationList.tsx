@@ -9,6 +9,7 @@ import {
   DisplayStratificationValue,
   StratificationExpectedValue,
   PopulationType,
+  PopulationExpectedValue,
 } from "@madie/madie-models";
 import classNames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -26,7 +27,7 @@ export interface TestCasePopulationListProps {
   groupIndex?: number;
   scoring: string;
   populations: DisplayPopulationValue[];
-  populationResults: any;
+  populationResults: PopulationExpectedValue[];
   stratification?: StratificationExpectedValue;
   stratResult?: any;
   populationBasis: string;
