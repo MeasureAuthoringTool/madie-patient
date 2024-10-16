@@ -43,6 +43,8 @@ const DemographicsSection = ({ canEdit }) => {
   const { state, dispatch } = useQdmPatient();
   const { patient } = state;
   // this will be local
+  const [birthDateDataElement, setBirthDateDataElement] =
+    useState<DataElement>();
   const [raceDataElement, setRaceDataElement] = useState<DataElement>();
   const [genderDataElement, setGenderDataElement] = useState<DataElement>();
   const [ethnicityDataElement, setEthnicityDataElement] =
@@ -182,16 +184,23 @@ const DemographicsSection = ({ canEdit }) => {
     }
   };
 
-  const handleTimeChange = (val) => {
+  const handleDateTimeChange = (val) => {
     const formatted = dayjs.utc(val).format();
     const existingElement = getDataElementByStatus("birthdate", patient);
     const newTimeElement = getBirthDateElement(formatted, existingElement);
-    dispatch({
-      type: existingElement
-        ? PatientActionType.MODIFY_DATA_ELEMENT
-        : PatientActionType.ADD_DATA_ELEMENT,
-      payload: newTimeElement,
-    });
+    if (val) {
+      dispatch({
+        type: existingElement
+          ? PatientActionType.MODIFY_DATA_ELEMENT
+          : PatientActionType.ADD_DATA_ELEMENT,
+        payload: newTimeElement,
+      });
+    } else {
+      dispatch({
+        type: PatientActionType.REMOVE_DATA_ELEMENT,
+        payload: existingElement,
+      });
+    }
     dispatch({
       type: PatientActionType.SET_BIRTHDATETIME,
       payload: val,
@@ -227,7 +236,7 @@ const DemographicsSection = ({ canEdit }) => {
                 }
                 attributeName="DateTime"
                 onDateTimeChange={(newValue) => {
-                  handleTimeChange(newValue);
+                  handleDateTimeChange(newValue);
                 }}
               />
               <FormControl>

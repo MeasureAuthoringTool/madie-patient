@@ -13,7 +13,8 @@ import {
   TestCaseImportOutcome,
   TestCaseImportRequest,
 } from "@madie/madie-models";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import queryString from "query-string";
 import calculationService from "../../../api/CalculationService";
 import {
   checkUserCanEdit,
@@ -25,6 +26,7 @@ import CreateNewTestCaseDialog from "../../createTestCase/CreateNewTestCaseDialo
 import {
   MadieDeleteDialog,
   MadieSpinner,
+  Pagination,
   Toast,
 } from "@madie/madie-design-system/dist/react";
 import Typography from "@mui/material/Typography";
@@ -95,6 +97,8 @@ export const getCoverageValueFromHtml = (
 
 const TestCaseList = (props: TestCaseListProps) => {
   let navigate = useNavigate();
+  const { search } = useLocation();
+  const values = queryString.parse(search);
   const { setErrors, setImportErrors, setWarnings } = props;
   const { measureId, criteriaId } = useParams<{
     measureId: string;
@@ -107,10 +111,26 @@ const TestCaseList = (props: TestCaseListProps) => {
     loadingState,
     setLoadingState,
     retrieveTestCases,
+    testCasePage,
   } = UseTestCases({
     measureId,
     setErrors,
   });
+  // UseTestCases handles all the pagination and navigation independent of where we're at
+  const {
+    totalItems,
+    visibleItems,
+    offset,
+    limit,
+    count,
+    page,
+    currentSlice,
+    handlePageChange,
+    handleLimitChange,
+    canGoNext,
+    canGoPrev,
+  } = testCasePage;
+
   const {
     toastOpen,
     setToastOpen,
@@ -316,6 +336,20 @@ const TestCaseList = (props: TestCaseListProps) => {
       allRelevantClauses.filter((clause) => clause.final === "TRUE"),
       (c1, c2) => c1.libraryName === c2.libraryName && c1.localId === c2.localId
     );
+    // set onto window for any environment debug purposes
+    if (localStorage.getItem("madieDebug") || (window as any).madieDebug) {
+      // eslint-disable-next-line no-console
+      console.log("coveredClauses: ", _.cloneDeep(coveredClauses));
+      // eslint-disable-next-line no-console
+      console.log("allUniqueClauses: ", _.cloneDeep(allUniqueClauses));
+      // eslint-disable-next-line no-console
+      console.log(
+        "uncoveredClauses: ",
+        _.cloneDeep(
+          _.pullAllBy(_.cloneDeep(allUniqueClauses), coveredClauses, "localId")
+        )
+      );
+    }
     return Math.floor(
       (coveredClauses.length / allUniqueClauses.length) * 100
     ).toString();
@@ -473,7 +507,6 @@ const TestCaseList = (props: TestCaseListProps) => {
         }
         return testCase;
       });
-
       const res = await testCaseService.current.importTestCasesQDM(
         measureId,
         testCases
@@ -493,13 +526,20 @@ const TestCaseList = (props: TestCaseListProps) => {
           `(${successfulImports}) Test cases imported successfully`
         );
       }
-      retrieveTestCases();
     } catch (error) {
       setToastOpen(true);
       setToastType("danger");
       setToastMessage(IMPORT_ERROR);
     } finally {
       setLoadingState({ loading: false, message: "" });
+      const newPath = `/measures/${measureId}/edit/test-cases/list-page/${
+        measure.groups[0].id
+      }?filter=${values.filter ? values.filter : ""}&search=${
+        values.search ? values.search : ""
+      }&page=1&limit=${values.limit ? values.limit : 10}`;
+      navigate(newPath);
+      // always trigger refresh
+      retrieveTestCases();
     }
   };
 
@@ -748,13 +788,27 @@ const TestCaseList = (props: TestCaseListProps) => {
                       )}
                       {featureFlags.TestCaseListSearch && <ActionCenter />}
                       <TestCaseTable
-                        testCases={testCases}
+                        testCases={currentSlice}
                         canEdit={canEdit}
                         deleteTestCase={deleteTestCase}
                         exportTestCase={null}
                         onCloneTestCase={handleCloneTestCase}
                         measure={measure}
                         onTestCaseShiftDates={onTestCaseShiftDates}
+                      />
+                      <Pagination
+                        totalItems={totalItems}
+                        visibleItems={visibleItems}
+                        limitOptions={[10, 25, 50]}
+                        offset={offset}
+                        handlePageChange={handlePageChange}
+                        handleLimitChange={handleLimitChange}
+                        page={page}
+                        limit={limit}
+                        count={count}
+                        shape="rounded"
+                        hideNextButton={!canGoNext}
+                        hidePrevButton={!canGoPrev}
                       />
                     </>
                   )}
@@ -793,7 +847,10 @@ const TestCaseList = (props: TestCaseListProps) => {
             alignItems: "center",
           }}
         >
-          <MadieSpinner style={{ height: 50, width: 50 }} />
+          <MadieSpinner
+            style={{ height: 50, width: 50 }}
+            data-testid="testcase-list-loading-spinner"
+          />
           <Typography color="inherit">{loadingState.message}</Typography>
         </div>
       )}

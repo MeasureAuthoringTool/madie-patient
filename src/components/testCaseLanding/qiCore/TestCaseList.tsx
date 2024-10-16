@@ -9,7 +9,8 @@ import {
   TestCaseImportRequest,
   TestCaseImportOutcome,
 } from "@madie/madie-models";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import queryString from "query-string";
 import calculationService from "../../../api/CalculationService";
 import {
   CalculationOutput,
@@ -27,6 +28,7 @@ import CreateNewTestCaseDialog from "../../createTestCase/CreateNewTestCaseDialo
 import {
   MadieDeleteDialog,
   MadieSpinner,
+  Pagination,
   Toast,
 } from "@madie/madie-design-system/dist/react";
 import Typography from "@mui/material/Typography";
@@ -85,10 +87,26 @@ const TestCaseList = (props: TestCaseListProps) => {
     loadingState,
     setLoadingState,
     retrieveTestCases,
+    testCasePage,
   } = UseTestCases({
     measureId,
     setErrors,
   });
+
+  const {
+    totalItems,
+    visibleItems,
+    offset,
+    limit,
+    count,
+    page,
+    currentSlice,
+    handlePageChange,
+    handleLimitChange,
+    canGoNext,
+    canGoPrev,
+  } = testCasePage;
+
   const {
     toastOpen,
     setToastOpen,
@@ -99,7 +117,8 @@ const TestCaseList = (props: TestCaseListProps) => {
     onToastClose,
   } = UseToast();
   let navigate = useNavigate();
-
+  const { search } = useLocation();
+  const values = queryString.parse(search);
   const [executionResults, setExecutionResults] = useState<{
     [key: string]: DetailedPopulationGroupResult[];
   }>({});
@@ -381,6 +400,7 @@ const TestCaseList = (props: TestCaseListProps) => {
       ]);
       return null;
     }
+    // request all test cases ->
     const validTestCases = testCases?.filter((tc) => tc.validResource);
 
     if (validTestCases && validTestCases.length > 0 && measureBundle) {
@@ -421,7 +441,6 @@ const TestCaseList = (props: TestCaseListProps) => {
   };
   const readerString = generateSRString(testCases);
   const executionResultLength = Object.keys(executionResults).length;
-
   const onTestCaseImportFromBonnie = async (testCases: TestCase[]) => {
     setImportFromBonnieDialogState({
       ...importFromBonnieDialogState,
@@ -441,7 +460,6 @@ const TestCaseList = (props: TestCaseListProps) => {
       setLoadingState({ loading: false, message: "" });
     }
   };
-
   const onTestCaseImport = async (
     testCaseImportRequest: TestCaseImportRequest[]
   ) => {
@@ -451,7 +469,6 @@ const TestCaseList = (props: TestCaseListProps) => {
       loading: true,
       message: "Importing Test Cases...",
     }));
-
     try {
       const response = await testCaseService.current.importTestCases(
         measureId,
@@ -472,11 +489,17 @@ const TestCaseList = (props: TestCaseListProps) => {
           `(${successfulImports}) Test cases imported successfully`
         );
       }
-      retrieveTestCases();
     } catch (error) {
       setErrors((prevState) => [...prevState, IMPORT_ERROR]);
     } finally {
       setLoadingState({ loading: false, message: "" });
+      const newPath = `/measures/${measureId}/edit/test-cases/list-page/${
+        measure.groups[0].id
+      }?filter=${values.filter ? values.filter : ""}&search=${
+        values.search ? values.search : ""
+      }&page=1&limit=${values.limit ? values.limit : 10}`;
+      navigate(newPath);
+      retrieveTestCases();
     }
   };
 
@@ -580,13 +603,29 @@ const TestCaseList = (props: TestCaseListProps) => {
                       )}
                       {featureFlags.TestCaseListSearch && <ActionCenter />}
                       <TestCaseTable
-                        testCases={testCases}
+                        testCases={currentSlice}
                         canEdit={canEdit}
                         deleteTestCase={deleteTestCase}
                         exportTestCase={exportTestCase}
                         measure={measure}
                         onTestCaseShiftDates={onTestCaseShiftDates}
                       />
+                      {currentSlice?.length > 0 && (
+                        <Pagination
+                          totalItems={totalItems}
+                          visibleItems={visibleItems}
+                          limitOptions={[10, 25, 50]}
+                          offset={offset}
+                          handlePageChange={handlePageChange}
+                          handleLimitChange={handleLimitChange}
+                          page={page}
+                          limit={limit}
+                          count={count}
+                          shape="rounded"
+                          hideNextButton={!canGoNext}
+                          hidePrevButton={!canGoPrev}
+                        />
+                      )}
                     </>
                   )}
                   {executing && (

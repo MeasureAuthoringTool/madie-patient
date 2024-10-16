@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import queryString from "query-string";
 import { TestCase, Measure, Model } from "@madie/madie-models";
 import { TestCaseValidator } from "../../validators/TestCaseValidator";
 import {
@@ -73,6 +74,10 @@ const CreateNewTestCaseDialog = ({
   onClose,
   measure,
 }: createNewTestCaseDialogProps) => {
+  let navigate = useNavigate();
+  const { search } = useLocation();
+  const values = queryString.parse(search);
+
   const [toast, setToast] = useState<Toast>({
     toastOpen: false,
     toastType: "danger",
@@ -162,6 +167,13 @@ const CreateNewTestCaseDialog = ({
         measureId
       );
       handleTestCaseResponse(savedTestCase);
+      // go to page 1
+      const newPath = `/measures/${measureId}/edit/test-cases/list-page/${
+        measure.groups[0].id
+      }?filter=${values.filter ? values.filter : ""}&search=${
+        values.search ? values.search : ""
+      }&page=1&limit=${values.limit ? values.limit : 10}`;
+      navigate(newPath);
     } catch (error) {
       setToast({
         toastOpen: true,

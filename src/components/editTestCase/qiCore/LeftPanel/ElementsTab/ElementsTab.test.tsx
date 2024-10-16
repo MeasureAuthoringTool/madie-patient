@@ -2,6 +2,12 @@ import * as React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { QiCoreResourceProvider } from "../../../../../util/QiCorePatientProvider";
 import ElementsTab from "./ElementsTab";
+import {
+  ApiContextProvider,
+  ServiceConfig,
+} from "../../../../../api/ServiceContext";
+import { Measure, TestCase } from "@madie/madie-models";
+import axios from "../../../../../api/axios-instance";
 
 const patientBundle = {
   resourceType: "Bundle",
@@ -110,39 +116,132 @@ const patientBundle = {
 };
 const setEditorVal = jest.fn();
 
+const serviceConfig: ServiceConfig = {
+  qdmElmTranslationService: { baseUrl: "qdm-cql-to-elm.com" },
+  fhirElmTranslationService: { baseUrl: "fhir-cql-to-elm.com" },
+  excelExportService: {
+    baseUrl: "excelexport.com",
+  },
+  measureService: {
+    baseUrl: "measure.url",
+  },
+  testCaseService: {
+    baseUrl: "base.url",
+  },
+  fhirService: {
+    baseUrl: "fhirservice.url",
+  },
+  terminologyService: {
+    baseUrl: "something.com",
+  },
+};
+const MEASURE_CREATEDBY = "testuser";
+let mockApplyDefaults = false;
+jest.mock("@madie/madie-util", () => {
+  return {
+    useDocumentTitle: jest.fn(),
+    useFeatureFlags: () => {
+      return {
+        applyDefaults: mockApplyDefaults,
+        qiCoreElementsTab: true,
+      };
+    },
+    measureStore: {
+      updateMeasure: jest.fn((measure) => measure),
+      state: null,
+      initialState: null,
+      subscribe: (set) => {
+        set({} as Measure);
+        return { unsubscribe: () => null };
+      },
+      unsubscribe: () => null,
+    },
+    useOktaTokens: jest.fn(() => ({
+      getAccessToken: () => "test.jwt",
+    })),
+    checkUserCanEdit: jest.fn(() => {
+      return true;
+    }),
+    routeHandlerStore: {
+      subscribe: () => {
+        return { unsubscribe: () => null };
+      },
+      updateRouteHandlerState: () => null,
+      state: { canTravel: false, pendingPath: "" },
+      initialState: { canTravel: false, pendingPath: "" },
+    },
+  };
+});
+
+jest.mock("../../../../../api/axios-instance");
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+
 describe("ElementsTab", () => {
+  beforeEach(() => {
+    mockedAxios.get.mockImplementation((args) => {
+      if (args && args.endsWith("resources")) {
+        return Promise.resolve({
+          data: [
+            {
+              id: "qicore-adverseevent",
+              type: "AdverseEvent",
+              title: "QICore AdverseEvent",
+              category: "Clinical.Summary",
+              profile:
+                "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-adverseevent",
+            },
+            {
+              id: "qicore-medicationstatement",
+              type: "MedicationStatement",
+              title: "QICore MedicationStatement",
+              category: "Clinical.Medications",
+              profile:
+                "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-medicationstatement",
+            },
+            {
+              id: "qicore-claim",
+              type: "Claim",
+              title: "QICore Claim",
+              category: "Financial.Billing",
+              profile:
+                "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-claim",
+            },
+            {
+              id: "qicore-procedure",
+              type: "Procedure",
+              title: "QICore Procedure",
+              category: "Clinical.Summary",
+              profile:
+                "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-procedure",
+            },
+          ],
+        });
+      }
+      return Promise.resolve({ data: null });
+    });
+  });
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   const renderElementTab = () => {
     render(
-      <QiCoreResourceProvider>
-        <ElementsTab
-          canEdit={true}
-          setEditorVal={setEditorVal}
-          editorVal={patientBundle}
-        />
-      </QiCoreResourceProvider>
+      <ApiContextProvider value={serviceConfig}>
+        <QiCoreResourceProvider>
+          <ElementsTab
+            canEdit={true}
+            setEditorVal={setEditorVal}
+            editorVal={JSON.stringify(patientBundle)}
+            testCase={{ json: JSON.stringify(patientBundle) } as TestCase}
+          />
+        </QiCoreResourceProvider>
+      </ApiContextProvider>
     );
   };
 
-  it("displays Element Tab for a QICore case", () => {
+  it("displays Element Tab for a QICore case", async () => {
     renderElementTab();
-    expect(screen.getByText("Demographics")).toBeInTheDocument();
-    expect(screen.getByText("Elements")).toBeInTheDocument();
-  });
-
-  describe("DemographicsSection tests", () => {
-    it("handles gender demographics changes for a QICore case", async () => {
-      renderElementTab();
-      const gender = screen.getByTestId(
-        "demographics-gender-input"
-      ) as HTMLInputElement;
-      expect(gender).toBeInTheDocument();
-      expect(gender.value).toEqual("male");
-      // change the gender option
-      fireEvent.change(gender, {
-        target: { value: "female" },
-      });
-      expect(gender.value).toEqual("female");
-      expect(setEditorVal).toHaveBeenCalled();
-    });
+    expect(screen.getByText("Resources")).toBeInTheDocument();
+    expect(await screen.findByText("QICore AdverseEvent")).toBeInTheDocument();
   });
 });
