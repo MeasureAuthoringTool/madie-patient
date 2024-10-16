@@ -8,6 +8,8 @@ import DateTimeComponent from "./types/DateTimeComponent";
 import BooleanComponent from "./types/BooleanComponent";
 import UriComponent from "./types/UriComponent";
 import DateComponent from "./types/DateComponent";
+import CodesComponent from "./types/CodesComponent";
+import { Instant } from "@madie/madie-design-system/dist/react";
 
 const TypeEditor = ({
   type,
@@ -20,7 +22,6 @@ const TypeEditor = ({
 }) => {
   const [childTypeDefs, setChildTypeDefs] = useState([]);
   const fhirDefinitionsService = useRef(useFhirDefinitionsServiceApi());
-
   useEffect(() => {
     if (!fhirDefinitionsService.current.isComponentDataType(type)) {
       fhirDefinitionsService.current.getResourceTree(type).then((def) => {
@@ -30,7 +31,6 @@ const TypeEditor = ({
       });
     }
   }, [type]);
-
   if (fhirDefinitionsService.current.isComponentDataType(type)) {
     switch (type) {
       case "string":
@@ -67,6 +67,19 @@ const TypeEditor = ({
             value={value}
           />
         );
+      case "instant":
+      case "http://hl7.org/fhir/R4/datatypes.html#instant":
+        return (
+          <Instant
+            disabled={false}
+            id="instant"
+            label="Date Time"
+            canEdit={true}
+            required={required}
+            dateTimeValue={value}
+            handleDateTimeChange={onChange}
+          />
+        );
       case "boolean":
         return (
           <BooleanComponent
@@ -98,6 +111,14 @@ const TypeEditor = ({
             label={``}
             onChange={onChange}
             value={value}
+          />
+        );
+      case "code":
+        return (
+          <CodesComponent
+            canEdit={true}
+            structureDefinition={structureDefinition}
+            fieldRequired={required}
           />
         );
       default:

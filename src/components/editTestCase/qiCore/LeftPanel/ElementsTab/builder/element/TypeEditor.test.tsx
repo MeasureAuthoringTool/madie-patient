@@ -92,4 +92,30 @@ describe("TypeEditor Component", () => {
     );
     expect(screen.getByTestId("uri-input-field-URI")).toBeInTheDocument();
   });
+  test("Should render Instant component by instant", () => {
+    const handleChange = jest.fn();
+    render(
+      <TypeEditor
+        type={`instant`}
+        required={true}
+        value={`urn:oid:2.16.840.1.113883.6.238`}
+        onChange={handleChange}
+        structureDefinition={null}
+      />
+    );
+    expect(screen.getByTestId("instant-input")).toBeInTheDocument();
+  });
+  test("Should render Instant component by hl7 code", () => {
+    const handleChange = jest.fn();
+    render(
+      <TypeEditor
+        type={`http://hl7.org/fhir/R4/datatypes.html#instant`}
+        required={true}
+        value={``}
+        onChange={handleChange}
+        structureDefinition={null}
+      />
+    );
+    expect(screen.getByTestId("instant-input")).toBeInTheDocument();
+  });
 });

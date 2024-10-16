@@ -43,6 +43,7 @@ import { TestCaseValidator } from "../../../validators/TestCaseValidator";
 import { checkUserCanEdit } from "@madie/madie-util";
 import { PopulationType as FqmPopulationType } from "fqm-execution/build/types/Enums";
 import { addValues } from "../../../util/DefaultValueProcessor";
+import { ResourceIdentifier } from "../../../api/models/ResourceIdentifier";
 
 //temporary solution (after jest updated to version 27) for error: thrown: "Exceeded timeout of 5000 ms for a test.
 jest.setTimeout(60000);
@@ -92,7 +93,7 @@ const serviceConfig: ServiceConfig = {
   testCaseService: {
     baseUrl: "base.url",
   },
-  fhirDefinitionsService: {
+  fhirService: {
     baseUrl: "fhirservice.url",
   },
   terminologyService: {
@@ -225,6 +226,40 @@ const renderWithRouter = (
   );
 };
 
+const resourceIdentifiers: ResourceIdentifier[] = [
+  {
+    id: "qicore-adverseevent",
+    type: "AdverseEvent",
+    title: "QICore AdverseEvent",
+    category: "Clinical.Summary",
+    profile:
+      "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-adverseevent",
+  },
+  {
+    id: "qicore-medicationstatement",
+    type: "MedicationStatement",
+    title: "QICore MedicationStatement",
+    category: "Clinical.Medications",
+    profile:
+      "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-medicationstatement",
+  },
+  {
+    id: "qicore-claim",
+    type: "Claim",
+    title: "QICore Claim",
+    category: "Financial.Billing",
+    profile: "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-claim",
+  },
+  {
+    id: "qicore-procedure",
+    type: "Procedure",
+    title: "QICore Procedure",
+    category: "Clinical.Summary",
+    profile:
+      "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-procedure",
+  },
+];
+
 const testTitle = async (title: string, clear = false) => {
   const tcTitle = await screen.findByTestId("test-case-title");
   expect(tcTitle).toBeInTheDocument();
@@ -250,7 +285,40 @@ describe("EditTestCase component", () => {
         return Promise.resolve({ data: ["SeriesA"] });
       } else if (args && args.endsWith("resources")) {
         return Promise.resolve({
-          data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+          data: [
+            {
+              id: "qicore-adverseevent",
+              type: "AdverseEvent",
+              title: "QICore AdverseEvent",
+              category: "Clinical.Summary",
+              profile:
+                "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-adverseevent",
+            },
+            {
+              id: "qicore-medicationstatement",
+              type: "MedicationStatement",
+              title: "QICore MedicationStatement",
+              category: "Clinical.Medications",
+              profile:
+                "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-medicationstatement",
+            },
+            {
+              id: "qicore-claim",
+              type: "Claim",
+              title: "QICore Claim",
+              category: "Financial.Billing",
+              profile:
+                "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-claim",
+            },
+            {
+              id: "qicore-procedure",
+              type: "Procedure",
+              title: "QICore Procedure",
+              category: "Clinical.Summary",
+              profile:
+                "http://hl7.org/fhir/us/qicore/StructureDefinition/qicore-procedure",
+            },
+          ],
         });
       }
       return Promise.resolve({ data: null });
@@ -451,7 +519,7 @@ describe("EditTestCase component", () => {
       );
 
       expect(screen.getByTestId("elements-content")).toBeInTheDocument();
-      const firstResource = await screen.findByText("Adverse Event");
+      const firstResource = await screen.findByText("QICore AdverseEvent");
 
       expect(firstResource).toBeInTheDocument();
       expect(screen.getByText("Resources")).toBeInTheDocument();
@@ -517,7 +585,7 @@ describe("EditTestCase component", () => {
           return Promise.resolve({ data: [] });
         } else if (args && args.endsWith("resources")) {
           return Promise.resolve({
-            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+            data: [...resourceIdentifiers],
           });
         }
         return Promise.resolve({
@@ -586,7 +654,7 @@ describe("EditTestCase component", () => {
           return Promise.resolve({ data: [] });
         } else if (args && args.endsWith("resources")) {
           return Promise.resolve({
-            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+            data: [...resourceIdentifiers],
           });
         }
         return Promise.resolve({
@@ -753,7 +821,7 @@ describe("EditTestCase component", () => {
           return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
         } else if (args && args.endsWith("resources")) {
           return Promise.resolve({
-            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+            data: [...resourceIdentifiers],
           });
         }
         return Promise.resolve({ data: testCase });
@@ -899,7 +967,7 @@ describe("EditTestCase component", () => {
           return Promise.resolve({ data: ["SeriesA"] });
         } else if (args && args.endsWith("resources")) {
           return Promise.resolve({
-            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+            data: [...resourceIdentifiers],
           });
         }
         return Promise.resolve({ data: testCase });
@@ -960,7 +1028,7 @@ describe("EditTestCase component", () => {
           return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
         } else if (args && args.endsWith("resources")) {
           return Promise.resolve({
-            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+            data: [...resourceIdentifiers],
           });
         }
         return Promise.resolve({ data: testCase });
@@ -1115,7 +1183,7 @@ describe("EditTestCase component", () => {
           return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
         } else if (args && args.endsWith("resources")) {
           return Promise.resolve({
-            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+            data: [...resourceIdentifiers],
           });
         }
         return Promise.resolve({ data: testCase });
@@ -1255,7 +1323,7 @@ describe("EditTestCase component", () => {
           return Promise.resolve({ data: ["SeriesA"] });
         } else if (args && args.endsWith("resources")) {
           return Promise.resolve({
-            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+            data: [...resourceIdentifiers],
           });
         }
         return Promise.resolve({ data: testCase });
@@ -1315,7 +1383,7 @@ describe("EditTestCase component", () => {
           return Promise.resolve({ data: ["SeriesA"] });
         } else if (args && args.endsWith("resources")) {
           return Promise.resolve({
-            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+            data: [...resourceIdentifiers],
           });
         }
         return Promise.resolve({ data: testCase });
@@ -1372,7 +1440,7 @@ describe("EditTestCase component", () => {
           return Promise.resolve({ data: ["SeriesA"] });
         } else if (args && args.endsWith("resources")) {
           return Promise.resolve({
-            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+            data: [...resourceIdentifiers],
           });
         }
         return Promise.resolve({ data: testCase });
@@ -1417,7 +1485,7 @@ describe("EditTestCase component", () => {
           return Promise.resolve({ data: ["SeriesA"] });
         } else if (args && args.endsWith("resources")) {
           return Promise.resolve({
-            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+            data: [...resourceIdentifiers],
           });
         }
         return Promise.resolve({ data: testCase });
@@ -1524,7 +1592,7 @@ describe("EditTestCase component", () => {
           });
         } else if (args && args.endsWith("resources")) {
           return Promise.resolve({
-            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+            data: [...resourceIdentifiers],
           });
         }
         return Promise.resolve({ data: null });
@@ -1563,7 +1631,7 @@ describe("EditTestCase component", () => {
           return Promise.reject(axiosError);
         } else if (args && args.endsWith("resources")) {
           return Promise.resolve({
-            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+            data: [...resourceIdentifiers],
           });
         }
         return Promise.resolve({ data: null });
@@ -1759,7 +1827,7 @@ describe("EditTestCase component", () => {
           return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
         } else if (args && args.endsWith("resources")) {
           return Promise.resolve({
-            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+            data: [...resourceIdentifiers],
           });
         }
         return Promise.resolve({ data: testCase });
@@ -1812,7 +1880,7 @@ describe("EditTestCase component", () => {
           return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
         } else if (args && args.endsWith("resources")) {
           return Promise.resolve({
-            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+            data: [...resourceIdentifiers],
           });
         }
         return Promise.resolve({ data: testCase });
@@ -1921,7 +1989,7 @@ describe("EditTestCase component", () => {
           return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
         } else if (args && args.endsWith("resources")) {
           return Promise.resolve({
-            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+            data: [...resourceIdentifiers],
           });
         }
         return Promise.resolve({ data: testCase });
@@ -2052,7 +2120,7 @@ describe("EditTestCase component", () => {
           return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
         } else if (args && args.endsWith("resources")) {
           return Promise.resolve({
-            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+            data: [...resourceIdentifiers],
           });
         }
         return Promise.resolve({ data: testCase });
@@ -2092,7 +2160,7 @@ describe("EditTestCase component", () => {
           return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
         } else if (args && args.endsWith("resources")) {
           return Promise.resolve({
-            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+            data: [...resourceIdentifiers],
           });
         }
         return Promise.resolve({ data: testCase });
@@ -2169,7 +2237,7 @@ describe("EditTestCase component", () => {
           return Promise.resolve({ data: ["SeriesA", "SeriesB", "SeriesC"] });
         } else if (args && args.endsWith("resources")) {
           return Promise.resolve({
-            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+            data: [...resourceIdentifiers],
           });
         }
         return Promise.resolve({ data: testCase });
@@ -2292,7 +2360,7 @@ describe("EditTestCase component", () => {
           return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
         } else if (args && args.endsWith("resources")) {
           return Promise.resolve({
-            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+            data: [...resourceIdentifiers],
           });
         }
         return Promise.resolve({ data: { ...testCaseFixture } });
@@ -2345,7 +2413,7 @@ describe("EditTestCase component", () => {
           return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
         } else if (args && args.endsWith("resources")) {
           return Promise.resolve({
-            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+            data: [...resourceIdentifiers],
           });
         }
         return Promise.resolve({ data: { ...nonBoolTestCaseFixture } });
@@ -2436,7 +2504,7 @@ describe("EditTestCase component", () => {
           return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
         } else if (args && args.endsWith("resources")) {
           return Promise.resolve({
-            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+            data: [...resourceIdentifiers],
           });
         }
         return Promise.resolve({
@@ -2472,7 +2540,7 @@ describe("EditTestCase component", () => {
           return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
         } else if (args && args.endsWith("resources")) {
           return Promise.resolve({
-            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+            data: [...resourceIdentifiers],
           });
         }
         return Promise.resolve({
@@ -2537,7 +2605,7 @@ describe("EditTestCase component", () => {
           return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
         } else if (args && args.endsWith("resources")) {
           return Promise.resolve({
-            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+            data: [...resourceIdentifiers],
           });
         }
         return Promise.resolve({
@@ -2594,7 +2662,7 @@ describe("EditTestCase component", () => {
           return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
         } else if (args && args.endsWith("resources")) {
           return Promise.resolve({
-            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+            data: [...resourceIdentifiers],
           });
         }
         return Promise.resolve({
@@ -2662,7 +2730,7 @@ describe("EditTestCase component", () => {
           return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
         } else if (args && args.endsWith("resources")) {
           return Promise.resolve({
-            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+            data: [...resourceIdentifiers],
           });
         }
         return Promise.resolve({
@@ -2738,7 +2806,7 @@ describe("EditTestCase component", () => {
           return Promise.resolve({ data: [] });
         } else if (args && args.endsWith("resources")) {
           return Promise.resolve({
-            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+            data: [...resourceIdentifiers],
           });
         }
         return Promise.resolve({
@@ -2797,7 +2865,7 @@ describe("EditTestCase component", () => {
           return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
         } else if (args && args.endsWith("resources")) {
           return Promise.resolve({
-            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+            data: [...resourceIdentifiers],
           });
         }
         return Promise.resolve({
@@ -2882,7 +2950,7 @@ describe("EditTestCase component", () => {
           return Promise.resolve({ data: ["DENOM_Pass", "NUMER_Pass"] });
         } else if (args && args.endsWith("resources")) {
           return Promise.resolve({
-            data: ["AdverseEvent", "MedicationStatement", "Claim", "Procedure"],
+            data: [...resourceIdentifiers],
           });
         }
         return Promise.resolve({

@@ -499,10 +499,7 @@ const TestCaseList = (props: TestCaseListProps) => {
         values.search ? values.search : ""
       }&page=1&limit=${values.limit ? values.limit : 10}`;
       navigate(newPath);
-      // navigate will call the page if it's not on that page only.
-      if (values.page === "1") {
-        retrieveTestCases();
-      }
+      retrieveTestCases();
     }
   };
 
