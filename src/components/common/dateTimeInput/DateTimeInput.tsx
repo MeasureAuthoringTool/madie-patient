@@ -62,7 +62,7 @@ const DateTimeInput = ({
 }: DateTimeInputProps) => {
   const handleDateTimeChange = (newValue, context) => {
     // Use MUI validation to identify complete dateTime entry.
-    if (context?.validationError === "invalidDate") {
+    if (context?.validationError) {
       // Partial dateTime entry.
       return;
     }
