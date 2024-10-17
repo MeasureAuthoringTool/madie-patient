@@ -4,6 +4,11 @@ import "twin.macro";
 import "styled-components/macro";
 import { TypeComponentProps } from "./TypeComponentProps";
 
+type IntegerComponentProps = Partial<TypeComponentProps> & {
+  typeProps: TypeComponentProps;
+  unsignedInt?: boolean;
+};
+
 const IntegerComponent = ({
   canEdit,
   fieldRequired,
@@ -12,7 +17,7 @@ const IntegerComponent = ({
   label = "Integer",
   structureDefinition,
   unsignedInt = true,
-}: TypeComponentProps) => {
+}: IntegerComponentProps) => {
   const POSITIVEINT_MINIMUM = 1;
   const POSITIVEINT_MAXIMUM = 2147483647;
   const UNSIGNED_MINIMUM = 0;
