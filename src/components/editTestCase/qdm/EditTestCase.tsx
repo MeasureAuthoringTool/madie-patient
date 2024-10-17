@@ -41,6 +41,7 @@ import {
   GroupCoverageResult,
 } from "../../../util/cqlCoverageBuilder/CqlCoverageBuilder";
 import checkSpecialCharacters from "../../../util/checkSpecialCharacters";
+import { GroupPopulation } from "@madie/madie-models/dist/TestCase";
 
 const EditTestCase = () => {
   useDocumentTitle("MADiE Edit Measure Edit Test Case");
@@ -106,7 +107,7 @@ const EditTestCase = () => {
   const [selectedDataElement, setSelectedDataElement] = useState<DataElement>();
   const [groupCoverageResult, setGroupCoverageResult] =
     useState<GroupCoverageResult>();
-  const [testCaseResults, setTestCaseResults] = useState<any>();
+  const [testCaseResults, setTestCaseResults] = useState<GroupPopulation[]>();
   dayjs.extend(utc);
   dayjs.utc().format(); // utc format
 
