@@ -791,7 +791,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                       {featureFlags.TestCaseListSearch && <ActionCenter />}
                       <TestCaseTable
                         sorting={sorting}
-                        setSorting={() => {}}
+                        setSorting={setSorting}
                         testCases={currentSlice}
                         canEdit={canEdit}
                         deleteTestCase={deleteTestCase}
