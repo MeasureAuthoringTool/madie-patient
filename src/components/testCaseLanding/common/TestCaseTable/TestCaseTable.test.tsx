@@ -93,11 +93,14 @@ const renderWithTestCase = (
   deleteTestCase,
   exportTestCase,
   onCloneTestCase,
-  measure
+  measure,
+  setSorting = undefined
 ) => {
   return render(
     <MemoryRouter>
       <TestCaseTable
+        sorting={[]}
+        setSorting={setSorting}
         testCases={testCases}
         canEdit={canEdit}
         deleteTestCase={deleteTestCase}
@@ -197,14 +200,15 @@ describe("TestCase component", () => {
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
       TestCaseID: false,
     }));
-
+    const sortingFn = jest.fn();
     renderWithTestCase(
       testCases,
       true,
       deleteTestCase,
       exportTestCase,
       onCloneTestCase,
-      defaultMeasure
+      defaultMeasure,
+      sortingFn
     );
 
     const rows = await screen.findByTestId(`test-case-row-0`);
@@ -228,18 +232,14 @@ describe("TestCase component", () => {
     const buttons = await screen.findAllByRole("button");
     expect(buttons).toHaveLength(10);
     expect(buttons[4]).toHaveTextContent("Last Saved");
+    const lastSavedButton = screen.getByRole("button", { name: /last saved/i });
+    expect(lastSavedButton).toHaveAttribute("title", "Sort descending");
 
     expect(columns[4]).toHaveTextContent(convertDate(testCase.lastModifiedAt));
-
-    fireEvent.click(buttons[4]);
-    //descend
-    const sortDescendingBtn = screen.getByTestId("KeyboardArrowUpIcon");
-    fireEvent.click(sortDescendingBtn);
-    const sortedRows = await screen.findByTestId(`test-case-row-3`);
-    const sortedColumns = sortedRows.querySelectorAll("td");
-    expect(sortedColumns[4]).toHaveTextContent(
-      convertDate(testCaseInvalid.lastModifiedAt)
-    );
+    fireEvent.click(lastSavedButton);
+    await waitFor(() => {
+      expect(sortingFn).toHaveBeenCalled();
+    });
   });
 
   it("should render test case view for now owners and no delete option", async () => {
