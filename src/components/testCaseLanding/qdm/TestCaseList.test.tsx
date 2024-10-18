@@ -2632,6 +2632,12 @@ describe("TestCaseList component", () => {
     });
 
     expect(executeAllTestCasesButton).toBeDisabled();
+
+    const lastSavedButton = screen.getByRole("button", { name: /last saved/i });
+    fireEvent.mouseEnter(lastSavedButton);
+    await waitFor(() => {
+      expect(lastSavedButton).toHaveAttribute("title", "Sort descending");
+    });
   });
 
   it("should not render execute button for user who is not the owner of the measure", () => {

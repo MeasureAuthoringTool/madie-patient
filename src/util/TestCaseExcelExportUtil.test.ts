@@ -2,6 +2,7 @@ import {
   findGroupNumber,
   createExcelExportDtosForAllTestCases,
   convertToNumber,
+  getReformattedDob,
 } from "./TestCaseExcelExportUtil";
 import {
   Measure,
@@ -736,5 +737,30 @@ describe("TestCaseExcelExportUtil", () => {
   it("test convertToNumber string", () => {
     const result = convertToNumber("3");
     expect(result).toBe(3);
+  });
+});
+
+describe("getReformattedDob", () => {
+  test("should return formatted date for a valid", () => {
+    const dob = "2000-01-01T00:00:00Z";
+    const result = getReformattedDob(dob);
+    expect(result).toBe("01/01/2000");
+  });
+  test("should return an empty string for an undefined", () => {
+    const dob = undefined;
+    const result = getReformattedDob(dob);
+    expect(result).toBe("");
+  });
+
+  test("should return an empty string for null", () => {
+    const dob = null;
+    const result = getReformattedDob(dob);
+    expect(result).toBe("");
+  });
+
+  test("should return correctly formatted date for a non-UTC", () => {
+    const dob = "2022-12-25T12:00:00";
+    const result = getReformattedDob(dob);
+    expect(result).toBe("12/25/2022");
   });
 });

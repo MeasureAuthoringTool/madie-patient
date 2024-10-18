@@ -5,16 +5,58 @@ import { measureStore } from "@madie/madie-util";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import queryString from "query-string";
 import * as _ from "lodash";
+import { SortingState } from "@tanstack/react-table";
+
+export const customSort = (a: string, b: string) => {
+  if (a === undefined || a === "") {
+    return 1;
+  } else if (b === undefined || b === "") {
+    return -1;
+  }
+  if (typeof a === "number" && typeof b === "number") {
+    return a - b;
+  }
+  const aComp = a.trim().toLocaleLowerCase();
+  const bComp = b.trim().toLocaleLowerCase();
+  if (aComp < bComp) return -1;
+  if (aComp > bComp) return 1;
+  return 0;
+};
+
+export const sortFilteredTestCases = (
+  sorting: SortingState,
+  testCases: TestCase[]
+) => {
+  const sorts = sorting?.[0];
+  const testCaseCopy = testCases.slice();
+  if (sorts) {
+    const { id, desc } = sorts;
+    // sort the testCaseList in either descending or ascending order based on the sorts object
+    testCaseCopy.sort((a, b) => {
+      const aValue = a[id as keyof typeof a] as string;
+      const bValue = b[id as keyof typeof b] as string;
+      // Use customSort function for comparing values
+      const comparison = customSort(aValue, bValue);
+      // If desc is true, reverse the order
+      return desc ? -comparison : comparison;
+    });
+  }
+  return testCaseCopy;
+};
 
 function UseFetchTestCases({ measureId, setErrors }) {
   const { search } = useLocation();
   const values = queryString.parse(search);
   const testCaseService = useRef(useTestCaseServiceApi());
-  const [testCases, setTestCases] = useState<TestCase[]>(null);
+  const [testCases, setTestCases] = useState<TestCase[]>(null); // all test cases.. what about
+  const [sortedTestCases, setSortedTestCases] = useState<TestCase[]>(null); //An extra copy to remember remember sort order..
+  // TO Do: figure out if this should just be sorted against lastModified for better space complexity. Time complexity will suffer. Not sure either will matter.
   const [loadingState, setLoadingState] = useState<any>({
     loading: true,
     message: "",
   });
+  const [sorting, setSorting] = useState<SortingState>([]);
+  // preserve sort order for react table display
 
   // Save local storage variable for page, filter, search, clear when navigating to different measure
   const testCasePageOptions = JSON.parse(
@@ -128,7 +170,11 @@ function UseFetchTestCases({ measureId, setErrors }) {
             )
           );
         }
-        const currentSlice = [...filteredTestCases].slice(start, end);
+        const sortedTestCases = sortFilteredTestCases(
+          sorting,
+          filteredTestCases
+        );
+        const currentSlice = [...sortedTestCases].slice(start, end);
         const count = Math.ceil(filteredTestCases.length / curLimit);
         const canGoNext = (() => {
           return curPage < count;
@@ -147,7 +193,8 @@ function UseFetchTestCases({ measureId, setErrors }) {
           canGoPrev,
         });
       } else {
-        const currentSlice = [...testCases].slice(start, end);
+        const sortedTestCases = sortFilteredTestCases(sorting, testCases);
+        const currentSlice = [...sortedTestCases].slice(start, end);
         const count = Math.ceil(testCases.length / curLimit);
         const canGoNext = (() => {
           return curPage < count;
@@ -167,7 +214,7 @@ function UseFetchTestCases({ measureId, setErrors }) {
         });
       }
     }
-  }, [testCases, curPage, curLimit, filter, searchQuery]);
+  }, [sortedTestCases, curPage, curLimit, filter, searchQuery, sorting]);
   useEffect(() => {
     getTestCasePage();
   }, [getTestCasePage]);
@@ -185,7 +232,8 @@ function UseFetchTestCases({ measureId, setErrors }) {
         });
         testCaseList = _.orderBy(testCaseList, ["lastModifiedAt"], ["desc"]);
         updateTestCases(testCaseList);
-        setTestCases(testCaseList);
+        setTestCases(testCaseList); // point of truth centralized state
+        setSortedTestCases(testCaseList); // our actual sort
       })
       .catch((err) => {
         setErrors((prevState) => [...prevState, err.message]);
@@ -200,12 +248,14 @@ function UseFetchTestCases({ measureId, setErrors }) {
   }, [retrieveTestCases]);
   return {
     testCaseService,
-    testCases, //all test cases to run execution against
+    testCases: sortedTestCases, //all test cases to run execution against
     testCasePage, //all pagination required values
     setTestCases,
     loadingState,
     setLoadingState,
     retrieveTestCases,
+    sorting,
+    setSorting,
   };
 }
 
