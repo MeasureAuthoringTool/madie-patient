@@ -16,6 +16,7 @@ import {
   CalculationOutput,
   DetailedPopulationGroupResult,
 } from "fqm-execution/build/types/Calculator";
+import { ObjectID } from "bson";
 import {
   checkUserCanEdit,
   measureStore,
@@ -524,6 +525,24 @@ const TestCaseList = (props: TestCaseListProps) => {
       });
   };
 
+  const handleQiCloneTestCase = async (testCase: TestCase) => {
+    const clonedTestCase = testCase;
+    clonedTestCase.title =
+      clonedTestCase.title + "-" + new ObjectID().toString();
+    try {
+      await testCaseService.current.createTestCase(clonedTestCase, measureId);
+      setToastOpen(true);
+      setToastType("success");
+      setToastMessage("Test case cloned successfully");
+      retrieveTestCases();
+    } catch (error) {
+      setToastOpen(true);
+      setToastMessage(
+        `An error occurred while cloning the test case: ${error.message}`
+      );
+    }
+  };
+
   return (
     <div>
       {!loadingState.loading && (
@@ -614,6 +633,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                         exportTestCase={exportTestCase}
                         measure={measure}
                         onTestCaseShiftDates={onTestCaseShiftDates}
+                        handleQiCloneTestCase={handleQiCloneTestCase}
                       />
                       {currentSlice?.length > 0 && (
                         <Pagination
