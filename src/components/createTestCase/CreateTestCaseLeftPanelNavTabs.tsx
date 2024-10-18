@@ -39,14 +39,7 @@ export default function CreateTestCaseNavTabs(props: NavTabProps) {
           />
         </Tabs>
       ) : (
-        <Tabs
-          id="test-case-nav-container"
-          value={leftPanelActiveTab}
-          onChange={(e, v) => {
-            setLeftPanelActiveTab(v);
-          }}
-          type="D"
-        ></Tabs>
+        <div style={{ margin: "24px", width: "fit-content" }}></div>
       )}
     </>
   );
