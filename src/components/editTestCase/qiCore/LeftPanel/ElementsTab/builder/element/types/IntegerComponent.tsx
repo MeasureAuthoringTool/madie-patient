@@ -4,10 +4,9 @@ import "twin.macro";
 import "styled-components/macro";
 import { TypeComponentProps } from "./TypeComponentProps";
 
-type IntegerComponentProps = Partial<TypeComponentProps> & {
-  typeProps: TypeComponentProps;
+interface IntegerComponentProps extends TypeComponentProps {
   unsignedInt?: boolean;
-};
+}
 
 const IntegerComponent = ({
   canEdit,
