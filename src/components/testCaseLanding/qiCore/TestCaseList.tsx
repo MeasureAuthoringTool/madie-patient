@@ -89,6 +89,8 @@ const TestCaseList = (props: TestCaseListProps) => {
     setLoadingState,
     retrieveTestCases,
     testCasePage,
+    sorting,
+    setSorting,
   } = UseTestCases({
     measureId,
     setErrors,
@@ -622,6 +624,9 @@ const TestCaseList = (props: TestCaseListProps) => {
                       )}
                       {featureFlags.TestCaseListSearch && <ActionCenter />}
                       <TestCaseTable
+                        sorting={sorting}
+                        setSorting={setSorting}
+                        // test cases doesn't know how to sort by category
                         testCases={currentSlice}
                         canEdit={canEdit}
                         deleteTestCase={deleteTestCase}
