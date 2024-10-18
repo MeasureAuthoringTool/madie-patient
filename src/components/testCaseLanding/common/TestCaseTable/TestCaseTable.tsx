@@ -33,6 +33,7 @@ interface TestCaseTableProps {
   onCloneTestCase?: (testCase: TestCase) => void;
   measure: Measure;
   onTestCaseShiftDates?: (testCase: TestCase, shifted: number) => void;
+  handleQiCloneTestCase?: (testCase: TestCase) => void;
   sorting: any;
   setSorting: any;
 }
@@ -57,6 +58,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     onCloneTestCase,
     measure,
     onTestCaseShiftDates,
+    handleQiCloneTestCase,
     sorting,
     setSorting,
   } = props;
@@ -330,6 +332,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
         shiftDatesDialogOpen={shiftDatesDialogOpen}
         setShiftDatesDialogOpen={setShiftDatesDialogOpen}
         onTestCaseShiftDates={onTestCaseShiftDates}
+        handleQiCloneTestCase={handleQiCloneTestCase}
       />
 
       {/* This sees to have gotten disconnected at some point in the past. */}
