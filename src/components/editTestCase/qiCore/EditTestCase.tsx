@@ -25,6 +25,7 @@ import {
   HapiOperationOutcome,
   PopulationExpectedValue,
   MeasureErrorType,
+  Model,
 } from "@madie/madie-models";
 import useTestCaseServiceApi from "../../../api/useTestCaseServiceApi";
 import Editor from "../../editor/Editor";
@@ -777,6 +778,8 @@ const EditTestCase = (props: EditTestCaseProps) => {
     return true;
   };
 
+  const isQICore6 = measure?.model === Model.QICORE_6_0_0;
+
   const severityOfValidationErrors = (validationErrors) => {
     const errorsWithNoSeverity = validationErrors?.filter(
       (validationError) => !validationError.hasOwnProperty("severity")
@@ -863,51 +866,63 @@ const EditTestCase = (props: EditTestCaseProps) => {
                   <CreateTestCaseLeftPanelNavTabs
                     leftPanelActiveTab={leftPanelActiveTab}
                     setLeftPanelActiveTab={setLeftPanelActiveTab}
+                    isQICore6={isQICore6}
                   />
                 </div>
-
-                <QiCoreResourceProvider>
-                  {leftPanelActiveTab === "elements" &&
-                    isValidJson(editorVal) && (
-                      <div className="panel-content">
-                        <div data-testid="elements-content">
-                          <ElementsTab
-                            canEdit={canEdit}
-                            setEditorVal={setEditorVal}
-                            editorVal={editorVal}
-                            testCase={testCase}
+                {isQICore6 ? (
+                  <QiCoreResourceProvider>
+                    {leftPanelActiveTab === "elements" &&
+                      isValidJson(editorVal) && (
+                        <div className="panel-content">
+                          <div data-testid="elements-content">
+                            <ElementsTab
+                              canEdit={canEdit}
+                              setEditorVal={setEditorVal}
+                              editorVal={editorVal}
+                              testCase={testCase}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    {leftPanelActiveTab === "elements" &&
+                      !isValidJson(editorVal) && (
+                        <div style={{ width: "98%" }}>
+                          <MadieAlert
+                            type="error"
+                            content={
+                              <div
+                                aria-live="polite"
+                                role="alert"
+                                data-testid="json-error-alert-div"
+                                style={{
+                                  paddingTop: "10px",
+                                  paddingBottom: "8px",
+                                }}
+                              >
+                                <h3>JSON Failing</h3>
+                                All JSON errors must be cleared before the UI
+                                Builder can be used.
+                              </div>
+                            }
+                            alertProps={{
+                              "data-testid": "json-error-alert",
+                            }}
+                            canClose={false}
                           />
                         </div>
-                      </div>
+                      )}
+                    {leftPanelActiveTab === "json" && (
+                      <Editor
+                        onChange={(val: string) => setEditorVal(val)}
+                        value={editorVal}
+                        setEditor={setEditor}
+                        readOnly={!canEdit || _.isNil(testCase)}
+                        height="100%"
+                      />
                     )}
-                  {leftPanelActiveTab === "elements" &&
-                    !isValidJson(editorVal) && (
-                      <div style={{ width: "98%" }}>
-                        <MadieAlert
-                          type="error"
-                          content={
-                            <div
-                              aria-live="polite"
-                              role="alert"
-                              data-testid="json-error-alert-div"
-                              style={{
-                                paddingTop: "10px",
-                                paddingBottom: "8px",
-                              }}
-                            >
-                              <h3>JSON Failing</h3>
-                              All JSON errors must be cleared before the UI
-                              Builder can be used.
-                            </div>
-                          }
-                          alertProps={{
-                            "data-testid": "json-error-alert",
-                          }}
-                          canClose={false}
-                        />
-                      </div>
-                    )}
-                  {leftPanelActiveTab === "json" && (
+                  </QiCoreResourceProvider>
+                ) : (
+                  <QiCoreResourceProvider>
                     <Editor
                       onChange={(val: string) => setEditorVal(val)}
                       value={editorVal}
@@ -915,8 +930,8 @@ const EditTestCase = (props: EditTestCaseProps) => {
                       readOnly={!canEdit || _.isNil(testCase)}
                       height="100%"
                     />
-                  )}
-                </QiCoreResourceProvider>
+                  </QiCoreResourceProvider>
+                )}
               </div>
             ) : (
               <div className="left-panel">
