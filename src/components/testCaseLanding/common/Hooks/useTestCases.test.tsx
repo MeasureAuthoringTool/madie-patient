@@ -1,7 +1,10 @@
 import React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-import UseFetchTestCases from "./UseTestCases";
+import UseFetchTestCases, {
+  customSort,
+  sortFilteredTestCases,
+} from "./UseTestCases";
 import useTestCaseServiceApi from "../../../../api/useTestCaseServiceApi";
 import { renderHook, act } from "@testing-library/react-hooks";
 import { measureStore } from "@madie/madie-util";
@@ -232,11 +235,7 @@ describe("UseFetchTestCases", () => {
 
     render(
       <MemoryRouter>
-        <MockComponent
-          measureId="123"
-          setErrors={mockSetErrors}
-          setSorting={}
-        />
+        <MockComponent measureId="123" setErrors={mockSetErrors} />
       </MemoryRouter>
     );
     expect(mockGetTestCasesByMeasureId).toHaveBeenCalledWith("123");
@@ -256,5 +255,36 @@ describe("UseFetchTestCases", () => {
     const foo = true;
     await new Promise((r) => setTimeout(r, 2000));
     expect(foo).toBeDefined();
+  });
+  // forget it. exporting the lines this doesn't reach.
+  it("should sort test cases based on sorting state", () => {
+    const testCaseList: TestCase[] = [
+      { title: "apple", validResource: true, lastModifiedAt: new Date() },
+      { title: "banana", validResource: true, lastModifiedAt: new Date() },
+      { title: "cat", validResource: true, lastModifiedAt: new Date() },
+      { title: "zebra", validResource: true, lastModifiedAt: new Date() },
+    ];
+
+    const sorting: SortingState = [{ id: "title", desc: false }];
+    const sortedCasesAsc = sortFilteredTestCases(sorting, testCaseList);
+    expect(sortedCasesAsc[0].title).toBe("apple");
+    expect(sortedCasesAsc[1].title).toBe("banana");
+
+    const sortedCasesDesc = sortFilteredTestCases(
+      [{ id: "title", desc: true }],
+      testCaseList
+    );
+    expect(sortedCasesDesc[0].title).toBe("zebra");
+    expect(sortedCasesDesc[1].title).toBe("cat");
+  });
+
+  it("should return original list when no sorting is applied", () => {
+    const testCaseList: TestCase[] = [
+      { title: "apple", validResource: true, lastModifiedAt: new Date() },
+      { title: "banana", validResource: true, lastModifiedAt: new Date() },
+    ];
+
+    const sortedCases = sortFilteredTestCases([], testCaseList);
+    expect(sortedCases).toEqual(testCaseList);
   });
 });

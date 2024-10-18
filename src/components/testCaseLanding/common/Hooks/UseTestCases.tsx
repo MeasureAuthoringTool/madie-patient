@@ -6,6 +6,44 @@ import { useNavigate, useLocation, useParams } from "react-router-dom";
 import queryString from "query-string";
 import * as _ from "lodash";
 import { SortingState } from "@tanstack/react-table";
+
+export const customSort = (a: string, b: string) => {
+  if (a === undefined || a === "") {
+    return 1;
+  } else if (b === undefined || b === "") {
+    return -1;
+  }
+  if (typeof a === "number" && typeof b === "number") {
+    return a - b;
+  }
+  const aComp = a.trim().toLocaleLowerCase();
+  const bComp = b.trim().toLocaleLowerCase();
+  if (aComp < bComp) return -1;
+  if (aComp > bComp) return 1;
+  return 0;
+};
+
+export const sortFilteredTestCases = (
+  sorting: SortingState,
+  testCases: TestCase[]
+) => {
+  const sorts = sorting?.[0];
+  const testCaseCopy = testCases.slice();
+  if (sorts) {
+    const { id, desc } = sorts;
+    // sort the testCaseList in either descending or ascending order based on the sorts object
+    testCaseCopy.sort((a, b) => {
+      const aValue = a[id as keyof typeof a] as string;
+      const bValue = b[id as keyof typeof b] as string;
+      // Use customSort function for comparing values
+      const comparison = customSort(aValue, bValue);
+      // If desc is true, reverse the order
+      return desc ? -comparison : comparison;
+    });
+  }
+  return testCaseCopy;
+};
+
 function UseFetchTestCases({ measureId, setErrors }) {
   const { search } = useLocation();
   const values = queryString.parse(search);
@@ -19,45 +57,7 @@ function UseFetchTestCases({ measureId, setErrors }) {
   });
   const [sorting, setSorting] = useState<SortingState>([]);
   // preserve sort order for react table display
-  function customSort(a: string, b: string) {
-    if (a === undefined || a === "") {
-      return 1;
-    } else if (b === undefined || b === "") {
-      return -1;
-    }
-    if (typeof a === "number" && typeof b === "number") {
-      return a - b;
-    }
-    const aComp = a.trim().toLocaleLowerCase();
-    const bComp = b.trim().toLocaleLowerCase();
-    if (aComp < bComp) return -1;
-    if (aComp > bComp) return 1;
-    return 0;
-  }
 
-  // given sort, and list
-  const sortFilteredTestCases = (
-    sorting: SortingState,
-    testCases: TestCase[]
-  ) => {
-    const sorts = sorting?.[0];
-    const testCaseCopy = testCases.slice();
-    if (sorts) {
-      const { id, desc } = sorts;
-      // sort the testCaseList in either descending or ascending order based on the sorts object
-      testCaseCopy.sort((a, b) => {
-        const aValue = a[id as keyof typeof a] as string;
-        const bValue = b[id as keyof typeof b] as string;
-
-        // Use customSort function for comparing values
-        const comparison = customSort(aValue, bValue);
-
-        // If desc is true, reverse the order
-        return desc ? -comparison : comparison;
-      });
-    }
-    return testCaseCopy;
-  };
   // Save local storage variable for page, filter, search, clear when navigating to different measure
   const testCasePageOptions = JSON.parse(
     window.localStorage.getItem("testCasesPageOptions")
