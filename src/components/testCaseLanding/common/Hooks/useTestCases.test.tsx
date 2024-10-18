@@ -24,11 +24,7 @@ jest.mock("react-router-dom", () => ({
 }));
 
 const MockComponent = ({ measureId, setErrors }) => {
-  const {
-    testCases,
-    loadingState,
-    setSorting,
-  } = UseFetchTestCases({
+  const { testCases, loadingState, setSorting } = UseFetchTestCases({
     measureId,
     setErrors,
   });
