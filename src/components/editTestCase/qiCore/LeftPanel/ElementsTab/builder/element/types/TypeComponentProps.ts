@@ -5,5 +5,4 @@ export interface TypeComponentProps {
   onChange?: (nextValue: any) => void;
   structureDefinition: any;
   fieldRequired: boolean;
-  signed?: boolean;
 }
