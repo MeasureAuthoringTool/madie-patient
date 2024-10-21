@@ -179,6 +179,7 @@ export const createExcelExportDtosForAllTestCases = (
   return testCaseExcelExportDtos;
 };
 
+//candidate for code coverage
 export const buildTestCaseExecutionResult = (
   currentTestCase: TestCase,
   coverageResults,

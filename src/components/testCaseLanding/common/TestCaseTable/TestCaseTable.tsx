@@ -33,6 +33,9 @@ interface TestCaseTableProps {
   onCloneTestCase?: (testCase: TestCase) => void;
   measure: Measure;
   onTestCaseShiftDates?: (testCase: TestCase, shifted: number) => void;
+  handleQiCloneTestCase?: (testCase: TestCase) => void;
+  sorting: any;
+  setSorting: any;
 }
 
 export const convertDate = (date: string) => {
@@ -55,6 +58,9 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     onCloneTestCase,
     measure,
     onTestCaseShiftDates,
+    handleQiCloneTestCase,
+    sorting,
+    setSorting,
   } = props;
   const viewOrEdit = canEdit ? "edit" : "view";
   const [deleteDialogModalOpen, setDeleteDialogModalOpen] =
@@ -71,7 +77,6 @@ const TestCaseTable = (props: TestCaseTableProps) => {
   // Popover utilities
   const [optionsOpen, setOptionsOpen] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [sorting, setSorting] = React.useState<SortingState>([]);
   const [selectedTestCase, setSelectedTestCase] = useState<TestCase>(null);
   const [shiftDatesDialogOpen, setShiftDatesDialogOpen] =
     useState<boolean>(false);
@@ -116,19 +121,6 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     caseNumber: number;
   };
 
-  function customSort(a: string, b: string) {
-    if (a === undefined || a === "") {
-      return 1;
-    } else if (b === undefined || b === "") {
-      return -1;
-    }
-    const aComp = a.trim().toLocaleLowerCase();
-    const bComp = b.trim().toLocaleLowerCase();
-    if (aComp < bComp) return -1;
-    if (aComp > bComp) return 1;
-    return 0;
-  }
-
   const [data, setData] = useState<TCRow[]>([]);
   useEffect(() => {
     if (testCases) {
@@ -162,7 +154,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
         cell: (info) => (
           <TestCaseStatus executionStatus={info.row.original.status} />
         ),
-        accessorKey: "status",
+        accessorKey: "executionStatus",
       },
       {
         header: "Group",
@@ -174,9 +166,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
             dataTestId={`test-case-series-${info.row.original.id}`}
           />
         ),
-        accessorKey: "group",
-        sortingFn: (rowA, rowB) =>
-          customSort(rowA.original.group, rowB.original.group),
+        accessorKey: "series",
       },
       {
         header: "Title",
@@ -189,8 +179,6 @@ const TestCaseTable = (props: TestCaseTableProps) => {
           />
         ),
         accessorKey: "title",
-        sortingFn: (rowA, rowB) =>
-          customSort(rowA.original.title, rowB.original.title),
       },
       {
         header: "Description",
@@ -203,8 +191,6 @@ const TestCaseTable = (props: TestCaseTableProps) => {
           />
         ),
         accessorKey: "description",
-        sortingFn: (rowA, rowB) =>
-          customSort(rowA.original.description, rowB.original.description),
       },
       {
         header: "Last Saved",
@@ -218,9 +204,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
             }`}
           />
         ),
-        accessorKey: "lastSaved",
-        sortingFn: (rowA, rowB) =>
-          customSort(rowA.original.lastSaved, rowB.original.lastSaved),
+        accessorKey: "lastModifiedAt",
       },
       {
         header: "Action",
@@ -250,6 +234,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     state: {
       sorting,
     },
+    manualSorting: true,
   });
 
   return (
@@ -347,6 +332,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
         shiftDatesDialogOpen={shiftDatesDialogOpen}
         setShiftDatesDialogOpen={setShiftDatesDialogOpen}
         onTestCaseShiftDates={onTestCaseShiftDates}
+        handleQiCloneTestCase={handleQiCloneTestCase}
       />
 
       {/* This sees to have gotten disconnected at some point in the past. */}
