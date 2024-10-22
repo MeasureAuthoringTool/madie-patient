@@ -81,7 +81,7 @@ const TestCaseTable = (props: TestCaseTableProps) => {
   const [sorting, setSorting] = useState<SortingState>([
     {
       id: "caseNumber",
-      desc: false,
+      desc: true,
     },
   ]);
 
