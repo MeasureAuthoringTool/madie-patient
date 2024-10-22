@@ -9,6 +9,7 @@ import {
   DisplayStratificationValue,
   StratificationExpectedValue,
   PopulationType,
+  PopulationExpectedValue,
 } from "@madie/madie-models";
 import classNames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -26,7 +27,7 @@ export interface TestCasePopulationListProps {
   groupIndex?: number;
   scoring: string;
   populations: DisplayPopulationValue[];
-  populationResults: any;
+  populationResults: PopulationExpectedValue[];
   stratification?: StratificationExpectedValue;
   stratResult?: any;
   populationBasis: string;
@@ -150,21 +151,20 @@ const TestCasePopulationList = ({
   };
 
   // Determines the result of each PopulationCriteria
-  // If stratification fails, then we skip verifying populations as the PC is failed
-  // if stratification pass, then we determine its populations result
-  // If the PC is not stratified, then we determine the PC results only based on its populations.
+  // If the PC is stratified then we determine the result based on stratResult and its populationValues (stratResult.populationValues)
+  // If the PC is not stratified, then we determine the PC results only based on its populationResults.
   const [view, setView] = useState<string>();
   useEffect(() => {
-    let localView = view;
     if (stratification) {
-      localView = determineGroupResultStratification(
-        populationBasis,
-        stratification,
-        stratResult,
-        isTestCaseExecuted
+      setView(
+        determineGroupResultStratification(
+          populationBasis,
+          stratification,
+          stratResult,
+          isTestCaseExecuted
+        )
       );
-    }
-    if (populationResults?.length > 0) {
+    } else if (populationResults?.length > 0) {
       setView(
         determineGroupResult(
           populationBasis,
@@ -173,8 +173,6 @@ const TestCasePopulationList = ({
           isTestCaseExecuted
         )
       );
-    } else {
-      setView(localView);
     }
   }, [
     isTestCaseExecuted,
