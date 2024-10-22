@@ -28,11 +28,12 @@ describe("TestCasePopulationList component", () => {
     render(
       <MemoryRouter>
         <TestCasePopulationList
-          populationBasis="boolean"
-          populations={testCasePopulations}
-          content="population"
-          groupIndex={0}
+          content="Measure Group 1"
           scoring="Proportion"
+          populations={testCasePopulations}
+          populationResults={testCasePopulations}
+          populationBasis="boolean"
+          groupIndex={0}
         />
       </MemoryRouter>
     );
@@ -81,6 +82,7 @@ describe("TestCasePopulationList component", () => {
       <MemoryRouter>
         <TestCasePopulationList
           populations={testCasePopulations}
+          populationResults={testCasePopulations}
           onChange={handleChange}
           disableExpected={false}
           populationBasis="true"
@@ -129,6 +131,7 @@ describe("TestCasePopulationList component", () => {
       <MemoryRouter>
         <TestCasePopulationList
           populations={testCasePopulations}
+          populationResults={testCasePopulations}
           stratification={testCaseStratification}
           stratResult={testCaseStratification}
           onChange={handleChange}
@@ -179,6 +182,7 @@ describe("TestCasePopulationList component", () => {
       <MemoryRouter>
         <TestCasePopulationList
           populations={testCasePopulations}
+          populationResults={testCasePopulations}
           stratification={testCaseStratification}
           stratResult={testCaseStratification}
           onChange={handleChange}
@@ -258,6 +262,7 @@ describe("TestCasePopulationList component", () => {
       <MemoryRouter>
         <TestCasePopulationList
           populations={testCasePopulations}
+          populationResults={testCasePopulations}
           onChange={handleChange}
           disableExpected={false}
           populationBasis="boolean"
@@ -334,6 +339,7 @@ describe("TestCasePopulationList component", () => {
       <MemoryRouter>
         <TestCasePopulationList
           populations={testCasePopulations}
+          populationResults={testCasePopulations}
           onChange={handleChange}
           disableExpected={false}
           populationBasis="boolean"
@@ -388,6 +394,7 @@ describe("TestCasePopulationList component", () => {
       <MemoryRouter>
         <TestCasePopulationList
           populations={testCasePopulations}
+          populationResults={testCasePopulations}
           onChange={handleChange}
           disableExpected={false}
           populationBasis="boolean"
