@@ -609,10 +609,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
       const validationErrors =
         testCase?.hapiOperationOutcome?.outcomeResponse?.issue;
       if (hasValidHapiOutcome(testCase)) {
-        setAlert({
-          status: "success",
-          message: `Test case ${action}d successfully!`,
-        });
+        showToast(`Test case ${action}d successfully!`, "success");
       } else {
         const valErrors = validationErrors.map((error) => (
           <li>{error.diagnostics}</li>

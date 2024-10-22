@@ -236,7 +236,9 @@ function UseFetchTestCases({ measureId, setErrors }) {
         testCaseList = _.orderBy(testCaseList, ["lastModifiedAt"], ["desc"]);
         updateTestCases(testCaseList);
         setTestCases(testCaseList); // point of truth centralized state
-        setSortedTestCases(testCaseList); // our actual sort
+        setSortedTestCases(
+          testCaseList.sort((a, b) => b.caseNumber - a.caseNumber)
+        ); // our actual sort
       })
       .catch((err) => {
         setErrors((prevState) => [...prevState, err.message]);

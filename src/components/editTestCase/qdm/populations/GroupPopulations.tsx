@@ -15,7 +15,7 @@ import { GroupPopulation } from "@madie/madie-models/dist/TestCase";
 
 interface GroupPopulationsProps {
   disableExpected: boolean;
-  testCaseResults: any;
+  testCaseResults: GroupPopulation[];
   isTestCaseExecuted: boolean;
   groupPopulations: GroupPopulation[];
   onChange?: (
@@ -101,7 +101,8 @@ const GroupPopulations = ({
                           testCaseResults
                             ? testCaseResults.find(
                                 (pop) => pop.groupId === gp.groupId
-                              )?.populationValues
+                              )?.stratificationValues[stratIndex]
+                                ?.populationValues
                             : []
                         }
                         stratification={strat}
