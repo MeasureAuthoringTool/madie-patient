@@ -4,8 +4,14 @@ import "twin.macro";
 import "styled-components/macro";
 import { TypeComponentProps } from "./TypeComponentProps";
 
+export enum IntegerType {
+  UNSIGNED = "Unsigned",
+  SIGNED = "Signed",
+  POSITIVE_INT = "PositiveInt",
+}
+
 interface IntegerComponentProps extends TypeComponentProps {
-  unsignedInt?: boolean;
+  integerType: IntegerType;
 }
 
 const IntegerComponent = ({
@@ -15,16 +21,18 @@ const IntegerComponent = ({
   onChange,
   label = "Integer",
   structureDefinition,
-  unsignedInt = true,
+  integerType,
 }: IntegerComponentProps) => {
   const POSITIVEINT_MINIMUM = 1;
   const POSITIVEINT_MAXIMUM = 2147483647;
   const UNSIGNED_MINIMUM = 0;
   const UNSIGNED_MAXIMUN = 2147483647;
+  const SIGNED_MINIMUM = -2147483648;
+  const SIGNED_MAXIMUN = 2147483647;
   const [inputValue, setInputValue] = useState<string>(value ? value : "");
   const [error, setError] = useState<string>("");
   useEffect(() => {
-    if (unsignedInt) {
+    if (integerType === IntegerType.UNSIGNED) {
       if (
         Number(value) < UNSIGNED_MINIMUM ||
         Number(value) > UNSIGNED_MAXIMUN
@@ -33,13 +41,19 @@ const IntegerComponent = ({
           `Unsigned integer range is [${UNSIGNED_MINIMUM} to ${UNSIGNED_MAXIMUN}]`
         );
       }
-    } else {
+    } else if (integerType === IntegerType.POSITIVE_INT) {
       if (
         Number(value) < POSITIVEINT_MINIMUM ||
         Number(value) > POSITIVEINT_MAXIMUM
       ) {
         setError(
           `Positive integer range is [${POSITIVEINT_MINIMUM} to ${POSITIVEINT_MAXIMUM}]`
+        );
+      }
+    } else {
+      if (Number(value) < SIGNED_MINIMUM || Number(value) > SIGNED_MAXIMUN) {
+        setError(
+          `Signed integer range is [${SIGNED_MINIMUM} to ${SIGNED_MAXIMUN}]`
         );
       }
     }
@@ -61,11 +75,15 @@ const IntegerComponent = ({
       fullWidth
       value={inputValue}
       onKeyPress={(e) => {
-        if (unsignedInt && !Number(e.key) && e.key != "0") {
+        if (
+          integerType !== IntegerType.SIGNED &&
+          !Number(e.key) &&
+          e.key != "0"
+        ) {
           //when input . after 12, or - for unsigned integer
           e.preventDefault();
-        } else if (!unsignedInt) {
-          if (!inputValue && !Number(e.key) && e.key != "0") {
+        } else if (integerType === IntegerType.SIGNED) {
+          if (!inputValue && !Number(e.key) && e.key != "0" && e.key != "-") {
             e.preventDefault();
           } else if (
             inputValue?.includes("-") &&
@@ -79,14 +97,20 @@ const IntegerComponent = ({
             //when inputting the last - after a positive number: 12-
             e.preventDefault();
           } else if (
-            Number(inputValue + e.key) < POSITIVEINT_MINIMUM ||
-            Number(inputValue + e.key) > POSITIVEINT_MAXIMUM
+            Number(inputValue + e.key) < SIGNED_MINIMUM ||
+            Number(inputValue + e.key) > SIGNED_MAXIMUN
           ) {
             e.preventDefault();
           }
         } else {
-          if (Number(inputValue + e.key) > UNSIGNED_MAXIMUN) {
-            e.preventDefault();
+          if (integerType === IntegerType.UNSIGNED) {
+            if (Number(inputValue + e.key) > UNSIGNED_MAXIMUN) {
+              e.preventDefault();
+            }
+          } else {
+            if (Number(inputValue + e.key) > POSITIVEINT_MAXIMUM) {
+              e.preventDefault();
+            }
           }
         }
       }}
@@ -99,7 +123,7 @@ const IntegerComponent = ({
         } else {
           setError("");
         }
-        if (unsignedInt) {
+        if (integerType === IntegerType.UNSIGNED) {
           if (
             Number(value) >= UNSIGNED_MINIMUM &&
             Number(value) <= UNSIGNED_MAXIMUN
@@ -110,7 +134,7 @@ const IntegerComponent = ({
               `Unsigned integer range is [${UNSIGNED_MINIMUM} to ${UNSIGNED_MAXIMUN}]`
             );
           }
-        } else {
+        } else if (integerType === IntegerType.POSITIVE_INT) {
           if (
             Number(value) >= POSITIVEINT_MINIMUM &&
             Number(value) <= POSITIVEINT_MAXIMUM
@@ -119,6 +143,17 @@ const IntegerComponent = ({
           } else {
             setError(
               `Positive integer range is [${POSITIVEINT_MINIMUM} to ${POSITIVEINT_MAXIMUM}]`
+            );
+          }
+        } else {
+          if (
+            Number(value) >= SIGNED_MINIMUM &&
+            Number(value) <= SIGNED_MAXIMUN
+          ) {
+            onChange(Number(value));
+          } else {
+            setError(
+              `Signed integer range is [${SIGNED_MINIMUM} to ${SIGNED_MAXIMUN}]`
             );
           }
         }

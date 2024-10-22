@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import IntegerComponent from "./IntegerComponent";
+import IntegerComponent, { IntegerType } from "./IntegerComponent";
 import userEvent from "@testing-library/user-event";
 
 describe("IntegerComponent", () => {
@@ -15,7 +15,7 @@ describe("IntegerComponent", () => {
           fieldRequired={false}
           onChange={handleChange}
           structureDefinition={null}
-          unsignedInt={true}
+          integerType={IntegerType.UNSIGNED}
         />
       );
 
@@ -39,7 +39,7 @@ describe("IntegerComponent", () => {
           fieldRequired={false}
           onChange={handleChange}
           structureDefinition={null}
-          unsignedInt={true}
+          integerType={IntegerType.UNSIGNED}
         />
       );
 
@@ -70,7 +70,7 @@ describe("IntegerComponent", () => {
           fieldRequired={false}
           onChange={handleChange}
           structureDefinition={null}
-          unsignedInt={true}
+          integerType={IntegerType.UNSIGNED}
         />
       );
       const integerField = screen.getByTestId("integer-field-");
@@ -96,7 +96,7 @@ describe("IntegerComponent", () => {
           fieldRequired={false}
           onChange={handleChange}
           structureDefinition={null}
-          unsignedInt={true}
+          integerType={IntegerType.UNSIGNED}
         />
       );
       const integerField = screen.getByTestId("integer-field-");
@@ -108,29 +108,30 @@ describe("IntegerComponent", () => {
       expect(integerFieldInput.value).toBe("");
     });
 
-    test("Test on key press of reaching maximum causes prevent default for Unsigned IntegerComponent", () => {
+    test("Test on key press of valid Unsigned IntegerComponent", () => {
       const handleChange = jest.fn();
       render(
         <IntegerComponent
           value={null}
-          label=""
           canEdit={true}
           fieldRequired={false}
           onChange={handleChange}
           structureDefinition={null}
-          unsignedInt={true}
+          integerType={IntegerType.UNSIGNED}
         />
       );
-      const integerField = screen.getByTestId("integer-field-");
+      const integerField = screen.getByTestId("integer-field-Integer");
       expect(integerField).toBeInTheDocument();
-      const integerFieldInput = screen.getByTestId("integer-field-input-");
+      const integerFieldInput = screen.getByTestId(
+        "integer-field-input-Integer"
+      );
       expect(integerFieldInput).toBeInTheDocument();
       expect(integerFieldInput.value).toBe("");
 
-      fireEvent.change(integerFieldInput, { target: { value: "214748364" } });
-      expect(integerFieldInput.value).toBe("214748364");
       fireEvent.keyPress(integerFieldInput, { key: "8", charCode: 56 });
-      expect(integerFieldInput.value).toBe("214748364");
+      expect(
+        screen.queryByText("Unsigned integer range is [0 to 2147483647]")
+      ).not.toBeInTheDocument();
     });
 
     test("Test on key press of number reaching maximum causes prevent default for Unsigned IntegerComponent", () => {
@@ -143,6 +144,7 @@ describe("IntegerComponent", () => {
           fieldRequired={false}
           onChange={handleChange}
           structureDefinition={null}
+          integerType={IntegerType.UNSIGNED}
         />
       );
       const integerField = screen.getByTestId("integer-field-Unsigned");
@@ -170,6 +172,7 @@ describe("IntegerComponent", () => {
           fieldRequired={false}
           onChange={handleChange}
           structureDefinition={null}
+          integerType={IntegerType.UNSIGNED}
         />
       );
       const integerField = screen.getByTestId("integer-field-");
@@ -197,7 +200,7 @@ describe("IntegerComponent", () => {
           fieldRequired={false}
           onChange={handleChange}
           structureDefinition={null}
-          unsignedInt={false}
+          integerType={IntegerType.POSITIVE_INT}
         />
       );
 
@@ -218,7 +221,7 @@ describe("IntegerComponent", () => {
           fieldRequired={false}
           onChange={handleChange}
           structureDefinition={null}
-          unsignedInt={false}
+          integerType={IntegerType.POSITIVE_INT}
         />
       );
       const integerField = screen.getByTestId("integer-field-");
@@ -253,7 +256,7 @@ describe("IntegerComponent", () => {
           fieldRequired={false}
           onChange={handleChange}
           structureDefinition={null}
-          unsignedInt={false}
+          integerType={IntegerType.POSITIVE_INT}
         />
       );
       const integerField = screen.getByTestId("integer-field-");
@@ -266,7 +269,7 @@ describe("IntegerComponent", () => {
       expect(integerFieldInput.value).toBe("");
     });
 
-    test("Test 2 on key press of duplicate minus signs causes prevent default for PositiveInt IntegerComponent", () => {
+    test("Test 4 on key press of reaching maximum number causes prevent default for PositiveInt IntegerComponent", () => {
       const handleChange = jest.fn();
       render(
         <IntegerComponent
@@ -276,7 +279,117 @@ describe("IntegerComponent", () => {
           fieldRequired={false}
           onChange={handleChange}
           structureDefinition={null}
-          unsignedInt={false}
+          integerType={IntegerType.POSITIVE_INT}
+        />
+      );
+      const integerField = screen.getByTestId("integer-field-");
+      expect(integerField).toBeInTheDocument();
+      const integerFieldInput = screen.getByTestId("integer-field-input-");
+      expect(integerFieldInput).toBeInTheDocument();
+      expect(integerFieldInput.value).toBe("");
+
+      fireEvent.change(integerFieldInput, { target: { value: "214748364" } });
+      expect(integerFieldInput.value).toBe("214748364");
+      fireEvent.keyPress(integerFieldInput, { key: "8", charCode: 56 });
+      expect(integerFieldInput.value).toBe("214748364");
+    });
+
+    test("Test on key press of valid PositiveInt IntegerComponent", () => {
+      const handleChange = jest.fn();
+      render(
+        <IntegerComponent
+          value={null}
+          canEdit={true}
+          fieldRequired={false}
+          onChange={handleChange}
+          structureDefinition={null}
+          integerType={IntegerType.POSITIVE_INT}
+        />
+      );
+      const integerField = screen.getByTestId("integer-field-Integer");
+      expect(integerField).toBeInTheDocument();
+      const integerFieldInput = screen.getByTestId(
+        "integer-field-input-Integer"
+      );
+      expect(integerFieldInput).toBeInTheDocument();
+      expect(integerFieldInput.value).toBe("");
+
+      fireEvent.change(integerFieldInput, { target: { value: "214748364" } });
+      expect(integerFieldInput.value).toBe("214748364");
+      fireEvent.keyPress(integerFieldInput, { key: "7", charCode: 55 });
+      expect(
+        screen.queryByText("Positive integer range is  [1 to 2147483647]")
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  describe("Signed IntegerComponent", () => {
+    test("Should render Signed IntegerComponent", () => {
+      const handleChange = jest.fn();
+      render(
+        <IntegerComponent
+          value={-2147483649}
+          label=""
+          canEdit={true}
+          fieldRequired={false}
+          onChange={handleChange}
+          structureDefinition={null}
+          integerType={IntegerType.SIGNED}
+        />
+      );
+
+      const integerField = screen.getByTestId("integer-field-");
+      expect(integerField).toBeInTheDocument();
+      const integerFieldInput = screen.getByTestId("integer-field-input-");
+      expect(integerFieldInput).toBeInTheDocument();
+      expect(integerFieldInput.value).toBe("-2147483649");
+      expect(
+        screen.getByText("Signed integer range is [-2147483648 to 2147483647]")
+      ).toBeInTheDocument();
+    });
+
+    test("Should validate Signed IntegerComponent", () => {
+      const handleChange = jest.fn();
+      render(
+        <IntegerComponent
+          value={1}
+          label=""
+          canEdit={true}
+          fieldRequired={false}
+          onChange={handleChange}
+          structureDefinition={null}
+          integerType={IntegerType.SIGNED}
+        />
+      );
+
+      const integerField = screen.getByTestId("integer-field-");
+      expect(integerField).toBeInTheDocument();
+      const integerFieldInput = screen.getByTestId("integer-field-input-");
+      expect(integerFieldInput).toBeInTheDocument();
+      expect(integerFieldInput.value).toBe("1");
+
+      fireEvent.change(integerFieldInput, { target: { value: "2147483647" } });
+      expect(
+        screen.queryByText("Unsigned integer range is [0 to 2147483647]")
+      ).not.toBeInTheDocument();
+
+      fireEvent.change(integerFieldInput, { target: { value: "2147483648" } });
+      expect(
+        screen.getByText("Signed integer range is [-2147483648 to 2147483647]")
+      ).toBeInTheDocument();
+    });
+
+    test("Test 2 on key press of duplicate minus signs causes prevent default for Signed IntegerComponent", () => {
+      const handleChange = jest.fn();
+      render(
+        <IntegerComponent
+          value={null}
+          label=""
+          canEdit={true}
+          fieldRequired={false}
+          onChange={handleChange}
+          structureDefinition={null}
+          integerType={IntegerType.SIGNED}
         />
       );
       const integerField = screen.getByTestId("integer-field-");
@@ -292,12 +405,9 @@ describe("IntegerComponent", () => {
       expect(integerFieldInput.value).toBe("-1");
       fireEvent.keyPress(integerFieldInput, { key: "-", charCode: 173 });
       expect(integerFieldInput.value).toBe("-1");
-      expect(
-        screen.getByText("Positive integer range is [1 to 2147483647]")
-      ).toBeInTheDocument();
     });
 
-    test("Test 3 on key press of minus sign with a positive number causes prevent default for PositiveInt IntegerComponent", () => {
+    test("Test 3 on key press of minus sign with a positive number causes prevent default for Signed IntegerComponent", () => {
       const handleChange = jest.fn();
       render(
         <IntegerComponent
@@ -307,7 +417,7 @@ describe("IntegerComponent", () => {
           fieldRequired={false}
           onChange={handleChange}
           structureDefinition={null}
-          unsignedInt={false}
+          integerType={IntegerType.SIGNED}
         />
       );
       const integerField = screen.getByTestId("integer-field-");
@@ -321,30 +431,58 @@ describe("IntegerComponent", () => {
       fireEvent.keyPress(integerFieldInput, { key: "-", charCode: 173 });
       expect(integerFieldInput.value).toBe("1");
     });
-  });
 
-  test("Test 4 on key press of reaching maximum umber causes prevent default for PositiveInt IntegerComponent", () => {
-    const handleChange = jest.fn();
-    render(
-      <IntegerComponent
-        value={null}
-        label=""
-        canEdit={true}
-        fieldRequired={false}
-        onChange={handleChange}
-        structureDefinition={null}
-        unsignedInt={false}
-      />
-    );
-    const integerField = screen.getByTestId("integer-field-");
-    expect(integerField).toBeInTheDocument();
-    const integerFieldInput = screen.getByTestId("integer-field-input-");
-    expect(integerFieldInput).toBeInTheDocument();
-    expect(integerFieldInput.value).toBe("");
+    test("Test 4 on key press of reaching maximum number causes prevent default for Signed IntegerComponent", () => {
+      const handleChange = jest.fn();
+      render(
+        <IntegerComponent
+          value={null}
+          label=""
+          canEdit={true}
+          fieldRequired={false}
+          onChange={handleChange}
+          structureDefinition={null}
+          integerType={IntegerType.SIGNED}
+        />
+      );
+      const integerField = screen.getByTestId("integer-field-");
+      expect(integerField).toBeInTheDocument();
+      const integerFieldInput = screen.getByTestId("integer-field-input-");
+      expect(integerFieldInput).toBeInTheDocument();
+      expect(integerFieldInput.value).toBe("");
 
-    fireEvent.change(integerFieldInput, { target: { value: "214748364" } });
-    expect(integerFieldInput.value).toBe("214748364");
-    fireEvent.keyPress(integerFieldInput, { key: "8", charCode: 56 });
-    expect(integerFieldInput.value).toBe("214748364");
+      fireEvent.change(integerFieldInput, { target: { value: "214748364" } });
+      expect(integerFieldInput.value).toBe("214748364");
+      fireEvent.keyPress(integerFieldInput, { key: "8", charCode: 56 });
+      expect(integerFieldInput.value).toBe("214748364");
+    });
+
+    test("Test on key press of valid Signed IntegerComponent", () => {
+      const handleChange = jest.fn();
+      render(
+        <IntegerComponent
+          value={null}
+          canEdit={true}
+          fieldRequired={false}
+          onChange={handleChange}
+          structureDefinition={null}
+          integerType={IntegerType.SIGNED}
+        />
+      );
+      const integerField = screen.getByTestId("integer-field-Integer");
+      expect(integerField).toBeInTheDocument();
+      const integerFieldInput = screen.getByTestId(
+        "integer-field-input-Integer"
+      );
+      expect(integerFieldInput).toBeInTheDocument();
+      expect(integerFieldInput.value).toBe("");
+
+      fireEvent.keyPress(integerFieldInput, { key: "8", charCode: 56 });
+      expect(
+        screen.queryByText(
+          "Signed integer range is [-2147483648 to 2147483647]"
+        )
+      ).not.toBeInTheDocument();
+    });
   });
 });
