@@ -99,8 +99,6 @@ const renderWithTestCase = (
   return render(
     <MemoryRouter>
       <TestCaseTable
-        sorting={[]}
-        setSorting={setSorting}
         testCases={testCases}
         canEdit={canEdit}
         deleteTestCase={deleteTestCase}
@@ -207,8 +205,7 @@ describe("TestCase component", () => {
       deleteTestCase,
       exportTestCase,
       onCloneTestCase,
-      defaultMeasure,
-      sortingFn
+      defaultMeasure
     );
 
     const rows = await screen.findByTestId(`test-case-row-0`);
@@ -237,9 +234,6 @@ describe("TestCase component", () => {
 
     expect(columns[4]).toHaveTextContent(convertDate(testCase.lastModifiedAt));
     fireEvent.click(lastSavedButton);
-    await waitFor(() => {
-      expect(sortingFn).toHaveBeenCalled();
-    });
   });
 
   it("should render test case view for now owners and no delete option", async () => {

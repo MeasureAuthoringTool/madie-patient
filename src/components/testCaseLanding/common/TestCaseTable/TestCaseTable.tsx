@@ -34,8 +34,6 @@ interface TestCaseTableProps {
   measure: Measure;
   onTestCaseShiftDates?: (testCase: TestCase, shifted: number) => void;
   handleQiCloneTestCase?: (testCase: TestCase) => void;
-  sorting: any;
-  setSorting: any;
 }
 
 export const convertDate = (date: string) => {
@@ -59,8 +57,6 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     measure,
     onTestCaseShiftDates,
     handleQiCloneTestCase,
-    sorting,
-    setSorting,
   } = props;
   const viewOrEdit = canEdit ? "edit" : "view";
   const [deleteDialogModalOpen, setDeleteDialogModalOpen] =
@@ -81,6 +77,13 @@ const TestCaseTable = (props: TestCaseTableProps) => {
   const [shiftDatesDialogOpen, setShiftDatesDialogOpen] =
     useState<boolean>(false);
   const featureFlags = useFeatureFlags();
+  // Default Sorting Settings
+  const [sorting, setSorting] = useState<SortingState>([
+    {
+      id: "caseNumber",
+      desc: false,
+    },
+  ]);
 
   const handleOpen = (
     selected: TestCase,
@@ -234,7 +237,6 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     state: {
       sorting,
     },
-    manualSorting: true,
   });
 
   return (
