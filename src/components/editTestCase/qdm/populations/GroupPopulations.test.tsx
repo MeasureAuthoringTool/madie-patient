@@ -30,7 +30,7 @@ describe("Group Populations", () => {
             id: "123",
             name: PopulationType.INITIAL_POPULATION,
             expected: true,
-            actual: true,
+            actual: false,
           },
         ],
         stratificationValues: [
@@ -144,7 +144,8 @@ describe("Group Populations", () => {
       <GroupPopulations
         disableExpected={false}
         isTestCaseExecuted={true}
-        groupPopulations={null}
+        testCaseResults={[]}
+        groupPopulations={[]}
         onChange={jest.fn()}
         errors={errors}
       />
@@ -161,6 +162,7 @@ describe("Group Populations", () => {
       <GroupPopulations
         disableExpected={false}
         isTestCaseExecuted={true}
+        testCaseResults={[]}
         groupPopulations={undefined}
         onChange={jest.fn()}
         errors={errors}
@@ -178,6 +180,7 @@ describe("Group Populations", () => {
       <GroupPopulations
         disableExpected={false}
         isTestCaseExecuted={true}
+        testCaseResults={[]}
         groupPopulations={[]}
         onChange={jest.fn()}
         errors={errors}
@@ -203,25 +206,45 @@ describe("Group Populations", () => {
       />
     );
 
-    const ippRows = screen.getAllByRole("row", {
-      name: "Initial Population",
-    });
-    const ippRow = ippRows[0];
+    const ippRow = screen.getByRole("row", { name: "Initial Population" });
     const ippCbs = within(ippRow).getAllByRole("checkbox");
     expect(ippCbs[0]).toBeDisabled();
     expect(ippCbs[0]).toBeChecked();
     expect(ippCbs[1]).toBeDisabled();
-    expect(ippCbs[1]).toBeChecked();
+    expect(ippCbs[1]).not.toBeChecked();
   });
 
-  it.skip("should handle checkbox changes", () => {
+  it("should handle checkbox changes", () => {
     testCaseGroups[0].scoring = MeasureScoring.CONTINUOUS_VARIABLE;
     const handleChange = jest.fn();
-    const handleStratificationChange = jest.fn();
+    const updatedTestCaseGroups = [
+      {
+        groupId: "Group1_ID",
+        scoring: MeasureScoring.CONTINUOUS_VARIABLE,
+        populationBasis: "true",
+        populationValues: [
+          {
+            id: "123",
+            name: PopulationType.INITIAL_POPULATION,
+            expected: false,
+            actual: false,
+          },
+        ],
+        stratificationValues: [
+          {
+            id: "321",
+            name: "strata-1 Initial Population",
+            expected: true,
+            actual: false,
+          },
+        ],
+      },
+    ];
     render(
       <GroupPopulations
         disableExpected={false}
         isTestCaseExecuted={true}
+        testCaseResults={testCaseGroups}
         groupPopulations={testCaseGroups}
         onChange={handleChange}
         errors={errors}
@@ -233,32 +256,15 @@ describe("Group Populations", () => {
     expect(ippCbs[0]).not.toBeDisabled();
     expect(ippCbs[0]).toBeChecked();
     expect(ippCbs[1]).toBeDisabled();
-    expect(ippCbs[1]).toBeChecked();
+    expect(ippCbs[1]).not.toBeChecked();
 
     userEvent.click(ippCbs[0]);
     expect(handleChange).toHaveBeenNthCalledWith(
       1,
-      testCaseGroups,
+      updatedTestCaseGroups,
       "Group1_ID",
-      { actual: true, expected: false, id: "123", name: "initialPopulation" }
+      { actual: false, expected: false, id: "123", name: "initialPopulation" }
     );
-
-    userEvent.click(ippCbs[0]);
-    expect(handleChange).toHaveBeenNthCalledWith(
-      2,
-      testCaseGroups,
-      "Group1_ID",
-      { actual: true, expected: false, id: "123", name: "initialPopulation" }
-    );
-
-    const stratRow = screen.getByRole("row", {
-      name: "strata-1 Initial Population",
-    });
-    const stratCbs = within(stratRow).getAllByRole("checkbox");
-    expect(stratCbs[0]).not.toBeDisabled();
-    expect(stratCbs[0]).toBeChecked();
-    userEvent.click(stratCbs[0]);
-    expect(handleStratificationChange).toHaveBeenCalledTimes(1);
   });
 
   it("should display empty on non run", () => {
@@ -267,6 +273,7 @@ describe("Group Populations", () => {
       <GroupPopulations
         disableExpected={false}
         isTestCaseExecuted={false}
+        testCaseResults={testCaseGroups}
         groupPopulations={testCaseGroups}
         onChange={handleChange}
         errors={errors}
@@ -301,6 +308,7 @@ describe("Group Populations", () => {
       <GroupPopulations
         disableExpected={false}
         isTestCaseExecuted={false}
+        testCaseResults={[]}
         groupPopulations={groupPopulations}
         onChange={handleChange}
         errors={errors}
@@ -317,6 +325,7 @@ describe("Group Populations", () => {
       <GroupPopulations
         disableExpected={false}
         isTestCaseExecuted={false}
+        testCaseResults={testCaseGroups}
         groupPopulations={testCaseGroups}
         onChange={handleChange}
         errors={errors}
