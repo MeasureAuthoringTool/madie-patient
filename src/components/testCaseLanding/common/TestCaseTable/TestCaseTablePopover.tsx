@@ -186,19 +186,21 @@ const TestCaseTablePopover = (props: TestCaseTablePopoverProps) => {
               >
                 delete
               </button>
-              {model.startsWith("QI-Core") && (
-                <button
-                  id={`clone-test-case-btn-${selectedTestCase?.id}`}
-                  aria-label={`clone-test-case-btn-${selectedTestCase?.title}`}
-                  data-testid={`clone-test-case-btn-${selectedTestCase?.id}`}
-                  onClick={() => {
-                    handleQiCloneTestCase(selectedTestCase);
-                    setOptionsOpen(false);
-                  }}
-                >
-                  clone test case
-                </button>
-              )}
+              {model.startsWith("QI-Core") &&
+                selectedTestCase &&
+                selectedTestCase.executionStatus != "Invalid" && (
+                  <button
+                    id={`clone-test-case-btn-${selectedTestCase?.id}`}
+                    aria-label={`clone-test-case-btn-${selectedTestCase?.title}`}
+                    data-testid={`clone-test-case-btn-${selectedTestCase?.id}`}
+                    onClick={() => {
+                      handleQiCloneTestCase(selectedTestCase);
+                      setOptionsOpen(false);
+                    }}
+                  >
+                    clone test case
+                  </button>
+                )}
             </>
           )}
 
