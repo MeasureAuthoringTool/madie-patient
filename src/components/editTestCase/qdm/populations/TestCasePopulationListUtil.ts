@@ -39,6 +39,7 @@ export const determineGroupResult = (
 };
 
 // Determines if stratification expected and actual value matches along with all its populations
+// If Stratification didn't fail, then we proceed to check the groupResults
 export const determineGroupResultStratification = (
   populationBasis: string,
   stratification: StratificationExpectedValue,
@@ -65,5 +66,10 @@ export const determineGroupResultStratification = (
       return "fail";
     }
   }
-  return "pass";
+  return determineGroupResult(
+    populationBasis,
+    stratification.populationValues,
+    stratificationResult?.populationValues,
+    isTestCaseExecuted
+  );
 };

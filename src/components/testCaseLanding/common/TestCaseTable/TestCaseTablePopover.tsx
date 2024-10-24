@@ -21,6 +21,7 @@ interface TestCaseTablePopoverProps {
   shiftDatesDialogOpen: boolean;
   setShiftDatesDialogOpen: (boolean) => void;
   onTestCaseShiftDates?: (testCase: TestCase, shifted: number) => void;
+  handleQiCloneTestCase?: (testCase: TestCase) => void;
 }
 
 const TestCaseTablePopover = (props: TestCaseTablePopoverProps) => {
@@ -40,6 +41,7 @@ const TestCaseTablePopover = (props: TestCaseTablePopoverProps) => {
     shiftDatesDialogOpen,
     setShiftDatesDialogOpen,
     onTestCaseShiftDates,
+    handleQiCloneTestCase,
   } = props;
   const editTestCaseUrl = _.isEmpty(props.groups)
     ? `../${selectedTestCase?.id}`
@@ -172,17 +174,34 @@ const TestCaseTablePopover = (props: TestCaseTablePopoverProps) => {
           )}
 
           {canEdit && (
-            <button
-              id={`delete-test-case-btn-${selectedTestCase?.id}`}
-              aria-label={`delete-test-case-${selectedTestCase?.title}`}
-              data-testid={`delete-test-case-btn-${selectedTestCase?.id}`}
-              onClick={() => {
-                setDeleteDialogModalOpen(true);
-                setOptionsOpen(false);
-              }}
-            >
-              delete
-            </button>
+            <>
+              <button
+                id={`delete-test-case-btn-${selectedTestCase?.id}`}
+                aria-label={`delete-test-case-${selectedTestCase?.title}`}
+                data-testid={`delete-test-case-btn-${selectedTestCase?.id}`}
+                onClick={() => {
+                  setDeleteDialogModalOpen(true);
+                  setOptionsOpen(false);
+                }}
+              >
+                delete
+              </button>
+              {model.startsWith("QI-Core") &&
+                selectedTestCase &&
+                selectedTestCase.executionStatus != "Invalid" && (
+                  <button
+                    id={`clone-test-case-btn-${selectedTestCase?.id}`}
+                    aria-label={`clone-test-case-btn-${selectedTestCase?.title}`}
+                    data-testid={`clone-test-case-btn-${selectedTestCase?.id}`}
+                    onClick={() => {
+                      handleQiCloneTestCase(selectedTestCase);
+                      setOptionsOpen(false);
+                    }}
+                  >
+                    clone test case
+                  </button>
+                )}
+            </>
           )}
 
           {canEdit && featureFlags?.ShiftTestCasesDates && (

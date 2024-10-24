@@ -3,14 +3,14 @@ import { Box, IconButton, Typography } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import * as _ from "lodash";
 
-const ResourceListTile = ({ name, onClick }) => {
+const ResourceListTile = ({ resourceIdentifier, onClick }) => {
   return (
     <Box
       sx={{
         borderRadius: 0,
         borderBottomWidth: "thin",
         borderColor: "dark-gray",
-        width: 250,
+        width: 275,
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
@@ -19,10 +19,8 @@ const ResourceListTile = ({ name, onClick }) => {
         padding: 1,
       }}
     >
-      <Typography flexWrap="wrap">
-        {name.split(/(?=[A-Z])/).join(" ")}
-      </Typography>
-      <IconButton onClick={() => onClick(name)}>
+      <Typography flexWrap="wrap">{resourceIdentifier.title}</Typography>
+      <IconButton onClick={() => onClick(resourceIdentifier)}>
         <AddCircleOutlineIcon />
       </IconButton>
     </Box>

@@ -1833,6 +1833,42 @@ describe("TestCaseList component", () => {
       expect(setWarnings).toHaveBeenCalledWith(mockedOutcome);
     });
   });
+  describe("clone test case", () => {
+    it("should clone a test case when the clone button is clicked", async () => {
+      const createTestCaseApiMock = jest.fn().mockResolvedValue({});
+      const getTestCasesByMeasureIdMock = jest
+        .fn()
+        .mockResolvedValue(testCases);
+      useTestCaseServiceMock.mockImplementation(() => {
+        return {
+          ...useTestCaseServiceMockResolved,
+          getTestCasesByMeasureId: getTestCasesByMeasureIdMock,
+          createTestCase: createTestCaseApiMock,
+        } as unknown as TestCaseServiceApi;
+      });
+      renderTestCaseListComponent();
+      await waitFor(() => {
+        expect(getTestCasesByMeasureIdMock).toHaveBeenCalled();
+        const selectButton = screen.getByTestId(
+          `select-action-${testCases[0].id}`
+        );
+        expect(selectButton).toBeInTheDocument();
+        userEvent.click(selectButton);
+      });
+      const cloneButton = screen.getByTestId(
+        `clone-test-case-btn-${testCases[0].id}`
+      );
+      userEvent.click(cloneButton);
+
+      await waitFor(() => {
+        expect(createTestCaseApiMock).toHaveBeenCalled();
+        expect(getTestCasesByMeasureIdMock).toHaveBeenCalled();
+        expect(
+          screen.getByText("Test case cloned successfully")
+        ).toBeInTheDocument();
+      });
+    });
+  });
 });
 
 describe("retrieve coverage value from HTML coverage", () => {
