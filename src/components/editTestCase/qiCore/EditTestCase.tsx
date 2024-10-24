@@ -1,4 +1,5 @@
 import React, {
+  ReactNode,
   Dispatch,
   SetStateAction,
   useCallback,
@@ -220,7 +221,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
 
   // Toast utilities
   const [toastOpen, setToastOpen] = useState<boolean>(false);
-  const [toastMessage, setToastMessage] = useState<string>("");
+  const [toastMessage, setToastMessage] = useState<ReactNode>("");
   const [toastType, setToastType] = useState<string>("danger");
   const onToastClose = () => {
     setToastMessage("");
@@ -228,8 +229,8 @@ const EditTestCase = (props: EditTestCaseProps) => {
   };
 
   const showToast = (
-    message: string,
-    toastType: "success" | "danger" | "warning"
+    message: ReactNode,
+    toastType: "success" | "danger" | "warning" | "info"
   ) => {
     setToastOpen(true);
     setToastType(toastType);
@@ -414,10 +415,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
           setSeriesState({ loaded: true, series: existingSeries })
         )
         .catch((error) => {
-          setAlert(() => ({
-            status: "error",
-            message: error.message,
-          }));
+          showToast(error.message, "danger");
           setErrors([...errors, error.message]);
         });
     }
@@ -471,10 +469,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
 
       handleTestCaseResponse(savedTestCase, "create");
     } catch (error) {
-      setAlert(() => ({
-        status: "error",
-        message: "An error occurred while creating the test case.",
-      }));
+      showToast("An error occurred while creating the test case.", "danger");
       setErrors([...errors, "An error occurred while creating the test case."]);
     }
   };
@@ -502,21 +497,14 @@ const EditTestCase = (props: EditTestCaseProps) => {
       });
       setTestCase(_.cloneDeep(updatedTc));
       setEditorVal(updatedTc.json);
-
       handleTestCaseResponse(updatedTc, "update");
     } catch (error) {
-      setAlert(() => {
-        if (error instanceof MadieError) {
-          return {
-            status: "error",
-            message: error.message,
-          };
-        }
-        return {
-          status: "error",
-          message: "An error occurred while updating the test case.",
-        };
-      });
+      showToast(
+        error instanceof MadieError
+          ? error.message
+          : "An error occurred while updating the test case.",
+        "danger"
+      );
       setErrors([...errors, "An error occurred while updating the test case."]);
     }
   };
@@ -614,30 +602,33 @@ const EditTestCase = (props: EditTestCaseProps) => {
         const valErrors = validationErrors.map((error) => (
           <li>{error.diagnostics}</li>
         ));
-        setAlert({
-          status: `${severityOfValidationErrors(validationErrors)}`,
-          message: testCaseAlertToast ? (
-            <div>
-              <h3>
-                Changes {action}d successfully but the following{" "}
-                {severityOfValidationErrors(validationErrors)}(s) were found
-              </h3>
-              <ul>{valErrors}</ul>
-            </div>
-          ) : (
-            `Test case updated successfully with ${severityOfValidationErrors(
-              validationErrors
-            )}s in JSON`
-          ),
-        });
+        const message: ReactNode = testCaseAlertToast ? (
+          <div>
+            <h3>
+              Changes {action}d successfully but the following{" "}
+              {severityOfValidationErrors(validationErrors)}(s) were found
+            </h3>
+            <ul>{valErrors}</ul>
+          </div>
+        ) : (
+          `Test case updated successfully with ${severityOfValidationErrors(
+            validationErrors
+          )}s in JSON`
+        );
+        let severity = severityOfValidationErrors(validationErrors);
+        if (severity === "error") {
+          severity = "danger";
+        }
+        //@ts-ignore
+        showToast(message, severity);
         handleHapiOutcome(testCase.hapiOperationOutcome);
       }
       updateMeasureStore(action, testCase);
     } else {
-      setAlert(() => ({
-        status: "error",
-        message: `An error occurred - ${action} did not return the expected successful result.`,
-      }));
+      showToast(
+        `An error occurred - ${action} did not return the expected successful result.`,
+        "danger"
+      );
       setErrors([
         ...errors,
         `An error occurred - ${action} did not return the expected successful result.`,
