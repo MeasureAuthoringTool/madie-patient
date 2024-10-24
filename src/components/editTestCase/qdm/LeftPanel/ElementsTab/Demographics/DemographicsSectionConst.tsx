@@ -64,37 +64,37 @@ export const RACE_CODE_OPTIONS: DataElementCode[] = [
 
 export const GENDER_CODE_OPTIONS: DataElementCode[] = [
   {
-    system: "http://snomed.info/sct",
-    version: "http://snomed.info/sct/731000124108/version/20240901",
+    system: "2.16.840.1.113883.6.96",
+    version: "20240901",
     code: "184115007",
     display: "Patient sex unknown (finding)",
   },
   {
-    system: "http://snomed.info/sct",
-    version: "http://snomed.info/sct/731000124108/version/20240901",
+    system: "2.16.840.1.113883.6.96",
+    version: "20240901",
     code: "248152002",
     display: "Female (finding)",
   },
   {
-    system: "http://snomed.info/sct",
-    version: "http://snomed.info/sct/731000124108/version/20240901",
+    system: "2.16.840.1.113883.6.96",
+    version: "20240901",
     code: "248153007",
     display: "Male (finding)",
   },
   {
-    system: "http://terminology.hl7.org/CodeSystem/v3-AdministrativeGender",
+    system: "2.16.840.1.113883.5.1",
     version: "2023-02-01",
     code: "F",
     display: "Female",
   },
   {
-    system: "http://terminology.hl7.org/CodeSystem/v3-AdministrativeGender",
+    system: "2.16.840.1.113883.5.1",
     version: "2023-02-01",
     code: "M",
     display: "Male",
   },
   {
-    system: "http://terminology.hl7.org/CodeSystem/data-absent-reason",
+    system: "2.16.840.1.113883.4.642.4.1048",
     version: "0.1.0",
     code: "asked-declined",
     display: "Asked But Declined",
