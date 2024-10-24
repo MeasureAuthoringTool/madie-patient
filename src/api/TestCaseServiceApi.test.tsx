@@ -1,6 +1,9 @@
 import { AxiosError, AxiosResponse } from "axios";
 import axios from "./axios-instance";
-import { TestCaseServiceApi } from "./useTestCaseServiceApi";
+import {
+  QrdaGroupExportDTO,
+  TestCaseServiceApi,
+} from "./useTestCaseServiceApi";
 import { ScanValidationDto } from "./models/ScanValidationDto";
 import {
   Measure,
@@ -8,7 +11,6 @@ import {
   Model,
   PopulationType,
   TestCase,
-  TestCaseExcelExportDto,
 } from "@madie/madie-models";
 import { waitFor } from "@testing-library/react";
 import { addValues } from "../util/DefaultValueProcessor";
@@ -236,14 +238,14 @@ describe("TestCaseServiceApi Tests", () => {
     const resp = { status: 200, data: zippedQRDAData };
     axios.put = jest.fn().mockResolvedValueOnce(resp);
 
-    const testCaseDtos: TestCaseExcelExportDto[] = [
+    const groupDTOs: QrdaGroupExportDTO[] = [
       {
         groupId: "1",
-      } as TestCaseExcelExportDto,
+      } as QrdaGroupExportDTO,
     ];
     const qrdaData = await testCaseService.exportQRDA("testMeasureId", {
       measure: mockMeasure,
-      groupDTOs: testCaseDtos,
+      groupDTOs: groupDTOs,
     });
     expect(axios.put).toBeCalledTimes(1);
     expect(qrdaData).toEqual(zippedQRDAData);
@@ -255,15 +257,15 @@ describe("TestCaseServiceApi Tests", () => {
     };
     axios.put = jest.fn().mockRejectedValueOnce(resp);
 
-    const testCaseDtos: TestCaseExcelExportDto[] = [
+    const groupDTOs: QrdaGroupExportDTO[] = [
       {
         groupId: "1",
-      } as TestCaseExcelExportDto,
+      } as QrdaGroupExportDTO,
     ];
     try {
       await testCaseService.exportQRDA("testMeasureId", {
         measure: mockMeasure,
-        groupDTOs: testCaseDtos,
+        groupDTOs: groupDTOs,
       });
       expect(axios.put).toBeCalledTimes(1);
     } catch (error) {
