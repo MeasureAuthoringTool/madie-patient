@@ -1,7 +1,7 @@
 import React from "react";
 import DateTimeInput from "../../../../../../../common/dateTimeInput/DateTimeInput";
 import DateTimeInterval from "../../../../../../../common/dateTimeInterval/DateTimeInterval";
-import { CQL } from "cqm-models";
+import { QDMDate } from "cqm-models";
 import "./Timing.scss";
 import { PRIMARY_TIMING_ATTRIBUTES } from "../../../../../../../../util/QdmAttributeHelpers";
 import * as _ from "lodash";
@@ -24,11 +24,10 @@ const Timing = ({ canEdit, onChange, selectedDataElement }) => {
   const dateFormatToDisplay = (date) => {
     if (date) {
       const currentDate = dayjs();
-      const dayjsDate = dayjs(currentDate)
+      return dayjs(currentDate)
         .set("year", date?.year)
-        .set("month", date?.month)
+        .set("month", date?.month - 1)
         .set("date", date?.day);
-      return dayjsDate;
     }
     return;
   };
@@ -82,11 +81,11 @@ const Timing = ({ canEdit, onChange, selectedDataElement }) => {
                     ) || null
                   }
                   onChange={(newValue: any) => {
-                    const newDate = new CQL.Date(
-                      newValue.$y,
-                      newValue.$M + 1,
-                      newValue.$D
-                    );
+                    const newDate = new QDMDate().cast({
+                      year: newValue.$y,
+                      month: newValue.$M + 1,
+                      day: newValue.$D,
+                    });
                     handleChange(newDate, timingAttr.path);
                   }}
                 />
