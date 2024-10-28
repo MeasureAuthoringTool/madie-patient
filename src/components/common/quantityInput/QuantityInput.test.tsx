@@ -142,14 +142,14 @@ describe("QuantityInput Component", () => {
     expect(quantityFieldInput.value).toBe("");
     expect(onQuantityChange).toBeCalled();
     userEvent.type(quantityFieldInput, "-1-");
-    await expect(onQuantityChange).toHaveBeenNthCalledWith(2, {
+    expect(onQuantityChange).toHaveBeenNthCalledWith(2, {
       unit: "mg",
-      value: "-1",
+      value: -1,
     });
     userEvent.type(quantityFieldInput, "2.5/...-");
-    await expect(onQuantityChange).toHaveBeenNthCalledWith(6, {
+    expect(onQuantityChange).toHaveBeenNthCalledWith(6, {
       unit: "mg",
-      value: "2.5",
+      value: 2.5,
     });
   });
 });

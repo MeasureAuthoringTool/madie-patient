@@ -105,7 +105,7 @@ const QuantityInput = ({
 
   const handleQuantityValueChange = (newValue) => {
     const newQuantity: CQL.Quantity = {
-      value: newValue,
+      value: Number(newValue),
       unit: currentQuantity.unit,
     };
     setCurrentQuantity(newQuantity);
