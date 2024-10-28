@@ -375,7 +375,7 @@ const EditTestCase = (props: EditTestCaseProps) => {
 
   const loadTestCase = () => {
     testCaseService.current
-      .getTestCase(id, measureId)
+      .getTestCase(id, measureId, true)
       .then((tc: TestCase) => {
         const nextTc = _.cloneDeep(tc);
         nextTc.json = standardizeJson(nextTc);
@@ -542,7 +542,8 @@ const EditTestCase = (props: EditTestCaseProps) => {
         // Validate test case JSON prior to execution
         const validationResult =
           await testCaseService.current.validateTestCaseBundle(
-            JSON.parse(editorVal)
+            JSON.parse(editorVal),
+            measure.model
           );
         const errors = handleHapiOutcome(validationResult);
         if (!_.isNil(errors) && errors.length > 0 && hasErrorSeverity(errors)) {
@@ -577,7 +578,8 @@ const EditTestCase = (props: EditTestCaseProps) => {
       const executionResults = calculationOutput.results;
       const validationResult =
         await testCaseService.current.validateTestCaseBundle(
-          JSON.parse(editorVal)
+          JSON.parse(editorVal),
+          measure.model
         );
       handleHapiOutcome(validationResult);
       setCalculationErrors(undefined);
