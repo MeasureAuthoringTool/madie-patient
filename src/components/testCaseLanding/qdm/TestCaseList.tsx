@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import "twin.macro";
 import "styled-components/macro";
-import * as _ from "lodash";
-import { uniqWith } from "lodash";
+import _ from "lodash";
 import {
   Group,
   GroupedStratificationDto,
@@ -16,11 +15,7 @@ import {
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import queryString from "query-string";
 import calculationService from "../../../api/CalculationService";
-import {
-  checkUserCanEdit,
-  measureStore,
-  useFeatureFlags,
-} from "@madie/madie-util";
+import { checkUserCanEdit, useFeatureFlags } from "@madie/madie-util";
 import CreateCodeCoverageNavTabs from "./CreateCodeCoverageNavTabs";
 import CreateNewTestCaseDialog from "../../createTestCase/CreateNewTestCaseDialog";
 import {
@@ -143,7 +138,6 @@ const TestCaseList = (props: TestCaseListProps) => {
     onToastClose,
   } = UseToast();
   const excelExportService = useRef(useExcelExportService());
-  const { updateMeasure } = measureStore;
   const calculation = useRef(calculationService());
   const qdmCalculation = useRef(qdmCalculationService());
   const [canEdit, setCanEdit] = useState<boolean>(false);
@@ -329,12 +323,12 @@ const TestCaseList = (props: TestCaseListProps) => {
       )
       .filter((result) => result.final !== "NA");
     // get a list of all unique used clauses
-    const allUniqueClauses = uniqWith(
+    const allUniqueClauses = _.uniqWith(
       allRelevantClauses,
       (c1, c2) => c1.libraryName === c2.libraryName && c1.localId === c2.localId
     ).sort((a, b) => a.localId - b.localId);
     // get a list of all unique covered clauses
-    const coveredClauses = uniqWith(
+    const coveredClauses = _.uniqWith(
       allRelevantClauses.filter((clause) => clause.final === "TRUE"),
       (c1, c2) => c1.libraryName === c2.libraryName && c1.localId === c2.localId
     );
@@ -803,7 +797,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                       <Pagination
                         totalItems={totalItems}
                         visibleItems={visibleItems}
-                        limitOptions={[10, 25, 50]}
+                        limitOptions={[10, 25, 50, "All"]}
                         offset={offset}
                         handlePageChange={handlePageChange}
                         handleLimitChange={handleLimitChange}

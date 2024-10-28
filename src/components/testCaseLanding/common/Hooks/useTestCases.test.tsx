@@ -1,13 +1,13 @@
-import React from "react";
+import * as React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-import UseFetchTestCases, {
-  customSort,
-  sortFilteredTestCases,
-} from "./UseTestCases";
-import useTestCaseServiceApi from "../../../../api/useTestCaseServiceApi";
+import UseFetchTestCases, { sortFilteredTestCases } from "./UseTestCases";
+import useTestCaseServiceApi, {
+  TestCaseServiceApi,
+} from "../../../../api/useTestCaseServiceApi";
 import { renderHook, act } from "@testing-library/react-hooks";
-import { measureStore } from "@madie/madie-util";
+import { TestCase } from "@madie/madie-models";
+import { SortingState } from "@tanstack/react-table";
 
 const mockNavigate = jest.fn();
 
@@ -55,14 +55,20 @@ const MockComponent = ({ measureId, setErrors }) => {
   );
 };
 
+jest.mock("../../../../api/useTestCaseServiceApi");
+const useTestCaseServiceMock =
+  useTestCaseServiceApi as jest.Mock<TestCaseServiceApi>;
+const mockGetTestCasesByMeasureId = jest.fn();
+const useTestCaseServiceMockResolved = {
+  getTestCasesByMeasureId: mockGetTestCasesByMeasureId,
+} as unknown as TestCaseServiceApi;
+
 describe("UseFetchTestCases", () => {
   const mockSetErrors = jest.fn();
-  const mockGetTestCasesByMeasureId = jest.fn();
-
   beforeEach(() => {
     jest.clearAllMocks();
-    useTestCaseServiceApi.mockReturnValue({
-      getTestCasesByMeasureId: mockGetTestCasesByMeasureId,
+    useTestCaseServiceMock.mockImplementation(() => {
+      return useTestCaseServiceMockResolved;
     });
   });
 
@@ -126,17 +132,39 @@ describe("UseFetchTestCases", () => {
     expect(mockNavigate).toHaveBeenCalledWith(
       expect.stringContaining("limit=20")
     );
+
+    act(() => {
+      result.current.testCasePage.handleLimitChange({
+        target: { value: "All" },
+      });
+    });
+    expect(mockNavigate).toHaveBeenCalledWith(
+      expect.stringContaining("limit=All")
+    );
   });
 
   it("should save pagination options to local storage", () => {
     const { result } = renderHook(() =>
       UseFetchTestCases({ measureId: "123", setErrors: mockSetErrors })
     );
+    const testCase1 = {
+      id: "1234",
+      title: "Test Case 1",
+      createdBy: "testuser",
+      description: "Test IPP",
+      series: "SeriesA",
+      json: `{"test":"test" BAD BAD JSON - DEFINITELY INVALID }`,
+    } as TestCase;
+    const testCase2 = {
+      id: "1234",
+      title: "Test Case 2",
+      createdBy: "testuser",
+      description: "Test IPP",
+      series: "SeriesA",
+      json: `{"test":"test" BAD BAD JSON - DEFINITELY INVALID }`,
+    } as TestCase;
     act(() => {
-      result.current.setTestCases([
-        { title: "Test Case 1" },
-        { title: "Test Case 2" },
-      ]);
+      result.current.setTestCases([testCase1, testCase2]);
     });
 
     expect(window.localStorage.getItem("testCasesPageOptions")).toContain(
@@ -248,12 +276,12 @@ describe("UseFetchTestCases", () => {
   });
   // forget it. exporting the lines this doesn't reach.
   it("should sort test cases based on sorting state", () => {
-    const testCaseList: TestCase[] = [
+    const testCaseList = [
       { title: "apple", validResource: true, lastModifiedAt: new Date() },
       { title: "banana", validResource: true, lastModifiedAt: new Date() },
       { title: "cat", validResource: true, lastModifiedAt: new Date() },
       { title: "zebra", validResource: true, lastModifiedAt: new Date() },
-    ];
+    ] as unknown as TestCase[];
 
     const sorting: SortingState = [{ id: "title", desc: false }];
     const sortedCasesAsc = sortFilteredTestCases(sorting, testCaseList);
@@ -269,10 +297,10 @@ describe("UseFetchTestCases", () => {
   });
 
   it("should return original list when no sorting is applied", () => {
-    const testCaseList: TestCase[] = [
+    const testCaseList = [
       { title: "apple", validResource: true, lastModifiedAt: new Date() },
       { title: "banana", validResource: true, lastModifiedAt: new Date() },
-    ];
+    ] as unknown as TestCase[];
 
     const sortedCases = sortFilteredTestCases([], testCaseList);
     expect(sortedCases).toEqual(testCaseList);

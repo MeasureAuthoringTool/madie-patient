@@ -81,7 +81,7 @@ function UseFetchTestCases({ measureId, setErrors }) {
     visibleItems: null,
     offset: 0,
     page: 1,
-    limit: 10,
+    limit: 10 || "All",
     count: undefined,
     currentSlice: [],
     canGoNext: false,
@@ -105,7 +105,10 @@ function UseFetchTestCases({ measureId, setErrors }) {
   const filter: string = values?.filter ? values.filter.toString() : "";
   // pull info from some query url
   let searchQuery: string = values?.search ? values.search.toString() : "";
-  const curLimit = (values.limit && Number(values.limit)) || 10;
+  const curLimit =
+    values.limit === "All" && testCases?.length > 0
+      ? testCases?.length
+      : Number(values.limit) || 10;
   const curPage = (values.page && Number(values.page)) || 1;
   let navigate = useNavigate();
 
@@ -132,7 +135,7 @@ function UseFetchTestCases({ measureId, setErrors }) {
         "testCasesPageOptions",
         JSON.stringify({
           page: curPage,
-          limit: curLimit,
+          limit: (values.limit === "All" && values.limit) || curLimit,
           filter,
           search: searchQuery,
         })
@@ -184,7 +187,7 @@ function UseFetchTestCases({ measureId, setErrors }) {
           visibleItems: currentSlice.length,
           offset: start,
           page: curPage,
-          limit: curLimit,
+          limit: (values.limit === "All" && values.limit) || curLimit,
           count: Math.ceil(filteredTestCases.length / curLimit),
           currentSlice,
           handlePageChange,
@@ -204,7 +207,7 @@ function UseFetchTestCases({ measureId, setErrors }) {
           visibleItems: currentSlice.length,
           offset: start,
           page: curPage,
-          limit: curLimit,
+          limit: (values.limit === "All" && values.limit) || curLimit,
           count,
           currentSlice,
           handlePageChange,
