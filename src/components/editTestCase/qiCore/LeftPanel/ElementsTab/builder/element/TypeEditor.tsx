@@ -8,6 +8,7 @@ import DateTimeComponent from "./types/DateTimeComponent";
 import BooleanComponent from "./types/BooleanComponent";
 import UriComponent from "./types/UriComponent";
 import DateComponent from "./types/DateComponent";
+import IntegerComponent, { IntegerType } from "./types/IntegerComponent";
 import CodesComponent from "./types/CodesComponent";
 import { Instant } from "@madie/madie-design-system/dist/react";
 
@@ -111,6 +112,30 @@ const TypeEditor = ({
             label={``}
             onChange={onChange}
             value={value}
+          />
+        );
+      case "positiveInt":
+        return (
+          <IntegerComponent
+            canEdit={true}
+            structureDefinition={structureDefinition}
+            fieldRequired={required}
+            label={``}
+            onChange={onChange}
+            value={value}
+            integerType={IntegerType.POSITIVE_INT}
+          />
+        );
+      case "unsignedInt":
+        return (
+          <IntegerComponent
+            canEdit={true}
+            structureDefinition={structureDefinition}
+            fieldRequired={required}
+            label={`Integer Field`}
+            onChange={onChange}
+            value={value}
+            integerType={IntegerType.UNSIGNED}
           />
         );
       case "code":
