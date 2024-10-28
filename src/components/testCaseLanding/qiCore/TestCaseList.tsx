@@ -639,7 +639,7 @@ const TestCaseList = (props: TestCaseListProps) => {
                         <Pagination
                           totalItems={totalItems}
                           visibleItems={visibleItems}
-                          limitOptions={[10, 25, 50]}
+                          limitOptions={[10, 25, 50, "All"]}
                           offset={offset}
                           handlePageChange={handlePageChange}
                           handleLimitChange={handleLimitChange}
