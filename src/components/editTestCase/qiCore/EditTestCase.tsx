@@ -993,7 +993,10 @@ const EditTestCase = (props: EditTestCaseProps) => {
                   <ExpectedActual
                     canEdit={canEdit}
                     groupPopulations={groupPopulations}
-                    executionRun={!_.isNil(populationGroupResults)}
+                    isTestCaseExecuted={!_.isNil(populationGroupResults)}
+                    clearTestResults={() => {
+                      setPopulationGroupResults(undefined);
+                    }}
                     errors={formik.errors.groupPopulations}
                     groupsStratificationAssociationMap={stratificationsMap}
                     onChange={(

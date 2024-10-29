@@ -24,7 +24,8 @@ export interface TestCasePopulationListProps {
   stratifications?: DisplayStratificationValue[];
   populationBasis: string;
   disableExpected?: boolean;
-  executionRun?: boolean;
+  isTestCaseExecuted?: boolean;
+  setIsTestCaseExecuted?: (isTestCaseExecuted: boolean) => void;
   onChange?: (
     populations: DisplayPopulationValue[],
     type: "actual" | "expected",
@@ -112,7 +113,8 @@ const TestCasePopulationList = ({
   stratifications,
   populationBasis,
   disableExpected = true,
-  executionRun = false,
+  isTestCaseExecuted = false,
+  setIsTestCaseExecuted,
   onChange,
   onStratificationChange,
   errors,
@@ -216,11 +218,15 @@ const TestCasePopulationList = ({
   };
 
   // we need to do an all check here for pass / no pass
-  const view = determineGroupResult(populationBasis, populations, executionRun);
+  const view = determineGroupResult(
+    populationBasis,
+    populations,
+    isTestCaseExecuted
+  );
   const viewStratification = determineGroupResultStratification(
     populationBasis,
     stratifications,
-    executionRun,
+    isTestCaseExecuted,
     groupsStratificationAssociationMap
   );
 
@@ -244,7 +250,7 @@ const TestCasePopulationList = ({
         className="population-table"
       >
         <caption>
-          {executionRun && (
+          {isTestCaseExecuted && (
             <StyledIcon
               icon={currentView === "pass" ? faCheckCircle : faTimesCircle}
               data-testid={`test-population-icon-${scoring}`}
@@ -272,7 +278,8 @@ const TestCasePopulationList = ({
         <tbody>
           {populations?.map((population, j) => (
             <TestCasePopulation
-              executionRun={executionRun}
+              isTestCaseExecuted={isTestCaseExecuted}
+              setIsTestCaseExecuted={setIsTestCaseExecuted}
               population={population}
               populationBasis={populationBasis}
               key={population.id}
@@ -295,7 +302,7 @@ const TestCasePopulationList = ({
                 groupsStratificationAssociationMap
               }
               strataCode={stratification.name}
-              executionRun={executionRun}
+              executionRun={isTestCaseExecuted}
               stratification={stratification}
               populationBasis={populationBasis}
               key={stratification.id}

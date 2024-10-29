@@ -5,7 +5,8 @@ import _ from "lodash";
 import ExpectActualInput from "./ExpectActualInput";
 
 export interface TestCasePopulationProps {
-  executionRun: boolean;
+  isTestCaseExecuted?: boolean;
+  setIsTestCaseExecuted?: (isTestCaseExecuted: boolean) => void;
   population: DisplayPopulationValue;
   populationBasis: string;
   showExpected?: boolean;
@@ -17,7 +18,8 @@ export interface TestCasePopulationProps {
 }
 
 const TestCasePopulation = ({
-  executionRun,
+  isTestCaseExecuted,
+  setIsTestCaseExecuted,
   population,
   populationBasis,
   disableExpected = false,
@@ -70,9 +72,10 @@ const TestCasePopulation = ({
             aria-labelledby={`${population.name}-expected`}
             name={population.name}
             expectedValue={population.expected}
-            onChange={(expectedValue) =>
-              onChange({ ...population, expected: expectedValue })
-            }
+            onChange={(expectedValue) => {
+              setIsTestCaseExecuted(false);
+              onChange({ ...population, expected: expectedValue });
+            }}
             populationBasis={populationBasis}
             disabled={disableExpected}
             data-testid={`test-population-${population.name}-expected`}
@@ -80,7 +83,7 @@ const TestCasePopulation = ({
           />
         </td>
         <td role="cell">
-          {executionRun ? (
+          {isTestCaseExecuted ? (
             <ExpectActualInput
               id={`${population.id}-actual-cb`}
               aria-labelledby={`${population.name}-actual`}
