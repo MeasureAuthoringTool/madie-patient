@@ -1,6 +1,10 @@
 import * as React from "react";
 import { render, screen, within } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import {
+  createMemoryRouter,
+  MemoryRouter,
+  RouterProvider,
+} from "react-router-dom";
 import TestCaseRoutes from "./TestCaseRoutes";
 import axios from "../../../api/axios-instance";
 import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
@@ -8,6 +12,13 @@ import { Model, PopulationType } from "@madie/madie-models";
 import useCqmConversionService, {
   CqmConversionService,
 } from "../../../api/CqmModelConversionService";
+import RedirectToList from "../RedirectToList";
+import EditTestCase from "../../editTestCase/qdm/EditTestCase";
+import TestCaseLandingWrapper from "../../testCaseLanding/common/TestCaseLandingWrapper";
+import SDEPage from "../../testCaseConfiguration/sde/SDEPage";
+import Expansion from "../../testCaseConfiguration/expansion/Expansion";
+import TestCaseData from "../../testCaseConfiguration/testCaseData/TestCaseData";
+import NotFound from "../../notfound/NotFound";
 
 jest.mock("../../../api/axios-instance");
 global.ResizeObserver = jest.fn().mockImplementation(() => ({
@@ -31,6 +42,9 @@ const serviceConfig: ServiceConfig = {
   },
   fhirElmTranslationService: {
     baseUrl: "fhir-elmTranslationService.com",
+  },
+  fhirService: {
+    baseUrl: "fhirService.com",
   },
   excelExportService: {
     baseUrl: "excelexport.com",
@@ -67,6 +81,35 @@ const mockMeasure = {
   ],
   createdBy: MEASURE_CREATEDBY,
 };
+
+const routesConfig = [
+  {
+    children: [
+      {
+        path: "/measures/:measureId/edit/test-cases",
+        element: <RedirectToList />,
+      },
+      {
+        path: "/measures/:measureId/edit/test-cases/:id",
+        element: <EditTestCase />,
+      },
+      {
+        path: "/measures/:measureId/edit/test-cases/list-page/sde",
+        element: <TestCaseLandingWrapper qdm children={<SDEPage />} />,
+      },
+      {
+        path: "/measures/:measureId/edit/test-cases/list-page/expansion",
+        element: <TestCaseLandingWrapper qdm children={<Expansion />} />,
+      },
+      {
+        path: "/measures/:measureId/edit/test-cases/list-page/test-case-data",
+        element: <TestCaseLandingWrapper qdm children={<TestCaseData />} />,
+      },
+      { path: "/404", element: <NotFound /> },
+      { path: "*", element: <NotFound /> },
+    ],
+  },
+];
 
 jest.mock("@madie/madie-util", () => ({
   useDocumentTitle: jest.fn(),
@@ -116,6 +159,23 @@ CQMConversionMock.mockImplementation(() => {
   return useCqmConversionServiceMockResolved;
 });
 
+const renderComponentViaRouter = (
+  initialEntries = ["/measures/m1234/edit/test-cases/list-page/sde"]
+) => {
+  const router = createMemoryRouter(routesConfig, {
+    initialEntries,
+  });
+  // const router = createMemoryRouter(routesConfig, {
+  //   initialEntries,
+  // });
+
+  return render(
+    <ApiContextProvider value={serviceConfig}>
+      <RouterProvider router={router} />
+    </ApiContextProvider>
+  );
+};
+
 describe("TestCaseRoutes", () => {
   it("should render the test case list component", async () => {
     mockedAxios.get.mockImplementation(() => {
@@ -132,14 +192,8 @@ describe("TestCaseRoutes", () => {
         ],
       });
     });
-    render(
-      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases"]}>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseRoutes />
-        </ApiContextProvider>
-      </MemoryRouter>
-    );
-
+    const { debug } = renderComponentViaRouter();
+    debug();
     const testCaseListTable = (await screen.findByTestId(
       "test-case-tbl"
     )) as HTMLTableElement;

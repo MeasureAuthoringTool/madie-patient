@@ -1,11 +1,11 @@
 import React, { useEffect, useCallback, useRef, useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import TestCaseLandingQdm from "../../testCaseLanding/qdm/TestCaseLanding";
 import EditTestCase from "../../editTestCase/qdm/EditTestCase";
 import NotFound from "../../notfound/NotFound";
 import StatusHandler from "../../statusHandler/StatusHandler";
 import { Measure, TestCaseImportOutcome } from "@madie/madie-models";
-import { measureStore, useFeatureFlags } from "@madie/madie-util";
+import { measureStore } from "@madie/madie-util";
 import { CqmMeasure, ValueSet } from "cqm-models";
 import useCqmConversionService from "../../../api/CqmModelConversionService";
 import useTerminologyServiceApi from "../../../api/useTerminologyServiceApi";
@@ -23,7 +23,6 @@ const TestCaseRoutes = () => {
     []
   );
   const [importErrors, setImportErrors] = useState<Array<string>>([]);
-  const featureFlags = useFeatureFlags();
   const [executionContextReady, setExecutionContextReady] =
     useState<boolean>(false);
   const [executing, setExecuting] = useState<boolean>();
@@ -169,6 +168,68 @@ const TestCaseRoutes = () => {
     }
   };
 
+  const routesConfig = [
+    {
+      children: [
+        {
+          path: "/measures/:measureId/edit/test-cases",
+          element: <RedirectToList />,
+        },
+        {
+          path: "/measures/:measureId/edit/test-cases/:id",
+          element: <EditTestCase />,
+        },
+        {
+          path: "/measures/:measureId/edit/test-cases/list-page",
+          element: (
+            <TestCaseLandingWrapper
+              qdm
+              children={
+                <TestCaseLandingQdm
+                  errors={cqmMeasureErrors}
+                  setErrors={setCqmMeasureErrors}
+                  setWarnings={setImportWarnings}
+                  setImportErrors={setImportErrors}
+                />
+              }
+            />
+          ),
+        },
+        {
+          path: "/measures/:measureId/edit/test-cases/list-page/:criteriaId",
+          element: (
+            <TestCaseLandingWrapper
+              qdm
+              children={
+                <TestCaseLandingQdm
+                  errors={cqmMeasureErrors}
+                  setErrors={setCqmMeasureErrors}
+                  setWarnings={setImportWarnings}
+                  setImportErrors={setImportErrors}
+                />
+              }
+            />
+          ),
+        },
+        {
+          path: "/measures/:measureId/edit/test-cases/list-page/sde",
+          element: <TestCaseLandingWrapper qdm children={<SDEPage />} />,
+        },
+        {
+          path: "/measures/:measureId/edit/test-cases/list-page/expansion",
+          element: <TestCaseLandingWrapper qdm children={<Expansion />} />,
+        },
+        {
+          path: "/measures/:measureId/edit/test-cases/list-page/test-case-data",
+          element: <TestCaseLandingWrapper qdm children={<TestCaseData />} />,
+        },
+        { path: "/404", element: <NotFound /> },
+        { path: "*", element: <NotFound /> },
+      ],
+    },
+  ];
+
+  const router = createBrowserRouter(routesConfig);
   return (
     <QdmExecutionContextProvider
       value={{
@@ -201,7 +262,7 @@ const TestCaseRoutes = () => {
           testDataId="import-warning-messages"
         />
       )}
-      <Routes>
+      {/* <Routes>
         <Route path="/measures/:measureId/edit/test-cases/list-page">
           <Route
             path="/measures/:measureId/edit/test-cases/list-page/sde"
@@ -247,20 +308,9 @@ const TestCaseRoutes = () => {
               />
             }
           />
-        </Route>
+        </Route> */}
 
-        <Route
-          path="/measures/:measureId/edit/test-cases"
-          element={<RedirectToList />}
-        />
-
-        <Route path="/measures/:measureId/edit/test-cases/:id">
-          <Route index element={<EditTestCase />} />
-          <Route path=":id" index element={<EditTestCase />} />
-        </Route>
-
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <RouterProvider router={router} />
     </QdmExecutionContextProvider>
   );
 };
