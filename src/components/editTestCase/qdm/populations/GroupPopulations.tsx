@@ -17,6 +17,7 @@ interface GroupPopulationsProps {
   disableExpected: boolean;
   testCaseResults: GroupPopulation[];
   isTestCaseExecuted: boolean;
+  setIsTestCaseExecuted?: () => void;
   groupPopulations: GroupPopulation[];
   onChange?: (
     groupPopulations: GroupPopulation[],
@@ -30,6 +31,7 @@ interface GroupPopulationsProps {
 const GroupPopulations = ({
   disableExpected = false,
   isTestCaseExecuted = false,
+  setIsTestCaseExecuted,
   testCaseResults,
   groupPopulations = [],
   onChange,
@@ -56,6 +58,7 @@ const GroupPopulations = ({
                 errors={errors?.[groupIndex]}
                 disableExpected={disableExpected}
                 isTestCaseExecuted={isTestCaseExecuted}
+                setIsTestCaseExecuted={setIsTestCaseExecuted}
                 populations={gp.populationValues}
                 populationResults={
                   testCaseResults

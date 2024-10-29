@@ -4,6 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 import TestCasePopulationList from "./TestCasePopulationList";
 import { MeasureScoring, PopulationType } from "@madie/madie-models";
 import userEvent from "@testing-library/user-event";
+import { act } from "react-dom/test-utils";
 
 describe("TestCasePopulationList component", () => {
   afterEach(() => {
@@ -77,13 +78,17 @@ describe("TestCasePopulationList component", () => {
         actual: true,
       },
     ];
-    const handleChange = jest.fn();
+    const handle1Change = jest.fn((arg1, arg2) => {});
+
+    const setIsTestCaseExecuted = jest.fn();
+
     render(
       <MemoryRouter>
         <TestCasePopulationList
           populations={testCasePopulations}
           populationResults={testCasePopulations}
-          onChange={handleChange}
+          onChange={handle1Change}
+          setIsTestCaseExecuted={setIsTestCaseExecuted}
           disableExpected={false}
           populationBasis="true"
           content="population"
@@ -103,10 +108,11 @@ describe("TestCasePopulationList component", () => {
       "test-population-initialPopulation-expected"
     );
     expect(ippCb).toBeInTheDocument();
-    userEvent.click(ippCb);
-    await waitFor(() => {
-      expect(handleChange).toHaveBeenCalled();
+
+    await act(async () => {
+      userEvent.click(ippCb);
     });
+    await waitFor(() => expect(handle1Change).toHaveBeenCalled());
   });
 
   it("should handle stratification changes for the test case population", async () => {

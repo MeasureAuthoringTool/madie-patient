@@ -33,6 +33,7 @@ export interface TestCasePopulationListProps {
   populationBasis: string;
   disableExpected?: boolean;
   isTestCaseExecuted?: boolean;
+  setIsTestCaseExecuted?: (isTestCaseExecuted: boolean) => void;
   onChange?: (
     populations: DisplayPopulationValue[],
     changedPopulation: DisplayPopulationValue
@@ -57,6 +58,7 @@ const TestCasePopulationList = ({
   populationBasis,
   disableExpected = true,
   isTestCaseExecuted = false,
+  setIsTestCaseExecuted,
   onChange,
   onStratificationChange,
   errors,
@@ -251,6 +253,7 @@ const TestCasePopulationList = ({
             <TestCasePopulation
               i={j}
               isTestCaseExecuted={isTestCaseExecuted}
+              setIsTestCaseExecuted={setIsTestCaseExecuted}
               strat={!_.isEmpty(stratification)}
               population={population}
               populationResult={populationResults ? populationResults[j] : null}
