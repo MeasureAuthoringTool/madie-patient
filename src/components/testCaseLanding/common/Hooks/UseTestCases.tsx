@@ -2,7 +2,7 @@ import { useCallback, useState, useEffect, useRef } from "react";
 import useTestCaseServiceApi from "../../../../api/useTestCaseServiceApi";
 import { TestCase } from "@madie/madie-models";
 import { measureStore } from "@madie/madie-util";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import queryString from "query-string";
 import * as _ from "lodash";
 import { SortingState } from "@tanstack/react-table";

@@ -134,7 +134,7 @@ const EditTestCase = () => {
   useEffect(() => {
     if (measure && measureId && id) {
       testCaseService.current
-        .getTestCase(id, measureId)
+        .getTestCase(id, measureId, false)
         .then((tc: TestCase) => {
           const nextTc = _.cloneDeep(tc);
           if (measure?.groups) {

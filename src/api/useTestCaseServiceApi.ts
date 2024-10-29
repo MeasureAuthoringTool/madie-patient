@@ -77,11 +77,16 @@ export class TestCaseServiceApi {
     }
   }
 
-  async getTestCase(testCaseId: string, measureId: string): Promise<TestCase> {
+  async getTestCase(
+    testCaseId: string,
+    measureId: string,
+    validateTest: boolean
+  ): Promise<TestCase> {
     try {
       const response = await axios.get<TestCase>(
         `${this.baseUrl}/measures/${measureId}/test-cases/${testCaseId}`,
         {
+          params: { validate: validateTest },
           headers: {
             Authorization: `Bearer ${this.getAccessToken()}`,
           },
@@ -207,12 +212,13 @@ export class TestCaseServiceApi {
     );
   }
 
-  async validateTestCaseBundle(bundle: any) {
+  async validateTestCaseBundle(bundle: any, model: string) {
     try {
       const response = await axios.post<HapiOperationOutcome>(
         `${this.baseUrl}/validations/bundles`,
         bundle,
         {
+          params: { model: model },
           headers: {
             Authorization: `Bearer ${this.getAccessToken()}`,
           },
