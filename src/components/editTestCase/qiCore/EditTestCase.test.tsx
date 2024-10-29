@@ -750,7 +750,7 @@ describe("EditTestCase component", () => {
       const createBtn = screen.getByRole("button", { name: "Save" });
       userEvent.click(createBtn);
 
-      const alert = await screen.findByTestId("create-test-case-alert");
+      const alert = await screen.findByTestId("error-toast");
       expect(alert).toBeInTheDocument();
       expect(alert).toHaveTextContent(
         "An error occurred while creating the test case."
@@ -784,11 +784,20 @@ describe("EditTestCase component", () => {
       const createBtn = screen.getByRole("button", { name: "Save" });
       userEvent.click(createBtn);
 
-      const alert = await screen.findByTestId("create-test-case-alert");
-      expect(alert).toBeInTheDocument();
+      const alert = await screen.findByTestId("error-toast");
       expect(alert).toHaveTextContent(
         "An error occurred - create did not return the expected successful result."
       );
+
+      const closeAlertBtn = screen.findByTestId("close-toast-button");
+      userEvent.click(await closeAlertBtn);
+      await waitFor(() => {
+        expect(
+          screen.queryByText(
+            "An error occurred - create did not return the expected successful result."
+          )
+        ).not.toBeInTheDocument();
+      });
     });
 
     it("should update test case when update button is clicked", async () => {
@@ -945,16 +954,18 @@ describe("EditTestCase component", () => {
       const createBtn = screen.getByRole("button", { name: "Save" });
       userEvent.click(createBtn);
 
-      const alert = await screen.findByTestId("create-test-case-alert");
+      const alert = await screen.findByTestId("error-toast");
       expect(alert).toHaveTextContent(
         "An error occurred while creating the test case."
       );
 
-      const closeAlertBtn = screen.findByTestId("close-create-test-case-alert");
+      const closeAlertBtn = screen.findByTestId("close-toast-button");
       userEvent.click(await closeAlertBtn);
-
-      const dismissedAlert = await screen.queryByRole("alert");
-      expect(dismissedAlert).not.toBeInTheDocument();
+      await waitFor(() => {
+        expect(
+          screen.queryByText("An error occurred while creating the test case.")
+        ).not.toBeInTheDocument();
+      });
     });
 
     it("should load existing test case data when viewing specific test case", async () => {
@@ -1933,7 +1944,6 @@ describe("EditTestCase component", () => {
       userEvent.type(seriesInput, testCaseDescription);
       const updateBtn = screen.getByRole("button", { name: "Save" });
       userEvent.click(updateBtn);
-
       const debugOutput = await screen.findByText(
         testCaseAlertToast
           ? "Changes updated successfully but the following error(s) were found"
@@ -2404,7 +2414,7 @@ describe("EditTestCase component", () => {
       await waitFor(() => expect(saveButton).not.toBeDisabled());
       userEvent.click(saveButton);
 
-      const alert = await screen.findByTestId("create-test-case-alert");
+      const alert = await screen.findByTestId("error-toast");
       expect(alert).toBeInTheDocument();
     });
 
