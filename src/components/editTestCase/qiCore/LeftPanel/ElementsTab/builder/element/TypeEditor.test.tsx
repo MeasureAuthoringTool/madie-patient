@@ -11,10 +11,6 @@ jest.mock("@madie/madie-util", () => ({
   }),
 }));
 
-const adverseEventStructureDefinition = {
-  id: "AdverseEvent.actuality",
-  path: "AdverseEvent.actuality",
-};
 const codingDef = {
   path: "Coding",
   definition: { resourceType: "StructureDefinition", id: "Coding" },
@@ -63,6 +59,75 @@ useFhirDefinitionsServiceApiMock.mockImplementation(
 );
 
 describe("TypeEditor Component", () => {
+  test("Should render String component", () => {
+    const handleChange = jest.fn();
+    render(
+      <TypeEditor
+        type={`http://hl7.org/fhirpath/System.String`}
+        required={false}
+        value={`test string`}
+        onChange={handleChange}
+        structureDefinition={null}
+      />
+    );
+    const inputField = screen.getByTestId("string-field-input-VALUE");
+    expect(inputField).toBeInTheDocument();
+    expect(inputField.value).toBe("test string");
+  });
+
+  test("Should render String component", () => {
+    const handleChange = jest.fn();
+    render(
+      <TypeEditor
+        type={`http://hl7.org/fhirpath/System.String`}
+        required={false}
+        value={`test string`}
+        onChange={handleChange}
+        structureDefinition={null}
+      />
+    );
+    const inputField = screen.getByTestId("string-field-input-VALUE");
+    expect(inputField).toBeInTheDocument();
+    expect(inputField.value).toBe("test string");
+  });
+
+  test("Should render Period component", () => {
+    const handleChange = jest.fn();
+    render(
+      <TypeEditor
+        type={`Period`}
+        required={false}
+        value={null}
+        onChange={handleChange}
+        structureDefinition={null}
+      />
+    );
+
+    expect(screen.getByText("start")).toBeInTheDocument();
+    expect(screen.getByText("End")).toBeInTheDocument();
+  });
+
+  test("Should render DateTime component", () => {
+    const handleChange = jest.fn();
+    render(
+      <TypeEditor
+        type={`http://hl7.org/fhirpath/System.DateTime`}
+        required={false}
+        value={`2024-09-26T08:33:33.000-05:00`}
+        onChange={handleChange}
+        structureDefinition={null}
+      />
+    );
+    const inputDate = screen.getByTestId("date-field-input");
+    expect(inputDate).toBeInTheDocument();
+
+    const inputTime = screen.getByPlaceholderText("hh:mm:ss aa");
+    expect(inputTime).toBeInTheDocument();
+
+    const inputZone = screen.getByTestId("timezone-input-field-");
+    expect(inputZone).toBeInTheDocument();
+  });
+
   test("Should render Boolean component", () => {
     const handleChange = jest.fn();
     render(
@@ -92,6 +157,7 @@ describe("TypeEditor Component", () => {
     );
     expect(screen.getByTestId("uri-input-field-URI")).toBeInTheDocument();
   });
+
   test("Should render Instant component by instant", () => {
     const handleChange = jest.fn();
     render(
@@ -117,5 +183,68 @@ describe("TypeEditor Component", () => {
       />
     );
     expect(screen.getByTestId("instant-input")).toBeInTheDocument();
+  });
+
+  test("Should render Date component", () => {
+    const handleChange = jest.fn();
+    render(
+      <TypeEditor
+        type={`date`}
+        required={false}
+        value={`2024-09-26`}
+        onChange={handleChange}
+        structureDefinition={null}
+      />
+    );
+
+    const inputField = screen.getByTestId("date-field--input");
+    expect(inputField).toBeInTheDocument();
+    expect(inputField.value).toBe("09/26/2024");
+  });
+
+  test("Should render PositiveInt component", () => {
+    const handleChange = jest.fn();
+    render(
+      <TypeEditor
+        type={`positiveInt`}
+        required={false}
+        value={`1234`}
+        onChange={handleChange}
+        structureDefinition={null}
+      />
+    );
+    const inputField = screen.getByTestId("integer-field-input-");
+    expect(inputField).toBeInTheDocument();
+    expect(inputField.value).toBe("1234");
+  });
+
+  test("Should render unsignedInt component", () => {
+    const handleChange = jest.fn();
+    render(
+      <TypeEditor
+        type={`unsignedInt`}
+        required={false}
+        value={`1234`}
+        onChange={handleChange}
+        structureDefinition={null}
+      />
+    );
+    const inputField = screen.getByTestId("integer-field-input-Integer Field");
+    expect(inputField).toBeInTheDocument();
+    expect(inputField.value).toBe("1234");
+  });
+
+  test("Should display unsupported", () => {
+    const handleChange = jest.fn();
+    render(
+      <TypeEditor
+        type={`test`}
+        required={false}
+        value={`test`}
+        onChange={handleChange}
+        structureDefinition={null}
+      />
+    );
+    expect(screen.getByText(`Unsupported Type [test]`)).toBeInTheDocument();
   });
 });
