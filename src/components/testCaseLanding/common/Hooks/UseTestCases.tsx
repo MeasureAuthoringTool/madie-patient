@@ -120,6 +120,7 @@ function UseFetchTestCases({ measureId, setErrors }) {
         Status: "executionStatus",
         Title: "title",
         Description: "description",
+        "Case #": "caseNumber", // Use an alternative key here
       };
       // edge case that will certainly get hit
       if (
@@ -162,14 +163,18 @@ function UseFetchTestCases({ measureId, setErrors }) {
         if (filter) {
           filteredTestCases = testCases.filter((tc) =>
             tc[filterMap[filter]]
-              ?.toLowerCase()
+              ?.toString()
+              .toLowerCase()
               .includes(searchQuery?.toLocaleLowerCase())
           );
         } else if (!filter) {
           // check for matches in any of the filter categories
           filteredTestCases = testCases.filter((tc) =>
             Object.values(filterMap).some((key) =>
-              tc[key]?.toLowerCase().includes(searchQuery?.toLowerCase())
+              tc[key]
+                ?.toString()
+                ?.toLowerCase()
+                .includes(searchQuery?.toLowerCase())
             )
           );
         }
