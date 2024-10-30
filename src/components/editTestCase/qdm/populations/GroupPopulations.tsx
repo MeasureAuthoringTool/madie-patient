@@ -17,7 +17,7 @@ interface GroupPopulationsProps {
   disableExpected: boolean;
   testCaseResults: GroupPopulation[];
   isTestCaseExecuted: boolean;
-  setIsTestCaseExecuted?: () => void;
+  setIsTestCaseExecuted?: (isTestCaseExecuted: boolean) => void;
   groupPopulations: GroupPopulation[];
   onChange?: (
     groupPopulations: GroupPopulation[],
