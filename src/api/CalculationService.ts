@@ -434,7 +434,7 @@ export class CalculationService {
                   strata.strataCode === strataResult.strataCode) ||
                 (strata.strataId && strata.strataId === strataResult.strataId)
             );
-            return population.result && stratification.result;
+            return population?.result && stratification?.result;
           }
         );
         // adjust the episode count for strata & associated population

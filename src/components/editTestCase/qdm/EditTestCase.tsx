@@ -322,6 +322,7 @@ const EditTestCase = () => {
                   canEdit={canEdit}
                   testCaseGroups={formik?.values?.groupPopulations}
                   isTestCaseExecuted={isTestCaseExecuted}
+                  setIsTestCaseExecuted={setIsTestCaseExecuted}
                   errors={formik.errors.groupPopulations}
                   groupCoverageResult={groupCoverageResult}
                   testCaseResults={testCaseResults}

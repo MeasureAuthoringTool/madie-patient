@@ -10,6 +10,7 @@ import userEvent from "@testing-library/user-event";
 import TestCaseStratification from "./TestCaseStratification";
 
 describe("Test Case Stratification Component", () => {
+  const setIsTestCaseExecuted = jest.fn();
   const { findByTestId, findByText, getByTestId } = screen;
   const renderStrats = (
     strataCode,
@@ -24,7 +25,8 @@ describe("Test Case Stratification Component", () => {
     render(
       <TestCaseStratification
         strataCode={strataCode}
-        executionRun={executionRun}
+        isTestCaseExecuted={executionRun}
+        setIsTestCaseExecuted={setIsTestCaseExecuted}
         stratification={stratification}
         stratResult={stratification}
         populationBasis={populationBasis}

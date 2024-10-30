@@ -13,7 +13,8 @@ import * as _ from "lodash";
 export interface PopulationsProps {
   disableExpected?: boolean;
   // we dont need disable actual as it's always disabled.
-  executionRun?: boolean;
+  isTestCaseExecuted?: boolean;
+  setIsTestCaseExecuted?: (isTestCaseExecuted) => void;
   groupPopulations: DisplayGroupPopulation[];
   onChange?: (
     groupPopulations: GroupPopulation[],
@@ -33,7 +34,8 @@ const GroupPopulations = ({
   disableExpected = false,
   groupsStratificationAssociationMap,
   // Execution run determines weather we display one of 3 views.
-  executionRun = false,
+  isTestCaseExecuted = false,
+  setIsTestCaseExecuted,
   groupPopulations = [],
   onChange,
   onStratificationChange,
@@ -50,7 +52,8 @@ const GroupPopulations = ({
               scoring={gp.scoring}
               errors={errors?.[i]}
               disableExpected={disableExpected}
-              executionRun={executionRun}
+              isTestCaseExecuted={isTestCaseExecuted}
+              setIsTestCaseExecuted={setIsTestCaseExecuted}
               populations={gp.populationValues}
               populationBasis={gp?.populationBasis}
               onChange={(populations, type, changedPopulation) => {
@@ -81,7 +84,8 @@ const GroupPopulations = ({
                 }
                 scoring={gp.scoring}
                 disableExpected={disableExpected}
-                executionRun={executionRun}
+                isTestCaseExecuted={isTestCaseExecuted}
+                setIsTestCaseExecuted={setIsTestCaseExecuted}
                 populations={null}
                 populationBasis={gp.populationBasis}
                 onStratificationChange={(

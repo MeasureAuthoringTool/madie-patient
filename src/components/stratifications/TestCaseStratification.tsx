@@ -5,7 +5,8 @@ import TestCaseStratificationRow from "./TestCaseStratificationRow";
 
 export interface TestCaseStratificationProps {
   strataCode: string;
-  executionRun: boolean;
+  isTestCaseExecuted?: boolean;
+  setIsTestCaseExecuted?: (isTestCaseExecuted: boolean) => void;
   stratification: DisplayStratificationValue;
   populationBasis: string;
   showExpected?: boolean;
@@ -19,7 +20,8 @@ export interface TestCaseStratificationProps {
 
 const TestCaseStratification = ({
   strataCode,
-  executionRun,
+  isTestCaseExecuted,
+  setIsTestCaseExecuted,
   stratification,
   populationBasis,
   disableExpected = false,
@@ -40,7 +42,8 @@ const TestCaseStratification = ({
             stratification={strat} //actuall a population value
             stratId={stratification.id}
             strataCode={strataCode}
-            executionRun={executionRun}
+            isTestCaseExecuted={isTestCaseExecuted}
+            setIsTestCaseExecuted={setIsTestCaseExecuted}
             populationBasis={populationBasis}
             disableExpected={disableExpected}
             onStratificationChange={onStratificationChange}
