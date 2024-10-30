@@ -289,17 +289,17 @@ describe("AttributeSection", () => {
     const typeSelect = await screen.findByRole("listbox");
     expect(typeSelect).toBeInTheDocument();
     const typeOptions = within(typeSelect).getAllByRole("option");
-    expect(typeOptions.length).toEqual(9);
-    userEvent.click(within(typeSelect).getByText("Date"));
+    expect(typeOptions.length).toEqual(8);
+    userEvent.click(within(typeSelect).getByText("DateTime"));
     const dateInput = (await screen.findByPlaceholderText(
-      "MM/DD/YYYY"
+      "MM/DD/YYYY hh:mm aa"
     )) as HTMLInputElement;
     const dateInput2 = await screen.findByTestId("CalendarIcon");
     expect(dateInput).toBeInTheDocument();
     expect(dateInput2).toBeInTheDocument();
 
-    fireEvent.change(dateInput, { target: { value: "01/01/2023" } });
-    expect(dateInput.value).toBe("01/01/2023");
+    fireEvent.change(dateInput, { target: { value: "01/01/2023 08:10 AM" } });
+    expect(dateInput.value).toBe("01/01/2023 08:10 AM");
 
     const addButton = screen.getByTestId("add-attribute-button");
     expect(addButton).toBeInTheDocument();
@@ -334,7 +334,7 @@ describe("AttributeSection", () => {
     const typeSelect = await screen.findByRole("listbox");
     expect(typeSelect).toBeInTheDocument();
     const typeOptions = within(typeSelect).getAllByRole("option");
-    expect(typeOptions.length).toEqual(9);
+    expect(typeOptions.length).toEqual(8);
     fireEvent.click(within(typeSelect).getByText("Ratio"));
   });
 
@@ -367,7 +367,7 @@ describe("AttributeSection", () => {
     const typeSelect = await screen.findByRole("listbox");
     expect(typeSelect).toBeInTheDocument();
     const typeOptions = within(typeSelect).getAllByRole("option");
-    expect(typeOptions.length).toEqual(9);
+    expect(typeOptions.length).toEqual(8);
     userEvent.click(within(typeSelect).getByText("DateTime"));
     const dateTimeInput = (await screen.findByPlaceholderText(
       "MM/DD/YYYY hh:mm aa"
@@ -444,16 +444,16 @@ describe("AttributeSection", () => {
     userEvent.click(typeSelectBtn);
     const typeSelect = await screen.findByRole("listbox");
     expect(typeSelect).toBeInTheDocument();
-    userEvent.click(within(typeSelect).getByText("Date"));
+    userEvent.click(within(typeSelect).getByText("DateTime"));
     const dateInput = (await screen.findByPlaceholderText(
-      "MM/DD/YYYY"
+      "MM/DD/YYYY hh:mm aa"
     )) as HTMLInputElement;
     const dateInput2 = await screen.findByTestId("CalendarIcon");
     expect(dateInput).toBeInTheDocument();
     expect(dateInput2).toBeInTheDocument();
 
-    fireEvent.change(dateInput, { target: { value: "01/01/2023" } });
-    expect(dateInput.value).toBe("01/01/2023");
+    fireEvent.change(dateInput, { target: { value: "01/01/2023 08:10 AM" } });
+    expect(dateInput.value).toBe("01/01/2023 08:10 AM");
 
     const addButton = screen.getByTestId("add-attribute-button");
     expect(addButton).toBeInTheDocument();
@@ -489,7 +489,7 @@ describe("AttributeSection", () => {
     const typeSelect = await screen.findByRole("listbox");
     expect(typeSelect).toBeInTheDocument();
     const typeOptions = within(typeSelect).getAllByRole("option");
-    expect(typeOptions.length).toEqual(9);
+    expect(typeOptions.length).toEqual(8);
     userEvent.click(within(typeSelect).getByText("Integer"));
     const integerField = (await screen.getByTestId(
       "integer-input-field-Integer"
@@ -529,7 +529,7 @@ describe("AttributeSection", () => {
     const typeSelect = await screen.findByRole("listbox");
     expect(typeSelect).toBeInTheDocument();
     const typeOptions = within(typeSelect).getAllByRole("option");
-    expect(typeOptions.length).toEqual(9);
+    expect(typeOptions.length).toEqual(8);
     fireEvent.click(within(typeSelect).getByText("Decimal"));
   });
 
@@ -561,7 +561,7 @@ describe("AttributeSection", () => {
     const typeSelect = await screen.findByRole("listbox");
     expect(typeSelect).toBeInTheDocument();
     const typeOptions = within(typeSelect).getAllByRole("option");
-    expect(typeOptions.length).toEqual(9);
+    expect(typeOptions.length).toEqual(8);
     fireEvent.click(within(typeSelect).getByText("DateTime"));
   });
 
@@ -593,7 +593,7 @@ describe("AttributeSection", () => {
     const typeSelect = await screen.findByRole("listbox");
     expect(typeSelect).toBeInTheDocument();
     const typeOptions = within(typeSelect).getAllByRole("option");
-    expect(typeOptions.length).toEqual(9);
+    expect(typeOptions.length).toEqual(8);
     fireEvent.click(within(typeSelect).getByText("Time"));
 
     const timeInput = await screen.findByLabelText("Time");
@@ -636,7 +636,7 @@ describe("AttributeSection", () => {
     const typeSelect = await screen.findByRole("listbox");
     expect(typeSelect).toBeInTheDocument();
     const typeOptions = within(typeSelect).getAllByRole("option");
-    expect(typeOptions.length).toEqual(9);
+    expect(typeOptions.length).toEqual(8);
     fireEvent.click(within(typeSelect).getByText("Quantity"));
     const addButton = screen.getByTestId("add-attribute-button");
     expect(addButton).toBeInTheDocument();
