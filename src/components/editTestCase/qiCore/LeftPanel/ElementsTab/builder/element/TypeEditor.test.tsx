@@ -229,7 +229,7 @@ describe("TypeEditor Component", () => {
         structureDefinition={null}
       />
     );
-    const inputField = screen.getByTestId("integer-field-input-Integer Field");
+    const inputField = screen.getByTestId("integer-field-input-");
     expect(inputField).toBeInTheDocument();
     expect(inputField.value).toBe("1234");
   });
