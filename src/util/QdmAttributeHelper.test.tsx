@@ -2,6 +2,7 @@ import {
   stringifyValue,
   getDisplayFromId,
   generateAttributesToDisplay,
+  determineAttributeTypeList,
 } from "./QdmAttributeHelpers";
 import cqmModels, { CQL } from "cqm-models";
 
@@ -496,5 +497,111 @@ describe("generateAttributesToDisplay", () => {
     expect(result[0].additionalElements[0].value).toBe(
       "654a289b170fde0000137c07 - Encounter, Performed: Outpatient Surgery Service"
     );
+  });
+});
+
+describe("determineAttributeTypeList", () => {
+  const info_result = {
+    path: "result",
+    instance: "Any",
+    validators: [],
+    getters: [],
+    setters: [],
+    _presplitPath: ["result"],
+    options: {},
+    _index: null,
+  };
+
+  describe("info.instance is 'Any'", () => {
+    test("QDM::CareGoal path = 'targetOutcome' ", () => {
+      const info = {
+        path: "targetOutcome",
+        instance: "Any",
+        validators: [],
+        getters: [],
+        setters: [],
+        _presplitPath: ["targetOutcome"],
+        options: {},
+        _index: null,
+      };
+      const result = determineAttributeTypeList(
+        "targetOutcome",
+        info,
+        "QDM::CareGoal"
+      );
+      expect(result.length).toBe(5);
+    });
+
+    test("QDM::LaboratoryTestPerformed path = 'result' ", () => {
+      const result = determineAttributeTypeList(
+        "result",
+        info_result,
+        "QDM::LaboratoryTestPerformed"
+      );
+      expect(result.length).toBe(5);
+    });
+
+    test("QDM::AssessmentPerformed path = 'result' ", () => {
+      const result = determineAttributeTypeList(
+        "result",
+        info_result,
+        "QDM::AssessmentPerformed"
+      );
+      expect(result.length).toBe(7);
+    });
+
+    test("QDM::DiagnosticStudyPerformed path = 'result' ", () => {
+      const result = determineAttributeTypeList(
+        "result",
+        info_result,
+        "QDM::DiagnosticStudyPerformed"
+      );
+      expect(result.length).toBe(5);
+    });
+
+    test("QDM::Component path = 'result' ", () => {
+      const result = determineAttributeTypeList(
+        "result",
+        info_result,
+        "QDM::Component"
+      );
+      expect(result.length).toBe(7);
+    });
+
+    test("QDM::ProcedurePerformed path = 'result' ", () => {
+      const result = determineAttributeTypeList(
+        "result",
+        info_result,
+        "QDM::ProcedurePerformed"
+      );
+      expect(result.length).toBe(5);
+    });
+
+    test("QDM::InterventionPerformed path = 'result' ", () => {
+      const result = determineAttributeTypeList(
+        "result",
+        info_result,
+        "QDM::InterventionPerformed"
+      );
+      expect(result.length).toBe(5);
+    });
+
+    test("QDM::PhysicalExamPerformed path = 'result' ", () => {
+      const result = determineAttributeTypeList(
+        "result",
+        info_result,
+        "QDM::PhysicalExamPerformed"
+      );
+      expect(result.length).toBe(8);
+    });
+
+    test("default", () => {
+      const result = determineAttributeTypeList(
+        "result",
+        info_result,
+        "QDM::default"
+      );
+      expect(result.length).toBe(5);
+    });
   });
 });

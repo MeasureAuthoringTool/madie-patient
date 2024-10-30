@@ -92,7 +92,13 @@ const AttributeSection = ({
       }
       // all other attribute cases
       else {
-        const nextTypes = [...determineAttributeTypeList(attr.path, attr.info)];
+        const nextTypes = [
+          ...determineAttributeTypeList(
+            attr.path,
+            attr.info,
+            selectedDataElement._type
+          ),
+        ];
         setTypes(nextTypes);
         if (nextTypes?.length === 1) {
           formik.setFieldValue("type", nextTypes[0]);
