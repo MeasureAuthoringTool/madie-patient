@@ -120,7 +120,7 @@ function UseFetchTestCases({ measureId, setErrors }) {
         Status: "executionStatus",
         Title: "title",
         Description: "description",
-        "Case #": "caseNumber", // Use an alternative key here
+        "Case #": "caseNumber",
       };
       // edge case that will certainly get hit
       if (
