@@ -238,6 +238,7 @@ const TestCasePopulationList = ({
               index={groupIndex}
               QDM={true}
               isTestCaseExecuted={isTestCaseExecuted}
+              setIsTestCaseExecuted={setIsTestCaseExecuted}
               strataCode={stratification?.name}
               stratification={stratification}
               stratResult={stratResult}

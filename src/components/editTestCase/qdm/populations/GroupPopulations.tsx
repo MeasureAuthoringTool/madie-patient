@@ -99,6 +99,7 @@ const GroupPopulations = ({
                         scoring={gp.scoring}
                         disableExpected={disableExpected}
                         isTestCaseExecuted={isTestCaseExecuted}
+                        setIsTestCaseExecuted={setIsTestCaseExecuted}
                         populations={strat.populationValues}
                         populationResults={
                           testCaseResults

@@ -302,7 +302,8 @@ const TestCasePopulationList = ({
                 groupsStratificationAssociationMap
               }
               strataCode={stratification.name}
-              executionRun={isTestCaseExecuted}
+              isTestCaseExecuted={isTestCaseExecuted}
+              setIsTestCaseExecuted={setIsTestCaseExecuted}
               stratification={stratification}
               populationBasis={populationBasis}
               key={stratification.id}

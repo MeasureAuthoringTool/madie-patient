@@ -132,6 +132,7 @@ describe("TestCasePopulationList component", () => {
     };
     const handleChange = jest.fn();
     const handleStratificationChange = jest.fn();
+    const setIsTestCaseExecuted = jest.fn();
 
     render(
       <MemoryRouter>
@@ -147,6 +148,7 @@ describe("TestCasePopulationList component", () => {
           content="population"
           groupIndex={0}
           scoring="Proportion"
+          setIsTestCaseExecuted={setIsTestCaseExecuted}
         />
       </MemoryRouter>
     );
@@ -183,6 +185,7 @@ describe("TestCasePopulationList component", () => {
     };
     const handleChange = jest.fn();
     const handleStratificationChange = jest.fn();
+    const setIsTestCaseExecuted = jest.fn();
 
     render(
       <MemoryRouter>
@@ -199,6 +202,7 @@ describe("TestCasePopulationList component", () => {
           groupIndex={0}
           scoring="Proportion"
           isTestCaseExecuted={true}
+          setIsTestCaseExecuted={setIsTestCaseExecuted}
         />
       </MemoryRouter>
     );

@@ -140,12 +140,13 @@ describe("TestCasePopulationList component", () => {
     };
     const handleChange = jest.fn();
     const handleStratificationChange = jest.fn();
-
+    const setIsTestCaseExecuted = jest.fn();
     render(
       <MemoryRouter>
         <TestCasePopulationList
           populations={testCasePopulations}
           stratifications={testCaseStratifications}
+          setIsTestCaseExecuted={setIsTestCaseExecuted}
           onChange={handleChange}
           onStratificationChange={handleStratificationChange}
           groupsStratificationAssociationMap={groupStratificationsMap}
@@ -194,6 +195,7 @@ describe("TestCasePopulationList component", () => {
     const groupStratificationsMap = {
       "1": [PopulationType.INITIAL_POPULATION],
     };
+    const setIsTestCaseExecuted = jest.fn();
     render(
       <MemoryRouter>
         <TestCasePopulationList
@@ -207,7 +209,8 @@ describe("TestCasePopulationList component", () => {
           content="population"
           i={0}
           scoring="Proportion"
-          executionRun={true}
+          isTestCaseExecuted={true}
+          setIsTestCaseExecuted={setIsTestCaseExecuted}
         />
       </MemoryRouter>
     );
