@@ -41,8 +41,44 @@ export const ENTITY_TYPES = [
   "Location",
 ];
 
+const BASIC_ATTRIBUTE_TYPES_FOR_ANY_INSTANCE = [
+  "Integer",
+  "Decimal",
+  "Code",
+  "Quantity",
+  "Ratio",
+];
+
+const getAttributeTypesForAnyInstance = (name: string) => {
+  switch (name) {
+    case "QDM::CareGoal":
+      return BASIC_ATTRIBUTE_TYPES_FOR_ANY_INSTANCE;
+    case "QDM::LaboratoryTestPerformed":
+      return BASIC_ATTRIBUTE_TYPES_FOR_ANY_INSTANCE;
+    case "QDM::AssessmentPerformed":
+      return [...BASIC_ATTRIBUTE_TYPES_FOR_ANY_INSTANCE, "DateTime", "Time"];
+    case "QDM::DiagnosticStudyPerformed":
+      return BASIC_ATTRIBUTE_TYPES_FOR_ANY_INSTANCE;
+    case "QDM::Component":
+      return [...BASIC_ATTRIBUTE_TYPES_FOR_ANY_INSTANCE, "DateTime", "Time"];
+    case "QDM::ProcedurePerformed":
+      return BASIC_ATTRIBUTE_TYPES_FOR_ANY_INSTANCE;
+    case "QDM::InterventionPerformed":
+      return BASIC_ATTRIBUTE_TYPES_FOR_ANY_INSTANCE;
+    case "QDM::PhysicalExamPerformed":
+      return [
+        ...BASIC_ATTRIBUTE_TYPES_FOR_ANY_INSTANCE,
+        "Date",
+        "DateTime",
+        "Time",
+      ];
+    default:
+      return BASIC_ATTRIBUTE_TYPES_FOR_ANY_INSTANCE;
+  }
+};
+
 // This code came over from Bonnie
-export const determineAttributeTypeList = (path, info) => {
+export const determineAttributeTypeList = (path, info, _type) => {
   // if is array type we need to find out what type it should be
   if (info.instance == "Array")
     if (info.$isMongooseDocumentArray)
@@ -62,18 +98,9 @@ export const determineAttributeTypeList = (path, info) => {
     else return ["???"];
   // TODO: Handle situation of unknown type better.
   // If this is an any type, there will be more options than one.
-  else if (info.instance == "Any")
-    // TODO: Filter these more if possible
-    return [
-      "Code",
-      "Quantity",
-      "Ratio",
-      "Integer",
-      "Decimal",
-      "Date",
-      "DateTime",
-      "Time",
-    ];
+  else if (info.instance == "Any") {
+    return getAttributeTypesForAnyInstance(_type);
+  }
   // It this is an AnyEntity type
   else if (info.instance == "AnyEntity") return ENTITY_TYPES;
   // If it is an interval, it may be one of DateTime or one of Quantity
