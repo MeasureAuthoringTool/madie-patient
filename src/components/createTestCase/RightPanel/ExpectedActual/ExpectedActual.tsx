@@ -7,7 +7,8 @@ const ExpectedActual = ({
   onChange,
   onStratificationChange,
   errors,
-  executionRun = false,
+  isTestCaseExecuted = false,
+  clearTestResults,
   groupsStratificationAssociationMap,
 }) => {
   return (
@@ -22,7 +23,8 @@ const ExpectedActual = ({
         onChange={onChange}
         onStratificationChange={onStratificationChange}
         errors={errors}
-        executionRun={executionRun}
+        isTestCaseExecuted={isTestCaseExecuted}
+        setIsTestCaseExecuted={clearTestResults}
       />
     </div>
   );

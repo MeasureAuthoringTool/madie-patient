@@ -82,7 +82,7 @@ describe("Group Populations", () => {
     const handleChange = jest.fn();
     render(
       <GroupPopulations
-        executionRun
+        isTestCaseExecuted={true}
         groupPopulations={groupPopulations}
         onChange={handleChange}
       />
@@ -139,11 +139,13 @@ describe("Group Populations", () => {
   });
 
   it("should handle null groupPopulation input", () => {
+    const mockExecute = jest.fn();
     render(
       <GroupPopulations
         groupPopulations={null}
         onChange={jest.fn()}
-        executionRun
+        isTestCaseExecuted
+        setIsTestCaseExecuted={mockExecute}
       />
     );
     expect(
@@ -188,7 +190,7 @@ describe("Group Populations", () => {
     render(
       <GroupPopulations
         disableExpected={true}
-        executionRun
+        isTestCaseExecuted={true}
         groupPopulations={testCaseGroups}
         onChange={handleChange}
         groupsStratificationAssociationMap={groupStratificationsMap}
@@ -206,10 +208,12 @@ describe("Group Populations", () => {
   it("should handle checkbox changes", () => {
     testCaseGroups[0].scoring = MeasureScoring.CONTINUOUS_VARIABLE;
     const handleChange = jest.fn();
+    const setIsTestCaseExecuted = jest.fn();
     const handleStratificationChange = jest.fn();
     render(
       <GroupPopulations
-        executionRun
+        isTestCaseExecuted={true}
+        setIsTestCaseExecuted={setIsTestCaseExecuted}
         groupPopulations={testCaseGroups}
         onChange={handleChange}
         onStratificationChange={handleStratificationChange}

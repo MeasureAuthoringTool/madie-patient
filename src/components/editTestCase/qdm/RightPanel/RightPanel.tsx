@@ -12,6 +12,7 @@ const RightPanel = ({
   testCaseGroups,
   testCaseResults,
   isTestCaseExecuted,
+  setIsTestCaseExecuted,
   errors,
   groupCoverageResult,
   calculationErrors,
@@ -56,6 +57,7 @@ const RightPanel = ({
             onChange={onChange}
             errors={errors}
             isTestCaseExecuted={isTestCaseExecuted}
+            setIsTestCaseExecuted={setIsTestCaseExecuted}
           />
         )}
         {activeTab === "details" && (

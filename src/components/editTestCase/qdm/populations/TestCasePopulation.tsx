@@ -17,6 +17,7 @@ export interface TestCasePopulationProps {
   i?: number;
   strat?: boolean;
   isTestCaseExecuted?: boolean;
+  setIsTestCaseExecuted?: (isTestCaseExecuted: boolean) => void;
 }
 
 const TestCasePopulation = ({
@@ -31,6 +32,7 @@ const TestCasePopulation = ({
   strat,
   i,
   isTestCaseExecuted,
+  setIsTestCaseExecuted,
 }: TestCasePopulationProps) => {
   const populationNameTemplate = (prop) => {
     if (prop === PopulationType.INITIAL_POPULATION) {
@@ -80,9 +82,10 @@ const TestCasePopulation = ({
             aria-labelledby={`${population.name}-expected`}
             name={population.name}
             expectedValue={population.expected}
-            onChange={(expectedValue) =>
-              onChange({ ...population, expected: expectedValue })
-            }
+            onChange={(expectedValue) => {
+              setIsTestCaseExecuted(false);
+              return onChange({ ...population, expected: expectedValue });
+            }}
             populationBasis={populationBasis}
             disabled={disableExpected}
             data-testid={

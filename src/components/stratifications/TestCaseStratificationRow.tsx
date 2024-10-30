@@ -6,7 +6,8 @@ import ExpectActualInput from "../populations/ExpectActualInput";
 
 export interface TestCaseStratificationRowProps {
   strataCode: string;
-  executionRun: boolean;
+  isTestCaseExecuted: boolean;
+  setIsTestCaseExecuted: (isTestCaseExecuted: boolean) => void;
   stratification: DisplayStratificationValue;
   populationBasis: string;
   showExpected?: boolean;
@@ -21,7 +22,8 @@ export interface TestCaseStratificationRowProps {
 
 const TestCaseStratificationRow = ({
   strataCode,
-  executionRun,
+  isTestCaseExecuted,
+  setIsTestCaseExecuted,
   stratification,
   populationBasis,
   disableExpected = false,
@@ -44,6 +46,7 @@ const TestCaseStratificationRow = ({
           expectedValue={stratification.expected}
           disabled={disableExpected}
           onChange={(expectedValue) => {
+            setIsTestCaseExecuted(false);
             onStratificationChange(
               {
                 ...stratification,
@@ -58,19 +61,20 @@ const TestCaseStratificationRow = ({
         />
       </td>
       <td role="cell">
-        {executionRun ? (
+        {isTestCaseExecuted ? (
           <ExpectActualInput
             id={`${stratification.name}-actual-cb`}
             expectedValue={stratification.actual}
-            onChange={(expectedValue) =>
+            onChange={(expectedValue) => {
+              setIsTestCaseExecuted(false);
               onStratificationChange(
                 {
                   ...stratification,
                   actual: expectedValue,
                 },
                 stratId
-              )
-            }
+              );
+            }}
             populationBasis={populationBasis}
             disabled={true}
             data-testid={`${strataCode}-${stratification.name}-actual`}
