@@ -204,7 +204,7 @@ const TestCaseTablePopover = (props: TestCaseTablePopoverProps) => {
             </>
           )}
 
-          {canEdit && featureFlags?.ShiftTestCasesDates && (
+          {canEdit && (
             <button
               id={`shift-dates-btn-${selectedTestCase?.id}`}
               aria-label={`shift-dates-${selectedTestCase?.title}`}
