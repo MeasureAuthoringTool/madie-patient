@@ -24,8 +24,7 @@ const TestCaseListSideBarNav = ({
   qdm,
 }: TestCaseListSideBarNavProps) => {
   const featureFlags = useFeatureFlags();
-  const showConfigurationSection =
-    (!qdm && featureFlags?.ShiftTestCasesDates) || qdm;
+
   let navigate = useNavigate();
   const { measureId, criteriaId } = useParams<{
     measureId: string;
@@ -96,68 +95,63 @@ const TestCaseListSideBarNav = ({
             )}
           </Tabs>
         )}
+        <>
+          <div className="nav-collapse-container">
+            <button
+              className="nav-collapser-title"
+              onClick={() => {
+                setShowConfigTabs(!showConfigTabs);
+              }}
+              data-testid="qdm-nav-collapser"
+              id="qdm-nav-collapser"
+              tw="px-2"
+            >
+              Configuration
+              <span className="tab-dropdown">
+                {showConfigTabs ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </span>
+            </button>
+          </div>
 
-        {showConfigurationSection && (
-          <>
-            <div className="nav-collapse-container">
-              <button
-                className="nav-collapser-title"
-                onClick={() => {
-                  setShowConfigTabs(!showConfigTabs);
-                }}
-                data-testid="qdm-nav-collapser"
-                id="qdm-nav-collapser"
-                tw="px-2"
-              >
-                Configuration
-                <span className="tab-dropdown">
-                  {showConfigTabs ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                </span>
-              </button>
-            </div>
-
-            {showConfigTabs && (
-              <Tabs
+          {showConfigTabs && (
+            <Tabs
+              type="C"
+              size="standard"
+              orientation="vertical"
+              onChange={handleChange}
+              value={endRoute}
+            >
+              {qdm && (
+                <Tab
+                  label="SDE"
+                  value="sde"
+                  data-testid="nav-link-sde"
+                  type="C"
+                  orientation="vertical"
+                  onChange={handleChange}
+                />
+              )}
+              {qdm && (
+                <Tab
+                  label="Expansion"
+                  value="expansion"
+                  data-testid="nav-link-expansion"
+                  type="C"
+                  orientation="vertical"
+                  onChange={handleChange}
+                />
+              )}
+              <Tab
+                label="Test Case Data"
+                value="test-case-data"
+                data-testid="test-case-data"
                 type="C"
-                size="standard"
                 orientation="vertical"
                 onChange={handleChange}
-                value={endRoute}
-              >
-                {qdm && (
-                  <Tab
-                    label="SDE"
-                    value="sde"
-                    data-testid="nav-link-sde"
-                    type="C"
-                    orientation="vertical"
-                    onChange={handleChange}
-                  />
-                )}
-                {qdm && (
-                  <Tab
-                    label="Expansion"
-                    value="expansion"
-                    data-testid="nav-link-expansion"
-                    type="C"
-                    orientation="vertical"
-                    onChange={handleChange}
-                  />
-                )}
-                {featureFlags?.ShiftTestCasesDates && (
-                  <Tab
-                    label="Test Case Data"
-                    value="test-case-data"
-                    data-testid="test-case-data"
-                    type="C"
-                    orientation="vertical"
-                    onChange={handleChange}
-                  />
-                )}
-              </Tabs>
-            )}
-          </>
-        )}
+              />
+            </Tabs>
+          )}
+        </>
       </Nav>
     </OuterWrapper>
   );

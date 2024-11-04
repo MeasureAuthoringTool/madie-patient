@@ -211,14 +211,10 @@ const TestCaseRoutes = () => {
             path="/measures/:measureId/edit/test-cases/list-page/expansion"
             element={<TestCaseLandingWrapper qdm children={<Expansion />} />}
           />
-          {featureFlags?.ShiftTestCasesDates && (
-            <Route
-              path="/measures/:measureId/edit/test-cases/list-page/test-case-data"
-              element={
-                <TestCaseLandingWrapper qdm children={<TestCaseData />} />
-              }
-            />
-          )}
+          <Route
+            path="/measures/:measureId/edit/test-cases/list-page/test-case-data"
+            element={<TestCaseLandingWrapper qdm children={<TestCaseData />} />}
+          />
           <Route
             index
             element={
