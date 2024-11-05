@@ -27,12 +27,13 @@ describe("Action Center Component", () => {
     userEvent.click(filterBySelect);
 
     const filterByOptions = screen.getAllByRole("option") as HTMLLIElement[];
-    expect(filterByOptions[0]).toHaveTextContent("Status");
-    expect(filterByOptions[1]).toHaveTextContent("Group");
-    expect(filterByOptions[2]).toHaveTextContent("Title");
-    expect(filterByOptions[3]).toHaveTextContent("Description");
+    expect(filterByOptions[0]).toHaveTextContent("Case #");
+    expect(filterByOptions[1]).toHaveTextContent("Status");
+    expect(filterByOptions[2]).toHaveTextContent("Group");
+    expect(filterByOptions[3]).toHaveTextContent("Title");
+    expect(filterByOptions[4]).toHaveTextContent("Description");
 
-    userEvent.click(filterByOptions[0]);
+    userEvent.click(filterByOptions[1]);
 
     const searchInput = screen.getByRole("textbox", { name: "Search" });
     expect(searchInput).toBeInTheDocument();
