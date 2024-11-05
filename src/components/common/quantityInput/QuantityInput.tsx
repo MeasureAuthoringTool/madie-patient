@@ -5,6 +5,7 @@ import "styled-components/macro";
 import { CQL } from "cqm-models";
 import * as ucum from "@lhncbc/ucum-lhc";
 import { validate, ValidationResult } from "./validate";
+import _ from "lodash";
 
 export interface QuantityProps {
   quantity: CQL.Quantity;
@@ -75,7 +76,11 @@ const QuantityInput = ({
   const [unitText, setUnitText] = useState<String>(valueFn(currentUnit?.value));
 
   useEffect(() => {
-    if (currentQuantity && currentQuantity.value && currentQuantity.unit) {
+    if (
+      currentQuantity &&
+      _.isNumber(currentQuantity.value) &&
+      currentQuantity.unit
+    ) {
       onQuantityChange(currentQuantity);
     } else {
       onQuantityChange(null);
@@ -105,9 +110,10 @@ const QuantityInput = ({
 
   const handleQuantityValueChange = (newValue) => {
     const newQuantity: CQL.Quantity = {
-      value: Number(newValue),
+      value: newValue ? Number(newValue) : "",
       unit: currentQuantity.unit,
     };
+
     setCurrentQuantity(newQuantity);
   };
 
