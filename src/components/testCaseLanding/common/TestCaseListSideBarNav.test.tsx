@@ -65,7 +65,7 @@ describe("TestCase component", () => {
     );
 
     expect(screen.getByRole("navigation")).toBeInTheDocument();
-    expect(screen.getAllByRole("tab").length).toEqual(2);
+    expect(screen.getAllByRole("tab").length).toEqual(3);
     const activeLink = screen.getByRole("tab", {
       name: "Population Criteria 2",
     });

@@ -83,7 +83,6 @@ jest.mock("@madie/madie-util", () => ({
   },
   useFeatureFlags: jest.fn().mockImplementation(() => ({
     applyDefaults: false,
-    ShiftTestCasesDates: true,
   })),
   useOktaTokens: () => ({
     getAccessToken: () => "test.jwt",

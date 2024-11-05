@@ -120,7 +120,11 @@ const TypeEditor = ({
             canEdit={true}
             structureDefinition={structureDefinition}
             fieldRequired={required}
-            label={``}
+            label={_.capitalize(
+              structureDefinition?.id?.substring(
+                structureDefinition?.id?.lastIndexOf(".") + 1
+              )
+            )}
             onChange={onChange}
             value={value}
             integerType={IntegerType.POSITIVE_INT}
@@ -132,7 +136,11 @@ const TypeEditor = ({
             canEdit={true}
             structureDefinition={structureDefinition}
             fieldRequired={required}
-            label={`Integer Field`}
+            label={_.capitalize(
+              structureDefinition?.id?.substring(
+                structureDefinition?.id?.lastIndexOf(".") + 1
+              )
+            )}
             onChange={onChange}
             value={value}
             integerType={IntegerType.UNSIGNED}

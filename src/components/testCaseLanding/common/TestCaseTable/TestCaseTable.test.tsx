@@ -82,7 +82,6 @@ let mockApplyDefaults = false;
 jest.mock("@madie/madie-util", () => ({
   useFeatureFlags: jest.fn().mockImplementation(() => ({
     applyDefaults: mockApplyDefaults,
-    ShiftTestCasesDates: true,
     TestCaseID: false,
   })),
 }));
@@ -345,7 +344,6 @@ describe("TestCase component", () => {
     const exportTestCase = jest.fn();
     const onCloneTestCase = jest.fn();
     (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      ShiftTestCasesDates: true,
       TestCaseID: false,
     }));
 

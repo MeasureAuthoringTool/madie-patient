@@ -217,6 +217,7 @@ describe("Group Populations", () => {
   it("should handle checkbox changes", () => {
     testCaseGroups[0].scoring = MeasureScoring.CONTINUOUS_VARIABLE;
     const handleChange = jest.fn();
+    const setIsTestCaseExecuted = jest.fn();
     const updatedTestCaseGroups = [
       {
         groupId: "Group1_ID",
@@ -246,6 +247,7 @@ describe("Group Populations", () => {
         isTestCaseExecuted={true}
         testCaseResults={testCaseGroups}
         groupPopulations={testCaseGroups}
+        setIsTestCaseExecuted={setIsTestCaseExecuted}
         onChange={handleChange}
         errors={errors}
       />
