@@ -1,14 +1,17 @@
+// import fetchMocks, { enableFetchMocks } from "jest-fetch-mock";
+// enableFetchMocks();
 import * as React from "react";
-import { render, screen, within } from "@testing-library/react";
 import {
-  createMemoryRouter,
-  MemoryRouter,
-  RouterProvider,
-} from "react-router-dom";
-import TestCaseRoutes from "./TestCaseRoutes";
+  prettyDOM,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
+import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import axios from "../../../api/axios-instance";
 import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
-import { Model, PopulationType } from "@madie/madie-models";
+import { Measure, Model, PopulationType } from "@madie/madie-models";
 import useCqmConversionService, {
   CqmConversionService,
 } from "../../../api/CqmModelConversionService";
@@ -19,6 +22,13 @@ import SDEPage from "../../testCaseConfiguration/sde/SDEPage";
 import Expansion from "../../testCaseConfiguration/expansion/Expansion";
 import TestCaseData from "../../testCaseConfiguration/testCaseData/TestCaseData";
 import NotFound from "../../notfound/NotFound";
+import { QdmExecutionContextProvider } from "./QdmExecutionContext";
+import useTerminologyServiceApi, {
+  TerminologyServiceApi,
+} from "../../../api/useTerminologyServiceApi";
+import TestCaseLandingQdm from "../../testCaseLanding/qdm/TestCaseLanding";
+import { wait } from "@testing-library/user-event/dist/utils";
+import TestCaseRoutes from "./TestCaseRoutes";
 
 jest.mock("../../../api/axios-instance");
 global.ResizeObserver = jest.fn().mockImplementation(() => ({
@@ -27,7 +37,7 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
   disconnect: jest.fn(),
 }));
 const mockedAxios = axios as jest.Mocked<typeof axios>;
-const serviceConfig: ServiceConfig = {
+export const serviceConfig: ServiceConfig = {
   measureService: {
     baseUrl: "measure.url",
   },
@@ -56,11 +66,10 @@ const mockMeasure = {
   id: "m1234",
   model: Model.QDM_5_6,
   cqlLibraryName: "CM527Library",
-  measurementPeriodStart: "01/05/2022",
-  measurementPeriodEnd: "03/07/2022",
+  measurementPeriodStart: new Date("01/05/2022"),
+  measurementPeriodEnd: new Date("03/07/2022"),
   active: true,
   cqlErrors: false,
-  errors: ["error"],
   elmJson: "Fak3",
   groups: [
     {
@@ -80,36 +89,7 @@ const mockMeasure = {
     },
   ],
   createdBy: MEASURE_CREATEDBY,
-};
-
-const routesConfig = [
-  {
-    children: [
-      {
-        path: "/measures/:measureId/edit/test-cases",
-        element: <RedirectToList />,
-      },
-      {
-        path: "/measures/:measureId/edit/test-cases/:id",
-        element: <EditTestCase />,
-      },
-      {
-        path: "/measures/:measureId/edit/test-cases/list-page/sde",
-        element: <TestCaseLandingWrapper qdm children={<SDEPage />} />,
-      },
-      {
-        path: "/measures/:measureId/edit/test-cases/list-page/expansion",
-        element: <TestCaseLandingWrapper qdm children={<Expansion />} />,
-      },
-      {
-        path: "/measures/:measureId/edit/test-cases/list-page/test-case-data",
-        element: <TestCaseLandingWrapper qdm children={<TestCaseData />} />,
-      },
-      { path: "/404", element: <NotFound /> },
-      { path: "*", element: <NotFound /> },
-    ],
-  },
-];
+} as Measure;
 
 jest.mock("@madie/madie-util", () => ({
   useDocumentTitle: jest.fn(),
@@ -138,9 +118,9 @@ jest.mock("@madie/madie-util", () => ({
     subscribe: () => {
       return { unsubscribe: () => null };
     },
-    updateRouteHandlerState: () => null,
-    state: { canTravel: false, pendingPath: "" },
-    initialState: { canTravel: false, pendingPath: "" },
+    updateRouteHandlerState: () => jest.fn(),
+    state: { canTravel: true, pendingPath: "" },
+    initialState: { canTravel: true, pendingPath: "" },
   },
 }));
 
@@ -154,46 +134,59 @@ const CQMConversionMock =
 const useCqmConversionServiceMockResolved = {
   convertToCqmMeasure: jest.fn().mockResolvedValue(mockMeasure),
 } as unknown as CqmConversionService;
-
 CQMConversionMock.mockImplementation(() => {
   return useCqmConversionServiceMockResolved;
 });
 
 const renderComponentViaRouter = (
-  initialEntries = ["/measures/m1234/edit/test-cases/list-page/sde"]
+  initialEntry = "/measures/m1234/edit/test-cases/list-page"
 ) => {
-  const router = createMemoryRouter(routesConfig, {
-    initialEntries,
-  });
-  // const router = createMemoryRouter(routesConfig, {
-  //   initialEntries,
-  // });
-
   return render(
     <ApiContextProvider value={serviceConfig}>
-      <RouterProvider router={router} />
+      <QdmExecutionContextProvider
+        value={{
+          measureState: [mockMeasure, jest.fn()],
+          cqmMeasureState: [{}, jest.fn()],
+          executionContextReady: true,
+          setExecutionContextReady: jest.fn(),
+          executing: false,
+          setExecuting: jest.fn(),
+          contextFailure: false,
+        }}
+      >
+        <TestCaseRoutes initialEntry={initialEntry} />
+      </QdmExecutionContextProvider>
     </ApiContextProvider>
   );
 };
 
-describe("TestCaseRoutes", () => {
+describe("QDM TestCaseRoutes", () => {
   it("should render the test case list component", async () => {
-    mockedAxios.get.mockImplementation(() => {
-      return Promise.resolve({
-        data: [
-          {
-            id: "id1",
-            title: "TC12",
-            description: "Desc1",
-            series: "IPP_Pass",
-            status: null,
-            lastModifiedAt: "2024-09-10T08:40:14.382Z",
-          },
-        ],
-      });
+    mockedAxios.get.mockImplementation((args) => {
+      if (
+        args &&
+        args.startsWith(
+          serviceConfig.testCaseService.baseUrl + "/measures/m1234/test-cases"
+        )
+      ) {
+        return Promise.resolve({
+          data: [
+            {
+              id: "id1",
+              title: "TC1",
+              description: "Desc1",
+              series: "IPP_Pass",
+              lastModifiedAt: "2024-09-10T09:19:14.382Z",
+              status: null,
+            },
+          ],
+        });
+      } else {
+        return null;
+      }
     });
-    const { debug } = renderComponentViaRouter();
-    debug();
+
+    renderComponentViaRouter("/measures/m1234/edit/test-cases/list-page");
     const testCaseListTable = (await screen.findByTestId(
       "test-case-tbl"
     )) as HTMLTableElement;
@@ -201,12 +194,12 @@ describe("TestCaseRoutes", () => {
     expect(tBody.rows.length).toBe(1);
     expect(tBody.rows.item(0).cells[0]).toHaveTextContent("Invalid");
     expect(tBody.rows.item(0).cells[1]).toHaveTextContent("IPP_Pass");
-    expect(tBody.rows.item(0).cells[2]).toHaveTextContent("TC12");
+    expect(tBody.rows.item(0).cells[2]).toHaveTextContent("TC1");
     expect(tBody.rows.item(0).cells[3]).toHaveTextContent("Desc1");
     expect(tBody.rows.item(0).cells[4]).toHaveTextContent("09/10/2024");
     expect(
       within(tBody.rows.item(0).cells[5]).getByRole("button", {
-        name: "select-action-TC12",
+        name: "select-action-TC1",
       })
     ).toBeInTheDocument();
   });
@@ -225,15 +218,7 @@ describe("TestCaseRoutes", () => {
         ],
       });
     });
-    render(
-      <MemoryRouter
-        initialEntries={["/measures/m1234/edit/test-cases/list-page/sde"]}
-      >
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseRoutes />
-        </ApiContextProvider>
-      </MemoryRouter>
-    );
+    renderComponentViaRouter("/measures/m1234/edit/test-cases/list-page/sde");
     expect(
       screen.getByTestId("sde-option-radio-buttons-group")
     ).toBeInTheDocument();
@@ -253,14 +238,8 @@ describe("TestCaseRoutes", () => {
         ],
       });
     });
-    render(
-      <MemoryRouter
-        initialEntries={["/measures/m1234/edit/test-cases/list-page/expansion"]}
-      >
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseRoutes />
-        </ApiContextProvider>
-      </MemoryRouter>
+    renderComponentViaRouter(
+      "/measures/m1234/edit/test-cases/list-page/expansion"
     );
     expect(screen.getByTestId("manifest-expansion-form")).toBeInTheDocument();
   });
@@ -279,16 +258,8 @@ describe("TestCaseRoutes", () => {
         ],
       });
     });
-    render(
-      <MemoryRouter
-        initialEntries={[
-          "/measures/m1234/edit/test-cases/list-page/test-case-data",
-        ]}
-      >
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseRoutes />
-        </ApiContextProvider>
-      </MemoryRouter>
+    renderComponentViaRouter(
+      "/measures/m1234/edit/test-cases/list-page/test-case-data"
     );
     expect(
       await screen.findByTestId("test-case-data-form")
@@ -309,13 +280,7 @@ describe("TestCaseRoutes", () => {
         ],
       });
     });
-    render(
-      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases/m1234"]}>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseRoutes />
-        </ApiContextProvider>
-      </MemoryRouter>
-    );
+    renderComponentViaRouter("/measures/m1234/edit/test-cases/m1234");
 
     expect(screen.getByTestId("edit-test-case-form")).toBeInTheDocument();
   });
@@ -332,13 +297,7 @@ describe("TestCaseRoutes", () => {
     CQMConversionMock.mockImplementation(() => {
       return useCqmConversionServiceMockRejected;
     });
-    render(
-      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases/m1234"]}>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseRoutes />
-        </ApiContextProvider>
-      </MemoryRouter>
-    );
+    renderComponentViaRouter("/measures/m1234/edit/test-cases/m1234");
 
     const runTestCaseButton = screen.getByRole("button", {
       name: "Run Test",

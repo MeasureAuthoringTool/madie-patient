@@ -1,5 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  useLocation,
+} from "react-router-dom";
 import TestCaseLanding from "../../testCaseLanding/qiCore/TestCaseLanding";
 import EditTestCase from "../../editTestCase/qiCore/EditTestCase";
 import NotFound from "../../notfound/NotFound";
@@ -22,7 +26,12 @@ import TestCaseData from "../../testCaseConfiguration/testCaseData/TestCaseData"
 export const CQL_RETURN_TYPES_MISMATCH_ERROR =
   "One or more Population Criteria has a mismatch with CQL return types. Test Cases cannot be executed until this is resolved.";
 
-const TestCaseRoutes = () => {
+const TestCaseRoutes = (props) => {
+  // only for Unit Tests
+  const { initialEntry } = props;
+  if (initialEntry) {
+    window.history.pushState({}, "", initialEntry);
+  }
   const [measureBundle, setMeasureBundle] = useState<Bundle>();
   const [valueSets, setValueSets] = useState<ValueSet[]>();
   const [errors, setErrors] = useState<Array<string>>([]);

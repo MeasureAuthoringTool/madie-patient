@@ -17,7 +17,12 @@ import SDEPage from "../../testCaseConfiguration/sde/SDEPage";
 import Expansion from "../../testCaseConfiguration/expansion/Expansion";
 import TestCaseData from "../../testCaseConfiguration/testCaseData/TestCaseData";
 
-const TestCaseRoutes = () => {
+const TestCaseRoutes = (props) => {
+  // only for Unit Tests
+  const { initialEntry } = props;
+  if (initialEntry) {
+    window.history.pushState({}, "", initialEntry);
+  }
   const [cqmMeasureErrors, setCqmMeasureErrors] = useState<Array<string>>([]);
   const [importWarnings, setImportWarnings] = useState<TestCaseImportOutcome[]>(
     []
@@ -47,7 +52,7 @@ const TestCaseRoutes = () => {
   const getValueSetAbortController = useRef<AbortController>(
     new AbortController()
   );
-  // arbitraty number that's just supposed to increment on abort calls
+  // arbitrary number that's just supposed to increment on abort calls
   // sole purpose is only to spin off the useEffect that typically listens for measure changes
   const [aborted, setAborted] = useState(0);
   // instantiating both at once is not the play here.

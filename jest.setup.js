@@ -1,0 +1,1 @@
+global.Request = jest.fn();

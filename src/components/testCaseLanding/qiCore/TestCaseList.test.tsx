@@ -6,9 +6,9 @@ import {
   waitFor,
   within,
 } from "@testing-library/react";
-import { MemoryRouter, Routes, Route } from "react-router-dom";
+import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
-import TestCaseList, {
+import {
   getCoverageValueFromHtml,
   IMPORT_ERROR,
   removeHtmlCoverageHeader,
@@ -40,18 +40,15 @@ import {
 } from "../../../util/CalculationTestHelpers";
 import { ExecutionContextProvider } from "../../routes/qiCore/ExecutionContext";
 // @ts-ignore
-import {
-  checkUserCanEdit,
-  useFeatureFlags,
-  measureStore,
-  useDocumentTitle,
-} from "@madie/madie-util";
+import { checkUserCanEdit, useFeatureFlags } from "@madie/madie-util";
 import { ScanValidationDto } from "../../../api/models/ScanValidationDto";
 // @ts-ignore
 import JSZip from "jszip";
 import TestCaseLandingWrapper from "../common/TestCaseLandingWrapper";
 import TestCaseLanding from "../qiCore/TestCaseLanding";
+// @ts-ignore
 import dotMadieFile from "./testDataImport/dotMadie.json";
+import EditTestCase from "../../editTestCase/qiCore/EditTestCase";
 
 const createZipFile = async (
   patientIds: string[],
@@ -80,8 +77,14 @@ const createZipFile = async (
   }
 };
 
-const serviceConfig: ServiceConfig = {
-  elmTranslationService: { baseUrl: "base.url" },
+jest.mock("react-router-dom", () => ({
+  ...(jest.requireActual("react-router-dom") as any),
+  useNavigate: () => mockedUsedNavigate,
+}));
+
+const serviceConfig = {
+  qdmElmTranslationService: { baseUrl: "qdm-base.url" },
+  fhirElmTranslationService: { baseUrl: "fhir-base.url" },
   excelExportService: {
     baseUrl: "excelexport.com",
   },
@@ -94,7 +97,7 @@ const serviceConfig: ServiceConfig = {
   terminologyService: {
     baseUrl: "http.com",
   },
-};
+} as ServiceConfig;
 
 const MEASURE_CREATEDBY = "testuser";
 // Mock data for Measure retrieved from MeasureService
@@ -581,69 +584,66 @@ describe("TestCaseList component", () => {
     errors: string[] = [],
     contextFailure = false
   ) {
+    const routesConfig = [
+      {
+        children: [
+          {
+            path: "/measures/:measureId/edit/test-cases/:id",
+            element: <EditTestCase errors={errors} setErrors={setError} />,
+          },
+          {
+            path: "/measures/:measureId/edit/test-cases/list-page",
+            element: (
+              <TestCaseLandingWrapper
+                qdm={false}
+                children={
+                  <TestCaseLanding
+                    errors={errors}
+                    setErrors={setError}
+                    setWarnings={setWarnings}
+                  />
+                }
+              />
+            ),
+          },
+          {
+            path: "/measures/:measureId/edit/test-cases/list-page/:criteriaId",
+            element: (
+              <TestCaseLandingWrapper
+                qdm={false}
+                children={
+                  <TestCaseLanding
+                    errors={errors}
+                    setErrors={setError}
+                    setWarnings={setWarnings}
+                  />
+                }
+              />
+            ),
+          },
+        ],
+      },
+    ];
+    const initialEntries = [
+      `/measures/${mockMeasure.id}/edit/test-cases/list-page`,
+    ];
+    const router = createMemoryRouter(routesConfig, { initialEntries });
     return render(
-      <MemoryRouter
-        initialEntries={[
-          `/measures/${mockMeasure.id}/edit/test-cases/list-page`,
-        ]}
-      >
-        <ApiContextProvider value={serviceConfig}>
-          <ExecutionContextProvider
-            value={{
-              measureState: [mockMeasure, setMeasure],
-              bundleState: [measureBundle, setMeasureBundle],
-              valueSetsState: [valueSets, setValueSets],
-              executionContextReady: true,
-              executing: false,
-              setExecuting: jest.fn(),
-              contextFailure: contextFailure,
-            }}
-          >
-            <Routes>
-              <Route path="/measures/:measureId/edit/test-cases/list-page">
-                <Route
-                  index
-                  element={
-                    <TestCaseLandingWrapper
-                      qdm={false}
-                      children={
-                        <TestCaseLanding
-                          errors={errors}
-                          setErrors={setError}
-                          setWarnings={setWarnings}
-                        />
-                      }
-                    />
-                  }
-                />
-                <Route
-                  path=":criteriaId"
-                  element={
-                    <TestCaseLandingWrapper
-                      qdm={false}
-                      children={
-                        <TestCaseLanding
-                          errors={errors}
-                          setErrors={setError}
-                          setWarnings={setWarnings}
-                        />
-                      }
-                    />
-                  }
-                />
-              </Route>
-              <Route path="/measures/:measureId/edit/test-cases/:id">
-                <Route index element={<div data-testid="edit-page" />} />
-                <Route
-                  path=":id"
-                  index
-                  element={<div data-testid="edit-page" />}
-                />
-              </Route>
-            </Routes>
-          </ExecutionContextProvider>
-        </ApiContextProvider>
-      </MemoryRouter>
+      <ApiContextProvider value={serviceConfig}>
+        <ExecutionContextProvider
+          value={{
+            measureState: [mockMeasure, setMeasure],
+            bundleState: [measureBundle, setMeasureBundle],
+            valueSetsState: [valueSets, setValueSets],
+            executionContextReady: true,
+            executing: false,
+            setExecuting: jest.fn(),
+            contextFailure: contextFailure,
+          }}
+        >
+          <RouterProvider router={router} />
+        </ExecutionContextProvider>
+      </ApiContextProvider>
     );
   }
 
@@ -1420,14 +1420,13 @@ describe("TestCaseList component", () => {
         `select-action-${testCases[0].id}`
       );
       expect(selectButton).toBeInTheDocument();
-      fireEvent.click(selectButton);
+      userEvent.click(selectButton);
     });
     const editButton = screen.getByTestId(
       `view-edit-test-case-${testCases[0].id}`
     );
-    fireEvent.click(editButton);
-    const editPage = await screen.findByTestId("edit-page");
-    expect(editPage).toBeInTheDocument();
+    userEvent.click(editButton);
+    expect(mockedUsedNavigate).toHaveBeenCalled();
   });
 
   it("should navigate to the Test Case details page on edit button click for shared user", async () => {
@@ -1437,14 +1436,13 @@ describe("TestCaseList component", () => {
         `select-action-${testCases[0].id}`
       );
       expect(selectButton).toBeInTheDocument();
-      fireEvent.click(selectButton);
+      userEvent.click(selectButton);
     });
     const editButton = screen.getByTestId(
       `view-edit-test-case-${testCases[0].id}`
     );
-    fireEvent.click(editButton);
-    const editPage = await screen.findByTestId("edit-page");
-    expect(editPage).toBeInTheDocument();
+    userEvent.click(editButton);
+    expect(mockedUsedNavigate).toHaveBeenCalled();
   });
 
   it("should navigate to the Test Case details page on view button click for non-owner", async () => {
@@ -1456,14 +1454,13 @@ describe("TestCaseList component", () => {
         `select-action-${testCases[0].id}`
       );
       expect(selectButton).toBeInTheDocument();
-      fireEvent.click(selectButton);
+      userEvent.click(selectButton);
     });
     const viewButton = screen.getByTestId(
       `view-edit-test-case-${testCases[0].id}`
     );
-    fireEvent.click(viewButton);
-    const editPage = await screen.findByTestId("edit-page");
-    expect(editPage).toBeInTheDocument();
+    userEvent.click(viewButton);
+    expect(mockedUsedNavigate).toHaveBeenCalled();
   });
 
   it("should throw 404 error while exporting a test case", async () => {

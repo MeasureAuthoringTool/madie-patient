@@ -21,6 +21,7 @@ const TestCaseLandingWrapper = (props) => {
   }, []);
 
   // Required by every single spa application that has internal routing
+  // This will block user from navigating inside madie-measure when the current form is dirty
   const { updateRouteHandlerState } = routeHandlerStore;
   const [routeHandlerState, setRouteHandlerState] = useState<RouteHandlerState>(
     routeHandlerStore.state

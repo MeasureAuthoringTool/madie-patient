@@ -1,13 +1,18 @@
 import * as React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { prettyDOM, render, screen, waitFor } from "@testing-library/react";
+import {
+  createMemoryRouter,
+  MemoryRouter,
+  RouterProvider,
+} from "react-router-dom";
 import TestCaseRoutes, {
   CQL_RETURN_TYPES_MISMATCH_ERROR,
 } from "./TestCaseRoutes";
 import userEvent from "@testing-library/user-event";
 import axios from "../../../api/axios-instance";
-import { ApiContextProvider, ServiceConfig } from "../../../api/ServiceContext";
+import { ApiContextProvider } from "../../../api/ServiceContext";
 import {
+  Measure,
   MeasureErrorType,
   MeasureScoring,
   PopulationType,
@@ -15,29 +20,19 @@ import {
 import { getExampleValueSet } from "../../../util/CalculationTestHelpers";
 import { Bundle } from "fhir/r4";
 import { act } from "react-dom/test-utils";
-
+import { serviceConfig } from "../qdm/TestCaseRoutes.test";
+import { ExecutionContextProvider } from "./ExecutionContext";
+import RedirectToList from "../RedirectToList";
+import EditTestCase from "../../editTestCase/qiCore/EditTestCase";
+import TestCaseLandingWrapper from "../../testCaseLanding/common/TestCaseLandingWrapper";
+import TestCaseLanding from "../../testCaseLanding/qiCore/TestCaseLanding";
+import TestCaseData from "../../testCaseConfiguration/testCaseData/TestCaseData";
+import NotFound from "../../notfound/NotFound";
 // mock the editor cause we don't care for this test and it gets rid of errors
 jest.mock("../../editor/Editor", () => () => <div>editor contents</div>);
 
 jest.mock("../../../api/axios-instance");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
-
-const serviceConfig: ServiceConfig = {
-  qdmElmTranslationService: { baseUrl: "qdm/translator" },
-  fhirElmTranslationService: { baseUrl: "fhir/translator" },
-  excelExportService: {
-    baseUrl: "excelexport.com",
-  },
-  measureService: {
-    baseUrl: "measure.url",
-  },
-  testCaseService: {
-    baseUrl: "base.url",
-  },
-  terminologyService: {
-    baseUrl: "something.com",
-  },
-};
 
 const MEASURE_CREATEDBY = "testuser";
 const measureBundle = {} as Bundle;
@@ -46,15 +41,15 @@ const mockMeasure = {
   id: "m1234",
   model: "QI-Core v4.1.1",
   cqlLibraryName: "CM527Library",
-  measurementPeriodStart: "01/05/2022",
-  measurementPeriodEnd: "03/07/2022",
+  measurementPeriodStart: new Date("01/05/2022"),
+  measurementPeriodEnd: new Date("03/07/2022"),
   active: true,
   cqlErrors: false,
   errors: [],
   elmJson: "Fak3",
   groups: [
     {
-      id: null,
+      id: "234234234",
       scoring: "Cohort",
       populations: [
         {
@@ -70,7 +65,7 @@ const mockMeasure = {
     },
   ],
   createdBy: MEASURE_CREATEDBY,
-};
+} as Measure;
 
 jest.mock("@madie/madie-util", () => ({
   useDocumentTitle: jest.fn(),
@@ -97,16 +92,36 @@ jest.mock("@madie/madie-util", () => ({
     return true;
   }),
   routeHandlerStore: {
-    subscribe: (set) => {
+    subscribe: () => {
       return { unsubscribe: () => null };
     },
-    updateRouteHandlerState: () => null,
-    state: { canTravel: false, pendingPath: "" },
-    initialState: { canTravel: false, pendingPath: "" },
+    updateRouteHandlerState: () => jest.fn(),
+    state: { canTravel: true, pendingPath: "" },
+    initialState: { canTravel: true, pendingPath: "" },
   },
 }));
-
-describe("TestCaseRoutes", () => {
+const renderComponentViaRouter = (
+  initialEntry = "/measures/m1234/edit/test-cases/list-page"
+) => {
+  return render(
+    <ApiContextProvider value={serviceConfig}>
+      <ExecutionContextProvider
+        value={{
+          measureState: [mockMeasure, jest.fn()],
+          bundleState: [measureBundle, jest.fn()],
+          valueSetsState: [null, jest.fn()],
+          executionContextReady: true,
+          executing: false,
+          setExecuting: jest.fn(),
+          contextFailure: false,
+        }}
+      >
+        <TestCaseRoutes initialEntry={initialEntry} />
+      </ExecutionContextProvider>
+    </ApiContextProvider>
+  );
+};
+describe("Qi-Core TestCaseRoutes", () => {
   afterEach(() => {
     jest.clearAllMocks();
     mockMeasure.errors = [];
@@ -115,27 +130,29 @@ describe("TestCaseRoutes", () => {
 
   it("should render the landing component first", async () => {
     mockedAxios.get.mockImplementation((args) => {
-      return Promise.resolve({
-        data: [
-          {
-            id: "id1",
-            title: "TC1",
-            description: "Desc1",
-            series: "IPP_Pass",
-            lastModifiedAt: "2024-09-10T09:19:14.382Z",
-            status: null,
-          },
-        ],
-      });
+      if (
+        args &&
+        args.startsWith(
+          serviceConfig.testCaseService.baseUrl + "/measures/m1234/test-cases"
+        )
+      ) {
+        return Promise.resolve({
+          data: [
+            {
+              id: "id1",
+              title: "TC1",
+              description: "Desc1",
+              series: "IPP_Pass",
+              lastModifiedAt: "2024-09-10T09:19:14.382Z",
+              status: null,
+            },
+          ],
+        });
+      } else {
+        return null;
+      }
     });
-    render(
-      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases"]}>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseRoutes />
-        </ApiContextProvider>
-      </MemoryRouter>
-    );
-
+    await waitFor(() => renderComponentViaRouter());
     const testCaseTitle = await screen.findByText("TC1");
     expect(testCaseTitle).toBeInTheDocument();
     const testCaseSeries = await screen.findByText("IPP_Pass");
@@ -162,13 +179,7 @@ describe("TestCaseRoutes", () => {
         ],
       });
     });
-    render(
-      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases"]}>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseRoutes />
-        </ApiContextProvider>
-      </MemoryRouter>
-    );
+    renderComponentViaRouter();
 
     const testCaseTitle = await screen.findByText("TC1");
     expect(testCaseTitle).toBeInTheDocument();
@@ -211,13 +222,7 @@ describe("TestCaseRoutes", () => {
       return Promise.resolve({ data: null });
     });
 
-    render(
-      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases"]}>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseRoutes />
-        </ApiContextProvider>
-      </MemoryRouter>
-    );
+    renderComponentViaRouter();
 
     expect(await screen.findByTestId("code-coverage-tabs")).toBeInTheDocument();
 
@@ -287,13 +292,7 @@ describe("TestCaseRoutes", () => {
       return Promise.resolve({ data: null });
     });
 
-    render(
-      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases"]}>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseRoutes />
-        </ApiContextProvider>
-      </MemoryRouter>
-    );
+    renderComponentViaRouter();
 
     const testCaseTitle = await screen.findByText("TC1");
     expect(testCaseTitle).toBeInTheDocument();
@@ -357,13 +356,7 @@ describe("TestCaseRoutes", () => {
       }
     });
 
-    render(
-      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases"]}>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseRoutes />
-        </ApiContextProvider>
-      </MemoryRouter>
-    );
+    renderComponentViaRouter();
 
     mockedAxios.post.mockResolvedValue({
       data: {
@@ -440,14 +433,7 @@ describe("TestCaseRoutes", () => {
         return Promise.resolve({ data: [valueSets] });
       }
     });
-
-    render(
-      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases"]}>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseRoutes />
-        </ApiContextProvider>
-      </MemoryRouter>
-    );
+    renderComponentViaRouter();
 
     mockedAxios.post.mockRejectedValue({
       data: {
@@ -536,13 +522,7 @@ describe("TestCaseRoutes", () => {
       }
     });
 
-    render(
-      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases"]}>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseRoutes />
-        </ApiContextProvider>
-      </MemoryRouter>
-    );
+    renderComponentViaRouter();
 
     const testCaseTitle = await screen.findByText("TC1");
     expect(testCaseTitle).toBeInTheDocument();
@@ -624,13 +604,7 @@ describe("TestCaseRoutes", () => {
     });
 
     mockedAxios.put.mockRejectedValue(new Error("VALUE SET ERRORS"));
-    render(
-      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases"]}>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseRoutes />
-        </ApiContextProvider>
-      </MemoryRouter>
-    );
+    renderComponentViaRouter();
     expect(
       await screen.findByText(
         "An error occurred, please try again. If the error persists, please contact the help desk. (003)"
@@ -658,13 +632,7 @@ describe("TestCaseRoutes", () => {
         ],
       });
     });
-    render(
-      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases"]}>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseRoutes />
-        </ApiContextProvider>
-      </MemoryRouter>
-    );
+    renderComponentViaRouter();
 
     const runAllTestsButton = await screen.findByRole("button", {
       name: "Run Test(s)",
@@ -691,14 +659,7 @@ describe("TestCaseRoutes", () => {
         data: [],
       });
     });
-    render(
-      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases"]}>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseRoutes />
-        </ApiContextProvider>
-      </MemoryRouter>
-    );
-
+    renderComponentViaRouter();
     await waitFor(() => {
       expect(screen.getByRole("alert")).toHaveTextContent(
         "An error occurred, please try again. If the error persists, please contact the help desk."
@@ -707,16 +668,9 @@ describe("TestCaseRoutes", () => {
   });
 
   it("should render 404 page", async () => {
-    const { getByTestId } = render(
-      <MemoryRouter initialEntries={["/measures/m1234/edit/test-case"]}>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseRoutes />
-        </ApiContextProvider>
-      </MemoryRouter>
-    );
-
-    expect(getByTestId("404-page")).toBeInTheDocument();
-    expect(getByTestId("404-page-link")).toBeInTheDocument();
+    renderComponentViaRouter("/measures/m1234/edit/2");
+    expect(screen.getByTestId("404-page")).toBeInTheDocument();
+    expect(screen.getByTestId("404-page-link")).toBeInTheDocument();
   });
 
   it("should display error message when fetch test cases fails", async () => {
@@ -745,17 +699,10 @@ describe("TestCaseRoutes", () => {
       }
       return Promise.resolve({ data: null });
     });
-
-    const { getByTestId } = render(
-      <MemoryRouter initialEntries={["/measures/m1234/edit/test-cases"]}>
-        <ApiContextProvider value={serviceConfig}>
-          <TestCaseRoutes />
-        </ApiContextProvider>
-      </MemoryRouter>
-    );
+    renderComponentViaRouter();
 
     await waitFor(() => {
-      const error = getByTestId("execution_context_loading_errors");
+      const error = screen.getByTestId("execution_context_loading_errors");
       expect(error).toBeInTheDocument();
     });
   });
