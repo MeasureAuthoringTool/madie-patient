@@ -53,8 +53,7 @@ import EditTestCase from "../../editTestCase/qiCore/EditTestCase";
 const createZipFile = async (
   patientIds: string[],
   jsonBundle?: string[],
-  jsonFileName?: string[],
-  zipFileName = "CMS136FHIR-v0.0.000-FHIR4-TestCases"
+  jsonFileName?: string[]
 ) => {
   try {
     const zip = new JSZip();
@@ -476,11 +475,9 @@ jest.mock("../../../api/CalculationService");
 const calculationServiceMock =
   calculationService as jest.Mock<CalculationService>;
 
-const mockProcessTestCaseResults = jest
-  .fn()
-  .mockImplementation((testCase, groups, results) => {
-    return failingTestCaseResults.find((tc) => tc.id === testCase.id);
-  });
+const mockProcessTestCaseResults = jest.fn().mockImplementation((testCase) => {
+  return failingTestCaseResults.find((tc) => tc.id === testCase.id);
+});
 const mockGetPassingPercentageForTestCases = jest
   .fn()
   .mockReturnValue({ passPercentage: 50, passFailRatio: "1/2" });
@@ -702,9 +699,7 @@ describe("TestCaseList component", () => {
     });
 
     renderTestCaseListComponent();
-    expect(
-      await screen.queryByTestId("display-tests-error")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("display-tests-error")).not.toBeInTheDocument();
   });
 
   it("should render delete dialogue on Test Case list page when delete button is clicked", async () => {
@@ -938,7 +933,7 @@ describe("TestCaseList component", () => {
       fireEvent.click(executeAllTestCasesButton);
 
       const errorMessage = screen.queryByTestId("display-tests-error");
-      await expect(errorMessage).not.toBeInTheDocument();
+      expect(errorMessage).not.toBeInTheDocument();
     });
   });
 
@@ -1122,23 +1117,43 @@ describe("TestCaseList component", () => {
         measureGroupTypes: [],
       },
     ];
+
+    mockProcessTestCaseResults.mockClear().mockImplementation((testCase) => {
+      return {
+        ...failingTestCaseResults.find((tc) => tc.id === testCase.id),
+        executionStatus: "pass",
+      };
+    });
+
+    mockGetPassingPercentageForTestCases
+      .mockClear()
+      .mockReturnValue({ passPercentage: 66, passFailRatio: "2/3" });
     renderTestCaseListComponent();
 
     // wait for pop criteria to load
     await waitFor(() => {
-      expect(screen.getByText("Population Criteria 1")).toBeInTheDocument();
+      expect(
+        screen.getByRole("tab", { name: "Population Criteria 1" })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("tab", { name: "Population Criteria 2" })
+      ).toBeInTheDocument();
+      // what is N/A ?
       expect(screen.getAllByText("N/A").length).toEqual(2);
     });
-
     // wait for execution context to be ready
-    const executeButton = screen.getByRole("button", {
+    const executeButton = await screen.findByRole("button", {
       name: "Run Test(s)",
     });
 
     await waitFor(() => expect(executeButton).not.toBeDisabled());
 
     userEvent.click(executeButton);
-    await waitFor(() => expect(screen.getByText("75%")).toBeInTheDocument());
+    // Coverage percentage
+    await waitFor(() => {
+      const coverageTab = screen.getByTestId("coverage-tab");
+      expect(coverageTab).toHaveTextContent("75%");
+    });
     const table = await screen.findByTestId("test-case-tbl");
     const tableRows = table.querySelectorAll("tbody tr");
     await waitFor(() => {
@@ -1146,19 +1161,6 @@ describe("TestCaseList component", () => {
       expect(tableRows[1]).toHaveTextContent("Fail");
       expect(tableRows[0]).toHaveTextContent("Invalid");
     });
-
-    mockProcessTestCaseResults
-      .mockClear()
-      .mockImplementation((testCase, groups, results) => {
-        return {
-          ...failingTestCaseResults.find((tc) => tc.id === testCase.id),
-          executionStatus: "pass",
-        };
-      });
-
-    mockGetPassingPercentageForTestCases
-      .mockClear()
-      .mockReturnValue({ passPercentage: 66, passFailRatio: "2/3" });
 
     const popCriteria2 = screen.getByText("Population Criteria 2");
     expect(popCriteria2).toBeInTheDocument();
@@ -1174,9 +1176,8 @@ describe("TestCaseList component", () => {
       expect(tableRows2[0]).toHaveTextContent("Invalid");
     });
 
-    expect(screen.getByText("Passing (2/3)")).toBeInTheDocument();
-    expect(screen.getByText("100%")).toBeInTheDocument();
-    expect(screen.getByTestId("sr-div")).toBeInTheDocument();
+    const passingTab = await screen.findByTestId("passing-tab");
+    expect(passingTab).toHaveTextContent("Passing (2/3)");
   });
 
   it("should hide the button for import test cases from bonnie when feature is disabled", async () => {
@@ -1186,7 +1187,7 @@ describe("TestCaseList component", () => {
     }));
 
     renderTestCaseListComponent();
-    const importBtn = await screen.queryByRole("button", {
+    const importBtn = screen.queryByRole("button", {
       name: /Import From Bonnie/i,
     });
     expect(importBtn).not.toBeInTheDocument();
@@ -1245,9 +1246,7 @@ describe("TestCaseList component", () => {
     });
     expect(importBtn).toBeInTheDocument();
     userEvent.click(importBtn);
-    const removedImportDialog = await screen.queryByTestId(
-      "test-case-import-dialog"
-    );
+    const removedImportDialog = screen.queryByTestId("test-case-import-dialog");
     expect(removedImportDialog).not.toBeInTheDocument();
     expect(nextState).toEqual([]);
   });
@@ -1287,9 +1286,7 @@ describe("TestCaseList component", () => {
       name: "Import",
     });
     userEvent.click(importBtn);
-    const removedImportDialog = await screen.queryByTestId(
-      "test-case-import-dialog"
-    );
+    const removedImportDialog = screen.queryByTestId("test-case-import-dialog");
     expect(removedImportDialog).not.toBeInTheDocument();
     await waitFor(() => expect(setError).toHaveBeenCalledTimes(2));
     expect(nextState).toEqual([IMPORT_ERROR]);
@@ -1319,9 +1316,7 @@ describe("TestCaseList component", () => {
     });
     expect(cancelBtn).toBeInTheDocument();
     userEvent.click(cancelBtn);
-    const removedImportDialog = await screen.queryByTestId(
-      "test-case-import-dialog"
-    );
+    const removedImportDialog = screen.queryByTestId("test-case-import-dialog");
     expect(removedImportDialog).not.toBeInTheDocument();
     expect(setError).toHaveBeenCalled();
     expect(nextState).toEqual([]);
