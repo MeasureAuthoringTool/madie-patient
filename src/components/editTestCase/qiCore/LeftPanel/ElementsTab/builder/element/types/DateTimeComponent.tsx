@@ -131,7 +131,7 @@ const DateTimeComponent = ({
     setTime(converted.format(DATE_TIME_ZONE_FORMAT));
     setFormattedDate(converted.format(DATE_FORMAT));
     setFormattedTime(converted.format(TIME_FORMAT));
-  }, [value]);
+  }, []);
 
   const renderMenuItems = (options: MenuObj[]) => {
     return [
@@ -242,7 +242,6 @@ const DateTimeComponent = ({
             onChange={(event) => {
               const newTimeZone = event.target.value;
               setTimeZone(newTimeZone);
-
               const offset = getOffSet(newTimeZone);
               const changedDate = handleDateTimeChange(
                 formattedDate,
