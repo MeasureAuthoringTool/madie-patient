@@ -260,6 +260,26 @@ export class TerminologyServiceApi {
       },
     });
   }
+
+  async getFhirValueSetExpansion(valueSetId: string): Promise<ValueSet> {
+    try {
+      const response = await axios.get<ValueSet>(
+        `${this.baseUrl}/internal-terminology/ValueSet/us-core-vaccines-cvx/expand`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getAccessToken()}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        `An error occurred while fetching the ValueSet expansion for [${valueSetId}]: `,
+        error
+      );
+    }
+    return null;
+  }
 }
 
 export default function useTerminologyServiceApi(): TerminologyServiceApi {
