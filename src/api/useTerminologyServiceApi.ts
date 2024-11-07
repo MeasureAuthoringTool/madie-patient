@@ -261,7 +261,7 @@ export class TerminologyServiceApi {
     });
   }
 
-  async getFhirValueSetExpansion(valueSetId: string): Promise<ValueSet> {
+  async getInternalValueSetExpansion(valueSetId: string): Promise<ValueSet> {
     try {
       const response = await axios.get<ValueSet>(
         `${this.baseUrl}/internal-terminology/ValueSet/us-core-vaccines-cvx/expand`,

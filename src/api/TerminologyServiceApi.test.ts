@@ -318,7 +318,7 @@ describe("TerminologyServiceApi Tests", () => {
         },
       },
     });
-    const result = await terminologyService.getFhirValueSetExpansion(
+    const result = await terminologyService.getInternalValueSetExpansion(
       "us-core-vaccines-cvx"
     );
     expect(result.expansion.contains).not.toBeNull();
@@ -328,7 +328,7 @@ describe("TerminologyServiceApi Tests", () => {
     axios.get = jest.fn().mockRejectedValue({
       status: 400,
     });
-    const result = await terminologyService.getFhirValueSetExpansion(
+    const result = await terminologyService.getInternalValueSetExpansion(
       "us-core-vaccines-cvx"
     );
     expect(result).toBeNull();

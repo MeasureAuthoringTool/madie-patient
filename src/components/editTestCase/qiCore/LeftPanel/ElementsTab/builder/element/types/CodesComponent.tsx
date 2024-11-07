@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { TypeComponentProps } from "./TypeComponentProps";
-import useFhirDefinitionsServiceApi from "../../../../../../../../api/useFhirDefinitionsService";
 import Box from "@mui/system/Box";
 import { MenuItem } from "@mui/material";
 import { Select } from "@madie/madie-design-system/dist/react";
@@ -30,7 +29,7 @@ const CodesComponent = ({
           valueSetVal.indexOf("|")
         );
         terminologyServiceApi.current
-          .getFhirValueSetExpansion(valueSetId)
+          .getInternalValueSetExpansion(valueSetId)
           .then((expansion) => {
             setCodes(expansion.expansion.contains);
           })
