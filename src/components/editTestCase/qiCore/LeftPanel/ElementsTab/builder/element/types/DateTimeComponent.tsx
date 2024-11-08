@@ -128,9 +128,12 @@ const DateTimeComponent = ({
   };
 
   const handleDateTimeChange = (date, time, offset) => {
-    const dateTime = dayjs(date + "T" + time + ".000");
-    const dateTimeStr = dateTime.format(DATE_TIME_ZONE_FORMAT).slice(0, 23);
-    return dateTimeStr + offset;
+    if (date) {
+      const dateTime = dayjs(date + "T" + time + ".000");
+      const dateTimeStr = dateTime.format(DATE_TIME_ZONE_FORMAT).slice(0, 23);
+      return dateTimeStr + offset;
+    }
+    return null;
   };
 
   return (
