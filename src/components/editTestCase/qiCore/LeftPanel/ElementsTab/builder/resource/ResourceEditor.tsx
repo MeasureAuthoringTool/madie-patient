@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { Box, Divider, IconButton, Tab, Tabs } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import CloseIcon from "@mui/icons-material/Close";
@@ -33,12 +33,25 @@ const ResourceEditor = ({
   );
   const fhirDefinitionsService = useRef(useFhirDefinitionsServiceApi());
   const { state, dispatch } = useQiCoreResource();
+  // We build a tree
 
+  const [relationTree, setRelationTree] = useState({});
+  const buildRelationTree = (allDefinitions: Array<any>) => {
+    allDefinitions.forEach(({ path }) => {});
+  };
   useEffect(() => {
     if (selectedResource) {
       // TODO: look at the data that exists on the resource and combine fields from that
+      // console.log('selectedResource', selectedResource);
+      // we care about structuredDefinitionsArray
+      // const allDefinitions = selectedResource?.definition?.snapshot?.elements;
+      // if (allDefinitions?.length){
+      //   // we build the tree
+      //   buildRelationTree(allDefinitions);
+      // }
       const topElements =
         fhirDefinitionsService.current.getTopLevelElements(selectedResource);
+      console.log("topLevelElements", topElements);
       setAllElements(topElements);
       const requiredElements = [...topElements.filter((e) => e.min > 0)];
       const elementsWithValues = [
@@ -143,6 +156,7 @@ const ResourceEditor = ({
         </Tabs>
         <ElementEditor
           elementDefinition={displayedElements?.[activeTab]}
+          selectedResource={selectedResource}
           resource={editingResource}
           resourcePath={resourceBasePath}
           onChange={(path, value) => {
