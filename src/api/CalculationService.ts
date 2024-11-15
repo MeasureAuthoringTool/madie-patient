@@ -431,8 +431,8 @@ export class CalculationService {
               (strata) =>
                 // TODO: workaround because fqm execution doesn't provide IDs for all cases
                 (strata.strataCode &&
-                  strata.strataCode === strataResult.strataCode) ||
-                (strata.strataId && strata.strataId === strataResult.strataId)
+                  strata.strataCode === strataResult?.strataCode) ||
+                (strata.strataId && strata.strataId === strataResult?.strataId)
             );
             return population?.result && stratification?.result;
           }
