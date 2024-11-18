@@ -292,7 +292,6 @@ export class CalculationService {
   }
 
   isGroupPass(groupPopulation: GroupPopulation, measureGroup: Group) {
-    // console.log("isGroupPass: for group: "+measureGroup.id);
     let groupPass = true;
     if (groupPopulation) {
       const patientBased =
