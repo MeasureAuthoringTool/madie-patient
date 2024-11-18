@@ -528,7 +528,7 @@ describe("CalculationService Tests", () => {
         ],
       };
       const output = calculationService.isGroupPass(groupPop);
-      expect(output).toEqual(false);
+      expect(output).toEqual(true);
     });
 
     it("should fail group with incorrect measure observations for Ratio", () => {

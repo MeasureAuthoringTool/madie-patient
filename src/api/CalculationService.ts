@@ -350,7 +350,7 @@ export class CalculationService {
     popValue: PopulationExpectedValue
   ): PopulationExpectedValue[] {
     let valiePopValue = [];
-    measureGroup.stratifications?.forEach((strat) => {
+    measureGroup?.stratifications?.forEach((strat) => {
       if (strat.id === stratId) {
         strat.associations?.forEach((association) => {
           if (association === popValue.name) {
