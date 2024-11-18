@@ -12,6 +12,7 @@ import {
   Population,
   PopulationExpectedValue,
   TestCase,
+  StratificationExpectedValue,
 } from "@madie/madie-models";
 import { Bundle, ValueSet } from "fhir/r4";
 import * as _ from "lodash";
@@ -290,7 +291,8 @@ export class CalculationService {
     return results;
   }
 
-  isGroupPass(groupPopulation: GroupPopulation) {
+  isGroupPass(groupPopulation: GroupPopulation, measureGroup: Group) {
+    // console.log("isGroupPass: for group: "+measureGroup.id);
     let groupPass = true;
     if (groupPopulation) {
       const patientBased =
@@ -313,12 +315,20 @@ export class CalculationService {
       // verify stratification & stratified populations passing if they exist
       if (groupPopulation.stratificationValues) {
         let validStratPopValues = [];
-        groupPopulation.stratificationValues.forEach((stratValues) => {
-          const filtered = stratValues.populationValues?.filter(
-            (populationValue) => populationValue.expected !== null
-          );
-          validStratPopValues.push(filtered);
-        });
+        groupPopulation.stratificationValues.forEach(
+          (stratValues: StratificationExpectedValue) => {
+            stratValues.populationValues?.forEach((popValue) => {
+              const validPopValues = this.getValidStratPopulationValues(
+                measureGroup,
+                stratValues.id,
+                popValue
+              );
+              if (validPopValues && validPopValues.length > 0) {
+                validStratPopValues.push(validPopValues);
+              }
+            });
+          }
+        );
         return validStratPopValues.every((strata) => {
           // verify stratified populations passing
           return strata.every((population) =>
@@ -332,6 +342,24 @@ export class CalculationService {
       }
     }
     return groupPass;
+  }
+
+  getValidStratPopulationValues(
+    measureGroup: Group,
+    stratId: string,
+    popValue: PopulationExpectedValue
+  ): PopulationExpectedValue[] {
+    let valiePopValue = [];
+    measureGroup.stratifications?.forEach((strat) => {
+      if (strat.id === stratId) {
+        strat.associations?.forEach((association) => {
+          if (association === popValue.name) {
+            valiePopValue.push(popValue);
+          }
+        });
+      }
+    });
+    return valiePopValue;
   }
 
   processTestCaseResults(
@@ -470,7 +498,8 @@ export class CalculationService {
         });
       });
       // need to do work here.
-      allGroupsPass = allGroupsPass && this.isGroupPass(tcGroupPopulation);
+      allGroupsPass =
+        allGroupsPass && this.isGroupPass(tcGroupPopulation, measureGroup);
     }
     updatedTestCase.executionStatus = allGroupsPass
       ? ExecutionStatusType.PASS
