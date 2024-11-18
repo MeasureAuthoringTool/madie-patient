@@ -212,6 +212,7 @@ const DemographicsSection = ({ canEdit }) => {
     const newExpiredElement: DataElement = new PatientCharacteristicExpired(
       expiredElement
     );
+    newExpiredElement.dataE
     newExpiredElement.expiredDatetime = val;
     setLivingStatusDataElement(newExpiredElement);
     dispatch({
