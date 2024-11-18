@@ -169,14 +169,7 @@ export const getEthnicityDataElement = (
 
 export const getLivingStatusDataElement = (): DataElement => {
   const pce: DataElement = new PatientCharacteristicExpired();
-  pce.dataElementCodes = [
-    {
-      system: "2.16.840.1.113883.6.96",
-      version: "20240901",
-      code: "184115007",
-      display: "Patient sex unknown (finding)",
-    }
-  ];
+  pce.dataElementCodes = [];
   return pce;
 };
 
