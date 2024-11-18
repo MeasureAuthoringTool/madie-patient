@@ -312,9 +312,16 @@ export class CalculationService {
       }
       // verify stratification & stratified populations passing if they exist
       if (groupPopulation.stratificationValues) {
-        return groupPopulation.stratificationValues.every((strata) => {
+        let validStratPopValues = [];
+        groupPopulation.stratificationValues.forEach((stratValues) => {
+          const filtered = stratValues.populationValues?.filter(
+            (populationValue) => populationValue.expected !== null
+          );
+          validStratPopValues.push(filtered);
+        });
+        return validStratPopValues.every((strata) => {
           // verify stratified populations passing
-          return strata.populationValues.every((population) =>
+          return strata.every((population) =>
             this.isValuePass(
               population.actual,
               population.expected,
