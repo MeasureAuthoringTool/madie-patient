@@ -345,7 +345,7 @@ describe("CalculationService Tests", () => {
         populationValues: undefined,
         stratificationValues: undefined,
       };
-      const output = calculationService.isGroupPass(groupPop);
+      const output = calculationService.isGroupPass(groupPop, {} as Group);
       expect(output).toEqual(true);
     });
 
@@ -357,7 +357,7 @@ describe("CalculationService Tests", () => {
         populationValues: [],
         stratificationValues: undefined,
       };
-      const output = calculationService.isGroupPass(groupPop);
+      const output = calculationService.isGroupPass(groupPop, {} as Group);
       expect(output).toEqual(true);
     });
 
@@ -369,7 +369,7 @@ describe("CalculationService Tests", () => {
         populationValues: [],
         stratificationValues: [],
       };
-      const output = calculationService.isGroupPass(groupPop);
+      const output = calculationService.isGroupPass(groupPop, {} as Group);
       expect(output).toEqual(true);
     });
 
@@ -389,7 +389,7 @@ describe("CalculationService Tests", () => {
         ],
         stratificationValues: [],
       };
-      const output = calculationService.isGroupPass(groupPop);
+      const output = calculationService.isGroupPass(groupPop, {} as Group);
       expect(output).toEqual(true);
     });
 
@@ -423,7 +423,7 @@ describe("CalculationService Tests", () => {
         ],
         stratificationValues: [],
       };
-      const output = calculationService.isGroupPass(groupPop);
+      const output = calculationService.isGroupPass(groupPop, {} as Group);
       expect(output).toEqual(true);
     });
 
@@ -457,7 +457,7 @@ describe("CalculationService Tests", () => {
         ],
         stratificationValues: [],
       };
-      const output = calculationService.isGroupPass(groupPop);
+      const output = calculationService.isGroupPass(groupPop, {} as Group);
       expect(output).toEqual(false);
     });
 
@@ -492,7 +492,7 @@ describe("CalculationService Tests", () => {
           },
         ],
       };
-      const output = calculationService.isGroupPass(groupPop);
+      const output = calculationService.isGroupPass(groupPop, {} as Group);
       expect(output).toEqual(true);
     });
 
@@ -527,8 +527,155 @@ describe("CalculationService Tests", () => {
           },
         ],
       };
-      const output = calculationService.isGroupPass(groupPop);
-      expect(output).toEqual(false);
+      const output = calculationService.isGroupPass(groupPop, {} as Group);
+      expect(output).toEqual(true);
+    });
+
+    it("Should pass group with stratifications and filter out invalid population values", () => {
+      const group: Group = {
+        id: "6734f7e4af7d11385b114b91",
+        scoring: "Continuous Variable",
+        populations: [
+          {
+            id: "69333bb0-0e65-41ac-9648-8badc3e70c6e",
+            name: PopulationType.INITIAL_POPULATION,
+            definition: "Initial Population",
+            description: "",
+          },
+          {
+            id: "60ab5bfd-bd1a-4e53-8cd8-1cb4aae465dd",
+            name: PopulationType.MEASURE_POPULATION,
+            definition: "Qualifying Encounters",
+            description: "",
+          },
+          {
+            id: "9a4b1c39-5a94-49b2-ae33-75ec80a5d7d6",
+            name: PopulationType.MEASURE_POPULATION_OBSERVATION,
+            definition: "",
+            description: "",
+          },
+        ],
+        measureObservations: [
+          {
+            id: "3a429f92-8eb6-456a-bfd4-658458d54885",
+            definition: "MeasureObservation",
+
+            criteriaReference: "60ab5bfd-bd1a-4e53-8cd8-1cb4aae465dd",
+            aggregateMethod: "Maximum",
+          },
+        ],
+        groupDescription: "",
+        improvementNotation: "",
+        rateAggregation: "",
+        measureGroupTypes: [MeasureGroupTypes.PROCESS],
+        scoringUnit: "",
+        stratifications: [
+          {
+            id: "a9197a7f-78ca-484c-a84d-05531c1dd9e4",
+            description: "StratificationOne",
+            cqlDefinition: "Stratification 1",
+            associations: [PopulationType.INITIAL_POPULATION],
+          },
+          {
+            id: "c88151f1-83dd-477e-afe7-631e17cec6ff",
+            description: "StratificationTwo",
+            cqlDefinition: "Stratification 2",
+            associations: [PopulationType.MEASURE_POPULATION],
+          },
+        ],
+        populationBasis: "Encounter",
+      };
+      const groupPop = {
+        groupId: "6734f7e4af7d11385b114b91",
+        scoring: "Continuous Variable",
+        populationBasis: "Encounter",
+        populationValues: [
+          {
+            id: "69333bb0-0e65-41ac-9648-8badc3e70c6e",
+            criteriaReference: null,
+            name: PopulationType.INITIAL_POPULATION,
+            expected: "1",
+            actual: 1,
+          },
+          {
+            id: "60ab5bfd-bd1a-4e53-8cd8-1cb4aae465dd",
+            criteriaReference: null,
+            name: PopulationType.MEASURE_POPULATION,
+            expected: "1",
+            actual: 1,
+          },
+          {
+            id: "measurePopulationObservation0",
+            criteriaReference: "60ab5bfd-bd1a-4e53-8cd8-1cb4aae465dd",
+            name: PopulationType.MEASURE_POPULATION_OBSERVATION,
+            expected: "02",
+            actual: 2,
+          },
+        ],
+        stratificationValues: [
+          {
+            id: "a9197a7f-78ca-484c-a84d-05531c1dd9e4",
+            name: "Strata-1",
+            expected: null,
+            actual: null,
+            populationValues: [
+              {
+                id: "69333bb0-0e65-41ac-9648-8badc3e70c6e",
+                criteriaReference: null,
+                name: PopulationType.INITIAL_POPULATION,
+                expected: "1",
+                actual: 1,
+              },
+              {
+                id: "60ab5bfd-bd1a-4e53-8cd8-1cb4aae465dd",
+                criteriaReference: null,
+                name: PopulationType.MEASURE_POPULATION,
+                expected: "1",
+                actual: 1,
+              },
+              {
+                id: "measurePopulationObservation0",
+                criteriaReference: "60ab5bfd-bd1a-4e53-8cd8-1cb4aae465dd",
+                name: PopulationType.MEASURE_POPULATION_OBSERVATION,
+                expected: "02",
+                actual: 0,
+              },
+            ],
+          },
+          {
+            id: "c88151f1-83dd-477e-afe7-631e17cec6ff",
+            name: "Strata-2",
+            expected: null,
+            actual: null,
+            populationValues: [
+              {
+                id: "69333bb0-0e65-41ac-9648-8badc3e70c6e",
+                criteriaReference: null,
+                name: PopulationType.INITIAL_POPULATION,
+                expected: "0",
+                actual: 0,
+              },
+              {
+                id: "60ab5bfd-bd1a-4e53-8cd8-1cb4aae465dd",
+                criteriaReference: null,
+                name: PopulationType.MEASURE_POPULATION,
+                expected: "0",
+                actual: 0,
+              },
+              {
+                id: "measurePopulationObservation0",
+                criteriaReference: "60ab5bfd-bd1a-4e53-8cd8-1cb4aae465dd",
+                name: PopulationType.MEASURE_POPULATION_OBSERVATION,
+                expected: "02",
+                actual: 0,
+              },
+            ],
+          },
+        ],
+      };
+
+      const output = calculationService.isGroupPass(groupPop, group);
+      expect(output).toEqual(true);
     });
 
     it("should fail group with incorrect measure observations for Ratio", () => {
@@ -575,7 +722,7 @@ describe("CalculationService Tests", () => {
         ],
         stratificationValues: [],
       };
-      const output = calculationService.isGroupPass(groupPop);
+      const output = calculationService.isGroupPass(groupPop, {} as Group);
       expect(output).toEqual(false);
     });
   });
