@@ -23,6 +23,8 @@ import {
   getRaceDataElement,
   LIVING_STATUS_CODE_OPTIONS,
   RACE_CODE_OPTIONS,
+  PATIENT_CHARACTERISTIC_EXPIRED,
+  getPatientCharacteristicExpiredDateElement,
 } from "./DemographicsSectionConst";
 import { MenuItem as MuiMenuItem } from "@mui/material";
 import {
@@ -110,6 +112,7 @@ const DemographicsSection = ({ canEdit }) => {
 
       const expiredElement = getDataElementByStatus("expired", patient);
       if (expiredElement) {
+        expiredElement.dataElementCodes = PATIENT_CHARACTERISTIC_EXPIRED;
         setLivingStatusDataElement(expiredElement);
       } else {
         setLivingStatusDataElement("Living");
@@ -209,10 +212,8 @@ const DemographicsSection = ({ canEdit }) => {
 
   const handleExpiredDateTimeChange = (val) => {
     const expiredElement = getDataElementByStatus("expired", patient);
-    const newExpiredElement: DataElement = new PatientCharacteristicExpired(
-      expiredElement
-    );
-    newExpiredElement.expiredDatetime = val;
+    const newExpiredElement: DataElement =
+      getPatientCharacteristicExpiredDateElement(val, expiredElement);
     setLivingStatusDataElement(newExpiredElement);
     dispatch({
       type: PatientActionType.MODIFY_DATA_ELEMENT,
