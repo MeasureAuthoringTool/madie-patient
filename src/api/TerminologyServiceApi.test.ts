@@ -84,7 +84,7 @@ describe("TerminologyServiceApi Tests", () => {
       });
   });
 
-  it("Should call Terminology Service URL to fetch value set expansions when manifest Expansion feature flag is true", () => {
+  it("Should call Terminology Service URL to fetch value set expansions when manifest Expansion feature flag is true and activeOnly is set to 'true' when manifestExpansion is truthy (expansion type is Manifest)", () => {
     axios.put = jest
       .fn()
       .mockResolvedValue({ data: cqm_measure_basic_valueset });
@@ -101,6 +101,32 @@ describe("TerminologyServiceApi Tests", () => {
           fullUrl: "https://cts.nlm.nih.gov/fhir/Library/mu2-update-2015-05-01",
           id: "mu2-update-2015-05-01",
         },
+        activeOnly: "true",
+        profile: "",
+        valueSetParams: [
+          { oid: "2.16.840.1.113883.3.666.5.307" },
+          { oid: "2.16.840.1.113883.3.464.1003.103.12.1001" },
+        ],
+      },
+      { headers: { Authorization: "Bearer undefined" }, signal: true }
+    );
+  });
+
+  it("Should call Terminology Service URL to fetch value set expansions when manifest Expansion feature flag is true and activeOnly is set to 'false' when manifestExpansion is falsy (expansion type is Latest)", () => {
+    axios.put = jest
+      .fn()
+      .mockResolvedValue({ data: cqm_measure_basic_valueset });
+    const result = terminologyService.getQdmValueSetsExpansion(
+      cqm_measure_basic,
+      null,
+      true
+    );
+    expect(axios.put).toBeCalledWith(
+      "test.url/terminology/value-sets/expansion/qdm",
+      {
+        includeDraft: "yes",
+        manifestExpansion: null,
+        activeOnly: "false",
         profile: "",
         valueSetParams: [
           { oid: "2.16.840.1.113883.3.666.5.307" },
@@ -128,6 +154,7 @@ describe("TerminologyServiceApi Tests", () => {
                 "https://cts.nlm.nih.gov/fhir/Library/mu2-update-2015-05-01",
               id: "mu2-update-2015-05-01",
             },
+            activeOnly: "true",
             profile: "",
             valueSetParams: [
               { oid: "2.16.840.1.113883.3.666.5.307" },
