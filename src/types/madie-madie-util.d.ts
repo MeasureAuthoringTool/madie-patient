@@ -17,6 +17,7 @@ declare module "@madie/madie-util" {
     ShiftTestCasesDates: boolean;
     TestCaseListSearch: boolean;
     TestCaseID: boolean;
+    TestCaseListButtons: boolean;
   }
 
   export interface ServiceConfig {

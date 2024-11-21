@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, HTMLProps } from "react";
 import tw from "twin.macro";
 import "styled-components/macro";
 import { Measure, TestCase } from "@madie/madie-models";
@@ -110,6 +110,34 @@ const TestCaseTable = (props: TestCaseTableProps) => {
     }));
   };
 
+  function IndeterminateCheckbox({
+    indeterminate,
+    className = "",
+    onChange,
+    id,
+    ...rest
+  }: {
+    indeterminate?: boolean;
+  } & HTMLProps<HTMLInputElement>) {
+    const ref = React.useRef<HTMLInputElement>(null!);
+
+    React.useEffect(() => {
+      if (typeof indeterminate === "boolean") {
+        ref.current.indeterminate = !rest.checked && indeterminate;
+      }
+    }, [ref, indeterminate]);
+
+    return (
+      <input
+        type="checkbox"
+        ref={ref}
+        className={className + " cursor-pointer"}
+        onChange={onChange}
+        {...rest}
+      />
+    );
+  }
+
   type TCRow = {
     status: any;
     group: string;
@@ -129,6 +157,36 @@ const TestCaseTable = (props: TestCaseTableProps) => {
   }, [testCases]);
   const columns = useMemo<ColumnDef<TCRow>[]>(() => {
     const columnDefs = [];
+
+    if (featureFlags?.TestCaseListButtons) {
+      columnDefs.push({
+        id: "select",
+        header: ({ table }) => (
+          <IndeterminateCheckbox
+            {...{
+              checked: table.getIsAllRowsSelected(),
+              indeterminate: table.getIsSomePageRowsSelected(),
+              onChange: table.getToggleAllPageRowsSelectedHandler(),
+            }}
+          />
+        ),
+        cell: ({ row }) => {
+          return (
+            <div className="px-1">
+              <IndeterminateCheckbox
+                {...{
+                  checked: row.getIsSelected(), //props.selectedIds[row.original.id],
+                  disabled: !row.getCanSelect(),
+                  indeterminate: row.getIsSomeSelected(),
+                  onChange: row.getToggleSelectedHandler(),
+                  id: row.original.id,
+                }}
+              />
+            </div>
+          );
+        },
+      });
+    }
 
     if (featureFlags?.TestCaseID) {
       columnDefs.push({
