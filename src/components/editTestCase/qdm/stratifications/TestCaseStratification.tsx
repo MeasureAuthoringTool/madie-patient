@@ -14,6 +14,7 @@ export interface TestCaseStratificationProps {
   QDM?: boolean;
   index?: number;
   isTestCaseExecuted?: boolean;
+  setIsTestCaseExecuted?: (isTestCaseExecuted: boolean) => void;
 }
 
 const TestCaseStratification = ({
@@ -23,6 +24,7 @@ const TestCaseStratification = ({
   populationBasis,
   disableExpected = false,
   onStratificationChange,
+  setIsTestCaseExecuted,
   index,
   QDM = false,
   isTestCaseExecuted = false,
@@ -41,12 +43,13 @@ const TestCaseStratification = ({
           <ExpectActualInput
             id={`${stratification.name}-expected-cb`}
             expectedValue={stratification.expected}
-            onChange={(expectedValue) =>
+            onChange={(expectedValue) => {
+              setIsTestCaseExecuted(false);
               onStratificationChange({
                 ...stratification,
                 expected: expectedValue,
-              })
-            }
+              });
+            }}
             populationBasis={populationBasis}
             disabled={disableExpected}
             data-testid={

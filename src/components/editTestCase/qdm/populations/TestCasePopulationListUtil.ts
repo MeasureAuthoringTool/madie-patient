@@ -16,7 +16,9 @@ export const determineGroupResult = (
   }
   for (let i = 0; i < populations?.length; i++) {
     const population = populations[i];
-    const { actual } = populationResult[i];
+    //const { actual } = populationResult[i];
+    const actual =
+      populationResult[i] === undefined ? "" : populationResult[i].actual;
     const { expected } = population;
     if (populationBasis === "boolean" && expected != actual) {
       return "fail";

@@ -14,7 +14,6 @@ declare module "@madie/madie-util" {
     qiCoreBonnieTestCases: boolean;
     qiCoreElementsTab: boolean;
     qdmHideJson: boolean;
-    ShiftTestCasesDates: boolean;
     TestCaseListSearch: boolean;
     TestCaseID: boolean;
     TestCaseListButtons: boolean;

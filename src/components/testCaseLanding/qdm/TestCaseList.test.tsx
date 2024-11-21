@@ -3280,9 +3280,7 @@ describe("TestCaseList component", () => {
   });
 
   it("should render shift test case dates dialogue on Test Case list page when shift test case dates button is clicked", async () => {
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      ShiftTestCasesDates: true,
-    }));
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({}));
 
     const { getByTestId } = renderTestCaseListComponent();
     await waitFor(() => {
@@ -3301,9 +3299,7 @@ describe("TestCaseList component", () => {
 
   it("should shift test case dates successfully", async () => {
     testCases[0].title = "WhenAllGood";
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      ShiftTestCasesDates: true,
-    }));
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({}));
     const responseDto: TestCase = {
       id: "1234",
       json: "date2",
@@ -3357,9 +3353,7 @@ describe("TestCaseList component", () => {
   });
 
   it("should handle shift test case dates failure", async () => {
-    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({
-      ShiftTestCasesDates: true,
-    }));
+    (useFeatureFlags as jest.Mock).mockClear().mockImplementation(() => ({}));
     const shiftTestCaseDatesApiMock = jest.fn().mockRejectedValueOnce(null);
     useTestCaseServiceMock.mockImplementationOnce(() => {
       return {

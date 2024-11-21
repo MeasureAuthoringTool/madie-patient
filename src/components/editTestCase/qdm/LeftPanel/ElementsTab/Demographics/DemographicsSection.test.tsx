@@ -11,6 +11,8 @@ import {
   PatientCharacteristicEthnicity,
   PatientCharacteristicExpired,
   DataElementCode,
+  PatientCharacteristicRace,
+  PatientCharacteristicSex,
 } from "cqm-models";
 
 const emptyPatient = new QDMPatient();
@@ -197,5 +199,73 @@ describe("DemographicsSection", () => {
         payload: expect.anything(),
       });
     });
+  });
+
+  it("should handle Race change", () => {
+    const qdmPatient = new QDMPatient();
+    const raceElement = new PatientCharacteristicRace();
+    const newCode: DataElementCode = {
+      code: "1002-5",
+      display: "American Indian or Alaska Native",
+      version: undefined,
+      system: "2.16.840.1.113883.6.238",
+    };
+    raceElement.dataElementCodes = [newCode];
+    qdmPatient.dataElements.push(raceElement);
+    (useQdmPatient as jest.Mock).mockImplementation(() => ({
+      state: { patient: qdmPatient },
+      dispatch: mockUseQdmPatientDispatch,
+    }));
+    render(
+      <FormikProvider value={mockFormik}>
+        <DemographicsSection canEdit={true} />
+      </FormikProvider>
+    );
+
+    expect(screen.getByText("Race")).toBeInTheDocument();
+    const raceInput = screen.getByTestId(
+      "demographics-race-input"
+    ) as HTMLInputElement;
+    expect(raceInput).toBeInTheDocument();
+    expect(raceInput.value).toBe("American Indian or Alaska Native");
+
+    fireEvent.change(raceInput, {
+      target: { value: "Asian" },
+    });
+    expect(raceInput.value).toBe("Asian");
+  });
+
+  it("should handle Gender change", () => {
+    const qdmPatient = new QDMPatient();
+    const genderElement = new PatientCharacteristicSex();
+    const newCode: DataElementCode = {
+      system: "2.16.840.1.113883.5.1",
+      version: "2023-02-01",
+      code: "F",
+      display: "Female",
+    };
+    genderElement.dataElementCodes = [newCode];
+    qdmPatient.dataElements.push(genderElement);
+    (useQdmPatient as jest.Mock).mockImplementation(() => ({
+      state: { patient: qdmPatient },
+      dispatch: mockUseQdmPatientDispatch,
+    }));
+    render(
+      <FormikProvider value={mockFormik}>
+        <DemographicsSection canEdit={true} />
+      </FormikProvider>
+    );
+
+    expect(screen.getByText("Gender")).toBeInTheDocument();
+    const genderInput = screen.getByTestId(
+      "demographics-gender-input"
+    ) as HTMLInputElement;
+    expect(genderInput).toBeInTheDocument();
+    expect(genderInput.value).toBe("Female");
+
+    fireEvent.change(genderInput, {
+      target: { value: "Male" },
+    });
+    expect(genderInput.value).toBe("Male");
   });
 });

@@ -14,7 +14,7 @@ interface ActionCenterProps {
   onSubmit?: any;
 }
 
-const filterByOptions = ["Status", "Group", "Title", "Description"];
+const filterByOptions = ["Case #", "Status", "Group", "Title", "Description"];
 
 export default function ActionCenter(props: ActionCenterProps) {
   const { search } = useLocation();
@@ -32,12 +32,15 @@ export default function ActionCenter(props: ActionCenterProps) {
       props.onSubmit(formValues);
     },
   });
+  const createEncodedQuery = (values) => {
+    const filterEncoded = encodeURIComponent(values.filterBy);
+    const searchEncoded = encodeURIComponent(values.searchValue);
+    return `?filter=${filterEncoded}&search=${searchEncoded}&page=1&limit=${
+      values.limit || 10
+    }`;
+  };
   const handleNavigate = () => {
-    navigate(
-      `?filter=${formik.values.filterBy}&search=${
-        formik.values.searchValue
-      }&page=${1}&limit=${values.limit ? values.limit : 10}`
-    );
+    navigate(createEncodedQuery(formik.values));
   };
   const handleClearClick = () => {
     const testCasePageOptions = JSON.parse(

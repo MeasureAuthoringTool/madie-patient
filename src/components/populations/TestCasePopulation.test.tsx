@@ -22,7 +22,7 @@ describe("TestCasePopulation component", () => {
         <table>
           <tbody>
             <TestCasePopulation
-              executionRun
+              isTestCaseExecuted={true}
               population={testCasePopulation}
               onChange={handleChange}
               setChangedPopulation={setChangedPopulation}

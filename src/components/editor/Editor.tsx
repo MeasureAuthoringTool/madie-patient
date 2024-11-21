@@ -68,7 +68,7 @@ const Editor = ({
   return (
     <div
       data-testid="test-case-json-editor"
-      style={{ height: "calc(100% - 64px)" }}
+      style={{ height: "calc(100% - 48px)" }}
     >
       <AceEditor
         value={value}
