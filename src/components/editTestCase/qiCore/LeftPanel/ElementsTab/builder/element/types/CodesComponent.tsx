@@ -16,7 +16,7 @@ const CodesComponent = ({
   useEffect(() => {
     if (structureDefinition) {
       // eslint-disable-next-line no-console
-      console.log("valueSet: ", structureDefinition.binding);
+      // console.log("valueSet: ", structureDefinition.binding);
       const valueSetVal = structureDefinition.binding?.valueSet;
       if (_.isEmpty(valueSetVal)) {
         console.warn(

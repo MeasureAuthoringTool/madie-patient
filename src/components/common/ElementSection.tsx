@@ -4,13 +4,14 @@ import "./ElementSection.scss";
 // Tab heading to display weather or not we can see contents
 
 interface ElementSectionProps {
-  title: string;
+  title: any;
   children?: any;
+  startOpen?: any;
 }
 
 const ElementSection = (props: ElementSectionProps) => {
-  const { title, children } = props;
-  const [open, setOpen] = useState(true);
+  const { title, children, startOpen = true } = props;
+  const [open, setOpen] = useState(startOpen);
   const chevronClass = open ? "chevron-display open" : "chevron-display";
   const growingDivClass = open ? "growing-div open" : "growing-div";
 

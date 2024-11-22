@@ -4,6 +4,7 @@ import * as _ from "lodash";
 import TypeEditor from "./TypeEditor";
 import useFhirDefinitionsServiceApi from "../../../../../../../api/useFhirDefinitionsService";
 import ElementEditorChildren from "./ElementEditorChildren";
+import "./ElementEditor.scss";
 interface ElementEditorProps {
   resource?: any;
   selectedResource?: any;
@@ -32,15 +33,9 @@ const ElementEditor = ({
     resourcePath,
     elementDefinition.path
   );
-  console.log("elemPath", elemPath);
+  // console.log("elemPath", elemPath);
   const required = +elementDefinition.min > 0;
   let elementValue = _.get(resource, elemPath);
-
-  console.log("resource", resource);
-  console.log("elementDefinition", elementDefinition);
-  console.log("resourcePath", resourcePath);
-
-  // we can get the path with el
 
   const currentPath = elementDefinition?.path;
 
@@ -48,9 +43,9 @@ const ElementEditor = ({
     selectedResource,
     currentPath
   );
+
   // We will hit all direct children normally with the typeEditor however not every second child;
   const currentDepth = elementDefinition?.path.split(".").length;
-
   return (
     <Box
       sx={{
@@ -59,23 +54,15 @@ const ElementEditor = ({
         flexDirection: "column",
         width: "100%",
       }}
+      id="element-editor"
     >
-      {/* we're starting at ClaimResponse.item It's got lots of children and we want to render a typeEditor for each of the children with a label */}
-      <TypeEditor
-        type={type.code}
-        required={required}
-        value={elementValue}
-        onChange={(e) => {
-          elementValue = e;
-          onChange(elemPath, e);
-        }}
-        structureDefinition={elementDefinition}
-        canEdit={canEdit}
-        label={elementDefinition?.id}
-      />
-
-      {/* if */}
-      <ElementEditorChildren
+      {/* we need to render not only the current item, but all children */}
+      <ElementEditorChildren //recursive render control
+        // stuff we need only at the init root
+        resourcePath={resourcePath}
+        fhirDefinitionsService={fhirDefinitionsService}
+        rootDefinition={elementDefinition}
+        // stuff we need everywhere
         allChildren={allChildren}
         currentDepth={currentDepth}
         resource={resource}
