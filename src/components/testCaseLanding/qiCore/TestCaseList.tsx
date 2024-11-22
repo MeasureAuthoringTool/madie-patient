@@ -166,6 +166,7 @@ const TestCaseList = (props: TestCaseListProps) => {
   }, [testCases]);
 
   useEffect(() => {
+    setExecuteAllTestCases(false);
     if (
       !_.isNil(measure?.groups) &&
       measure.groups.length > 0 &&
