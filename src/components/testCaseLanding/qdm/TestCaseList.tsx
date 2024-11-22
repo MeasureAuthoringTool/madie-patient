@@ -175,6 +175,7 @@ const TestCaseList = (props: TestCaseListProps) => {
   useState<GroupCoverageResult>();
   const [createOpen, setCreateOpen] = useState<boolean>(false);
   useEffect(() => {
+    setExecuteAllTestCases(false);
     if (
       !_.isNil(measure?.groups) &&
       measure.groups.length > 0 &&
