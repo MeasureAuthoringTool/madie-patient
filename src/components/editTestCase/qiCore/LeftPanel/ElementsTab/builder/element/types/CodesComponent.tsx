@@ -1,17 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import { TypeComponentProps } from "./TypeComponentProps";
-import useFhirDefinitionsServiceApi from "../../../../../../../../api/useFhirDefinitionsService";
 import Box from "@mui/system/Box";
 import { MenuItem } from "@mui/material";
 import { Select } from "@madie/madie-design-system/dist/react";
 import * as _ from "lodash";
+import useTerminologyServiceApi from "../../../../../../../../api/useTerminologyServiceApi";
 
 const CodesComponent = ({
   canEdit,
   structureDefinition,
 }: TypeComponentProps) => {
   const [codes, setCodes] = useState([]);
-  const fhirDefinitionsService = useRef(useFhirDefinitionsServiceApi());
+  const terminologyServiceApi = useRef(useTerminologyServiceApi());
 
   useEffect(() => {
     if (structureDefinition) {
@@ -28,8 +28,8 @@ const CodesComponent = ({
           valueSetVal.lastIndexOf("/") + 1,
           valueSetVal.indexOf("|")
         );
-        fhirDefinitionsService.current
-          .getFhirValueSetExpansion(valueSetId)
+        terminologyServiceApi.current
+          .getInternalValueSetExpansion(valueSetId)
           .then((expansion) => {
             setCodes(expansion.expansion.contains);
           })

@@ -302,4 +302,35 @@ describe("TerminologyServiceApi Tests", () => {
     const result = terminologyService.getValueSetsForDRCs(testCqmMeasure);
     expect(_.isEmpty(result)).toBe(true);
   });
+
+  it("should return value set expansion for us-core-vaccines-cvx", async () => {
+    axios.get = jest.fn().mockResolvedValue({
+      status: 200,
+      data: {
+        expansion: {
+          contains: [
+            {
+              system: "http://hl7.org/fhir/sid/cvx",
+              code: "01",
+              display: "diphtheria, tetanus toxoids and pertussis vaccine",
+            },
+          ],
+        },
+      },
+    });
+    const result = await terminologyService.getInternalValueSetExpansion(
+      "us-core-vaccines-cvx"
+    );
+    expect(result.expansion.contains).not.toBeNull();
+  });
+
+  it("should return null if  expansion not found", async () => {
+    axios.get = jest.fn().mockRejectedValue({
+      status: 400,
+    });
+    const result = await terminologyService.getInternalValueSetExpansion(
+      "us-core-vaccines-cvx"
+    );
+    expect(result).toBeNull();
+  });
 });
