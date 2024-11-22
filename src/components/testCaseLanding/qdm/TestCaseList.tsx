@@ -245,7 +245,7 @@ const TestCaseList = (props: TestCaseListProps) => {
 
   useEffect(() => {
     const validTestCases = testCases?.filter((tc) => tc.validResource);
-    if (validTestCases && calculationOutput) {
+    if (validTestCases && calculationOutput && selectedPopCriteria) {
       const executionResults: CqmExecutionResultsByPatient = calculationOutput;
       // calculation output only contains valid testcases already.
       const highlightingForAllGroups = buildHighlightingForAllGroups(

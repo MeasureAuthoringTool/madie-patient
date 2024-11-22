@@ -230,7 +230,7 @@ const TestCaseList = (props: TestCaseListProps) => {
 
   useEffect(() => {
     const validTestCases = testCases?.filter((tc) => tc.validResource);
-    if (validTestCases && calculationOutput?.results) {
+    if (validTestCases && calculationOutput?.results && selectedPopCriteria) {
       // Pull Clause Coverage from coverage HTML
       setCoveragePercentage(
         getCoverageValueFromHtml(
