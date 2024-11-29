@@ -1,9 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  useLocation,
+} from "react-router-dom";
 import TestCaseLanding from "../../testCaseLanding/qiCore/TestCaseLanding";
 import EditTestCase from "../../editTestCase/qiCore/EditTestCase";
 import NotFound from "../../notfound/NotFound";
-import { measureStore, useFeatureFlags } from "@madie/madie-util";
+import { measureStore } from "@madie/madie-util";
 import { Bundle, ValueSet } from "fhir/r4";
 import useTerminologyServiceApi from "../../../api/useTerminologyServiceApi";
 import { ExecutionContextProvider } from "./ExecutionContext";
@@ -22,8 +26,12 @@ import TestCaseData from "../../testCaseConfiguration/testCaseData/TestCaseData"
 export const CQL_RETURN_TYPES_MISMATCH_ERROR =
   "One or more Population Criteria has a mismatch with CQL return types. Test Cases cannot be executed until this is resolved.";
 
-const TestCaseRoutes = () => {
-  const featureFlags = useFeatureFlags();
+const TestCaseRoutes = (props) => {
+  // only for Unit Tests
+  const { initialEntry } = props;
+  if (initialEntry) {
+    window.history.pushState({}, "", initialEntry);
+  }
   const [measureBundle, setMeasureBundle] = useState<Bundle>();
   const [valueSets, setValueSets] = useState<ValueSet[]>();
   const [errors, setErrors] = useState<Array<string>>([]);
@@ -111,6 +119,61 @@ const TestCaseRoutes = () => {
     setExecutionContextReady(!!measureBundle && !!valueSets && !!measure);
   }, [measureBundle, measure, valueSets]);
 
+  const routesConfig = [
+    {
+      children: [
+        {
+          path: "/measures/:measureId/edit/test-cases",
+          element: <RedirectToList />,
+        },
+        {
+          path: "/measures/:measureId/edit/test-cases/:id",
+          element: <EditTestCase errors={errors} setErrors={setErrors} />,
+        },
+        {
+          path: "/measures/:measureId/edit/test-cases/list-page",
+          element: (
+            <TestCaseLandingWrapper
+              qdm={false}
+              children={
+                <TestCaseLanding
+                  errors={errors}
+                  setErrors={setErrors}
+                  setWarnings={setImportWarnings}
+                />
+              }
+            />
+          ),
+        },
+        {
+          path: "/measures/:measureId/edit/test-cases/list-page/:criteriaId",
+          element: (
+            <TestCaseLandingWrapper
+              qdm={false}
+              children={
+                <TestCaseLanding
+                  errors={errors}
+                  setErrors={setErrors}
+                  setWarnings={setImportWarnings}
+                />
+              }
+            />
+          ),
+        },
+        {
+          path: "/measures/:measureId/edit/test-cases/list-page/test-case-data",
+          element: (
+            <TestCaseLandingWrapper qdm={false} children={<TestCaseData />} />
+          ),
+        },
+        { path: "/404", element: <NotFound /> },
+        { path: "*", element: <NotFound /> },
+      ],
+    },
+  ];
+
+  const router = createBrowserRouter(routesConfig);
+
   return (
     <ExecutionContextProvider
       value={{
@@ -133,7 +196,7 @@ const TestCaseRoutes = () => {
       {importWarnings && importWarnings.length > 0 && (
         <StatusHandler importWarnings={importWarnings} />
       )}
-      <Routes>
+      {/* <Routes>
         <Route path="/measures/:measureId/edit/test-cases/list-page">
           <Route
             index
@@ -191,7 +254,8 @@ const TestCaseRoutes = () => {
         </Route>
 
         <Route path="*" element={<NotFound />} />
-      </Routes>
+      </Routes> */}
+      <RouterProvider router={router} />
     </ExecutionContextProvider>
   );
 };

@@ -1,5 +1,4 @@
 import React, { Suspense, useEffect, useState } from "react";
-import { BrowserRouter } from "react-router-dom";
 import RoutesWrapper from "./routes/RoutesWrapper";
 import { ServiceConfig, ApiContextProvider } from "../api/ServiceContext";
 import axios from "../api/axios-instance";
@@ -32,13 +31,11 @@ export default function Home() {
   const loadingState = <div>Loading...</div>;
 
   const loadedState = (
-    <BrowserRouter>
-      <ApiContextProvider value={serviceConfig}>
-        <Suspense fallback={<div>loading</div>}>
-          <RoutesWrapper />
-        </Suspense>
-      </ApiContextProvider>
-    </BrowserRouter>
+    <ApiContextProvider value={serviceConfig}>
+      <Suspense fallback={<div>loading</div>}>
+        <RoutesWrapper />
+      </Suspense>
+    </ApiContextProvider>
   );
 
   let result = serviceConfig === null ? loadingState : loadedState;

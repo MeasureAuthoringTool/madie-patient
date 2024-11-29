@@ -119,7 +119,7 @@ const TestCaseTablePopover = (props: TestCaseTablePopoverProps) => {
           >
             {viewOrEdit}
           </button>
-          {model.startsWith("QI-Core") ? (
+          {model?.startsWith("QI-Core") ? (
             <>
               <button
                 id={`export-transaction-bundle-${selectedTestCase?.id}`}
@@ -186,7 +186,7 @@ const TestCaseTablePopover = (props: TestCaseTablePopoverProps) => {
               >
                 delete
               </button>
-              {model.startsWith("QI-Core") &&
+              {model?.startsWith("QI-Core") &&
                 selectedTestCase &&
                 selectedTestCase.executionStatus != "Invalid" && (
                   <button
