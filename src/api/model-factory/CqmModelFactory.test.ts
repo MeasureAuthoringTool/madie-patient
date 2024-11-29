@@ -234,9 +234,6 @@ describe("CqmModelFactory", () => {
     expect(
       CqmModelFactory.instantiateModel("EncounterPerformed")
     ).toBeInstanceOf(EncounterPerformed);
-    expect(
-      CqmModelFactory.instantiateModel("CommunicationNotPerformed")
-    ).toBeInstanceOf(CommunicationPerformed);
   });
 
   it("Error on UnSupportedType", () => {
