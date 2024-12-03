@@ -166,6 +166,7 @@ const TestCaseList = (props: TestCaseListProps) => {
   }, [testCases]);
 
   useEffect(() => {
+    setExecuteAllTestCases(false);
     if (
       !_.isNil(measure?.groups) &&
       measure.groups.length > 0 &&
@@ -230,7 +231,7 @@ const TestCaseList = (props: TestCaseListProps) => {
 
   useEffect(() => {
     const validTestCases = testCases?.filter((tc) => tc.validResource);
-    if (validTestCases && calculationOutput?.results) {
+    if (validTestCases && calculationOutput?.results && selectedPopCriteria) {
       // Pull Clause Coverage from coverage HTML
       setCoveragePercentage(
         getCoverageValueFromHtml(

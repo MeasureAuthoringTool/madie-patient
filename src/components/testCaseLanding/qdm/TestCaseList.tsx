@@ -175,6 +175,7 @@ const TestCaseList = (props: TestCaseListProps) => {
   useState<GroupCoverageResult>();
   const [createOpen, setCreateOpen] = useState<boolean>(false);
   useEffect(() => {
+    setExecuteAllTestCases(false);
     if (
       !_.isNil(measure?.groups) &&
       measure.groups.length > 0 &&
@@ -245,7 +246,7 @@ const TestCaseList = (props: TestCaseListProps) => {
 
   useEffect(() => {
     const validTestCases = testCases?.filter((tc) => tc.validResource);
-    if (validTestCases && calculationOutput) {
+    if (validTestCases && calculationOutput && selectedPopCriteria) {
       const executionResults: CqmExecutionResultsByPatient = calculationOutput;
       // calculation output only contains valid testcases already.
       const highlightingForAllGroups = buildHighlightingForAllGroups(

@@ -117,6 +117,23 @@ export const ETHNICITY_CODE_OPTIONS: DataElementCode[] = [
 ];
 
 export const LIVING_STATUS_CODE_OPTIONS = ["Living", "Expired"];
+export const PATIENT_CHARACTERISTIC_EXPIRED: DataElementCode = {
+  code: "419099009",
+  system: "2.16.840.1.113883.6.96",
+  version: "2022-09",
+  display: "Dead (finding)",
+};
+export const getPatientCharacteristicExpiredDateElement = (
+  value,
+  existingElement: DataElement
+): DataElement => {
+  const expired: DataElement = existingElement
+    ? new PatientCharacteristicExpired(existingElement)
+    : new PatientCharacteristicExpired();
+  expired.expiredDatetime = value;
+  expired.dataElementCodes = [PATIENT_CHARACTERISTIC_EXPIRED];
+  return expired;
+};
 
 export const getBirthDateElement = (
   value,
@@ -169,7 +186,7 @@ export const getEthnicityDataElement = (
 
 export const getLivingStatusDataElement = (): DataElement => {
   const pce: DataElement = new PatientCharacteristicExpired();
-  pce.dataElementCodes = [];
+  pce.dataElementCodes = [PATIENT_CHARACTERISTIC_EXPIRED];
   return pce;
 };
 

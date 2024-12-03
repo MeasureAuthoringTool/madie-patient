@@ -12,6 +12,7 @@ import {
   Population,
   PopulationExpectedValue,
   TestCase,
+  StratificationExpectedValue,
 } from "@madie/madie-models";
 import { Bundle, ValueSet } from "fhir/r4";
 import * as _ from "lodash";
@@ -290,7 +291,7 @@ export class CalculationService {
     return results;
   }
 
-  isGroupPass(groupPopulation: GroupPopulation) {
+  isGroupPass(groupPopulation: GroupPopulation, measureGroup: Group) {
     let groupPass = true;
     if (groupPopulation) {
       const patientBased =
@@ -312,9 +313,24 @@ export class CalculationService {
       }
       // verify stratification & stratified populations passing if they exist
       if (groupPopulation.stratificationValues) {
-        return groupPopulation.stratificationValues.every((strata) => {
+        let validStratPopValues = [];
+        groupPopulation.stratificationValues.forEach(
+          (stratValues: StratificationExpectedValue) => {
+            stratValues.populationValues?.forEach((popValue) => {
+              const validPopValues = this.getValidStratPopulationValues(
+                measureGroup,
+                stratValues.id,
+                popValue
+              );
+              if (validPopValues && validPopValues.length > 0) {
+                validStratPopValues.push(validPopValues);
+              }
+            });
+          }
+        );
+        return validStratPopValues.every((strata) => {
           // verify stratified populations passing
-          return strata.populationValues.every((population) =>
+          return strata.every((population) =>
             this.isValuePass(
               population.actual,
               population.expected,
@@ -325,6 +341,24 @@ export class CalculationService {
       }
     }
     return groupPass;
+  }
+
+  getValidStratPopulationValues(
+    measureGroup: Group,
+    stratId: string,
+    popValue: PopulationExpectedValue
+  ): PopulationExpectedValue[] {
+    let valiePopValue = [];
+    measureGroup?.stratifications?.forEach((strat) => {
+      if (strat.id === stratId) {
+        strat.associations?.forEach((association) => {
+          if (association === popValue.name) {
+            valiePopValue.push(popValue);
+          }
+        });
+      }
+    });
+    return valiePopValue;
   }
 
   processTestCaseResults(
@@ -431,8 +465,8 @@ export class CalculationService {
               (strata) =>
                 // TODO: workaround because fqm execution doesn't provide IDs for all cases
                 (strata.strataCode &&
-                  strata.strataCode === strataResult.strataCode) ||
-                (strata.strataId && strata.strataId === strataResult.strataId)
+                  strata.strataCode === strataResult?.strataCode) ||
+                (strata.strataId && strata.strataId === strataResult?.strataId)
             );
             return population?.result && stratification?.result;
           }
@@ -463,7 +497,8 @@ export class CalculationService {
         });
       });
       // need to do work here.
-      allGroupsPass = allGroupsPass && this.isGroupPass(tcGroupPopulation);
+      allGroupsPass =
+        allGroupsPass && this.isGroupPass(tcGroupPopulation, measureGroup);
     }
     updatedTestCase.executionStatus = allGroupsPass
       ? ExecutionStatusType.PASS
